@@ -3,7 +3,7 @@ import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 're
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { FieldEditMulti, FieldSelect, Title } from 'components';
-import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, getPersonExport, exportExcel, templateMaker, uploadExcel, insPersonBody, insPersonCommunicationChannel, array_trimmer, convertLocalDate } from 'common/helpers';
+import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, getPersonExport, exportExcel, templateMaker, uploadExcel, insPersonBody, insPersonCommunicationChannel, array_trimmer, convertLocalDate, getColumnsSel, personcommunicationchannelUpdateLockedArrayIns } from 'common/helpers';
 import { Dictionary, IDomain, IObjectState, IPerson, IPersonChannel, IPersonCommunicationChannel, IPersonConversation, IPersonDomains, IPersonImport, IPersonReferrer, IFetchData } from "@types";
 import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, TextField, MenuItem, Paper, InputBase } from '@material-ui/core';
 import clsx from 'clsx';
@@ -33,6 +33,7 @@ import { sendHSM } from 'store/inbox/actions';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Menu from '@material-ui/core/Menu';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
+import { getLeadPhases, resetGetLeadPhases } from 'store/lead/actions';
 const urgencyLevels = [null, 'LOW', 'MEDIUM', 'HIGH']
 
 interface SelectFieldProps {
@@ -93,7 +94,14 @@ const selectionKey = 'personid';
 
 const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'dateactivity', 'leadactivity', 'datenote', 'note', 'custom']
 
-const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean, persons: IPerson[], type: string }> = ({ setOpenModal, openModal, persons, type }) => {
+interface DialogSendTemplateProps {
+    setOpenModal: (param: any) => void;
+    openModal: boolean;
+    persons: IPerson[];
+    type: "HSM" | "MAIL" | "SMS";
+}
+
+const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, openModal, persons, type }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitClose, setWaitClose] = useState(false);
@@ -103,6 +111,15 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
     const [bodyMessage, setBodyMessage] = useState('');
     const [personWithData, setPersonWithData] = useState<IPerson[]>([])
     const domains = useSelector(state => state.person.editableDomains);
+
+    const title = useMemo(() => {
+        switch (type) {
+            case "HSM": return t(langKeys.send_hsm);
+            case "SMS": return t(langKeys.send_sms);
+            case "MAIL": return t(langKeys.send_mail);
+            default: return '-';
+        }
+    }, [type]);
 
     const { control, register, handleSubmit, setValue, getValues, trigger, reset, formState: { errors } } = useForm<any>({
         defaultValues: {
@@ -210,7 +227,7 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
     return (
         <DialogZyx
             open={openModal}
-            title={t(langKeys.send_hsm).replace("HSM", type)}
+            title={title}
             buttonText1={t(langKeys.cancel)}
             buttonText2={t(langKeys.continue)}
             handleClickButton1={() => setOpenModal(false)}
@@ -395,14 +412,16 @@ export const Person: FC = () => {
     const [waitExport, setWaitExport] = useState(false);
     const [waitImport, setWaitImport] = useState(false);
     const [filterAgents, setFilterAgents] = useState('');
-    const [filterChannelsType, setFilterChannelType] = useState('')
     const [openDialogTemplate, setOpenDialogTemplate] = useState(false)
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [personsSelected, setPersonsSelected] = useState<IPerson[]>([]);
-    const [typeTemplate, setTypeTemplate] = useState('');
+    const [typeTemplate, setTypeTemplate] = useState<"HSM" | "SMS" | "MAIL">('MAIL');
+    const phases = useSelector(state => state.lead.leadPhases);
 
     const query = useMemo(() => new URLSearchParams(location.search), [location]);
-    const params = useQueryParams(query);
+    const params = useQueryParams(query, { ignore: ['channelTypes'] });
+
+    const [filterChannelsType, setFilterChannelType] = useState(query.get('channelTypes') || '');
 
     const goToPersonDetail = (person: IPerson) => {
         history.push({
@@ -410,7 +429,7 @@ export const Person: FC = () => {
             state: person,
         });
     }
-    const columns = [
+    const columns = useMemo(() => ([
         {
             accessor: 'leadid',
             isComponent: true,
@@ -430,13 +449,13 @@ export const Person: FC = () => {
                             e.stopPropagation();
                             setPersonsSelected([person]);
                             setOpenDialogTemplate(true);
-                            setTypeTemplate("MAIL");
+                            setTypeTemplate("SMS");
                         }}
                         sendMAIL={(e) => {
                             e.stopPropagation();
                             setPersonsSelected([person]);
                             setOpenDialogTemplate(true);
-                            setTypeTemplate("SMS");
+                            setTypeTemplate("MAIL");
                         }}
                     />
                 )
@@ -454,21 +473,6 @@ export const Person: FC = () => {
             Header: t(langKeys.email),
             accessor: 'email',
         },
-        // {
-        //     Header: t(langKeys.name),
-        //     accessor: 'name',
-        // },
-
-        // {
-        //     Header: t(langKeys.firstContactDate),
-        //     accessor: 'firstcontact',
-        //     type: 'date',
-        //     sortType: 'datetime',
-        //     Cell: (props: any) => {
-        //         const row = props.cell.row.original;
-        //         return row.firstcontact ? convertLocalDate(row.firstcontact).toLocaleString() : ""
-        //     }
-        // },
         {
             Header: t(langKeys.lastContactDate),
             accessor: 'lastcontact',
@@ -481,40 +485,29 @@ export const Person: FC = () => {
         },
         {
             Header: t(langKeys.lastuser),
-            accesor: 'lastuser',
+            accessor: 'lastuser',
         },
-        // {
-        //     Header: t(langKeys.lead),
-        //     accessor: 'havelead',
-        //     type: "boolean",
-        //     Cell: (props: any) => {
-        //         const { havelead } = props.cell.row.original;
-        //         if (havelead)
-        //             return <StarIcon fontSize="small" style={{ color: '#ffb400' }} />
-
-        //         return <StarIcon color="action" fontSize="small" />
-        //     }
-        // },
         {
             Header: t(langKeys.lead),
             accessor: 'phasejson',
             type: "select",
-            listSelectFilter: [
-                { key: t(langKeys.new), value: "New" },
-                { key: t(langKeys.qualified), value: "Qualified" },
-                { key: t(langKeys.proposition), value: "Proposition" },
-                { key: t(langKeys.won), value: "Won" },
-                { key: t(langKeys.lost), value: "Lost" },
-            ],
+            listSelectFilter: phases.loading || phases.error ? [] : phases.data.map(x => ({
+                key: x.description,
+                value: `${x.index},${x.description}`,
+            })),
             Cell: (props: any) => {
                 const { phasejson } = props.cell.row.original;
                 if (!phasejson)
                     return null;
                 return (
                     <div style={{ display: 'flex', gap: 4, flexDirection: 'column' }}>
-                        {Object.entries(phasejson).map(([key, value]) => (
+                        {Object.entries(phasejson).sort(([aKey], [bKey]) => {
+                            const aIndex = Number(aKey.split(',')[0]);
+                            const bIndex = Number(bKey.split(',')[0]);
+                            return aIndex - bIndex;
+                        }).map(([key, value]) => (
                             <CountTicket
-                                label={key}
+                                label={key.split(',')[1]}
                                 key={key}
                                 count={value + ""}
                                 color="#55BD84"
@@ -522,44 +515,8 @@ export const Person: FC = () => {
                         ))}
                     </div>
                 )
-
-                // return <StarIcon color="action" fontSize="small" />
             }
         },
-        // {
-        //     Header: t(langKeys.customer),
-        //     accessor: 'email',
-        //     Cell: (props: any) => {
-        //         const { name, email, phone, priority, userlead } = props.cell.row.original;
-        //         return (
-        //             <div >
-        //                 <div>{t(langKeys.name)}: {name}</div>
-        //                 <div>{t(langKeys.email)}: {email}</div>
-        //                 <div>{t(langKeys.phone)}: {phone}</div>
-        //                 {priority &&
-        //                     <>
-        //                         <Rating
-        //                             name="simple-controlled"
-        //                             max={3}
-        //                             defaultValue={urgencyLevels.findIndex(x => x === priority)}
-        //                             readOnly={true}
-        //                         />
-        //                         <div>{t(langKeys.assignedTo)}: {userlead}</div>
-        //                     </>
-        //                 }
-        //             </div>
-        //         )
-        //     }
-        // },
-        // {
-        //     Header: t(langKeys.type),
-        //     accessor: 'type',
-        //     prefixTranslation: 'type_persontype_',
-        //     Cell: (props: any) => {
-        //         const { type } = props.cell.row.original;
-        //         return type ? (t(`type_persontype_${type}`.toLowerCase()) || "").toUpperCase() : "";
-        //     }
-        // },
         {
             Header: t(langKeys.status),
             accessor: 'status',
@@ -582,12 +539,15 @@ export const Person: FC = () => {
                 )
             }
         },
-    ]
+    ]), [phases, t]);
 
     useEffect(() => {
         dispatch(getDomainsByTypename());
+        dispatch(getLeadPhases(getColumnsSel(0, true)));
+
         return () => {
             dispatch(resetGetPersonListPaginated());
+            dispatch(resetGetLeadPhases());
             dispatch(resetAllMain());
         };
     }, [])
@@ -615,13 +575,19 @@ export const Person: FC = () => {
     }
 
     const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
+        const columnsExport = columns.filter(x => !x.isComponent).map(x => ({
+            key: x.accessor,
+            alias: x.Header,
+        }));
         dispatch(exportData(getPersonExport(
             {
                 startdate: daterange.startDate!,
                 enddate: daterange.endDate!,
                 sorts,
-                filters: filters
-            })));
+                filters: filters,
+                userids: '',
+                personcommunicationchannels: filterChannelsType,
+            }), "", "excel", false, columnsExport));
         dispatch(showBackdrop(true));
         setWaitExport(true);
     };
@@ -765,6 +731,25 @@ export const Person: FC = () => {
         }
     }
 
+    const handleLock = (type: "LOCK" | "UNLOCK") => {
+        const callback = () => {
+            const data = personsSelected.map(p => ({
+                personid: p.personid,
+                personcommunicationchannel: p.personcommunicationchannel,
+                locked: type === "LOCK",
+            }));
+            dispatch(execute(personcommunicationchannelUpdateLockedArrayIns(data)));
+            dispatch(showBackdrop(true));
+            setWaitImport(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: type === "UNLOCK" ? t(langKeys.confirmation_person_unlock) : t(langKeys.confirmation_person_lock),
+            callback
+        }));
+    }
+
     useEffect(() => {
         if (waitImport) {
             if (!executeResult.loading && !executeResult.error) {
@@ -803,22 +788,32 @@ export const Person: FC = () => {
                             data={domains.value?.channels || []}
                             optionValue="type"
                             optionDesc="communicationchanneldesc"
+                            valueDefault={filterChannelsType}
                         />
-                        {/* <FieldMultiSelect
-                            onChange={(value) => setFilterAgents(value.map((o: any) => o.userid).join())}
-                            size="small"
-                            label={t(langKeys.user)}
-                            style={{ maxWidth: 300, minWidth: 200 }}
-                            variant="outlined"
-                            loading={domains.loading}
-                            data={domains.value?.agents || []}
-                            optionValue="userid"
-                            optionDesc="fullname"
-                        /> */}
                     </div>
                 </Grid>
                 <Grid item>
                     <div style={{ display: 'flex', gap: 8 }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            disabled={personList.loading || Object.keys(selectedRows).length === 0}
+                            startIcon={<LockIcon color="secondary" />}
+                            onClick={() => handleLock("LOCK")}
+                        >
+                            <Trans i18nKey={langKeys.lock} />
+                        </Button>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            disabled={personList.loading || Object.keys(selectedRows).length === 0}
+                            startIcon={<LockOpenIcon color="secondary" />}
+                            onClick={() => handleLock("UNLOCK")}
+                        >
+                            <Trans i18nKey={langKeys.unlock} />
+                        </Button>
                         <Button
                             variant="contained"
                             color="primary"
@@ -893,6 +888,7 @@ export const Person: FC = () => {
                 onFilterChange={f => {
                     console.log('Persons::onFilterChange', f);
                     const params = buildQueryFilters(f);
+                    if (filterChannelsType !== '') params.append('channelTypes', filterChannelsType);
                     history.push({ search: params.toString() });
                 }}
                 initialEndDate={params.endDate}
@@ -951,10 +947,6 @@ const usePropertyStyles = makeStyles(theme => ({
         fontSize: 15,
         margin: 0,
         width: '100%',
-
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
     },
     leadingContainer: {
         height: 24,
@@ -1313,21 +1305,21 @@ export const PersonDetail: FC = () => {
                             {!!person.personid &&
                                 <Tab
                                     className={clsx(classes.tab, classes.label, tabIndex === "2" && classes.activetab)}
-                                    label={<Trans i18nKey={langKeys.audit} />}
+                                    label={<Trans i18nKey={langKeys.conversation} count={2} />}
                                     value="2"
                                 />
                             }
                             {!!person.personid &&
                                 <Tab
                                     className={clsx(classes.tab, classes.label, tabIndex === "3" && classes.activetab)}
-                                    label={<Trans i18nKey={langKeys.conversation} count={2} />}
+                                    label={<Trans i18nKey={langKeys.opportunity} count={2} />}
                                     value="3"
                                 />
                             }
                             {!!person.personid &&
                                 <Tab
                                     className={clsx(classes.tab, classes.label, tabIndex === "4" && classes.activetab)}
-                                    label={<Trans i18nKey={langKeys.opportunity} count={2} />}
+                                    label={<Trans i18nKey={langKeys.audit} />}
                                     value="4"
                                 />
                             }
@@ -1356,13 +1348,13 @@ export const PersonDetail: FC = () => {
                         />
                     </TabPanel>
                     <TabPanel value="2" index={tabIndex}>
-                        <AuditTab person={person} />
-                    </TabPanel>
-                    <TabPanel value="3" index={tabIndex}>
                         <ConversationsTab person={person} />
                     </TabPanel>
-                    <TabPanel value="4" index={tabIndex}>
+                    <TabPanel value="3" index={tabIndex}>
                         <OpportunitiesTab person={person} />
+                    </TabPanel>
+                    <TabPanel value="4" index={tabIndex}>
+                        <AuditTab person={person} />
                     </TabPanel>
                     {/* <TabPanel value="4" index={tabIndex}>qqq</TabPanel> */}
                 </div>
@@ -1376,14 +1368,15 @@ export const PersonDetail: FC = () => {
                         <Property
                             icon={<TelephoneIcon fill="inherit" stroke="inherit" width={20} height={20} />}
                             title={<Trans i18nKey={langKeys.phone} />}
-                            subtitle={(
-                                <TextField
-                                    fullWidth
-                                    placeholder={t(langKeys.phone)}
-                                    defaultValue={person.phone}
-                                    onChange={e => setValue('phone', e.target.value)}
-                                />
-                            )}
+                            // subtitle={(
+                            //     <TextField
+                            //         fullWidth
+                            //         placeholder={t(langKeys.phone)}
+                            //         defaultValue={person.phone}
+                            //         onChange={e => setValue('phone', e.target.value)}
+                            //     />
+                            // )}
+                            subtitle={person.phone}
                             mt={1}
                             mb={1}
                         />
@@ -1402,48 +1395,51 @@ export const PersonDetail: FC = () => {
                             mb={1} />
                         <Property
                             icon={<DocTypeIcon fill="inherit" stroke="inherit" width={20} height={20} />}
-                            title={<Trans i18nKey={langKeys.document} />}
-                            subtitle={(
-                                <DomainSelectField
-                                    defaultValue={person.documenttype}
-                                    onChange={(value) => {
-                                        setValue('documenttype', value);
-                                    }}
-                                    loading={domains.loading}
-                                    data={domains.value?.docTypes || []}
-                                />
-                            )}
+                            title={<Trans i18nKey={langKeys.documenttype} />}
+                            // subtitle={(
+                            //     <DomainSelectField
+                            //         defaultValue={person.documenttype}
+                            //         onChange={(value) => {
+                            //             setValue('documenttype', value);
+                            //         }}
+                            //         loading={domains.loading}
+                            //         data={domains.value?.docTypes || []}
+                            //     />
+                            // )}
+                            subtitle={person.documenttype}
                             mt={1}
                             mb={1}
                         />
                         <Property
                             icon={<DocNumberIcon fill="inherit" stroke="inherit" width={20} height={20} />}
                             title={<Trans i18nKey={langKeys.docNumber} />}
-                            subtitle={(
-                                <TextField
-                                    fullWidth
-                                    placeholder={t(langKeys.docNumber)}
-                                    defaultValue={person.documentnumber}
-                                    onChange={e => setValue('documentnumber', e.target.value)}
-                                />
-                            )}
+                            // subtitle={(
+                            //     <TextField
+                            //         fullWidth
+                            //         placeholder={t(langKeys.docNumber)}
+                            //         defaultValue={person.documentnumber}
+                            //         onChange={e => setValue('documentnumber', e.target.value)}
+                            //     />
+                            // )}
+                            subtitle={person.documentnumber}
                             mt={1}
                             mb={1}
                         />
                         <Property
                             icon={<GenderIcon />}
                             title={<Trans i18nKey={langKeys.gender} />}
-                            subtitle={(
-                                <DomainSelectField
-                                    defaultValue={person.gender}
-                                    onChange={(value, desc) => {
-                                        setValue('gender', value);
-                                        setValue('genderdesc', desc)
-                                    }}
-                                    loading={domains.loading}
-                                    data={domains.value?.genders || []}
-                                />
-                            )}
+                            // subtitle={(
+                            //     <DomainSelectField
+                            //         defaultValue={person.gender}
+                            //         onChange={(value, desc) => {
+                            //             setValue('gender', value);
+                            //             setValue('genderdesc', desc)
+                            //         }}
+                            //         loading={domains.loading}
+                            //         data={domains.value?.genders || []}
+                            //     />
+                            // )}
+                            subtitle={person.gender}
                             mt={1}
                             mb={1}
                         />
@@ -1661,7 +1657,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                         </Grid>
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                             <Property
-                                title={<Trans i18nKey={langKeys.document} />}
+                                title={<Trans i18nKey={langKeys.documenttype} />}
                                 subtitle={(
                                     <FieldSelect
                                         uset={true}
@@ -1952,33 +1948,34 @@ interface ChannelItemProps {
     channel: IPersonChannel;
 }
 
+const nameschannel: { [x: string]: { label: string, icon: React.ReactNode } } = {
+    "WHAT": { label: "WHATSAPP", icon: <WhatsappIcon width={18} style={{ fill: 'black' }} /> },
+    "WHAD": { label: "WHATSAPP", icon: <WhatsappIcon width={18} style={{ fill: 'black' }} /> },
+    "WHAP": { label: "WHATSAPP", icon: <WhatsappIcon width={18} style={{ fill: 'black' }} /> },
+    "WHAC": { label: "WHATSAPP", icon: <WhatsappIcon width={18} style={{ fill: 'black' }} /> },
+    "FBMS": { label: "FACEBOOK MESSENGER", icon: <FacebookMessengerIcon width={18} style={{ fill: 'black' }} /> },
+    "FBDM": { label: "FACEBOOK MESSENGER", icon: <FacebookMessengerIcon width={18} style={{ fill: 'black' }} /> },
+    "FBWA": { label: "FACEBOOK MURO", icon: <FacebookWallIcon width={18} style={{ fill: 'black' }} /> },
+    "WEBM": { label: "WEB MESSENGER", icon: <WebMessengerIcon width={18} style={{ fill: 'black' }} /> },
+    "TELE": { label: "TELEGRAM", icon: <TelegramIcon width={18} style={{ fill: 'black' }} /> },
+    "INST": { label: "INSTAGRAM", icon: <InstagramIcon width={18} style={{ fill: 'black' }} /> },
+    "INMS": { label: "INSTAGRAM", icon: <InstagramIcon width={18} style={{ fill: 'black' }} /> },
+    "INDM": { label: "INSTAGRAM", icon: <InstagramIcon width={18} style={{ fill: 'black' }} /> },
+    "ANDR": { label: "ANDROID", icon: <AndroidIcon width={18} style={{ fill: 'black' }} /> },
+    "APPL": { label: "IOS", icon: <AppleIcon width={18} style={{ fill: 'black' }} /> },
+    "CHATZ": { label: "WEB MESSENGER", icon: <WebMessengerIcon width={18} style={{ fill: 'black' }} /> },
+    "CHAZ": { label: "WEB MESSENGER", icon: <WebMessengerIcon width={18} style={{ fill: 'black' }} /> },
+    "MAIL": { label: "EMAIL", icon: <EmailIcon width={18} style={{ fill: 'black' }} /> },
+    "YOUT": { label: "YOUTUBE", icon: <YoutubeIcon width={18} style={{ fill: 'black' }} /> },
+    "LINE": { label: "LINE", icon: <LineIcon width={18} style={{ fill: 'black' }} /> },
+    "SMS": { label: "SMS", icon: <SmsIcon width={18} style={{ fill: 'black' }} /> },
+    "SMSI": { label: "SMS", icon: <WhatsappIcon width={18} style={{ fill: 'black' }} /> },
+    "TWIT": { label: "TWITTER", icon: <TwitterIcon width={18} style={{ fill: 'black' }} /> },
+    "TWMS": { label: "TWITTER", icon: <TwitterIcon width={18} style={{ fill: 'black' }} /> },
+};
+
 const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
     const classes = useChannelItemStyles();
-    const nameschannel: { [x: string]: { label: string, icon: React.ReactNode } } = {
-        "WHAT": { label: "WHATSAPP", icon: <WhatsappIcon width={18} style={{ fill: 'black' }} /> },
-        "WHAD": { label: "WHATSAPP", icon: <WhatsappIcon width={18} style={{ fill: 'black' }} /> },
-        "WHAP": { label: "WHATSAPP", icon: <WhatsappIcon width={18} style={{ fill: 'black' }} /> },
-        "WHAC": { label: "WHATSAPP", icon: <WhatsappIcon width={18} style={{ fill: 'black' }} /> },
-        "FBMS": { label: "FACEBOOK MESSENGER", icon: <FacebookMessengerIcon width={18} style={{ fill: 'black' }} /> },
-        "FBDM": { label: "FACEBOOK MESSENGER", icon: <FacebookMessengerIcon width={18} style={{ fill: 'black' }} /> },
-        "FBWA": { label: "FACEBOOK MURO", icon: <FacebookWallIcon width={18} style={{ fill: 'black' }} /> },
-        "WEBM": { label: "WEB MESSENGER", icon: <WebMessengerIcon width={18} style={{ fill: 'black' }} /> },
-        "TELE": { label: "TELEGRAM", icon: <TelegramIcon width={18} style={{ fill: 'black' }} /> },
-        "INST": { label: "INSTAGRAM", icon: <InstagramIcon width={18} style={{ fill: 'black' }} /> },
-        "INMS": { label: "INSTAGRAM", icon: <InstagramIcon width={18} style={{ fill: 'black' }} /> },
-        "INDM": { label: "INSTAGRAM", icon: <InstagramIcon width={18} style={{ fill: 'black' }} /> },
-        "ANDR": { label: "ANDROID", icon: <AndroidIcon width={18} style={{ fill: 'black' }} /> },
-        "APPL": { label: "IOS", icon: <AppleIcon width={18} style={{ fill: 'black' }} /> },
-        "CHATZ": { label: "WEB MESSENGER", icon: <WebMessengerIcon width={18} style={{ fill: 'black' }} /> },
-        "CHAZ": { label: "WEB MESSENGER", icon: <WebMessengerIcon width={18} style={{ fill: 'black' }} /> },
-        "MAIL": { label: "EMAIL", icon: <EmailIcon width={18} style={{ fill: 'black' }} /> },
-        "YOUT": { label: "YOUTUBE", icon: <YoutubeIcon width={18} style={{ fill: 'black' }} /> },
-        "LINE": { label: "LINE", icon: <LineIcon width={18} style={{ fill: 'black' }} /> },
-        "SMS": { label: "SMS", icon: <SmsIcon width={18} style={{ fill: 'black' }} /> },
-        "SMSI": { label: "SMS", icon: <WhatsappIcon width={18} style={{ fill: 'black' }} /> },
-        "TWIT": { label: "TWITTER", icon: <TwitterIcon width={18} style={{ fill: 'black' }} /> },
-        "TWMS": { label: "TWITTER", icon: <TwitterIcon width={18} style={{ fill: 'black' }} /> },
-    }
     const personIdentifier = useMemo(() => {
         if (!channel) return '';
 
@@ -2357,6 +2354,7 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
         setOpenModal(true);
         setRowSelected({ ...row, displayname: person.name, ticketnum: row.ticketnum })
     }, [mainResult]);
+
     return (
         <div className={classes.root}>
             <DialogInteractions
@@ -2377,7 +2375,12 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
                 <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
                     <Property
                         title={<Trans i18nKey={langKeys.channel} />}
-                        subtitle={conversation.channeldesc}
+                        subtitle={(
+                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '0.5em' }}>
+                                <span>{conversation.channeldesc}</span>
+                                {nameschannel[conversation.channeltype].icon}
+                            </div>
+                        )}
                     />
                 </Grid>
                 <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
@@ -2440,7 +2443,8 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
                                     <Grid container direction="row">
                                         <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
                                             <label className={classes.infoLabel}>
-                                                <Trans i18nKey={langKeys.avgResponseTimeOfClient} />
+                                                {/* <Trans i18nKey={langKeys.avgResponseTimeOfClient} /> */}
+                                                <Trans i18nKey={langKeys.tmrClient} />
                                             </label>
                                         </Grid>
                                         <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
@@ -2519,11 +2523,11 @@ const OpportunitiesTab: FC<OpportunitiesTabProps> = ({ person }) => {
     const dispatch = useDispatch();
     const leads = useSelector(state => state.person.personLeadList);
     const { t } = useTranslation();
-    const history = useHistory();
+    // const history = useHistory();
 
-    const goToLead = (lead: Dictionary) => {
-        history.push({ pathname: paths.CRM_EDIT_LEAD.resolve(lead.leadid), });
-    }
+    // const goToLead = (lead: Dictionary) => {
+    //     history.push({ pathname: paths.CRM_EDIT_LEAD.resolve(lead.leadid), });
+    // }
 
     const columns = React.useMemo(
         () => [
@@ -2565,6 +2569,23 @@ const OpportunitiesTab: FC<OpportunitiesTabProps> = ({ person }) => {
             {
                 Header: t(langKeys.status),
                 accessor: 'status'
+            },
+            {
+                Header: t(langKeys.product, { count: 2 }),
+                accessor: 'leadproduct',
+                Cell: (props: any) => {
+                    const { leadproduct } = props.cell.row.original;
+                    if (!leadproduct) return null;
+                    return leadproduct.split(",").map((t: string, i: number) => (
+                        <span key={`leadproduct${i}`} style={{
+                            backgroundColor: '#7721AD',
+                            color: '#fff',
+                            borderRadius: '20px',
+                            padding: '2px 5px',
+                            margin: '2px'
+                        }}>{t}</span>
+                    ))
+                }
             },
             {
                 Header: t(langKeys.tags),

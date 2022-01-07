@@ -5,9 +5,8 @@ import { useDispatch } from "react-redux";
 import { useSelector } from 'hooks';
 import { getCollectionAux, resetMainAux } from "store/main/actions";
 import { getUserProductivitySel } from "common/helpers/requestBodies";
-import { DateRangePicker, FieldMultiSelect, FieldSelect } from "components";
+import { DateRangePicker, FieldMultiSelect, FieldSelect, IOSSwitch } from "components";
 import { makeStyles } from '@material-ui/core/styles';
-import Switch from "@material-ui/core/Switch/Switch";
 import FormControlLabel from "@material-ui/core/FormControlLabel/FormControlLabel";
 import { Box, Button, Card, CardContent, Grid, Typography } from "@material-ui/core";
 import { CalendarIcon, DownloadIcon, SearchIcon } from "icons";
@@ -30,16 +29,17 @@ interface Assessor {
 const useStyles = makeStyles((theme) => ({
     containerFilter: {
         width: '100%',
-        marginBottom: theme.spacing(2),
+        padding: "10px",
+        marginBottom: "10px",
         display: 'flex',
-        gap: 16,
-        flexWrap: 'wrap'
+        gap: 8,
+        flexWrap: 'wrap',
+        backgroundColor: "white"
     },
     filterComponent: {
         width: '220px'
     },
     containerHeader: {
-        paddingBottom: theme.spacing(2),
         display: 'flex',
         flexWrap: 'wrap',
         gap: 16,
@@ -48,7 +48,6 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     containerDetails: {
-        paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2)
     },
     button: {
@@ -58,10 +57,10 @@ const useStyles = makeStyles((theme) => ({
         textTransform: 'initial'
     },
     BackGrRed: {
-        backgroundColor: "red",
+        backgroundColor: "#fb5f5f",
     },
     BackGrGreen: {
-        backgroundColor: "green",
+        backgroundColor: "#55bd84",
     },
 }));
 
@@ -69,17 +68,39 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
-    const detailCustomReport = useSelector(state => state.main.mainAux);
+    const mainAux = useSelector(state => state.main.mainAux);
     const [allParameters, setAllParameters] = useState({});
     const [dateRange, setdateRange] = useState<Range>({ startDate: new Date(new Date().setDate(0)), endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0), key: 'selection' });
     const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
     const [state, setState] = useState({ checkedA: false, checkedB: false });
+    const [checkedA, setcheckedA] = useState(false);
+    const [isday, setisday] = useState(false);
+    const [maxmin, setmaxmin] = useState({
+        maxticketsclosed: 0,
+        maxticketsclosedasesor: "",
+        minticketsclosed: 0,
+        minticketsclosedasesor: "",
+        maxtimeconnected: "0",
+        maxtimeconnectedasesor: "",
+        mintimeconnected: "0",
+        mintimeconnectedasesor: "",
+    });
+
+    
+    const [detailCustomReport, setDetailCustomReport] = useState<{
+        loading: boolean;
+        data: Dictionary[]
+    }>({
+        loading: false,
+        data: []
+    })
 
     const columns = React.useMemo(
         () => [
             {
                 Header: t(langKeys.report_userproductivity_user),
                 accessor: 'usr',
+                helpText: 'holas',
                 NoFilter: false,
             },
             {
@@ -87,11 +108,11 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                 accessor: 'fullname',
                 NoFilter: false
             },
-            {
+            ...(isday?[{
                 Header: t(langKeys.report_userproductivity_hourfirstlogin),
                 accessor: 'hourfirstlogin',
-                NoFilter: false
-            },
+                NoFilter: false,
+            }]:[]),
             {
                 Header: t(langKeys.report_userproductivity_totaltickets),
                 accessor: 'totaltickets',
@@ -183,8 +204,59 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                 NoFilter: false
             }
         ],
-        []
+        [isday]
     );
+
+    useEffect(() => {
+        if (!mainAux.error && !mainAux.loading && mainAux.key === "UFN_REPORT_USERPRODUCTIVITY_SEL") {
+            setDetailCustomReport(mainAux);
+            let maxminaux={
+                maxticketsclosed: 0,
+                maxticketsclosedasesor: "",
+                minticketsclosed: 0,
+                minticketsclosedasesor: "",
+                maxtimeconnected: "0",
+                maxtimeconnectedasesor: "",
+                mintimeconnected: "0",
+                mintimeconnectedasesor: "",
+            }
+            if(mainAux.data.length >0){
+                
+                mainAux.data.forEach((x,i)=>{
+                    if (i===0){
+                        maxminaux ={
+                            maxticketsclosed: x.closedtickets,
+                            maxticketsclosedasesor: x.fullname,
+                            minticketsclosed: x.closedtickets,
+                            minticketsclosedasesor: x.fullname,
+                            maxtimeconnected: x.userconnectedduration,
+                            maxtimeconnectedasesor: x.fullname,
+                            mintimeconnected: x.userconnectedduration,
+                            mintimeconnectedasesor: x.fullname,
+                        }
+                    }else{
+                        if(maxminaux.maxticketsclosed<x.closedtickets){
+                            maxminaux.maxticketsclosed = x.closedtickets
+                            maxminaux.maxticketsclosedasesor = x.fullname
+                        }
+                        if(maxminaux.minticketsclosed>x.closedtickets){
+                            maxminaux.minticketsclosed = x.closedtickets
+                            maxminaux.minticketsclosedasesor = x.fullname
+                        }
+                        if(parseInt(maxminaux.maxtimeconnected)<parseInt(x.userconnectedduration)){
+                            maxminaux.maxtimeconnected = x.userconnectedduration
+                            maxminaux.maxtimeconnectedasesor = x.fullname
+                        }
+                        if(parseInt(maxminaux.mintimeconnected)>parseInt(x.userconnectedduration)){
+                            maxminaux.mintimeconnected = x.userconnectedduration
+                            maxminaux.mintimeconnectedasesor = x.fullname
+                        }
+                    }
+                })
+            }
+            setmaxmin(maxminaux)
+        }
+    }, [mainAux])
 
     useEffect(() => {
         setAllParameters({
@@ -195,6 +267,9 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
     }, [dateRange]);
 
     const fetchData = () => {
+        let stardate = dateRange.startDate ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10) : null
+        let enddate = dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : null
+        setisday(stardate === enddate)
         dispatch(resetMainAux());
         dispatch(getCollectionAux(getUserProductivitySel({ ...allParameters })));
     };
@@ -206,6 +281,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
     const handleChange = (event: any) => {
         setState({ ...state, [event.target.name]: event.target.checked });
         setValue("bot", event.target.checked);
+        setcheckedA(event.target.checked)
     };
 
     const format = (date: Date) => date.toISOString().split('T')[0];
@@ -213,6 +289,29 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
     return (
         <>
             <div className={classes.containerFilter}>
+                <div style={{ display: 'flex'}}>
+                    <Box width={1}>
+                        <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center">
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                                <DateRangePicker
+                                    open={openDateRangeModal}
+                                    setOpen={setOpenDateRangeModal}
+                                    range={dateRange}
+                                    onSelect={setdateRange}
+                                >
+                                    <Button
+                                        disabled={detailCustomReport.loading}
+                                        style={{ border: '1px solid #bfbfc0', borderRadius: 4, color: 'rgb(143, 146, 161)'  }}
+                                        startIcon={<CalendarIcon />}
+                                        onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
+                                    >
+                                        {format(dateRange.startDate!) + " - " + format(dateRange.endDate!)}
+                                    </Button>
+                                </DateRangePicker>
+                            </div>
+                        </Box>
+                    </Box>
+                </div>
                 {
                     allFilters.map(filtro => (
                         (filtro.values[0].multiselect ?
@@ -241,59 +340,48 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                     )
                     )
                 }
-                <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-                    {t(langKeys.report_userproductivity_filter_includebot)}
-                    <div style={{ display: 'flex', alignItems: 'center' }}> 
-                        {t(langKeys.no)}
-                        <Switch
-                            checked={state.checkedA}
-                            onChange={handleChange}
-                            name="checkedA"
+                <div style={{ alignItems: 'center' }}> 
+                    <div>
+                        <Box fontWeight={500} lineHeight="18px" fontSize={14} color="textPrimary">{t(langKeys.report_userproductivity_filter_includebot)}</Box>
+                        <FormControlLabel
+                            style={{paddingLeft:10}}
+                            control={<IOSSwitch checked={checkedA} onChange={handleChange} />}
+                            label={checkedA?t(langKeys.yes):"No"}
                         />
-                        {t(langKeys.yes)}
                     </div>
                 </div>
-                <Box width={1}>
-                    <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                            <DateRangePicker
-                                open={openDateRangeModal}
-                                setOpen={setOpenDateRangeModal}
-                                range={dateRange}
-                                onSelect={setdateRange}
-                            >
+                <div style={{ display: 'flex'}}>
+                    <Box width={1}>
+                        <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center">
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                                 <Button
                                     disabled={detailCustomReport.loading}
-                                    style={{ border: '2px solid #EBEAED', borderRadius: 4 }}
-                                    startIcon={<CalendarIcon />}
-                                    onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
-                                >
-                                    {format(dateRange.startDate!) + " - " + format(dateRange.endDate!)}
+                                    variant="contained"
+                                    color="primary"
+                                    style={{ backgroundColor: '#55BD84', width: 120 }}
+                                    onClick={() => {
+                                        setDetailCustomReport({
+                                            loading: true,
+                                            data: []
+                                        })
+                                        fetchData()
+                                    }}
+                                >{t(langKeys.refresh)}
                                 </Button>
-                            </DateRangePicker>
-                            <Button
-                                disabled={detailCustomReport.loading}
-                                variant="contained"
-                                color="primary"
-                                style={{ backgroundColor: '#55BD84', width: 120 }}
-                                onClick={() => {
-                                    fetchData()
-                                }}
-                            >{t(langKeys.refresh)}
-                            </Button>
-                        </div>
+                            </div>
+                        </Box>
                     </Box>
-                </Box>
+                </div>
             </div>
 
             <Grid container spacing={3}>
-                <Grid item xs={12} md={4} lg={4}>
-                    <div style={{ padding: 8, border: '2px solid #EAE9E9', borderRadius: '8px' }}>
-                        <Grid container spacing={1} style={{ paddingTop: 12 }}>
+                <Grid item xs={12} md={6} lg={6}>
+                    <div>
+                        <Grid container spacing={1} >
                             <Grid item xs={12} md={12} lg={12}>
                                 <Card className={clsx({
-                                    [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtme <= detailCustomReport.data[0]?.tmeesperadogeneral),
-                                    [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtme > detailCustomReport.data[0]?.tmeesperadogeneral),
+                                    [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtme >= detailCustomReport.data[0]?.tmeesperadogeneral),
+                                    [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtme < detailCustomReport.data[0]?.tmeesperadogeneral),
                                 })} style={{color: "white"}}>
                                     <CardContent style={{paddingBottom: 10}}>
                                         <Typography variant="h5">
@@ -304,7 +392,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                         </Typography>
                                         <Typography variant="subtitle2" style={{display: "flex",width: "100%", paddingTop: 5, justifyContent: "space-between"}}>
                                             {`${t(langKeys.tmeexpected)} ${detailCustomReport.data[0]?.tmeesperadogeneral||""}`}
-                                            { (detailCustomReport.data[0]?.cardavgavgtme <= detailCustomReport.data[0]?.tmeesperadogeneral) ? (<ThumbUpIcon/>) : (<ThumbDownIcon/>)}
+                                            { (detailCustomReport.data[0]?.cardavgavgtme <= detailCustomReport.data[0]?.tmeesperadogeneral) ? (<ThumbDownIcon/>) : (<ThumbUpIcon/>)}
                                         </Typography>
                                     </CardContent>
                                 </Card>
@@ -313,40 +401,40 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                 <IndicatorPanel
                                     title={t(langKeys.report_userproductivity_cardavgmax_tme)}
                                     value={detailCustomReport.data[0]?.cardavgmaxtme}
-                                    value2={detailCustomReport.data[0]?.cardavgmaxtmeuser}
+                                    value2={detailCustomReport.data[0]?.cardavgmaxtmeuser || "-"}
                                 />
                             </Grid>
                             <Grid item xs={12} md={12} lg={6}>
                                 <IndicatorPanel
                                     title={t(langKeys.report_userproductivity_cardmaxmax_tme)}
                                     value={detailCustomReport.data[0]?.cardmaxmaxtme}
-                                    value2={detailCustomReport.data[0]?.cardmaxmaxtmeuser}
+                                    value2={detailCustomReport.data[0]?.cardmaxmaxtmeuser?`#${detailCustomReport.data[0]?.cardmaxmaxtmeticket} (${detailCustomReport.data[0]?.cardmaxmaxtmeuser})`:"-"}
                                 />
                             </Grid>
                             <Grid item xs={12} md={12} lg={6}>
                                 <IndicatorPanel
                                     title={t(langKeys.report_userproductivity_cardavgmin_tme)}
                                     value={detailCustomReport.data[0]?.cardavgmintme}
-                                    value2={detailCustomReport.data[0]?.cardavgmintmeuser}
+                                    value2={detailCustomReport.data[0]?.cardavgmintmeuser || "-"}
                                 />
                             </Grid>
                             <Grid item xs={12} md={12} lg={6}>
                                 <IndicatorPanel
                                     title={t(langKeys.report_userproductivity_cardminmin_tme)}
                                     value={detailCustomReport.data[0]?.cardminmintme}
-                                    value2={detailCustomReport.data[0]?.cardminmintmeuser}
+                                    value2={detailCustomReport.data[0]?.cardminmintmeuser?`#${detailCustomReport.data[0]?.cardminmintmeticket} (${detailCustomReport.data[0]?.cardminmintmeuser})`:"-"}
                                 />
                             </Grid>
                         </Grid>
                     </div>
                 </Grid>
-                <Grid item xs={12} md={4} lg={4}>
-                    <div style={{ padding: 8, border: '2px solid #EAE9E9', borderRadius: '8px' }}>
-                        <Grid container spacing={1} style={{ paddingTop: 12 }}>
+                <Grid item xs={12} md={6} lg={6}>
+                    <div>
+                        <Grid container spacing={1}>
                             <Grid item xs={12} md={12} lg={12}>
                                 <Card className={clsx({
-                                    [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtmo <= detailCustomReport.data[0]?.tmoesperadogeneral),
-                                    [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtmo > detailCustomReport.data[0]?.tmoesperadogeneral),
+                                    [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtmo >= detailCustomReport.data[0]?.tmoesperadogeneral),
+                                    [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtmo < detailCustomReport.data[0]?.tmoesperadogeneral),
                                 })} style={{color: "white"}}>
                                     <CardContent style={{paddingBottom: 10}}>
                                         <Typography variant="h5">
@@ -357,7 +445,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                         </Typography>
                                         <Typography variant="subtitle2" style={{display: "flex",width: "100%", paddingTop: 5, justifyContent: "space-between"}}>
                                             {`${t(langKeys.tmoexpected)} ${detailCustomReport.data[0]?.tmoesperadogeneral||""}`}
-                                            { (detailCustomReport.data[0]?.cardavgavgtmo <= detailCustomReport.data[0]?.tmoesperadogeneral) ? (<ThumbUpIcon/>) : (<ThumbDownIcon/>)}
+                                            { (detailCustomReport.data[0]?.cardavgavgtmo <= detailCustomReport.data[0]?.tmoesperadogeneral) ? (<ThumbDownIcon/>) : (<ThumbUpIcon/>)}
                                         </Typography>
                                     </CardContent>
                                 </Card>
@@ -366,81 +454,28 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                 <IndicatorPanel
                                     title={t(langKeys.report_userproductivity_cardavgmax_tmo)}
                                     value={detailCustomReport.data[0]?.cardavgmaxtmo}
-                                    value2={detailCustomReport.data[0]?.cardavgmaxtmouser}
+                                    value2={detailCustomReport.data[0]?.cardavgmaxtmouser || "-"}
                                 />
                             </Grid>
                             <Grid item xs={12} md={12} lg={6}>
                                 <IndicatorPanel
                                     title={t(langKeys.report_userproductivity_cardmaxmax_tmo)}
                                     value={detailCustomReport.data[0]?.cardmaxmaxtmo}
-                                    value2={detailCustomReport.data[0]?.cardmaxmaxtmouser}
+                                    value2={detailCustomReport.data[0]?.cardmaxmaxtmouser?`#${detailCustomReport.data[0]?.cardmaxmaxtmoticket} (${detailCustomReport.data[0]?.cardmaxmaxtmouser})`:"-"}
                                 />
                             </Grid>
                             <Grid item xs={12} md={12} lg={6}>
                                 <IndicatorPanel
                                     title={t(langKeys.report_userproductivity_cardavgmin_tmo)}
                                     value={detailCustomReport.data[0]?.cardavgmintmo}
-                                    value2={detailCustomReport.data[0]?.cardavgmintmouser}
+                                    value2={detailCustomReport.data[0]?.cardavgmintmouser || "-"}
                                 />
                             </Grid>
                             <Grid item xs={12} md={12} lg={6}>
                                 <IndicatorPanel
                                     title={t(langKeys.report_userproductivity_cardminmin_tmo)}
                                     value={detailCustomReport.data[0]?.cardminmintmo}
-                                    value2={detailCustomReport.data[0]?.cardminmintmouser}
-                                />
-                            </Grid>
-                        </Grid>
-                    </div>
-                </Grid>
-                <Grid item xs={12} md={4} lg={4}>
-                    <div style={{ padding: 8, border: '2px solid #EAE9E9', borderRadius: '8px' }}>
-                        <Grid container spacing={1} style={{ paddingTop: 12 }}>
-                            <Grid item xs={12} md={12} lg={12}>
-                                <Card className={clsx({
-                                    [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtmoasesor < detailCustomReport.data[0]?.tmoasesoresperadogeneral),
-                                    [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtmoasesor > detailCustomReport.data[0]?.tmoasesoresperadogeneral),
-                                })} style={{color: "white"}}>
-                                    <CardContent style={{paddingBottom: 10}}>
-                                        <Typography variant="h5">
-                                            {t(langKeys.report_userproductivity_cardtmoadviser)}
-                                        </Typography>
-                                        <Typography variant="h5" component="div" align="center">
-                                            {detailCustomReport.data[0]?.cardavgavgtmoasesor}
-                                        </Typography>
-                                        <Typography variant="subtitle2" style={{display: "flex",width: "100%", paddingTop: 5, justifyContent: "space-between"}}>
-                                            {`${t(langKeys.tmoadviserexpected)} ${detailCustomReport.data[0]?.tmoasesoresperadogeneral||""}`}
-                                            { (detailCustomReport.data[0]?.cardavgavgtmoasesor <= detailCustomReport.data[0]?.tmoasesoresperadogeneral) ? (<ThumbUpIcon/>) : (<ThumbDownIcon/>)}
-                                        </Typography>
-                                    </CardContent>
-                                </Card>
-                            </Grid>
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardavgmax_tmoagent)}
-                                    value={detailCustomReport.data[0]?.cardavgmaxtmoasesor}
-                                    value2={detailCustomReport.data[0]?.cardavgmaxtmoasesoruser}
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardmaxmax_tmoagent)}
-                                    value={detailCustomReport.data[0]?.cardmaxmaxtmoasesor}
-                                    value2={detailCustomReport.data[0]?.cardmaxmaxtmoasesoruser}
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardavgmin_tmoagent)}
-                                    value={detailCustomReport.data[0]?.cardavgmintmoasesor}
-                                    value2={detailCustomReport.data[0]?.cardavgmintmoasesoruser}
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardminmin_tmoagent)}
-                                    value={detailCustomReport.data[0]?.cardminmintmoasesor}
-                                    value2={detailCustomReport.data[0]?.cardminmintmoasesoruser}
+                                    value2={detailCustomReport.data[0]?.cardminmintmouser?`#${detailCustomReport.data[0]?.cardminmintmoticket} (${detailCustomReport.data[0]?.cardminmintmouser})`:"-"}
                                 />
                             </Grid>
                         </Grid>
@@ -449,29 +484,49 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
             </Grid>
 
             <Grid container spacing={3} className={classes.containerDetails}>
-                <Grid item xs={12} md={4} lg={3}>
-                    <IndicatorPanel
-                        title={t(langKeys.report_userproductivity_totalclosedtickets)}
-                        value={detailCustomReport.data[0]?.totalclosedtickets}
-                    />
+                <Grid item xs={12} md={6} lg={6}>
+                    <Card>
+                        <CardContent style={{paddingBottom: 10, display: "flex"}}>
+                            <div style={{flex: 1}}>
+                                <Typography variant="body2">
+                                    {t(langKeys.report_userproductivity_totalclosedtickets)}
+                                </Typography>
+                                <Typography variant="h5" component="div" align="center">
+                                    {detailCustomReport.data[0]?.totalclosedtickets}
+                                </Typography>
+                            </div>
+                            <div style={{flex: 1}}>
+                                <Typography variant="subtitle1" >
+                                    {maxmin.maxticketsclosedasesor} ({maxmin.maxticketsclosed})
+                                </Typography>
+                                <Typography variant="subtitle1">
+                                    {maxmin.minticketsclosedasesor} ({maxmin.minticketsclosed})
+                                </Typography>
+                            </div>
+                        </CardContent>
+                    </Card>
                 </Grid>
-                <Grid item xs={12} md={4} lg={3}>
-                    <IndicatorPanel
-                        title={t(langKeys.report_userproductivity_holdingtickets)}
-                        value={detailCustomReport.data[0]?.holdingtickets}
-                    />
-                </Grid>
-                <Grid item xs={12} md={4} lg={3}>
-                    <IndicatorPanel
-                        title={t(langKeys.report_userproductivity_asesortickets)}
-                        value={detailCustomReport.data[0]?.asesortickets}
-                    />
-                </Grid>
-                <Grid item xs={12} md={4} lg={3}>
-                    <IndicatorPanel
-                        title={`${t(langKeys.report_userproductivity_usersconnected)} ${new Date().toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "numeric", minute: "numeric", second: "numeric"})}`}
-                        value={detailCustomReport.data[0]?.usersconnected}
-                    />
+                <Grid item xs={12} md={6} lg={6}>
+                    <Card>
+                        <CardContent style={{paddingBottom: 10, display: "flex"}}>
+                            <div style={{flex: 1}}>
+                                <Typography variant="body2">
+                                    N° {t(langKeys.report_userproductivity_usersconnected)}
+                                </Typography>
+                                <Typography variant="h5" component="div" align="center">
+                                    {detailCustomReport.data[0]?.usersconnected}
+                                </Typography>
+                            </div>
+                            <div style={{flex: 1}}>
+                                <Typography variant="subtitle1">
+                                    {maxmin.maxtimeconnectedasesor} ({maxmin.maxtimeconnected} m)
+                                </Typography>
+                                <Typography variant="subtitle1">
+                                    {maxmin.mintimeconnectedasesor} ({maxmin.mintimeconnected} m)
+                                </Typography>
+                            </div>
+                        </CardContent>
+                    </Card>
                 </Grid>
             </Grid>
 

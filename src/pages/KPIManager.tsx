@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldEditMulti } from 'components';
-import { calcKPIManager, convertLocalDate, dateToLocalDate, dictToArrayKV, duplicateKPIManager, getDateToday, getFirstDayMonth, getLastDayMonth, getValuesFromDomain, insKPIManager, selKPIManager, selKPIManagerHistory } from 'common/helpers';
+import { calcKPIManager, convertLocalDate, dictToArrayKV, duplicateKPIManager, getDateToday, getFirstDayMonth, getLastDayMonth, getValuesFromDomain, insKPIManager, selKPIManager, selKPIManagerHistory } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -107,6 +107,31 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
         currentvalue: row?.currentvalue,
         updatedate: row?.updatedate,
     })
+
+    const [gaugeArcs, setGaugeArcs] = useState([0,0,0]);
+
+    useEffect(() => {
+        if (row) {
+            if (row.target <= row.alertat) {
+                setGaugeArcs(
+                    [
+                        row.cautionat / (Math.max(detaildata?.currentvalue, Math.ceil(row.alertat * 1.2 / 10) * 10)),
+                        (row.alertat - row.cautionat) / (Math.max(detaildata?.currentvalue, Math.ceil(row.alertat * 1.2 / 10) * 10)),
+                        ((Math.max(detaildata?.currentvalue, Math.ceil(row.alertat * 1.2 / 10) * 10)) - row.alertat) / (Math.max(detaildata?.currentvalue, Math.ceil(row.alertat * 1.2 / 10) * 10)) 
+                    ]
+                )
+            }
+            else {
+                setGaugeArcs(
+                    [
+                        row.alertat / (Math.max(detaildata?.currentvalue, Math.ceil(row.target * 1.2 / 10) * 10)),
+                        (row.cautionat - row.alertat) / (Math.max(detaildata?.currentvalue, Math.ceil(row.target * 1.2 / 10) * 10)),
+                        ((Math.max(detaildata?.currentvalue, Math.ceil(row.target * 1.2 / 10) * 10)) - row.cautionat) / (Math.max(detaildata?.currentvalue, Math.ceil(row.target * 1.2 / 10) * 10))
+                    ]
+                )
+            }
+        }
+    }, [row])
 
     React.useEffect(() => {
         register('kpiname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -253,9 +278,10 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                                 className={classes.button}
                                 variant="contained"
                                 color="primary"
-                                type="submit"
+                                type="button"
                                 startIcon={<SaveIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}
+                                onClick={onSubmit}
                             >{t(langKeys.save)}
                             </Button>
                         }
@@ -387,6 +413,8 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                                 valueDefault={getValues('target')}
                                 onChange={(value) => setValue('target', value)}
                                 error={errors?.target?.message}
+                                type="number"
+                                inputProps={{ min: 0, step: 1 }}
                             />
                             :
                             <FieldView
@@ -402,6 +430,8 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                                 valueDefault={getValues('cautionat')}
                                 onChange={(value) => setValue('cautionat', value)}
                                 error={errors?.cautionat?.message}
+                                type="number"
+                                inputProps={{ min: 0, step: 1 }}
                             />
                             :
                             <FieldView
@@ -417,6 +447,8 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                                 valueDefault={getValues('alertat')}
                                 onChange={(value) => setValue('alertat', value)}
                                 error={errors?.alertat?.message}
+                                type="number"
+                                inputProps={{ min: 0, step: 1 }}
                             />
                             :
                             <FieldView
@@ -518,8 +550,20 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                                             <GaugeChart
                                                 style={{width: '150px'}}
                                                 id="gauge-chart"
-                                                nrOfLevels={20}
-                                                percent={!!row?.target ? detaildata?.currentvalue/row?.target : 0} 
+                                                arcsLength={gaugeArcs}
+                                                colors={
+                                                    row.target < row.alertat
+                                                    ? ['#5BE12C', '#F5CD19', '#EA4228']
+                                                    : ['#EA4228', '#F5CD19', '#5BE12C']
+                                                }
+                                                textColor="#000000"
+                                                animate={false}
+                                                percent={
+                                                    row.target < row.alertat
+                                                    ? detaildata?.currentvalue / (Math.max(detaildata?.currentvalue, Math.ceil(row.alertat * 1.2 / 10) * 10))
+                                                    : detaildata?.currentvalue / (Math.max(detaildata?.currentvalue, Math.ceil(row.target * 1.2 / 10) * 10))
+                                                }
+                                                formatTextValue={() => ``}
                                             /></TableCell>
                                     </TableRow>
                                 </TableBody>

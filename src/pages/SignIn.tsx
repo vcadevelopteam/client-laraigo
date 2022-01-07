@@ -183,6 +183,7 @@ const SignIn = () => {
                             variant="outlined"
                             margin="normal"
                             fullWidth
+                            required
                             value={dataAuth.username}
                             onChange={e => setDataAuth(p => ({ ...p, username: e.target.value.trim() }))}
                             label={t(langKeys.username)}
@@ -192,6 +193,7 @@ const SignIn = () => {
                             variant="outlined"
                             margin="normal"
                             fullWidth
+                            required
                             label={t(langKeys.password)}
                             name="password"
                             type={showPassword ? 'text' : 'password'}

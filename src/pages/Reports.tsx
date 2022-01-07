@@ -47,8 +47,8 @@ interface ItemProps {
 }
 
 
-const getArrayBread = (nametmp: string) => ([
-    { id: "view-1", name: "Reports" },
+const getArrayBread = (nametmp: string, nameView1: string) => ([
+    { id: "view-1", name: nameView1 || "Reports" },
     { id: "view-2", name: nametmp }
 ]);
 
@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(3)
     },
     media: {
-        objectFit: "none"
+        objectFit: "contain"
     },
     containerSearch: {
         width: '100%',
@@ -159,6 +159,28 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                         }
                     });
                     break;
+                case "date":
+                        columns.push({
+                            Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                            accessor: x.proargnames,
+                            type: "date",
+                            Cell: (props: any) => {
+                                const column = props.cell.column;
+                                const row = props.cell.row.original;
+                                return (<div>
+                                    {new Date(
+                                        row[column.id].split('-')[0],
+                                        row[column.id].split('-')[1]-1,
+                                        row[column.id].split('-')[2]
+                                    ).toLocaleString(undefined, {
+                                        year: "numeric",
+                                        month: "2-digit",
+                                        day: "2-digit"
+                                    })}
+                                </div>)
+                            }
+                        });
+                        break;
                 default:
                     switch (row?.origin) {
                         case "loginhistory":
@@ -270,7 +292,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
     return (
         <div style={{ width: '100%' }}>
             <TemplateBreadcrumbs
-                breadcrumbs={getArrayBread(t('report_' + row?.origin))}
+                breadcrumbs={getArrayBread(t('report_' + row?.origin), t(langKeys.report_plural))}
                 handleClick={handleSelected}
             />
             <div style={{ height: 10 }}></div>
@@ -284,38 +306,6 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                         />
                         :
                         <>
-                            {allFilters &&
-                                <div className={classes.containerFilter} >
-                                    {
-                                        allFilters.map(filtro => (
-                                            (filtro.values[0].multiselect ?
-                                                <FieldMultiSelect
-                                                    label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
-                                                    className={classes.filterComponent}
-                                                    key={filtro.values[0].filter}
-                                                    onChange={(value) => setValue(filtro.values[0].parameterName, value ? value.map((o: Dictionary) => o[filtro.values[0].optionValue]).join() : '')}
-                                                    variant="outlined"
-                                                    data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
-                                                    optionDesc={filtro.values[0].optionDesc}
-                                                    optionValue={filtro.values[0].optionValue}
-                                                />
-                                                :
-                                                <FieldSelect
-                                                    label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
-                                                    className={classes.filterComponent}
-                                                    key={filtro.values[0].filter}
-                                                    variant="outlined"
-                                                    onChange={(value) => setValue(filtro.values[0].parameterName, value ? value[filtro.values[0].optionValue] : '')}
-                                                    data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
-                                                    optionDesc={filtro.values[0].optionDesc}
-                                                    optionValue={filtro.values[0].optionValue}
-                                                />
-                                            )
-                                        )
-                                        )
-                                    }
-                                </div>
-                            }
                             <div className={classes.container}>
                                 <TablePaginated
                                     columns={columns}
@@ -324,6 +314,35 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                     loading={mainPaginated.loading}
                                     pageCount={pageCount}
                                     filterrange={true}
+                                    FiltersElement={(
+                                        <>
+                                            {!allFilters ? null : allFilters.map(filtro => (
+                                                (filtro.values[0].multiselect ?
+                                                    <FieldMultiSelect
+                                                        label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
+                                                        className={classes.filterComponent}
+                                                        key={filtro.values[0].filter}
+                                                        onChange={(value) => setValue(filtro.values[0].parameterName, value ? value.map((o: Dictionary) => o[filtro.values[0].optionValue]).join() : '')}
+                                                        variant="outlined"
+                                                        data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
+                                                        optionDesc={filtro.values[0].optionDesc}
+                                                        optionValue={filtro.values[0].optionValue}
+                                                    />
+                                                    :
+                                                    <FieldSelect
+                                                        label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
+                                                        className={classes.filterComponent}
+                                                        key={filtro.values[0].filter}
+                                                        variant="outlined"
+                                                        onChange={(value) => setValue(filtro.values[0].parameterName, value ? value[filtro.values[0].optionValue] : '')}
+                                                        data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
+                                                        optionDesc={filtro.values[0].optionDesc}
+                                                        optionValue={filtro.values[0].optionValue}
+                                                    />
+                                                )
+                                            ))}
+                                        </>
+                                    )}
                                     download={true}
                                     fetchData={fetchData}
                                     exportPersonalized={triggerExportData}
@@ -361,7 +380,7 @@ const Reports: FC = () => {
     };
 
     useEffect(() => {
-        if (!reportsResult.mainData.loading && !reportsResult.mainData.error && !reportsResult.mainAux.loading && !reportsResult.mainAux.error) {
+        if (!reportsResult.mainData.loading && !reportsResult.mainData.error && !reportsResult.mainAux.loading && !reportsResult.mainAux.error && reportsResult.mainAux.key === "UFN_REPORTTEMPLATE_SEL") {
             if (searchValue === null || searchValue.trim().length === 0) {
                 if (allReports.length === 0 || !waitSave) {
                     const rr = [...reportsResult.mainData.data, ...reportsResult.mainAux.data.map(x => ({
@@ -374,9 +393,11 @@ const Reports: FC = () => {
                 }
             }
         }
+
     }, [reportsResult.mainAux, reportsResult.mainData, waitSave])
+
     useEffect(() => {
-        let temparray = allReports.filter((el:any)=> String(el.reportname).toLowerCase().includes(searchValue.toLowerCase()))
+        let temparray = allReports.filter((el: any) => String(t((langKeys as any)[`report_${el.origin}`])).toLowerCase().includes(searchValue.toLowerCase()))
         setallReportsToShow(temparray)
     }, [searchValue]);
 
@@ -473,7 +494,7 @@ const Reports: FC = () => {
             <div className={classes.container}>
                 <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" style={{ marginBottom: 8 }}>
                     <span className={classes.title}>
-                        {t(langKeys.report_plural)}
+                        {t(langKeys.report_plural)} ({allReportsToShow.length})
                     </span>
                 </Box>
                 {(reportsResult.mainData.loading || reportsResult.mainAux.loading) ? (
@@ -493,61 +514,65 @@ const Reports: FC = () => {
                         <div className={classes.containerDetails}>
                             <Grid container spacing={3} >
                                 {allReportsToShow.filter(x => !!x.image).map((report, index) => (
-                                    <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
-                                        <Card >
-                                            <CardActionArea onClick={() => handleSelected(report, report.filters)}>
-                                                <CardMedia
-                                                    component="img"
-                                                    height="140"
-                                                    className={classes.media}
-                                                    image={reportsImage.find(x => x.name === report.image)?.image || 'no_data.png'}
-                                                    title={t('report_' + report?.origin)}
-                                                />
-                                                <CardContent>
-                                                    <Typography gutterBottom variant="h6" component="div">
-                                                        {t('report_' + report?.origin)}
-                                                    </Typography>
-                                                </CardContent>
-                                            </CardActionArea>
-                                        </Card>
-                                    </Grid>
+                                    report.reportname === 'HEATMAP' ?
+                                        <Grid item key={"heatmap"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                                            <Card >
+                                                <CardActionArea onClick={() => handleSelectedString("heatmap")}>
+                                                    <CardMedia
+                                                        component="img"
+                                                        height="140"
+                                                        className={classes.media}
+                                                        image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/01mapadecalor.png'}
+                                                        title={t(langKeys.heatmap)}
+                                                    />
+                                                    <CardContent>
+                                                        <Typography gutterBottom variant="h6" component="div">
+                                                            {t(langKeys.heatmap)}
+                                                        </Typography>
+                                                    </CardContent>
+                                                </CardActionArea>
+                                            </Card>
+                                        </Grid>
+                                        :
+                                        report.reportname === 'RECORDHSMREPORT' ?
+                                            <Grid item key={"recordhsmreport"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                                                <Card >
+                                                    <CardActionArea onClick={() => handleSelectedString("recordhsmreport")}>
+                                                        <CardMedia
+                                                            component="img"
+                                                            height="140"
+                                                            className={classes.media}
+                                                            image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/02reportehsm.png"
+                                                            title={t(langKeys.recordhsmreport)}
+                                                        />
+                                                        <CardContent>
+                                                            <Typography gutterBottom variant="h6" component="div">
+                                                                {t(langKeys.recordhsmreport)}
+                                                            </Typography>
+                                                        </CardContent>
+                                                    </CardActionArea>
+                                                </Card>
+                                            </Grid>
+                                            :
+                                            <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                                                <Card >
+                                                    <CardActionArea onClick={() => handleSelected(report, report.filters)}>
+                                                        <CardMedia
+                                                            component="img"
+                                                            height="140"
+                                                            className={classes.media}
+                                                            image={reportsImage.find(x => x.name === report.image)?.image || 'no_data.png'}
+                                                            title={t('report_' + report?.origin)}
+                                                        />
+                                                        <CardContent>
+                                                            <Typography gutterBottom variant="h6" component="div">
+                                                                {t('report_' + report?.origin)}
+                                                            </Typography>
+                                                        </CardContent>
+                                                    </CardActionArea>
+                                                </Card>
+                                            </Grid>
                                 ))}
-                                {t(langKeys.heatmap).toLowerCase().includes(searchValue.toLowerCase()) && <Grid item key={"heatmap"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
-                                    <Card >
-                                        <CardActionArea onClick={() => handleSelectedString("heatmap")}>
-                                            <CardMedia
-                                                component="img"
-                                                height="140"
-                                                className={classes.media}
-                                                image={'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4SgTYos-jCFQS1NPSy5_gbSbSwOd-bMAv2w&usqp=CAU'}
-                                                title={t(langKeys.heatmap)}
-                                            />
-                                            <CardContent>
-                                                <Typography gutterBottom variant="h6" component="div">
-                                                    {t(langKeys.heatmap)}
-                                                </Typography>
-                                            </CardContent>
-                                        </CardActionArea>
-                                    </Card>
-                                </Grid>}
-                                {t(langKeys.recordhsmreport).toLowerCase().includes(searchValue.toLowerCase()) && <Grid item key={"recordhsmreport"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
-                                    <Card >
-                                        <CardActionArea onClick={() => handleSelectedString("recordhsmreport")}>
-                                            <CardMedia
-                                                component="img"
-                                                height="140"
-                                                className={classes.media}
-                                                image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/enviocomunicaciones.png"
-                                                title={t(langKeys.recordhsmreport)}
-                                            />
-                                            <CardContent>
-                                                <Typography gutterBottom variant="h6" component="div">
-                                                    {t(langKeys.recordhsmreport)}
-                                                </Typography>
-                                            </CardContent>
-                                        </CardActionArea>
-                                    </Card>
-                                </Grid>}
                                 {allReportsToShow.filter(x => !x.image).map((report, index) => (
                                     <Grid item key={"report_" + report.reporttemplateid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
                                         <Card style={{ position: 'relative' }}>
@@ -562,7 +587,7 @@ const Reports: FC = () => {
                                                     component="img"
                                                     height="140"
                                                     className={classes.media}
-                                                    image='https://www.datacrm.com/upload/article/b201902121011569.jpg'
+                                                    image='https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/03reportepersonalizado.png'
                                                     title={report.description}
                                                 />
 
@@ -656,7 +681,7 @@ const Reports: FC = () => {
             <Fragment>
                 <div style={{ width: '100%' }}>
                     <TemplateBreadcrumbs
-                        breadcrumbs={getArrayBread(t('report_heatmap'))}
+                        breadcrumbs={getArrayBread(t('report_heatmap'), t(langKeys.report_plural))}
                         handleClick={handleSelectedString}
                     />
                     <Heatmap />
@@ -668,7 +693,7 @@ const Reports: FC = () => {
             <>
                 <div style={{ width: '100%' }}>
                     <TemplateBreadcrumbs
-                        breadcrumbs={getArrayBread(t('report_recordhsmreport'))}
+                        breadcrumbs={getArrayBread(t('report_recordhsmreport'), t(langKeys.report_plural))}
                         handleClick={handleSelectedString}
                     />
                     <RecordHSMRecord />

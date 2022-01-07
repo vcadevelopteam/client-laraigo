@@ -17,7 +17,6 @@ import { Button, IconButton } from "@material-ui/core";
 import { Dictionary, ICampaignLst, ICrmLead, IDomain, IFetchData } from "@types";
 import TablePaginated, { buildQueryFilters, useQueryParams } from 'components/fields/table-paginated';
 import { makeStyles } from '@material-ui/core/styles';
-import { setDisplay } from "store/lead/actions";
 import { Rating } from '@material-ui/lab';
 import { DialogSendTemplate, NewActivityModal, NewNoteModal } from "./Modals";
 import { WhatsappIcon } from "icons";
@@ -98,26 +97,38 @@ const CRM: FC = () => {
   const mainMulti = useSelector(state => state.main.multiData);
   const { t } = useTranslation();
   const classes = useStyles();
-  const [boardFilter, setBoardFilter] = useState<IBoardFilter>({ campaign: 0, customer: '', products: '', tags: '' });
 
   const query = useMemo(() => new URLSearchParams(location.search), [location]);
-  const params = useQueryParams(query, { ignore: ['asesorid', 'channels', 'contact', 'display'] });
+  const params = useQueryParams(query, {
+    ignore: [
+      'asesorid', 'channels', 'contact', 'display', 'products', 'tags', 'campaign',
+    ],
+  });
   const otherParams = useMemo(() => ({
     asesorid: Number(query.get('asesorid')),
     channels: query.get('channels') || '',
     contact: query.get('contact') || '',
+    products: query.get('products') || '',
+    tags: query.get('tags') || '',
+    campaign: Number(query.get('campaign')),
   }), [query]);
   const [display, setDisplay] = useState(query.get('display') || 'BOARD');
+  const [boardFilter, setBoardFilter] = useState<IBoardFilter>({
+    campaign: otherParams.campaign,
+    customer: otherParams.contact,
+    products: otherParams.products,
+    tags: otherParams.tags,
+  });
 
   useEffect(() => {
       dispatch(getMultiCollection([
           getColumnsSel(1),
           getLeadsSel({
             id: 0,
-            campaignid: 0,
-            fullname: '',
-            leadproduct: '',
-            tags: '',
+            campaignid: boardFilter.campaign,
+            fullname: boardFilter.customer,
+            leadproduct: boardFilter.products,
+            tags: boardFilter.tags,
           }),
           adviserSel(),
           getCommChannelLst(),
@@ -128,6 +139,7 @@ const CRM: FC = () => {
       return () => {
           dispatch(resetAllMain());
       };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
   useEffect(() => {
@@ -146,6 +158,13 @@ const CRM: FC = () => {
   },[mainMulti]);
 
   const fetchBoardLeadsWithFilter = useCallback(() => {
+    const newParams = new URLSearchParams(location.search);
+    if (boardFilter.campaign) newParams.set('campaign', String(boardFilter.campaign));
+    if (boardFilter.products) newParams.set('products', String(boardFilter.products));
+    if (boardFilter.tags) newParams.set('tags', String(boardFilter.tags));
+    if (boardFilter.customer) newParams.set('contact', String(boardFilter.customer));
+    history.push({ search: newParams.toString() });
+
     dispatch(getMultiCollection([
       getColumnsSel(1),
       getLeadsSel({
@@ -496,7 +515,10 @@ const CRM: FC = () => {
                     aria-controls="long-menu"
                     aria-haspopup="true"
                     size="small"
-                    onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'HSM' }}) }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'HSM' }})
+                    }}
                   >
                     <WhatsappIcon
                       width={24}
@@ -508,7 +530,10 @@ const CRM: FC = () => {
                     aria-controls="long-menu"
                     aria-haspopup="true"
                     size="small"
-                    onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'MAIL' }}) }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'MAIL' }}) 
+                    }}
                   >
                     <MailIcon color="action" />
                   </IconButton>
@@ -517,7 +542,10 @@ const CRM: FC = () => {
                     aria-controls="long-menu"
                     aria-haspopup="true"
                     size="small"
-                    onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'SMS' }}) }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'SMS' }}) 
+                    }}
                   >
                     <SmsIcon color="action" />
                   </IconButton>
@@ -528,7 +556,10 @@ const CRM: FC = () => {
                     aria-controls="long-menu"
                     aria-haspopup="true"
                     size="small"
-                    onClick={() => setGridModal({name: 'ACTIVITY', open: true, payload: {leadid: row['leadid']}}) }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setGridModal({name: 'ACTIVITY', open: true, payload: {leadid: row['leadid']}}) 
+                    }}
                   >
                     <AccessTimeIcon
                       titleAccess={t(langKeys.activities)}
@@ -540,7 +571,10 @@ const CRM: FC = () => {
                     aria-controls="long-menu"
                     aria-haspopup="true"
                     size="small"
-                    onClick={() => setGridModal({name: 'NOTE', open: true, payload: {leadid: row['leadid']}}) }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setGridModal({name: 'NOTE', open: true, payload: {leadid: row['leadid']}}) 
+                    }}
                   >
                     <NoteIcon
                       titleAccess={t(langKeys.logNote)}
@@ -585,6 +619,14 @@ const CRM: FC = () => {
   }, [mainPaginated]);
 
   const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
+    const columnsExport = [
+      ...columns.filter(x => !x.isComponent && x.accessor !== 'comments').map(x => ({
+        key: x.accessor,
+        alias: x.Header,
+      })),
+      { key: 'notedescription', alias: t(langKeys.notedescription) }, // parte de la columna comments
+      { key: 'activitydescription', alias: t(langKeys.activitydescription) }, // parte de la columna comments
+    ];
     dispatch(exportData(getLeadExport(
       {
         startdate: daterange.startDate!,
@@ -592,7 +634,7 @@ const CRM: FC = () => {
         sorts: sorts,
         filters: filters,
         ...allParameters
-    })));  
+      }), "", "excel", false, columnsExport));
     dispatch(showBackdrop(true));
     setWaitExport(true);
   };
@@ -633,10 +675,7 @@ const CRM: FC = () => {
             <IconButton
               color="default"
               disabled={display === 'BOARD'}
-              onClick={() => {
-                // dispatch(setDisplay('BOARD'));
-                setDisplay('BOARD');
-              }}
+              onClick={() => setDisplay('BOARD')}
               style={{ padding: '5px' }}
             >
               <ViewColumnIcon />
@@ -644,10 +683,7 @@ const CRM: FC = () => {
             <IconButton
               color="default"
               disabled={display === 'GRID'}
-              onClick={() => {
-                // dispatch(setDisplay('GRID'));
-                setDisplay('GRID');
-              }}
+              onClick={() => setDisplay('GRID')}
               style={{ padding: '5px' }}
             >
               <ViewListIcon />
@@ -673,7 +709,10 @@ const CRM: FC = () => {
               label={t(langKeys.product, { count: 2 })}
               className={classes.filterComponent}
               valueDefault={boardFilter.products}
-              onChange={(v) => setBoardFilter(prev => ({ ...prev, products: v?.map((o: IDomain) => o.domainvalue).join(',') || '' }))}
+              onChange={(v) => {
+                const products = v?.map((o: IDomain) => o.domainvalue).join(',') || '';
+                setBoardFilter(prev => ({ ...prev, products }));
+              }}
               data={mainMulti.data[5]?.data || []}
               loading={mainMulti.loading}
               optionDesc="domaindesc"
@@ -684,7 +723,10 @@ const CRM: FC = () => {
               label={t(langKeys.tag, { count: 2 })}
               className={classes.filterComponent}
               valueDefault={boardFilter.tags}
-              onChange={(v) => setBoardFilter(prev => ({ ...prev, tags: v?.map((o: any) => o.tags).join(',') || '' }))}
+              onChange={(v) => {
+                const tags = v?.map((o: any) => o.tags).join(',') || '';
+                setBoardFilter(prev => ({ ...prev, tags }));
+              }}
               data={mainMulti.data[6]?.data || []}
               loading={mainMulti.loading}
               optionDesc="tags"
@@ -820,34 +862,7 @@ const CRM: FC = () => {
         <div style={{ width: 'inherit' }}>
           <div className={classes.containerFilter}>
             <div style={{ display: 'flex', gap: 8 }}>
-              <FieldSelect
-                  variant="outlined"
-                  label={t(langKeys.user)}
-                  className={classes.filterComponent}
-                  valueDefault={allParameters.asesorid}
-                  onChange={(value) => setAllParameters({...allParameters, asesorid: value?.userid})}
-                  data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
-                  optionDesc={'fullname'}
-                  optionValue={'userid'}
-              />
-              <FieldMultiSelect
-                  variant="outlined"
-                  label={t(langKeys.channel)}
-                  className={classes.filterComponent}
-                  valueDefault={allParameters.channel}
-                  onChange={(value) => setAllParameters({...allParameters, channel: value?.map((o: Dictionary) => o['communicationchannelid']).join(',')})}
-                  data={mainMulti.data[3]?.data?.sort((a, b) => a?.communicationchanneldesc?.toLowerCase() > b?.communicationchanneldesc?.toLowerCase() ? 1 : -1) || []}
-                  optionDesc={'communicationchanneldesc'}
-                  optionValue={'communicationchannelid'}
-              />
-              <FieldEdit
-                  size="small"
-                  variant="outlined"
-                  label={t(langKeys.customer)}
-                  className={classes.filterComponent}
-                  valueDefault={allParameters.contact}
-                  onChange={(value) => setAllParameters({...allParameters, contact: value})}
-              />
+              
             </div>
             <div style={{ display: 'flex', gap: 8 }}>
               <Button
@@ -897,6 +912,38 @@ const CRM: FC = () => {
               selectionKey={selectionKey}
               setSelectedRows={setSelectedRows}
               onClickRow={onClickRow}
+              FiltersElement={(
+                <>
+                  <FieldSelect
+                    variant="outlined"
+                    label={t(langKeys.user)}
+                    className={classes.filterComponent}
+                    valueDefault={allParameters.asesorid}
+                    onChange={(value) => setAllParameters({...allParameters, asesorid: value?.userid})}
+                    data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
+                    optionDesc={'fullname'}
+                    optionValue={'userid'}
+                />
+                <FieldMultiSelect
+                    variant="outlined"
+                    label={t(langKeys.channel)}
+                    className={classes.filterComponent}
+                    valueDefault={allParameters.channel}
+                    onChange={(value) => setAllParameters({...allParameters, channel: value?.map((o: Dictionary) => o['communicationchannelid']).join(',')})}
+                    data={mainMulti.data[3]?.data?.sort((a, b) => a?.communicationchanneldesc?.toLowerCase() > b?.communicationchanneldesc?.toLowerCase() ? 1 : -1) || []}
+                    optionDesc={'communicationchanneldesc'}
+                    optionValue={'communicationchannelid'}
+                />
+                <FieldEdit
+                    size="small"
+                    variant="outlined"
+                    label={t(langKeys.customer)}
+                    className={classes.filterComponent}
+                    valueDefault={allParameters.contact}
+                    onChange={(value) => setAllParameters({...allParameters, contact: value})}
+                />
+              </>
+              )}
               onFilterChange={f => {
                 console.log('Leads::onFilterChange', f);
                 const params = buildQueryFilters(f);

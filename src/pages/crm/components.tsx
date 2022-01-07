@@ -107,7 +107,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
     const classes = useLeadCardStyles();
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const tags = lead.tags?.split(',')?.filter(e => e !== '') || [];
-    const products = lead.leadproduct?.split(',') || [];
+    const products = (lead.leadproduct || null)?.split(',') || [];
     const urgencyLevels = [null,'LOW','MEDIUM','HIGH'];
     const colors = ['', 'cyan', 'red', 'violet', 'blue', 'blueviolet'];
     const history = useHistory();

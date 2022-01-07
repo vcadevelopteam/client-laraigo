@@ -52,13 +52,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const dataClassification: Dictionary = {
-    INSULTS: 'INSULTS',
-    ENTITIES: 'ENTITIES',
-    LINKS: 'LINKS',
-    EMOTIONS: 'EMOTIONS',
-};
-
 const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
@@ -67,6 +60,7 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
     const { t } = useTranslation();
 
     const dataStatus = multiData[1] && multiData[1].success ? multiData[1].data : [];
+    const dataClassification = multiData[2] && multiData[2].success ? multiData[2].data : [];
 
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
@@ -157,15 +151,14 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         <FieldSelect
-                            uset={true}    
                             label={t(langKeys.classification)}
                             className="col-12"
                             valueDefault={row?.classification || ""}
-                            onChange={(value) => setValue('classification', (value?.value||""))}
+                            onChange={(value) => setValue('status', (value?value.domainvalue:""))}
                             error={errors?.classification?.message}
-                            data={dictToArrayKV(dataClassification)}
-                            optionDesc="value"
-                            optionValue="key"
+                            data={dataClassification}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
                         />
                     </div>
                     <div className="row-zyx">
@@ -276,7 +269,11 @@ const InappropriateWords: FC = () => {
 
     useEffect(() => {
         fetchData();
-        dispatch(getMultiCollection([getValuesFromDomain("GRUPOS"), getValuesFromDomain("ESTADOGENERICO")]));
+        dispatch(getMultiCollection([
+            getValuesFromDomain("GRUPOS"), 
+            getValuesFromDomain("ESTADOGENERICO"),
+            getValuesFromDomain("CLASSINNAWORDS"),
+        ]));
         return () => {
             dispatch(resetAllMain());
         };
@@ -347,7 +344,7 @@ const InappropriateWords: FC = () => {
         if (file) {
             const data: any = (await uploadExcel(file, undefined) as any[])
                 .filter((d: any) => !['', null, undefined].includes(d.description)
-                    && Object.keys(dataClassification).includes(d.classification)
+                    && (mainResult.multiData.data[2].data.filter((x:any)=>x.domainvalue===d.classification).length>0)
                 );
             if (data.length > 0) {
                 const validpk = Object.keys(data[0]).includes('description');
@@ -372,7 +369,7 @@ const InappropriateWords: FC = () => {
     }
 
     const handleTemplate = () => {
-        const data = [dataClassification, {}, {}, mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domainvalue}),{})];
+        const data = [mainResult.multiData.data[2].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domainvalue}),{}), {}, {}, mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domainvalue}),{})];
         const header = ['classification', 'description', 'defaultanswer', 'status'];
         exportExcel(t(langKeys.template), templateMaker(data, header));
     }

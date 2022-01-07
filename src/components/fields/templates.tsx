@@ -328,6 +328,7 @@ export const FieldEdit: React.FC<InputProps> = ({ label, size, className, disabl
                 onBlur={(e) => {
                     onBlur && onBlur(e.target.value);
                 }}
+                inputProps={inputProps}
                 InputProps={InputProps}
             />
         </div>
@@ -769,6 +770,13 @@ export const AntTab = withStyles((theme) => ({
         '&:focus': {
             color: theme.palette.primary.main,
         },
+    },
+    labelIcon: {
+        minHeight: 40,
+    },
+    wrapper: {
+        display: 'flex',
+        flexDirection: 'row-reverse',
     },
     selected: {},
 }))((props: TabProps) => <Tab disableRipple {...props} />);

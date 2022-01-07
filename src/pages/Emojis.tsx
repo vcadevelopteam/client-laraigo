@@ -93,6 +93,7 @@ const Emojis: FC = () => {
         fetchData();
 
         emojis.sort((a, b) => a.categoryorder - b.categoryorder);
+        console.log(emojis)
         setGroups(Array.from(new Set(Object.values(emojis.map(a => a.categorydesc)))));
 
         dispatch(getMultiCollection([
@@ -140,6 +141,7 @@ const Emojis: FC = () => {
                                 setOpenDialog={setOpenDialog}
                                 setEmojiSelected={setEmojiSelected}
                                 fetchData={fetchData}
+                                category={category}
                             />
                         )
                     }
@@ -226,7 +228,7 @@ const TabEmoji: FC<{ groups: Dictionary, setCategory: (categorydesc: any) => voi
     )
 })
 
-const Emoji: FC<{ emoji: Dictionary, setOpenDialog: (openDialog: boolean) => void, setEmojiSelected: (emojiSelected: Dictionary) => void, fetchData: () => void }> = React.memo(({ emoji, setOpenDialog, setEmojiSelected, fetchData }) => {
+const Emoji: FC<{ emoji: Dictionary, setOpenDialog: (openDialog: boolean) => void, setEmojiSelected: (emojiSelected: Dictionary) => void, fetchData: () => void, category:string }> = React.memo(({ emoji, setOpenDialog, setEmojiSelected, fetchData,category }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [anchorEl, setAnchorEl] = useState(null);
@@ -236,13 +238,14 @@ const Emoji: FC<{ emoji: Dictionary, setOpenDialog: (openDialog: boolean) => voi
         setEmojiSelected(emoji);
         setOpenDialog(true);
     };
-
     const handleClick = (event: any) => {
         event.preventDefault();
         setAnchorEl(event.currentTarget);
     };
+    //RESTRICTED
+    //FAVORITES
 
-    const handleExecution = (favorite: boolean) => {
+    const handleExecution = (favorite: boolean,restricted: boolean) => {
         setAnchorEl(null);
 
         const callback = () => {
@@ -250,6 +253,7 @@ const Emoji: FC<{ emoji: Dictionary, setOpenDialog: (openDialog: boolean) => voi
                 ...emoji,
                 communicationchannel: "",
                 favorite,
+                restricted,
                 allchannels: true
             })));
 
@@ -288,8 +292,15 @@ const Emoji: FC<{ emoji: Dictionary, setOpenDialog: (openDialog: boolean) => voi
                 open={Boolean(anchorEl)}
                 onClose={handleOnClose}
             >
-                <MenuItem key={"menu_item_1_" + emoji?.emojidec} onClick={() => handleExecution(true)}>{t(langKeys.emoji_favorites)}</MenuItem>
-                <MenuItem key={"menu_item_2_" + emoji?.emojidec} onClick={() => handleExecution(false)}>{t(langKeys.emoji_restricted)}</MenuItem>
+                <MenuItem key={"menu_item_x_" + emoji?.emojidec} style={{textAlign: "center"}}>{emoji?.description}</MenuItem>
+                {category==="FAVORITES"?
+                    <MenuItem key={"menu_item_1_" + emoji?.emojidec} onClick={() => handleExecution(false,false)}>{t(langKeys.emoji_removefavorites)}</MenuItem>
+                    : <MenuItem key={"menu_item_1_" + emoji?.emojidec} onClick={() => handleExecution(true,false)}>{t(langKeys.emoji_favorites)}</MenuItem>
+                }
+                {category==="RESTRICTED"?
+                    <MenuItem key={"menu_item_2_" + emoji?.emojidec} onClick={() => handleExecution(false,false)}>{t(langKeys.emoji_removerestricted)}</MenuItem>
+                    :<MenuItem key={"menu_item_2_" + emoji?.emojidec} onClick={() => handleExecution(false,true)}>{t(langKeys.emoji_restricted)}</MenuItem>
+                }
             </Menu>
         </>
     )
@@ -316,6 +327,7 @@ const EmojiDetails: React.FC<ModalProps> = React.memo(({ fetchData, setOpenModal
                     ...allParameters,
                     communicationchannel: datachannels?.data[0]?.data.map((o: Dictionary) => o.domainvalue).join(),
                     favorite: false,
+                    restricted: false,
                     allchannels: false
                 })));
 

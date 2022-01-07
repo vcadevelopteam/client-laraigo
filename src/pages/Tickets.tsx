@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useCallback } from 'react'
-import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomain, insConversationClassificationMassive, reassignMassiveTicket, getUserSel, getHistoryStatusConversation } from 'common/helpers';
-import { getCollectionPaginated, exportData, getMultiCollection, resetAllMain, execute, getCollectionAux } from 'store/main/actions';
+import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomainLight, insConversationClassificationMassive, reassignMassiveTicket, getUserSel, getHistoryStatusConversation, getCampaignLst } from 'common/helpers';
+import { getCollectionPaginated, exportData, getMultiCollection, resetAllMain, execute, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
 import { useDispatch } from 'react-redux';
@@ -12,7 +12,6 @@ import { useTranslation } from 'react-i18next';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Box from '@material-ui/core/Box/Box';
 import { DialogZyx, FieldMultiSelect, FieldSelect, FieldEditMulti } from 'components';
-import clsx from 'clsx';
 import TableZyx from 'components/fields/table-simple';
 import { DialogInteractions } from 'components';
 import { useForm } from 'react-hook-form';
@@ -20,7 +19,9 @@ import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import { CloseTicketIcon, HistoryIcon, TipifyIcon, ReassignIcon } from 'icons';
 import { massiveCloseTicket, getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, emitEvent } from 'store/inbox/actions';
+import { Button, ListItemIcon } from '@material-ui/core';
 
 const selectionKey = 'conversationid';
 
@@ -227,7 +228,6 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
 
     useEffect(() => {
         if (openModal) {
-            console.log(rowWithDataSelected)
             reset({
                 newUserId: 0,
                 observation: '',
@@ -245,6 +245,8 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
                 setGroupsList(groupsList);
             }
             dispatch(getCollectionAux(getListUsers()));
+        } else {
+            dispatch(resetMainAux());
         }
     }, [openModal])
 
@@ -266,14 +268,14 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
             open={openModal}
             title={t(langKeys.reassign_ticket)}
             buttonText1={t(langKeys.cancel)}
-            buttonText2={t(langKeys.save)}
+            buttonText2={t(langKeys.reassign)}
             handleClickButton1={() => setOpenModal(false)}
             handleClickButton2={onSubmit}
             button2Type="submit"
         >
             <div className="row-zyx">
                 <FieldSelect
-                    label={t(langKeys.user_plural)}
+                    label={t(langKeys.agent_plural)}
                     className="col-12"
                     valueDefault={"" + getValues('newUserId')}
                     onChange={(value) => setValue('newUserId', value ? value.userid : 0)}
@@ -457,7 +459,6 @@ const IconOptions: React.FC<{
                 aria-haspopup="true"
                 size="small"
                 disabled={disabled}
-                color="primary"
                 onClick={(e) => setAnchorEl(e.currentTarget)}
             >
                 <MoreVertIcon />
@@ -482,6 +483,9 @@ const IconOptions: React.FC<{
                         setAnchorEl(null);
                         onHandlerReassign();
                     }}>
+                        <ListItemIcon color="inherit">
+                            <ReassignIcon width={18} style={{ fill: '#7721AD' }} />
+                        </ListItemIcon>
                         {t(langKeys.reassign_ticket)}
                     </MenuItem>
                 }
@@ -490,6 +494,9 @@ const IconOptions: React.FC<{
                         setAnchorEl(null);
                         onHandlerClassify();
                     }}>
+                        <ListItemIcon>
+                            <TipifyIcon width={18} style={{ fill: '#7721AD' }} />
+                        </ListItemIcon>
                         {t(langKeys.tipify_ticket)}
                     </MenuItem>
                 }
@@ -498,6 +505,9 @@ const IconOptions: React.FC<{
                         setAnchorEl(null);
                         onHandlerClose();
                     }}>
+                        <ListItemIcon>
+                            <CloseTicketIcon width={18} style={{ fill: '#7721AD' }} />
+                        </ListItemIcon>
                         {t(langKeys.close_ticket)}
                     </MenuItem>
                 }
@@ -506,6 +516,9 @@ const IconOptions: React.FC<{
                         setAnchorEl(null);
                         onHandlerShowHistory();
                     }}>
+                        <ListItemIcon>
+                            <HistoryIcon width={18} style={{ fill: '#7721AD' }} />
+                        </ListItemIcon>
                         {t(langKeys.status_history)}
                     </MenuItem>
                 }
@@ -521,10 +534,12 @@ const DialogHistoryStatus: React.FC<{ ticket: Dictionary | null, openModal: bool
     const resultHistory = useSelector(state => state.main.mainAux);
 
     useEffect(() => {
-        if (ticket) {
-            dispatch(getCollectionAux(getHistoryStatusConversation(ticket.personid, ticket.conversationid, ticket.communicationchannelid)))
+        if (openModal) {
+            if (ticket) {
+                dispatch(getCollectionAux(getHistoryStatusConversation(ticket.personid, ticket.conversationid, ticket.communicationchannelid)))
+            }
         }
-    }, [ticket])
+    }, [ticket, openModal])
 
     const columns = React.useMemo(
         () => [
@@ -544,7 +559,7 @@ const DialogHistoryStatus: React.FC<{ ticket: Dictionary | null, openModal: bool
             },
             {
                 Header: t(langKeys.person_who_modified),
-                accessor: 'createby',
+                accessor: 'fullname',
             },
         ],
         []
@@ -589,9 +604,11 @@ const Tickets = () => {
     const [openModal, setOpenModal] = useState(false);
     const mainPaginated = useSelector(state => state.main.mainPaginated);
     const resExportData = useSelector(state => state.main.exportData);
+    const [rowToSend, setRowToSend] = useState<Dictionary[]>([]);
     const [waitSave, setWaitSave] = useState(false);
     const [pageCount, setPageCount] = useState(0);
     const [totalrow, settotalrow] = useState(0);
+    const [userList, setUserList] = useState<Dictionary[]>([])
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
 
     const setValue = (parameterName: any, value: any) => {
@@ -617,20 +634,21 @@ const Tickets = () => {
                     return (
                         <IconOptions
                             onHandlerReassign={ticket.estadoconversacion === "CERRADO" ? undefined : () => {
-                                setRowSelected(ticket);
+                                setRowToSend([ticket]);
                                 setOpenDialogReassign(true);
                             }}
                             onHandlerClassify={ticket.estadoconversacion === "CERRADO" ? undefined : () => {
-                                setRowSelected(ticket);
+                                setRowToSend([ticket]);
                                 setOpenDialogTipify(true);
                             }}
                             onHandlerClose={ticket.estadoconversacion === "CERRADO" ? undefined : () => {
-                                setRowSelected(ticket);
+                                setRowToSend([ticket]);
                                 setOpenDialogClose(true);
                             }}
                             onHandlerShowHistory={() => {
                                 setOpenDialogShowHistory(true);
                                 setRowSelected(ticket);
+                                setRowToSend([ticket]);
                             }}
                         />
                     )
@@ -657,7 +675,7 @@ const Tickets = () => {
             },
             {
                 Header: t(langKeys.ticket_name),
-                accessor: 'name'
+                accessor: 'name',
             },
             {
                 Header: t(langKeys.ticket_phone),
@@ -692,22 +710,27 @@ const Tickets = () => {
                 accessor: 'tipocierre'
             },
             {
-                Header: t(langKeys.ticket_duraciontotal),
-                accessor: 'duraciontotal',
-                type: 'time'
-            },
-            {
                 Header: t(langKeys.ticket_duracionreal),
                 accessor: 'duracionreal',
+                helpText: t(langKeys.ticket_help_duracionreal),
                 type: 'time'
             },
             {
                 Header: t(langKeys.ticket_duracionpausa),
                 accessor: 'duracionpausa',
+                helpText: t(langKeys.ticket_duracionpausa_help),
+                type: 'time'
+            },
+            {
+                Header: t(langKeys.ticket_duraciontotal),
+                helpText: t(langKeys.ticket_duraciontotal_help),
+                accessor: 'duraciontotal',
+
                 type: 'time'
             },
             {
                 Header: t(langKeys.ticket_fechahandoff),
+                helpText: t(langKeys.ticket_fechahandoff_help),
                 accessor: 'fechahandoff',
                 type: 'date',
                 sortType: 'datetime',
@@ -718,6 +741,7 @@ const Tickets = () => {
             },
             {
                 Header: t(langKeys.ticket_fechaultimaconversacion),
+                helpText: t(langKeys.ticket_fechaultimaconversacion_help),
                 accessor: 'fechaultimaconversacion',
                 type: 'date',
                 sortType: 'datetime',
@@ -743,37 +767,42 @@ const Tickets = () => {
                 accessor: 'empresa'
             },
             {
+                Header: t(langKeys.campaign),
+                accessor: 'campaign'
+            },
+            {
                 Header: t(langKeys.ticket_tmoasesor),
+                helpText: t(langKeys.ticket_tmoasesor_help),
                 accessor: 'tmoasesor',
                 type: 'time'
             },
             {
                 Header: t(langKeys.ticket_tiempopromediorespuesta),
+                helpText: t(langKeys.ticket_tiempopromediorespuesta_help),
                 accessor: 'tiempopromediorespuesta',
                 type: 'time',
             },
             {
                 Header: t(langKeys.ticket_tiempopromediorespuestaasesor),
+                helpText: t(langKeys.ticket_tiempopromediorespuestaasesor_help),
                 accessor: 'tiempopromediorespuestaasesor',
                 type: 'time',
             },
             {
-                Header: t(langKeys.ticket_tiempoprimerarespuesta),
-                accessor: 'tiempoprimerarespuesta',
-                type: 'time'
-            },
-            {
                 Header: t(langKeys.ticket_tiempoprimerarespuestaasesor),
+                helpText: t(langKeys.ticket_tiempoprimerarespuestaasesor_help),
                 accessor: 'tiempoprimerarespuestaasesor',
                 type: 'time'
             },
             {
                 Header: t(langKeys.ticket_tiempoprimeraasignacion),
+                helpText: t(langKeys.ticket_tiempoprimeraasignacion_help),
                 accessor: 'tiempoprimeraasignacion',
                 type: 'time'
             },
             {
                 Header: t(langKeys.ticket_tdatime),
+                helpText: t(langKeys.ticket_tdatime_help),
                 accessor: 'tdatime',
                 type: 'time'
             },
@@ -869,12 +898,13 @@ const Tickets = () => {
     useEffect(() => {
         dispatch(getMultiCollection([
             getCommChannelLst(),
-            getValuesFromDomain("GRUPOS"),
-            getValuesFromDomain("MOTIVOCIERRE"),
+            getValuesFromDomainLight("GRUPOS"),
+            getValuesFromDomainLight("MOTIVOCIERRE"),
             getComunicationChannelDelegate(""),
             getClassificationLevel1("TIPIFICACION"),
             getUserSel(0),
-            getValuesFromDomain("GRUPOS"),
+            getValuesFromDomainLight("GRUPOS"),
+            getCampaignLst(),
         ]));
 
         return () => {
@@ -904,11 +934,58 @@ const Tickets = () => {
         }
     }, [resExportData, waitSave])
 
+    useEffect(() => {
+        if (!mainResult?.multiData.loading && !mainResult?.multiData.error) {
+            setUserList(mainResult?.multiData?.data[5] ? mainResult?.multiData?.data[5].data.map(x => ({
+                ...x,
+                fullname: `${x.firstname} ${x.lastname}`
+            })).sort((a, b) => a.fullname.localeCompare(b.fullname)) : [])
+        }
+    }, [mainResult?.multiData])
+
     return (
         <div className={classes.container}>
             <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" style={{ gap: 8 }}>
                 <div className={classes.title}>
                     {t(langKeys.ticket_plural)}
+                </div>
+                <div style={{ display: 'flex', gap: 8 }}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                        startIcon={<ReassignIcon width={24} style={{ fill: '#FFF' }} />}
+                        onClick={() => {
+                            setRowToSend(rowWithDataSelected);
+                            setOpenDialogReassign(true);
+                        }}
+                    >
+                        {t(langKeys.reassign)}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                        startIcon={<TipifyIcon width={24} style={{ fill: '#FFF' }} />}
+                        onClick={() => {
+                            setRowToSend(rowWithDataSelected);
+                            setOpenDialogTipify(true);
+                        }}
+                    >
+                        {t(langKeys.ticket_typify)}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                        startIcon={<CloseTicketIcon width={24} style={{ fill: '#FFF' }} />}
+                        onClick={() => {
+                            setRowToSend(rowWithDataSelected);
+                            setOpenDialogClose(true);
+                        }}
+                    >
+                        {t(langKeys.close)}
+                    </Button>
                 </div>
             </Box>
             <TablePaginated
@@ -926,14 +1003,6 @@ const Tickets = () => {
                 selectionKey={selectionKey}
                 setSelectedRows={setSelectedRows}
                 filterRangeDate="today"
-                ButtonsElement={() => (
-                    <IconOptions
-                        onHandlerReassign={() => setOpenDialogReassign(true)}
-                        onHandlerClassify={() => setOpenDialogTipify(true)}
-                        onHandlerClose={() => setOpenDialogClose(true)}
-                        disabled={rowWithDataSelected.length === 0}
-                    />
-                )}
                 FiltersElement={React.useMemo(() => (
                     <>
                         <FieldMultiSelect
@@ -943,7 +1012,7 @@ const Tickets = () => {
                             valueDefault={allParameters["channel"] || ""}
                             onChange={(value) => setValue("channel", value ? value.map((o: Dictionary) => o.communicationchannelid).join() : '')}
                             variant="outlined"
-                            data={mainResult?.multiData?.data[0]?.data || []}
+                            data={mainResult?.multiData?.data[0]?.data.sort((a, b) => (a.communicationchanneldesc || "").localeCompare(b.communicationchanneldesc)) || []}
                             optionDesc="communicationchanneldesc"
                             optionValue="communicationchannelid"
                             disabled={mainPaginated.loading}
@@ -967,13 +1036,25 @@ const Tickets = () => {
                             valueDefault={allParameters["lastuserid"] || ""}
                             onChange={(value) => setValue("lastuserid", value ? value.map((o: Dictionary) => o.userid).join() : '')}
                             variant="outlined"
-                            data={mainResult?.multiData?.data[5]?.data || []}
-                            optionDesc="usr"
+                            data={userList}
+                            optionDesc="fullname"
                             optionValue="userid"
                             disabled={mainPaginated.loading}
                         />
+                        <FieldMultiSelect
+                            label={t(langKeys.campaign)}
+                            className={classes.filterComponent}
+                            key="fieldMultiSelect_campaign"
+                            valueDefault={allParameters["campaignid"] || ""}
+                            onChange={(value) => setValue("campaignid", value ? value.map((o: Dictionary) => o.id).join() : '')}
+                            variant="outlined"
+                            data={mainResult?.multiData?.data[7]?.data || []}
+                            optionDesc="title"
+                            optionValue="id"
+                            disabled={mainPaginated.loading}
+                        />
                     </>
-                ), [allParameters, mainResult.multiData, mainPaginated])}
+                ), [allParameters, mainResult.multiData, mainPaginated, userList])}
             />
             <DialogInteractions
                 openModal={openModal}
@@ -987,19 +1068,19 @@ const Tickets = () => {
             />
             <DialogTipifications
                 fetchData={fetchDataAux2}
-                rowWithDataSelected={[rowSelected || {}]}
+                rowWithDataSelected={rowToSend}
                 openModal={openDialogTipify}
                 setOpenModal={setOpenDialogTipify}
             />
             <DialogCloseticket
                 fetchData={fetchDataAux2}
-                rowWithDataSelected={[rowSelected || {}]}
+                rowWithDataSelected={rowToSend}
                 openModal={openDialogClose}
                 setOpenModal={setOpenDialogClose}
             />
             <DialogReassignticket
                 fetchData={fetchDataAux2}
-                rowWithDataSelected={[rowSelected || {}]}
+                rowWithDataSelected={rowToSend}
                 openModal={openDialogReassign}
                 setOpenModal={setOpenDialogReassign}
             />

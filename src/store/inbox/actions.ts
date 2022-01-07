@@ -118,6 +118,8 @@ export const addTicket = (ticket: ITicket): IActionCall => ({ type: actionTypes.
 
 export const modifyTicket = (ticket: ITicket): IActionCall => ({ type: actionTypes.MODIFY_TICKET, payload: ticket });
 
+export const changeStatusTicket = (conversationid: number, status: string): IActionCall => ({ type: actionTypes.CHANGE_STATUS_TICKET, payload: { conversationid, status } });
+
 export const newMessageFromClient = (ticket: INewMessageParams): IActionCall => ({ type: actionTypes.NEW_MESSAGE_FROM_CLIENT, payload: ticket });
 
 export const deleteTicket = (ticket: IDeleteTicketParams): IActionCall => ({ type: actionTypes.DELETE_TICKET, payload: ticket });
@@ -167,7 +169,7 @@ export const getDataForOutbound = (): IActionCall => ({
     type: null
 })
 
-export const resetGetDataForOutbount = () => ({type: actionTypes.GET_DATA_FOR_OUTBOUND_RESET });
+export const resetGetDataForOutbount = () => ({ type: actionTypes.GET_DATA_FOR_OUTBOUND_RESET });
 
 
 

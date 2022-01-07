@@ -20,6 +20,8 @@ const hoursProm=["00:00 a 01:00","01:00 a 02:00","02:00 a 03:00","03:00 a 04:00"
 
 
 const LIMITHOUR = 24;
+const lowestcolornum = parseInt("55bd84",16)
+const higuestcolornum = parseInt("fb5f5f",16)
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -107,7 +109,7 @@ const MainHeatMap: React.FC = () => {
     const [dataMainHeatMap, setdataMainHeatMap] = useState({
         communicationchannel: "",
         closedby: "ASESOR",
-        startdate: new Date(new Date().setDate(1)),
+        startdate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
         enddate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
         datetoshow: `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`
     });
@@ -277,27 +279,15 @@ const MainHeatMap: React.FC = () => {
         })
         setheatMapConversationsData(arrayfree)
 
-        let mid = rowmax/2;
-        let scale = 255 / (mid);
         function gradient(num:number,rowcounter:number){
-            let number = "";
+            let scale = num/rowmax
+            if(isNaN(scale)) scale=0
+
             if ( rowcounter >= 24 ) {
                 return "FFFFFF";
             }
-            if ( num <= 0 ) {
-                return "00FF99";
-            }
-            else if ( num >= rowmax ) {
-                return "FF0099";
-            }
-            else if ( num <= mid ) {
-                number=Math.imul(num,scale).toString(16)
-                return "00".slice(number.length) + number +  "FF99" 
-            }
-            else {
-                number= Math.imul(255-(num-mid),scale).toString(16)
-                return  "FF" +"00".slice(number.length) + number +"99"  
-            }
+
+            return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*scale).toString(16)
         }
         
         let rowcounter = 0;
@@ -425,33 +415,17 @@ const MainHeatMap: React.FC = () => {
         })
         setaverageHeatMapTMOData(arrayfree)
                 
-        let mid = (rowmax/2);
-        let scale = 255 / (mid);
-        let n=0;
-        function gradient(num:string,key:string){
-            n++;
-            if(dateend*24<n){
-                if (key === "day30") n=0
-                return "FFFFFF"
+        function gradient(num:number,rowcounter:number){
+            let scale = num/rowmax
+            if(isNaN(scale)) scale=0
+            if ( rowcounter >= 24 ) {
+                return "FFFFFF";
             }
-            let timespent = num.split(':')
-            let seconds = parseInt(timespent[0])*3600+parseInt(timespent[1])*60+parseInt(timespent[2])
-            let number = ""
-            if ( seconds <= 0 ) {
-                return "00FF99";
-            }
-            else if ( seconds >= rowmax ) {
-                return "FF0099";
-            }
-            else if ( seconds < mid ) {
-                number = Math.imul(seconds, scale).toString(16);
-                return '00'.slice(number.length) + number +  "FF99" 
-            }
-            else {
-                number = Math.imul(255-(seconds-mid), scale).toString(16)
-                return  "FF" + '00'.slice(number.length) + number +"99"  
-            }
+            
+            return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*scale).toString(16)
         }
+        
+        let rowcounter = 0;
 
         const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/hour|horanum/gi.test(key)).map(([key, value]) => ({
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : "Promedio",
@@ -461,11 +435,15 @@ const MainHeatMap: React.FC = () => {
                 const column = props.cell.column;
                 const row = props.cell.row.original;
                 if (key !== "totalcol") {
-                    let color=gradient(props.cell.row.original[key],key)
+                    let color = "white"                    
                     let timespenttotal = props.cell.row.original[key].split(':')
                     let hh = timespenttotal[0] === "00" ? "" : (timespenttotal[0] + "h ")
                     let mm = timespenttotal[1] === "00" ? "" : (timespenttotal[1] + "m ")
                     let ss = timespenttotal[2]
+                    let seconds = parseInt(timespenttotal[0])*3600+parseInt(timespenttotal[1])*60+parseInt(timespenttotal[2])
+                    if (props.data[rowcounter]) {
+                        color = gradient(seconds,rowcounter)
+                    }
                     return (
                         <div
                             style={{background: `#${color}`, textAlign: "center", color:"black"}}
@@ -476,6 +454,8 @@ const MainHeatMap: React.FC = () => {
                     )
                 }
                 else {
+                    if (rowcounter < 24)
+                        rowcounter++;
                     let timespenttotal = props.cell.row.original[key].split(':')
                     let hh = timespenttotal[0] === "00" ? "" : (timespenttotal[0] + "h ")
                     let mm = timespenttotal[1] === "00" ? "" : (timespenttotal[1] + "m ")
@@ -577,33 +557,17 @@ const MainHeatMap: React.FC = () => {
 
         setheatmapaverageagentTMEData(arrayfree)
                 
-        let mid = (rowmax/2);
-        let scale = 255 / (mid);
-        let n=0;
-        function gradient(num:string,key:string){
-            n++;
-            if(dateend*24<n){
-                if (key === "day30") n=0
-                return "FFFFFF"
+        function gradient(num:number,rowcounter:number){
+            let scale = num/rowmax
+            if(isNaN(scale)) scale=0
+            if ( rowcounter >= 24 ) {
+                return "FFFFFF";
             }
-            let timespent = num.split(':')
-            let seconds = parseInt(timespent[0])*3600+parseInt(timespent[1])*60+parseInt(timespent[2])
-            let number = ""
-            if ( seconds <= 0 ) {
-                return "00FF99";
-            }
-            else if ( seconds >= rowmax ) {
-                return "FF0099";
-            }
-            else if ( seconds < mid ) {
-                number = Math.imul(seconds, scale).toString(16);
-                return '00'.slice(number.length) + number +  "FF99" 
-            }
-            else {
-                number = Math.imul(255-(seconds-mid), scale).toString(16)
-                return  "FF" + '00'.slice(number.length) + number +"99"  
-            }
+            
+            return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*scale).toString(16)
         }
+
+        let rowcounter = 0;
 
         const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/hour|horanum/gi.test(key)).map(([key, value]) => ({
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : "Promedio",
@@ -613,11 +577,16 @@ const MainHeatMap: React.FC = () => {
                 const column = props.cell.column;
                 const row = props.cell.row.original;
                 if (key!=="totalcol") {
-                    let color=gradient(props.cell.row.original[key],key)
+                    
+                    let color = "white"
                     let timespenttotal = props.cell.row.original[key].split(':')
                     let hh = timespenttotal[0] === "00" ? "" : (timespenttotal[0] + "h ")
                     let mm = timespenttotal[1] === "00" ? "" : (timespenttotal[1] + "m ")
                     let ss = timespenttotal[2]
+                    let seconds = parseInt(timespenttotal[0])*3600+parseInt(timespenttotal[1])*60+parseInt(timespenttotal[2])
+                    if (props.data[rowcounter]) {
+                        color = gradient(seconds,rowcounter)
+                    }
                     return (
                         <div
                             style={{background: `#${color}`, textAlign: "center", color:"black"}}
@@ -628,6 +597,8 @@ const MainHeatMap: React.FC = () => {
                     )
                 }
                 else {
+                    if (rowcounter < 24)
+                        rowcounter++;
                     let timespenttotal = props.cell.row.original[key].split(':')
                     let hh = timespenttotal[0] === "00" ? "" : (timespenttotal[0] + "h ")
                     let mm = timespenttotal[1] === "00" ? "" : (timespenttotal[1] + "m ")
@@ -729,33 +700,17 @@ const MainHeatMap: React.FC = () => {
 
         setuserAverageReplyTimexFechaData(arrayfree)
                 
-        let mid = (rowmax/2);
-        let scale = 255 / (mid);
-        let n=0;
-        function gradient(num:string,key:string){
-            n++;
-            if(dateend*24<n){
-                if (key === "day30") n=0
-                return "FFFFFF"
+        function gradient(num:number,rowcounter:number){
+            let scale = num/rowmax
+            if(isNaN(scale)) scale=0
+            if ( rowcounter >= 24 ) {
+                return "FFFFFF";
             }
-            let timespent = num.split(':')
-            let seconds = parseInt(timespent[0])*3600+parseInt(timespent[1])*60+parseInt(timespent[2])
-            let number = ""
-            if ( seconds <= 0 ) {
-                return "00FF99";
-            }
-            else if ( seconds >= rowmax ) {
-                return "FF0099";
-            }
-            else if ( seconds < mid ) {
-                number = Math.imul(seconds, scale).toString(16);
-                return '00'.slice(number.length) + number +  "FF99" 
-            }
-            else {
-                number = Math.imul(255-(seconds-mid), scale).toString(16)
-                return  "FF" + '00'.slice(number.length) + number +"99"  
-            }
+            
+            return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*scale).toString(16)
         }
+        
+        let rowcounter = 0;
 
         const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/hour|horanum/gi.test(key)).map(([key, value]) => ({
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : "Promedio",
@@ -765,21 +720,27 @@ const MainHeatMap: React.FC = () => {
                 const column = props.cell.column;
                 const row = props.cell.row.original;
                 if (key !== "totalcol") {
-                    let color=gradient(props.cell.row.original[key],key)
+                    let color = "white"                    
                     let timespenttotal = props.cell.row.original[key].split(':')
                     let hh = timespenttotal[0] === "00" ? "" : (timespenttotal[0] + "h ")
                     let mm = timespenttotal[1] === "00" ? "" : (timespenttotal[1] + "m ")
                     let ss = timespenttotal[2]
+                    let seconds = parseInt(timespenttotal[0])*3600+parseInt(timespenttotal[1])*60+parseInt(timespenttotal[2])
+                    if (props.data[rowcounter]) {
+                        color = gradient(seconds,rowcounter)
+                    }
                     return (
                         <div
                             style={{background: `#${color}`, textAlign: "center", color:"black"}}
-                            onClick={() => fetchDetail('1.4', column, row)}
+                            onClick={() => fetchDetail('1.2', column, row)}
                         >
                             {`${hh}${mm}${ss}s`}
                         </div>
                     )
                 }
                 else {
+                    if (rowcounter < 24)
+                        rowcounter++;
                     let timespenttotal = props.cell.row.original[key].split(':')
                     let hh = timespenttotal[0] === "00" ? "" : (timespenttotal[0] + "h ")
                     let mm = timespenttotal[1] === "00" ? "" : (timespenttotal[1] + "m ")
@@ -881,33 +842,17 @@ const MainHeatMap: React.FC = () => {
 
         setpersonAverageReplyTimexFechaData(arrayfree)
                 
-        let mid = (rowmax/2);
-        let scale = 255 / (mid);
-        let n=0;
-        function gradient(num:string,key:string){
-            n++;
-            if(dateend*24<n){
-                if (key === "day30") n=0
-                return "FFFFFF"
+        function gradient(num:number,rowcounter:number){
+            let scale = num/rowmax
+            if(isNaN(scale)) scale=0
+            if ( rowcounter >= 24 ) {
+                return "FFFFFF";
             }
-            let timespent = num.split(':')
-            let seconds = parseInt(timespent[0])*3600+parseInt(timespent[1])*60+parseInt(timespent[2])
-            let number = ""
-            if ( seconds <= 0 ) {
-                return "00FF99";
-            }
-            else if ( seconds >= rowmax ) {
-                return "FF0099";
-            }
-            else if ( seconds < mid ) {
-                number = Math.imul(seconds, scale).toString(16);
-                return '00'.slice(number.length) + number +  "FF99" 
-            }
-            else {
-                number = Math.imul(255-(seconds-mid), scale).toString(16)
-                return  "FF" + '00'.slice(number.length) + number +"99"  
-            }
+            
+            return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*scale).toString(16)
         }
+        
+        let rowcounter = 0;
 
         const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/hour|horanum/gi.test(key)).map(([key, value]) => ({
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : "Promedio",
@@ -916,22 +861,28 @@ const MainHeatMap: React.FC = () => {
             Cell: (props: any) => {
                 const column = props.cell.column;
                 const row = props.cell.row.original;
-                if (key !=="totalcol") {
-                    let color=gradient(props.cell.row.original[key],key)
+                if (key !== "totalcol") {
+                    let color = "white"                    
                     let timespenttotal = props.cell.row.original[key].split(':')
                     let hh = timespenttotal[0] === "00" ? "" : (timespenttotal[0] + "h ")
                     let mm = timespenttotal[1] === "00" ? "" : (timespenttotal[1] + "m ")
                     let ss = timespenttotal[2]
+                    let seconds = parseInt(timespenttotal[0])*3600+parseInt(timespenttotal[1])*60+parseInt(timespenttotal[2])
+                    if (props.data[rowcounter]) {
+                        color = gradient(seconds,rowcounter)
+                    }
                     return (
                         <div
                             style={{background: `#${color}`, textAlign: "center", color:"black"}}
-                            onClick={() => fetchDetail('1.5', column, row)}
+                            onClick={() => fetchDetail('1.2', column, row)}
                         >
                             {`${hh}${mm}${ss}s`}
                         </div>
                     )
                 }
                 else {
+                    if (rowcounter < 24)
+                        rowcounter++;
                     let timespenttotal = props.cell.row.original[key].split(':')
                     let hh = timespenttotal[0] === "00" ? "" : (timespenttotal[0] + "h ")
                     let mm = timespenttotal[1] === "00" ? "" : (timespenttotal[1] + "m ")
@@ -1090,7 +1041,7 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
     const [dataMainHeatMap, setdataMainHeatMap] = useState({
         communicationchannel: "",
         closedby: "ASESOR",
-        startdate: new Date(new Date().setDate(1)),
+        startdate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
         enddate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
         datetoshow: `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`,
         company: ""
@@ -1164,29 +1115,16 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
         })
         setCompletadosxAsesorData(arrayfree)
 
-        let mid = rowmax/2;
-        let scale = 255 / (mid);
         let m=0;
         function gradient(num:number){
+            let scale = num/rowmax
+            if(isNaN(scale)) scale=0
             m++;
             if ((listadvisers.length)*dateend<m){
                 return "FFFFFF"
             }
-            let number = "";
-            if ( num <= 0 ) {
-                return "00FF99";
-            }
-            else if ( num >= rowmax ) {
-                return "FF0099";
-            }
-            else if ( num <= mid ) {
-                number=Math.imul(num, scale).toString(16)
-                return "00".slice(number.length) + number +  "FF99" 
-            }
-            else {
-                number= Math.imul((255-(num-mid)),scale).toString(16)
-                return  "FF" +"00".slice(number.length) + number +"99"  
-            }
+            
+            return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*scale).toString(16)
         }
         
         const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor|horanum/gi.test(key)).map(([key, value]) => ({
@@ -1243,29 +1181,16 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
         })
         setabandonosxAsesorData(arrayfree)
 
-        let mid = rowmax/2;
-        let scale = 255 / (mid);
         let m=0;
         function gradient(num:number){
+            let scale = num/rowmax
+            if(isNaN(scale)) scale=0
             m++;
             if ((listadvisers.length)*dateend<m){
                 return "FFFFFF"
             }
-            let number = "";
-            if ( num <= 0 ) {
-                return "00FF99";
-            }
-            else if ( num >= rowmax ) {
-                return "FF0099";
-            }
-            else if ( num <= mid ) {
-                number=Math.imul(num, scale).toString(16)
-                return "00".slice(number.length) + number +  "FF99" 
-            }
-            else {
-                number= Math.imul((255-(num-mid)),scale).toString(16)
-                return  "FF" +"00".slice(number.length) + number +"99"  
-            }
+
+            return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*scale).toString(16)
         }
         
         const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor|horanum/gi.test(key)).map(([key, value]) => ({
@@ -1305,28 +1230,11 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
             arrayfree = arrayfree.map((x:any) => x.userid === hour ? ({...x, [`day${day}`]: row.tasaabandonosxasesor}) : x) 
         })
         
-        let mid = 50;
-        let scale = 255 / (50);
         settasaAbandonosxAsesorData(arrayfree)
         
         function gradient(porcentage:number){
-            let number = "";
-            let num = porcentage*100;
 
-            if ( num <= 0 ) {
-                return "00FF0099";
-            }
-            else if ( num >= rowmax ) {
-                return "FF000099";
-            }
-            else if ( num <= mid ) {
-                number=Math.imul(num, scale).toString(16)
-                return "00".slice(number.length) + number +  "FF0099" 
-            }
-            else {
-                number= Math.imul((255-(num-mid)),scale).toString(16)
-                return  "FF" +"00".slice(number.length) + number +"0099"  
-            }
+            return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*porcentage).toString(16)
         }
         
         const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor/gi.test(key)).map(([key, value]) => ({
@@ -1379,8 +1287,6 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
         
         setventasxAsesorData(arrayfree)
 
-        let mid = rowmax/2;
-        let scale = 255 / (mid);
         let m=0;
         
         function gradient(num:number){
@@ -1388,21 +1294,11 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
             if ((listadvisers.length)*dateend<m){
                 return "00000000"
             }
-            let number = "";
-            if ( num <= 0 ) {
-                return "00FF0099";
-            }
-            else if ( num >= rowmax ) {
-                return "FF000099";
-            }
-            else if ( num <= mid ) {
-                number=Math.imul(num, scale).toString(16)
-                return "00".slice(number.length) + number +  "FF0099" 
-            }
-            else {
-                number= Math.imul((255-(num-mid)),scale).toString(16)
-                return  "FF" +"00".slice(number.length) + number +"0099"  
-            }
+            
+            let scale = num/rowmax
+            if(isNaN(scale)) scale=0
+            
+            return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*scale).toString(16)
         }
         
         const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor|horanum/gi.test(key)).map(([key, value]) => ({
@@ -1443,28 +1339,11 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
             arrayfree = arrayfree.map((x:any) => x.userid === hour ? ({...x, [`day${day}`]: efectividad}) : x) 
         })
         
-        let mid = 50;
-        let scale = 255 / (50);
         setefectividadxAsesorData(arrayfree)
         
         function gradient(porcentage:number){
-            let number = "";
-            let num = porcentage*100;
 
-            if ( num <= 0 ) {
-                return "00FF0099";
-            }
-            else if ( num >= rowmax ) {
-                return "FF000099";
-            }
-            else if ( num <= mid ) {
-                number=Math.imul(num, scale).toString(16)
-                return "00".slice(number.length) + number +  "FF0099" 
-            }
-            else {
-                number= Math.imul((255-(num-mid)),scale).toString(16)
-                return  "FF" +"00".slice(number.length) + number +"0099"  
-            }
+            return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*porcentage).toString(16)
         }
         
         const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor/gi.test(key)).map(([key, value]) => ({
@@ -1641,7 +1520,7 @@ const HeatMapTicket: React.FC = () => {
     const [asesoresConectadosTitle, setasesoresConectadosTitle] = useState<any>([]);  
     const [dataMainHeatMap, setdataMainHeatMap] = useState({
         communicationchannel: "",
-        startdate: new Date(new Date().setDate(1)),
+        startdate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
         enddate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
         datetoshow: `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`,
     });
@@ -1749,25 +1628,11 @@ const HeatMapTicket: React.FC = () => {
             rowmax = row.value>rowmax ? row.value:rowmax;
         })
 
-        let mid = (rowmax/2);
-        let scale = 255 / (mid);
-
         function gradient(num:number){
-            let number = "";
-            if ( num <= 0 ) {
-                return "00FF99";
-            }
-            else if ( num >= rowmax ) {
-                return "FF0099";
-            }
-            else if ( num <= mid ) {
-                number=Math.imul(num, scale).toString(16)
-                return "00".slice(number.length) + number +  "FF99" 
-            }
-            else {
-                number= Math.imul((255-(num-mid)),scale).toString(16)
-                return  "FF" +"00".slice(number.length) + number +"99"  
-            }
+            let scale = num/rowmax
+            if(isNaN(scale)) scale=0
+
+            return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*scale).toString(16)
         }
         
         setasesoresConectadosData(arrayfree);

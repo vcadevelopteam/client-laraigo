@@ -451,21 +451,7 @@ const Settings: FC = () => {
                                 m={2}
                             />
                         </Grid>                        
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <ItemTile
-                                title={<Trans i18nKey={langKeys.inputvalidation} count={2} />}
-                                subtitle={<SubtitleText value={value?.num_inputvalidation} i18nKey={langKeys.inputvalidation} />}
-                                icon={<InputIcon fill="inherit" stroke="inherit" />}
-                                helpText={
-                                    <HelpText
-                                        i18nKey={langKeys.manageInputValidation}
-                                        count={2}
-                                        onClick={() => history.push(paths.INPUTVALIDATION)}
-                                    />
-                                }
-                                m={2}
-                            />
-                        </Grid>
+                        
                     </Grid>
                 </Grid>
                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
@@ -547,13 +533,14 @@ const Settings: FC = () => {
                         </Grid>
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <ItemTile
-                                title={<Trans i18nKey={langKeys.whitelist} />}
-                                subtitle={<SubtitleText value={value?.num_whitelist} i18nKey={langKeys.whitelist} />}
-                                icon={<WhitelistIcon fill="inherit" stroke="inherit" />}
+                                title={<Trans i18nKey={langKeys.inputvalidation} count={2} />}
+                                subtitle={<SubtitleText value={value?.num_inputvalidation} i18nKey={langKeys.inputvalidation} />}
+                                icon={<InputIcon fill="inherit" stroke="inherit" />}
                                 helpText={
                                     <HelpText
-                                        i18nKey={langKeys.whitelist}
-                                        onClick={() => history.push(paths.WHITELIST)}
+                                        i18nKey={langKeys.manageInputValidation}
+                                        count={2}
+                                        onClick={() => history.push(paths.INPUTVALIDATION)}
                                     />
                                 }
                                 m={2}
@@ -564,7 +551,7 @@ const Settings: FC = () => {
             </Grid>
             <ItemTile
                 title={<Trans i18nKey={langKeys.property} count={2} />}
-                subtitle={<PropertiesTileBody />}
+                subtitle={<SubtitleText value={value?.num_property} i18nKey={langKeys.activeProperty} />}
                 icon={<ConfigPropertiesIcon fill="inherit" stroke="inherit" />}
                 helpText={
                     <HelpText

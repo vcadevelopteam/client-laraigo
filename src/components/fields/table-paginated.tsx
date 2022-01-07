@@ -13,12 +13,12 @@ import Input from '@material-ui/core/Input';
 import { makeStyles } from '@material-ui/core/styles';
 import { TableConfig, Pagination, Dictionary, ITablePaginatedFilter } from '@types'
 import { Trans } from 'react-i18next';
+import Tooltip from '@material-ui/core/Tooltip';
 import Button from '@material-ui/core/Button';
 import { langKeys } from 'lang/keys';
 import { DownloadIcon, CalendarIcon } from 'icons';
 import BackupIcon from '@material-ui/icons/Backup';
 import { Skeleton } from '@material-ui/lab';
-
 import {
     FirstPage,
     LastPage,
@@ -30,7 +30,7 @@ import {
     ArrowUpward as ArrowUpwardIcon,
     MoreVert as MoreVertIcon,
 } from '@material-ui/icons';
-// import RefreshIcon from "@material-ui/icons/Refresh";
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import Menu from '@material-ui/core/Menu';
 
 import {
@@ -42,15 +42,15 @@ import {
 } from 'react-table'
 import { Range } from 'react-date-range';
 import { DateRangePicker } from 'components';
-import { Checkbox } from '@material-ui/core';
+import { Checkbox, Typography } from '@material-ui/core';
 import { BooleanOptionsMenuComponent, DateOptionsMenuComponent, SelectFilterTmp, OptionsMenuComponent, TimeOptionsMenuComponent } from './table-simple';
-import { getDateToday, getFirstDayMonth, getLastDayMonth } from 'common/helpers';
-import { useLocation } from 'react-router-dom';
+import { getDateToday, getFirstDayMonth, getLastDayMonth, getDateCleaned } from 'common/helpers';
 
 declare module "react-table" {
     // eslint-disable-next-line
     interface UseTableColumnProps<D extends object> {
         listSelectFilter: Dictionary;
+        helpText?: string;
     }
 }
 
@@ -119,10 +119,19 @@ const useStyles = makeStyles((theme) => ({
         [theme.breakpoints.up('sm')]: {
             display: 'flex',
         },
+    },
+    containerHeaderColumn: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
+    iconHelpText: {
+        width: 15,
+        height: 15,
+        cursor: 'pointer',
     }
 }));
 
-const format = (date: Date) => date.toISOString().split('T')[0];
 
 const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilter }: any) => {
     const [value, setValue] = useState('');
@@ -201,7 +210,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
                 setFilters({
                     ...filters,
                     [header]: {
-                        value: op,
+                        value: '',
                         operator: op
                     },
                 }, 0)
@@ -215,7 +224,18 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
                 }, 0)
             }
         } else if (type === "number") {
-            if (value) {
+            if (op === 'isempty' ||
+                op === 'isnotempty' ||
+                op === 'isnull' ||
+                op === 'isnotnull') {
+                setFilters({
+                    ...filters,
+                    [header]: {
+                        value: '',
+                        operator: op
+                    },
+                }, 0)
+            } else if (value) {
                 setFilters({
                     ...filters,
                     [header]: {
@@ -233,6 +253,14 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
                     ...filters,
                     [header]: {
                         value: op,
+                        operator: op
+                    },
+                }, 0)
+            } else if (value !== '') {
+                setFilters({
+                    ...filters,
+                    [header]: {
+                        value: value,
                         operator: op
                     },
                 }, 0)
@@ -485,7 +513,7 @@ const TableZyx = React.memo(({
     const setFilters = (filters: any, page: number) => {
         setPagination(prev => {
             const pageIndex = !page ? prev.pageIndex : page;
-            return { ...prev, filters, pageIndex: pageIndex, trigger: true }
+            return { ...prev, filters, pageIndex: 0, trigger: true }
         });
     };
     const setPageIndex = (page: number) => {
@@ -493,35 +521,40 @@ const TableZyx = React.memo(({
         setTFilters(prev => ({ ...prev, page }));
     }
     const handleClickSort = (column: string) => {
-        const newsorts: any = {
-            ...pagination.sorts
+        let newsorts: any = {};
+        if (Object.keys(pagination.sorts).includes(column)) {
+            newsorts = {
+                ...pagination.sorts
+            }
         }
-
-        let currentsort = "";
 
         if (newsorts[column] === "desc") {
             delete newsorts[column]
-        } else {
-            if (newsorts[column] === "asc")
-                currentsort = "desc";
-            else
-                currentsort = "asc";
-            newsorts[column] = currentsort
+        }
+        else {
+            if (newsorts[column] === "asc") {
+                newsorts[column] = "desc";
+            }
+            else {
+                newsorts[column] = "asc";
+            }
         }
 
         setPagination(prev => ({ ...prev, sorts: newsorts, trigger: true }))
     }
 
     const [dateRange, setdateRange] = useState<Range>({
-        startDate: filterRangeDate === "month" ? getFirstDayMonth() : getDateToday(),
-        endDate: filterRangeDate === "month" ? getLastDayMonth() : getDateToday(),
+        startDate: initialStartDate ? new Date(initialStartDate) : filterRangeDate === "month" ? getFirstDayMonth() : getDateToday(),
+        endDate: initialEndDate ? new Date(initialEndDate) : filterRangeDate === "month" ? getLastDayMonth() : getDateToday(),
         key: 'selection'
     });
 
     const triggertmp = (fromButton: boolean = false) => {
         if (fromButton)
             setPagination(prev => ({ ...prev, pageIndex: 0, trigger: false }));
-        fetchData && fetchData({
+
+        if (!fetchData) return;
+        fetchData({
             ...pagination,
             pageSize,
             pageIndex: fromButton ? 0 : pagination.pageIndex,
@@ -532,6 +565,7 @@ const TableZyx = React.memo(({
         });
         setTFilters(prev => ({
             ...prev,
+            page: fromButton ? 0 : pagination.pageIndex,
             startDate: dateRange.startDate ? (new Date(dateRange.startDate.setHours(10))).getTime() : null,
             endDate: dateRange.endDate ? (new Date(dateRange.endDate.setHours(10))).getTime() : null,
         }));
@@ -542,7 +576,7 @@ const TableZyx = React.memo(({
             triggertmp()
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [pageSize, pagination, dateRange, triggerSearch])
+    }, [pageSize, pagination, triggerSearch])
 
     useEffect(() => {
         if (triggerSearch) {
@@ -596,7 +630,7 @@ const TableZyx = React.memo(({
                                     startIcon={<CalendarIcon />}
                                     onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
                                 >
-                                    {format(dateRange.startDate!) + " - " + format(dateRange.endDate!)}
+                                    {getDateCleaned(dateRange.startDate!) + " - " + getDateCleaned(dateRange.endDate!)}
                                 </Button>
                             </DateRangePicker>
                             {FiltersElement && FiltersElement}
@@ -688,30 +722,36 @@ const TableZyx = React.memo(({
                                                     column.render('Header')
                                                     :
                                                     (<>
-                                                        <Box
-                                                            component="div"
-                                                            {...column.getHeaderProps()}
-                                                            onClick={() => !column.NoSort && handleClickSort(column.id)}
-                                                            style={{
-                                                                whiteSpace: 'nowrap',
-                                                                wordWrap: 'break-word',
-                                                                cursor: 'pointer',
-                                                                alignItems: 'center',
-                                                            }}
-                                                        >
-                                                            {column.render('Header')}
-                                                            {pagination.sorts[column.id]
-                                                                && (pagination.sorts[column.id] === "asc"
-                                                                    ? <ArrowUpwardIcon className={classes.iconOrder} color="action" />
+                                                        <div className={classes.containerHeaderColumn}>
+                                                            <Box
+                                                                component="div"
+                                                                {...column.getHeaderProps()}
+                                                                onClick={() => !column.NoSort && handleClickSort(column.id)}
+                                                                style={{
+                                                                    whiteSpace: 'nowrap',
+                                                                    wordWrap: 'break-word',
+                                                                    display: 'flex',
+                                                                    cursor: 'pointer',
+                                                                    alignItems: 'center',
+                                                                }}
+                                                            >
+                                                                {column.render('Header')}
+                                                                {pagination.sorts[column.id] && (pagination.sorts[column.id] === "asc" ?
+                                                                    <ArrowUpwardIcon className={classes.iconOrder} color="action" />
                                                                     : <ArrowDownwardIcon className={classes.iconOrder} color="action" />)
-                                                            }
-                                                        </Box>
+                                                                }
+                                                            </Box>
+                                                            {!!column.helpText && (
+                                                                <Tooltip title={<div style={{ fontSize: 12 }}>{column.helpText}</div>} arrow placement="top" >
+                                                                    <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                                                </Tooltip>
+                                                            )}
+                                                        </div>
                                                         {!column.NoFilter &&
                                                             <DefaultColumnFilter
                                                                 header={column.id}
                                                                 listSelectFilter={column.listSelectFilter || []}
                                                                 type={column.type}
-                                                                // firstvalue={data && data.length > 0 ? data[0][column.id] : null}
                                                                 filters={pagination.filters}
                                                                 setFilters={(filters: any, page: number) => {
                                                                     setFilters(filters, page);
@@ -721,7 +761,6 @@ const TableZyx = React.memo(({
                                                                         page,
                                                                     }));
                                                                 }}
-                                                            // setFilters={setFilters}
                                                             />
                                                         }
                                                     </>)
@@ -856,7 +895,7 @@ interface IFilters {
 }
 
 interface IOptions {
-    ignore: string[];
+    ignore?: string[];
 }
 
 export function useQueryParams(query: URLSearchParams, options: IOptions = { ignore: [] }) {
@@ -874,18 +913,22 @@ export function useQueryParams(query: URLSearchParams, options: IOptions = { ign
                 key === "startDate" ||
                 key === "page" ||
                 key.includes('-operator') ||
-                ignore.includes(key)) {
+                (ignore || []).includes(key)) {
                 return;
             }
 
-            map.filters[key] = { value, operator: query.get(`${key}-operator`)! };
+            const name = `${key}-operator`;
+            map.filters[key] = { value, operator: query.get(name)! };
         });
 
         return map;
     }, [query]);
 }
 
-export function buildQueryFilters(filters: ITablePaginatedFilter, init?: string | string[][] | Record<string, string>) {
+export function buildQueryFilters(
+    filters: ITablePaginatedFilter,
+    init?: string | string[][] | Record<string, string>,
+) {
     const params = new URLSearchParams(init);
 
     for (const key in filters) {

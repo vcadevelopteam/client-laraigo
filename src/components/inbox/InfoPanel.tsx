@@ -5,7 +5,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Tabs from '@material-ui/core/Tabs';
 import Avatar from '@material-ui/core/Avatar';
-import { EMailInboxIcon, PhoneIcon } from 'icons';
+import { EMailInboxIcon, PhoneIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, DocumentIcon } from 'icons';
 import { getTicketsPerson, showInfoPanel, updatePerson } from 'store/inbox/actions';
 import { GetIcon, FieldEdit, FieldSelect, DialogInteractions, AntTab, FieldEditMulti } from 'components'
 import { langKeys } from 'lang/keys';
@@ -19,9 +19,15 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useForm } from 'react-hook-form';
 import { getMultiCollectionAux, resetMultiMainAux, execute } from 'store/main/actions';
 import Fab from '@material-ui/core/Fab';
+import { CircularProgress } from '@material-ui/core';
+import AttachFileIcon from '@material-ui/icons/AttachFile';
+import ImportExportIcon from '@material-ui/icons/ImportExport';
+import clsx from 'clsx';
+
 const useStyles = makeStyles((theme) => ({
     containerInfo: {
         flex: '0 0 300px',
+        width: 300,
         display: 'flex',
         flexDirection: 'column',
 
@@ -58,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(1),
         display: 'flex',
         flexDirection: 'column',
-        gap: theme.spacing(1),
+        gap: theme.spacing(.5),
         overflowY: 'auto',
         cursor: 'pointer',
         flex: 1,
@@ -94,6 +100,24 @@ const useStyles = makeStyles((theme) => ({
     propIcon: {
         stroke: '#8F92A1'
     },
+    orderReverse: {
+        flexDirection: 'column-reverse'
+    },
+    orderDefault: {
+        flexDirection: 'column'
+    },
+    containerAttachment: {
+        display: 'flex',
+        gap: 16,
+        alignItems: 'center',
+        borderBottom: '1px solid #e1e1e1',
+        padding: theme.spacing(1),
+        paddingLeft: 16,
+        cursor: 'pointer',
+        '&:hover': {
+            backgroundColor: '#ececec'
+        }
+    }
 }));
 
 const InfoClient: React.FC = () => {
@@ -388,7 +412,7 @@ const InfoTab: React.FC = () => {
                         <div>{person?.documentnumber}</div>
                     </div>
                 </div>}
-               
+
                 {person?.alternativephone && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.alternativePhone)}</div>
@@ -443,7 +467,7 @@ const InfoTab: React.FC = () => {
                         <div>{person?.educationlevel && t("type_educationlevel_" + person?.educationlevel.toLocaleLowerCase())}</div>
                     </div>
                 </div>}
-               
+
                 {person?.lastcommunicationchannel && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.lastCommunicationChannel)}</div>
@@ -500,13 +524,15 @@ const Variables: React.FC = () => {
     )
 }
 
-const PreviewTickets = () => {
+const PreviewTickets: React.FC<{ order: number }> = ({ order }) => {
     const dispatch = useDispatch();
     const classes = useStyles();
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const previewTicketList = useSelector(state => state.inbox.previewTicketList);
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
     const [openModal, setOpenModal] = useState(false);
+    const el = React.useRef<null | HTMLDivElement>(null);
+    const el1 = React.useRef<null | HTMLDivElement>(null);
     const { t } = useTranslation();
 
     useEffect(() => {
@@ -518,28 +544,58 @@ const PreviewTickets = () => {
         setRowSelected(row)
     };
 
+    useEffect(() => {
+        // setTimeout(() => {
+        if (order === 1)
+            el1.current?.scrollIntoView();
+        else
+            el?.current?.scrollIntoView();
+        // }, 1000);
+    }, [order])
+
+    if (previewTicketList.loading) {
+        return (
+            <div style={{ flex: 1, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <CircularProgress />
+            </div>
+        )
+    }
+
+    if (previewTicketList.data.length === 0) {
+        return (
+            <div className={classes.label} style={{ padding: 8, flex: 1 }}>
+                {t(langKeys.without_result)}
+            </div>
+        )
+    }
+
     return (
-        <div style={{ flex: 1 }} className="scroll-style-go">
-            {previewTicketList.loading ? "Espere" :
-                previewTicketList.data?.map((ticket, index) => (
-                    <div key={index} className={classes.containerPreviewTicket} onClick={() => handleClickOpen(ticket)}>
+        <div style={{ display: 'flex', flex: 1 }} className={clsx("scroll-style-go", {
+            [classes.orderDefault]: order === -1,
+            [classes.orderReverse]: order === 1,
+        })}>
+            <div ref={el}></div>
+            {previewTicketList.data?.map((ticket, index) => (
+                <div key={index}>
+                    <div className={classes.containerPreviewTicket} onClick={() => handleClickOpen(ticket)}>
                         <div className={classes.titlePreviewTicket}>
                             <GetIcon color={ticket.coloricon} channelType={ticket.communicationchanneltype} />
-                            <div>#{ticket.ticketnum}</div>
+                            <div>{ticket.ticketnum}</div>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <div style={{ flex: 1 }}>
-                                <div className={classes.label}>{t(langKeys.created_on)}</div>
+                                <div className={classes.label}>{t(langKeys.creationDate)}</div>
                                 <div>{convertLocalDate(ticket.firstconversationdate).toLocaleString()}</div>
                             </div>
                             <div style={{ flex: 1 }}>
-                                <div className={classes.label}>{t(langKeys.closed_on)}</div>
+                                <div className={classes.label}>{t(langKeys.close_date)}</div>
                                 <div>{convertLocalDate(ticket.finishdate).toLocaleString()}</div>
                             </div>
                         </div>
                     </div>
-                ))
-            }
+                </div>
+            ))}
+            <div ref={el1}></div>
             <DialogInteractions
                 openModal={openModal}
                 setOpenModal={setOpenModal}
@@ -549,9 +605,68 @@ const PreviewTickets = () => {
     )
 }
 
+const Attachments: React.FC = () => {
+    const classes = useStyles();
+    const [listFiles, setListFiles] = useState<Dictionary[]>([]);
+    const interactionList = useSelector(state => state.inbox.interactionList.data);
+    const { t } = useTranslation();
+
+    useEffect(() => {
+        setListFiles(interactionList.reduce<Dictionary[]>((acc, item) => [
+            ...acc,
+            ...(item.interactions?.filter((x) => ["file", "video"].includes(x.interactiontype)) || []).map(x => ({
+                url: x.interactiontext,
+                filename: x.interactiontext.split("/").pop(),
+                extension: (x.interactiontext.split("/").pop() || "").split(".").pop(),
+                date: convertLocalDate(x.createdate).toLocaleString(),
+            }))
+        ], []));
+    }, [])
+
+    if (listFiles.length === 0) {
+        return (
+            <div className={classes.label} style={{ padding: 8, flex: 1 }}>
+                {t(langKeys.without_files)}
+            </div>
+        )
+    }
+
+    return (
+        <div className={`scroll-style-go`} style={{ overflowY: 'auto', flex: 1, backgroundColor: 'transparent' }}>
+            {listFiles.map(({filename, date, url, extension}, index) => (
+                <div
+                    key={index}
+                    className={classes.containerAttachment}
+                    onClick={() => window.open(url, "_blank")}
+                >
+                    {extension === "pdf" ? (
+                        <PdfIcon width="30" height="30" />
+                    ) :  (extension === "doc" || extension === "docx") ? (
+                        <DocIcon width="30" height="30" />
+                    ) : (extension === "xls" || extension === "xlsx") ? (
+                        <XlsIcon width="30" height="30" />
+                    ) : (extension === "ppt" || extension === "pptx") ? (
+                        <PptIcon width="30" height="30" />
+                    ) : (extension === "text" || extension === "txt") ? (
+                        <TxtIcon width="30" height="30" />
+                    ) : <FileIcon width="30" height="30" />
+                    }
+                    <div>
+                        <div>{filename}</div>
+                        <div className={classes.label}>{date}</div>
+                    </div>
+                </div>
+            ))}
+        </div>
+    )
+}
+
+
 const InfoPanel: React.FC = () => {
     const classes = useStyles();
     const [pageSelected, setPageSelected] = useState(0);
+    const [order, setOrder] = useState(-1)
+    const { t } = useTranslation();
 
     return (
         <div className={classes.containerInfo}>
@@ -559,18 +674,21 @@ const InfoPanel: React.FC = () => {
             <Tabs
                 value={pageSelected}
                 indicatorColor="primary"
-                variant="fullWidth"
+                variant="scrollable"
+                scrollButtons="auto"
                 style={{ borderBottom: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
                 textColor="primary"
                 onChange={(_, value) => setPageSelected(value)}
             >
-                <AntTab label="Info" />
+                <AntTab label={t(langKeys.information)} />
+                <AntTab label="Tickets" icon={<ImportExportIcon onClick={() => setOrder(order * -1)} />} />
+                <AntTab icon={<AttachFileIcon />} />
                 <AntTab label="Variables" />
-                <AntTab label="Tickets" />
             </Tabs>
             {pageSelected === 0 && <InfoTab />}
-            {pageSelected === 1 && <Variables />}
-            {pageSelected === 2 && <PreviewTickets />}
+            {pageSelected === 1 && <PreviewTickets order={order} />}
+            {pageSelected === 2 && <Attachments />}
+            {pageSelected === 3 && <Variables />}
         </div>
     );
 }

@@ -102,13 +102,17 @@ export const resetSaveLeadActivity = (): IActionCall => ({type: actionTypes.SAVE
 
 export const saveLeadLogNote = (body: IRequestBody): IActionCall => ({
     callAPI: async () => {
-        const mediaFile = (body.parameters as ICrmLeadNoteSave).media as File | null;
-        if (mediaFile) {
-            const fd = new FormData();
-            fd.append('file', mediaFile, mediaFile.name);
-            const uploadResult = await CommonService.uploadFile(fd);
-            const url = uploadResult.data["url"] as string;
-            (body.parameters as ICrmLeadNoteSave).media = url;
+        const mediaFiles = (body.parameters as ICrmLeadNoteSave).media as File[] | null;
+        if (mediaFiles) {
+            const urls: String[] = [];
+            for (const fileToUpload of mediaFiles) {
+                const fd = new FormData();
+                fd.append('file', fileToUpload, fileToUpload.name);
+                const uploadResult = await CommonService.uploadFile(fd);
+                const url = uploadResult.data["url"] as string;
+                urls.push(url);
+            }
+            (body.parameters as ICrmLeadNoteSave).media = urls.join(',');
         }
         return CommonService.main(body);
     },
@@ -202,3 +206,15 @@ export const getLeadProductsDomain = (body: IRequestBody): IActionCall => ({
 });
 
 export const resetGetLeadProductsDomain = (): IActionCall => ({type: actionTypes.GET_LEAD_PRODUCTS_DOMAIN_RESET});
+
+export const getLeadTagsDomain = (body: IRequestBody): IActionCall => ({
+    callAPI: () => CommonService.main(body),
+    types: {
+        loading: actionTypes.GET_LEAD_TAGS_DOMAIN,
+        success: actionTypes.GET_LEAD_TAGS_DOMAIN_SUCCESS,
+        failure: actionTypes.GET_LEAD_TAGS_DOMAIN_FAILURE,
+    },
+    type: null,
+});
+
+export const resetGetLeadTagsDomain = (): IActionCall => ({type: actionTypes.GET_LEAD_TAGS_DOMAIN_RESET});

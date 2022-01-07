@@ -5,7 +5,7 @@ import { setUserType, emitEvent, cleanAlerts } from 'store/inbox/actions';
 import { useDispatch } from 'react-redux';
 import InboxPanel from 'components/inbox/InboxPanel'
 import { getMultiCollection, resetAllMain } from 'store/main/actions';
-import { getMessageTemplateSel, getValuesFromDomain, getCommChannelLst, getListUsers, getClassificationLevel1, getListQuickReply } from 'common/helpers';
+import { getMessageTemplateLst, getValuesFromDomainLight, getCommChannelLst, getListUsers, getClassificationLevel1, getListQuickReply } from 'common/helpers';
 
 const MessageInbox: React.FC = () => {
     const dispatch = useDispatch();
@@ -52,14 +52,16 @@ const MessageInbox: React.FC = () => {
     useEffect(() => {
         dispatch(setUserType("AGENT"));
         dispatch(getMultiCollection([
-            getValuesFromDomain("MOTIVOCIERRE"),
+            getValuesFromDomainLight("MOTIVOCIERRE"),
             getListUsers(),
             getClassificationLevel1("TIPIFICACION"),
-            getValuesFromDomain("GRUPOS"),
+            getValuesFromDomainLight("GRUPOS"),
             getListQuickReply(),
-            getMessageTemplateSel(0),
+            getMessageTemplateLst(),
             getCommChannelLst(),
-            getValuesFromDomain("OPORTUNIDADPRODUCTOS"),
+            getValuesFromDomainLight("OPORTUNIDADPRODUCTOS"),
+            getValuesFromDomainLight("MOTIVOSUSPENSION"),
+            getValuesFromDomainLight("OPORTUNIDADETIQUETAS"),
         ]))
         setinitial(false)
         return () => {
