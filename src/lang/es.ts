@@ -1792,12 +1792,9 @@ const translation: LangKeys = {
     pendingpayment: 'Pendiente a Pago',
     emissorinvoice: 'FACTURA',
     emissorticket: 'BOLETA',
-<<<<<<< HEAD
     regulatepayment: 'Regularizar Pago',
-=======
     notedescription: 'Descripción de la nota',
     activitydescription: 'Descripción de la actividad',
->>>>>>> b131fd351b171131a2566be2890ada786ce4f5a8
 };
 
 const esResource: ResourceLanguage = {
