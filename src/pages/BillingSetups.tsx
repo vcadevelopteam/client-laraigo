@@ -596,6 +596,32 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             dispatch(showBackdrop(false));
             if (mainResult.mainData.data) {
                 if (mainResult.mainData.data[0]) {
+                    setValue("ruc", mainResult.mainData.data[0].ruc);
+                    setValue("businessname", mainResult.mainData.data[0].businessname);
+                    setValue("tradename", mainResult.mainData.data[0].tradename);
+                    setValue("fiscaladdress", mainResult.mainData.data[0].fiscaladdress);
+                    setValue("ubigeo", mainResult.mainData.data[0].ubigeo);
+                    setValue("country", mainResult.mainData.data[0].country);
+                    setValue("emittertype", mainResult.mainData.data[0].emittertype);
+                    setValue("currency", mainResult.mainData.data[0].currency);
+                    setValue("invoiceserie", mainResult.mainData.data[0].invoiceserie);
+                    setValue("invoicecorrelative", mainResult.mainData.data[0].invoicecorrelative);
+                    setValue("annexcode", mainResult.mainData.data[0].annexcode);
+                    setValue("igv", mainResult.mainData.data[0].igv);
+                    setValue("printingformat", mainResult.mainData.data[0].printingformat);
+                    setValue("xmlversion", mainResult.mainData.data[0].xmlversion);
+                    setValue("ublversion", mainResult.mainData.data[0].ublversion);
+                    setValue("returnpdf", mainResult.mainData.data[0].returnpdf);
+                    setValue("returnxmlsunat", mainResult.mainData.data[0].returnxmlsunat);
+                    setValue("returnxml", mainResult.mainData.data[0].returnxml);
+                    setValue("invoiceprovider", mainResult.mainData.data[0].invoiceprovider);
+                    setValue("sunaturl", mainResult.mainData.data[0].sunaturl);
+                    setValue("token", mainResult.mainData.data[0].token);
+                    setValue("sunatusername", mainResult.mainData.data[0].sunatusername);
+                    setValue("paymentprovider", mainResult.mainData.data[0].paymentprovider);
+                    setValue("publickey", mainResult.mainData.data[0].publickey);
+                    setValue("privatekey", mainResult.mainData.data[0].privatekey);
+
                     setFields({
                         "ruc": mainResult.mainData.data[0].ruc,
                         "businessname": mainResult.mainData.data[0].businessname,
@@ -675,7 +701,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         }
     }, [executeResult, waitSave])
 
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             ruc: fields.ruc,
             businessname: fields.businessname,
@@ -767,14 +793,14 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         <FieldEdit
                             label={t(langKeys.billingruc)}
                             className="col-6"
-                            valueDefault={fields.ruc || ''}
+                            valueDefault={getValues('ruc')}
                             onChange={(value) => setValue('ruc', value)}
                             error={errors?.ruc?.message}
                         />
                         <FieldEdit
                             label={t(langKeys.billingcompanyname)}
                             className="col-6"
-                            valueDefault={fields.businessname || ''}
+                            valueDefault={getValues('businessname')}
                             onChange={(value) => setValue('businessname', value)}
                             error={errors?.businessname?.message}
                         /> 
@@ -783,14 +809,14 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         <FieldEdit
                             label={t(langKeys.billingcommercialname)}
                             className="col-6"
-                            valueDefault={fields.tradename || ''}
+                            valueDefault={getValues('tradename')}
                             onChange={(value) => setValue('tradename', value)}
                             error={errors?.tradename?.message}
                         />
                         <FieldEdit
                             label={t(langKeys.billingfiscaladdress)}
                             className="col-6"
-                            valueDefault={fields.fiscaladdress || ''}
+                            valueDefault={getValues('fiscaladdress')}
                             onChange={(value) => setValue('fiscaladdress', value)}
                             error={errors?.fiscaladdress?.message}
                         /> 
@@ -799,14 +825,14 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         <FieldEdit
                             label={t(langKeys.billingubigeocode)}
                             className="col-6"
-                            valueDefault={fields.ubigeo || ''}
+                            valueDefault={getValues('ubigeo')}
                             onChange={(value) => setValue('ubigeo', value)}
                             error={errors?.ubigeo?.message}
                         /> 
                         <FieldSelect
                             label={t(langKeys.billingcountry)}
                             className="col-6"
-                            valueDefault={fields.country || ''}
+                            valueDefault={getValues('country')}
                             onChange={(value) => setValue('country', value.code)}
                             error={errors?.country?.message}
                             data={dataPlan}
@@ -823,7 +849,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             label={t(langKeys.billingemittertype)}
                             loading={domainDocument.loading}
                             className="col-6"
-                            valueDefault={fields.emittertype || ''}
+                            valueDefault={getValues('emittertype')}
                             onChange={(value) => setValue('emittertype', value.domainvalue)}
                             error={errors?.emittertype?.message}
                             data={domainDocument.data}
@@ -836,7 +862,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             label={t(langKeys.billingcurrency)}
                             loading={domainCurrency.loading}
                             className="col-6"
-                            valueDefault={fields.currency || ''}
+                            valueDefault={getValues('currency')}
                             onChange={(value) => setValue('currency', value.domainvalue)}
                             error={errors?.currency?.message}
                             data={domainCurrency.data}
@@ -850,14 +876,14 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         <FieldEdit
                             label={t(langKeys.billingserial)}
                             className="col-6"
-                            valueDefault={fields.invoiceserie || ''}
+                            valueDefault={getValues('invoiceserie')}
                             onChange={(value) => setValue('invoiceserie', value)}
                             error={errors?.invoiceserie?.message}
                         /> 
                         <FieldEdit
                             label={t(langKeys.billingcorrelative)}
                             className="col-6"
-                            valueDefault={fields.invoicecorrelative || 0}
+                            valueDefault={getValues('invoicecorrelative')}
                             onChange={(value) => setValue('invoicecorrelative', value)}
                             error={errors?.invoicecorrelative?.message}
                             type='number'
@@ -867,14 +893,14 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         <FieldEdit
                             label={t(langKeys.billingannexcode)}
                             className="col-6"
-                            valueDefault={fields.annexcode || ''}
+                            valueDefault={getValues('annexcode')}
                             onChange={(value) => setValue('annexcode', value)}
                             error={errors?.annexcode?.message}
                         />
                         <FieldEdit
                             label={t(langKeys.billingtax)}
                             className="col-6"
-                            valueDefault={fields.igv || 0}
+                            valueDefault={getValues('igv')}
                             onChange={(value) => setValue('igv', value)}
                             error={errors?.igv?.message}
                             type='number'
@@ -885,7 +911,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             label={t(langKeys.billingprintingformat)}
                             loading={domainPrinting.loading}
                             className="col-6"
-                            valueDefault={fields.printingformat || ''}
+                            valueDefault={getValues('printingformat')}
                             onChange={(value) => setValue('printingformat', value.domainvalue)}
                             error={errors?.printingformat?.message}
                             data={domainPrinting.data}
@@ -897,7 +923,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         <FieldEdit
                             label={t(langKeys.billingxmlversion)}
                             className="col-6"
-                            valueDefault={fields.xmlversion || ''}
+                            valueDefault={getValues('xmlversion')}
                             onChange={(value) => setValue('xmlversion', value)}
                             error={errors?.xmlversion?.message}
                         />
@@ -906,14 +932,14 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         <FieldEdit
                             label={t(langKeys.billingublversion)}
                             className="col-6"
-                            valueDefault={fields.ublversion || ''}
+                            valueDefault={getValues('ublversion')}
                             onChange={(value) => setValue('ublversion', value)}
                             error={errors?.ublversion?.message}
                         />
                         <TemplateSwitch
                             label={t(langKeys.billingreturnpdf)}
                             className="col-6"
-                            valueDefault={fields.returnpdf || false}
+                            valueDefault={getValues('returnpdf')}
                             onChange={(value) => setValue('returnpdf', value)}
                         />
                     </div>
@@ -921,13 +947,13 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         <TemplateSwitch
                             label={t(langKeys.billingreturncsv)}
                             className="col-6"
-                            valueDefault={fields.returnxmlsunat || false}
+                            valueDefault={getValues('returnxmlsunat')}
                             onChange={(value) => setValue('returnxmlsunat', value)}
                         />
                         <TemplateSwitch
                             label={t(langKeys.billingreturnxml)}
                             className="col-6"
-                            valueDefault={fields.returnxml || false}
+                            valueDefault={getValues('returnxml')}
                             onChange={(value) => setValue('returnxml', value)}
                         /> 
                     </div>
@@ -940,7 +966,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             label={t(langKeys.billinginvoiceprovider)}
                             loading={domainInvoiceProvider.loading}
                             className="col-6"
-                            valueDefault={fields.invoiceprovider || ''}
+                            valueDefault={getValues('invoiceprovider')}
                             onChange={(value) => setValue('invoiceprovider', value.domainvalue)}
                             error={errors?.invoiceprovider?.message}
                             data={domainInvoiceProvider.data}
@@ -952,7 +978,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         <FieldEdit
                             label={t(langKeys.billingapiendpoint)}
                             className="col-6"
-                            valueDefault={fields.sunaturl || ''}
+                            valueDefault={getValues('sunaturl')}
                             onChange={(value) => setValue('sunaturl', value)}
                             error={errors?.sunaturl?.message}
                         />
@@ -961,14 +987,14 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         <FieldEdit
                             label={t(langKeys.billingtoken)}
                             className="col-6"
-                            valueDefault={fields.token || ''}
+                            valueDefault={getValues('token')}
                             onChange={(value) => setValue('token', value)}
                             error={errors?.token?.message}
                         />
                         <FieldEdit
                             label={t(langKeys.billingusername)}
                             className="col-6"
-                            valueDefault={fields.sunatusername || ''}
+                            valueDefault={getValues('sunatusername')}
                             onChange={(value) => setValue('sunatusername', value)}
                             error={errors?.sunatusername?.message}
                         />
@@ -982,7 +1008,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         label={t(langKeys.billingpaymentprovider)}
                             loading={domainPaymentProvider.loading}
                             className="col-6"
-                            valueDefault={fields.paymentprovider || ''}
+                            valueDefault={getValues('paymentprovider')}
                             onChange={(value) => setValue('paymentprovider', value.domainvalue)}
                             error={errors?.paymentprovider?.message}
                             data={domainPaymentProvider.data}
@@ -994,7 +1020,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         <FieldEdit
                             label={t(langKeys.billingpublickey)}
                             className="col-6"
-                            valueDefault={fields.publickey || ''}
+                            valueDefault={getValues('publickey')}
                             onChange={(value) => setValue('publickey', value)}
                             error={errors?.publickey?.message}
                         />
@@ -1003,7 +1029,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         <FieldEdit
                             label={t(langKeys.billingprivatekey)}
                             className="col-6"
-                            valueDefault={fields.privatekey || ''}
+                            valueDefault={getValues('privatekey')}
                             onChange={(value) => setValue('privatekey', value)}
                             error={errors?.privatekey?.message}
                         />
