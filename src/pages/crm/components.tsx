@@ -311,7 +311,7 @@ interface LeadColumnProps extends Omit<BoxProps, 'title'> {
     titleOnChange?: (value: string) => void;
     onDelete?: (value: string) => void;
     onAddCard?: () => void;
-    provided: DraggableProvided;
+    provided?: DraggableProvided;
     columnid: string;
     total_revenue: number;
 }
@@ -352,6 +352,7 @@ const useLeadColumnStyles = makeStyles(theme => ({
     },
     currency: {
         marginBottom: '0.63em',
+        fontWeight: 'bold',
     },
 }));
 
@@ -399,13 +400,13 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
     return (
         <Box {...boxProps}>
             <div className={classes.root}>
-                <div className={classes.header} {...provided.dragHandleProps}>
+                <div className={classes.header} {...(provided?.dragHandleProps || {})}>
                     <InputTitle
                         defaultValue={title}
                         edit={edit.current}
                         onBlur={handleOnBlur}
                     />
-                    <IconButton size="small" aria-describedby={id} onClick={handleClick}>
+                    {/* <IconButton size="small" aria-describedby={id} onClick={handleClick}>
                         <MoreVertIcon style={{ height: 22, width: 22 }} />
                     </IconButton>
                     <Popover
@@ -431,20 +432,10 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
                         >
                             <Trans i18nKey={langKeys.edit} />
                         </Button>
-                        {/* <Button
-                            variant="text"
-                            color="inherit"
-                            fullWidth
-                            type="button"
-                            onClick={handleDelete}
-                            style={{ fontWeight: "normal", textTransform: "uppercase" }}
-                        >
-                            <Trans i18nKey={langKeys.delete} />
-                        </Button> */}
                     </Popover>
                     <IconButton size="small" onClick={onAddCard}>
                         <Add style={{ height: 22, width: 22 }} />
-                    </IconButton>
+                    </IconButton> */}
                 </div>
                 <span className={classes.currency}>S/ {total_revenue?.toLocaleString('en-US') || 0}</span>
                 {children}
