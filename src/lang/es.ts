@@ -1248,15 +1248,15 @@ const translation: LangKeys = {
     report_userproductivity_totalclosedtickets: 'N° Tickets cerrados',
     report_userproductivity_holdingtickets: 'N° Tickets en holding',
     report_userproductivity_asesortickets: 'N° Tickets en asesor',
-    report_userproductivity_usersconnected: 'Asesores conectados al',
+    report_userproductivity_usersconnected: 'Asesores conectados',
 
     report_userproductivity_userid: 'Id',
-    report_userproductivity_user: 'Usuario',
+    report_userproductivity_user: 'Usuario del asesor',
     report_userproductivity_fullname: 'Nombre del asesor',
-    report_userproductivity_hourfirstlogin: 'Primer logueo',
+    report_userproductivity_hourfirstlogin: 'Hora de primer logueo',
     report_userproductivity_totaltickets: 'Cantidad de tickets',
     report_userproductivity_closedtickets: 'Cerrados',
-    report_userproductivity_asignedtickets: 'Asignados',
+    report_userproductivity_asignedtickets: 'En atención',
     report_userproductivity_suspendedtickets: 'Suspendidos',
     report_userproductivity_avgfirstreplytime: 'TME promedio',
     report_userproductivity_maxfirstreplytime: 'TME máximo',
@@ -1280,15 +1280,15 @@ const translation: LangKeys = {
     report_userproductivity_cardavgmin: 'Promedio más bajo',
     report_userproductivity_cardminmin: 'Más bajo',
 
-    report_userproductivity_cardavgmax_tme: 'TME promedio más alto',
-    report_userproductivity_cardmaxmax_tme: 'TME más alto',
-    report_userproductivity_cardavgmin_tme: 'TME promedio más bajo',
-    report_userproductivity_cardminmin_tme: 'TME más bajo',
+    report_userproductivity_cardavgmax_tme: 'Asesor con TME más alto',
+    report_userproductivity_cardmaxmax_tme: 'Ticket con TME más alto',
+    report_userproductivity_cardavgmin_tme: 'Asesor con TME más bajo',
+    report_userproductivity_cardminmin_tme: 'Ticket con TME más bajo',
 
-    report_userproductivity_cardavgmax_tmo: 'TMO promedio más alto',
-    report_userproductivity_cardmaxmax_tmo: 'TMO más alto',
-    report_userproductivity_cardavgmin_tmo: 'TMO promedio más bajo',
-    report_userproductivity_cardminmin_tmo: 'TMO más bajo',
+    report_userproductivity_cardavgmax_tmo: 'Asesor con TMO más alto',
+    report_userproductivity_cardmaxmax_tmo: 'Ticket con TMO más alto',
+    report_userproductivity_cardavgmin_tmo: 'Asesor con TMO más bajo',
+    report_userproductivity_cardminmin_tmo: 'Ticket con TMO más bajo',
 
     report_userproductivity_cardavgmax_tmoagent: 'TMO asesor promedio más alto',
     report_userproductivity_cardmaxmax_tmoagent: 'TMO asesor más alto',
@@ -1781,8 +1781,6 @@ const translation: LangKeys = {
     supportplandetail: "Detalle de Plan de Soporte",
     costcommentary: "Lista de precios vigente a partir de febrero del 2021",
 
-    notedescription: 'Descripción de la nota',
-    activitydescription: 'Descripción de la actividad',
     confirmation_calculate: '¿Estas seguro que quieres calcular la data del mes actual?',
     successful_calculate: 'Se calculó satisfactoriamente',
     gotopay: 'Ir a Pagos',
@@ -1793,6 +1791,8 @@ const translation: LangKeys = {
     pendingpayment: 'Pendiente a Pago',
     emissorinvoice: 'FACTURA',
     emissorticket: 'BOLETA',
+    notedescription: 'Descripción de la nota',
+    activitydescription: 'Descripción de la actividad',
 };
 
 const esResource: ResourceLanguage = {
