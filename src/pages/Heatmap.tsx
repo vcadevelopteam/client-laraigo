@@ -155,7 +155,7 @@ const MainHeatMap: React.FC = () => {
                     setModalTitle(`Tickets ${t(langKeys.day)} ${day} ${hournum}`)
                     setModalColumns([
                         { Header: t(langKeys.ticket), accessor: 'ticketnum' },
-                        { Header: t(langKeys.tme), accessor: 'useraveragereplytime' },
+                        { Header: t(langKeys.tmr), accessor: 'useraveragereplytime' },
                         { Header: t(langKeys.agent), accessor: 'asesor' },
                     ])
                     break;
@@ -163,7 +163,7 @@ const MainHeatMap: React.FC = () => {
                     setModalTitle(`Tickets ${t(langKeys.day)} ${day} ${hournum}`)
                     setModalColumns([
                         { Header: t(langKeys.ticket), accessor: 'ticketnum' },
-                        { Header: t(langKeys.tme), accessor: 'personaveragereplytime' },
+                        { Header: t(langKeys.tmr_client), accessor: 'personaveragereplytime' },
                     ])
                     break;
                 default:
@@ -732,7 +732,7 @@ const MainHeatMap: React.FC = () => {
                     return (
                         <div
                             style={{background: `#${color}`, textAlign: "center", color:"black"}}
-                            onClick={() => fetchDetail('1.2', column, row)}
+                            onClick={() => fetchDetail('1.4', column, row)}
                         >
                             {`${hh}${mm}${ss}s`}
                         </div>
@@ -874,7 +874,7 @@ const MainHeatMap: React.FC = () => {
                     return (
                         <div
                             style={{background: `#${color}`, textAlign: "center", color:"black"}}
-                            onClick={() => fetchDetail('1.2', column, row)}
+                            onClick={() => fetchDetail('1.5', column, row)}
                         >
                             {`${hh}${mm}${ss}s`}
                         </div>
