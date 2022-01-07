@@ -747,11 +747,12 @@ const CRM: FC = () => {
             <Button
                 variant="contained"
                 color="primary"
-                startIcon={<AddIcon style={{ color: 'white' }} />}
-                onClick={goToAddLead}
                 disabled={mainMulti.loading}
-            >
-                <Trans i18nKey={langKeys.new} />
+                startIcon={<AddIcon color="secondary" />}
+                onClick={goToAddLead}
+                style={{ backgroundColor: "#55BD84" }}
+              >
+                <Trans i18nKey={langKeys.register} />
             </Button>
             <Button
                 variant="contained"
@@ -781,7 +782,7 @@ const CRM: FC = () => {
                       //       ref={provided.innerRef}
                       //     >
                               <DraggableLeadColumn 
-                                title={column.description} 
+                                title={t(column.description.toLowerCase())} 
                                 key={index+1} 
                                 snapshot={null} 
                                 // provided={provided} 
