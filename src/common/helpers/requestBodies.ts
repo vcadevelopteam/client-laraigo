@@ -2249,15 +2249,15 @@ export const getBusinessDocType = () => ({
     parameters: {},
 });
 
-export const selInvoice = (year: number, month: string, invoiceid: number = 0) => ({
+export const selInvoice = ({ year, month, invoiceid }: Dictionary) => ({
     method: "UFN_INVOICE_SEL",
     key: "UFN_INVOICE_SEL",
-    parameters: { year, month, invoiceid },
+    parameters: { year, month, invoiceid: invoiceid ? invoiceid : 0 },
 });
-export const selInvoiceClient = (year: number, month: string, invoiceid: number = 0) => ({
+export const selInvoiceClient = ({ year, month, invoiceid }: Dictionary) => ({
     method: "UFN_INVOICE_SELCLIENT",
     key: "UFN_INVOICE_SELCLIENT",
-    parameters: { year, month, invoiceid },
+    parameters: { year, month, invoiceid: invoiceid ? invoiceid : 0 },
 });
 export const selInvoiceChangePaymentStatus = ({ invoiceid, paymentnote, paymentfile }: Dictionary) => ({
     method: "UFN_INVOICE_CHANGEPAYMENTSTATUS",
@@ -2365,6 +2365,7 @@ export const billingNotificationIns = ({ year, month, countrycode, id, vcacomiss
     parameters: { year, month, countrycode, id, vcacomission, c250000, c750000, c2000000, c3000000, c4000000, c5000000, c10000000, c25000000, description, status, type, operation }
 })
 
+<<<<<<< HEAD
 /**bloquear o desbloquear personas de forma masiva */
 export const personcommunicationchannelUpdateLockedArrayIns = (table: {personid: number, personcommunicationchannel: string, locked: boolean}[]) => ({
     method: "UFN_PERSONCOMMUNICATIONCHANNEL_UPDATE_LOCKED_ARRAY",
@@ -2390,5 +2391,12 @@ export const changeStatus = ({ conversationid, status, obs, motive }: {
         status,
         obs,
         type: motive,
+=======
+export const getBillingPeriodCalcRefreshAll = (exchangerate: number): IRequestBody => ({
+    method: "UFN_BILLINGPERIOD_CALC_REFRESHALL",
+    key: "UFN_BILLINGPERIOD_CALC_REFRESHALL",
+    parameters: {
+        exchangerate
+>>>>>>> origin/dev-billing
     },
 });

@@ -152,7 +152,7 @@ const translation: LangKeys = {
     email: 'Email',
     with: 'with',
     address: 'Address',
-    periodreport: 'Period report',    
+    periodreport: 'Period Report',    
     totalize: 'Totalize',
     client: "Client",
     rate: "Rate",
@@ -1791,6 +1791,15 @@ const translation: LangKeys = {
 
     notedescription: 'Note description',
     activitydescription: 'Activity description',
+    successful_calculate: 'Calculated successfully',
+    gotopay: 'Go to Payment',
+    payments: 'Payments',
+    gotoreport: 'Get Report',
+    xmldocument: 'Get XML',
+    cdrdocument: 'Get CDR',
+    pendingpayment: 'Pending Payment',
+    emissorinvoice: 'INVOICE',
+    emissorticket: 'TICKET',
 };
 
 const enResource: ResourceLanguage = {
