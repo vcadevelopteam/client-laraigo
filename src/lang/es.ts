@@ -1612,7 +1612,7 @@ const translation: LangKeys = {
     lost: 'Perdido',
     billbyorg: 'Facturación por organización',
 
-    bussinessname: 'Razón Social',
+    businessname: 'Razón Social',
     fiscaladdress: 'Dirección fiscal',
     sunatcountry: 'Pais',
     contactemail: 'Correo del contacto',

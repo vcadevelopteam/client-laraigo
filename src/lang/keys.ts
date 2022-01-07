@@ -1510,7 +1510,7 @@ export const langKeys = {
     invoice_generation: 'invoice_generation',
 
 
-    bussinessname: 'bussinessname',
+    businessname: 'businessname',
     fiscaladdress: 'fiscaladdress',
     sunatcountry: 'sunatcountry',
     contactemail: 'contactemail',

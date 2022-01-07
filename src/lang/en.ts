@@ -1669,7 +1669,7 @@ const translation: LangKeys = {
     won: 'Won',
     lost: 'Lost',
 
-    bussinessname: 'Bussiness name',
+    businessname: 'Bussiness name',
     fiscaladdress: 'Fiscal address',
     tradename: "Trade name",
     sunatcountry: 'Country',
