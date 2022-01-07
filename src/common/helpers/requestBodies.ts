@@ -2249,15 +2249,15 @@ export const getBusinessDocType = () => ({
     parameters: {},
 });
 
-export const selInvoice = (year: number, month: string, invoiceid: number = 0) => ({
+export const selInvoice = ({ year, month, invoiceid }: Dictionary) => ({
     method: "UFN_INVOICE_SEL",
     key: "UFN_INVOICE_SEL",
-    parameters: { year, month, invoiceid },
+    parameters: { year, month, invoiceid: invoiceid ? invoiceid : 0 },
 });
-export const selInvoiceClient = (year: number, month: string, invoiceid: number = 0) => ({
+export const selInvoiceClient = ({ year, month, invoiceid }: Dictionary) => ({
     method: "UFN_INVOICE_SELCLIENT",
     key: "UFN_INVOICE_SELCLIENT",
-    parameters: { year, month, invoiceid },
+    parameters: { year, month, invoiceid: invoiceid ? invoiceid : 0 },
 });
 export const selInvoiceChangePaymentStatus = ({ invoiceid, paymentnote, paymentfile }: Dictionary) => ({
     method: "UFN_INVOICE_CHANGEPAYMENTSTATUS",
@@ -2371,11 +2371,6 @@ export const personcommunicationchannelUpdateLockedArrayIns = (table: {personid:
     key: "UFN_PERSONCOMMUNICATIONCHANNEL_UPDATE_LOCKED_ARRAY",
     parameters: { table: JSON.stringify(table) },
 });
-export const getBillingPeriodCalcRefreshAll = () => ({
-    method: "UFN_BILLINGPERIOD_CALC_REFRESHALL",
-    key: "UFN_BILLINGPERIOD_CALC_REFRESHALL",
-    parameters: {},
-});
 
 export const changeStatus = ({ conversationid, status, obs, motive }: {
     conversationid: number;
@@ -2390,5 +2385,12 @@ export const changeStatus = ({ conversationid, status, obs, motive }: {
         status,
         obs,
         type: motive,
+    },
+});
+export const getBillingPeriodCalcRefreshAll = (exchangerate: number): IRequestBody => ({
+    method: "UFN_BILLINGPERIOD_CALC_REFRESHALL",
+    key: "UFN_BILLINGPERIOD_CALC_REFRESHALL",
+    parameters: {
+        exchangerate
     },
 });
