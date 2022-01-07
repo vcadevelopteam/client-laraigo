@@ -147,3 +147,10 @@ export { ReactComponent as LaraigoBlockedIcon } from './Laraigo-emojis_blocked.s
 export { ReactComponent as CRMIcon } from './crm.svg';
 export { ReactComponent as LeadIcon } from './Laraigo-emojis_blocked.svg';
 export { ReactComponent as HistoryIcon } from './historyStatus.svg';
+
+export { ReactComponent as DocIcon } from './docIcon.svg';
+export { ReactComponent as FileIcon1 } from './fileIcon.svg';
+export { ReactComponent as PdfIcon } from './pdfIcon.svg';
+export { ReactComponent as PptIcon } from './pptIcon.svg';
+export { ReactComponent as TxtIcon } from './txtIcon.svg';
+export { ReactComponent as XlsIcon } from './xlsIcon.svg';

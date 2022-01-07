@@ -2,7 +2,7 @@
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { FieldEditMulti, FieldSelect, Title } from 'components';
+import { FieldEditMulti, FieldSelect, GetIcon, Title } from 'components';
 import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, getPersonExport, exportExcel, templateMaker, uploadExcel, insPersonBody, insPersonCommunicationChannel, array_trimmer, convertLocalDate, getColumnsSel, personcommunicationchannelUpdateLockedArrayIns } from 'common/helpers';
 import { Dictionary, IDomain, IObjectState, IPerson, IPersonChannel, IPersonCommunicationChannel, IPersonConversation, IPersonDomains, IPersonImport, IPersonReferrer, IFetchData } from "@types";
 import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, TextField, MenuItem, Paper, InputBase } from '@material-ui/core';
@@ -775,84 +775,65 @@ export const Person: FC = () => {
     return (
         <div style={{ height: '100%', width: 'inherit' }}>
             <Title><Trans i18nKey={langKeys.person} count={2} /></Title>
-            <Grid container direction="row" justifyContent="space-between" style={{ marginBottom: 12, marginTop: 4, gap: 8 }}>
-                <Grid item>
-                    <div style={{ display: 'flex', gap: 8 }}>
-                        <FieldMultiSelect
-                            onChange={(value) => setFilterChannelType(value.map((o: any) => o.type).join())}
-                            size="small"
-                            label={t(langKeys.channel)}
-                            style={{ maxWidth: 300, minWidth: 200 }}
-                            variant="outlined"
-                            loading={domains.loading}
-                            data={domains.value?.channels || []}
-                            optionValue="type"
-                            optionDesc="communicationchanneldesc"
-                            valueDefault={filterChannelsType}
-                        />
-                    </div>
-                </Grid>
-                <Grid item>
-                    <div style={{ display: 'flex', gap: 8 }}>
-                        <Button
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            disabled={personList.loading || Object.keys(selectedRows).length === 0}
-                            startIcon={<LockIcon color="secondary" />}
-                            onClick={() => handleLock("LOCK")}
-                        >
-                            <Trans i18nKey={langKeys.lock} />
-                        </Button>
-                        <Button
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            disabled={personList.loading || Object.keys(selectedRows).length === 0}
-                            startIcon={<LockOpenIcon color="secondary" />}
-                            onClick={() => handleLock("UNLOCK")}
-                        >
-                            <Trans i18nKey={langKeys.unlock} />
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            disabled={personList.loading || Object.keys(selectedRows).length === 0}
-                            startIcon={<WhatsappIcon width={24} style={{ fill: '#FFF' }} />}
-                            onClick={() => {
-                                setOpenDialogTemplate(true);
-                                setTypeTemplate("HSM");
-                            }}
-                        >
-                            <Trans i18nKey={langKeys.send_hsm} />
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            disabled={personList.loading || Object.keys(selectedRows).length === 0}
-                            startIcon={<MailIcon width={24} style={{ fill: '#FFF' }} />}
-                            onClick={() => {
-                                setOpenDialogTemplate(true);
-                                setTypeTemplate("MAIL");
-                            }}
-                        >
-                            <Trans i18nKey={langKeys.send_mail} />
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            disabled={personList.loading || Object.keys(selectedRows).length === 0}
-                            startIcon={<SmsIcon width={24} style={{ fill: '#FFF' }} />}
-                            onClick={() => {
-                                setOpenDialogTemplate(true);
-                                setTypeTemplate("SMS");
-                            }}
-                        >
-                            <Trans i18nKey={langKeys.send_sms} />
-                        </Button>
-                    </div>
-                </Grid>
-            </Grid>
+            <div style={{ display: 'flex', gap: 8, flexDirection: 'row', marginBottom: 12, marginTop: 4}}>
+                <div style={{ flexGrow: 1 }} />
+                <Button
+                    variant="contained"
+                    type="button"
+                    color="primary"
+                    disabled={personList.loading || Object.keys(selectedRows).length === 0}
+                    startIcon={<LockIcon color="secondary" />}
+                    onClick={() => handleLock("LOCK")}
+                >
+                    <Trans i18nKey={langKeys.lock} />
+                </Button>
+                <Button
+                    variant="contained"
+                    type="button"
+                    color="primary"
+                    disabled={personList.loading || Object.keys(selectedRows).length === 0}
+                    startIcon={<LockOpenIcon color="secondary" />}
+                    onClick={() => handleLock("UNLOCK")}
+                >
+                    <Trans i18nKey={langKeys.unlock} />
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={personList.loading || Object.keys(selectedRows).length === 0}
+                    startIcon={<WhatsappIcon width={24} style={{ fill: '#FFF' }} />}
+                    onClick={() => {
+                        setOpenDialogTemplate(true);
+                        setTypeTemplate("HSM");
+                    }}
+                >
+                    <Trans i18nKey={langKeys.send_hsm} />
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={personList.loading || Object.keys(selectedRows).length === 0}
+                    startIcon={<MailIcon width={24} style={{ fill: '#FFF' }} />}
+                    onClick={() => {
+                        setOpenDialogTemplate(true);
+                        setTypeTemplate("MAIL");
+                    }}
+                >
+                    <Trans i18nKey={langKeys.send_mail} />
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={personList.loading || Object.keys(selectedRows).length === 0}
+                    startIcon={<SmsIcon width={24} style={{ fill: '#FFF' }} />}
+                    onClick={() => {
+                        setOpenDialogTemplate(true);
+                        setTypeTemplate("SMS");
+                    }}
+                >
+                    <Trans i18nKey={langKeys.send_sms} />
+                </Button>
+            </div>
             <TablePaginated
                 columns={columns}
                 data={personList.data}
@@ -895,7 +876,20 @@ export const Person: FC = () => {
                 initialStartDate={params.startDate}
                 initialFilters={params.filters}
                 initialPageIndex={params.page}
-                autotrigger
+                FiltersElement={useMemo(() => (
+                    <FieldMultiSelect
+                        onChange={(value) => setFilterChannelType(value.map((o: any) => o.type).join())}
+                        size="small"
+                        label={t(langKeys.channel)}
+                        style={{ maxWidth: 300, minWidth: 200 }}
+                        variant="outlined"
+                        loading={domains.loading}
+                        data={domains.value?.channels || []}
+                        optionValue="type"
+                        optionDesc="communicationchanneldesc"
+                        valueDefault={filterChannelsType}
+                    />
+                ), [filterChannelsType, domains, t])}
             />
             <DialogSendTemplate
                 openModal={openDialogTemplate}
@@ -1038,7 +1032,7 @@ const usePersonDetailStyles = makeStyles(theme => ({
         color: theme.palette.text.primary,
         maxWidth: 343,
         width: 343,
-        minWidth: 180,
+        minWidth: 343,
         padding: theme.spacing(2),
         display: 'flex',
         flexDirection: 'column',
@@ -1383,14 +1377,15 @@ export const PersonDetail: FC = () => {
                         <Property
                             icon={<EMailInboxIcon />}
                             title={<Trans i18nKey={langKeys.email} />}
-                            subtitle={(
-                                <TextField
-                                    fullWidth
-                                    placeholder={t(langKeys.email)}
-                                    defaultValue={person.email}
-                                    onChange={e => setValue('email', e.target.value)}
-                                />
-                            )}
+                            // subtitle={(
+                            //     <TextField
+                            //         fullWidth
+                            //         placeholder={t(langKeys.email)}
+                            //         defaultValue={person.email}
+                            //         onChange={e => setValue('email', e.target.value)}
+                            //     />
+                            // )}
+                            subtitle={person.email}
                             mt={1}
                             mb={1} />
                         <Property
@@ -1948,30 +1943,30 @@ interface ChannelItemProps {
     channel: IPersonChannel;
 }
 
-const nameschannel: { [x: string]: { label: string, icon: React.ReactNode } } = {
-    "WHAT": { label: "WHATSAPP", icon: <WhatsappIcon width={18} style={{ fill: 'black' }} /> },
-    "WHAD": { label: "WHATSAPP", icon: <WhatsappIcon width={18} style={{ fill: 'black' }} /> },
-    "WHAP": { label: "WHATSAPP", icon: <WhatsappIcon width={18} style={{ fill: 'black' }} /> },
-    "WHAC": { label: "WHATSAPP", icon: <WhatsappIcon width={18} style={{ fill: 'black' }} /> },
-    "FBMS": { label: "FACEBOOK MESSENGER", icon: <FacebookMessengerIcon width={18} style={{ fill: 'black' }} /> },
-    "FBDM": { label: "FACEBOOK MESSENGER", icon: <FacebookMessengerIcon width={18} style={{ fill: 'black' }} /> },
-    "FBWA": { label: "FACEBOOK MURO", icon: <FacebookWallIcon width={18} style={{ fill: 'black' }} /> },
-    "WEBM": { label: "WEB MESSENGER", icon: <WebMessengerIcon width={18} style={{ fill: 'black' }} /> },
-    "TELE": { label: "TELEGRAM", icon: <TelegramIcon width={18} style={{ fill: 'black' }} /> },
-    "INST": { label: "INSTAGRAM", icon: <InstagramIcon width={18} style={{ fill: 'black' }} /> },
-    "INMS": { label: "INSTAGRAM", icon: <InstagramIcon width={18} style={{ fill: 'black' }} /> },
-    "INDM": { label: "INSTAGRAM", icon: <InstagramIcon width={18} style={{ fill: 'black' }} /> },
-    "ANDR": { label: "ANDROID", icon: <AndroidIcon width={18} style={{ fill: 'black' }} /> },
-    "APPL": { label: "IOS", icon: <AppleIcon width={18} style={{ fill: 'black' }} /> },
-    "CHATZ": { label: "WEB MESSENGER", icon: <WebMessengerIcon width={18} style={{ fill: 'black' }} /> },
-    "CHAZ": { label: "WEB MESSENGER", icon: <WebMessengerIcon width={18} style={{ fill: 'black' }} /> },
-    "MAIL": { label: "EMAIL", icon: <EmailIcon width={18} style={{ fill: 'black' }} /> },
-    "YOUT": { label: "YOUTUBE", icon: <YoutubeIcon width={18} style={{ fill: 'black' }} /> },
-    "LINE": { label: "LINE", icon: <LineIcon width={18} style={{ fill: 'black' }} /> },
-    "SMS": { label: "SMS", icon: <SmsIcon width={18} style={{ fill: 'black' }} /> },
-    "SMSI": { label: "SMS", icon: <WhatsappIcon width={18} style={{ fill: 'black' }} /> },
-    "TWIT": { label: "TWITTER", icon: <TwitterIcon width={18} style={{ fill: 'black' }} /> },
-    "TWMS": { label: "TWITTER", icon: <TwitterIcon width={18} style={{ fill: 'black' }} /> },
+const nameschannel: { [x: string]: string } = {
+    "WHAT": "WHATSAPP",
+    "WHAD": "WHATSAPP",
+    "WHAP": "WHATSAPP",
+    "WHAC": "WHATSAPP",
+    "FBMS": "FACEBOOK MESSENGER",
+    "FBDM": "FACEBOOK MESSENGER",
+    "FBWA": "FACEBOOK MURO",
+    "WEBM": "WEB MESSENGER",
+    "TELE": "TELEGRAM",
+    "INST": "INSTAGRAM",
+    "INMS": "INSTAGRAM",
+    "INDM": "INSTAGRAM",
+    "ANDR": "ANDROID",
+    "APPL": "IOS",
+    "CHATZ": "WEB MESSENGER",
+    "CHAZ": "WEB MESSENGER",
+    "MAIL": "EMAIL",
+    "YOUT": "YOUTUBE",
+    "LINE": "LINE",
+    "SMS": "SMS",
+    "SMSI": "SMS",
+    "TWIT": "TWITTER",
+    "TWMS": "TWITTER",
 };
 
 const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
@@ -1991,8 +1986,8 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
                         title={<Trans i18nKey={langKeys.communicationchannel} />}
                         subtitle={(
                             <div className={classes.subtitle}>
-                                <span>{nameschannel[channel.type].label}</span>
-                                {nameschannel[channel.type].icon}
+                                <span>{nameschannel[channel.type]}</span>
+                                <GetIcon channelType={channel.type} color='black' />
                             </div>
                         )}
                         m={1}
@@ -2007,14 +2002,14 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
                 </Grid>
                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                     <Property
-                        title={<Trans i18nKey={langKeys.personIdentifier} />}
+                        title={<Trans i18nKey={langKeys.internalIdentifier} />}
                         subtitle={personIdentifier}
                         m={1}
                     />
                 </Grid>
                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                     <Property
-                        title={<Trans i18nKey={langKeys.internalIdentifier} />}
+                        title={<Trans i18nKey={langKeys.personIdentifier} />}
                         subtitle={channel.personcommunicationchannelowner}
                         m={1}
                     />
@@ -2378,7 +2373,7 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
                         subtitle={(
                             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '0.5em' }}>
                                 <span>{conversation.channeldesc}</span>
-                                {nameschannel[conversation.channeltype].icon}
+                                <GetIcon channelType={conversation.channeltype} color='black' />
                             </div>
                         )}
                     />

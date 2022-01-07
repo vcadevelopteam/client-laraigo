@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
 import { IInteraction, IGroupInteraction, Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
-import { BotIcon, AgentIcon, DownloadIcon2, FileIcon, InteractiveListIcon, SeenIcon } from 'icons';
+import { BotIcon, AgentIcon, DownloadIcon2, InteractiveListIcon, SeenIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon } from 'icons';
 import Fab from '@material-ui/core/Fab';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
@@ -294,7 +294,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             text = interactiontext.split("&&&")[0];
             json = interactiontext.split("&&&")[1]
         }
-        
+
         const listButtons: Dictionary[] = JSON.parse(`[${json}]`);
         return (
             <div className={clsx(classes.interactionText, {
@@ -355,13 +355,24 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             </div>
         )
     } else if (interactiontype === "file") {
+        const extension = (interactiontext.split("/").pop() || "").split(".").pop();
         return (
-            <div style={{ width: 200, backgroundColor: 'white', padding: '16px 13px', borderRadius: 4, position: 'relative' }}>
+            <div style={{ width: 200, backgroundColor: 'white', padding: '12px 13px', borderRadius: 4, position: 'relative' }}>
                 <a download rel="noreferrer" target="_blank" href={interactiontext} style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 4 }}>
-                    <FileIcon width="20" height="20" />
+                    {extension === "pdf" ? (
+                        <PdfIcon width="30" height="30" />
+                    ) : (extension === "doc" || extension === "docx") ? (
+                        <DocIcon width="30" height="30" />
+                    ) : (extension === "xls" || extension === "xlsx" || extension === "csv") ? (
+                        <XlsIcon width="30" height="30" />
+                    ) : (extension === "ppt" || extension === "pptx") ? (
+                        <PptIcon width="30" height="30" />
+                    ) : (extension === "text" || extension === "txt") ? (
+                        <TxtIcon width="30" height="30" />
+                    ) : <FileIcon width="30" height="30" />
+                    }
                     <div style={{ color: '#171717', textOverflow: 'ellipsis', overflowX: 'hidden', flex: 1, whiteSpace: 'nowrap' }}>{interactiontext.split("/").pop()}</div>
                     <DownloadIcon2 width="20" height="20" color="primary" />
-
                 </a>
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} background={true} time={onlyTime || ""} />
             </div>
@@ -392,8 +403,6 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
         )
     } else if (interactiontype === "reply-text") {
         const textres = interactiontext.split("###")[1];
-        // const typeref = interactiontext.split("###")[0].split("&&&")[0];
-        // const textref = interactiontext.split("###")[0].split("&&&")[1];
         return (
             <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
                 [classes.interactionTextAgent]: userType !== 'client',

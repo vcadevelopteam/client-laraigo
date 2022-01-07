@@ -20,6 +20,9 @@ export const langKeys = {
     report_plural: 'report_plural',
     next: "next",
     period: "period",
+    boticon: "boticon",
+    advisoricon: "advisoricon",
+    clienticon: "clienticon",
     interval: 'interval',
     tos: "tos",
     tmo: "tmo",
@@ -40,6 +43,7 @@ export const langKeys = {
     numberoflabels: "numberoflabels",
     new: 'new',
     qualified: 'qualified',
+    chatimages: "chatimages",
     paynow: "paynow",
     proposition: 'proposition',
     uniquecontacts: "uniquecontacts",
@@ -1514,7 +1518,7 @@ export const langKeys = {
     invoice_generation: 'invoice_generation',
 
 
-    bussinessname: 'bussinessname',
+    businessname: 'businessname',
     fiscaladdress: 'fiscaladdress',
     sunatcountry: 'sunatcountry',
     contactemail: 'contactemail',
@@ -1801,6 +1805,7 @@ export const langKeys = {
     pendingpayment: 'pendingpayment',
     emissorinvoice: 'emissorinvoice',
     emissorticket: 'emissorticket',
+    regulatepayment: 'regulatepayment',
 };
 
 export type LangKeys = typeof langKeys;

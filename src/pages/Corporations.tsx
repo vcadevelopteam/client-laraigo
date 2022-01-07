@@ -228,7 +228,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
             billbyorg: row?.billbyorg || false,
             doctype: row?.doctype || '',
             docnum: row?.docnum || '',
-            bussinessname: row?.bussinessname || '',
+            businessname: row?.businessname || '',
             fiscaladdress: row?.fiscaladdress || '',
             sunatcountry: row?.sunatcountry || '',
             contactemail: row?.contactemail || '',
@@ -240,7 +240,11 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
     });
 
     React.useEffect(() => {
-    }, [doctype]);
+        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('paymentplanid');
+    }, [register]);
 
     useEffect(() => {
     }, [executeRes, waitSave])
@@ -402,7 +406,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                 <FieldSelect
                                     label={t(langKeys.docType)}
                                     className="col-6"
-                                    valueDefault={doctype}
+                                    valueDefault={getValues("doctype")}
                                     onChange={(value) => {setValue("doctype", value?.code || ""); setdoctype( value?.code || "")}}
                                     error={errors?.doctype?.message}
                                     disabled={doctype === "0"}
@@ -420,11 +424,11 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                             </div>
                             <div className="row-zyx">
                                 <FieldEdit
-                                    label={t(langKeys.bussinessname)}
+                                    label={t(langKeys.businessname)}
                                     className="col-6"
-                                    valueDefault={getValues('bussinessname')}
-                                    onChange={(value) => setValue('bussinessname', value)}
-                                    error={errors?.bussinessname?.message}
+                                    valueDefault={getValues('businessname')}
+                                    onChange={(value) => setValue('businessname', value)}
+                                    error={errors?.businessname?.message}
                                 />
                                 <FieldEdit
                                     label={t(langKeys.fiscaladdress)}

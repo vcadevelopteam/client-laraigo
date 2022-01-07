@@ -606,6 +606,7 @@ const TableZyx = React.memo(({
         previousPage,
         setPageSize,
         preGlobalFilteredRows,
+        globalFilteredRows,
         setGlobalFilter,
         state: { pageIndex, pageSize, selectedRowIds },
         toggleAllRowsSelected
@@ -653,7 +654,6 @@ const TableZyx = React.memo(({
             ])
         }
     )
-
     useEffect(() => {
         let next = true;
         if (fetchData && next) {
@@ -797,7 +797,7 @@ const TableZyx = React.memo(({
                             variant="contained"
                             color="primary"
                             disabled={loading}
-                            onClick={() => exportExcel(String(titlemodule || '') + "Report", data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
+                            onClick={() => exportExcel(String(titlemodule || '') + "Report", globalFilteredRows.map(x => x.original), columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
                             startIcon={<DownloadIcon />}
                         ><Trans i18nKey={langKeys.download} />
                         </Button>

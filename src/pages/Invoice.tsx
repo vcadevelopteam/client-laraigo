@@ -1869,7 +1869,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 }
             },
             {
-                Header: t(langKeys.bussinessname),
+                Header: t(langKeys.businessname),
                 accessor: 'receiverbusinessname',
             },
             {
@@ -2133,7 +2133,7 @@ const BillingDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =>
                                 startIcon={<PaymentIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}
                                 onClick={() => setOpenModal(true)}
-                            >{t(langKeys.pay)}
+                            >{t(langKeys.regulatepayment)}
                             </Button>
                         }
                     </div>
@@ -2153,7 +2153,7 @@ const BillingDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =>
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={t(langKeys.bussinessname)}
+                                label={t(langKeys.businessname)}
                                 value={data?.receiverbusinessname}
                                 className={classes.fieldView}
                             />
