@@ -76,6 +76,17 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
     const [state, setState] = useState({ checkedA: false, checkedB: false });
     const [checkedA, setcheckedA] = useState(false);
     const [isday, setisday] = useState(false);
+    const [maxmin, setmaxmin] = useState({
+        maxticketsclosed: 0,
+        maxticketsclosedasesor: "",
+        minticketsclosed: 0,
+        minticketsclosedasesor: "",
+        maxtimeconnected: "0",
+        maxtimeconnectedasesor: "",
+        mintimeconnected: "0",
+        mintimeconnectedasesor: "",
+    });
+
     
     const [detailCustomReport, setDetailCustomReport] = useState<{
         loading: boolean;
@@ -200,6 +211,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
     useEffect(() => {
         if (!mainAux.error && !mainAux.loading && mainAux.key === "UFN_REPORT_USERPRODUCTIVITY_SEL") {
             setDetailCustomReport(mainAux);
+            debugger
         }
     }, [mainAux])
 
@@ -434,7 +446,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                         <CardContent style={{paddingBottom: 10, display: "flex"}}>
                             <div style={{flex: 1}}>
                                 <Typography variant="h6">
-                                    N° {t(langKeys.report_userproductivity_totalclosedtickets)}
+                                    {t(langKeys.report_userproductivity_totalclosedtickets)}
                                 </Typography>
                                 <Typography variant="h5" component="div" align="center">
                                     {detailCustomReport.data[0]?.totalclosedtickets}

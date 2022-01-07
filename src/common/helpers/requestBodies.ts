@@ -2249,15 +2249,15 @@ export const getBusinessDocType = () => ({
     parameters: {},
 });
 
-export const selInvoice = ({ year, month, invoiceid }: Dictionary) => ({
+export const selInvoice = ({ corpid, orgid, year, month, invoiceid, currency, paymentstatus }: Dictionary) => ({
     method: "UFN_INVOICE_SEL",
     key: "UFN_INVOICE_SEL",
-    parameters: { year, month, invoiceid: invoiceid ? invoiceid : 0 },
+    parameters: { corpid, orgid, year, month, invoiceid: invoiceid ? invoiceid : 0 , currency, paymentstatus},
 });
-export const selInvoiceClient = ({ year, month, invoiceid }: Dictionary) => ({
+export const selInvoiceClient = ({ corpid, orgid, year, month, invoiceid, currency, paymentstatus }: Dictionary) => ({
     method: "UFN_INVOICE_SELCLIENT",
     key: "UFN_INVOICE_SELCLIENT",
-    parameters: { year, month, invoiceid: invoiceid ? invoiceid : 0 },
+    parameters: { corpid, orgid, year, month, invoiceid: invoiceid ? invoiceid : 0 , currency, paymentstatus},
 });
 export const selInvoiceChangePaymentStatus = ({ invoiceid, paymentnote, paymentfile }: Dictionary) => ({
     method: "UFN_INVOICE_CHANGEPAYMENTSTATUS",
