@@ -9,15 +9,15 @@ import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import { getCollection, getMultiCollection, execute, resetAllMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { getCurrencyList } from "store/signup/actions";
 import ClearIcon from '@material-ui/icons/Clear';
-import { IconButton, InputAdornment, Tabs } from '@material-ui/core';
-import { Visibility, VisibilityOff } from '@material-ui/icons';
+import { Box, Grid, IconButton, InputAdornment, Tabs } from '@material-ui/core';
+import { Close, CloudUpload, Visibility, VisibilityOff } from '@material-ui/icons';
 import { getCountryList } from 'store/signup/actions';
 
 interface RowSelected {
@@ -35,7 +35,17 @@ interface DetailOrganizationProps {
     fetchData: () => void,
     dataCurrency: Dictionary[];
 }
+const getImgUrl = (file: File | null): string | null => {
+    if (!file) return null;
 
+    try {
+        const url = URL.createObjectURL(file);
+        return url;
+    } catch (ex) {
+        console.error(ex);
+        return null;
+    }
+}
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
@@ -51,9 +61,34 @@ const useStyles = makeStyles((theme) => ({
     mb2: {
         marginBottom: theme.spacing(4),
     },
+    imgContainer: {
+        borderRadius: 20,
+        backgroundColor: 'white',
+        width: 157,
+        height: 90,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    text: {
+        fontWeight: 500,
+        fontSize: 16,
+        color: '#381052',
+    },
+    icon: {
+        '&:hover': {
+            cursor: 'pointer',
+            color: theme.palette.primary.main,
+        }
+    },
+    img: {
+        height: '80%',
+        width: 'auto',
+    },
 }));
 
 const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, dataCurrency }) => {
+    const countryList = useSelector(state => state.signup.countryList);
     const user = useSelector(state => state.login.validateToken.user);
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
@@ -63,12 +98,6 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const [pageSelected, setPageSelected] = useState(0);
     const [showPassword, setShowPassword] = useState(false);
     const [showCredential, setShowCredential] = useState(row?.default_credentials || false);
-
-    const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataType = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    const dataCorp = multiData[2] && multiData[2].success ? multiData[2].data : [];
-    const dataDocType = multiData[3] && multiData[3].success ? multiData[3].data : [];
-    const countryList = useSelector(state => state.signup.countryList);
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
@@ -96,9 +125,14 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             contactemail: row?.contactemail || '',
             contact: row?.contact || '',
             autosendinvoice: row?.autosendinvoice || false,
+            iconbot: row?.iconbot||"",
+            iconadvisor: row?.iconadvisor||"",
+            iconclient: row?.iconclient||"",
         }
     });
-
+    const [chatBtn, setChatBtn] = useState<File | null>(getValues("iconbot") as File);
+    const [headerBtn, setHeaderBtn] = useState<File | null>(getValues("iconadvisor") as File);
+    const [botBtn, setBotBtn] = useState<File | null>(getValues("iconclient") as File);
     React.useEffect(() => {
         register('corpid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -108,8 +142,10 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         register('host');
         register('ssl');
         register('private_mail');
+        register('iconbot');
+        register('iconadvisor');
+        register('iconclient');
     }, [edit, register]);
-
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
@@ -125,6 +161,10 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             }
         }
     }, [executeRes, waitSave])
+    const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
+    const dataType = multiData[1] && multiData[1].success ? multiData[1].data : [];
+    const dataCorp = multiData[2] && multiData[2].success ? multiData[2].data : [];
+    const dataDocType = multiData[3] && multiData[3].success ? multiData[3].data : [];
 
     const onSubmit = handleSubmit((data) => {
         console.log(data)
@@ -146,6 +186,64 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         { id: "view-1", name: t(langKeys.organization)},
         { id: "view-2", name: t(langKeys.organizationdetail) }
     ];
+    const onChangeChatInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+        if (!e.target.files) return;
+        setChatBtn(e.target.files[0]);
+        setValue("iconbot", e.target.files[0]);
+    }
+
+    const onChangeHeaderInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+        if (!e.target.files) return;
+        setHeaderBtn(e.target.files[0]);
+        setValue('iconadvisor', e.target.files[0]);
+    }
+
+    const onChangeBotInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+        if (!e.target.files) return;
+        setBotBtn(e.target.files[0]);
+        setValue('iconclient', e.target.files[0]);
+    }
+    const handleChatBtnClick = () => {
+        const input = document.getElementById('chatBtnInput');
+        input!.click();
+    }
+
+    const handleHeaderBtnClick = () => {
+        const input = document.getElementById('headerBtnInput');
+        input!.click();
+    }
+
+    const handleBotBtnClick = () => {
+        const input = document.getElementById('botBtnInput');
+        input!.click();
+    }
+    const handleCleanChatInput = () => {
+        if (!chatBtn) return;
+        const input = document.getElementById('chatBtnInput') as HTMLInputElement;
+        input.value = "";
+        setChatBtn(null);
+        setValue('iconbot', null);
+    }
+
+    const handleCleanHeaderInput = () => {
+        if (!headerBtn) return;
+        const input = document.getElementById('headerBtnInput') as HTMLInputElement;
+        input.value = "";
+        setHeaderBtn(null);
+        setValue('iconadvisor', null);
+    }
+
+    const handleCleanBotInput = () => {
+        if (!botBtn) return;
+        const input = document.getElementById('botBtnInput') as HTMLInputElement;
+        input.value = "";
+        setBotBtn(null);
+        setValue('iconclient', null);
+    }
+    const chatImgUrl = getImgUrl(chatBtn);
+    const headerImgUrl = getImgUrl(headerBtn);
+    const botImgUrl = getImgUrl(botBtn);
+
     return (
         <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
@@ -191,6 +289,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                 >
                     <AntTab label={t(langKeys.informationorganization)} />
                     <AntTab label={t(langKeys.emailconfiguration)} />
+                    <AntTab label={t(langKeys.chatimages)} />
                 </Tabs>
                 {pageSelected === 0 && <div className={classes.containerDetail}>
                     <div className="row-zyx">
@@ -508,6 +607,109 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                             </Fragment>
 
                         }
+                    </div>
+                }
+                {pageSelected === 2 &&
+                    <div className={classes.containerDetail}>
+                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                            <Box m={1}>
+                                <Grid container direction="row">
+                                    <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
+                                        <label className={classes.text}>
+                                            <Trans i18nKey={langKeys.boticon} />
+                                        </label>
+                                    </Grid>
+                                    <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
+                                        <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+                                            <div className={classes.imgContainer}>
+                                                {chatImgUrl && <img alt="chatweb" src={chatImgUrl} className={classes.img} />}
+                                            </div>
+                                            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
+                                                <input
+                                                    accept="image/*"
+                                                    style={{ display: 'none' }}
+                                                    id="chatBtnInput"
+                                                    type="file"
+                                                    onChange={onChangeChatInput}
+                                                />
+                                                <IconButton onClick={handleChatBtnClick}>
+                                                    <CloudUpload className={classes.icon} />
+                                                </IconButton>
+                                                <IconButton onClick={handleCleanChatInput}>
+                                                    <Close className={classes.icon} />
+                                                </IconButton>
+                                            </div>
+                                        </div>
+                                    </Grid>
+                                </Grid>
+                            </Box>
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                            <Box m={1}>
+                                <Grid container direction="row">
+                                    <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
+                                        <label className={classes.text}>
+                                            <Trans i18nKey={langKeys.advisoricon} />
+                                        </label>
+                                    </Grid>
+                                    <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
+                                        <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+                                            <div className={classes.imgContainer}>
+                                                {headerImgUrl && <img alt="chatweb" src={headerImgUrl} className={classes.img} />}
+                                            </div>
+                                            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
+                                                <input
+                                                    accept="image/*"
+                                                    style={{ display: 'none' }}
+                                                    id="headerBtnInput"
+                                                    type="file"
+                                                    onChange={onChangeHeaderInput}
+                                                />
+                                                <IconButton onClick={handleHeaderBtnClick}>
+                                                    <CloudUpload className={classes.icon} />
+                                                </IconButton>
+                                                <IconButton onClick={handleCleanHeaderInput}>
+                                                    <Close className={classes.icon} />
+                                                </IconButton>
+                                            </div>
+                                        </div>
+                                    </Grid>
+                                </Grid>
+                            </Box>
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                            <Box m={1}>
+                                <Grid container direction="row">
+                                    <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
+                                        <label className={classes.text}>
+                                            <Trans i18nKey={langKeys.botButton} />
+                                        </label>
+                                    </Grid>
+                                    <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
+                                        <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+                                            <div className={classes.imgContainer}>
+                                                {botImgUrl && <img alt="chatweb" src={botImgUrl} className={classes.img} />}
+                                            </div>
+                                            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
+                                                <input
+                                                    accept="image/*"
+                                                    style={{ display: 'none' }}
+                                                    id="botBtnInput"
+                                                    type="file"
+                                                    onChange={onChangeBotInput}
+                                                />
+                                                <IconButton onClick={handleBotBtnClick}>
+                                                    <CloudUpload className={classes.icon} />
+                                                </IconButton>
+                                                <IconButton onClick={handleCleanBotInput}>
+                                                    <Close className={classes.icon} />
+                                                </IconButton>
+                                            </div>
+                                        </div>
+                                    </Grid>
+                                </Grid>
+                            </Box>
+                        </Grid>
                     </div>
                 }
             </form>

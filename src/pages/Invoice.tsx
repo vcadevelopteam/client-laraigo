@@ -2133,7 +2133,7 @@ const BillingDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =>
                                 startIcon={<PaymentIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}
                                 onClick={() => setOpenModal(true)}
-                            >{t(langKeys.pay)}
+                            >{t(langKeys.regulatepayment)}
                             </Button>
                         }
                     </div>
