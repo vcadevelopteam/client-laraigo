@@ -883,20 +883,11 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
                         setOpenModalHSM(true)
                     }}>
                         <ListItemIcon>
-                            <HSMIcon />
+                            <HSMIcon width={18} style={{ fill: '#2E2C34' }} />
                         </ListItemIcon>
                         {t(langKeys.send_hsm)}
                     </MenuItem>
                 }
-                <MenuItem onClick={() => {
-                    setAnchorEl(null)
-                    setOpenModalHSM(true)
-                }}>
-                    <ListItemIcon>
-                        <HSMIcon width={18} style={{ fill: '#2E2C34' }} />
-                    </ListItemIcon>
-                    {t(langKeys.send_hsm)}
-                </MenuItem>
                 {ticketSelected?.status !== 'CERRADO' &&
                     <MenuItem onClick={() => {
                         setAnchorEl(null)

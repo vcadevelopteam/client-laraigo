@@ -14,14 +14,14 @@ export interface IUpload extends ITemplate {
 }
 
 export interface IState {
-    mainData: IListStatePaginated<Dictionary>;
+    mainData: IListStatePaginated<Dictionary> & { key?: string };
     mainDynamic: IListStatePaginated<Dictionary>;
     multiData: IListStatePaginated<MultiData>;
     multiDataAux: IListStatePaginated<itemMulti>;
     multiDataAux2: IListStatePaginated<itemMulti>;
     execute: IListStatePaginated<Dictionary> & { success: boolean | undefined | null };
-    mainAux: IListStatePaginated<Dictionary>;
-    mainAux2: IListStatePaginated<Dictionary>;
+    mainAux: IListStatePaginated<Dictionary> & { key?: string };
+    mainAux2: IListStatePaginated<Dictionary> & { key?: string };
     mainPaginated: IListStatePaginated<Dictionary>;
     uploadFile: IUpload;
     exportData: IUpload;

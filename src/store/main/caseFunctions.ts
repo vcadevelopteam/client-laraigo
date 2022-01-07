@@ -10,6 +10,7 @@ export const mainSuccess = (state: IState, action: IAction): IState => {
     return {
         ...state,
         mainData: {
+            key: action.payload.key,
             data: action.payload.data || [],
             count: 0,
             loading: false,
@@ -194,6 +195,7 @@ export const mainAuxSuccess = (state: IState, action: IAction): IState => {
     return {
         ...state,
         mainAux: {
+            key: action.payload.key,
             data: action.payload.data || [],
             count: 0,
             loading: false,
@@ -227,6 +229,7 @@ export const mainAux2Success = (state: IState, action: IAction): IState => {
     return {
         ...state,
         mainAux2: {
+            key: action.payload.key,
             data: action.payload.data || [],
             count: 0,
             loading: false,
