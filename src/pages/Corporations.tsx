@@ -240,7 +240,11 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
     });
 
     React.useEffect(() => {
-    }, [doctype]);
+        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('paymentplanid');
+    }, [register]);
 
     useEffect(() => {
     }, [executeRes, waitSave])
@@ -402,7 +406,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                 <FieldSelect
                                     label={t(langKeys.docType)}
                                     className="col-6"
-                                    valueDefault={doctype}
+                                    valueDefault={getValues("doctype")}
                                     onChange={(value) => {setValue("doctype", value?.code || ""); setdoctype( value?.code || "")}}
                                     error={errors?.doctype?.message}
                                     disabled={doctype === "0"}

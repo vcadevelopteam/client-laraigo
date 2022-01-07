@@ -5,7 +5,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Tabs from '@material-ui/core/Tabs';
 import Avatar from '@material-ui/core/Avatar';
-import { EMailInboxIcon, PhoneIcon } from 'icons';
+import { EMailInboxIcon, PhoneIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon } from 'icons';
 import { getTicketsPerson, showInfoPanel, updatePerson } from 'store/inbox/actions';
 import { GetIcon, FieldEdit, FieldSelect, DialogInteractions, AntTab, FieldEditMulti } from 'components'
 import { langKeys } from 'lang/keys';
@@ -14,7 +14,6 @@ import { convertLocalDate, getValuesFromDomain, insPersonBody } from 'common/hel
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import { Dictionary } from '@types';
-import { FileIcon } from 'icons';
 import EditIcon from '@material-ui/icons/Edit';
 import SaveIcon from '@material-ui/icons/Save';
 import { useForm } from 'react-hook-form';
@@ -109,7 +108,7 @@ const useStyles = makeStyles((theme) => ({
     },
     containerAttachment: {
         display: 'flex',
-        gap: 16,
+        gap: 8,
         alignItems: 'center',
         borderBottom: '1px solid #e1e1e1',
         padding: theme.spacing(1),
@@ -609,21 +608,22 @@ const PreviewTickets: React.FC<{ order: number }> = ({ order }) => {
 const Attachments: React.FC = () => {
     const classes = useStyles();
     const [listFiles, setListFiles] = useState<Dictionary[]>([]);
-    const interactionList = useSelector(state => state.inbox.interactionList.data);
+    const interactionList = useSelector(state => state.inbox.interactionList);
     const { t } = useTranslation();
 
+    
     useEffect(() => {
-        console.log(interactionList)
-        setListFiles(interactionList.reduce<Dictionary[]>((acc, item) => [
+        console.log("interactionList", interactionList)
+        setListFiles(interactionList.data.reduce<Dictionary[]>((acc, item) => [
             ...acc,
             ...(item.interactions?.filter((x) => ["file", "video"].includes(x.interactiontype)) || []).map(x => ({
                 url: x.interactiontext,
-                filename: x.interactiontext.split("/").pop()?.split(".")[0],
+                filename: x.interactiontext.split("/").pop(),
                 extension: (x.interactiontext.split("/").pop() || "").split(".").pop(),
                 date: convertLocalDate(x.createdate).toLocaleString(),
             }))
         ], []));
-    }, [])
+    }, [interactionList])
 
     if (listFiles.length === 0) {
         return (
@@ -635,16 +635,27 @@ const Attachments: React.FC = () => {
 
     return (
         <div className={`scroll-style-go`} style={{ overflowY: 'auto', flex: 1, backgroundColor: 'transparent' }}>
-            {listFiles.map((file, index) => (
+            {listFiles.map(({filename, date, url, extension}, index) => (
                 <div
                     key={index}
                     className={classes.containerAttachment}
-                    onClick={() => window.open(file.url, "_blank")}
+                    onClick={() => window.open(url, "_blank")}
                 >
-                    <FileIcon width="20" height="20" />
+                    {extension === "pdf" ? (
+                        <PdfIcon width="30" height="30" />
+                    ) :  (extension === "doc" || extension === "docx") ? (
+                        <DocIcon width="30" height="30" />
+                    ) : (extension === "xls" || extension === "xlsx" || extension === "csv") ? (
+                        <XlsIcon width="30" height="30" />
+                    ) : (extension === "ppt" || extension === "pptx") ? (
+                        <PptIcon width="30" height="30" />
+                    ) : (extension === "text" || extension === "txt") ? (
+                        <TxtIcon width="30" height="30" />
+                    ) : <FileIcon width="30" height="30" />
+                    }
                     <div>
-                        <div>{file.filename}</div>
-                        <div className={classes.label}>{file.date}</div>
+                        <div>{filename}</div>
+                        <div className={classes.label}>{date}</div>
                     </div>
                 </div>
             ))}
