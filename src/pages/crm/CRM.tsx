@@ -1,4 +1,4 @@
-import { adviserSel, convertLocalDate, getCampaignLst, getColumnsSel, getCommChannelLst, getLeadExport, getLeadsSel, getLeadTasgsSel, getPaginatedLead, getValuesFromDomain, insColumns, insLead, updateColumnsLeads, updateColumnsOrder } from "common/helpers";
+import { adviserSel, convertLocalDate, getCampaignLst, getColumnsSel, getCommChannelLst, getLeadExport, getLeadsSel, getLeadTasgsSel, getPaginatedLead, getValuesFromDomain, insArchiveLead, insColumns, insLead, insLead2, updateColumnsLeads, updateColumnsOrder } from "common/helpers";
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
@@ -266,8 +266,7 @@ const CRM: FC = () => {
       const totalRevenue = copiedItems!.reduce((a,b) => a + parseFloat(b.expected_revenue), 0)
       const newData = Object.values({...dataColumn, [index]: {...column, total_revenue: totalRevenue, items: copiedItems}}) as dataBackend[]
       setDataColumn(newData);
-      const data = { ...lead, status:'CERRADO', operation:'UPDATE' }
-      dispatch(execute(insLead(data)))
+      dispatch(execute(insArchiveLead(lead)))
     }
     dispatch(manageConfirmation({
       visible: true,
@@ -286,8 +285,7 @@ const CRM: FC = () => {
       const totalRevenue = copiedItems!.reduce((a,b) => a + parseFloat(b.expected_revenue), 0)
       const newData = Object.values({...dataColumn, [index]: {...column, total_revenue: totalRevenue, items: copiedItems}}) as dataBackend[]
       setDataColumn(newData);
-      const data = { ...lead, status:'ELIMINADO', operation:'UPDATE' }
-      dispatch(execute(insLead(data)))
+      dispatch(execute(insLead2({ ...lead, status: 'ELIMINADO' }, "DELETE")));
     }
     dispatch(manageConfirmation({
       visible: true,
