@@ -1540,6 +1540,10 @@ const translation: LangKeys = {
     manageCorporation_plural: 'Manage corporations',
     manageproperty: 'Manage property',
     manageproperty_plural: 'Manage properties',
+    boticon: "Bot icon",
+    advisoricon: "Advisor icon",
+    clienticon: "Client icon",
+
     manageAgreement: 'Manage agreements',
     manageAgreement_plural: 'Manage agreements',
     activeOrganization: 'Active organization',

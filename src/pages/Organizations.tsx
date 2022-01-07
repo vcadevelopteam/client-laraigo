@@ -99,11 +99,6 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const [showPassword, setShowPassword] = useState(false);
     const [showCredential, setShowCredential] = useState(row?.default_credentials || false);
 
-    const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataType = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    const dataCorp = multiData[2] && multiData[2].success ? multiData[2].data : [];
-    const dataDocType = multiData[3] && multiData[3].success ? multiData[3].data : [];
-
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             corpid: row ? row.corpid : user?.corpid,
@@ -130,17 +125,14 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             contactemail: row?.contactemail || '',
             contact: row?.contact || '',
             autosendinvoice: row?.autosendinvoice || false,
-            iconbutton: row?.iconbutton||"",
-            iconheader: row?.iconheader||"",
             iconbot: row?.iconbot||"",
+            iconadvisor: row?.iconadvisor||"",
+            iconclient: row?.iconclient||"",
         }
     });
-    
-    const [chatBtn, setChatBtn] = useState<File | null>(getValues("iconbutton") as File);
-    const [headerBtn, setHeaderBtn] = useState<File | null>(getValues("iconheader") as File);
-    const [botBtn, setBotBtn] = useState<File | null>(getValues("iconbot") as File);
-    
-
+    const [chatBtn, setChatBtn] = useState<File | null>(getValues("iconbot") as File);
+    const [headerBtn, setHeaderBtn] = useState<File | null>(getValues("iconadvisor") as File);
+    const [botBtn, setBotBtn] = useState<File | null>(getValues("iconclient") as File);
     React.useEffect(() => {
         register('corpid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -150,8 +142,10 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         register('host');
         register('ssl');
         register('private_mail');
+        register('iconbot');
+        register('iconadvisor');
+        register('iconclient');
     }, [edit, register]);
-
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
@@ -167,6 +161,10 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             }
         }
     }, [executeRes, waitSave])
+    const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
+    const dataType = multiData[1] && multiData[1].success ? multiData[1].data : [];
+    const dataCorp = multiData[2] && multiData[2].success ? multiData[2].data : [];
+    const dataDocType = multiData[3] && multiData[3].success ? multiData[3].data : [];
 
     const onSubmit = handleSubmit((data) => {
         console.log(data)
@@ -191,19 +189,19 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const onChangeChatInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         if (!e.target.files) return;
         setChatBtn(e.target.files[0]);
-        setValue("iconbutton", e.target.files[0]);
+        setValue("iconbot", e.target.files[0]);
     }
 
     const onChangeHeaderInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         if (!e.target.files) return;
         setHeaderBtn(e.target.files[0]);
-        setValue('iconheader', e.target.files[0]);
+        setValue('iconadvisor', e.target.files[0]);
     }
 
     const onChangeBotInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         if (!e.target.files) return;
         setBotBtn(e.target.files[0]);
-        setValue('iconbot', e.target.files[0]);
+        setValue('iconclient', e.target.files[0]);
     }
     const handleChatBtnClick = () => {
         const input = document.getElementById('chatBtnInput');
@@ -224,7 +222,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         const input = document.getElementById('chatBtnInput') as HTMLInputElement;
         input.value = "";
         setChatBtn(null);
-        setValue('iconbutton', null);
+        setValue('iconbot', null);
     }
 
     const handleCleanHeaderInput = () => {
@@ -232,7 +230,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         const input = document.getElementById('headerBtnInput') as HTMLInputElement;
         input.value = "";
         setHeaderBtn(null);
-        setValue('iconheader', null);
+        setValue('iconadvisor', null);
     }
 
     const handleCleanBotInput = () => {
@@ -240,7 +238,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         const input = document.getElementById('botBtnInput') as HTMLInputElement;
         input.value = "";
         setBotBtn(null);
-        setValue('iconbot', null);
+        setValue('iconclient', null);
     }
     const chatImgUrl = getImgUrl(chatBtn);
     const headerImgUrl = getImgUrl(headerBtn);
@@ -618,7 +616,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 <Grid container direction="row">
                                     <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
                                         <label className={classes.text}>
-                                            <Trans i18nKey={langKeys.chatButton} />
+                                            <Trans i18nKey={langKeys.boticon} />
                                         </label>
                                     </Grid>
                                     <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
@@ -651,7 +649,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 <Grid container direction="row">
                                     <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
                                         <label className={classes.text}>
-                                            <Trans i18nKey={langKeys.header} />
+                                            <Trans i18nKey={langKeys.advisoricon} />
                                         </label>
                                     </Grid>
                                     <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
