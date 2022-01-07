@@ -106,9 +106,9 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const history = useHistory();
-    const match = useRouteMatch<{ id: string, columnid: string, columnuuid: string }>();
+    const match = useRouteMatch<{ id: string, columnid?: string, columnuuid?: string }>();
     const [values, setValues] = useState<ICrmLead>({
-        column_uuid: match.params.columnuuid,
+        column_uuid: match.params.columnuuid || '',
         columnid: Number(match.params.columnid),
         priority: 'LOW',
     } as ICrmLead
@@ -143,7 +143,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             priority: 'LOW',
             conversationid: 0,
             columnid: Number(match.params.columnid),
-            column_uuid: match.params.columnuuid,
+            column_uuid: match.params.columnuuid || '',
             index: 0,
             phone: '',
             email: '',
@@ -237,6 +237,26 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             dispatch(resetGetLeadTagsDomain());
         };
     }, [edit, match.params.id, dispatch]);
+
+    useEffect(() => {
+        if (phases.loading) return;
+        if (phases.error) {
+            const errormessage = t(phases.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
+            dispatch(showSnackbar({
+                success: false,
+                message: errormessage,
+                show: true,
+            }));
+        } else if (!edit && (!values.column_uuid || !values.columnid) && phases.data.length > 0) {
+            setValues(prev => ({
+                ...prev,
+                column_uuid: phases.data[0].column_uuid,
+                columnid: phases.data[0].columnid,
+            }));
+            setValue('columnid', phases.data[0].columnid);
+            setValue('column_uuid', phases.data[0].column_uuid);
+        }
+    }, [phases, edit]);
 
     useEffect(() => {
         if (!edit) return;
@@ -478,6 +498,12 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const isStatusClosed = useCallback(() => {
         return lead.value?.status === "CERRADO";
     }, [lead]);
+
+    const translatedPhases = useMemo(() => phases.data.map(x => ({
+        columnid: x.columnid,
+        column_uuid: x.column_uuid,
+        description: t(x.description),
+    })), [phases]);
 
     if (edit === true && lead.loading && advisers.loading) {
         return <Loading />;
@@ -735,7 +761,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     row
                                     optionDesc="description"
                                     optionValue="columnid"
-                                    data={phases.data}
+                                    data={translatedPhases}
+                                    // data={phases.data}
                                     onChange={(e) => {
                                         setValue('column_uuid', e.column_uuid);
                                         setValue('columnid', Number(e.columnid));

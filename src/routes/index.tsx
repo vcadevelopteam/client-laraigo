@@ -313,7 +313,7 @@ const RouterApp: FC = () => {
 				<ProtectRoute exact path={paths.CRM}>
 					<Layout mainClasses={classes.main}><CRM /></Layout>
 				</ProtectRoute>
-				<ProtectRoute exact path={paths.CRM_ADD_LEAD.path}>
+				<ProtectRoute exact path={paths.CRM_ADD_LEAD}>
 					<Layout mainClasses={classes.main}><LeadForm /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CRM_EDIT_LEAD.path}>

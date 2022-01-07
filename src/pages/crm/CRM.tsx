@@ -12,7 +12,7 @@ import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/acti
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
 import { DialogZyx3Opt, FieldEdit, FieldMultiSelect, FieldSelect } from "components";
-import { Search as SearchIcon, ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon } from '@material-ui/icons';
+import { Search as SearchIcon, ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon, Add as AddIcon } from '@material-ui/icons';
 import { Button, IconButton } from "@material-ui/core";
 import { Dictionary, ICampaignLst, ICrmLead, IDomain, IFetchData } from "@types";
 import TablePaginated, { buildQueryFilters, useQueryParams } from 'components/fields/table-paginated';
@@ -637,6 +637,10 @@ const CRM: FC = () => {
     setWaitExport(true);
   };
 
+  const goToAddLead = useCallback(() => {
+    history.push(paths.CRM_ADD_LEAD);
+  }, [history]);
+
   useEffect(() => {
     if (waitExport) {
         if (!resExportData.loading && !resExportData.error) {
@@ -743,6 +747,15 @@ const CRM: FC = () => {
             <Button
                 variant="contained"
                 color="primary"
+                startIcon={<AddIcon style={{ color: 'white' }} />}
+                onClick={goToAddLead}
+                disabled={mainMulti.loading}
+            >
+                <Trans i18nKey={langKeys.new} />
+            </Button>
+            <Button
+                variant="contained"
+                color="primary"
                 startIcon={<SearchIcon style={{ color: 'white' }} />}
                 style={{ backgroundColor: '#55BD84', width: 120 }}
                 onClick={fetchBoardLeadsWithFilter}
@@ -761,22 +774,22 @@ const CRM: FC = () => {
                 >
                   {dataColumn.map((column, index) => {
                     return (
-                      <Draggable draggableId={column.column_uuid} index={index+1} key={column.column_uuid}>
-                        { (provided) => (
-                          <div
-                            {...provided.draggableProps}
-                            ref={provided.innerRef}
-                          >
+                      // <Draggable draggableId={column.column_uuid} index={index+1} key={column.column_uuid}>
+                      //   { (provided) => (
+                      //     <div
+                      //       {...provided.draggableProps}
+                      //       ref={provided.innerRef}
+                      //     >
                               <DraggableLeadColumn 
                                 title={column.description} 
                                 key={index+1} 
                                 snapshot={null} 
-                                provided={provided} 
-                                titleOnChange={(val) =>{handleEdit(column.column_uuid,val,dataColumn, setDataColumn)}}
+                                // provided={provided} 
+                                // titleOnChange={(val) =>{handleEdit(column.column_uuid,val,dataColumn, setDataColumn)}}
                                 columnid={column.column_uuid} 
                                 onDelete={hanldeDeleteColumn}
                                 total_revenue={column.total_revenue!}
-                                onAddCard={() => history.push(paths.CRM_ADD_LEAD.resolve(column.columnid, column.column_uuid))}
+                                // onAddCard={() => history.push(paths.CRM_ADD_LEAD.resolve(column.columnid, column.column_uuid))}
                               >
                                   <Droppable droppableId={column.column_uuid} type="task">
                                     {(provided, snapshot) => {
@@ -828,9 +841,9 @@ const CRM: FC = () => {
                                     }}
                                   </Droppable>
                               </DraggableLeadColumn>
-                          </div>
-                        )}
-                      </Draggable>
+                      //     </div>
+                      //   )}
+                      // </Draggable>
                     );
                   })}
                   {provided.placeholder}
