@@ -1730,6 +1730,7 @@ const translation: LangKeys = {
     billingcompanyname: 'Razón Social',
     billingcommercialname: 'Nombre Comercial',
     billingfiscaladdress: 'Dirección Fiscal',
+    chatimages: "Imágenes del chat",
     billingubigeocode: 'Código de Ubigeo',
     billingcountry: 'País',
     billingemittertype: 'Tipo de Documento',

@@ -1800,6 +1800,7 @@ const translation: LangKeys = {
     pendingpayment: 'Pending Payment',
     emissorinvoice: 'INVOICE',
     emissorticket: 'TICKET',
+    chatimages: "Chat images",
 };
 
 const enResource: ResourceLanguage = {

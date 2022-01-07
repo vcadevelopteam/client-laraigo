@@ -39,6 +39,7 @@ export const langKeys = {
     numberoflabels: "numberoflabels",
     new: 'new',
     qualified: 'qualified',
+    chatimages: "chatimages",
     paynow: "paynow",
     proposition: 'proposition',
     uniquecontacts: "uniquecontacts",
