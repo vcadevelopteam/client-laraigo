@@ -352,6 +352,7 @@ const useLeadColumnStyles = makeStyles(theme => ({
     },
     currency: {
         marginBottom: '0.63em',
+        fontWeight: 'bold',
     },
 }));
 

@@ -954,7 +954,7 @@ const Users: FC = () => {
                             extraOption={t(langKeys.duplicate)}
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
-                            viewFunction={() => handleDuplicate(row)} //esta es la funcion de duplicar
+                            extraFunction={() => handleDuplicate(row)}
                         />
                     )
                 }

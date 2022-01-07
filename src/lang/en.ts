@@ -1715,11 +1715,12 @@ const translation: LangKeys = {
     NEWTAG: 'Tag added',
     REMOVETAG: 'Tag removed',
     ELIMINADO: 'Deleted',
-    CLOSEDLEAD: 'Lead closed',
+    CLOSEDLEAD: 'Sent to history',
     ACTIVITYCHANGESTATUS: 'Activity status change',
     ACTIVITYDONE: 'Scheduled activity completed',
     ACTIVITYDISCARD: 'Discarded scheduled activity',
     ACTIVITYUPDATE: 'Activity update',
+    CHANGEAGENT: 'Agent change',
 
     repeatPassword: 'Repeat password',
     passwordsMustBeEqual: 'Passwords must be equal',
@@ -1814,6 +1815,8 @@ const translation: LangKeys = {
     emissorticket: 'TICKET',
     regulatepayment: 'Regulate Payment',
     chatimages: "Chat images",
+
+    sendToHistory: 'Send to history',
 };
 
 const enResource: ResourceLanguage = {

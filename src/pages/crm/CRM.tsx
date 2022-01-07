@@ -356,6 +356,12 @@ const CRM: FC = () => {
     }
   }
 
+  const initialAsesorId = useMemo(() => {
+    if (!user) return 0;
+    if (user.roledesc === "ASESOR") return user.userid;
+    else return otherParams.asesorid || mainMulti.data[2]?.data?.map(d => d.userid).includes(user?.userid) ? (user?.userid || 0) : 0;
+  }, [otherParams, user]);
+
   const mainPaginated = useSelector(state => state.main.mainPaginated);
   const resExportData = useSelector(state => state.main.exportData);
   const [pageCount, setPageCount] = useState(0);
@@ -363,14 +369,25 @@ const CRM: FC = () => {
   const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
   const [autoRefresh, setAutoRefresh] = useState(false);
   const [waitExport, setWaitExport] = useState(false);
-  const [allParameters, setAllParameters] = useState<{ contact: string, channel: string, asesorid: number }>({
-    asesorid: otherParams.asesorid || mainMulti.data[2]?.data?.map(d => d.userid).includes(user?.userid) ? (user?.userid || 0) : 0,
+  const [allParameters, setAllParametersPrivate] = useState<{ contact: string, channel: string, asesorid: number }>({
+    // asesorid: otherParams.asesorid || mainMulti.data[2]?.data?.map(d => d.userid).includes(user?.userid) ? (user?.userid || 0) : 0,
+    asesorid: initialAsesorId,
     channel: otherParams.channels,
     contact: otherParams.contact,
   });
   const [selectedRows, setSelectedRows] = useState<Dictionary>({});
   const [personsSelected, setPersonsSelected] = useState<Dictionary[]>([]);
   const [gridModal, setGridModal] = useState<IModalProps>({ name: '', open: false, payload: null });
+
+  const setAllParameters = useCallback((prop: typeof allParameters) => {
+    if (!user) return;
+
+    if (user.roledesc === "ASESOR" && prop.asesorid !== user.userid) {
+      setAllParametersPrivate({ ...prop, asesorid: user.userid });
+    } else {
+      setAllParametersPrivate(prop);
+    }
+  }, [user]);
 
   const CustomCellRender = ({column, row}: any) => {
     switch (column.id) {
@@ -603,7 +620,7 @@ const CRM: FC = () => {
           filters: filters,
           take: pageSize,
           skip: pageIndex * pageSize,
-          ...allParameters
+          ...allParameters,
         }
     )));
   };
@@ -669,6 +686,40 @@ const CRM: FC = () => {
     p.set('display', display);
     history.push({ search: p.toString() });
   }, [display, history]);
+
+  const filtersElement = useMemo(() => (
+    <>
+      <FieldSelect
+        variant="outlined"
+        label={t(langKeys.user)}
+        className={classes.filterComponent}
+        valueDefault={allParameters.asesorid}
+        onChange={(value) => setAllParameters({...allParameters, asesorid: value?.userid})}
+        data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
+        optionDesc={'fullname'}
+        optionValue={'userid'}
+        disabled={user?.roledesc === "ASESOR" || false}
+      />
+      <FieldMultiSelect
+          variant="outlined"
+          label={t(langKeys.channel)}
+          className={classes.filterComponent}
+          valueDefault={allParameters.channel}
+          onChange={(value) => setAllParameters({...allParameters, channel: value?.map((o: Dictionary) => o['communicationchannelid']).join(',')})}
+          data={mainMulti.data[3]?.data?.sort((a, b) => a?.communicationchanneldesc?.toLowerCase() > b?.communicationchanneldesc?.toLowerCase() ? 1 : -1) || []}
+          optionDesc={'communicationchanneldesc'}
+          optionValue={'communicationchannelid'}
+      />
+      <FieldEdit
+          size="small"
+          variant="outlined"
+          label={t(langKeys.customer)}
+          className={classes.filterComponent}
+          valueDefault={allParameters.contact}
+          onChange={(value) => setAllParameters({...allParameters, contact: value})}
+      />
+    </>
+  ), [user, allParameters, classes, mainMulti, t]);
 
   return (
       <div style={{ width: '100%', display: 'flex', flexDirection: 'column'}}>
@@ -747,11 +798,12 @@ const CRM: FC = () => {
             <Button
                 variant="contained"
                 color="primary"
-                startIcon={<AddIcon style={{ color: 'white' }} />}
-                onClick={goToAddLead}
                 disabled={mainMulti.loading}
-            >
-                <Trans i18nKey={langKeys.new} />
+                startIcon={<AddIcon color="secondary" />}
+                onClick={goToAddLead}
+                style={{ backgroundColor: "#55BD84" }}
+              >
+                <Trans i18nKey={langKeys.register} />
             </Button>
             <Button
                 variant="contained"
@@ -781,7 +833,7 @@ const CRM: FC = () => {
                       //       ref={provided.innerRef}
                       //     >
                               <DraggableLeadColumn 
-                                title={column.description} 
+                                title={t(column.description.toLowerCase())} 
                                 key={index+1} 
                                 snapshot={null} 
                                 // provided={provided} 
@@ -923,38 +975,7 @@ const CRM: FC = () => {
               selectionKey={selectionKey}
               setSelectedRows={setSelectedRows}
               onClickRow={onClickRow}
-              FiltersElement={(
-                <>
-                  <FieldSelect
-                    variant="outlined"
-                    label={t(langKeys.user)}
-                    className={classes.filterComponent}
-                    valueDefault={allParameters.asesorid}
-                    onChange={(value) => setAllParameters({...allParameters, asesorid: value?.userid})}
-                    data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
-                    optionDesc={'fullname'}
-                    optionValue={'userid'}
-                />
-                <FieldMultiSelect
-                    variant="outlined"
-                    label={t(langKeys.channel)}
-                    className={classes.filterComponent}
-                    valueDefault={allParameters.channel}
-                    onChange={(value) => setAllParameters({...allParameters, channel: value?.map((o: Dictionary) => o['communicationchannelid']).join(',')})}
-                    data={mainMulti.data[3]?.data?.sort((a, b) => a?.communicationchanneldesc?.toLowerCase() > b?.communicationchanneldesc?.toLowerCase() ? 1 : -1) || []}
-                    optionDesc={'communicationchanneldesc'}
-                    optionValue={'communicationchannelid'}
-                />
-                <FieldEdit
-                    size="small"
-                    variant="outlined"
-                    label={t(langKeys.customer)}
-                    className={classes.filterComponent}
-                    valueDefault={allParameters.contact}
-                    onChange={(value) => setAllParameters({...allParameters, contact: value})}
-                />
-              </>
-              )}
+              FiltersElement={filtersElement}
               onFilterChange={f => {
                 console.log('Leads::onFilterChange', f);
                 const params = buildQueryFilters(f);
