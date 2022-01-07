@@ -12,7 +12,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, getMultiCollection, execute, resetAllMain } from 'store/main/actions';
+import { getCollection, getMultiCollection, execute, resetAllMain, uploadFile, resetUploadFile } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { getCurrencyList } from "store/signup/actions";
 import ClearIcon from '@material-ui/icons/Clear';
@@ -92,12 +92,22 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const user = useSelector(state => state.login.validateToken.user);
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
+    const [waitSaveUpload, setWaitSaveUpload] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const [pageSelected, setPageSelected] = useState(0);
     const [showPassword, setShowPassword] = useState(false);
-    const [showCredential, setShowCredential] = useState(row?.default_credentials || false);
+    const [showCredential, setShowCredential] = useState(row?.default_credentials || false);    
+    const uploadResult = useSelector(state => state.main.uploadFile);
+    const [valuefile, setvaluefile] = useState('')
+    const [idUpload, setIdUpload] = useState('');
+    const [iconupload, seticonupload] = useState('');
+    const [iconsurl, seticonsurl] = useState({
+        iconbot: row?.iconbot|| "",
+        iconadvisor: row?.iconadvisor|| "",
+        iconclient: row?.iconclient|| "",
+    });
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
@@ -119,7 +129,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
 
             doctype: row?.doctype || '',
             docnum: row?.docnum || '',
-            bussinessname: row?.bussinessname || '',
+            businessname: row?.businessname || '',
             fiscaladdress: row?.fiscaladdress || '',
             sunatcountry: row?.sunatcountry || '',
             contactemail: row?.contactemail || '',
@@ -142,9 +152,6 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         register('host');
         register('ssl');
         register('private_mail');
-        register('iconbot');
-        register('iconadvisor');
-        register('iconclient');
     }, [edit, register]);
     useEffect(() => {
         if (waitSave) {
@@ -161,15 +168,28 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             }
         }
     }, [executeRes, waitSave])
+    useEffect(() => {
+        if (waitSaveUpload) {
+            if (!uploadResult.loading && !uploadResult.error) {
+                seticonsurl((prev)=>({...prev,[iconupload]:uploadResult.url}))
+                dispatch(showBackdrop(false));
+                seticonupload("")              
+                setWaitSaveUpload(false);
+                dispatch(resetUploadFile());
+            } else if (uploadResult.error) {
+                setWaitSaveUpload(false);
+            }
+        }
+    }, [waitSaveUpload, uploadResult, dispatch, idUpload])
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataType = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataCorp = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const dataDocType = multiData[3] && multiData[3].success ? multiData[3].data : [];
 
     const onSubmit = handleSubmit((data) => {
-        console.log(data)
         const callback = () => {
-            dispatch(execute(insOrg(data)));
+            
+            dispatch(execute(insOrg({...data, iconbot: iconsurl.iconbot, iconadvisor: iconsurl.iconadvisor, iconclient: iconsurl.iconclient})));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -180,7 +200,18 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             callback
         }))
     });
-
+    const onSelectImage = (files: any, id: string) => {
+        
+        dispatch(showBackdrop(true));
+        seticonupload(id)
+        const idd = new Date().toISOString()
+        var fd = new FormData();
+        fd.append('file', files, files.name);
+        setvaluefile('')
+        setIdUpload(idd);
+        dispatch(uploadFile(fd));
+        setWaitSaveUpload(true)
+    }
         
     const arrayBread = [
         { id: "view-1", name: t(langKeys.organization)},
@@ -190,20 +221,24 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         if (!e.target.files) return;
         setChatBtn(e.target.files[0]);
         setValue("iconbot", e.target.files[0]);
+        onSelectImage(e.target.files[0],"iconbot")
     }
 
     const onChangeHeaderInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         if (!e.target.files) return;
         setHeaderBtn(e.target.files[0]);
         setValue('iconadvisor', e.target.files[0]);
+        onSelectImage(e.target.files[0],"iconadvisor")
     }
 
     const onChangeBotInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         if (!e.target.files) return;
         setBotBtn(e.target.files[0]);
         setValue('iconclient', e.target.files[0]);
+        onSelectImage(e.target.files[0],"iconclient")
     }
     const handleChatBtnClick = () => {
+        
         const input = document.getElementById('chatBtnInput');
         input!.click();
     }
@@ -219,6 +254,8 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     }
     const handleCleanChatInput = () => {
         if (!chatBtn) return;
+        
+        seticonsurl((prev)=>({...prev,iconbot:""}))
         const input = document.getElementById('chatBtnInput') as HTMLInputElement;
         input.value = "";
         setChatBtn(null);
@@ -227,6 +264,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
 
     const handleCleanHeaderInput = () => {
         if (!headerBtn) return;
+        seticonsurl((prev)=>({...prev,iconadvisor:""}))
         const input = document.getElementById('headerBtnInput') as HTMLInputElement;
         input.value = "";
         setHeaderBtn(null);
@@ -235,11 +273,13 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
 
     const handleCleanBotInput = () => {
         if (!botBtn) return;
+        seticonsurl((prev)=>({...prev,iconclient:""}))
         const input = document.getElementById('botBtnInput') as HTMLInputElement;
         input.value = "";
         setBotBtn(null);
         setValue('iconclient', null);
     }
+
     const chatImgUrl = getImgUrl(chatBtn);
     const headerImgUrl = getImgUrl(headerBtn);
     const botImgUrl = getImgUrl(botBtn);
@@ -320,19 +360,13 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 value={user?.corpdesc}
                                 className="col-6"
                             />}
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.description)}
-                                className="col-6"
-                                onChange={(value) => setValue('description', value)}
-                                valueDefault={getValues("description")}
-                                error={errors?.description?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.description)}
-                                value={row ? (row.orgdesc || "") : ""}
-                                className="col-6"
-                            />}
+                        <FieldEdit
+                            label={t(langKeys.organization)}
+                            className="col-6"
+                            onChange={(value) => setValue('description', value)}
+                            valueDefault={getValues("description")}
+                            error={errors?.description?.message}
+                        />
                     </div>
                     <div className="row-zyx">
                         {edit ?
@@ -415,11 +449,11 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                             </div>
                             <div className="row-zyx">
                                 <FieldEdit
-                                    label={t(langKeys.bussinessname)}
+                                    label={t(langKeys.businessname)}
                                     className="col-6"
-                                    valueDefault={getValues('bussinessname')}
-                                    onChange={(value) => setValue('bussinessname', value)}
-                                    error={errors?.bussinessname?.message}
+                                    valueDefault={getValues('businessname')}
+                                    onChange={(value) => setValue('businessname', value)}
+                                    error={errors?.businessname?.message}
                                 />
                                 <FieldEdit
                                     label={t(langKeys.fiscaladdress)}
@@ -622,7 +656,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                         <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                                             <div className={classes.imgContainer}>
-                                                {chatImgUrl && <img alt="chatweb" src={chatImgUrl} className={classes.img} />}
+                                                {(chatImgUrl||iconsurl?.iconbot) && <img alt="chatweb" src={chatImgUrl||iconsurl?.iconbot} className={classes.img} />}
                                             </div>
                                             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
                                                 <input
@@ -655,7 +689,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                         <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                                             <div className={classes.imgContainer}>
-                                                {headerImgUrl && <img alt="chatweb" src={headerImgUrl} className={classes.img} />}
+                                                {(headerImgUrl||iconsurl?.iconadvisor) && <img alt="chatweb" src={headerImgUrl||iconsurl?.iconadvisor} className={classes.img} />}
                                             </div>
                                             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
                                                 <input
@@ -688,7 +722,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                         <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                                             <div className={classes.imgContainer}>
-                                                {botImgUrl && <img alt="chatweb" src={botImgUrl} className={classes.img} />}
+                                                {(botImgUrl||iconsurl?.iconclient) && <img alt="chatweb" src={botImgUrl||iconsurl.iconclient} className={classes.img} />}
                                             </div>
                                             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
                                                 <input

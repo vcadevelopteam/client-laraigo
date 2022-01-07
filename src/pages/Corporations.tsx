@@ -228,7 +228,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
             billbyorg: row?.billbyorg || false,
             doctype: row?.doctype || '',
             docnum: row?.docnum || '',
-            bussinessname: row?.bussinessname || '',
+            businessname: row?.businessname || '',
             fiscaladdress: row?.fiscaladdress || '',
             sunatcountry: row?.sunatcountry || '',
             contactemail: row?.contactemail || '',
@@ -424,11 +424,11 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                             </div>
                             <div className="row-zyx">
                                 <FieldEdit
-                                    label={t(langKeys.bussinessname)}
+                                    label={t(langKeys.businessname)}
                                     className="col-6"
-                                    valueDefault={getValues('bussinessname')}
-                                    onChange={(value) => setValue('bussinessname', value)}
-                                    error={errors?.bussinessname?.message}
+                                    valueDefault={getValues('businessname')}
+                                    onChange={(value) => setValue('businessname', value)}
+                                    error={errors?.businessname?.message}
                                 />
                                 <FieldEdit
                                     label={t(langKeys.fiscaladdress)}
