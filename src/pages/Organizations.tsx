@@ -104,9 +104,9 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const [idUpload, setIdUpload] = useState('');
     const [iconupload, seticonupload] = useState('');
     const [iconsurl, seticonsurl] = useState({
-        iconbot: "",
-        iconadvisor: "",
-        iconclient: "",
+        iconbot: row?.iconbot|| "",
+        iconadvisor: row?.iconadvisor|| "",
+        iconclient: row?.iconclient|| "",
     });
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
@@ -172,7 +172,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         if (waitSaveUpload) {
             if (!uploadResult.loading && !uploadResult.error) {
                 seticonsurl((prev)=>({...prev,[iconupload]:uploadResult.url}))
-                debugger
+                dispatch(showBackdrop(false));
                 seticonupload("")              
                 setWaitSaveUpload(false);
                 dispatch(resetUploadFile());
@@ -188,7 +188,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
-            debugger
+            
             dispatch(execute(insOrg({...data, iconbot: iconsurl.iconbot, iconadvisor: iconsurl.iconadvisor, iconclient: iconsurl.iconclient})));
             dispatch(showBackdrop(true));
             setWaitSave(true)
@@ -201,6 +201,8 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         }))
     });
     const onSelectImage = (files: any, id: string) => {
+        
+        dispatch(showBackdrop(true));
         seticonupload(id)
         const idd = new Date().toISOString()
         var fd = new FormData();
@@ -654,7 +656,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                         <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                                             <div className={classes.imgContainer}>
-                                                {chatImgUrl && <img alt="chatweb" src={chatImgUrl} className={classes.img} />}
+                                                {(chatImgUrl||iconsurl?.iconbot) && <img alt="chatweb" src={chatImgUrl||iconsurl?.iconbot} className={classes.img} />}
                                             </div>
                                             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
                                                 <input
@@ -687,7 +689,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                         <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                                             <div className={classes.imgContainer}>
-                                                {headerImgUrl && <img alt="chatweb" src={headerImgUrl} className={classes.img} />}
+                                                {(headerImgUrl||iconsurl?.iconadvisor) && <img alt="chatweb" src={headerImgUrl||iconsurl?.iconadvisor} className={classes.img} />}
                                             </div>
                                             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
                                                 <input
@@ -720,7 +722,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                         <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                                             <div className={classes.imgContainer}>
-                                                {botImgUrl && <img alt="chatweb" src={botImgUrl} className={classes.img} />}
+                                                {(botImgUrl||iconsurl?.iconclient) && <img alt="chatweb" src={botImgUrl||iconsurl.iconclient} className={classes.img} />}
                                             </div>
                                             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
                                                 <input
