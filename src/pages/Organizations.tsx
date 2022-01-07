@@ -88,6 +88,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, dataCurrency }) => {
+    const countryList = useSelector(state => state.signup.countryList);
     const user = useSelector(state => state.login.validateToken.user);
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
@@ -102,7 +103,6 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const dataType = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataCorp = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const dataDocType = multiData[3] && multiData[3].success ? multiData[3].data : [];
-    const countryList = useSelector(state => state.signup.countryList);
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
@@ -139,6 +139,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const [chatBtn, setChatBtn] = useState<File | null>(getValues("iconbutton") as File);
     const [headerBtn, setHeaderBtn] = useState<File | null>(getValues("iconheader") as File);
     const [botBtn, setBotBtn] = useState<File | null>(getValues("iconbot") as File);
+    
 
     React.useEffect(() => {
         register('corpid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
