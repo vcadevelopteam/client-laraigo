@@ -224,7 +224,18 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
                 }, 0)
             }
         } else if (type === "number") {
-            if (value) {
+            if (op === 'isempty' ||
+                op === 'isnotempty' ||
+                op === 'isnull' ||
+                op === 'isnotnull') {
+                setFilters({
+                    ...filters,
+                    [header]: {
+                        value: '',
+                        operator: op
+                    },
+                }, 0)
+            } else if (value) {
                 setFilters({
                     ...filters,
                     [header]: {
