@@ -775,84 +775,65 @@ export const Person: FC = () => {
     return (
         <div style={{ height: '100%', width: 'inherit' }}>
             <Title><Trans i18nKey={langKeys.person} count={2} /></Title>
-            <Grid container direction="row" justifyContent="space-between" style={{ marginBottom: 12, marginTop: 4, gap: 8 }}>
-                <Grid item>
-                    <div style={{ display: 'flex', gap: 8 }}>
-                        <FieldMultiSelect
-                            onChange={(value) => setFilterChannelType(value.map((o: any) => o.type).join())}
-                            size="small"
-                            label={t(langKeys.channel)}
-                            style={{ maxWidth: 300, minWidth: 200 }}
-                            variant="outlined"
-                            loading={domains.loading}
-                            data={domains.value?.channels || []}
-                            optionValue="type"
-                            optionDesc="communicationchanneldesc"
-                            valueDefault={filterChannelsType}
-                        />
-                    </div>
-                </Grid>
-                <Grid item>
-                    <div style={{ display: 'flex', gap: 8 }}>
-                        <Button
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            disabled={personList.loading || Object.keys(selectedRows).length === 0}
-                            startIcon={<LockIcon color="secondary" />}
-                            onClick={() => handleLock("LOCK")}
-                        >
-                            <Trans i18nKey={langKeys.lock} />
-                        </Button>
-                        <Button
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            disabled={personList.loading || Object.keys(selectedRows).length === 0}
-                            startIcon={<LockOpenIcon color="secondary" />}
-                            onClick={() => handleLock("UNLOCK")}
-                        >
-                            <Trans i18nKey={langKeys.unlock} />
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            disabled={personList.loading || Object.keys(selectedRows).length === 0}
-                            startIcon={<WhatsappIcon width={24} style={{ fill: '#FFF' }} />}
-                            onClick={() => {
-                                setOpenDialogTemplate(true);
-                                setTypeTemplate("HSM");
-                            }}
-                        >
-                            <Trans i18nKey={langKeys.send_hsm} />
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            disabled={personList.loading || Object.keys(selectedRows).length === 0}
-                            startIcon={<MailIcon width={24} style={{ fill: '#FFF' }} />}
-                            onClick={() => {
-                                setOpenDialogTemplate(true);
-                                setTypeTemplate("MAIL");
-                            }}
-                        >
-                            <Trans i18nKey={langKeys.send_mail} />
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            disabled={personList.loading || Object.keys(selectedRows).length === 0}
-                            startIcon={<SmsIcon width={24} style={{ fill: '#FFF' }} />}
-                            onClick={() => {
-                                setOpenDialogTemplate(true);
-                                setTypeTemplate("SMS");
-                            }}
-                        >
-                            <Trans i18nKey={langKeys.send_sms} />
-                        </Button>
-                    </div>
-                </Grid>
-            </Grid>
+            <div style={{ display: 'flex', gap: 8, flexDirection: 'row', marginBottom: 12, marginTop: 4}}>
+                <div style={{ flexGrow: 1 }} />
+                <Button
+                    variant="contained"
+                    type="button"
+                    color="primary"
+                    disabled={personList.loading || Object.keys(selectedRows).length === 0}
+                    startIcon={<LockIcon color="secondary" />}
+                    onClick={() => handleLock("LOCK")}
+                >
+                    <Trans i18nKey={langKeys.lock} />
+                </Button>
+                <Button
+                    variant="contained"
+                    type="button"
+                    color="primary"
+                    disabled={personList.loading || Object.keys(selectedRows).length === 0}
+                    startIcon={<LockOpenIcon color="secondary" />}
+                    onClick={() => handleLock("UNLOCK")}
+                >
+                    <Trans i18nKey={langKeys.unlock} />
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={personList.loading || Object.keys(selectedRows).length === 0}
+                    startIcon={<WhatsappIcon width={24} style={{ fill: '#FFF' }} />}
+                    onClick={() => {
+                        setOpenDialogTemplate(true);
+                        setTypeTemplate("HSM");
+                    }}
+                >
+                    <Trans i18nKey={langKeys.send_hsm} />
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={personList.loading || Object.keys(selectedRows).length === 0}
+                    startIcon={<MailIcon width={24} style={{ fill: '#FFF' }} />}
+                    onClick={() => {
+                        setOpenDialogTemplate(true);
+                        setTypeTemplate("MAIL");
+                    }}
+                >
+                    <Trans i18nKey={langKeys.send_mail} />
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={personList.loading || Object.keys(selectedRows).length === 0}
+                    startIcon={<SmsIcon width={24} style={{ fill: '#FFF' }} />}
+                    onClick={() => {
+                        setOpenDialogTemplate(true);
+                        setTypeTemplate("SMS");
+                    }}
+                >
+                    <Trans i18nKey={langKeys.send_sms} />
+                </Button>
+            </div>
             <TablePaginated
                 columns={columns}
                 data={personList.data}
@@ -895,7 +876,20 @@ export const Person: FC = () => {
                 initialStartDate={params.startDate}
                 initialFilters={params.filters}
                 initialPageIndex={params.page}
-                autotrigger
+                FiltersElement={useMemo(() => (
+                    <FieldMultiSelect
+                        onChange={(value) => setFilterChannelType(value.map((o: any) => o.type).join())}
+                        size="small"
+                        label={t(langKeys.channel)}
+                        style={{ maxWidth: 300, minWidth: 200 }}
+                        variant="outlined"
+                        loading={domains.loading}
+                        data={domains.value?.channels || []}
+                        optionValue="type"
+                        optionDesc="communicationchanneldesc"
+                        valueDefault={filterChannelsType}
+                    />
+                ), [filterChannelsType, domains, t])}
             />
             <DialogSendTemplate
                 openModal={openDialogTemplate}
@@ -1038,7 +1032,7 @@ const usePersonDetailStyles = makeStyles(theme => ({
         color: theme.palette.text.primary,
         maxWidth: 343,
         width: 343,
-        minWidth: 180,
+        minWidth: 343,
         padding: theme.spacing(2),
         display: 'flex',
         flexDirection: 'column',
@@ -2008,14 +2002,14 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
                 </Grid>
                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                     <Property
-                        title={<Trans i18nKey={langKeys.personIdentifier} />}
+                        title={<Trans i18nKey={langKeys.internalIdentifier} />}
                         subtitle={personIdentifier}
                         m={1}
                     />
                 </Grid>
                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                     <Property
-                        title={<Trans i18nKey={langKeys.internalIdentifier} />}
+                        title={<Trans i18nKey={langKeys.personIdentifier} />}
                         subtitle={channel.personcommunicationchannelowner}
                         m={1}
                     />
