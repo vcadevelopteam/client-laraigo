@@ -899,6 +899,7 @@ export const Person: FC = () => {
                         valueDefault={filterChannelsType}
                     />
                 ), [filterChannelsType, domains, t])}
+                autotrigger={!(params.startDate === 0 && params.endDate === 0 && params.page === 0)}
             />
             <DialogSendTemplate
                 openModal={openDialogTemplate}
