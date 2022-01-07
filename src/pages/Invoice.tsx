@@ -76,6 +76,10 @@ const StyledTableRow = withStyles((theme) => ({
 
 const datatotalize = [{value:1,description: "CORPORATION"},{value:2,description: "ORGANIZATION"}]
 
+const datacurrency = [{value:"PEN",description: "PEN"},{value:"USD",description: "USD"}]
+
+const datapaymentstatus = [{value:"PENDING",description: "PENDING"},{value:"PAID",description: "PAID"}]
+
 const years = [{desc:"2010"},{desc:"2011"},{desc:"2012"},{desc:"2013"},{desc:"2014"},{desc:"2015"},{desc:"2016"},{desc:"2017"},{desc:"2018"},{desc:"2020"},{desc:"2021"},{desc:"2022"},{desc:"2023"},{desc:"2024"},{desc:"2025"}]
 
 const months =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" },]
@@ -201,788 +205,6 @@ const YEARS = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "20
 const MONTHS = [{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" },]
 
 const statusToEdit = ["DRAFT", "INVOICED", "ERROR", "CANCELED"];
-
-
-
-const PaymentComp: FC<{ data: any, openModal: boolean, setOpenModal: (param: any) => void, onTrigger: () => void }> = ({ data, openModal, setOpenModal, onTrigger }) => {
-    const classes = useStyles();
-    const { t } = useTranslation();
-    const dispatch = useDispatch();
-    const [waitSave, setWaitSave] = useState(false);
-    const [chatBtn, setChatBtn] = useState<File | string | null>(null);
-    const executeRes = useSelector(state => state.main.execute);
-
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
-        defaultValues: {
-            invoiceid: data?.invoiceid || 0,
-            paymentnote: '',
-            paymentfile: ""
-        }
-    });
-
-    const mandatoryFileField = (value: string | File | null) => {
-        return !value ? t(langKeys.field_required) : undefined;
-    }
-
-    React.useEffect(() => {
-        register('invoiceid');
-        register('paymentnote', { validate: mandatoryFileField });
-        register('paymentfile', { validate: mandatoryFileField });
-    }, [register]);
-
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
-                dispatch(showBackdrop(false));
-                onTrigger()
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                setWaitSave(false);
-                dispatch(showBackdrop(false));
-            }
-        }
-    }, [executeRes, waitSave])
-
-    const onSubmit = handleSubmit((dataf) => {
-        const callback = () => {
-            dispatch(showBackdrop(true));
-            dispatch(execute(selInvoiceChangePaymentStatus(dataf)));
-            setWaitSave(true);
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))
-    });
-
-    const onChangeChatInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-        if (!e.target.files) return;
-        setChatBtn(e.target.files[0]);
-        setValue("paymentfile", String(getImgUrl(e.target.files[0])))
-    }
-    const handleChatBtnClick = () => {
-        const input = document.getElementById('chatBtnInput');
-        input!.click();
-    }
-    const handleCleanChatInput = () => {
-        if (!chatBtn) return;
-        const input = document.getElementById('chatBtnInput') as HTMLInputElement;
-        input.value = "";
-        setChatBtn(null);
-        setValue('paymentfile', "");
-    }
-
-    const chatImgUrl = getImgUrl(chatBtn);
-
-    return (
-        <DialogZyx
-            open={openModal}
-            title={t(langKeys.pay)}
-            buttonText1={t(langKeys.cancel)}
-            buttonText2={t(langKeys.save)}
-            handleClickButton1={() => setOpenModal(false)}
-            handleClickButton2={onSubmit}
-            button2Type="submit"
-        >
-            <FieldEdit
-                label={t(langKeys.paymentnote)}
-                valueDefault={getValues('paymentnote')}
-                error={errors?.paymentnote?.message}
-                onChange={(value) => setValue('paymentnote', value)}
-                className="col-12"
-            />
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                <Box m={1}>
-                    <Grid container direction="row">
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <label className={classes.text}>
-                                {t(langKeys.evidenceofpayment)}
-                            </label>
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-                                <div className={classes.imgContainer}>
-                                    {chatImgUrl && <img src={chatImgUrl} alt="icon button" className={classes.img} />}
-                                </div>
-                                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
-                                    <input
-                                        accept="image/*"
-                                        style={{ display: 'none' }}
-                                        id="chatBtnInput"
-                                        type="file"
-                                        onChange={onChangeChatInput}
-                                    />
-                                    <IconButton onClick={handleChatBtnClick}>
-                                        <CloudUpload className={classes.icon} />
-                                    </IconButton>
-                                    <IconButton onClick={handleCleanChatInput}>
-                                        <Close className={classes.icon} />
-                                    </IconButton>
-                                </div>
-                            </div>
-                            <FormHelperText error={!isEmpty(errors?.paymentfile?.message)} style={{ marginLeft: 14 }}>
-                                {errors?.paymentfile?.message}
-                            </FormHelperText>
-                        </Grid>
-                    </Grid>
-                </Box>
-            </Grid>
-        </DialogZyx>
-    )
-}
-
-const InvoiceDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) => {
-    const classes = useStyles();
-    const { t } = useTranslation();
-    const dispatch = useDispatch();
-    const [waitSave, setWaitSave] = useState(false);
-    const [openModal, setOpenModal] = useState(false);
-    const executeRes = useSelector(state => state.main.execute);
-
-    const { handleSubmit, setValue, getValues, formState: { errors } } = useForm({
-        defaultValues: {
-            invoiceid: data?.invoiceid || 0,
-            filenumber: data?.filenumber || '',
-            purchaseorder: data?.purchaseorder || '',
-            executingunitcode: data?.executingunitcode || '',
-            selectionprocessnumber: data?.selectionprocessnumber || '',
-            contractnumber: data?.contractnumber || '',
-            comments: data?.comments || '',
-            paymentnote: data?.paymentnote || "",
-            paymentfile: ""
-        }
-    });
-
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
-                fetchData && fetchData();
-                dispatch(showBackdrop(false));
-                setViewSelected("view-1")
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                setWaitSave(false);
-                dispatch(showBackdrop(false));
-            }
-        }
-    }, [executeRes, waitSave])
-
-
-    const onSubmit = handleSubmit((row) => {
-        const callback = () => {
-            dispatch(execute(insInvoice({ ...data!!, ...row })));
-            dispatch(showBackdrop(true));
-            setWaitSave(true)
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))
-    });
-
-    const onPaid = () => {
-        fetchData();
-        setOpenModal(false);
-        setViewSelected("view-1");
-    }
-
-    return (
-        <div style={{ width: '100%' }}>
-            <div>
-                <PaymentComp
-                    data={data}
-                    openModal={openModal}
-                    setOpenModal={setOpenModal}
-                    onTrigger={onPaid}
-                />
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div>
-                        <TemplateBreadcrumbs
-                            breadcrumbs={invocesBread}
-                            handleClick={setViewSelected}
-                        />
-                        <TitleDetail
-                            title={data?.description}
-                        />
-                    </div>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                        {data?.paymentstatus === "PENDING" &&
-                            <Button
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                                startIcon={<PaymentIcon color="secondary" />}
-                                style={{ backgroundColor: "#55BD84" }}
-                                onClick={() => setOpenModal(true)}
-                            >{t(langKeys.pay)}
-                            </Button>
-                        }
-                    </div>
-                </div>
-                <div style={{ backgroundColor: 'white', padding: 16 }}>
-                    <div className={classes.container}>
-                        <div className={classes.containerField}>
-                            <div className={classes.titleCard}>{t(langKeys.clientinformation)}</div>
-                            <FieldView
-                                label={t(langKeys.docType)}
-                                value={data?.receiverdoctype}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.documentnumber)}
-                                value={data?.receiverdocnum}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.bussinessname)}
-                                value={data?.receiverbusinessname}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.address)}
-                                value={data?.receiverfiscaladdress}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.country)}
-                                value={data?.receivercountry}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.email)}
-                                value={data?.receivermail}
-                                className={classes.fieldView}
-                            />
-                        </div>
-                        <div className={classes.containerField}>
-                            <div className={classes.titleCard}>{t(langKeys.invoiceinformation)}</div>
-                            <FieldView
-                                label={t(langKeys.documentnumber)}
-                                value={data?.serie + " - " + (data?.correlative || "")}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.invoicedate)}
-                                value={data?.invoicedate}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.dueDate)}
-                                value={data?.expirationdate}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.totalamount)}
-                                value={data?.totalamount}
-                                className={classes.fieldView}
-                            />
-
-                            <FieldView
-                                label={t(langKeys.currency)}
-                                value={data?.currency}
-                                className={classes.fieldView}
-                            />
-                            <div>
-                                <a href={data?.urlpdf} target="_blank" rel="noreferrer">{t(langKeys.urlpdf)}</a>
-                            </div>
-                            <div>
-                                <a href={data?.urlcdr} target="_blank" rel="noreferrer">{t(langKeys.urlcdr)}</a>
-                            </div>
-                            <div>
-                                <a href={data?.urlxml} target="_blank" rel="noreferrer">{t(langKeys.urlxml)}</a>
-                            </div>
-                            {/* <FieldView
-                                label={t(langKeys.urlcdr)}
-                                value={data?.urlcdr}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.urlpdf)}
-                                value={data?.urlpdf}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.urlxml)}
-                                value={data?.urlxml}
-                                className={classes.fieldView}
-                            /> */}
-                        </div>
-                        <div className={classes.containerField} style={{ position: 'relative' }}>
-                            <div className={classes.titleCard}>{t(langKeys.additional_information)}</div>
-                            {statusToEdit.includes(data?.invoicestatus) ? (
-                                <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                                    <Fab
-                                        onClick={onSubmit}
-                                        type="submit"
-                                        size="small"
-                                        style={{ position: 'absolute', top: 8, right: 8, zIndex: 99999, backgroundColor: '#fff' }}
-                                    >
-                                        <SaveIcon color="primary" />
-                                    </Fab>
-                                    <FieldEdit
-                                        label={t(langKeys.filenumber)}
-                                        className="col-6"
-                                        type="number"
-                                        valueDefault={getValues('filenumber')}
-                                        onChange={(value) => setValue('filenumber', parseInt(value || "0"))}
-                                        error={errors?.filenumber?.message}
-                                    />
-                                    <FieldEdit
-                                        label={t(langKeys.purchaseorder)}
-                                        className="col-6"
-                                        valueDefault={getValues('purchaseorder')}
-                                        onChange={(value) => setValue('purchaseorder', value)}
-                                        error={errors?.purchaseorder?.message}
-                                    />
-                                    <FieldEdit
-                                        label={t(langKeys.executingunitcode)}
-                                        className="col-6"
-                                        valueDefault={getValues('executingunitcode')}
-                                        onChange={(value) => setValue('executingunitcode', value)}
-                                        error={errors?.executingunitcode?.message}
-                                    />
-                                    <FieldEdit
-                                        label={t(langKeys.selectionprocessnumber)}
-                                        className="col-6"
-                                        valueDefault={getValues('selectionprocessnumber')}
-                                        onChange={(value) => setValue('selectionprocessnumber', value)}
-                                        error={errors?.selectionprocessnumber?.message}
-                                    />
-                                    <FieldEdit
-                                        label={t(langKeys.contractnumber)}
-                                        className="col-6"
-                                        valueDefault={getValues('contractnumber')}
-                                        onChange={(value) => setValue('contractnumber', value)}
-                                        error={errors?.contractnumber?.message}
-                                    />
-                                    <FieldEdit
-                                        label={t(langKeys.comments)}
-                                        className="col-6"
-                                        valueDefault={getValues('comments')}
-                                        onChange={(value) => setValue('comments', value)}
-                                        error={errors?.comments?.message}
-                                    />
-                                </form>
-                            ) : (
-                                <>
-
-                                    <FieldView
-                                        label={t(langKeys.filenumber)}
-                                        value={data?.filenumber}
-                                        className={classes.fieldView}
-                                    />
-                                    <FieldView
-                                        label={t(langKeys.purchaseorder)}
-                                        value={data?.purchaseorder}
-                                        className={classes.fieldView}
-                                    />
-                                    <FieldView
-                                        label={t(langKeys.executingunitcode)}
-                                        value={data?.executingunitcode}
-                                        className={classes.fieldView}
-                                    />
-                                    <FieldView
-                                        label={t(langKeys.selectionprocessnumber)}
-                                        value={data?.selectionprocessnumber}
-                                        className={classes.fieldView}
-                                    />
-                                    <FieldView
-                                        label={t(langKeys.contractnumber)}
-                                        value={data?.contractnumber}
-                                        className={classes.fieldView}
-                                    />
-                                    <FieldView
-                                        label={t(langKeys.comments)}
-                                        value={data?.comments}
-                                        className={classes.fieldView}
-                                    />
-                                </>
-                            )}
-                        </div>
-                        <div className={classes.containerField}>
-                            <div className={classes.titleCard}>{t(langKeys.paymentinformation)}</div>
-
-                            {/* <FieldView
-                                label={t(langKeys.orderjson)}
-                                value={data?.orderjson}
-                                className={classes.fieldView}
-                            /> */}
-                            <FieldView
-                                label={t(langKeys.paymentstatus)}
-                                value={data?.paymentstatus}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.paymentdate)}
-                                value={data?.paymentdate}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.paidby)}
-                                value={data?.paidby}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.email)}
-                                value={data?.email}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.id_payment)}
-                                value={data?.orderid}
-                                className={classes.fieldView}
-                            />
-                            {/* <FieldView
-                                label={t(langKeys.capture)}
-                                value={data?.capture}
-                                className={classes.fieldView}
-                            /> */}
-                            <FieldView
-                                label={t(langKeys.paymentnote)}
-                                value={data?.paymentnote}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.paymentfile)}
-                                value={data?.paymentfile}
-                                className={classes.fieldView}
-                            />
-                        </div>
-                        {/* <div className={classes.containerField}>
-                            <div className={classes.titleCard}>{t(langKeys.optionalfields)}</div>
-                            <FieldView
-                                label={t(langKeys.invoicetype)}
-                                value={data?.invoicetype}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.sunatopecode)}
-                                value={data?.sunatopecode}
-                                className={classes.fieldView}
-                            />
-                        </div> */}
-                    </div>
-                </div>
-            </div>
-        </div >
-    )
-}
-
-const PaymentsTwo: FC = () => {
-    const dispatch = useDispatch();
-
-    const { t } = useTranslation();
-
-    const executeRes = useSelector(state => state.main.execute);
-    const multiData = useSelector(state => state.main.multiData);
-    const resInvoice = useSelector(state => state.culqi.request);
-
-    const [dataInvoice, setDataInvoice] = useState<Dictionary[]>([]);
-    const [filterMonth, setFilterMonth] = useState((new Date().getMonth() + 1).toString());
-    const [filterYear, setFilterYear] = useState(new Date().getFullYear().toString());
-    const [functiontrigger, setfunctiontrigger] = useState('');
-    const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
-    const [viewSelected, setViewSelected] = useState("view-1");
-    const [waitSave, setWaitSave] = useState(false);
-    const [waitSend, setWaitSend] = useState(false);
-
-    const fetchData = () => dispatch(getMultiCollection([selInvoice(parseInt(filterYear), filterMonth)]));
-    const search = () => dispatch(getMultiCollection([selInvoice(parseInt(filterYear), filterMonth)]));
-
-    useEffect(() => {
-        fetchData()
-    }, [])
-
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
-                const message = functiontrigger === 'generate' ? "La factura se generó correctamente." : "Factura anulada correctamente";
-                dispatch(showSnackbar({ show: true, success: true, message }))
-                fetchData && fetchData();
-                dispatch(showBackdrop(false));
-                setViewSelected("view-1")
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                setWaitSave(false);
-                dispatch(showBackdrop(false));
-            }
-        }
-    }, [executeRes, waitSave])
-
-    useEffect(() => {
-        if (waitSend) {
-            if (!resInvoice.loading && !resInvoice.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: "Factura enviada correctamente" }))
-                fetchData && fetchData();
-                dispatch(showBackdrop(false));
-            } else if (resInvoice.error) {
-                const errormessage = t(resInvoice.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                setWaitSend(false);
-                dispatch(showBackdrop(false));
-            }
-        }
-    }, [resInvoice, waitSend])
-
-    useEffect(() => {
-        if (!multiData.loading && !multiData.error) {
-            const invoiceData = multiData.data.find(x => x.key === "UFN_INVOICE_SEL");
-            if (invoiceData) {
-                setDataInvoice(invoiceData.data);
-            }
-        }
-    }, [multiData])
-
-    const columns = React.useMemo(
-        () => [
-            {
-                accessor: 'billingsupportid',
-                isComponent: true,
-                minWidth: 60,
-                width: '1%',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-                    const handleClose = () => setAnchorEl(null);
-                    return (
-                        <>
-                            <IconButton
-                                aria-label="more"
-                                aria-controls="long-menu"
-                                aria-haspopup="true"
-                                size="small"
-                                onClick={() => handleView(row)}
-                            >
-                                <Visibility style={{ color: '#B6B4BA' }} />
-                            </IconButton>
-                            <IconButton
-                                aria-label="more"
-                                aria-controls="long-menu"
-                                aria-haspopup="true"
-                                size="small"
-                                onClick={(e) => setAnchorEl(e.currentTarget)}
-                            >
-                                <MoreVert style={{ color: '#B6B4BA' }} />
-                            </IconButton>
-                            <Menu
-                                anchorEl={anchorEl}
-                                getContentAnchorEl={null}
-                                anchorOrigin={{
-                                    vertical: 'bottom',
-                                    horizontal: 'right',
-                                }}
-                                transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'right',
-                                }}
-                                open={Boolean(anchorEl)}
-                                onClose={handleClose}
-                            >
-                                <MenuItem onClick={(e) => {
-                                    setAnchorEl(null)
-                                    handleGenerate(row)
-                                }}>Generar factura</MenuItem>
-                                <MenuItem onClick={(e) => {
-                                    setAnchorEl(null)
-                                    handleSend(row)
-                                }}>Envíar factura</MenuItem>
-                                <MenuItem onClick={(e) => {
-                                    setAnchorEl(null)
-                                    handleCancel(row)
-                                }}>Anular factura</MenuItem>
-                            </Menu>
-                        </>
-                    )
-                }
-            },
-            {
-                Header: t(langKeys.corporation),
-                accessor: 'corpdesc',
-            },
-            {
-                Header: t(langKeys.organization),
-                accessor: 'orgdesc',
-            },
-            {
-                Header: t(langKeys.year),
-                accessor: 'year',
-            },
-            {
-                Header: t(langKeys.month),
-                accessor: 'month',
-            },
-            {
-                Header: t(langKeys.currency),
-                accessor: 'currency',
-            },
-            {
-                Header: t(langKeys.amount),
-                accessor: 'totalamount',
-                type: 'number',
-            },
-            {
-                Header: t(langKeys.paymentstatus),
-                accessor: 'paymentstatus',
-            },
-            {
-                Header: "RUC",
-                accessor: 'issuerruc',
-            },
-            {
-                Header: t(langKeys.bussinessname),
-                accessor: 'issuerbusinessname',
-            },
-            {
-                Header: t(langKeys.tradename),
-                accessor: 'issuertradename',
-            },
-            {
-                Header: "Serie",
-                accessor: 'serie',
-            },
-            {
-                Header: t(langKeys.correlative),
-                accessor: 'correlative',
-            },
-            {
-                Header: t(langKeys.dateofissue),
-                accessor: 'invoicedate',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return row.invoicedate ? new Date(row.invoicedate).toLocaleString() : ''
-                }
-            },
-            {
-                Header: t(langKeys.expirationdate),
-                accessor: 'expirationdate',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return row.expirationdate ? new Date(row.invoicedate).toLocaleString() : ''
-                }
-            },
-            {
-                Header: t(langKeys.invoicestatus),
-                accessor: 'invoicestatus',
-            },
-            
-        ],
-        []
-    );
-
-    const handleCancel = (row: Dictionary) => {
-        setfunctiontrigger("cancel")
-        const callback = () => {
-            dispatch(execute(cancelInvoice(row.invoiceid)));
-            dispatch(showBackdrop(true));
-            setWaitSave(true)
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.cancelinvoice),
-            callback
-        }))
-    }
-
-    const handleGenerate = (row: Dictionary) => {
-        setfunctiontrigger("generate")
-        const callback = () => {
-            dispatch(execute(regenerateInvoice({ invoiceid: row.invoiceid })));
-            dispatch(showBackdrop(true));
-            setWaitSave(true)
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.regenerateinvoice),
-            callback
-        }))
-    }
-
-    const handleSend = (row: Dictionary) => {
-        const callback = () => {
-            dispatch(sendInvoice(row.invoiceid));
-            dispatch(showBackdrop(true));
-            setWaitSend(true)
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.sendinvoice),
-            callback
-        }))
-    }
-
-    const handleView = (row: Dictionary) => {
-        setViewSelected("view-2");
-        setRowSelected(row);
-    }
-    
-    if (viewSelected === "view-1") {
-        return (
-            <TableZyx
-                columns={columns}
-                ButtonsElement={() => (
-                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                        <FieldSelect
-                            label={t(langKeys.year)}
-                            style={{ width: 150 }}
-                            valueDefault={filterYear}
-                            variant="outlined"
-                            onChange={(value) => setFilterYear(value?.desc || "")}
-                            data={YEARS}
-                            optionDesc="desc"
-                            optionValue="desc"
-                        />
-                        <FieldMultiSelect
-                            label={t(langKeys.month)}
-                            style={{ width: 300 }}
-                            valueDefault={filterMonth}
-                            variant="outlined"
-                            onChange={(value) => setFilterMonth(value.map((o: Dictionary) => o.val).join())}
-                            data={MONTHS}
-                            uset={true}
-                            prefixTranslation="month_"
-                            optionDesc="val"
-                            optionValue="val"
-                        />
-                        <Button
-                            disabled={multiData.loading}
-                            variant="contained"
-                            color="primary"
-                            startIcon={<SearchIcon style={{ color: 'white' }} />}
-                            style={{ width: 120, backgroundColor: "#55BD84" }}
-                            onClick={search}
-                        >{t(langKeys.search)}
-                        </Button>
-                    </div>
-                )}
-                data={dataInvoice}
-                filterGeneral={false}
-                loading={multiData.loading}
-                download={true}
-                register={false}
-            />
-        )
-    } else {
-        return (
-            <InvoiceDetail
-                fetchData={fetchData}
-                data={rowSelected}
-                setViewSelected={setViewSelected}
-            />
-        );
-    }
-}
 
 const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const dispatch = useDispatch();
@@ -2241,20 +1463,31 @@ const Payments: React.FC <{ dataPlan: any, setPageSelected (param: any): void }>
 
     const { t } = useTranslation();
 
+    const classes = useStyles();
+    const dataCorpList = dataPlan.data[2] && dataPlan.data[2].success? dataPlan.data[2].data : [];
+    const dataOrgList = dataPlan.data[1] && dataPlan.data[1].success? dataPlan.data[1].data : [];
     const executeRes = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main);
+    const user = useSelector(state => state.login.validateToken.user);
     //const multiData = useSelector(state => state.main.multiData);
 
+    const [dataMain, setdataMain] = useState({
+        corpid: user?.corpid || 0,
+        month: (new Date().getMonth() + 1).toString().padStart(2, "0"),
+        orgid: 0,
+        year: String(new Date().getFullYear()),
+        paymentstatus: "",
+        currency: ""
+    });
     const [dataInvoice, setDataInvoice] = useState<Dictionary[]>([]);
-    const [filterMonth, setFilterMonth] = useState((new Date().getMonth() + 1).toString());
-    const [filterYear, setFilterYear] = useState(new Date().getFullYear().toString());
-    const [viewSelected, setViewSelected] = useState("view-1");
+    const [disableSearch, setdisableSearch] = useState(false);
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
+    const [viewSelected, setViewSelected] = useState("view-1");
     const [waitSave, setWaitSave] = useState(false);
 
-    const fetchData = () => dispatch(getCollection(selInvoiceClient(parseInt(filterYear), filterMonth)));
+    const fetchData = () => dispatch(getCollection(selInvoiceClient(dataMain)));
 
-    const search = () => dispatch(getCollection(selInvoiceClient(parseInt(filterYear), filterMonth)));
+    const search = () => dispatch(getCollection(selInvoiceClient(dataMain)));
 
     const goToReport = () => {
         setPageSelected(1);
@@ -2263,6 +1496,10 @@ const Payments: React.FC <{ dataPlan: any, setPageSelected (param: any): void }>
     useEffect(() => {
         fetchData()
     }, [])
+
+    useEffect(() => {
+        setdisableSearch(dataMain.year === "" ) 
+    }, [dataMain])
 
     useEffect(() => {
         if (waitSave) {
@@ -2306,6 +1543,7 @@ const Payments: React.FC <{ dataPlan: any, setPageSelected (param: any): void }>
                             description=""
                             currency={row.currency}
                             amount={row.totalamount * 100}
+                            callbackOnSuccess={search}
                         ></CulqiModal>
                     )
                 }
@@ -2418,32 +1656,72 @@ const Payments: React.FC <{ dataPlan: any, setPageSelected (param: any): void }>
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                         <FieldSelect
                             label={t(langKeys.year)}
-                            style={{ width: 150 }}
-                            valueDefault={filterYear}
+                            style={{width: 140}}
+                            valueDefault={dataMain.year}
                             variant="outlined"
-                            onChange={(value) => setFilterYear(value?.desc || "")}
-                            data={YEARS}
+                            onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||""}))}
+                            data={years}
                             optionDesc="desc"
                             optionValue="desc"
                         />
                         <FieldMultiSelect
                             label={t(langKeys.month)}
-                            style={{ width: 300 }}
-                            valueDefault={filterMonth}
+                            style={{width: 214}}
+                            valueDefault={dataMain.month}
                             variant="outlined"
-                            onChange={(value) => setFilterMonth(value.map((o: Dictionary) => o.val).join())}
-                            data={MONTHS}
+                            onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
+                            data={months}
                             uset={true}
                             prefixTranslation="month_"
                             optionDesc="val"
                             optionValue="val"
                         />
+                        <FieldSelect
+                            label={t(langKeys.corporation)}
+                            className={classes.fieldsfilter}
+                            valueDefault={dataMain.corpid}
+                            variant="outlined"
+                            onChange={(value) => setdataMain(prev=>({...prev,corpid:value?.corpid||0,orgid:0}))}
+                            data={dataCorpList}
+                            optionDesc="description"
+                            optionValue="corpid"
+                        />
+                        <FieldSelect
+                            label={t(langKeys.organization)}
+                            className={classes.fieldsfilter}
+                            valueDefault={dataMain.orgid}
+                            variant="outlined"
+                            onChange={(value) => setdataMain(prev=>({...prev,orgid:value?.orgid||0}))}
+                            data={dataOrgList.filter((e:any)=>{return e.corpid===dataMain.corpid})}
+                            optionDesc="orgdesc"
+                            optionValue="orgid"
+                        />
+                        <FieldSelect
+                            label={t(langKeys.currency)}
+                            className={classes.fieldsfilter}
+                            valueDefault={dataMain.currency}
+                            variant="outlined"
+                            onChange={(value) => setdataMain(prev=>({...prev,currency:value?.value||''}))}
+                            data={datacurrency}
+                            optionDesc="description"
+                            optionValue="value"
+                        />
+                        <FieldSelect
+                            label={t(langKeys.paymentstatus)}
+                            className={classes.fieldsfilter}
+                            valueDefault={dataMain.paymentstatus}
+                            variant="outlined"
+                            onChange={(value) => setdataMain(prev=>({...prev,paymentstatus:value?.value||''}))}
+                            data={datapaymentstatus}
+                            optionDesc="description"
+                            optionValue="value"
+                        />
                         <Button
-                            disabled={mainResult.mainData.loading}
+                            disabled={mainResult.mainData.loading || disableSearch}
                             variant="contained"
                             color="primary"
-                            startIcon={<SearchIcon style={{ color: 'white' }} />}
                             style={{ width: 120, backgroundColor: "#55BD84" }}
+                            startIcon={<SearchIcon style={{ color: 'white' }} />}
                             onClick={search}
                         >{t(langKeys.search)}
                         </Button>
@@ -2459,13 +1737,773 @@ const Payments: React.FC <{ dataPlan: any, setPageSelected (param: any): void }>
         )
     } else {
         return (
-            <InvoiceDetail
+            <BillingDetail
                 fetchData={fetchData}
                 data={rowSelected}
                 setViewSelected={setViewSelected}
             />
         );
     }
+}
+
+const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
+    const dispatch = useDispatch();
+
+    const { t } = useTranslation();
+
+    const classes = useStyles();
+    const dataCorpList = dataPlan.data[2] && dataPlan.data[2].success? dataPlan.data[2].data : [];
+    const dataOrgList = dataPlan.data[1] && dataPlan.data[1].success? dataPlan.data[1].data : [];
+    const executeRes = useSelector(state => state.main.execute);
+    const mainResult = useSelector(state => state.main);
+    const user = useSelector(state => state.login.validateToken.user);
+    //const multiData = useSelector(state => state.main.multiData);
+
+    const [dataMain, setdataMain] = useState({
+        corpid: user?.corpid || 0,
+        month: (new Date().getMonth() + 1).toString().padStart(2, "0"),
+        orgid: 0,
+        year: String(new Date().getFullYear()),
+        paymentstatus: "",
+        currency: ""
+    });
+    const [dataInvoice, setDataInvoice] = useState<Dictionary[]>([]);
+    const [disableSearch, setdisableSearch] = useState(false);
+    const [functiontrigger, setfunctiontrigger] = useState('');
+    const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
+    const [viewSelected, setViewSelected] = useState("view-1");
+    const [waitSave, setWaitSave] = useState(false);
+    const [waitSend, setWaitSend] = useState(false);
+
+    const fetchData = () => dispatch(getCollection(selInvoice(dataMain)));
+
+    const search = () => dispatch(getCollection(selInvoice(dataMain)));
+
+    useEffect(() => {
+        fetchData()
+    }, [])
+
+    useEffect(() => {
+        setdisableSearch(dataMain.year === "" ) 
+    }, [dataMain])
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeRes.loading && !executeRes.error) {
+                const message = functiontrigger === 'generate' ? "La factura se generó correctamente." : "Factura anulada correctamente";
+                dispatch(showSnackbar({ show: true, success: true, message }))
+                fetchData && fetchData();
+                dispatch(showBackdrop(false));
+                setViewSelected("view-1")
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                setWaitSave(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [executeRes, waitSave])
+
+    useEffect(() => {
+        if (!mainResult.mainData.loading && !mainResult.mainData.error) {
+            setDataInvoice(mainResult.mainData.data);
+        }
+    }, [mainResult])
+
+    const columns = React.useMemo(
+        () => [
+            {
+                accessor: 'billingsupportid',
+                isComponent: true,
+                minWidth: 60,
+                width: '1%',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <>
+                            <IconButton
+                                aria-label="more"
+                                aria-controls="long-menu"
+                                aria-haspopup="true"
+                                size="small"
+                                onClick={() => handleView(row)}
+                            >
+                                <Visibility style={{ color: '#B6B4BA' }} />
+                            </IconButton>
+                        </>
+                    )
+                }
+            },
+            {
+                Header: t(langKeys.corporation),
+                accessor: 'corpdesc',
+            },
+            {
+                Header: t(langKeys.organization),
+                accessor: 'orgdesc',
+            },
+            {
+                Header: t(langKeys.year),
+                accessor: 'year',
+            },
+            {
+                Header: t(langKeys.month),
+                accessor: 'month',
+            },
+            {
+                Header: t(langKeys.documenttype),
+                accessor: 'receiverdoctype',
+                Cell: (props: any) => {
+                    const receiverdoctype = props.cell.row.original.receiverdoctype;
+                    return (
+                        <Fragment>
+                            <div>
+                                { (receiverdoctype == '6' ?
+                                    <span style={{ display: "block" }}>{t(langKeys.emissorinvoice)}</span>
+                                    :
+                                    <span style={{ display: "block" }}>{t(langKeys.emissorticket)}</span>)
+                                }
+                            </div>
+                        </Fragment>
+                    )
+                }
+            },
+            {
+                Header: t(langKeys.bussinessname),
+                accessor: 'receiverbusinessname',
+            },
+            {
+                Header: t(langKeys.documentnumber),
+                accessor: 'receiverdocnum',
+            },
+            {
+                Header: t(langKeys.currency),
+                accessor: 'currency',
+            },
+            {
+                Header: t(langKeys.amount),
+                accessor: 'totalamount',
+                type: 'number',
+            },
+            {
+                Header: t(langKeys.invoicestatus),
+                accessor: 'invoicestatus',
+            },
+            {
+                Header: t(langKeys.paymentstatus),
+                accessor: 'paymentstatus',
+            },
+        ],
+        []
+    );
+
+    const handleCancel = (row: Dictionary) => {
+        setfunctiontrigger("cancel")
+        const callback = () => {
+            dispatch(execute(cancelInvoice(row.invoiceid)));
+            dispatch(showBackdrop(true));
+            setWaitSave(true)
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.cancelinvoice),
+            callback
+        }))
+    }
+
+    const handleGenerate = (row: Dictionary) => {
+        setfunctiontrigger("generate")
+        const callback = () => {
+            dispatch(execute(regenerateInvoice({ invoiceid: row.invoiceid })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true)
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.regenerateinvoice),
+            callback
+        }))
+    }
+
+    const handleSend = (row: Dictionary) => {
+        const callback = () => {
+            dispatch(sendInvoice(row.invoiceid));
+            dispatch(showBackdrop(true));
+            setWaitSend(true)
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.sendinvoice),
+            callback
+        }))
+    }
+
+    const handleView = (row: Dictionary) => {
+        setViewSelected("view-2");
+        setRowSelected(row);
+    }
+    
+    if (viewSelected === "view-1") {
+        return (
+            <TableZyx
+                columns={columns}
+                ButtonsElement={() => (
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                        <FieldSelect
+                            label={t(langKeys.year)}
+                            style={{width: 140}}
+                            valueDefault={dataMain.year}
+                            variant="outlined"
+                            onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||""}))}
+                            data={years}
+                            optionDesc="desc"
+                            optionValue="desc"
+                        />
+                        <FieldMultiSelect
+                            label={t(langKeys.month)}
+                            style={{width: 214}}
+                            valueDefault={dataMain.month}
+                            variant="outlined"
+                            onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
+                            data={months}
+                            uset={true}
+                            prefixTranslation="month_"
+                            optionDesc="val"
+                            optionValue="val"
+                        />
+                        <FieldSelect
+                            label={t(langKeys.corporation)}
+                            className={classes.fieldsfilter}
+                            valueDefault={dataMain.corpid}
+                            variant="outlined"
+                            onChange={(value) => setdataMain(prev=>({...prev,corpid:value?.corpid||0,orgid:0}))}
+                            data={dataCorpList}
+                            optionDesc="description"
+                            optionValue="corpid"
+                        />
+                        <FieldSelect
+                            label={t(langKeys.organization)}
+                            className={classes.fieldsfilter}
+                            valueDefault={dataMain.orgid}
+                            variant="outlined"
+                            onChange={(value) => setdataMain(prev=>({...prev,orgid:value?.orgid||0}))}
+                            data={dataOrgList.filter((e:any)=>{return e.corpid===dataMain.corpid})}
+                            optionDesc="orgdesc"
+                            optionValue="orgid"
+                        />
+                        <FieldSelect
+                            label={t(langKeys.currency)}
+                            className={classes.fieldsfilter}
+                            valueDefault={dataMain.currency}
+                            variant="outlined"
+                            onChange={(value) => setdataMain(prev=>({...prev,currency:value?.value||''}))}
+                            data={datacurrency}
+                            optionDesc="description"
+                            optionValue="value"
+                        />
+                        <FieldSelect
+                            label={t(langKeys.paymentstatus)}
+                            className={classes.fieldsfilter}
+                            valueDefault={dataMain.paymentstatus}
+                            variant="outlined"
+                            onChange={(value) => setdataMain(prev=>({...prev,paymentstatus:value?.value||''}))}
+                            data={datapaymentstatus}
+                            optionDesc="description"
+                            optionValue="value"
+                        />
+                        <Button
+                            disabled={mainResult.mainData.loading || disableSearch}
+                            variant="contained"
+                            color="primary"
+                            style={{ width: 120, backgroundColor: "#55BD84" }}
+                            startIcon={<SearchIcon style={{ color: 'white' }} />}
+                            onClick={search}
+                        >{t(langKeys.search)}
+                        </Button>
+                    </div>
+                )}
+                data={dataInvoice}
+                filterGeneral={false}
+                loading={mainResult.mainData.loading}
+                download={true}
+                register={false}
+            />
+        )
+    } else {
+        return (
+            <BillingDetail
+                fetchData={fetchData}
+                data={rowSelected}
+                setViewSelected={setViewSelected}
+            />
+        );
+    }
+}
+
+const BillingDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) => {
+    const dispatch = useDispatch();
+
+    const { t } = useTranslation();
+
+    const classes = useStyles();
+    const executeRes = useSelector(state => state.main.execute);
+    
+    const [openModal, setOpenModal] = useState(false);
+    const [waitSave, setWaitSave] = useState(false);
+
+    const { handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+        defaultValues: {
+            invoiceid: data?.invoiceid || 0,
+            filenumber: data?.filenumber || '',
+            purchaseorder: data?.purchaseorder || '',
+            executingunitcode: data?.executingunitcode || '',
+            selectionprocessnumber: data?.selectionprocessnumber || '',
+            contractnumber: data?.contractnumber || '',
+            comments: data?.comments || '',
+            paymentnote: data?.paymentnote || "",
+            paymentfile: ""
+        }
+    });
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
+                fetchData && fetchData();
+                dispatch(showBackdrop(false));
+                setViewSelected("view-1")
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                setWaitSave(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [executeRes, waitSave])
+
+
+    const onSubmit = handleSubmit((row) => {
+        const callback = () => {
+            dispatch(execute(insInvoice({ ...data!!, ...row })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true)
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
+    });
+
+    const onPaid = () => {
+        fetchData();
+        setOpenModal(false);
+        setViewSelected("view-1");
+    }
+
+    return (
+        <div style={{ width: '100%' }}>
+            <div>
+                <PaymentComp
+                    data={data}
+                    openModal={openModal}
+                    setOpenModal={setOpenModal}
+                    onTrigger={onPaid}
+                />
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={invocesBread}
+                            handleClick={setViewSelected}
+                        />
+                        <TitleDetail
+                            title={data?.description}
+                        />
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        {data?.paymentstatus === "PENDING" &&
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                startIcon={<PaymentIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                                onClick={() => setOpenModal(true)}
+                            >{t(langKeys.pay)}
+                            </Button>
+                        }
+                    </div>
+                </div>
+                <div style={{ backgroundColor: 'white', padding: 16 }}>
+                    <div className={classes.container}>
+                        <div className={classes.containerField}>
+                            <div className={classes.titleCard}>{t(langKeys.clientinformation)}</div>
+                            <FieldView
+                                label={t(langKeys.docType)}
+                                value={data?.receiverdoctype}
+                                className={classes.fieldView}
+                            />
+                            <FieldView
+                                label={t(langKeys.documentnumber)}
+                                value={data?.receiverdocnum}
+                                className={classes.fieldView}
+                            />
+                            <FieldView
+                                label={t(langKeys.bussinessname)}
+                                value={data?.receiverbusinessname}
+                                className={classes.fieldView}
+                            />
+                            <FieldView
+                                label={t(langKeys.address)}
+                                value={data?.receiverfiscaladdress}
+                                className={classes.fieldView}
+                            />
+                            <FieldView
+                                label={t(langKeys.country)}
+                                value={data?.receivercountry}
+                                className={classes.fieldView}
+                            />
+                            <FieldView
+                                label={t(langKeys.email)}
+                                value={data?.receivermail}
+                                className={classes.fieldView}
+                            />
+                        </div>
+                        <div className={classes.containerField}>
+                            <div className={classes.titleCard}>{t(langKeys.invoiceinformation)}</div>
+                            <FieldView
+                                label={t(langKeys.documentnumber)}
+                                value={data?.serie + " - " + (data?.correlative || "")}
+                                className={classes.fieldView}
+                            />
+                            <FieldView
+                                label={t(langKeys.invoicedate)}
+                                value={data?.invoicedate}
+                                className={classes.fieldView}
+                            />
+                            <FieldView
+                                label={t(langKeys.dueDate)}
+                                value={data?.expirationdate}
+                                className={classes.fieldView}
+                            />
+                            <FieldView
+                                label={t(langKeys.totalamount)}
+                                value={data?.totalamount}
+                                className={classes.fieldView}
+                            />
+
+                            <FieldView
+                                label={t(langKeys.currency)}
+                                value={data?.currency}
+                                className={classes.fieldView}
+                            />
+                            <div>
+                                <a href={data?.urlpdf} target="_blank" rel="noreferrer">{t(langKeys.urlpdf)}</a>
+                            </div>
+                            <div>
+                                <a href={data?.urlcdr} target="_blank" rel="noreferrer">{t(langKeys.urlcdr)}</a>
+                            </div>
+                            <div>
+                                <a href={data?.urlxml} target="_blank" rel="noreferrer">{t(langKeys.urlxml)}</a>
+                            </div>
+                        </div>
+                        <div className={classes.containerField} style={{ position: 'relative' }}>
+                            <div className={classes.titleCard}>{t(langKeys.additional_information)}</div>
+                            {statusToEdit.includes(data?.invoicestatus) ? (
+                                <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                    <Fab
+                                        onClick={onSubmit}
+                                        type="submit"
+                                        size="small"
+                                        style={{ position: 'absolute', top: 8, right: 8, zIndex: 99999, backgroundColor: '#fff' }}
+                                    >
+                                        <SaveIcon color="primary" />
+                                    </Fab>
+                                    <FieldEdit
+                                        label={t(langKeys.filenumber)}
+                                        className="col-6"
+                                        type="number"
+                                        valueDefault={getValues('filenumber')}
+                                        onChange={(value) => setValue('filenumber', parseInt(value || "0"))}
+                                        error={errors?.filenumber?.message}
+                                    />
+                                    <FieldEdit
+                                        label={t(langKeys.purchaseorder)}
+                                        className="col-6"
+                                        valueDefault={getValues('purchaseorder')}
+                                        onChange={(value) => setValue('purchaseorder', value)}
+                                        error={errors?.purchaseorder?.message}
+                                    />
+                                    <FieldEdit
+                                        label={t(langKeys.executingunitcode)}
+                                        className="col-6"
+                                        valueDefault={getValues('executingunitcode')}
+                                        onChange={(value) => setValue('executingunitcode', value)}
+                                        error={errors?.executingunitcode?.message}
+                                    />
+                                    <FieldEdit
+                                        label={t(langKeys.selectionprocessnumber)}
+                                        className="col-6"
+                                        valueDefault={getValues('selectionprocessnumber')}
+                                        onChange={(value) => setValue('selectionprocessnumber', value)}
+                                        error={errors?.selectionprocessnumber?.message}
+                                    />
+                                    <FieldEdit
+                                        label={t(langKeys.contractnumber)}
+                                        className="col-6"
+                                        valueDefault={getValues('contractnumber')}
+                                        onChange={(value) => setValue('contractnumber', value)}
+                                        error={errors?.contractnumber?.message}
+                                    />
+                                    <FieldEdit
+                                        label={t(langKeys.comments)}
+                                        className="col-6"
+                                        valueDefault={getValues('comments')}
+                                        onChange={(value) => setValue('comments', value)}
+                                        error={errors?.comments?.message}
+                                    />
+                                </form>
+                            ) : (
+                                <>
+
+                                    <FieldView
+                                        label={t(langKeys.filenumber)}
+                                        value={data?.filenumber}
+                                        className={classes.fieldView}
+                                    />
+                                    <FieldView
+                                        label={t(langKeys.purchaseorder)}
+                                        value={data?.purchaseorder}
+                                        className={classes.fieldView}
+                                    />
+                                    <FieldView
+                                        label={t(langKeys.executingunitcode)}
+                                        value={data?.executingunitcode}
+                                        className={classes.fieldView}
+                                    />
+                                    <FieldView
+                                        label={t(langKeys.selectionprocessnumber)}
+                                        value={data?.selectionprocessnumber}
+                                        className={classes.fieldView}
+                                    />
+                                    <FieldView
+                                        label={t(langKeys.contractnumber)}
+                                        value={data?.contractnumber}
+                                        className={classes.fieldView}
+                                    />
+                                    <FieldView
+                                        label={t(langKeys.comments)}
+                                        value={data?.comments}
+                                        className={classes.fieldView}
+                                    />
+                                </>
+                            )}
+                        </div>
+                        <div className={classes.containerField}>
+                            <div className={classes.titleCard}>{t(langKeys.paymentinformation)}</div>
+                            <FieldView
+                                label={t(langKeys.paymentstatus)}
+                                value={data?.paymentstatus}
+                                className={classes.fieldView}
+                            />
+                            <FieldView
+                                label={t(langKeys.paymentdate)}
+                                value={data?.paymentdate}
+                                className={classes.fieldView}
+                            />
+                            <FieldView
+                                label={t(langKeys.paidby)}
+                                value={data?.paidby}
+                                className={classes.fieldView}
+                            />
+                            <FieldView
+                                label={t(langKeys.email)}
+                                value={data?.email}
+                                className={classes.fieldView}
+                            />
+                            <FieldView
+                                label={t(langKeys.id_payment)}
+                                value={data?.orderid}
+                                className={classes.fieldView}
+                            />
+                            <FieldView
+                                label={t(langKeys.paymentnote)}
+                                value={data?.paymentnote}
+                                className={classes.fieldView}
+                            />
+                            <FieldView
+                                label={t(langKeys.paymentfile)}
+                                value={data?.paymentfile}
+                                className={classes.fieldView}
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div >
+    )
+}
+
+const PaymentComp: FC<{ data: any, openModal: boolean, setOpenModal: (param: any) => void, onTrigger: () => void }> = ({ data, openModal, setOpenModal, onTrigger }) => {
+    const dispatch = useDispatch();
+    
+    const { t } = useTranslation();
+
+    const classes = useStyles();
+    const executeRes = useSelector(state => state.main.execute);
+    const resInvoice = useSelector(state => state.culqi.request);
+    
+    const [chatBtn, setChatBtn] = useState<File | string | null>(null);
+    const [waitSave, setWaitSave] = useState(false);
+    const [waitSend, setWaitSend] = useState(false);
+
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+        defaultValues: {
+            invoiceid: data?.invoiceid || 0,
+            paymentnote: '',
+            paymentfile: ""
+        }
+    });
+
+    const chatImgUrl = getImgUrl(chatBtn);
+
+    const mandatoryFileField = (value: string | File | null) => {
+        return !value ? t(langKeys.field_required) : undefined;
+    }
+
+    React.useEffect(() => {
+        register('invoiceid');
+        register('paymentnote', { validate: mandatoryFileField });
+        register('paymentfile', { validate: mandatoryFileField });
+    }, [register]);
+
+    useEffect(() => {
+        if (waitSend) {
+            if (!executeRes.loading && !executeRes.error) {
+                setWaitSave(false);
+                setWaitSave(true);
+                dispatch(sendInvoice(data.invoiceid));
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                setWaitSave(false);
+                setWaitSend(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [executeRes, waitSend])
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!resInvoice.loading && !resInvoice.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+                setWaitSend(false);
+                onTrigger();
+            }
+            else if (executeRes.error) {
+                const errormessage = t(resInvoice.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                setWaitSave(false);
+                setWaitSend(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [resInvoice, waitSave])
+
+    const onSubmit = handleSubmit((dataf) => {
+        const callback = () => {
+            dispatch(showBackdrop(true));
+            dispatch(execute(selInvoiceChangePaymentStatus(dataf)));
+            setWaitSend(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
+    });
+
+    const onChangeChatInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+        if (!e.target.files) return;
+        setChatBtn(e.target.files[0]);
+        setValue("paymentfile", String(getImgUrl(e.target.files[0])))
+    }
+
+    const handleChatBtnClick = () => {
+        const input = document.getElementById('chatBtnInput');
+        input!.click();
+    }
+
+    const handleCleanChatInput = () => {
+        if (!chatBtn) return;
+        const input = document.getElementById('chatBtnInput') as HTMLInputElement;
+        input.value = "";
+        setChatBtn(null);
+        setValue('paymentfile', "");
+    }
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.pay)}
+            buttonText1={t(langKeys.cancel)}
+            buttonText2={t(langKeys.save)}
+            handleClickButton1={() => setOpenModal(false)}
+            handleClickButton2={onSubmit}
+            button2Type="submit"
+        >
+            <FieldEdit
+                label={t(langKeys.paymentnote)}
+                valueDefault={getValues('paymentnote')}
+                error={errors?.paymentnote?.message}
+                onChange={(value) => setValue('paymentnote', value)}
+                className="col-12"
+            />
+            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                <Box m={1}>
+                    <Grid container direction="row">
+                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                            <label className={classes.text}>
+                                {t(langKeys.evidenceofpayment)}
+                            </label>
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+                                <div className={classes.imgContainer}>
+                                    {chatImgUrl && <img src={chatImgUrl} alt="icon button" className={classes.img} />}
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
+                                    <input
+                                        accept="image/*"
+                                        style={{ display: 'none' }}
+                                        id="chatBtnInput"
+                                        type="file"
+                                        onChange={onChangeChatInput}
+                                    />
+                                    <IconButton onClick={handleChatBtnClick}>
+                                        <CloudUpload className={classes.icon} />
+                                    </IconButton>
+                                    <IconButton onClick={handleCleanChatInput}>
+                                        <Close className={classes.icon} />
+                                    </IconButton>
+                                </div>
+                            </div>
+                            <FormHelperText error={!isEmpty(errors?.paymentfile?.message)} style={{ marginLeft: 14 }}>
+                                {errors?.paymentfile?.message}
+                            </FormHelperText>
+                        </Grid>
+                    </Grid>
+                </Box>
+            </Grid>
+        </DialogZyx>
+    )
 }
 
 const Invoice: FC = () => {
@@ -2527,9 +2565,9 @@ const Invoice: FC = () => {
                 {(user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMIN") && 
                     <AntTab label={t(langKeys.payments)} />
                 }
-                {/*(user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMIN") && 
-                    <AntTab label={t(langKeys.payments)} />
-                */}
+                {user?.roledesc === "SUPERADMIN" && 
+                    <AntTab label={t(langKeys.invoice)} />
+                }
             </Tabs>
             {pageSelected === 0 &&
                 <div style={{ marginTop: 16 }}>
@@ -2546,11 +2584,11 @@ const Invoice: FC = () => {
                     <Payments dataPlan={multiData} setPageSelected={setPageSelected}/>
                 </div>
             }
-            {/*pageSelected === 3 &&
+            {pageSelected === 3 &&
                 <div style={{ marginTop: 16 }}>
-                    <PaymentsTwo />
+                    <Billing dataPlan={multiData}/>
                 </div>
-            */}
+            }
         </div>
     );
 }

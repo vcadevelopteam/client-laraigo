@@ -1754,6 +1754,8 @@ const translation: LangKeys = {
     xmldocument: 'Get XML',
     cdrdocument: 'Get CDR',
     pendingpayment: 'Pending Payment',
+    emissorinvoice: 'INVOICE',
+    emissorticket: 'TICKET',
 };
 
 const enResource: ResourceLanguage = {

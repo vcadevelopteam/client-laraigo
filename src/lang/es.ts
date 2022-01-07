@@ -1748,6 +1748,8 @@ const translation: LangKeys = {
     xmldocument: 'Ver XML',
     cdrdocument: 'Ver CDR',
     pendingpayment: 'Pendiente a Pago',
+    emissorinvoice: 'FACTURA',
+    emissorticket: 'BOLETA',
 };
 
 const esResource: ResourceLanguage = {

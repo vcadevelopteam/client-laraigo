@@ -1749,6 +1749,8 @@ export const langKeys = {
     xmldocument: 'xmldocument',
     cdrdocument: 'cdrdocument',
     pendingpayment: 'pendingpayment',
+    emissorinvoice: 'emissorinvoice',
+    emissorticket: 'emissorticket',
 };
 
 export type LangKeys = typeof langKeys;

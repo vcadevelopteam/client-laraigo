@@ -30,20 +30,24 @@ interface CulqiModalProps {
     interval_count?: number;
     limit?: number;
     options?: CulqiOptionsProps;
+    callbackOnSuccess?: () => void;
     metadata?: Dictionary;
 }
 
 const publickey = apiUrls.CULQIKEY;
 
-/*
-<CulqiModal
+
+{/* <CulqiModal
     type="CHARGE"
     title="Basic plan"
     description=""
     currency="USD"
     amount={10000}
-></CulqiModal>
-*/
+    callbackOnSuccess={() => {
+        ....
+    }}
+></CulqiModal> */}
+
 
 const CulqiModal: FC<CulqiModalProps> = ({
     invoiceid,
@@ -56,7 +60,8 @@ const CulqiModal: FC<CulqiModalProps> = ({
     interval_count,
     limit,
     options = {},
-    metadata
+    metadata, 
+    callbackOnSuccess
 }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -107,6 +112,7 @@ const CulqiModal: FC<CulqiModalProps> = ({
             dispatch(showBackdrop(false));
             console.log(culqiSelector.data);
             dispatch(resetCharge());
+            callbackOnSuccess && callbackOnSuccess()
         }
         else if (culqiSelector.error) {
             dispatch(showSnackbar({ show: true, success: false, message: '' + culqiSelector.message }))
