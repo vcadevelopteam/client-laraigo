@@ -7,8 +7,8 @@ import { FieldMultiSelect } from "components";
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { showBackdrop } from 'store/popus/actions';
-import { getasesoresbyorgid, getValuesFromDomain, heatmappage1, heatmappage1detail, heatmappage2, heatmappage3, heatmappage3detail } from 'common/helpers/requestBodies';
-import { getMultiCollection, getMultiCollectionAux, getMultiCollectionAux2 } from 'store/main/actions';
+import { getasesoresbyorgid, getValuesFromDomain, heatmappage1, heatmappage1detail, heatmappage2, heatmappage2detail1, heatmappage2detail2, heatmappage3, heatmappage3detail } from 'common/helpers/requestBodies';
+import { getCollectionAux, getMultiCollection, getMultiCollectionAux, getMultiCollectionAux2, resetMultiMainAux } from 'store/main/actions';
 import { useSelector } from 'hooks';
 import { Dictionary } from '@types';
 import TableZyx from 'components/fields/table-simple';
@@ -296,6 +296,7 @@ const MainHeatMap: React.FC = () => {
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : "Promedio",
             accessor: key,
             NoFilter: true,
+            NoSort: true,
             Cell: (props: any) => {
                 const column = props.cell.column;
                 const row = props.cell.row.original;
@@ -325,6 +326,7 @@ const MainHeatMap: React.FC = () => {
                 Header: `Hora`,
                 accessor: "hournum",
                 NoFilter: true,
+                NoSort: true,
             },
             ...arraytemplate
         ])
@@ -431,6 +433,7 @@ const MainHeatMap: React.FC = () => {
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : "Promedio",
             accessor: key,
             NoFilter: true,
+            NoSort: true,
             Cell: (props: any) => {
                 const column = props.cell.column;
                 const row = props.cell.row.original;
@@ -469,6 +472,7 @@ const MainHeatMap: React.FC = () => {
                 Header: `Hora`,
                 accessor: "hournum",
                 NoFilter: true,
+                NoSort: true,
             },
             ...arraytemplate
         ])
@@ -573,6 +577,7 @@ const MainHeatMap: React.FC = () => {
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : "Promedio",
             accessor: key,
             NoFilter: true,
+            NoSort: true,
             Cell: (props: any) => {
                 const column = props.cell.column;
                 const row = props.cell.row.original;
@@ -613,6 +618,7 @@ const MainHeatMap: React.FC = () => {
                 Header: `Hora`,
                 accessor: "hournum",
                 NoFilter: true,
+                NoSort: true,
             },
             ...arraytemplate
         ])
@@ -716,6 +722,7 @@ const MainHeatMap: React.FC = () => {
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : "Promedio",
             accessor: key,
             NoFilter: true,
+            NoSort: true,
             Cell: (props: any) => {
                 const column = props.cell.column;
                 const row = props.cell.row.original;
@@ -755,6 +762,7 @@ const MainHeatMap: React.FC = () => {
                 Header: `Hora`,
                 accessor: "hournum",
                 NoFilter: true,
+                NoSort: true,
             },
             ...arraytemplate
         ])
@@ -858,6 +866,7 @@ const MainHeatMap: React.FC = () => {
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : "Promedio",
             accessor: key,
             NoFilter: true,
+            NoSort: true,
             Cell: (props: any) => {
                 const column = props.cell.column;
                 const row = props.cell.row.original;
@@ -897,6 +906,7 @@ const MainHeatMap: React.FC = () => {
                 Header: `Hora`,
                 accessor: "hournum",
                 NoFilter: true,
+                NoSort: true,
             },
             ...arraytemplate
         ])
@@ -917,6 +927,7 @@ const MainHeatMap: React.FC = () => {
                     />
                 </div>
                 <div style={{flex:1}}>
+
                     <FieldMultiSelect
                         label={t(langKeys.advisor)}
                         className={classes.fieldsfilter}
@@ -1020,7 +1031,7 @@ const MainHeatMap: React.FC = () => {
     )
 }
 
-const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any, listadvisers: any}> = ({companydomain,groupsdomain,listadvisers}) => {
+const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({companydomain,groupsdomain}) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const [realizedsearch, setrealizedsearch] = useState(false);
@@ -1041,9 +1052,70 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any, listadviser
     const [ventasxAsesorData, setventasxAsesorData] = useState<any>([]);
     const [ventasxAsesorTitle, setventasxAsesorTitle] = useState<any>([]);
     const [typeEfectiveness, settypeEfectiveness] = useState(true);
+    const [listadvisers, setlistadvisers] = useState<any>([]);
     const dataAdvisor = [{domaindesc: t(langKeys.agent), domainvalue: "ASESOR"},{domaindesc: "Bot", domainvalue: "BOT"}]
     const dispatch = useDispatch();
-    //const mainData = useSelector(state => state.main.mainData);
+    const multiDataAux2 = useSelector(state => state.main.multiDataAux2);
+    const [modalRow, setModalRow] = useState<Dictionary | null>(null);
+    const [modalTitle, setModalTitle] = useState('');
+    const [modalColumns, setModalColumns] = useState<any>([]);
+    const [waitDetail, setWaitDetail] = useState(false);
+    const [openModal, setOpenModal] = useState(false);
+    const mainAux = useSelector(state => state.main.mainAux);
+    const fetchDetail = (grid: string, column: Dictionary, row: Dictionary,page2:boolean) => {
+        if ((typeof(row[column.id]) === 'number' && row[column.id] > 0)
+        || (typeof(row[column.id]) === 'string' && row[column.id] !== '00:00:00')) {
+            setModalRow(row);
+            const day = column.id.replace('day','');
+            const user = listadvisers.filter((x:any)=>x.userid === row.userid)[0].userdesc
+            switch (grid) {
+                case 'COMPLETED':
+                    setModalTitle(`Tickets ${user} ${t(langKeys.day)} ${day}`)
+                    setModalColumns([
+                        { Header: t(langKeys.ticket), accessor: 'ticketnum' },
+                        { Header: t(langKeys.agent), accessor: 'asesor' },
+                    ])
+                    break;
+                case 'ABANDONED':
+                    setModalTitle(`Tickets ${user} ${t(langKeys.day)} ${day}`)
+                    setModalColumns([
+                        { Header: t(langKeys.ticket), accessor: 'ticketnum' },
+                    ])
+                    break;
+                case 'OPPORTUNITY':
+                    setModalTitle(`${t(langKeys.opportunity_plural)} ${user} ${t(langKeys.day)} ${day}`)
+                    setModalColumns([
+                        { Header: t(langKeys.ticket), accessor: 'ticketnum' },
+                        { Header: t(langKeys.opportunityname), accessor: 'leadname' },
+                    ])
+                    break;
+                case 'OPPORTUNITYWON':
+                    setModalTitle(`${t(langKeys.opportunity_plural)} ${user} ${t(langKeys.day)} ${day}`)
+                    setModalColumns([
+                        { Header: t(langKeys.ticket), accessor: 'ticketnum' },
+                        { Header: t(langKeys.opportunitywon), accessor: 'opportunitywon' },
+                    ])
+                    break;
+                default:
+                    break;
+            }
+            (!page2)?(dispatch(getCollectionAux(heatmappage2detail1({
+                ...dataMainHeatMap,
+                startdate: new Date(dataMainHeatMap.startdate.setDate(day)),
+                enddate: new Date(dataMainHeatMap.enddate.setDate(day)),
+                agentid: row.userid,
+                option: grid
+            })))):(dispatch(getCollectionAux(heatmappage2detail2({
+                ...dataMainHeatMap,
+                startdate: new Date(dataMainHeatMap.startdate.setDate(day)),
+                enddate: new Date(dataMainHeatMap.enddate.setDate(day)),
+                agentid: row.userid,
+                option: grid
+            }))))
+            dispatch(showBackdrop(true));
+            setWaitDetail(true);
+        }
+    }
     const multiData = useSelector(state => state.main.multiData);
     const [dataMainHeatMap, setdataMainHeatMap] = useState({
         communicationchannel: "",
@@ -1058,6 +1130,21 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any, listadviser
         search()
     }, [])
 
+    useEffect(() => {
+
+        if(!multiDataAux2.loading && realizedsearch){
+            setlistadvisers(multiDataAux2.data[0]?.data||[])
+        }
+    }, [multiDataAux2,realizedsearch])
+    useEffect(() => {
+        if(waitDetail) {
+            if (!mainAux.loading){
+                dispatch(showBackdrop(false));
+                setWaitDetail(false);
+                setOpenModal(true);
+            }
+        }
+    }, [mainAux])
     useEffect(() => {
 
         if(!multiData.loading && realizedsearch){
@@ -1078,7 +1165,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any, listadviser
                 arrayfree.push(objectfree);
             })
             setrealizedsearch(false)
-            dispatch(showBackdrop(false))            
+            dispatch(showBackdrop(false))         
             initCompletadosxAsesorGrid(multiData.data[0]?.data||[],arrayfree)
             initAbandonosxAsesorGrid(multiData.data[0]?.data||[],arrayfree)
             initTasaAbandonosxAsesorGrid(multiData.data[0]?.data||[],arrayfree)
@@ -1135,11 +1222,15 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any, listadviser
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : (key==="asesor" ? "ASESOR" : "TOTAL"),
             accessor: key,
             NoFilter: true,
+            NoSort: true,
             Cell: (props: any) => {
+                const column = props.cell.column;
+                const row = props.cell.row.original;
                 if(key!=="totalcol"){
                     let color=gradient(props.cell.row.original[key])
                     
-                    return <div style={{background: `#${color}`, textAlign: "center", color:"black"}} >{(props.cell.row.original[key])}</div>
+                    return <div style={{background: `#${color}`, textAlign: "center", color:"black"}} 
+                            onClick={() => fetchDetail('COMPLETED', column, row,false)}>{(props.cell.row.original[key])}</div>
                     
                 }
                 else{
@@ -1153,6 +1244,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any, listadviser
                 Header: `Adviser`,
                 accessor: "asesor",
                 NoFilter: true,
+                NoSort: true,
             },
             ...arraytemplate
         ])
@@ -1201,11 +1293,14 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any, listadviser
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : (key==="asesor" ? "ASESOR" : "TOTAL"),
             accessor: key,
             NoFilter: true,
+            NoSort: true,
             Cell: (props: any) => {
                 if(key!=="totalcol"){
                     let color=gradient(props.cell.row.original[key])
+                    const column = props.cell.column;
+                    const row = props.cell.row.original;
                     
-                    return <div style={{background: `#${color}`, textAlign: "center", color:"black"}} >{(props.cell.row.original[key])}</div>
+                    return <div onClick={() => fetchDetail('ABANDONED', column, row,false)} style={{background: `#${color}`, textAlign: "center", color:"black"}} >{(props.cell.row.original[key])}</div>
                     
                 }
                 else{
@@ -1219,6 +1314,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any, listadviser
                 Header: `Adviser`,
                 accessor: "asesor",
                 NoFilter: true,
+                NoSort: true,
             },
             ...arraytemplate
         ])
@@ -1226,7 +1322,6 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any, listadviser
     function initTasaAbandonosxAsesorGrid(data:any,arraything:any){
         let arrayfree: any = [...arraything];
         let mes = dataMainHeatMap.startdate?.getMonth()+1
-
         data.forEach((row:any)=>{
             const day = parseInt(row.fecha.split("-")[2])
             const hour = row.userid;
@@ -1244,10 +1339,12 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any, listadviser
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : (key==="asesor" ? "ASESOR" : "TOTAL"),
             accessor: key,
             NoFilter: true,
+            NoSort: true,
             Cell: (props: any) => {
-                let color=gradient(props.cell.row.original[key])
-                let number = `${(parseInt(props.cell.row.original[key])*100).toFixed(0)} %`
-                return <div style={{background: `#${color}`, textAlign: "center", color:"black"}} >{number}</div>
+                let color=gradient(Number(props.cell.row.original[key]))
+                let number = `${(Number(props.cell.row.original[key])*100).toFixed(0)} %`
+                return (
+                    <div style={{background: `#${color}`, textAlign: "center", color:"black"} } >{number}</div>)
             },
         }));
         arraytemplate.shift()
@@ -1257,6 +1354,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any, listadviser
                 Header: `Adviser`,
                 accessor: "asesor",
                 NoFilter: true,
+                NoSort: true,
             },
             ...arraytemplate
         ])
@@ -1305,11 +1403,14 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any, listadviser
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : (key==="asesor" ? "ASESOR" : "TOTAL"),
             accessor: key,
             NoFilter: true,
+            NoSort: true,
             Cell: (props: any) => {
                 if(key!=="totalcol"){
                     let color=gradient(props.cell.row.original[key])
+                    const column = props.cell.column;
+                    const row = props.cell.row.original;
                     
-                    return <div style={{background: `#${color}`, textAlign: "center", color:"black"}} >{(props.cell.row.original[key])}</div>
+                    return <div onClick={() => fetchDetail('OPPORTUNITY', column, row,true)}  style={{background: `#${color}`, textAlign: "center", color:"black"}} >{(props.cell.row.original[key])}</div>
                     
                 }
                 else{
@@ -1323,6 +1424,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any, listadviser
                 Header: `Adviser`,
                 accessor: "asesor",
                 NoFilter: true,
+                NoSort: true,
             },
             ...arraytemplate
         ])
@@ -1340,7 +1442,6 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any, listadviser
         setTasaOportunidadesData(arrayfree)
         
         function gradient(porcentage:number){
-
             return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*porcentage).toString(16)
         }
         
@@ -1348,9 +1449,10 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any, listadviser
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : (key==="asesor" ? "ASESOR" : "TOTAL"),
             accessor: key,
             NoFilter: true,
+            NoSort: true,
             Cell: (props: any) => {
-                let color=gradient(props.cell.row.original[key])
-                let number = `${(parseInt(props.cell.row.original[key])*100).toFixed(0)} %`
+                let color=gradient(Number(props.cell.row.original[key]))
+                let number = `${(Number(props.cell.row.original[key])*100).toFixed(0)} %`
                 return <div style={{background: `#${color}`, textAlign: "center", color:"black"}} >{number}</div>
             },
         }));
@@ -1361,6 +1463,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any, listadviser
                 Header: `Adviser`,
                 accessor: "asesor",
                 NoFilter: true,
+                NoSort: true,
             },
             ...arraytemplate
         ])
@@ -1413,11 +1516,14 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any, listadviser
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : (key==="asesor" ? "ASESOR" : "TOTAL"),
             accessor: key,
             NoFilter: true,
+            NoSort: true,
             Cell: (props: any) => {
                 if(key!=="totalcol"){
                     let color=gradient(props.cell.row.original[key])
+                    const column = props.cell.column;
+                    const row = props.cell.row.original;
                     
-                    return <div style={{background: `#${color}`, textAlign: "center", color:"black"}} >{(props.cell.row.original[key])}</div>
+                    return <div onClick={() => fetchDetail('OPPORTUNITYWON', column, row,true)}  style={{background: `#${color}`, textAlign: "center", color:"black"}} >{(props.cell.row.original[key])}</div>
                     
                 }
                 else{
@@ -1431,6 +1537,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any, listadviser
                 Header: `Adviser`,
                 accessor: "asesor",
                 NoFilter: true,
+                NoSort: true,
             },
             ...arraytemplate
         ])
@@ -1457,9 +1564,10 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any, listadviser
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : (key==="asesor" ? "ASESOR" : "TOTAL"),
             accessor: key,
             NoFilter: true,
+            NoSort: true,
             Cell: (props: any) => {
-                let color=gradient(props.cell.row.original[key])
-                let number = `${(parseInt(props.cell.row.original[key])*100).toFixed(0)} %`
+                let color=gradient(Number(props.cell.row.original[key]))
+                let number = `${(Number(props.cell.row.original[key])*100).toFixed(0)} %`
                 return <div style={{background: `#${color}`, textAlign: "center", color:"black"}} >{number}</div>
             },
         }));
@@ -1470,6 +1578,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any, listadviser
                 Header: `Adviser`,
                 accessor: "asesor",
                 NoFilter: true,
+                NoSort: true,
             },
             ...arraytemplate
         ])
@@ -1488,7 +1597,6 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any, listadviser
         setefectividadxAsesorOportunidadData(arrayfree)
         
         function gradient(porcentage:number){
-
             return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*porcentage).toString(16)
         }
         
@@ -1496,9 +1604,10 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any, listadviser
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : (key==="asesor" ? "ASESOR" : "TOTAL"),
             accessor: key,
             NoFilter: true,
+            NoSort: true,
             Cell: (props: any) => {
-                let color=gradient(props.cell.row.original[key])
-                let number = `${(parseInt(props.cell.row.original[key])*100).toFixed(0)} %`
+                let color=gradient(Number(props.cell.row.original[key]))
+                let number = `${(Number(props.cell.row.original[key])*100).toFixed(0)} %`
                 return <div style={{background: `#${color}`, textAlign: "center", color:"black"}} >{number}</div>
             },
         }));
@@ -1509,11 +1618,13 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any, listadviser
                 Header: `Adviser`,
                 accessor: "asesor",
                 NoFilter: true,
+                NoSort: true,
             },
             ...arraytemplate
         ])
     }
-    function search(){
+    async function search(){
+        setlistadvisers([])
         setCompletadosxAsesorData([])
         setabandonosxAsesorData([])
         settasaAbandonosxAsesorData([])
@@ -1524,6 +1635,9 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any, listadviser
         setCantidadOportunidadesData([])
         setrealizedsearch(true)
         dispatch(showBackdrop(true))
+        dispatch(getMultiCollectionAux2([
+            getasesoresbyorgid(dataMainHeatMap.closedby),            
+        ]))
         dispatch(getMultiCollection([
             heatmappage2(dataMainHeatMap)
         ]));
@@ -1711,6 +1825,14 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any, listadviser
                     />
                 </div>:""
             }
+            <ModalHeatMap
+                openModal={openModal}
+                setOpenModal={setOpenModal}
+                title={modalTitle}
+                row={modalRow}
+                columns={modalColumns}
+                data={mainAux?.data||[]}
+            />
         </div>
     )
 }
@@ -1846,6 +1968,7 @@ const HeatMapTicket: React.FC = () => {
             Header: `${key.split('day')[1]}/${mes}`,
             accessor: key,
             NoFilter: true,
+            NoSort: true,
             Cell: (props: any) => {
                 const column = props.cell.column;
                 const row = props.cell.row.original;
@@ -1866,6 +1989,7 @@ const HeatMapTicket: React.FC = () => {
                 Header: `Hora`,
                 accessor: "hournum",
                 NoFilter: true,
+                NoSort: true,
             },
             ...arraytemplate
         ])
@@ -1929,17 +2053,18 @@ const Heatmap: FC = () => {
     const dispatch = useDispatch();
     useEffect(() => {
         if(!multiDataAux.loading){
-            setcompanydomain(multiDataAux.data[0]?.data||[])
-            setlistadvisers(multiDataAux.data[1]?.data||[])    
-            setgroupsdomain(multiDataAux.data[2]?.data||[])    
+            setcompanydomain(multiDataAux.data[0]?.data||[]) 
+            setgroupsdomain(multiDataAux.data[1]?.data||[])    
         }
     }, [multiDataAux])
     useEffect(() => {
         dispatch(getMultiCollectionAux([
             getValuesFromDomain("EMPRESA"),
-            getasesoresbyorgid(),
             getValuesFromDomain("GRUPOS")
         ]))
+        return () => {
+            dispatch(resetMultiMainAux());
+        }
     }, [])
     const { t } = useTranslation();
     return (
@@ -1957,7 +2082,7 @@ const Heatmap: FC = () => {
                 <AntTab label={t(langKeys.heatmapticket)}/>
             </Tabs>
             {pageSelected === 0 && <MainHeatMap />}
-            {pageSelected === 1 && <HeatMapAsesor companydomain={companydomain} groupsdomain={groupsdomain} listadvisers={listadvisers}/>}
+            {pageSelected === 1 && <HeatMapAsesor companydomain={companydomain} groupsdomain={groupsdomain}/>}
             {pageSelected === 2 && <HeatMapTicket />}
         </Fragment>
     )

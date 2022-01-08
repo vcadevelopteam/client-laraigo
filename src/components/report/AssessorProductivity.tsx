@@ -70,7 +70,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
     const dispatch = useDispatch();
     const mainAux = useSelector(state => state.main.mainAux);
     const [allParameters, setAllParameters] = useState({});
-    const [dateRange, setdateRange] = useState<Range>({ startDate: new Date(new Date().setDate(0)), endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0), key: 'selection' });
+    const [dateRange, setdateRange] = useState<Range>({ startDate: new Date(new Date().setDate(1)), endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0), key: 'selection' });
     const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
     const [state, setState] = useState({ checkedA: false, checkedB: false });
     const [checkedA, setcheckedA] = useState(false);

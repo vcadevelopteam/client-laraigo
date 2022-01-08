@@ -3,14 +3,14 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, DateRangePicker } from 'components';
-import { getRecordHSMList, getRecordHSMReport } from 'common/helpers';
+import { TemplateIcons, DateRangePicker, FieldSelect } from 'components';
+import { getRecordHSMList, getRecordHSMReport, getValuesFromDomain } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { getMultiCollection, getMultiCollectionAux } from 'store/main/actions';
+import { getMultiCollection, getMultiCollectionAux, resetMultiMainAux } from 'store/main/actions';
 import { showBackdrop } from 'store/popus/actions';
 import { CalendarIcon } from 'icons';
 import { Range } from 'react-date-range';
@@ -31,7 +31,7 @@ interface DetailRecordHSMRecordProps {
 const format = (date: Date) => date.toISOString().split('T')[0];
 
 const initialRange = {
-    startDate: new Date(new Date().setDate(0)),
+    startDate: new Date(new Date().setDate(1)),
     endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
     key: 'selection'
 }
@@ -66,8 +66,10 @@ const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { r
         dispatch(showBackdrop(true))
         dispatch(getMultiCollectionAux([
             getRecordHSMReport({
-                campaignname: row?.campaignname||"",
-                date: row?.date||""
+                name: row?.name || "",
+                from: row?.from || "",
+                date: row?.shippingdate || "",
+                type: row?.type || "",
             })
         ]))
     }
@@ -83,25 +85,15 @@ const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { r
 
     const columns = React.useMemo(
         () => [
-            {
+            /*{
                 accessor: 'inputvalidationid',
                 NoFilter: true,
                 isComponent: true,
                 hidden: true
-            },
+            },*/
             {
-                Header: t(langKeys.firstname),
-                accessor: 'firstname',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.lastname),
-                accessor: 'lastname',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.contact),
-                accessor: 'contact',
+                Header: t(langKeys.clientname),
+                accessor: 'clientname',
                 NoFilter: true
             },
             {
@@ -110,8 +102,8 @@ const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { r
                 NoFilter: true
             },
             {
-                Header: t(langKeys.failed),
-                accessor: 'failed',
+                Header: t(langKeys.contact),
+                accessor: 'contact',
                 NoFilter: true
             },
             {
@@ -125,33 +117,13 @@ const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { r
                 NoFilter: true
             },
             {
-                Header: `N° ${t(langKeys.transaction)}`,
-                accessor: 'transactionid',
-                NoFilter: true
-            },
-            {
                 Header: t(langKeys.group),
-                accessor: 'usergroup',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.success),
-                accessor: 'success',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.log),
-                accessor: 'log',
+                accessor: 'group',
                 NoFilter: true
             },
             {
                 Header: t(langKeys.body),
                 accessor: 'body',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.parameters),
-                accessor: 'parameters',
                 NoFilter: true
             },
             
@@ -193,12 +165,14 @@ const RecordHSMRecord: FC = () => {
     const { t } = useTranslation();
     const multiData = useSelector(state => state.main.multiData);
     
+    const multiDataAux = useSelector(state => state.main.multiDataAux);
     const classes = useStyles()
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
+    const [shippingTypesData, setshippingTypesData] = useState<any>([]);
     const [viewSelected, setViewSelected] = useState("view-1");
+    const [shippingtype, setshippingtype] = useState("");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
-
     const columns = React.useMemo(
         () => [
             {
@@ -215,14 +189,32 @@ const RecordHSMRecord: FC = () => {
                 }
             },
             {
-                Header: t(langKeys.campaign),
-                accessor: 'campaign',
+                Header: t(langKeys.namehsm),
+                accessor: 'name',
                 NoFilter: true
             },
             {
-                Header: t(langKeys.date),
-                accessor: 'date',
+                Header: t(langKeys.shippingdate),
+                accessor: 'shippingdate',
                 NoFilter: true
+            },
+            {
+                Header: t(langKeys.phone),
+                accessor: 'phone',
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const { from } = props.cell.row.original;
+                    return from;
+                }
+            },
+            {
+                Header: t(langKeys.mail),
+                accessor: 'mail',
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const { from } = props.cell.row.original;
+                    return from;
+                }
             },
             {
                 Header: t(langKeys.total),
@@ -233,7 +225,7 @@ const RecordHSMRecord: FC = () => {
             },
             {
                 Header: t(langKeys.satisfactory),
-                accessor: 'success',
+                accessor: 'satisfactory',
                 NoFilter: true,
                 type: 'number',
                 sortType: 'number',
@@ -247,25 +239,25 @@ const RecordHSMRecord: FC = () => {
             },
             {
                 Header: `% ${t(langKeys.satisfactory)}`,
-                accessor: 'successp',
+                accessor: 'satisfactoryp',
                 NoFilter: true,
-                // type: 'number',
-                // sortType: 'number',
-                // Cell: (props: any) => {
-                //     const { successp } = props.cell.row.original;
-                //     return successp;
-                // }
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { satisfactoryp } = props.cell.row.original;
+                    return `${parseInt(satisfactoryp)} %`;
+                }
             },
             {
                 Header: `% ${t(langKeys.failed)}`,
                 accessor: 'failedp',
                 NoFilter: true,
-                // type: 'number',
-                // sortType: 'number',
-                // Cell: (props: any) => {
-                //     const { failedp } = props.cell.row.original;
-                //     return failedp;
-                // }
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { failedp } = props.cell.row.original;
+                    return `${parseInt(failedp)} %`;
+                }
             },
             
         ],
@@ -279,17 +271,31 @@ const RecordHSMRecord: FC = () => {
             getRecordHSMList(
                 {
                     startdate: dateRangeCreateDate.startDate,
-                    enddate: dateRangeCreateDate.endDate
+                    enddate: dateRangeCreateDate.endDate,
+                    type: shippingtype
                 }
             )
         ]))
     }
     useEffect(() => {
+        dispatch(getMultiCollectionAux([getValuesFromDomain("SHIPPINGTYPES")]));
         search()
+        return () => {
+            dispatch(resetMultiMainAux());
+        }
     }, [])
     useEffect(() => {
         if (!multiData.loading){
             dispatch(showBackdrop(false))
+        }
+    }, [multiData])
+    useEffect(() => {
+        if (!multiDataAux.loading){
+            if(multiDataAux.data.length<=1){
+                setshippingTypesData(multiDataAux.data[0].data)
+            }else{
+                setshippingTypesData([])
+            }
         }
     }, [multiData])
 
@@ -307,6 +313,16 @@ const RecordHSMRecord: FC = () => {
                 data={multiData.data[0]?.data||[]}
                 ButtonsElement={() => (
                     <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
+                        <FieldSelect
+                            onChange={(value) => setshippingtype(value?.domainvalue||"")}
+                            label={t(langKeys.shippingtype)}
+                            loading={multiDataAux.loading}
+                            variant="outlined"
+                            style={{width: "170px"}}
+                            data={shippingTypesData}
+                            optionValue="domainvalue"
+                            optionDesc="domainvalue"
+                        />
                         <DateRangePicker
                             open={openDateRangeCreateDateModal}
                             setOpen={setOpenDateRangeCreateDateModal}

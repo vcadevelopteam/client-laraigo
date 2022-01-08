@@ -745,9 +745,10 @@ export const getChannelSel = (id: number): IRequestBody => ({
         all: id === 0,
     }
 });
-export const getasesoresbyorgid = (): IRequestBody => ({
-    method: "UFN_USER_ASESORBYORGID_LST",
+export const getasesoresbyorgid = (closedby: string): IRequestBody => ({
+    method: "UFN_USER_REPORT_HEATMAP_ASESOR_LST",
     parameters: {
+        bot: closedby.includes("BOT")
     }
 });
 
@@ -2045,6 +2046,36 @@ export const heatmappage2 = ({ communicationchannel, startdate, enddate, closedb
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
+export const heatmappage2detail1 = ({ communicationchannel, startdate, enddate, closedby, company, group, agentid,option  }: Dictionary): IRequestBody => ({
+    key: "UFN_REPORT_HEATMAP_PAGE2_1_AGENT_DETAIL_SEL",
+    method: "UFN_REPORT_HEATMAP_PAGE2_1_AGENT_DETAIL_SEL",
+    parameters: {
+        communicationchannel,
+        startdate,
+        enddate,
+        closedby,
+        company,
+        group,
+        agentid,
+        option,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+export const heatmappage2detail2 = ({ communicationchannel, startdate, enddate, closedby, company, group, agentid,option  }: Dictionary): IRequestBody => ({
+    key: "UFN_REPORT_HEATMAP_PAGE2_2_AGENT_DETAIL_SEL",
+    method: "UFN_REPORT_HEATMAP_PAGE2_2_AGENT_DETAIL_SEL",
+    parameters: {
+        communicationchannel,
+        startdate,
+        enddate,
+        closedby,
+        company,
+        group,
+        agentid,
+        option,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
 export const heatmappage3 = ({ communicationchannel, startdate, enddate}: Dictionary): IRequestBody => ({
     key: "UFN_REPORT_HEATMAP_ASESORESCONECTADOS_SEL",
     method: "UFN_REPORT_HEATMAP_ASESORESCONECTADOS_SEL",
@@ -2205,19 +2236,22 @@ export const inputValidationins = ({ id, operation, description, inputvalue, typ
     key: "UFN_INPUTVALIDATION_INS",
     parameters: { id, operation, description, inputvalue, type, status }
 })
-export const getRecordHSMList = ({ startdate, enddate }: Dictionary): IRequestBody => ({
-    method: "UFN_HSMHISTORY_LST",
-    key: "UFN_HSMHISTORY_LST",
+export const getRecordHSMList = ({ startdate, enddate,type }: Dictionary): IRequestBody => ({
+    method: "UFN_REPORT_SENTMESSAGES_LST",
+    key: "UFN_REPORT_SENTMESSAGES_LST",
     parameters: {
-        startdate, enddate,
+        startdate, enddate,type,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
-export const getRecordHSMReport = ({ campaignname, date }: Dictionary): IRequestBody => ({
-    method: "UFN_HSMHISTORY_REPORT",
-    key: "UFN_HSMHISTORY_REPORT",
+export const getRecordHSMReport = ({ name, from, date ,type}: Dictionary): IRequestBody => ({
+    method: "UFN_REPORT_SENTMESSAGES_REPORT",
+    key: "UFN_REPORT_SENTMESSAGES_REPORT",
     parameters: {
-        campaignname, date,
+        date,
+        type,
+        name,
+        from,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
