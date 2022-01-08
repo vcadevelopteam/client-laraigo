@@ -1670,9 +1670,11 @@ const translation: LangKeys = {
     type_phaselead_nuevo: 'New',
     type_phaselead_perdido: 'Lost',
     type_phaselead_propuesta: 'Proposal',
+    cantidadOportunidades: "Opportunity Quantity Heat Map",
 
     new: 'New',
     qualified: 'Qualified',
+    tasaOportunidades: "Opportunity rate heat map",
     proposition: 'Proposition',
     won: 'Won',
     lost: 'Lost',

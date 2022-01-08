@@ -400,6 +400,8 @@ const translation: LangKeys = {
     oportunidadesxAsesor: "Mapa de calor de cantidad de oportunidades",
     tasaOportunidadesxAsesor: "Mapa de calor de tasa de oportunidades",
     ventasxAsesor: "Mapa de calor de cantidad de ventas",
+    cantidadOportunidades: "Mapa de calor de cantidad de oportunidades",
+    tasaOportunidades: "Mapa de calor de tasa de oportunidades",
     efectividadxAsesor: "Mapa de calor de tasa de efectividad de ventas por asesor",
     tasaAbandonosxAsesor: "Mapa de calor de tasa de abandono",
     completadosxAsesor: "Mapa de calor de conversaciones completadas",

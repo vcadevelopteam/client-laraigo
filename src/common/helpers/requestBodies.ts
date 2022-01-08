@@ -2032,19 +2032,20 @@ export const heatmappage1detail = ({ communicationchannel, startdate, enddate, c
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
-export const heatmappage2 = ({ communicationchannel, startdate, enddate, closedby, company }: Dictionary): IRequestBody => ({
-    key: "UFN_REPORT_HEATMAP_PAGE3_SEL",
-    method: "UFN_REPORT_HEATMAP_PAGE3_SEL",
+export const heatmappage2 = ({ communicationchannel, startdate, enddate, closedby, company, group  }: Dictionary): IRequestBody => ({
+    key: "UFN_REPORT_HEATMAP_PAGE2_SEL",
+    method: "UFN_REPORT_HEATMAP_PAGE2_SEL",
     parameters: {
         communicationchannel,
         startdate,
         enddate,
         closedby,
         company,
+        group,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
-export const heatmappage3 = ({ communicationchannel, startdate, enddate }: Dictionary): IRequestBody => ({
+export const heatmappage3 = ({ communicationchannel, startdate, enddate}: Dictionary): IRequestBody => ({
     key: "UFN_REPORT_HEATMAP_ASESORESCONECTADOS_SEL",
     method: "UFN_REPORT_HEATMAP_ASESORESCONECTADOS_SEL",
     parameters: {

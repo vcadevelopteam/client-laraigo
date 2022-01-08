@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Button, createStyles, makeStyles, Tabs, TextField, Theme } from '@material-ui/core';
-import { AntTab, DialogZyx } from 'components';
+import { AntTab, DialogZyx, TemplateSwitchYesNo } from 'components';
 import { langKeys } from 'lang/keys';
 import React, { FC, Fragment, useEffect, useState } from 'react';
 import { FieldMultiSelect } from "components";
@@ -1020,20 +1020,27 @@ const MainHeatMap: React.FC = () => {
     )
 }
 
-const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({companydomain,listadvisers}) => {
+const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any, listadvisers: any}> = ({companydomain,groupsdomain,listadvisers}) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const [realizedsearch, setrealizedsearch] = useState(false);
     const [completadosxAsesorData, setCompletadosxAsesorData] = useState<any>([]);
+    const [completadosxAsesorTitle, setCompletadosxAsesorTitle] = useState<any>([]);
+    const [cantidadOportunidadesData, setCantidadOportunidadesData] = useState<any>([]);
+    const [cantidadOportunidadesTitle, setCantidadOportunidadesTitle] = useState<any>([]);
     const [abandonosxAsesorData, setabandonosxAsesorData] = useState<any>([]);
     const [abandonosxAsesorTitle, setabandonosxAsesorTitle] = useState<any>([]);
     const [tasaAbandonosxAsesorData, settasaAbandonosxAsesorData] = useState<any>([]);
     const [tasaAbandonosxAsesorTitle, settasaAbandonosxAsesorTitle] = useState<any>([]);
+    const [tasaOportunidadesData, setTasaOportunidadesData] = useState<any>([]);
+    const [tasaOportunidadesTitle, setTasaOportunidadesTitle] = useState<any>([]);
     const [efectividadxAsesorData, setefectividadxAsesorData] = useState<any>([]);
     const [efectividadxAsesorTitle, setefectividadxAsesorTitle] = useState<any>([]);
+    const [efectividadxAsesorOportunidadData, setefectividadxAsesorOportunidadData] = useState<any>([]);
+    const [efectividadxAsesorOportunidadTitle, setefectividadxAsesorOportunidadTitle] = useState<any>([]);
     const [ventasxAsesorData, setventasxAsesorData] = useState<any>([]);
     const [ventasxAsesorTitle, setventasxAsesorTitle] = useState<any>([]);
-    const [completadosxAsesorTitle, setCompletadosxAsesorTitle] = useState<any>([]);
+    const [typeEfectiveness, settypeEfectiveness] = useState(true);
     const dataAdvisor = [{domaindesc: t(langKeys.agent), domainvalue: "ASESOR"},{domaindesc: "Bot", domainvalue: "BOT"}]
     const dispatch = useDispatch();
     //const mainData = useSelector(state => state.main.mainData);
@@ -1044,7 +1051,8 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
         startdate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
         enddate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
         datetoshow: `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`,
-        company: ""
+        company: "", 
+        group: "",
     });
     useEffect(() => {
         search()
@@ -1070,20 +1078,16 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
                 arrayfree.push(objectfree);
             })
             setrealizedsearch(false)
-            dispatch(showBackdrop(false))
-            if(multiData.data[0].key === "UFN_REPORT_HEATMAP_PAGE3_SEL"){
-                initCompletadosxAsesorGrid(multiData.data[0]?.data||[],arrayfree)
-                initAbandonosxAsesorGrid(multiData.data[0]?.data||[],arrayfree)
-                initTasaAbandonosxAsesorGrid(multiData.data[0]?.data||[],arrayfree)
-                initVentasxAsesorGrid(multiData.data[0]?.data||[],arrayfree)            
-                initEfectividadxAsesorGrid(multiData.data[0]?.data||[],arrayfree)            
-            }else{
-                initCompletadosxAsesorGrid([],arrayfree)
-                initAbandonosxAsesorGrid([],arrayfree)
-                initTasaAbandonosxAsesorGrid([],arrayfree)
-                initVentasxAsesorGrid([],arrayfree)            
-                initEfectividadxAsesorGrid([],arrayfree)  
-            }
+            dispatch(showBackdrop(false))            
+            initCompletadosxAsesorGrid(multiData.data[0]?.data||[],arrayfree)
+            initAbandonosxAsesorGrid(multiData.data[0]?.data||[],arrayfree)
+            initTasaAbandonosxAsesorGrid(multiData.data[0]?.data||[],arrayfree)
+            initCantidadOportunidadesGrid(multiData.data[0]?.data||[],arrayfree)
+            initTasaOportunidadesGrid(multiData.data[0]?.data||[],arrayfree)
+            initVentasxAsesorGrid(multiData.data[0]?.data||[],arrayfree)            
+            initEfectividadxAsesorGrid(multiData.data[0]?.data||[],arrayfree)
+            initEfectividadxAsesorxoportunitiesGrid(multiData.data[0]?.data||[],arrayfree)
+            
         }
     }, [multiData,realizedsearch])
 
@@ -1222,7 +1226,6 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
     function initTasaAbandonosxAsesorGrid(data:any,arraything:any){
         let arrayfree: any = [...arraything];
         let mes = dataMainHeatMap.startdate?.getMonth()+1
-        let rowmax = 100;
 
         data.forEach((row:any)=>{
             const day = parseInt(row.fecha.split("-")[2])
@@ -1258,6 +1261,111 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
             ...arraytemplate
         ])
     }
+    function initCantidadOportunidadesGrid(data:any,arraything:any){
+        let arrayfree: any = [...arraything];
+        let mes = dataMainHeatMap.startdate?.getMonth()+1
+        let year = dataMainHeatMap.startdate?.getFullYear()
+        let rowmax = 0;
+        let dateend = new Date(year, mes, 0).getDate()
+
+        const objectlast:any = { asesor: "TOTAL" , userid: 0};
+        for(let j = 1; j <= dateend; j++) {
+            objectlast[`day${j}`] = 0;
+        }
+        objectlast[`totalcol`] = 0;
+        arrayfree.push(objectlast)
+        console.log(data)
+        data.filter((x:any) => listadvisers.filter((e:any) => e.userid === x.userid).length>0).forEach((row:any) => {
+            const day = parseInt(row.fecha.split("-")[2])
+            const hour = row.userid;
+            arrayfree = arrayfree.map((x:any) => x.userid === hour ? ({
+                ...x, 
+                [`day${day}`]: row.oportunidadesxasesor,
+                [`totalcol`]: x.totalcol + row.oportunidadesxasesor
+            }) : x) 
+            rowmax = row.oportunidadesxasesor>rowmax ? row.oportunidadesxasesor:rowmax;
+            arrayfree[listadvisers.length][`day${day}`] += row.oportunidadesxasesor;
+            arrayfree[listadvisers.length][`totalcol`] += row.oportunidadesxasesor;
+        })
+        setCantidadOportunidadesData(arrayfree)
+
+        let m=0;
+        function gradient(num:number){
+            let scale = num/rowmax
+            if(isNaN(scale)) scale=0
+            m++;
+            if ((listadvisers.length)*dateend<m){
+                return "FFFFFF"
+            }
+
+            return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*scale).toString(16)
+        }
+        
+        const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor|horanum/gi.test(key)).map(([key, value]) => ({
+            Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : (key==="asesor" ? "ASESOR" : "TOTAL"),
+            accessor: key,
+            NoFilter: true,
+            Cell: (props: any) => {
+                if(key!=="totalcol"){
+                    let color=gradient(props.cell.row.original[key])
+                    
+                    return <div style={{background: `#${color}`, textAlign: "center", color:"black"}} >{(props.cell.row.original[key])}</div>
+                    
+                }
+                else{
+                    return <div style={{textAlign: "center", fontWeight: "bold",background: "white"}}>{(props.cell.row.original[key])}</div>
+                }
+            },
+        }));
+        arraytemplate.shift()
+        setCantidadOportunidadesTitle([
+            {
+                Header: `Adviser`,
+                accessor: "asesor",
+                NoFilter: true,
+            },
+            ...arraytemplate
+        ])
+    }
+    function initTasaOportunidadesGrid(data:any,arraything:any){
+        let arrayfree: any = [...arraything];
+        let mes = dataMainHeatMap.startdate?.getMonth()+1
+
+        data.forEach((row:any)=>{
+            const day = parseInt(row.fecha.split("-")[2])
+            const hour = row.userid;
+            arrayfree = arrayfree.map((x:any) => x.userid === hour ? ({...x, [`day${day}`]: row.tasaoportunidadesxasesor}) : x) 
+        })
+        
+        setTasaOportunidadesData(arrayfree)
+        
+        function gradient(porcentage:number){
+
+            return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*porcentage).toString(16)
+        }
+        
+        const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor/gi.test(key)).map(([key, value]) => ({
+            Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : (key==="asesor" ? "ASESOR" : "TOTAL"),
+            accessor: key,
+            NoFilter: true,
+            Cell: (props: any) => {
+                let color=gradient(props.cell.row.original[key])
+                let number = `${(parseInt(props.cell.row.original[key])*100).toFixed(0)} %`
+                return <div style={{background: `#${color}`, textAlign: "center", color:"black"}} >{number}</div>
+            },
+        }));
+        arraytemplate.shift()
+        arraytemplate.pop()
+        setTasaOportunidadesTitle([
+            {
+                Header: `Adviser`,
+                accessor: "asesor",
+                NoFilter: true,
+            },
+            ...arraytemplate
+        ])
+    }
+
     function initVentasxAsesorGrid(data:any,arraything:any){
         let arrayfree: any = [...arraything];
         let mes = dataMainHeatMap.startdate?.getMonth()+1
@@ -1330,10 +1438,9 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
     function initEfectividadxAsesorGrid(data:any,arraything:any){
         let arrayfree: any = [...arraything];
         let mes = dataMainHeatMap.startdate?.getMonth()+1
-        let rowmax = 100;
 
         data.forEach((row:any)=>{
-            let efectividad = row.efectividadxasesor == null? 0: row.efectividadxasesor;
+            let efectividad = row.tasaventasxticket == null? 0: row.tasaventasxticket;
             const day = parseInt(row.fecha.split("-")[2])
             const hour = row.userid;
             arrayfree = arrayfree.map((x:any) => x.userid === hour ? ({...x, [`day${day}`]: efectividad}) : x) 
@@ -1367,12 +1474,54 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
             ...arraytemplate
         ])
     }
+    function initEfectividadxAsesorxoportunitiesGrid(data:any,arraything:any){
+        let arrayfree: any = [...arraything];
+        let mes = dataMainHeatMap.startdate?.getMonth()+1
+
+        data.forEach((row:any)=>{
+            let efectividad = row.tasaventasxoportunidad == null? 0: row.tasaventasxoportunidad;
+            const day = parseInt(row.fecha.split("-")[2])
+            const hour = row.userid;
+            arrayfree = arrayfree.map((x:any) => x.userid === hour ? ({...x, [`day${day}`]: efectividad}) : x) 
+        })
+        
+        setefectividadxAsesorOportunidadData(arrayfree)
+        
+        function gradient(porcentage:number){
+
+            return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*porcentage).toString(16)
+        }
+        
+        const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor/gi.test(key)).map(([key, value]) => ({
+            Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : (key==="asesor" ? "ASESOR" : "TOTAL"),
+            accessor: key,
+            NoFilter: true,
+            Cell: (props: any) => {
+                let color=gradient(props.cell.row.original[key])
+                let number = `${(parseInt(props.cell.row.original[key])*100).toFixed(0)} %`
+                return <div style={{background: `#${color}`, textAlign: "center", color:"black"}} >{number}</div>
+            },
+        }));
+        arraytemplate.shift()
+        arraytemplate.pop()
+        setefectividadxAsesorOportunidadTitle([
+            {
+                Header: `Adviser`,
+                accessor: "asesor",
+                NoFilter: true,
+            },
+            ...arraytemplate
+        ])
+    }
     function search(){
         setCompletadosxAsesorData([])
         setabandonosxAsesorData([])
         settasaAbandonosxAsesorData([])
+        setTasaOportunidadesData([])
         setventasxAsesorData([])
+        setefectividadxAsesorOportunidadData([])
         setefectividadxAsesorData([])
+        setCantidadOportunidadesData([])
         setrealizedsearch(true)
         dispatch(showBackdrop(true))
         dispatch(getMultiCollection([
@@ -1414,7 +1563,7 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
                         optionValue="domainvalue"
                     />
                 </div>
-                <div style={{flex:1}}>
+                <div style={{flex:1,paddingRight: 10}}>
                     <FieldMultiSelect
                         label={t(langKeys.company)}
                         className={classes.fieldsfilter}
@@ -1422,6 +1571,18 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
                         onChange={(value) => { setdataMainHeatMap(p => ({ ...p, company: value.map((o: Dictionary) => o.domainvalue).join() })) }}
                         valueDefault={dataMainHeatMap.company}
                         data={companydomain}
+                        optionDesc="domaindesc"
+                        optionValue="domainvalue"
+                    />
+                </div>
+                <div style={{flex:1}}>
+                    <FieldMultiSelect
+                        label={t(langKeys.group)}
+                        className={classes.fieldsfilter}
+                        variant="outlined"
+                        onChange={(value) => { setdataMainHeatMap(p => ({ ...p, group: value.map((o: Dictionary) => o.domainvalue).join() })) }}
+                        valueDefault={dataMainHeatMap.group}
+                        data={groupsdomain}
                         optionDesc="domaindesc"
                         optionValue="domainvalue"
                     />
@@ -1479,6 +1640,38 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
                 </div>:""
             }
             {
+                cantidadOportunidadesData.length?
+                <div style={{padding:10}}>
+                    <TableZyx
+                        columns={cantidadOportunidadesTitle}
+                        titlemodule={t(langKeys.cantidadOportunidades)}
+                        data={cantidadOportunidadesData}
+                        download={true}
+                        pageSizeDefault={50}
+                        filterGeneral={false}
+                        toolsFooter={false}
+                    />
+                </div>:""
+            }
+            {
+                tasaOportunidadesData.length?
+                <div style={{padding:10}}>
+                    <TableZyx
+                        columns={tasaOportunidadesTitle}
+                        titlemodule={t(langKeys.tasaOportunidades)}
+                        data={tasaOportunidadesData}
+                        download={true}
+                        pageSizeDefault={50}
+                        filterGeneral={false}
+                        toolsFooter={false}
+                    />
+                </div>:""
+            }
+
+
+
+
+            {
                 ventasxAsesorData.length?
                 <div style={{padding:10}}>
                     <TableZyx
@@ -1496,13 +1689,25 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
                 efectividadxAsesorData.length?
                 <div style={{padding:10}}>
                     <TableZyx
-                        columns={efectividadxAsesorTitle}
+                        columns={typeEfectiveness?efectividadxAsesorTitle:efectividadxAsesorOportunidadTitle}
                         titlemodule={t(langKeys.efectividadxAsesor)}
-                        data={efectividadxAsesorData}
+                        data={typeEfectiveness?efectividadxAsesorData:efectividadxAsesorOportunidadData}
                         download={true}
                         pageSizeDefault={50}
                         filterGeneral={false}
                         toolsFooter={false}
+                        ButtonsElement={()=>(
+                            <>
+                                <TemplateSwitchYesNo
+                                    valueDefault={typeEfectiveness}
+                                    onChange={(value) => settypeEfectiveness(value)}
+                                    textYes={t(langKeys.ticket)}
+                                    textNo={t(langKeys.opportunity_plural)}
+                                    labelPlacement="start"
+                                    style={{padding: 10}}
+                                />
+                            </>
+                        )}
                     />
                 </div>:""
             }
@@ -1719,18 +1924,21 @@ const Heatmap: FC = () => {
     const [pageSelected, setPageSelected] = useState(0);    
     const [listadvisers, setlistadvisers] = useState<any>([]);
     const [companydomain, setcompanydomain] = useState<any>([]);
+    const [groupsdomain, setgroupsdomain] = useState<any>([]);
     const multiDataAux = useSelector(state => state.main.multiDataAux);
     const dispatch = useDispatch();
     useEffect(() => {
         if(!multiDataAux.loading){
             setcompanydomain(multiDataAux.data[0]?.data||[])
             setlistadvisers(multiDataAux.data[1]?.data||[])    
+            setgroupsdomain(multiDataAux.data[2]?.data||[])    
         }
     }, [multiDataAux])
     useEffect(() => {
         dispatch(getMultiCollectionAux([
             getValuesFromDomain("EMPRESA"),
-            getasesoresbyorgid()
+            getasesoresbyorgid(),
+            getValuesFromDomain("GRUPOS")
         ]))
     }, [])
     const { t } = useTranslation();
@@ -1749,7 +1957,7 @@ const Heatmap: FC = () => {
                 <AntTab label={t(langKeys.heatmapticket)}/>
             </Tabs>
             {pageSelected === 0 && <MainHeatMap />}
-            {pageSelected === 1 && <HeatMapAsesor companydomain={companydomain} listadvisers={listadvisers}/>}
+            {pageSelected === 1 && <HeatMapAsesor companydomain={companydomain} groupsdomain={groupsdomain} listadvisers={listadvisers}/>}
             {pageSelected === 2 && <HeatMapTicket />}
         </Fragment>
     )

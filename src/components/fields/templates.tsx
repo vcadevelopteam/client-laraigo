@@ -615,6 +615,13 @@ interface TemplateSwitchProps extends InputProps {
     className?: any;
     label: string;
 }
+interface TemplateSwitchPropsYesNo extends InputProps {
+    className?: any;
+    label?: string;
+    textYes?:string;
+    textNo?:string;
+    labelPlacement?:"start" | "end" | "bottom" | "top" | undefined;
+}
 
 export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, onChange, valueDefault, label, style }) => {
     const [checkedaux, setChecked] = useState(false);
@@ -633,7 +640,7 @@ export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, onCha
         </div>
     );
 }
-export const TemplateSwitchYesNo: React.FC<TemplateSwitchProps> = ({ className, onChange, valueDefault, label, style }) => {
+export const TemplateSwitchYesNo: React.FC<TemplateSwitchPropsYesNo> = ({ className, onChange, valueDefault, label, style,textYes,textNo,labelPlacement="end" }) => {
     const [checkedaux, setChecked] = useState(false);
     const { t } = useTranslation();
 
@@ -643,14 +650,15 @@ export const TemplateSwitchYesNo: React.FC<TemplateSwitchProps> = ({ className, 
 
     return (
         <div className={className} style={{ ...style, paddingBottom: '3px' }}>
-            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{label}</Box>
+            {label && <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{label}</Box>}
             <FormControlLabel
+                labelPlacement={labelPlacement}
                 style={{paddingLeft:10}}
                 control={<IOSSwitch checked={checkedaux} onChange={(e) => {
                     setChecked(e.target.checked);
                     onChange && onChange(e.target.checked)
                 }} />}
-                label={checkedaux?t(langKeys.yes):"No"}
+                label={checkedaux?(textYes||t(langKeys.yes)):(textNo||"No")}
             />
         </div>
     );
