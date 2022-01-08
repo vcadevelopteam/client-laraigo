@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, DateRangePicker, FieldSelect } from 'components';
-import { getRecordHSMList, getRecordHSMReport, getValuesFromDomain } from 'common/helpers';
+import { getDateCleaned, getRecordHSMList, getRecordHSMReport, getValuesFromDomain } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -292,7 +292,7 @@ const RecordHSMRecord: FC = () => {
     useEffect(() => {
         if (!multiDataAux.loading){
             if(multiDataAux.data.length<=1){
-                setshippingTypesData(multiDataAux.data[0].data)
+                setshippingTypesData(multiDataAux.data[0]?.data)
             }else{
                 setshippingTypesData([])
             }
@@ -334,7 +334,7 @@ const RecordHSMRecord: FC = () => {
                                 startIcon={<CalendarIcon />}
                                 onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
                             >
-                                {format(dateRangeCreateDate.startDate!) + " - " + format(dateRangeCreateDate.endDate!)}
+                                {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
                             </Button>
                         </DateRangePicker>
                         <Button
