@@ -1807,7 +1807,7 @@ export const langKeys = {
     emissorinvoice: 'emissorinvoice',
     emissorticket: 'emissorticket',
     regulatepayment: 'regulatepayment',
-    costnotificaton: 'costnotificaton'
+    costnotificaton: 'costnotificaton',
 
     sendToHistory: 'sendToHistory',
 };
