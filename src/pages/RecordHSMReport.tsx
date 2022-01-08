@@ -99,7 +99,12 @@ const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { r
             {
                 Header: t(langKeys.status),
                 accessor: 'status',
-                NoFilter: true
+                NoFilter: true,
+                prefixTranslation: 'status_',
+                Cell: (props: any) => {
+                    const { status } = props.cell.row.original;
+                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
+                }
             },
             {
                 Header: t(langKeys.contact),

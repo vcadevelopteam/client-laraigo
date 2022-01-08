@@ -315,6 +315,9 @@ const translation: LangKeys = {
     active: 'Active',
     inactive: 'Inactive',
 
+    status_sent: 'sent',
+    'status_not sent': 'not sent',
+
     status_activo: 'active',
     status_inactivo: 'inactive',
     status_bloqueado: 'locked',

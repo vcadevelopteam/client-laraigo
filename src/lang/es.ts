@@ -493,6 +493,9 @@ const translation: LangKeys = {
     active: 'Activo',
     inactive: 'Inactivo',
 
+    status_sent: 'enviado',
+    'status_not sent': 'no enviado',
+
     status_activo: 'activo',
     no_reply_use_hsm: 'The conversation is closed or blocked due to being outside the 24 hour window.\nUse an HSM to contact the customer.',
     status_inactivo: 'inactivo',

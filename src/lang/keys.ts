@@ -661,6 +661,9 @@ export const langKeys = {
 
     attending: 'attending',
 
+    status_sent: 'status_sent',
+    'status_not sent': 'status_not sent',
+
     status_activo: 'status_activo',
     status_inactivo: 'status_inactivo',
     status_bloqueado: 'status_bloqueado',
