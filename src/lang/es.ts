@@ -108,7 +108,7 @@ const translation: LangKeys = {
     ticket: "Ticket",
     ticket_plural: 'Tickets',
 
-    billingSetup: 'Control de Facturación',
+    billingSetup: 'Config. de Facturación',
     productivity: "Productividad",
     channel: 'Canal',
     channel_plural: 'Canales',
@@ -1791,7 +1791,7 @@ const translation: LangKeys = {
     conversationcostdetail: "Detalle de Costo Basado en Conversación",
     notificationcostdetail: "Detalle de Costo Basado en Notificación",
     supportplandetail: "Detalle de Plan de Soporte",
-    costcommentary: "Lista de precios vigente a partir de febrero del 2021",
+    costcommentary: "Lista de precios vigente a partir del 1 febrero de 2022",
 
     confirmation_calculate: '¿Estas seguro que quieres calcular la data del mes actual?',
     successful_calculate: 'Se calculó satisfactoriamente',
@@ -1806,6 +1806,7 @@ const translation: LangKeys = {
     regulatepayment: 'Regularizar Pago',
     notedescription: 'Descripción de la nota',
     activitydescription: 'Descripción de la actividad',
+    costnotificaton: "Lista de precios vigente hasta el 1 de febrero de 2022",
 };
 
 const esResource: ResourceLanguage = {

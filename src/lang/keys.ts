@@ -1806,6 +1806,7 @@ export const langKeys = {
     emissorinvoice: 'emissorinvoice',
     emissorticket: 'emissorticket',
     regulatepayment: 'regulatepayment',
+    costnotificaton: 'costnotificaton'
 };
 
 export type LangKeys = typeof langKeys;

@@ -1037,7 +1037,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
     );
 }
 
-const PeriodReport: React.FC <{ dataPlan: any, setPageSelected (param: any): void }> = ({ dataPlan, setPageSelected }) => {
+const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPlan, customSearch }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -1062,6 +1062,7 @@ const PeriodReport: React.FC <{ dataPlan: any, setPageSelected (param: any): voi
     const [requesttipe, setrequesttipe] = useState(2)
     const [waitCalculate, setWaitCalculate] = useState(false);
     const [waitExport, setWaitExport] = useState(false);
+    const [waitSearch, setWaitSearch] = useState(false);
 
     function handleDateChange(e: any){
         if(e!==""){
@@ -1086,6 +1087,27 @@ const PeriodReport: React.FC <{ dataPlan: any, setPageSelected (param: any): voi
     useEffect(() => {
         search()
     }, [])
+
+    useEffect(() => {
+        if (customSearch?.corpid !== 0) {
+            setdataMain( prev => ({...prev,
+                datetoshow: `${customSearch?.year}-${String(customSearch?.month).padStart(2, '0')}`,
+                year: customSearch?.year,
+                month: customSearch?.month,
+                corpid: customSearch?.corpid,
+                orgid: customSearch?.orgid,
+                totalize: customSearch?.totalize,
+            }));
+            setWaitSearch(true);
+        }
+    }, [customSearch])
+
+    useEffect(() => {
+        if (waitSearch) {
+            setWaitSearch(false);
+            search();
+        }
+    }, [dataMain, waitSearch])
 
     useEffect(() => {
         if (!mainResult.mainData.loading){
@@ -1458,7 +1480,7 @@ const PeriodReport: React.FC <{ dataPlan: any, setPageSelected (param: any): voi
     )
 }
 
-const Payments: React.FC <{ dataPlan: any, setPageSelected (param: any): void }> = ({ dataPlan, setPageSelected }) => {
+const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStateAction<{ year: number; month: number; corpid: number; orgid: number; totalize: number; }>): void }> = ({ dataPlan, setCustomSearch }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -1482,20 +1504,33 @@ const Payments: React.FC <{ dataPlan: any, setPageSelected (param: any): void }>
     const [dataInvoice, setDataInvoice] = useState<Dictionary[]>([]);
     const [disableSearch, setdisableSearch] = useState(false);
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
+    const [rowSelect, setRowSelect] = useState(false);
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitSave, setWaitSave] = useState(false);
+    
 
     const fetchData = () => dispatch(getCollection(selInvoiceClient(dataMain)));
 
     const search = () => dispatch(getCollection(selInvoiceClient(dataMain)));
 
-    const goToReport = () => {
-        setPageSelected(1);
-    }
-
     useEffect(() => {
         fetchData()
     }, [])
+
+    useEffect(() => {
+        if (rowSelect) {
+            if (rowSelected) {
+                setCustomSearch( prev => ({...prev,
+                    year: rowSelected?.year,
+                    month: rowSelected?.month,
+                    corpid: rowSelected?.corpid,
+                    orgid: rowSelected?.orgid,
+                    totalize: rowSelected?.orgid == 0 ? 1 : 2,
+                }));
+                setRowSelect(false);
+            }
+        }
+    }, [rowSelected, rowSelect])
 
     useEffect(() => {
         setdisableSearch(dataMain.year === "" ) 
@@ -1580,10 +1615,11 @@ const Payments: React.FC <{ dataPlan: any, setPageSelected (param: any): void }>
                 Header: t(langKeys.gotoreport),
                 accessor: 'invoiceid',
                 Cell: (props: any) => {
+                    const selectedrow = props.cell.row.original;
                     return (
                         <Fragment>
                             <div>
-                                {<span onClick={goToReport} style={{ display: "block", cursor: "pointer", color: "blue", textDecoration: "underline" }}>{t(langKeys.gotoreport)}</span>}
+                                {<span onClick={() => {setRowSelected(selectedrow); setRowSelect(true)}} style={{ display: "block", cursor: "pointer", color: "blue", textDecoration: "underline" }}>{t(langKeys.gotoreport)}</span>}
                             </div>
                         </Fragment>
                     )
@@ -2521,6 +2557,20 @@ const Invoice: FC = () => {
     const [pageSelected, setPageSelected] = useState(user?.roledesc === "SUPERADMIN" ? 0 : 1);
     const [sentfirstinfo, setsentfirstinfo] = useState(false);
 
+    const [customSearch, setCustomSearch] = useState({
+        year: 0,
+        month: 0,
+        corpid: 0,
+        orgid: 0,
+        totalize: 2,
+    });
+
+    useEffect(() => {
+        if (customSearch.corpid !== 0) {
+            setPageSelected(1);
+        }
+    }, [customSearch])
+
     useEffect(() => {
         if(!multiData.loading && sentfirstinfo) {
             setsentfirstinfo(false);
@@ -2576,12 +2626,12 @@ const Invoice: FC = () => {
             }
             {pageSelected === 1 &&
                 <div style={{ marginTop: 16 }}>
-                    <PeriodReport dataPlan={multiData} setPageSelected={setPageSelected}/>
+                    <PeriodReport dataPlan={multiData} customSearch={customSearch}/>
                 </div>
             }
             {pageSelected === 2 &&
                 <div style={{ marginTop: 16 }}>
-                    <Payments dataPlan={multiData} setPageSelected={setPageSelected}/>
+                    <Payments dataPlan={multiData} setCustomSearch={setCustomSearch}/>
                 </div>
             }
             {pageSelected === 3 &&

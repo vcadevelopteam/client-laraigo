@@ -2449,7 +2449,7 @@ const DetailNotificationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                     <div className="row-zyx">
                         <FieldView
                             label=''
-                            value={t(langKeys.costcommentary)}
+                            value={t(langKeys.costnotificaton)}
                             className={classes.commentary}
                         />
                     </div>

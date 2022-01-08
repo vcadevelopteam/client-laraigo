@@ -75,7 +75,7 @@ const translation: LangKeys = {
     ticket: 'Ticket',
     ticket_plural: 'Tickets',
 
-    billingSetup: 'Billing Configuration',
+    billingSetup: 'Billing Config.',
 
     channel: 'Channel',
     channel_plural: 'Channels',
@@ -1798,7 +1798,7 @@ const translation: LangKeys = {
     conversationcostdetail: "Conversation-based Cost detail",
     notificationcostdetail: "Notification-based Cost detail",
     supportplandetail: "Support Plan detail",
-    costcommentary: "Price list valid as of February 2021",
+    costcommentary: "Price list valid as of february first of 2022",
     confirmation_calculate: 'Are you sure you want to calculate the data for the current month?',
 
     notedescription: 'Note description',
@@ -1814,6 +1814,7 @@ const translation: LangKeys = {
     emissorticket: 'TICKET',
     regulatepayment: 'Regulate Payment',
     chatimages: "Chat images",
+    costnotificaton: "Price list valid until february first of 2022",
 };
 
 const enResource: ResourceLanguage = {
