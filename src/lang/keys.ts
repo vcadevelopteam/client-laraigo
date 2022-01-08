@@ -1713,6 +1713,7 @@ export const langKeys = {
     ACTIVITYDONE: 'ACTIVITYDONE',
     ACTIVITYDISCARD: 'ACTIVITYDISCARD',
     ACTIVITYUPDATE: 'ACTIVITYUPDATE',
+    CHANGEAGENT: 'CHANGEAGENT',
     
     repeatPassword: 'repeatPassword',
     passwordsMustBeEqual: 'passwordsMustBeEqual',
@@ -1807,6 +1808,8 @@ export const langKeys = {
     emissorticket: 'emissorticket',
     regulatepayment: 'regulatepayment',
     costnotificaton: 'costnotificaton'
+
+    sendToHistory: 'sendToHistory',
 };
 
 export type LangKeys = typeof langKeys;

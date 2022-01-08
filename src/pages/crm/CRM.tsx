@@ -12,7 +12,7 @@ import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/acti
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
 import { DialogZyx3Opt, FieldEdit, FieldMultiSelect, FieldSelect } from "components";
-import { Search as SearchIcon, ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon } from '@material-ui/icons';
+import { Search as SearchIcon, ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon, Add as AddIcon } from '@material-ui/icons';
 import { Button, IconButton } from "@material-ui/core";
 import { Dictionary, ICampaignLst, ICrmLead, IDomain, IFetchData } from "@types";
 import TablePaginated, { buildQueryFilters, useQueryParams } from 'components/fields/table-paginated';
@@ -356,6 +356,12 @@ const CRM: FC = () => {
     }
   }
 
+  const initialAsesorId = useMemo(() => {
+    if (!user) return 0;
+    if (user.roledesc === "ASESOR") return user.userid;
+    else return otherParams.asesorid || mainMulti.data[2]?.data?.map(d => d.userid).includes(user?.userid) ? (user?.userid || 0) : 0;
+  }, [otherParams, user]);
+
   const mainPaginated = useSelector(state => state.main.mainPaginated);
   const resExportData = useSelector(state => state.main.exportData);
   const [pageCount, setPageCount] = useState(0);
@@ -363,14 +369,25 @@ const CRM: FC = () => {
   const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
   const [autoRefresh, setAutoRefresh] = useState(false);
   const [waitExport, setWaitExport] = useState(false);
-  const [allParameters, setAllParameters] = useState<{ contact: string, channel: string, asesorid: number }>({
-    asesorid: otherParams.asesorid || mainMulti.data[2]?.data?.map(d => d.userid).includes(user?.userid) ? (user?.userid || 0) : 0,
+  const [allParameters, setAllParametersPrivate] = useState<{ contact: string, channel: string, asesorid: number }>({
+    // asesorid: otherParams.asesorid || mainMulti.data[2]?.data?.map(d => d.userid).includes(user?.userid) ? (user?.userid || 0) : 0,
+    asesorid: initialAsesorId,
     channel: otherParams.channels,
     contact: otherParams.contact,
   });
   const [selectedRows, setSelectedRows] = useState<Dictionary>({});
   const [personsSelected, setPersonsSelected] = useState<Dictionary[]>([]);
   const [gridModal, setGridModal] = useState<IModalProps>({ name: '', open: false, payload: null });
+
+  const setAllParameters = useCallback((prop: typeof allParameters) => {
+    if (!user) return;
+
+    if (user.roledesc === "ASESOR" && prop.asesorid !== user.userid) {
+      setAllParametersPrivate({ ...prop, asesorid: user.userid });
+    } else {
+      setAllParametersPrivate(prop);
+    }
+  }, [user]);
 
   const CustomCellRender = ({column, row}: any) => {
     switch (column.id) {
@@ -603,7 +620,7 @@ const CRM: FC = () => {
           filters: filters,
           take: pageSize,
           skip: pageIndex * pageSize,
-          ...allParameters
+          ...allParameters,
         }
     )));
   };
@@ -637,6 +654,10 @@ const CRM: FC = () => {
     setWaitExport(true);
   };
 
+  const goToAddLead = useCallback(() => {
+    history.push(paths.CRM_ADD_LEAD);
+  }, [history]);
+
   useEffect(() => {
     if (waitExport) {
         if (!resExportData.loading && !resExportData.error) {
@@ -665,6 +686,40 @@ const CRM: FC = () => {
     p.set('display', display);
     history.push({ search: p.toString() });
   }, [display, history]);
+
+  const filtersElement = useMemo(() => (
+    <>
+      <FieldSelect
+        variant="outlined"
+        label={t(langKeys.user)}
+        className={classes.filterComponent}
+        valueDefault={allParameters.asesorid}
+        onChange={(value) => setAllParameters({...allParameters, asesorid: value?.userid})}
+        data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
+        optionDesc={'fullname'}
+        optionValue={'userid'}
+        disabled={user?.roledesc === "ASESOR" || false}
+      />
+      <FieldMultiSelect
+          variant="outlined"
+          label={t(langKeys.channel)}
+          className={classes.filterComponent}
+          valueDefault={allParameters.channel}
+          onChange={(value) => setAllParameters({...allParameters, channel: value?.map((o: Dictionary) => o['communicationchannelid']).join(',')})}
+          data={mainMulti.data[3]?.data?.sort((a, b) => a?.communicationchanneldesc?.toLowerCase() > b?.communicationchanneldesc?.toLowerCase() ? 1 : -1) || []}
+          optionDesc={'communicationchanneldesc'}
+          optionValue={'communicationchannelid'}
+      />
+      <FieldEdit
+          size="small"
+          variant="outlined"
+          label={t(langKeys.customer)}
+          className={classes.filterComponent}
+          valueDefault={allParameters.contact}
+          onChange={(value) => setAllParameters({...allParameters, contact: value})}
+      />
+    </>
+  ), [user, allParameters, classes, mainMulti, t]);
 
   return (
       <div style={{ width: '100%', display: 'flex', flexDirection: 'column'}}>
@@ -743,6 +798,16 @@ const CRM: FC = () => {
             <Button
                 variant="contained"
                 color="primary"
+                disabled={mainMulti.loading}
+                startIcon={<AddIcon color="secondary" />}
+                onClick={goToAddLead}
+                style={{ backgroundColor: "#55BD84" }}
+              >
+                <Trans i18nKey={langKeys.register} />
+            </Button>
+            <Button
+                variant="contained"
+                color="primary"
                 startIcon={<SearchIcon style={{ color: 'white' }} />}
                 style={{ backgroundColor: '#55BD84', width: 120 }}
                 onClick={fetchBoardLeadsWithFilter}
@@ -761,22 +826,22 @@ const CRM: FC = () => {
                 >
                   {dataColumn.map((column, index) => {
                     return (
-                      <Draggable draggableId={column.column_uuid} index={index+1} key={column.column_uuid}>
-                        { (provided) => (
-                          <div
-                            {...provided.draggableProps}
-                            ref={provided.innerRef}
-                          >
+                      // <Draggable draggableId={column.column_uuid} index={index+1} key={column.column_uuid}>
+                      //   { (provided) => (
+                      //     <div
+                      //       {...provided.draggableProps}
+                      //       ref={provided.innerRef}
+                      //     >
                               <DraggableLeadColumn 
-                                title={column.description} 
+                                title={t(column.description.toLowerCase())} 
                                 key={index+1} 
                                 snapshot={null} 
-                                provided={provided} 
-                                titleOnChange={(val) =>{handleEdit(column.column_uuid,val,dataColumn, setDataColumn)}}
+                                // provided={provided} 
+                                // titleOnChange={(val) =>{handleEdit(column.column_uuid,val,dataColumn, setDataColumn)}}
                                 columnid={column.column_uuid} 
                                 onDelete={hanldeDeleteColumn}
                                 total_revenue={column.total_revenue!}
-                                onAddCard={() => history.push(paths.CRM_ADD_LEAD.resolve(column.columnid, column.column_uuid))}
+                                // onAddCard={() => history.push(paths.CRM_ADD_LEAD.resolve(column.columnid, column.column_uuid))}
                               >
                                   <Droppable droppableId={column.column_uuid} type="task">
                                     {(provided, snapshot) => {
@@ -828,9 +893,9 @@ const CRM: FC = () => {
                                     }}
                                   </Droppable>
                               </DraggableLeadColumn>
-                          </div>
-                        )}
-                      </Draggable>
+                      //     </div>
+                      //   )}
+                      // </Draggable>
                     );
                   })}
                   {provided.placeholder}
@@ -910,38 +975,7 @@ const CRM: FC = () => {
               selectionKey={selectionKey}
               setSelectedRows={setSelectedRows}
               onClickRow={onClickRow}
-              FiltersElement={(
-                <>
-                  <FieldSelect
-                    variant="outlined"
-                    label={t(langKeys.user)}
-                    className={classes.filterComponent}
-                    valueDefault={allParameters.asesorid}
-                    onChange={(value) => setAllParameters({...allParameters, asesorid: value?.userid})}
-                    data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
-                    optionDesc={'fullname'}
-                    optionValue={'userid'}
-                />
-                <FieldMultiSelect
-                    variant="outlined"
-                    label={t(langKeys.channel)}
-                    className={classes.filterComponent}
-                    valueDefault={allParameters.channel}
-                    onChange={(value) => setAllParameters({...allParameters, channel: value?.map((o: Dictionary) => o['communicationchannelid']).join(',')})}
-                    data={mainMulti.data[3]?.data?.sort((a, b) => a?.communicationchanneldesc?.toLowerCase() > b?.communicationchanneldesc?.toLowerCase() ? 1 : -1) || []}
-                    optionDesc={'communicationchanneldesc'}
-                    optionValue={'communicationchannelid'}
-                />
-                <FieldEdit
-                    size="small"
-                    variant="outlined"
-                    label={t(langKeys.customer)}
-                    className={classes.filterComponent}
-                    valueDefault={allParameters.contact}
-                    onChange={(value) => setAllParameters({...allParameters, contact: value})}
-                />
-              </>
-              )}
+              FiltersElement={filtersElement}
               onFilterChange={f => {
                 console.log('Leads::onFilterChange', f);
                 const params = buildQueryFilters(f);

@@ -350,7 +350,7 @@ export const TemplateIcons: React.FC<{
                 aria-controls="long-menu"
                 aria-haspopup="true"
                 size="small"
-                
+
                 onClick={(e) => {
                     e.stopPropagation();
                     setAnchorEl(e.currentTarget);
@@ -491,10 +491,17 @@ export const Person: FC = () => {
             Header: t(langKeys.lead),
             accessor: 'phasejson',
             type: "select",
-            listSelectFilter: phases.loading || phases.error ? [] : phases.data.map(x => ({
-                key: x.description,
-                value: `${x.index},${x.description}`,
-            })),
+            listSelectFilter: [
+                { key: t(langKeys.new), value: "0,New" },
+                { key: t(langKeys.qualified), value: "1,Qualified" },
+                { key: t(langKeys.proposition), value: "2,Proposition" },
+                { key: t(langKeys.won), value: "3,Won" },
+                { key: t(langKeys.lost), value: "4,Lost" },
+            ],
+            // listSelectFilter: phases.loading || phases.error ? [] : phases.data.map(x => ({
+            //     key: x.description,
+            //     value: `${x.index},${x.description}`,
+            // })),
             Cell: (props: any) => {
                 const { phasejson } = props.cell.row.original;
                 if (!phasejson)
@@ -539,7 +546,7 @@ export const Person: FC = () => {
                 )
             }
         },
-    ]), [phases, t]);
+    ]), [t]);
 
     useEffect(() => {
         dispatch(getDomainsByTypename());
@@ -774,9 +781,11 @@ export const Person: FC = () => {
 
     return (
         <div style={{ height: '100%', width: 'inherit' }}>
-            <Title><Trans i18nKey={langKeys.person} count={2} /></Title>
-            <div style={{ display: 'flex', gap: 8, flexDirection: 'row', marginBottom: 12, marginTop: 4}}>
-                <div style={{ flexGrow: 1 }} />
+
+            <div style={{ display: 'flex', gap: 8, flexDirection: 'row', marginBottom: 12, marginTop: 4 }}>
+                <div style={{ flexGrow: 1 }} >
+                    <Title><Trans i18nKey={langKeys.person} count={2} /></Title>
+                </div>
                 <Button
                     variant="contained"
                     type="button"
@@ -890,6 +899,7 @@ export const Person: FC = () => {
                         valueDefault={filterChannelsType}
                     />
                 ), [filterChannelsType, domains, t])}
+                autotrigger={!(params.startDate === 0 && params.endDate === 0 && params.page === 0)}
             />
             <DialogSendTemplate
                 openModal={openDialogTemplate}
@@ -2401,108 +2411,112 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
             <Collapse in={open}>
                 <div className={classes.collapseContainer}>
                     <h3><Trans i18nKey={langKeys.ticketInformation} /></h3>
-                    <Grid container direction="row">
-                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-                            <Grid container direction="column">
-                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.containerstyle}>
-                                    <Grid container direction="row">
-                                        <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
+                    <Grid container direction="column">
+                        <Grid container direction="row">
+                            <Grid item xs={12} sm={12} md={6} lg={6} xl={6} className={classes.containerstyle}>
+                                <Grid container direction="row">
+                                    <Grid item xs={12} sm={6} md={6} lg={3} xl={2}>
+                                        <span className={classes.infoLabel}>
                                             TMO
-                                        </Grid>
-                                        <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                            {conversation.tmo}
-                                        </Grid>
+                                        </span>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} md={6} lg={9} xl={10}>
+                                        <span>{conversation.tmo}</span>
                                     </Grid>
                                 </Grid>
-                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.containerstyle}>
-                                    <Grid container direction="row">
-                                        <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
+                            </Grid>
+                            <Grid item xs={12} sm={12} md={6} lg={6} xl={6} className={classes.containerstyle}>
+                                <Grid container direction="row">
+                                    <Grid item xs={12} sm={6} md={6} lg={3} xl={2}>
+                                        <span className={classes.infoLabel}>
+                                            <Trans i18nKey={langKeys.status} />
+                                        </span>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} md={6} lg={9} xl={10}>
+                                        <span>{conversation.status}</span>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                        <Grid container direction="row">
+                            <Grid item xs={12} sm={12} md={6} lg={6} xl={6} className={classes.containerstyle}>
+                                <Grid container direction="row">
+                                    <Grid item xs={12} sm={6} md={6} lg={3} xl={2}>
+                                        <span className={classes.infoLabel}>
                                             <Trans i18nKey={langKeys.tmeAgent} />
-                                        </Grid>
-                                        <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                            {conversation.tme}
-                                        </Grid>
+                                        </span>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} md={6} lg={9} xl={10}>
+                                        <span>{conversation.tme}</span>
                                     </Grid>
                                 </Grid>
-                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.containerstyle}>
-                                    <Grid container direction="row">
-                                        <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
+                            </Grid>
+                            <Grid item xs={12} sm={12} md={6} lg={6} xl={6} className={classes.containerstyle}>
+                                <Grid container direction="row">
+                                    <Grid item xs={12} sm={6} md={6} lg={3} xl={2}>
+                                        <span className={classes.infoLabel}>
+                                            <Trans i18nKey={langKeys.closetype} />
+                                        </span>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} md={6} lg={9} xl={10}>
+                                        <span>{conversation.closetype}</span>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                        <Grid container direction="row">
+                            <Grid item xs={12} sm={12} md={6} lg={6} xl={6} className={classes.containerstyle}>
+                                <Grid container direction="row">
+                                    <Grid item xs={12} sm={6} md={6} lg={3} xl={2}>
+                                        <span className={classes.infoLabel}>
                                             <Trans i18nKey={langKeys.tmrAgent} />
-                                        </Grid>
-                                        <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                            {conversation.tmr}
-                                        </Grid>
+                                        </span>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} md={6} lg={9} xl={10}>
+                                        <span>{conversation.tmr}</span>
                                     </Grid>
                                 </Grid>
-                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.containerstyle}>
-                                    <Grid container direction="row">
-                                        <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                            <label className={classes.infoLabel}>
-                                                {/* <Trans i18nKey={langKeys.avgResponseTimeOfClient} /> */}
-                                                <Trans i18nKey={langKeys.tmrClient} />
-                                            </label>
-                                        </Grid>
-                                        <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                            {conversation.tiempopromediorespuestapersona}
-                                        </Grid>
+                            </Grid>
+                            <Grid item xs={12} sm={12} md={6} lg={6} xl={6} className={classes.containerstyle}>
+                                <Grid container direction="row">
+                                    <Grid item xs={12} sm={6} md={6} lg={3} xl={2}>
+                                        <span className={classes.infoLabel}>
+                                            <Trans i18nKey={langKeys.initialAgent} />
+                                        </span>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} md={6} lg={9} xl={10}>
+                                        <span>{conversation.asesorinicial}</span>
                                     </Grid>
                                 </Grid>
                             </Grid>
                         </Grid>
-                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-                            <Grid container direction="column">
-                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.containerstyle}>
-                                    <Grid container direction="row">
-                                        <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                            <label className={classes.infoLabel}>
-                                                <Trans i18nKey={langKeys.status} />
-                                            </label>
-                                        </Grid>
-                                        <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                            {conversation.status}
-                                        </Grid>
+                        <Grid container direction="row">
+                            <Grid item xs={12} sm={12} md={6} lg={6} xl={6} className={classes.containerstyle}>
+                                <Grid container direction="row">
+                                    <Grid item xs={12} sm={6} md={6} lg={3} xl={2}>
+                                        <span className={classes.infoLabel}>
+                                            {/* <Trans i18nKey={langKeys.avgResponseTimeOfClient} /> */}
+                                            <Trans i18nKey={langKeys.tmrClient} />
+                                        </span>
                                     </Grid>
-                                </Grid>
-                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.containerstyle}>
-                                    <Grid container direction="row">
-                                        <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                            <label className={classes.infoLabel}>
-                                                <Trans i18nKey={langKeys.closetype} />
-                                            </label>
-                                        </Grid>
-                                        <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                            {conversation.closetype}
-                                        </Grid>
-                                    </Grid>
-                                </Grid>
-                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.containerstyle}>
-                                    <Grid container direction="row">
-                                        <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                            <label className={classes.infoLabel}>
-                                                <Trans i18nKey={langKeys.initialAgent} />
-                                            </label>
-                                        </Grid>
-                                        <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                            {conversation.asesorinicial}
-                                        </Grid>
-                                    </Grid>
-                                </Grid>
-                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.containerstyle}>
-                                    <Grid container direction="row">
-                                        <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                            <label className={classes.infoLabel}>
-                                                <Trans i18nKey={langKeys.finalAgent} />
-                                            </label>
-                                        </Grid>
-                                        <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                            {conversation.asesorfinal}
-                                        </Grid>
+                                    <Grid item xs={12} sm={6} md={6} lg={9} xl={10}>
+                                        <span>{conversation.tiempopromediorespuestapersona}</span>
                                     </Grid>
                                 </Grid>
                             </Grid>
-
+                            <Grid item xs={12} sm={12} md={6} lg={6} xl={6} className={classes.containerstyle}>
+                                <Grid container direction="row">
+                                    <Grid item xs={12} sm={6} md={6} lg={3} xl={2}>
+                                        <span className={classes.infoLabel}>
+                                            <Trans i18nKey={langKeys.finalAgent} />
+                                        </span>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} md={6} lg={9} xl={10}>
+                                        <span>{conversation.asesorfinal}</span>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
                         </Grid>
-
                     </Grid>
                 </div>
             </Collapse>

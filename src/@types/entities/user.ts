@@ -34,6 +34,7 @@ export interface IUser {
     status: string;
     token: string;
     usr: string;
+    /**SUPERADMIN | ASESOR | ... */
     roledesc: string;
     corpdesc: string;
     orgdesc: string;

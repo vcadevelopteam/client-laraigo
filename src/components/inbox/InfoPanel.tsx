@@ -613,7 +613,6 @@ const Attachments: React.FC = () => {
 
     
     useEffect(() => {
-        console.log("interactionList", interactionList)
         setListFiles(interactionList.data.reduce<Dictionary[]>((acc, item) => [
             ...acc,
             ...(item.interactions?.filter((x) => ["file", "video"].includes(x.interactiontype)) || []).map(x => ({

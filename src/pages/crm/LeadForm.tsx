@@ -12,7 +12,7 @@ import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { archiveLead, getAdvisers, getLead, getLeadActivities, getLeadHistory, getLeadLogNotes, getLeadPhases, markDoneActivity, resetArchiveLead, resetGetLead, resetGetLeadActivities, resetGetLeadHistory, resetGetLeadLogNotes, resetGetLeadPhases, resetMarkDoneActivity, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLeadActivity, saveLeadLogNote, saveLeadWithFiles, updateLeadTags, saveLead as saveLeadAction, resetGetLeadProductsDomain, getLeadProductsDomain, getLeadTagsDomain, resetGetLeadTagsDomain } from 'store/lead/actions';
 import { Dictionary, ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, ICrmLeadHistory, ICrmLeadNote, ICrmLeadNoteSave, ICrmLeadTagsSave, IDomain, IFetchData, IPerson } from '@types';
-import { showSnackbar } from 'store/popus/actions';
+import { manageConfirmation, showSnackbar } from 'store/popus/actions';
 import { Rating, Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineSeparator } from '@material-ui/lab';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
@@ -20,7 +20,7 @@ import TableZyx from 'components/fields/table-paginated';
 import { Add, AttachFile, Clear, Close, GetApp, Create, Done, FileCopy, Info, Mood } from '@material-ui/icons';
 import { getPersonListPaginated, resetGetPersonListPaginated } from 'store/person/actions';
 import clsx from 'clsx';
-import { AccessTime as AccessTimeIcon, Archive as ArchiveIcon, Flag as FlagIcon, Cancel as CancelIcon, Note as NoteIcon, LocalOffer as LocalOfferIcon, LowPriority as LowPriorityIcon, Star as StarIcon, History as HistoryIcon } from '@material-ui/icons';
+import { AccessTime as AccessTimeIcon, Archive as ArchiveIcon, Flag as FlagIcon, Cancel as CancelIcon, Note as NoteIcon, LocalOffer as LocalOfferIcon, LowPriority as LowPriorityIcon, Star as StarIcon, History as HistoryIcon, TrackChanges as TrackChangesIcon } from '@material-ui/icons';
 import { useForm } from 'react-hook-form';
 import { getCollection, resetMain } from 'store/main/actions';
 import { AntTab } from 'components';
@@ -97,7 +97,17 @@ const useLeadFormStyles = makeStyles(theme => ({
         backgroundColor: '#FFA000',
         padding: '4px 6px',
         fontWeight: 'bold',
-        fontSize: 10,
+        fontSize: 14,
+    },
+    fakeInputContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+
+        borderBottom: `2px solid ${theme.palette.text.secondary}`,
+        '&:hover': {
+            borderBottom: `2px solid ${theme.palette.text.primary}`,
+        },
     },
 }));
 
@@ -106,9 +116,9 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const history = useHistory();
-    const match = useRouteMatch<{ id: string, columnid: string, columnuuid: string }>();
+    const match = useRouteMatch<{ id: string, columnid?: string, columnuuid?: string }>();
     const [values, setValues] = useState<ICrmLead>({
-        column_uuid: match.params.columnuuid,
+        column_uuid: match.params.columnuuid || '',
         columnid: Number(match.params.columnid),
         priority: 'LOW',
     } as ICrmLead
@@ -130,7 +140,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const leadProductsDomain = useSelector(state => state.lead.leadProductsDomain);
     const leadTagsDomain = useSelector(state => state.lead.leadTagsDomain);
 
-    const { register, handleSubmit, setValue, getValues, formState: { errors }, reset } = useForm<any>({
+    const { register, handleSubmit, setValue, getValues, formState: { errors }, reset, trigger } = useForm<any>({
         defaultValues: {
             leadid: 0,
             description: '',
@@ -143,7 +153,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             priority: 'LOW',
             conversationid: 0,
             columnid: Number(match.params.columnid),
-            column_uuid: match.params.columnuuid,
+            column_uuid: match.params.columnuuid || '',
             index: 0,
             phone: '',
             email: '',
@@ -176,36 +186,46 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         registerFormFieldOptions();
     }, [registerFormFieldOptions]);
 
-    const onSubmit = handleSubmit((data) => {
-        console.log('onSubmit:', data);
-        if (edit) {
-            dispatch(saveLeadAction(insLead2(data, data.operation), false));
-        } else {
-            dispatch(saveLeadWithFiles(async (uploader) => {
-                const notes = (data.notes || []) as ICrmLeadNoteSave[];
-                for (let i = 0; i < notes.length; i++) {
-                    // subir los archivos de la nota que se va a agregar
-                    if (notes[i].media && Array.isArray(notes[i].media)) {
-                        const urls: String[] = [];
-                        for (const fileToUpload of notes[i].media as File[]) {
-                            const url = await uploader(fileToUpload);
-                            urls.push(url);
+    const onSubmit = async () => {
+        const allOk = await trigger();
+        if (allOk) {
+            const data = getValues();
+            const callback = () => {
+                if (edit) {
+                    dispatch(saveLeadAction(insLead2(data, data.operation), false));
+                } else {
+                    dispatch(saveLeadWithFiles(async (uploader) => {
+                        const notes = (data.notes || []) as ICrmLeadNoteSave[];
+                        for (let i = 0; i < notes.length; i++) {
+                            // subir los archivos de la nota que se va a agregar
+                            if (notes[i].media && Array.isArray(notes[i].media)) {
+                                const urls: String[] = [];
+                                for (const fileToUpload of notes[i].media as File[]) {
+                                    const url = await uploader(fileToUpload);
+                                    urls.push(url);
+                                }
+                                notes[i].media = urls.join(',');
+                            }
                         }
-                        notes[i].media = urls.join(',');
-                    }
+        
+                        return {
+                            header: insLead2(data, data.operation),
+                            detail: [
+                                ...notes.map((x: ICrmLeadNoteSave) => leadLogNotesIns(x)),
+                                ...(data.activities || []).map((x: ICrmLeadActivitySave) => leadActivityIns(x)),
+                            ],
+                        };
+                    }, true));
                 }
+            };
 
-                return {
-                    header: insLead2(data, data.operation),
-                    detail: [
-                        ...notes.map((x: ICrmLeadNoteSave) => leadLogNotesIns(x)),
-                        ...(data.activities || []).map((x: ICrmLeadActivitySave) => leadActivityIns(x)),
-                    ],
-                };
-            }, true));
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_save),
+                callback
+            }))
         }
-        // dispatch(saveLeadBody(body));
-    }, e => console.log(e));
+    };
 
     useEffect(() => {
         if (edit === true) {
@@ -237,6 +257,26 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             dispatch(resetGetLeadTagsDomain());
         };
     }, [edit, match.params.id, dispatch]);
+
+    useEffect(() => {
+        if (phases.loading) return;
+        if (phases.error) {
+            const errormessage = t(phases.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
+            dispatch(showSnackbar({
+                success: false,
+                message: errormessage,
+                show: true,
+            }));
+        } else if (!edit && (!values.column_uuid || !values.columnid) && phases.data.length > 0) {
+            setValues(prev => ({
+                ...prev,
+                column_uuid: phases.data[0].column_uuid,
+                columnid: phases.data[0].columnid,
+            }));
+            setValue('columnid', phases.data[0].columnid);
+            setValue('column_uuid', phases.data[0].column_uuid);
+        }
+    }, [phases, edit]);
 
     useEffect(() => {
         if (!edit) return;
@@ -479,6 +519,12 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         return lead.value?.status === "CERRADO";
     }, [lead]);
 
+    const translatedPhases = useMemo(() => phases.data.map(x => ({
+        columnid: x.columnid,
+        column_uuid: x.column_uuid,
+        description: t(x.description.toLowerCase()),
+    })), [phases]);
+
     if (edit === true && lead.loading && advisers.loading) {
         return <Loading />;
     } else if (edit === true && (lead.error)) {
@@ -488,7 +534,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <div className={classes.root}>
-                <form onSubmit={onSubmit}>
+                <form /*onSubmit={onSubmit}*/>
                     <Breadcrumbs aria-label="breadcrumb">
                         <Link
                             underline="hover"
@@ -551,17 +597,18 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 onClick={handleCloseLead}
                                 disabled={iSProcessLoading()}
                             >
-                                <Trans i18nKey={langKeys.close} />
+                                <Trans i18nKey={langKeys.sendToHistory} />
                             </Button>
                         )}
                         {(!isStatusClosed() && !lead.loading) && <Button
                             className={classes.button}
                             variant="contained"
                             color="primary"
-                            type="submit"
+                            type="button"
                             startIcon={<SaveIcon color="secondary" />}
                             style={{ backgroundColor: "#55BD84" }}
                             disabled={iSProcessLoading()}
+                            onClick={onSubmit}
                         >
                             <Trans i18nKey={langKeys.save} />
                         </Button>}
@@ -657,11 +704,14 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                         <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                             <Grid container direction="column">
                                 {edit ?
-                                    (<FieldView
-                                        label={t(langKeys.customer)}
-                                        className={classes.field}
-                                        value={lead.value?.displayname}
-                                    />) :
+                                    (
+                                        <div className={clsx(classes.fakeInputContainer, classes.field)}>
+                                            <FieldView
+                                                label={t(langKeys.customer)}
+                                                value={lead.value?.displayname}
+                                            />
+                                        </div>
+                                    ) :
                                     (<div style={{ display: 'flex', flexDirection: 'column' }} className={classes.field}>
                                         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                                             <div style={{ flexGrow: 1 }}>
@@ -712,7 +762,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                         readOnly: isStatusClosed() || iSProcessLoading(),
                                     }}
                                 />
-                                <div className={classes.field}>
+                                <div className={classes.field} style={{ maxHeight: 55, minHeight: 55 }}>
                                     <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
                                         <Trans i18nKey={langKeys.priority} />
                                     </Box>
@@ -727,6 +777,12 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                         readOnly={isStatusClosed() || iSProcessLoading()}
                                     />
                                 </div>
+                                <div className={clsx(classes.fakeInputContainer, classes.field)}>
+                                    <FieldView
+                                        label={t(langKeys.campaign)}
+                                        value={lead.value?.campaign || ''}
+                                    />
+                                </div>
                                 <RadioGroudFieldEdit
                                     aria-label="columnid"
                                     value={Number(getValues('columnid'))}
@@ -735,7 +791,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     row
                                     optionDesc="description"
                                     optionValue="columnid"
-                                    data={phases.data}
+                                    data={translatedPhases}
+                                    // data={phases.data}
                                     onChange={(e) => {
                                         setValue('column_uuid', e.column_uuid);
                                         setValue('columnid', Number(e.columnid));
@@ -744,11 +801,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     label={<Trans i18nKey={langKeys.phase} />}
                                     error={errors?.columnid?.message}
                                     readOnly={isStatusClosed() || iSProcessLoading()}
-                                />
-                                <FieldView
-                                    label={t(langKeys.campaign)}
-                                    className={classes.field}
-                                    value={lead.value?.campaign || ''}
                                 />
                             </Grid>
                         </Grid>
@@ -1989,6 +2041,7 @@ const TabPanelLeadHistory: FC<TabPanelLeadHistoryProps> = ({ history, loading })
             case "NEWTAG": return <LocalOfferIcon width={24} style={{ fill: 'white' }} />;
             case "REMOVETAG": return <LocalOfferIcon width={24} style={{ fill: 'white' }} />;
             case "CLOSEDLEAD": return <CancelIcon width={24} style={{ fill: 'white' }} />;
+            case "CHANGEAGENT": return <TrackChangesIcon width={24} style={{ fill: 'white' }} />;
             case "ACTIVITYDONE":
             case "ACTIVITYDISCARD":
             case "ACTIVITYCHANGESTATUS":

@@ -1707,11 +1707,12 @@ const translation: LangKeys = {
     NEWTAG: 'Tag agregado',
     REMOVETAG: 'Tag eliminado',
     ELIMINADO: 'Eliminado',
-    CLOSEDLEAD: 'Oportunidad cerrada',
+    CLOSEDLEAD: 'Enviado al historial',
     ACTIVITYCHANGESTATUS: 'Cambio de estado de la actividad',
     ACTIVITYDONE: 'Actividad programada completada',
     ACTIVITYDISCARD: 'Actividad programada cancelada',
     ACTIVITYUPDATE: 'Actividad actualizada',
+    CHANGEAGENT: 'Cambio de asesor',
 
     repeatPassword: 'Repetir contraseña',
     passwordsMustBeEqual: 'Las contraseñas deben ser iguales',
@@ -1807,6 +1808,8 @@ const translation: LangKeys = {
     notedescription: 'Descripción de la nota',
     activitydescription: 'Descripción de la actividad',
     costnotificaton: "Lista de precios vigente hasta el 1 de febrero de 2022",
+
+    sendToHistory: 'Enviar al historial',
 };
 
 const esResource: ResourceLanguage = {
