@@ -1525,6 +1525,8 @@ const translation: LangKeys = {
     manageInputValidation_plural: 'Manage input validations',
     recordhsmreport: "Shipment history report",
     namehsm: "Name (HSM,SMS, CORREO)",
+    status_SENT: 'Sent',
+    "status_NOT SENT": 'Not sent',
     clientname: "Client name",
     shippingdate: "Shipping Date",
     shippingtype: "Shipping type",

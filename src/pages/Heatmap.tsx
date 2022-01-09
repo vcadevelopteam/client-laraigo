@@ -1,14 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Button, createStyles, makeStyles, Tabs, TextField, Theme } from '@material-ui/core';
-import { AntTab, DialogZyx, TemplateSwitchYesNo } from 'components';
+import { AntTab, DialogInteractions, DialogZyx, TemplateSwitchYesNo } from 'components';
 import { langKeys } from 'lang/keys';
-import React, { FC, Fragment, useEffect, useState } from 'react';
+import React, { FC, Fragment, useEffect, useState ,useCallback} from 'react';
 import { FieldMultiSelect } from "components";
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { showBackdrop } from 'store/popus/actions';
 import { getasesoresbyorgid, getValuesFromDomain, heatmappage1, heatmappage1detail, heatmappage2, heatmappage2detail1, heatmappage2detail2, heatmappage3, heatmappage3detail } from 'common/helpers/requestBodies';
-import { getCollectionAux, getMultiCollection, getMultiCollectionAux, getMultiCollectionAux2, resetMultiMainAux } from 'store/main/actions';
+import { getCollectionAux, getMultiCollection, getMultiCollectionAux, getMultiCollectionAux2, resetMainAux, resetMultiMain, resetMultiMainAux, resetMultiMainAux2 } from 'store/main/actions';
 import { useSelector } from 'hooks';
 import { Dictionary } from '@types';
 import TableZyx from 'components/fields/table-simple';
@@ -35,6 +35,11 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         fieldsfilter: {
             width: "100%",
+        },
+        labellink: {
+            color: '#7721ad',
+            textDecoration: 'underline',
+            cursor: 'pointer'
         },
     })
 )
@@ -105,6 +110,7 @@ const MainHeatMap: React.FC = () => {
     const dispatch = useDispatch();
     const multiData = useSelector(state => state.main.multiData);
     const multiDataAux2 = useSelector(state => state.main.multiDataAux2);
+    const mainResult = useSelector(state => state.main);
     const dataAdvisor = [{domaindesc: t(langKeys.agent), domainvalue: "ASESOR"},{domaindesc: "Bot", domainvalue: "BOT"}]
     const [dataMainHeatMap, setdataMainHeatMap] = useState({
         communicationchannel: "",
@@ -113,15 +119,21 @@ const MainHeatMap: React.FC = () => {
         enddate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
         datetoshow: `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`
     });
-
+    
     const [waitDetail, setWaitDetail] = useState(false);
     const [openModal, setOpenModal] = useState(false);
+    const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
+    const [openModalTicket, setOpenModalTicket] = useState(false);
     const [modalTitle, setModalTitle] = useState('');
     const [modalRow, setModalRow] = useState<Dictionary | null>(null);
     const [modalColumns, setModalColumns] = useState<any>([]);
-    const fetchDetail = (grid: string, column: Dictionary, row: Dictionary) => {
-        if ((typeof(row[column.id]) === 'number' && row[column.id] > 0)
-        || (typeof(row[column.id]) === 'string' && row[column.id] !== '00:00:00')) {
+    const openDialogInteractions = useCallback((row: any) => {
+        setOpenModalTicket(true);
+        setRowSelected({ ...row, displayname: row.asesor, ticketnum: row.ticketnum })
+    }, [mainResult]);
+    const fetchDetail = (grid: string, column: Dictionary, row: Dictionary, mes: number, year: number) => {
+        if (row.hournum!=="TOTAL" && row.hournum!=="PRM" && ((typeof(row[column.id]) === 'number' && row[column.id] > 0)
+        || (typeof(row[column.id]) === 'string' && row[column.id] !== '00:00:00')) ) {
             setModalRow(row);
             const day = column.id.replace('day','');
             const hour = row.hour - 1;
@@ -130,7 +142,17 @@ const MainHeatMap: React.FC = () => {
                 case '1.1':
                     setModalTitle(`Tickets ${t(langKeys.day)} ${day} ${hournum}`)
                     setModalColumns([
-                        { Header: t(langKeys.ticket), accessor: 'ticketnum' },
+                        { Header: t(langKeys.ticket), accessor: 'ticketnum',
+                            Cell: (props: any) => {
+                                const row = props.cell.row.original;
+                                return <label
+                                    className={classes.labellink}
+                                    onClick={() => openDialogInteractions(row)}
+                                >
+                                    {row.ticketnum}
+                                </label>
+                            }
+                        },
                         { Header: t(langKeys.agent), accessor: 'asesor' },
                         { Header: t(langKeys.tmo), accessor: 'totalduration' },
                     ])
@@ -138,7 +160,17 @@ const MainHeatMap: React.FC = () => {
                 case '1.2':
                     setModalTitle(`Tickets ${t(langKeys.day)} ${day} ${hournum}`)
                     setModalColumns([
-                        { Header: t(langKeys.ticket), accessor: 'ticketnum' },
+                        { Header: t(langKeys.ticket), accessor: 'ticketnum',
+                            Cell: (props: any) => {
+                                const row = props.cell.row.original;
+                                return <label
+                                    className={classes.labellink}
+                                    onClick={() => openDialogInteractions(row)}
+                                >
+                                    {row.ticketnum}
+                                </label>
+                            }
+                        },
                         { Header: t(langKeys.tmo), accessor: 'totalduration' },
                         { Header: t(langKeys.agent), accessor: 'asesor' },
                     ])
@@ -146,7 +178,17 @@ const MainHeatMap: React.FC = () => {
                 case '1.3':
                     setModalTitle(`Tickets ${t(langKeys.day)} ${day} ${hournum}`)
                     setModalColumns([
-                        { Header: t(langKeys.ticket), accessor: 'ticketnum' },
+                        { Header: t(langKeys.ticket), accessor: 'ticketnum',
+                            Cell: (props: any) => {
+                                const row = props.cell.row.original;
+                                return <label
+                                    className={classes.labellink}
+                                    onClick={() => openDialogInteractions(row)}
+                                >
+                                    {row.ticketnum}
+                                </label>
+                            }
+                        },
                         { Header: t(langKeys.tme), accessor: 'userfirstreplytime' },
                         { Header: t(langKeys.agent), accessor: 'asesor' },
                     ])
@@ -154,7 +196,17 @@ const MainHeatMap: React.FC = () => {
                 case '1.4':
                     setModalTitle(`Tickets ${t(langKeys.day)} ${day} ${hournum}`)
                     setModalColumns([
-                        { Header: t(langKeys.ticket), accessor: 'ticketnum' },
+                        { Header: t(langKeys.ticket), accessor: 'ticketnum',
+                            Cell: (props: any) => {
+                                const row = props.cell.row.original;
+                                return <label
+                                    className={classes.labellink}
+                                    onClick={() => openDialogInteractions(row)}
+                                >
+                                    {row.ticketnum}
+                                </label>
+                            }
+                        },
                         { Header: t(langKeys.tmr), accessor: 'useraveragereplytime' },
                         { Header: t(langKeys.agent), accessor: 'asesor' },
                     ])
@@ -162,7 +214,17 @@ const MainHeatMap: React.FC = () => {
                 case '1.5':
                     setModalTitle(`Tickets ${t(langKeys.day)} ${day} ${hournum}`)
                     setModalColumns([
-                        { Header: t(langKeys.ticket), accessor: 'ticketnum' },
+                        { Header: t(langKeys.ticket), accessor: 'ticketnum',
+                            Cell: (props: any) => {
+                                const row = props.cell.row.original;
+                                return <label
+                                    className={classes.labellink}
+                                    onClick={() => openDialogInteractions(row)}
+                                >
+                                    {row.ticketnum}
+                                </label>
+                            }
+                        },
                         { Header: t(langKeys.tmr_client), accessor: 'personaveragereplytime' },
                     ])
                     break;
@@ -171,8 +233,8 @@ const MainHeatMap: React.FC = () => {
             }
             dispatch(getMultiCollectionAux2([heatmappage1detail({
                 ...dataMainHeatMap,
-                startdate: new Date(dataMainHeatMap.startdate.setDate(day)),
-                enddate: new Date(dataMainHeatMap.enddate.setDate(day)),
+                startdate: new Date(year, mes-1, day),
+                enddate: new Date(year, mes-1, day),
                 horanum: ['TOTAL','PRM'].includes(row.hournum) ? '' : hour
             })]));
             dispatch(showBackdrop(true));
@@ -308,7 +370,7 @@ const MainHeatMap: React.FC = () => {
                     return (
                         <div
                             style={{background: `#${color}`, textAlign: "center", color:"black"}}
-                            onClick={() => fetchDetail('1.1', column, row)}
+                            onClick={() => fetchDetail('1.1', column, row,mes,year)}
                         >
                             {(props.data[rowcounter][key])}
                         </div>
@@ -450,7 +512,7 @@ const MainHeatMap: React.FC = () => {
                     return (
                         <div
                             style={{background: `#${color}`, textAlign: "center", color:"black"}}
-                            onClick={() => fetchDetail('1.2', column, row)}
+                            onClick={() => fetchDetail('1.2', column, row,mes,year)}
                         >
                             {`${hh}${mm}${ss}s`}
                         </div>
@@ -595,7 +657,7 @@ const MainHeatMap: React.FC = () => {
                     return (
                         <div
                             style={{background: `#${color}`, textAlign: "center", color:"black"}}
-                            onClick={() => fetchDetail('1.3', column, row)}
+                            onClick={() => fetchDetail('1.3', column, row,mes,year)}
                         >
                             {`${hh}${mm}${ss}s`}
                         </div>
@@ -739,7 +801,7 @@ const MainHeatMap: React.FC = () => {
                     return (
                         <div
                             style={{background: `#${color}`, textAlign: "center", color:"black"}}
-                            onClick={() => fetchDetail('1.4', column, row)}
+                            onClick={() => fetchDetail('1.4', column, row,mes,year)}
                         >
                             {`${hh}${mm}${ss}s`}
                         </div>
@@ -883,7 +945,7 @@ const MainHeatMap: React.FC = () => {
                     return (
                         <div
                             style={{background: `#${color}`, textAlign: "center", color:"black"}}
-                            onClick={() => fetchDetail('1.5', column, row)}
+                            onClick={() => fetchDetail('1.5', column, row,mes,year)}
                         >
                             {`${hh}${mm}${ss}s`}
                         </div>
@@ -1027,6 +1089,11 @@ const MainHeatMap: React.FC = () => {
                 columns={modalColumns}
                 data={multiDataAux2.data[0]?.data||[]}
             />
+            <DialogInteractions
+                openModal={openModalTicket}
+                setOpenModal={setOpenModalTicket}
+                ticket={rowSelected}
+            />
         </div>
     )
 }
@@ -1059,12 +1126,19 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
     const [modalRow, setModalRow] = useState<Dictionary | null>(null);
     const [modalTitle, setModalTitle] = useState('');
     const [modalColumns, setModalColumns] = useState<any>([]);
+    const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
+    const [openModalTicket, setOpenModalTicket] = useState(false);
     const [waitDetail, setWaitDetail] = useState(false);
     const [openModal, setOpenModal] = useState(false);
+    const mainResult = useSelector(state => state.main);
     const mainAux = useSelector(state => state.main.mainAux);
-    const fetchDetail = (grid: string, column: Dictionary, row: Dictionary,page2:boolean) => {
-        if ((typeof(row[column.id]) === 'number' && row[column.id] > 0)
-        || (typeof(row[column.id]) === 'string' && row[column.id] !== '00:00:00')) {
+    const openDialogInteractions = useCallback((row: any) => {
+        setOpenModalTicket(true);
+        setRowSelected({ ...row, displayname: row.asesor, ticketnum: row.ticketnum })
+    }, [mainResult]);
+    const fetchDetail = (grid: string, column: Dictionary, row: Dictionary,page2:boolean, mes: number, year: number) => {
+        if (row.hournum!=="TOTAL" && ((typeof(row[column.id]) === 'number' && row[column.id] > 0)
+        || (typeof(row[column.id]) === 'string' && row[column.id] !== '00:00:00'))) {
             setModalRow(row);
             const day = column.id.replace('day','');
             const user = listadvisers.filter((x:any)=>x.userid === row.userid)[0].userdesc
@@ -1072,27 +1146,67 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                 case 'COMPLETED':
                     setModalTitle(`Tickets ${user} ${t(langKeys.day)} ${day}`)
                     setModalColumns([
-                        { Header: t(langKeys.ticket), accessor: 'ticketnum' },
+                        { Header: t(langKeys.ticket), accessor: 'ticketnum',
+                            Cell: (props: any) => {
+                                const row = props.cell.row.original;
+                                return <label
+                                    className={classes.labellink}
+                                    onClick={() => openDialogInteractions(row)}
+                                >
+                                    {row.ticketnum}
+                                </label>
+                            }
+                        },
                         { Header: t(langKeys.agent), accessor: 'asesor' },
                     ])
                     break;
                 case 'ABANDONED':
                     setModalTitle(`Tickets ${user} ${t(langKeys.day)} ${day}`)
                     setModalColumns([
-                        { Header: t(langKeys.ticket), accessor: 'ticketnum' },
+                        { Header: t(langKeys.ticket), accessor: 'ticketnum',
+                            Cell: (props: any) => {
+                                const row = props.cell.row.original;
+                                return <label
+                                    className={classes.labellink}
+                                    onClick={() => openDialogInteractions(row)}
+                                >
+                                    {row.ticketnum}
+                                </label>
+                            }
+                        },
                     ])
                     break;
                 case 'OPPORTUNITY':
                     setModalTitle(`${t(langKeys.opportunity_plural)} ${user} ${t(langKeys.day)} ${day}`)
                     setModalColumns([
-                        { Header: t(langKeys.ticket), accessor: 'ticketnum' },
+                        { Header: t(langKeys.ticket), accessor: 'ticketnum',
+                            Cell: (props: any) => {
+                                const row = props.cell.row.original;
+                                return <label
+                                    className={classes.labellink}
+                                    onClick={() => openDialogInteractions(row)}
+                                >
+                                    {row.ticketnum}
+                                </label>
+                            }
+                        },
                         { Header: t(langKeys.opportunityname), accessor: 'leadname' },
                     ])
                     break;
                 case 'OPPORTUNITYWON':
                     setModalTitle(`${t(langKeys.opportunity_plural)} ${user} ${t(langKeys.day)} ${day}`)
                     setModalColumns([
-                        { Header: t(langKeys.ticket), accessor: 'ticketnum' },
+                        { Header: t(langKeys.ticket), accessor: 'ticketnum',
+                            Cell: (props: any) => {
+                                const row = props.cell.row.original;
+                                return <label
+                                    className={classes.labellink}
+                                    onClick={() => openDialogInteractions(row)}
+                                >
+                                    {row.ticketnum}
+                                </label>
+                            }
+                        },
                         { Header: t(langKeys.opportunitywon), accessor: 'opportunitywon' },
                     ])
                     break;
@@ -1101,14 +1215,14 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
             }
             (!page2)?(dispatch(getCollectionAux(heatmappage2detail1({
                 ...dataMainHeatMap,
-                startdate: new Date(dataMainHeatMap.startdate.setDate(day)),
-                enddate: new Date(dataMainHeatMap.enddate.setDate(day)),
+                startdate: new Date(year, mes-1, day),
+                enddate: new Date(year, mes-1, day),
                 agentid: row.userid,
                 option: grid
             })))):(dispatch(getCollectionAux(heatmappage2detail2({
                 ...dataMainHeatMap,
-                startdate: new Date(dataMainHeatMap.startdate.setDate(day)),
-                enddate: new Date(dataMainHeatMap.enddate.setDate(day)),
+                startdate: new Date(year, mes-1, day),
+                enddate: new Date(year, mes-1, day),
                 agentid: row.userid,
                 option: grid
             }))))
@@ -1230,7 +1344,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                     let color=gradient(props.cell.row.original[key])
                     
                     return <div style={{background: `#${color}`, textAlign: "center", color:"black"}} 
-                            onClick={() => fetchDetail('COMPLETED', column, row,false)}>{(props.cell.row.original[key])}</div>
+                            onClick={() => fetchDetail('COMPLETED', column, row,false, mes, year)}>{(props.cell.row.original[key])}</div>
                     
                 }
                 else{
@@ -1300,7 +1414,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                     const column = props.cell.column;
                     const row = props.cell.row.original;
                     
-                    return <div onClick={() => fetchDetail('ABANDONED', column, row,false)} style={{background: `#${color}`, textAlign: "center", color:"black"}} >{(props.cell.row.original[key])}</div>
+                    return <div onClick={() => fetchDetail('ABANDONED', column, row,false, mes, year)} style={{background: `#${color}`, textAlign: "center", color:"black"}} >{(props.cell.row.original[key])}</div>
                     
                 }
                 else{
@@ -1410,7 +1524,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                     const column = props.cell.column;
                     const row = props.cell.row.original;
                     
-                    return <div onClick={() => fetchDetail('OPPORTUNITY', column, row,true)}  style={{background: `#${color}`, textAlign: "center", color:"black"}} >{(props.cell.row.original[key])}</div>
+                    return <div onClick={() => fetchDetail('OPPORTUNITY', column, row,true, mes, year)}  style={{background: `#${color}`, textAlign: "center", color:"black"}} >{(props.cell.row.original[key])}</div>
                     
                 }
                 else{
@@ -1523,7 +1637,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                     const column = props.cell.column;
                     const row = props.cell.row.original;
                     
-                    return <div onClick={() => fetchDetail('OPPORTUNITYWON', column, row,true)}  style={{background: `#${color}`, textAlign: "center", color:"black"}} >{(props.cell.row.original[key])}</div>
+                    return <div onClick={() => fetchDetail('OPPORTUNITYWON', column, row,true, mes, year)}  style={{background: `#${color}`, textAlign: "center", color:"black"}} >{(props.cell.row.original[key])}</div>
                     
                 }
                 else{
@@ -1833,6 +1947,11 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                 columns={modalColumns}
                 data={mainAux?.data||[]}
             />
+            <DialogInteractions
+                openModal={openModalTicket}
+                setOpenModal={setOpenModalTicket}
+                ticket={rowSelected}
+            />
         </div>
     )
 }
@@ -1857,7 +1976,7 @@ const HeatMapTicket: React.FC = () => {
     const [modalTitle, setModalTitle] = useState('');
     const [modalRow, setModalRow] = useState<Dictionary | null>(null);
     const [modalColumns, setModalColumns] = useState<any>([]);
-    const fetchDetail = (grid: string, column: Dictionary, row: Dictionary) => {
+    const fetchDetail = (grid: string, column: Dictionary, row: Dictionary, mes: number, year: number) => {
         if (typeof(row[column.id]) === 'number' && row[column.id] > 0) {
             setModalRow(row);
             const day = column.id.replace('day','');
@@ -1875,8 +1994,8 @@ const HeatMapTicket: React.FC = () => {
             }
             dispatch(getMultiCollectionAux2([heatmappage3detail({
                 ...dataMainHeatMap,
-                startdate: new Date(dataMainHeatMap.startdate.setDate(day)),
-                enddate: new Date(dataMainHeatMap.enddate.setDate(day)),
+                startdate: new Date(year, mes-1, day),
+                enddate: new Date(year, mes-1, day),
                 horanum: row.hournum === 'TOTAL' ? '' : hour
             })]));
             dispatch(showBackdrop(true));
@@ -1976,7 +2095,7 @@ const HeatMapTicket: React.FC = () => {
                 return (
                     <div
                         style={{background: `#${color}`, textAlign: "center", color:"black"}}
-                        onClick={() => fetchDetail('3.1', column, row)}
+                        onClick={() => fetchDetail('3.1', column, row, mes, year)}
                     >
                         {(props.cell.row.original[key])}
                     </div>
@@ -2063,7 +2182,10 @@ const Heatmap: FC = () => {
             getValuesFromDomain("GRUPOS")
         ]))
         return () => {
+            dispatch(resetMainAux());
+            dispatch(resetMultiMain());
             dispatch(resetMultiMainAux());
+            dispatch(resetMultiMainAux2());
         }
     }, [])
     const { t } = useTranslation();

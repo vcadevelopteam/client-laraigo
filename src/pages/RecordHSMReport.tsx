@@ -99,6 +99,7 @@ const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { r
             {
                 Header: t(langKeys.status),
                 accessor: 'status',
+                prefixTranslation: 'status_',
                 NoFilter: true
             },
             {
@@ -291,11 +292,7 @@ const RecordHSMRecord: FC = () => {
     }, [multiData])
     useEffect(() => {
         if (!multiDataAux.loading){
-            if(multiDataAux.data.length<=1){
-                setshippingTypesData(multiDataAux.data[0].data)
-            }else{
-                setshippingTypesData([])
-            }
+            setshippingTypesData(multiDataAux.data[0]?.data||[])
         }
     }, [multiData])
 
@@ -318,6 +315,7 @@ const RecordHSMRecord: FC = () => {
                             label={t(langKeys.shippingtype)}
                             loading={multiDataAux.loading}
                             variant="outlined"
+                            valueDefault={shippingtype}
                             style={{width: "170px"}}
                             data={shippingTypesData}
                             optionValue="domainvalue"
