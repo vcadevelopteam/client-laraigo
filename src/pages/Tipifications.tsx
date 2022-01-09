@@ -669,6 +669,7 @@ const Tipifications: FC = () => {
                     loading={mainResult.mainData.loading}
                     download={true}
                     register={true}
+                    onClickRow={handleEdit}
                     importCSV={importCSV}
                     handleTemplate={handleTemplate}
                     handleRegister={handleRegister}

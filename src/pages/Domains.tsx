@@ -444,6 +444,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
                                 columns={columns}
                                 data={dataDomain}
                                 download={false}
+                                onClickRow={handleEdit}
                                 loading={detailRes.loading}
                                 filterGeneral={false}
                                 register={true}
@@ -606,6 +607,7 @@ const Domains: FC = () => {
                 titlemodule={t(langKeys.domain_plural, { count: 2 })}
                 data={mainResult.mainData.data}
                 download={true}
+                onClickRow={handleEdit}
                 loading={mainResult.mainData.loading}
                 register={superadmin}
                 handleRegister={handleRegister}

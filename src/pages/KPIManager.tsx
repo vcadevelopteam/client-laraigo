@@ -18,7 +18,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, Typography } from '@material-ui/core';
 import { Range } from 'react-date-range';
 import { DateRangePicker } from 'components';
-import { CalendarIcon, SearchIcon } from 'icons';
+import { CalendarIcon, SearchIcon, DuplicateIcon } from 'icons';
 import GaugeChart from 'react-gauge-chart'
 
 interface RowSelected {
@@ -688,6 +688,7 @@ const KPIManager: FC = () => {
                             editFunction={() => handleEdit(row)}
                             extraOption={t(langKeys.duplicate)}
                             extraFunction={() => handleDuplicate(row)}
+                            ExtraICon={() => <DuplicateIcon width={28} style={{ fill: '#7721AD' }} />}
                         />
                     )
                 }
@@ -831,6 +832,7 @@ const KPIManager: FC = () => {
     if (viewSelected === "view-1") {
         return (
             <TableZyx
+                onClickRow={handleEdit}
                 columns={columns}
                 titlemodule={t(langKeys.kpimanager_plural, { count: 2 })}
                 data={mainResult.mainData.data || []}

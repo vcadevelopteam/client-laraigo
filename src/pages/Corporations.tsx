@@ -170,6 +170,7 @@ const Corporations: FC = () => {
         return (
             <TableZyx
                 columns={columns}
+                onClickRow={handleEdit}
                 titlemodule={t(langKeys.corporation_plural, { count: 2 })}
                 data={mainResult.mainData.data}
                 download={true}

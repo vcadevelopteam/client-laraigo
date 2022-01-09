@@ -496,6 +496,7 @@ const SLA: FC = () => {
                 download={true}
                 loading={mainResult.mainData.loading}
                 register={true}
+                onClickRow={handleEdit}
                 handleRegister={handleRegister}
             // fetchData={fetchData}
             />

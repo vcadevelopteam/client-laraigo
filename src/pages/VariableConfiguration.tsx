@@ -82,14 +82,6 @@ const VariableConfiguration: FC = () => {
                             <IconButton
                                 aria-label="more"
                                 aria-controls="long-menu"
-                                aria-haspopup="true"
-                                size="small"
-                                onClick={() => handleEdit(row)}>
-                                <VisibilityIcon style={{ color: '#B6B4BA' }} />
-                            </IconButton>
-                            <IconButton
-                                aria-label="more"
-                                aria-controls="long-menu"
                                 aria-haspopup="true"    
                                 size="small"
                                 onClick={() => handleDownload(row)}>
@@ -225,6 +217,7 @@ const VariableConfiguration: FC = () => {
 
         return (
             <TableZyx
+                onClickRow={handleEdit}
                 columns={columns}
                 titlemodule={t(langKeys.variableconfiguration_plural, { count: 2 })}
                 data={mainResult.mainData.data}

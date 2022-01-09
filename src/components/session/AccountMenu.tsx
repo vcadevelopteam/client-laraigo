@@ -12,6 +12,8 @@ import Avatar from '@material-ui/core/Avatar';
 import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import { ManageOrganization, BadgeGo, StatusConnection } from 'components';
 
+
+
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
@@ -67,7 +69,7 @@ const AccountMenu: FC = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const history = useHistory();
-
+    
     const user = useSelector(state => state.login.validateToken.user);
     const userConnected = useSelector(state => state.inbox.userConnected);
     

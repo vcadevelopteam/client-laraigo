@@ -253,20 +253,6 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const columns = React.useMemo(
         () => [
             {
-                accessor: 'billingsupportid',
-                isComponent: true,
-                minWidth: 60,
-                width: '1%',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <TemplateIcons
-                            editFunction={() => handleEdit(row)}
-                        />
-                    )
-                }
-            },
-            {
                 Header: t(langKeys.corporation),
                 accessor: 'corpdesc',
             },
@@ -358,6 +344,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             <Fragment>
                 <TableZyx
                     columns={columns}
+                    onClickRow={handleEdit}
                     ButtonsElement={() => (
                         <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
                             <FieldSelect
@@ -1848,28 +1835,28 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
 
     const columns = React.useMemo(
         () => [
-            {
-                accessor: 'billingsupportid',
-                isComponent: true,
-                minWidth: 60,
-                width: '1%',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <>
-                            <IconButton
-                                aria-label="more"
-                                aria-controls="long-menu"
-                                aria-haspopup="true"
-                                size="small"
-                                onClick={() => handleView(row)}
-                            >
-                                <Visibility style={{ color: '#B6B4BA' }} />
-                            </IconButton>
-                        </>
-                    )
-                }
-            },
+            // {
+            //     accessor: 'billingsupportid',
+            //     isComponent: true,
+            //     minWidth: 60,
+            //     width: '1%',
+            //     Cell: (props: any) => {
+            //         const row = props.cell.row.original;
+            //         return (
+            //             <>
+            //                 <IconButton
+            //                     aria-label="more"
+            //                     aria-controls="long-menu"
+            //                     aria-haspopup="true"
+            //                     size="small"
+            //                     onClick={() => handleView(row)}
+            //                 >
+            //                     <Visibility style={{ color: '#B6B4BA' }} />
+            //                 </IconButton>
+            //             </>
+            //         )
+            //     }
+            // },
             {
                 Header: t(langKeys.corporation),
                 accessor: 'corpdesc',
@@ -1985,6 +1972,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     if (viewSelected === "view-1") {
         return (
             <TableZyx
+                onClickRow={handleView}
                 columns={columns}
                 ButtonsElement={() => (
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>

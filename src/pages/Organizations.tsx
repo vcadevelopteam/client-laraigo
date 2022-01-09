@@ -890,6 +890,7 @@ const Organizations: FC = () => {
                 titlemodule={t(langKeys.organization_plural, { count: 2 })}
                 data={mainResult.mainData.data}
                 download={true}
+                onClickRow={handleEdit}
                 loading={mainResult.mainData.loading}
                 register={true}
                 handleRegister={handleRegister}

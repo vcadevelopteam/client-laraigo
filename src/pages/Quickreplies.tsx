@@ -631,7 +631,7 @@ const Quickreplies: FC = () => {
                     importCSV={importCSV}
                     handleTemplate={handleTemplate}
                     handleRegister={handleRegister}
-                    // fetchData={fetchData}
+                    onClickRow={handleEdit}
                     ButtonsElement={()=>
                         <Button
                             variant="contained"

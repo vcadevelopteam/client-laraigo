@@ -151,7 +151,7 @@ const MessageTemplates: FC = () => {
                 NoFilter: true,
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    return convertLocalDate(row.createdate).toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit"})
+                    return convertLocalDate(row.createdate).toLocaleDateString(undefined, { year: "numeric", month: "2-digit", day: "2-digit" })
                 }
             },
             {
@@ -249,6 +249,7 @@ const MessageTemplates: FC = () => {
 
         return (
             <TableZyx
+                onClickRow={handleEdit}
                 columns={columns}
                 titlemodule={t(langKeys.messagetemplate_plural, { count: 2 })}
                 data={mainResult.mainData.data}
@@ -280,7 +281,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
 
     const dataCategory = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataLanguage = multiData[1] && multiData[1].success ? multiData[1].data : [];
-   
+
     const { control, register, handleSubmit, setValue, getValues, unregister, trigger, formState: { errors } } = useForm({
         defaultValues: {
             id: row ? row.id : 0,
@@ -306,7 +307,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
         }
     });
 
-    const [bodyobject, setBodyobject] = useState<Descendant[]>(row?.bodyobject || [{"type": "paragraph", "children": [{"text": row?.body || ""}] }])
+    const [bodyobject, setBodyobject] = useState<Descendant[]>(row?.bodyobject || [{ "type": "paragraph", "children": [{ "text": row?.body || "" }] }])
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { fields: buttons } = useFieldArray({
@@ -314,8 +315,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
         name: "buttons",
     });
 
-    const [templateTypeDisabled, setTemplateTypeDisabled] = useState(['SMS','MAIL'].includes(getValues('type')));
-    
+    const [templateTypeDisabled, setTemplateTypeDisabled] = useState(['SMS', 'MAIL'].includes(getValues('type')));
+
     const [waitUploadFile, setWaitUploadFile] = useState(false);
     const uploadResult = useSelector(state => state.main.uploadFile);
 
@@ -360,7 +361,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
             if (data.type === 'MAIL') {
                 data.body = renderToString(toElement(bodyobject));
             }
-            dispatch(execute(insMessageTemplate({...data, bodyobject: bodyobject})));
+            dispatch(execute(insMessageTemplate({ ...data, bodyobject: bodyobject })));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -393,7 +394,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
         await trigger('templatetype');
     }
 
-    const onClickHeaderToogle = async ({ value } : { value? : Boolean | null} = {}) => {
+    const onClickHeaderToogle = async ({ value }: { value?: Boolean | null } = {}) => {
         if (value)
             setValue('headerenabled', value)
         else
@@ -401,7 +402,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
         await trigger('headerenabled');
     }
 
-    const onClickFooterToogle = async ({ value } : { value? : Boolean | null} = {}) => {
+    const onClickFooterToogle = async ({ value }: { value?: Boolean | null } = {}) => {
         if (value)
             setValue('footerenabled', value)
         else
@@ -409,7 +410,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
         await trigger('footerenabled');
     }
 
-    const onClickButtonsToogle = async ({ value } : { value? : Boolean | null} = {}) => {
+    const onClickButtonsToogle = async ({ value }: { value?: Boolean | null } = {}) => {
         if (value)
             setValue('buttonsenabled', value)
         else
@@ -434,8 +435,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
 
     const onClickRemoveButton = async () => {
         let btns = getValues('buttons');
-        if (btns && btns.length > 0)
-        {
+        if (btns && btns.length > 0) {
             unregister(`buttons.${btns.length - 1}`);
             setValue('buttons', btns.filter((x: any, i: number) => i !== btns.length - 1));
         }
@@ -443,12 +443,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
     }
 
     const [fileAttachment, setFileAttachment] = useState<File | null>(null);
-    
+
     const onClickAttachment = useCallback(() => {
         const input = document.getElementById('attachmentInput');
         input!.click();
     }, []);
-    
+
     const onChangeAttachment = useCallback((files: any) => {
         const file = files?.item(0);
         if (file) {
@@ -482,8 +482,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                         <TitleDetail
                             title={row ? `${row.name}` : t(langKeys.newmessagetemplate)}
                         />
-                    </div> 
-            
+                    </div>
+
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                         <Button
                             variant="contained"
@@ -603,32 +603,32 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                         }
                     </div>
                     {getValues("type") === 'MAIL' &&
-                    <div className="row-zyx">
-                        {edit ?
-                            <React.Fragment>
-                                <FieldSelect
-                                    uset={true}
-                                    label={t(langKeys.priority)}
-                                    className="col-6"
-                                    valueDefault={getValues('priority')}
-                                    onChange={(value) => setValue('priority', value?.value)}
-                                    error={errors?.priority?.message}
-                                    data={dataPriority}
-                                    prefixTranslation="priority_"
-                                    optionDesc="text"
-                                    optionValue="value"
-                                />
-                            </React.Fragment>
-                            :
-                            <React.Fragment>
-                                <FieldView
-                                    label={t(langKeys.priority)}
-                                    value={row ? (row.priority || "") : ""}
-                                    className="col-6"
-                                />
-                            </React.Fragment>
-                        }
-                    </div>}
+                        <div className="row-zyx">
+                            {edit ?
+                                <React.Fragment>
+                                    <FieldSelect
+                                        uset={true}
+                                        label={t(langKeys.priority)}
+                                        className="col-6"
+                                        valueDefault={getValues('priority')}
+                                        onChange={(value) => setValue('priority', value?.value)}
+                                        error={errors?.priority?.message}
+                                        data={dataPriority}
+                                        prefixTranslation="priority_"
+                                        optionDesc="text"
+                                        optionValue="value"
+                                    />
+                                </React.Fragment>
+                                :
+                                <React.Fragment>
+                                    <FieldView
+                                        label={t(langKeys.priority)}
+                                        value={row ? (row.priority || "") : ""}
+                                        className="col-6"
+                                    />
+                                </React.Fragment>
+                            }
+                        </div>}
                     <div className="row-zyx">
                         {edit ?
                             <FieldSelect
@@ -652,98 +652,98 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                         }
                     </div>
                     {getValues('templatetype') === 'MULTIMEDIA' ?
-                    <div className="row-zyx">
-                        {edit ? 
-                            <React.Fragment>
-                                <Button
-                                    variant="contained"
-                                    type="button"
-                                    className={classes.mediabutton}
-                                    style={{ backgroundColor: getValues('headerenabled') ? "#000000" : "#AAAAAA", color: "#FFFFFF" }}
-                                    startIcon={<CheckIcon htmlColor="#FFFFFF" />}
-                                    onClick={() => onClickHeaderToogle()}
-                                >{t(langKeys.header)}</Button>
-                                <Button
-                                    variant="contained"
-                                    type="button"
-                                    className={classes.mediabutton}
-                                    style={{ backgroundColor: "#000000", color: "#FFFFFF" }}
-                                    startIcon={<CheckIcon htmlColor="#FFFFFF" />}
-                                >{t(langKeys.body)}</Button>
-                                <Button
-                                    variant="contained"
-                                    type="button"
-                                    className={classes.mediabutton}
-                                    style={{ backgroundColor: getValues('footerenabled') ? "#000000" : "#AAAAAA", color: "#FFFFFF" }}
-                                    startIcon={<CheckIcon htmlColor="#FFFFFF" />}
-                                    onClick={() => onClickFooterToogle()}
-                                >{t(langKeys.footer)}</Button>
-                                <Button
-                                    variant="contained"
-                                    type="button"
-                                    className={classes.mediabutton}
-                                    style={{ backgroundColor: getValues('buttonsenabled') ? "#000000" : "#AAAAAA", color: "#FFFFFF" }}
-                                    startIcon={<CheckIcon htmlColor="#FFFFFF" />}
-                                    onClick={() => onClickButtonsToogle()}
-                                >{t(langKeys.buttons)}</Button>
-                            </React.Fragment>
-                        : null }
-                    </div>
-                    : null}
+                        <div className="row-zyx">
+                            {edit ?
+                                <React.Fragment>
+                                    <Button
+                                        variant="contained"
+                                        type="button"
+                                        className={classes.mediabutton}
+                                        style={{ backgroundColor: getValues('headerenabled') ? "#000000" : "#AAAAAA", color: "#FFFFFF" }}
+                                        startIcon={<CheckIcon htmlColor="#FFFFFF" />}
+                                        onClick={() => onClickHeaderToogle()}
+                                    >{t(langKeys.header)}</Button>
+                                    <Button
+                                        variant="contained"
+                                        type="button"
+                                        className={classes.mediabutton}
+                                        style={{ backgroundColor: "#000000", color: "#FFFFFF" }}
+                                        startIcon={<CheckIcon htmlColor="#FFFFFF" />}
+                                    >{t(langKeys.body)}</Button>
+                                    <Button
+                                        variant="contained"
+                                        type="button"
+                                        className={classes.mediabutton}
+                                        style={{ backgroundColor: getValues('footerenabled') ? "#000000" : "#AAAAAA", color: "#FFFFFF" }}
+                                        startIcon={<CheckIcon htmlColor="#FFFFFF" />}
+                                        onClick={() => onClickFooterToogle()}
+                                    >{t(langKeys.footer)}</Button>
+                                    <Button
+                                        variant="contained"
+                                        type="button"
+                                        className={classes.mediabutton}
+                                        style={{ backgroundColor: getValues('buttonsenabled') ? "#000000" : "#AAAAAA", color: "#FFFFFF" }}
+                                        startIcon={<CheckIcon htmlColor="#FFFFFF" />}
+                                        onClick={() => onClickButtonsToogle()}
+                                    >{t(langKeys.buttons)}</Button>
+                                </React.Fragment>
+                                : null}
+                        </div>
+                        : null}
                     {getValues('type') === 'MAIL' ?
-                    <div className="row-zyx">
-                        {edit ?
-                            <React.Fragment>
-                                <FieldEdit
+                        <div className="row-zyx">
+                            {edit ?
+                                <React.Fragment>
+                                    <FieldEdit
+                                        label={t(langKeys.header)}
+                                        className="col-12"
+                                        valueDefault={getValues('header')}
+                                        onChange={(value) => setValue('header', value)}
+                                        error={errors?.header?.message}
+                                    />
+                                </React.Fragment>
+                                :
+                                <FieldView
                                     label={t(langKeys.header)}
+                                    value={row ? (row.header || "") : ""}
                                     className="col-12"
-                                    valueDefault={getValues('header')}
-                                    onChange={(value) => setValue('header', value)}
-                                    error={errors?.header?.message}
                                 />
-                            </React.Fragment>
-                            :
-                            <FieldView
-                                label={t(langKeys.header)}
-                                value={row ? (row.header || "") : ""}
-                                className="col-12"
-                            />
-                        }
-                    </div>
-                    : null}
+                            }
+                        </div>
+                        : null}
                     {(getValues('templatetype') === 'MULTIMEDIA'
-                    && getValues('headerenabled')) ?
-                    <div className="row-zyx">
-                        {edit ?
-                            <React.Fragment>
-                                <FieldSelect
-                                    uset={true}
-                                    label={t(langKeys.headertype)}
-                                    className={classes.headerType}
-                                    valueDefault={getValues('headertype')}
-                                    onChange={onChangeHeaderType}
-                                    error={errors?.header?.message}
-                                    data={dataHeaderType}
-                                    optionDesc="text"
-                                    optionValue="value"
-                                />
-                                <FieldEdit
+                        && getValues('headerenabled')) ?
+                        <div className="row-zyx">
+                            {edit ?
+                                <React.Fragment>
+                                    <FieldSelect
+                                        uset={true}
+                                        label={t(langKeys.headertype)}
+                                        className={classes.headerType}
+                                        valueDefault={getValues('headertype')}
+                                        onChange={onChangeHeaderType}
+                                        error={errors?.header?.message}
+                                        data={dataHeaderType}
+                                        optionDesc="text"
+                                        optionValue="value"
+                                    />
+                                    <FieldEdit
+                                        label={t(langKeys.header)}
+                                        className={classes.headerText}
+                                        valueDefault={getValues('header')}
+                                        onChange={(value) => setValue('header', value)}
+                                        error={errors?.header?.message}
+                                    />
+                                </React.Fragment>
+                                :
+                                <FieldView
                                     label={t(langKeys.header)}
-                                    className={classes.headerText}
-                                    valueDefault={getValues('header')}
-                                    onChange={(value) => setValue('header', value)}
-                                    error={errors?.header?.message}
+                                    value={row ? (row.header || "") : ""}
+                                    className="col-12"
                                 />
-                            </React.Fragment>
-                            :
-                            <FieldView
-                                label={t(langKeys.header)}
-                                value={row ? (row.header || "") : ""}
-                                className="col-12"
-                            />
-                        }
-                    </div>
-                    : null}
+                            }
+                        </div>
+                        : null}
                     <div className="row-zyx">
                         {getValues('type') === 'MAIL' &&
                             <React.Fragment>
@@ -760,177 +760,183 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                         {getValues('type') !== 'MAIL' &&
                             (
                                 edit ?
-                                <FieldEditMulti
-                                    label={t(langKeys.body)}
-                                    className="col-12"
-                                    valueDefault={getValues('body')}
-                                    onChange={(value) => setValue('body', value)}
-                                    error={errors?.body?.message}
-                                    maxLength={1024}
-                                />
-                                : <FieldView
-                                    label={t(langKeys.body)}
-                                    value={row ? (row.body || "") : ""}
-                                    className="col-12"
-                                />
+                                    <FieldEditMulti
+                                        label={t(langKeys.body)}
+                                        className="col-12"
+                                        valueDefault={getValues('body')}
+                                        onChange={(value) => setValue('body', value)}
+                                        error={errors?.body?.message}
+                                        maxLength={1024}
+                                    />
+                                    : <FieldView
+                                        label={t(langKeys.body)}
+                                        value={row ? (row.body || "") : ""}
+                                        className="col-12"
+                                    />
                             )
                         }
                     </div>
                     {(getValues('templatetype') === 'MULTIMEDIA'
-                    && getValues('footerenabled')) ?
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldEditMulti
-                                label={t(langKeys.footer)}
-                                className="col-12"
-                                valueDefault={getValues('footer')}
-                                onChange={(value) => setValue('footer', value)}
-                                error={errors?.footer?.message}
-                                rows={2}
-                                maxLength={60}
-                            />
-                            :
-                            <FieldView
-                                label={t(langKeys.footer)}
-                                value={row ? (row.footer || "") : ""}
-                                className="col-12"
-                            />
-                        }
-                    </div>
-                    : null}
-                    {(getValues('templatetype') === 'MULTIMEDIA'
-                    && getValues('buttonsenabled')) ?
-                    <div className="row-zyx" style={{ alignItems: 'flex-end' }}>
-                        <FieldView
-                            label={t(langKeys.buttons)}
-                            className={classes.buttonTitle}
-                        />
-                        {
-                            edit && getValues('buttons')?.length < 3 &&
-                            <Button
-                                variant="outlined"
-                                type="button"
-                                color="primary"
-                                className={classes.btnButton}
-                                startIcon={<AddIcon color="primary" />}
-                                onClick={() => onClickAddButton()}
-                            >{t(langKeys.addbutton)}</Button>
-                        }
-                        {
-                            edit && getValues('buttons')?.length > 0 &&
-                            <Button
-                                variant="outlined"
-                                type="button"
-                                color="primary"
-                                className={classes.btnButton}
-                                startIcon={<RemoveIcon color="primary" />}
-                                onClick={() => onClickRemoveButton()}
-                            >{t(langKeys.removebutton)}</Button>
-                        }
-                    </div>
-                    : null}
-                    {(getValues('templatetype') === 'MULTIMEDIA'
-                    && getValues('buttonsenabled')) ?
-                    <div className="row-zyx">
-                        {edit ?
-                            <React.Fragment>
-                            {getValues('buttons')?.map((btn: any, i: number) => {
-                                return (
-                                    <div key={`btn-${i}`} className="col-4">
-                                        <FieldEdit
-                                            fregister={{...register(`buttons.${i}.title`, {
-                                                validate: (value) => (value && value.length) || t(langKeys.field_required)
-                                            })}}
-                                            label={t(langKeys.title)}
-                                            className={classes.mb1}
-                                            valueDefault={btn?.title || ""}
-                                            onChange={(value) => onChangeButton(i, 'title', value)}
-                                            error={errors?.buttons?.[i]?.title?.message}
-                                        />
-                                        <FieldSelect
-                                            uset={true}
-                                            fregister={{...register(`buttons.${i}.type`, {
-                                                validate: (value) => (value && value.length) || t(langKeys.field_required)
-                                            })}}
-                                            label={t(langKeys.type)}
-                                            className={classes.mb1}
-                                            valueDefault={btn?.type || ""}
-                                            onChange={(value) => onChangeButton(i, 'type', value?.value)}
-                                            error={errors?.buttons?.[i]?.type?.message}
-                                            data={dataButtonType}
-                                            optionDesc="text"
-                                            optionValue="value"
-                                        />
-                                        <FieldEdit
-                                            fregister={{...register(`buttons.${i}.payload`, {
-                                                validate: (value) => (value && value.length) || t(langKeys.field_required)
-                                            })}}
-                                            label={t(langKeys.payload)}
-                                            className={classes.mb1}
-                                            valueDefault={btn?.payload || ""}
-                                            onChange={(value) => onChangeButton(i, 'payload', value)}
-                                            error={errors?.buttons?.[i]?.payload?.message}
-                                        />
-                                    </div>
-                                )
-                            })}
-                            </React.Fragment>
-                            :
-                            getValues('buttons')?.map((btn: any, i: number) => {
-                                return (
-                                    <div key={`btn${i}`} className="col-4">
-                                        <FieldView
-                                            label={t(langKeys.title)}
-                                            value={btn?.title || ""}
-                                            className="col-12"
-                                        />
-                                        <FieldView
-                                            label={t(langKeys.type)}
-                                            value={btn?.type || ""}
-                                            className="col-12"
-                                        />
-                                        <FieldView
-                                            label={t(langKeys.payload)}
-                                            value={btn?.payload || ""}
-                                            className="col-12"
-                                        />
-                                    </div>
-                                )
-                            })
-                        }
-                    </div>
-                    : null}
-                    {getValues("type") === 'MAIL' &&
-                    <div>
-                        <FieldView label={t(langKeys.files)} />
-                        {edit ?
-                            <React.Fragment>
-                                <input
-                                    accept="file/*"
-                                    style={{ display: 'none' }}
-                                    id="attachmentInput"
-                                    type="file"
-                                    onChange={(e) => onChangeAttachment(e.target.files)}
+                        && getValues('footerenabled')) ?
+                        <div className="row-zyx">
+                            {edit ?
+                                <FieldEditMulti
+                                    label={t(langKeys.footer)}
+                                    className="col-12"
+                                    valueDefault={getValues('footer')}
+                                    onChange={(value) => setValue('footer', value)}
+                                    error={errors?.footer?.message}
+                                    rows={2}
+                                    maxLength={60}
                                 />
-                                {<IconButton
-                                    onClick={onClickAttachment}
-                                    disabled={waitUploadFile}
-                                >
-                                    <AttachFileIcon color="primary" />
-                                </IconButton>}
-                                {!!getValues("attachment") && getValues("attachment").split(',').map((f: string, i: number) => (
-                                    <FilePreview key={`attachment-${i}`} src={f} onClose={(f) => handleCleanMediaInput(f)} />
-                                ))}
-                                {waitUploadFile && fileAttachment && <FilePreview key={`attachment-x`} src={fileAttachment} />}
-                            </React.Fragment>
-                            :
-                            <React.Fragment>
-                                {getValues("attachment").split(',').map((f: string, i: number) => (
-                                    <FilePreview key={`attachment-view-${i}`} src={f} onClose={(f) => handleCleanMediaInput(f)} />
-                                ))}
-                            </React.Fragment>
-                        }
-                    </div>}
+                                :
+                                <FieldView
+                                    label={t(langKeys.footer)}
+                                    value={row ? (row.footer || "") : ""}
+                                    className="col-12"
+                                />
+                            }
+                        </div>
+                        : null}
+                    {(getValues('templatetype') === 'MULTIMEDIA'
+                        && getValues('buttonsenabled')) ?
+                        <div className="row-zyx" style={{ alignItems: 'flex-end' }}>
+                            <FieldView
+                                label={t(langKeys.buttons)}
+                                className={classes.buttonTitle}
+                            />
+                            {
+                                edit && getValues('buttons')?.length < 3 &&
+                                <Button
+                                    variant="outlined"
+                                    type="button"
+                                    color="primary"
+                                    className={classes.btnButton}
+                                    startIcon={<AddIcon color="primary" />}
+                                    onClick={() => onClickAddButton()}
+                                >{t(langKeys.addbutton)}</Button>
+                            }
+                            {
+                                edit && getValues('buttons')?.length > 0 &&
+                                <Button
+                                    variant="outlined"
+                                    type="button"
+                                    color="primary"
+                                    className={classes.btnButton}
+                                    startIcon={<RemoveIcon color="primary" />}
+                                    onClick={() => onClickRemoveButton()}
+                                >{t(langKeys.removebutton)}</Button>
+                            }
+                        </div>
+                        : null}
+                    {(getValues('templatetype') === 'MULTIMEDIA'
+                        && getValues('buttonsenabled')) ?
+                        <div className="row-zyx">
+                            {edit ?
+                                <React.Fragment>
+                                    {getValues('buttons')?.map((btn: any, i: number) => {
+                                        return (
+                                            <div key={`btn-${i}`} className="col-4">
+                                                <FieldEdit
+                                                    fregister={{
+                                                        ...register(`buttons.${i}.title`, {
+                                                            validate: (value) => (value && value.length) || t(langKeys.field_required)
+                                                        })
+                                                    }}
+                                                    label={t(langKeys.title)}
+                                                    className={classes.mb1}
+                                                    valueDefault={btn?.title || ""}
+                                                    onChange={(value) => onChangeButton(i, 'title', value)}
+                                                    error={errors?.buttons?.[i]?.title?.message}
+                                                />
+                                                <FieldSelect
+                                                    uset={true}
+                                                    fregister={{
+                                                        ...register(`buttons.${i}.type`, {
+                                                            validate: (value) => (value && value.length) || t(langKeys.field_required)
+                                                        })
+                                                    }}
+                                                    label={t(langKeys.type)}
+                                                    className={classes.mb1}
+                                                    valueDefault={btn?.type || ""}
+                                                    onChange={(value) => onChangeButton(i, 'type', value?.value)}
+                                                    error={errors?.buttons?.[i]?.type?.message}
+                                                    data={dataButtonType}
+                                                    optionDesc="text"
+                                                    optionValue="value"
+                                                />
+                                                <FieldEdit
+                                                    fregister={{
+                                                        ...register(`buttons.${i}.payload`, {
+                                                            validate: (value) => (value && value.length) || t(langKeys.field_required)
+                                                        })
+                                                    }}
+                                                    label={t(langKeys.payload)}
+                                                    className={classes.mb1}
+                                                    valueDefault={btn?.payload || ""}
+                                                    onChange={(value) => onChangeButton(i, 'payload', value)}
+                                                    error={errors?.buttons?.[i]?.payload?.message}
+                                                />
+                                            </div>
+                                        )
+                                    })}
+                                </React.Fragment>
+                                :
+                                getValues('buttons')?.map((btn: any, i: number) => {
+                                    return (
+                                        <div key={`btn${i}`} className="col-4">
+                                            <FieldView
+                                                label={t(langKeys.title)}
+                                                value={btn?.title || ""}
+                                                className="col-12"
+                                            />
+                                            <FieldView
+                                                label={t(langKeys.type)}
+                                                value={btn?.type || ""}
+                                                className="col-12"
+                                            />
+                                            <FieldView
+                                                label={t(langKeys.payload)}
+                                                value={btn?.payload || ""}
+                                                className="col-12"
+                                            />
+                                        </div>
+                                    )
+                                })
+                            }
+                        </div>
+                        : null}
+                    {getValues("type") === 'MAIL' &&
+                        <div>
+                            <FieldView label={t(langKeys.files)} />
+                            {edit ?
+                                <React.Fragment>
+                                    <input
+                                        accept="file/*"
+                                        style={{ display: 'none' }}
+                                        id="attachmentInput"
+                                        type="file"
+                                        onChange={(e) => onChangeAttachment(e.target.files)}
+                                    />
+                                    {<IconButton
+                                        onClick={onClickAttachment}
+                                        disabled={waitUploadFile}
+                                    >
+                                        <AttachFileIcon color="primary" />
+                                    </IconButton>}
+                                    {!!getValues("attachment") && getValues("attachment").split(',').map((f: string, i: number) => (
+                                        <FilePreview key={`attachment-${i}`} src={f} onClose={(f) => handleCleanMediaInput(f)} />
+                                    ))}
+                                    {waitUploadFile && fileAttachment && <FilePreview key={`attachment-x`} src={fileAttachment} />}
+                                </React.Fragment>
+                                :
+                                <React.Fragment>
+                                    {getValues("attachment").split(',').map((f: string, i: number) => (
+                                        <FilePreview key={`attachment-view-${i}`} src={f} onClose={(f) => handleCleanMediaInput(f)} />
+                                    ))}
+                                </React.Fragment>
+                            }
+                        </div>}
                 </div>
             </form>
         </div>

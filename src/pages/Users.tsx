@@ -36,6 +36,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import { DuplicateIcon } from 'icons';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -955,6 +956,7 @@ const Users: FC = () => {
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
                             extraFunction={() => handleDuplicate(row)}
+                            ExtraICon={() => <DuplicateIcon width={28} style={{ fill: '#7721AD' }} />}
                         />
                     )
                 }
@@ -1271,6 +1273,7 @@ const Users: FC = () => {
                 hoverShadow={true}
                 handleRegister={handleRegister}
                 importCSV={handleUpload}
+                onClickRow={handleEdit}
                 ButtonsElement={() => (
                     <>
                         <Button

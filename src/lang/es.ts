@@ -743,7 +743,7 @@ const translation: LangKeys = {
     tableShowingRecordOf: 'Mostrando {{itemCount}} registros de {{totalItems}}',
     least_user_or_group: 'Debe elegir al menos usuario o grupo',
     tipification: 'Clasificación',
-    tipification_plural: 'Tipificaciones',
+    tipification_plural: 'Clasificaciones',
 
     report_designer: 'Diseñador de reportes',
     column_plural: 'Columnas',
@@ -1101,9 +1101,10 @@ const translation: LangKeys = {
     emoji_message_restricted: 'Usted desea restringir el emoji a todas las organizaciones y canales',
 
     ticket_close: 'Cerrar',
-    ticket_typify: 'Tipificar',
+    ticket_typify: 'Clasificar',
     ticket_reasign: 'Reasignar',
     ticket_reason: 'Motivo',
+    reasons_disconnection: 'Motivos de desconexión',
     ticket_comment: 'Comentario',
     ticket_user: 'Usuario',
 

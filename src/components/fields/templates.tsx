@@ -36,6 +36,7 @@ import { SearchField } from 'components';
 import CameraAltIcon from '@material-ui/icons/CameraAlt';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Tooltip from '@material-ui/core/Tooltip';
+import { ListItemIcon } from '@material-ui/core';
 import {
     WebMessengerIcon,
     ZyxmeMessengerIcon,
@@ -60,16 +61,20 @@ interface TemplateIconsProps {
     deleteFunction?: (param: any) => void;
     editFunction?: (param: any) => void;
     extraOption?: string;
+    ExtraICon?: () => JSX.Element;
     extraFunction?: (param: any) => void;
 }
 
-export const TemplateIcons: React.FC<TemplateIconsProps> = ({ extraOption, viewFunction, deleteFunction, editFunction, extraFunction }) => {
+export const TemplateIcons: React.FC<TemplateIconsProps> = ({ extraOption, viewFunction, deleteFunction, editFunction, extraFunction, ExtraICon }) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const handleClose = () => setAnchorEl(null);
+    const handleClose = (e: any) => {
+        e.stopPropagation();
+        setAnchorEl(null);
+    }
 
     return (
         <div style={{ whiteSpace: 'nowrap', display: 'flex' }}>
-            <IconButton
+            {/* <IconButton
                 aria-label="more"
                 aria-controls="long-menu"
                 aria-haspopup="true"
@@ -77,13 +82,16 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ extraOption, viewF
                 onClick={editFunction}
             >
                 <VisibilityIcon style={{ color: '#B6B4BA' }} />
-            </IconButton>
+            </IconButton> */}
             <IconButton
                 aria-label="more"
                 aria-controls="long-menu"
                 aria-haspopup="true"
                 size="small"
-                onClick={(e) => setAnchorEl(e.currentTarget)}
+                onClick={(e) => {
+                    setAnchorEl(e.currentTarget);
+                    e.stopPropagation();
+                }}
                 style={{ display: deleteFunction ? 'block' : 'none' }}
             >
                 <MoreVertIcon style={{ color: '#B6B4BA' }} />
@@ -104,14 +112,28 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ extraOption, viewF
                 onClose={handleClose}
             >
                 <MenuItem onClick={(e) => {
-                    setAnchorEl(null)
+                    e.stopPropagation();
+                    setAnchorEl(null);
                     deleteFunction && deleteFunction(e)
-                }}><Trans i18nKey={langKeys.delete} /></MenuItem>
-                {extraOption && 
+                }}>
+                    <ListItemIcon color="inherit">
+                        <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                    </ListItemIcon>
+                    <Trans i18nKey={langKeys.delete} />
+                </MenuItem>
+                {extraOption &&
                     <MenuItem onClick={(e) => {
+                        e.stopPropagation();
                         setAnchorEl(null)
                         extraFunction && extraFunction(e)
-                        }}>{extraOption}</MenuItem>
+                    }}>
+                        {ExtraICon &&
+                            <ListItemIcon color="inherit">
+                                <ExtraICon />
+                            </ListItemIcon>
+                        }
+                        {extraOption}
+                    </MenuItem>
                 }
             </Menu>
         </div>
@@ -470,7 +492,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null, variant = "standard", uset = false, prefixTranslation = ""}) => {
+export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null, variant = "standard", uset = false, prefixTranslation = "" }) => {
     const { t } = useTranslation();
     const [optionsSelected, setOptionsSelected] = useState<Dictionary[]>([]);
 
@@ -618,9 +640,9 @@ interface TemplateSwitchProps extends InputProps {
 interface TemplateSwitchPropsYesNo extends InputProps {
     className?: any;
     label?: string;
-    textYes?:string;
-    textNo?:string;
-    labelPlacement?:"start" | "end" | "bottom" | "top" | undefined;
+    textYes?: string;
+    textNo?: string;
+    labelPlacement?: "start" | "end" | "bottom" | "top" | undefined;
 }
 
 export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, onChange, valueDefault, label, style }) => {
@@ -640,7 +662,7 @@ export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, onCha
         </div>
     );
 }
-export const TemplateSwitchYesNo: React.FC<TemplateSwitchPropsYesNo> = ({ className, onChange, valueDefault, label, style,textYes,textNo,labelPlacement="end" }) => {
+export const TemplateSwitchYesNo: React.FC<TemplateSwitchPropsYesNo> = ({ className, onChange, valueDefault, label, style, textYes, textNo, labelPlacement = "end" }) => {
     const [checkedaux, setChecked] = useState(false);
     const { t } = useTranslation();
 
@@ -653,12 +675,12 @@ export const TemplateSwitchYesNo: React.FC<TemplateSwitchPropsYesNo> = ({ classN
             {label && <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{label}</Box>}
             <FormControlLabel
                 labelPlacement={labelPlacement}
-                style={{paddingLeft:10}}
+                style={{ paddingLeft: 10 }}
                 control={<IOSSwitch checked={checkedaux} onChange={(e) => {
                     setChecked(e.target.checked);
                     onChange && onChange(e.target.checked)
                 }} />}
-                label={checkedaux?(textYes||t(langKeys.yes)):(textNo||"No")}
+                label={checkedaux ? (textYes || t(langKeys.yes)) : (textNo || "No")}
             />
         </div>
     );

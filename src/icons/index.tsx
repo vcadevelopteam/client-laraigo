@@ -154,3 +154,4 @@ export { ReactComponent as PdfIcon } from './pdfIcon.svg';
 export { ReactComponent as PptIcon } from './pptIcon.svg';
 export { ReactComponent as TxtIcon } from './txtIcon.svg';
 export { ReactComponent as XlsIcon } from './xlsIcon.svg';
+export { ReactComponent as DuplicateIcon } from './duplicate.svg';

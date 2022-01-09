@@ -83,26 +83,6 @@ const Properties: FC = () => {
     const columns = React.useMemo(
         () => [
             {
-                accessor: 'userid',
-                isComponent: true,
-                NoFilter: true,
-                minWidth: 60,
-                width: '1%',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <IconButton
-                            aria-controls='long-menu'
-                            aria-haspopup='true'
-                            aria-label='more'
-                            onClick={() => handleEdit(row)}
-                            size='small'>
-                            <VisibilityIcon style={{ color: '#B6B4BA' }} />
-                        </IconButton>
-                    )
-                }
-            },
-            {
                 Header: t(langKeys.name),
                 accessor: 'propertyname'
             },
@@ -211,6 +191,7 @@ const Properties: FC = () => {
                     download={true}
                     columns={columns}
                     filterGeneral={false}
+                    onClickRow={handleEdit}
                     loading={mainResult.mainData.loading}
                     register={false}
                 />

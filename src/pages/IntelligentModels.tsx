@@ -97,7 +97,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
             }
         }
     }, [executeRes, waitSave])
-    
+
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
             dispatch(execute(insIntelligentModels(data)));
@@ -113,7 +113,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
     });
 
     return (
-        <div style={{width: '100%'}}>
+        <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
@@ -124,8 +124,8 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                         <TitleDetail
                             title={row ? `${row.endpoint}` : t(langKeys.newintelligentmodel)}
                         />
-                    </div>            
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center'}}>
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                         <Button
                             variant="contained"
                             type="button"
@@ -135,15 +135,15 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                             onClick={() => setViewSelected("view-1")}
                         >{t(langKeys.back)}</Button>
                         {edit &&
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            type="submit"
-                            startIcon={<SaveIcon color="secondary" />}
-                            style={{ backgroundColor: "#55BD84" }}
-                        >{t(langKeys.save)}
-                        </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                type="submit"
+                                startIcon={<SaveIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >{t(langKeys.save)}
+                            </Button>
                         }
                     </div>
                 </div>
@@ -151,7 +151,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                     <div className="row-zyx">
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.endpoint)} 
+                                label={t(langKeys.endpoint)}
                                 className="col-6"
                                 onChange={(value) => setValue('endpoint', value)}
                                 valueDefault={row ? (row.endpoint || "") : ""}
@@ -164,7 +164,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                             />}
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.modelid)} 
+                                label={t(langKeys.modelid)}
                                 className="col-6"
                                 onChange={(value) => setValue('modelid', value)}
                                 valueDefault={row ? (row.modelid || "") : ""}
@@ -179,7 +179,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                     <div className="row-zyx">
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.apikey)} 
+                                label={t(langKeys.apikey)}
                                 className="col-6"
                                 onChange={(value) => setValue('apikey', value)}
                                 valueDefault={row ? (row.apikey || "") : ""}
@@ -192,7 +192,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                             />}
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.description)} 
+                                label={t(langKeys.description)}
                                 className="col-6"
                                 onChange={(value) => setValue('description', value)}
                                 valueDefault={row ? (row.description || "") : ""}
@@ -207,7 +207,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                     <div className="row-zyx">
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.provider)} 
+                                label={t(langKeys.provider)}
                                 className="col-6"
                                 onChange={(value) => setValue('provider', value)}
                                 valueDefault={row ? (row.provider || "") : ""}
@@ -220,7 +220,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                             />}
                         {edit ?
                             <FieldSelect
-                                label={t(langKeys.type)} 
+                                label={t(langKeys.type)}
                                 className="col-6"
                                 valueDefault={row ? (row.type || "") : ""}
                                 onChange={(value) => setValue('type', value ? value.domainvalue : 0)}
@@ -377,6 +377,7 @@ const IntelligentModels: FC = () => {
 
         return (
             <TableZyx
+                onClickRow={handleEdit}
                 columns={columns}
                 titlemodule={t(langKeys.intelligentmodels, { count: 2 })}
                 data={mainResult.mainData.data}

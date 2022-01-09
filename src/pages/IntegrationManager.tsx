@@ -242,6 +242,7 @@ const IntegrationManager: FC = () => {
                 columns={columns}
                 titlemodule={t(langKeys.integrationmanager_plural, { count: 2 })}
                 data={mainResult.mainData.data}
+                onClickRow={handleEdit}
                 download={true}
                 loading={mainResult.mainData.loading}
                 register={true}

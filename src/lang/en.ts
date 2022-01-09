@@ -567,7 +567,7 @@ const translation: LangKeys = {
     tablePageOf: 'Page <0>{{currentPage}}</0> of <1>{{totalPages}}</1>',
     tableShowingRecordOf: 'Showing {{itemCount}} records of {{totalItems}}',
     tipification: 'Tipification',
-    tipification_plural: 'Tipifications',
+    tipification_plural: 'Classifications',
 
     report_designer: 'Report designer',
     column_plural: 'Columns',
@@ -1070,6 +1070,7 @@ const translation: LangKeys = {
     error_variable_incompatibility_error: '5001: There was an error, contact the administrator ',
     error_unexpected_error: '5000: There was an error, contact the administrator ',
     error_null_not_allowed: '23502: There was an error, contact the administrator ',
+    reasons_disconnection: 'Reasons for disconnection',
     error_function_not_exists: '42883: There was an error, contact the administrator ',
     error_parameter_is_missing: "5004: There was an error, contact the administrator",
     error_request_services: '50007: There was an error, contact the administrator',

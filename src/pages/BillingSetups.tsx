@@ -447,6 +447,7 @@ const CostPerHSMPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             <Fragment>
 
                 <TableZyx
+                    onClickRow={handleEdit}
                     columns={columns}                    
                     ButtonsElement={() => (
                         <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
@@ -1258,6 +1259,7 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         return (
             <Fragment>
                 <TableZyx
+                    onClickRow={handleEdit}
                     columns={columns}
                     ButtonsElement={() =>(
                         <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
@@ -1756,6 +1758,7 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         return (
             <Fragment>
                 <TableZyx
+                    onClickRow={handleEdit}
                     columns={columns}                    
                     ButtonsElement={() => (
                         <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
@@ -2240,6 +2243,7 @@ const NotificationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         return (
             <Fragment>
                 <TableZyx
+                    onClickRow={handleEdit}
                     columns={columns}                    
                     ButtonsElement={() => (
                         <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
@@ -2738,6 +2742,7 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 </div> */}
 
                 <TableZyx
+                    onClickRow={handleEdit}
                     columns={columns}
                     ButtonsElement={() => (
                         <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>

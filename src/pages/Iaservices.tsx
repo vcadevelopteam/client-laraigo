@@ -763,6 +763,7 @@ const Iaservices: FC = () => {
 
         return (
             <TableZyx
+                onClickRow={handleEdit}
                 columns={columns}
                 titlemodule={t(langKeys.iaservices_plural, { count: 2 })}
                 data={mainResult.mainData.data}

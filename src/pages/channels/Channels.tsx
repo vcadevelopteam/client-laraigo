@@ -200,6 +200,7 @@ export const Channels: FC = () => {
             titlemodule={t(langKeys.channel_plural, { count: 2 })}
             data={mainResult.mainData.data}
             download={true}
+            onClickRow={handleEdit}
             loading={mainResult.mainData.loading}
             register={true}
             hoverShadow={true}

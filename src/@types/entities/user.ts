@@ -27,6 +27,10 @@ interface Properties {
     auto_close_holding: Dictionary;
 }
 
+interface Domains {
+    reasons_disconnection: Dictionary[];
+}
+
 export interface IUser {
     email: string;
     firstname: string;
@@ -44,6 +48,7 @@ export interface IUser {
     orgid: number;
     menu: ObjectApps;
     image: string | null;
+    domains: Domains;
     organizations: Organization[];
     automaticConnection?: boolean;
     properties: Properties;

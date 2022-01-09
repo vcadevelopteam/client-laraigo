@@ -33,6 +33,7 @@ export const langKeys = {
     cantidadOportunidades: "cantidadOportunidades",
     tmo_help: 'tmo_help',
     tag: 'tag',
+    reasons_disconnection: 'reasons_disconnection',
     billbyorg: 'billbyorg',
     evidenceofpayment: "evidenceofpayment",
     additional_information: 'additional_information',

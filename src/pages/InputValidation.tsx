@@ -15,6 +15,7 @@ import { useForm } from 'react-hook-form';
 import { getCollection, resetAllMain, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
+import { DuplicateIcon } from 'icons';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -182,6 +183,7 @@ const InputValidation: FC = () => {
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
                             extraFunction={() => handleDuplicate(row)}
+                            ExtraICon={() => <DuplicateIcon width={28} style={{ fill: '#7721AD' }} />}
                         />
                     )
                 }
@@ -263,6 +265,7 @@ const InputValidation: FC = () => {
                 titlemodule={t(langKeys.inputvalidation, { count: 2 })}
                 data={mainResult.mainData.data}
                 download={true}
+                onClickRow={handleEdit}
                 loading={mainResult.mainData.loading}
                 register={true}
                 handleRegister={handleRegister}

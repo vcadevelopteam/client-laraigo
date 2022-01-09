@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons} from 'components';
+import { TemplateIcons } from 'components';
 import { getCampaignLst, delCampaign, getCampaignStatus, getCampaignStart, dateToLocalDate, todayDate, capitalize } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../../components/fields/table-simple';
@@ -122,8 +122,7 @@ export const Campaign: FC = () => {
                 Cell: (props: any) => {
                     const { id, status, startdate, enddate } = props.cell.row.original;
                     if (dateToLocalDate(startdate, 'date') <= todayDate()
-                    && todayDate() <= dateToLocalDate(enddate, 'date'))
-                    {
+                        && todayDate() <= dateToLocalDate(enddate, 'date')) {
                         if (status === 'EJECUTANDO') {
                             return <Button
                                 className={classes.button}
@@ -145,7 +144,7 @@ export const Campaign: FC = () => {
                             </Button>
                         }
                         else {
-                            return null    
+                            return null
                         }
                     }
                     else {
@@ -303,6 +302,7 @@ export const Campaign: FC = () => {
 
         return (
             <TableZyx
+                onClickRow={handleEdit}
                 columns={columns}
                 titlemodule={t(langKeys.campaign_plural, { count: 2 })}
                 data={mainResult.mainData.data}
