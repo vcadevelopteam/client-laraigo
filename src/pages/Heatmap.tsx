@@ -1141,7 +1141,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
         || (typeof(row[column.id]) === 'string' && row[column.id] !== '00:00:00'))) {
             setModalRow(row);
             const day = column.id.replace('day','');
-            const user = listadvisers.filter((x:any)=>x.userid === row.userid)[0].userdesc
+            const user = listadvisers.filter((x:any)=>x.userid === row.userid)[0]?.userdesc
             switch (grid) {
                 case 'COMPLETED':
                     setModalTitle(`Tickets ${user} ${t(langKeys.day)} ${day}`)
@@ -1449,7 +1449,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
             return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*porcentage).toString(16)
         }
         
-        const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor/gi.test(key)).map(([key, value]) => ({
+        const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor|horanum/gi.test(key)).map(([key, value]) => ({
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : (key==="asesor" ? "ASESOR" : "TOTAL"),
             accessor: key,
             NoFilter: true,
