@@ -100,14 +100,19 @@ const VariableConfiguration: FC = () => {
                                 value={valuefile}
                                 style={{ display: 'none' }}
                                 onChange={(e) => {
-                                    e.stopPropagation();
                                     handleUpload(row, e.target.files);
+                                }}
+                                onClick={(e: any) => {
+                                    e.stopPropagation();
                                 }}
                             />
                             <label htmlFor={`upload-file${id}`}>
                                 <IconButton
                                     size="small"
-                                    component="span">
+                                    component="span"
+                                    onClick={(e: any) => {
+                                        e.stopPropagation();
+                                    }}>
                                     <PublishIcon
                                         titleAccess={t(langKeys.import)}
                                         style={{ color: '#B6B4BA' }}/>
