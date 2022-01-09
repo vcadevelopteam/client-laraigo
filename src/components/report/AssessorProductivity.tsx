@@ -100,7 +100,6 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
             {
                 Header: t(langKeys.report_userproductivity_user),
                 accessor: 'usr',
-                helpText: 'holas',
                 NoFilter: false,
             },
             {
