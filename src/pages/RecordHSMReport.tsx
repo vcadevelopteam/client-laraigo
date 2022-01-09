@@ -309,6 +309,7 @@ const RecordHSMRecord: FC = () => {
 
         return (
             <TableZyx
+                onClickRow={handleView}    
                 columns={columns}
                 titlemodule={t(langKeys.recordhsmreport, { count: 2 })}
                 data={multiData.data[0]?.data||[]}
