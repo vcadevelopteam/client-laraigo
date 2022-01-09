@@ -477,7 +477,7 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                                                         valueDefault={(item.service) ? item.service : ''}
                                                         error={errors?.services?.[i]?.service?.message}
                                                         // data={dataModelType}
-                                                        data={serviceTypes.filter((y: any) => y.type === getValues(`services.${i}.type_of_service`))[0].options}
+                                                        data={serviceTypes.filter((y: any) => y.type === getValues(`services.${i}.type_of_service`))[0]?.options}
                                                         optionDesc="value"
                                                         optionValue="value"
                                                     />
