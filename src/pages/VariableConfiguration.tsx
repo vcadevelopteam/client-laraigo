@@ -84,7 +84,10 @@ const VariableConfiguration: FC = () => {
                                 aria-controls="long-menu"
                                 aria-haspopup="true"    
                                 size="small"
-                                onClick={() => handleDownload(row)}>
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDownload(row);
+                                }}>
                                 <GetAppIcon
                                     titleAccess={t(langKeys.download)}
                                     style={{ color: '#B6B4BA' }} />
@@ -96,7 +99,10 @@ const VariableConfiguration: FC = () => {
                                 accept="text/csv"
                                 value={valuefile}
                                 style={{ display: 'none' }}
-                                onChange={(e) => handleUpload(row, e.target.files)}
+                                onChange={(e) => {
+                                    e.stopPropagation();
+                                    handleUpload(row, e.target.files);
+                                }}
                             />
                             <label htmlFor={`upload-file${id}`}>
                                 <IconButton
