@@ -28,6 +28,13 @@ export const routes: RouteConfig[] = [
         path: paths.REPORTS,
         icon: (className) => <ReportsIcon style={{ width: 22, height: 22 }} className={className} />,
     },
+    {
+        key: paths.KPIMANAGER,
+        description: <Trans i18nKey={langKeys.kpimanager_plural} />,
+        tooltip: <Trans i18nKey={langKeys.kpimanager} />,
+        path: paths.KPIMANAGER,
+        icon: (className) => <DashboardIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
+    },
     // {
     //     key: paths.REPORTDESIGNER,
     //     description: <Trans i18nKey={langKeys.report_designer} count={2} />, // prop:count for plural purposes
@@ -154,13 +161,6 @@ export const routes: RouteConfig[] = [
         tooltip: <Trans i18nKey={langKeys.ia} />,
         path: paths.IASERVICES,
         icon: (className) => <IAServicesIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
-    },
-    {
-        key: paths.KPIMANAGER,
-        description: <Trans i18nKey={langKeys.kpimanager_plural} />,
-        tooltip: <Trans i18nKey={langKeys.kpimanager} />,
-        path: paths.KPIMANAGER,
-        icon: (className) => <DashboardIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
     },
     // {
     //     key: paths.EXTRAS,
