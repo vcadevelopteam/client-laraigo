@@ -26,6 +26,7 @@ export const langKeys = {
     interval: 'interval',
     clientname: "clientname",
     tos: "tos",
+    signupstep1title25: "signupstep1title25",
     namehsm: "namehsm",
     shippingdate: "shippingdate",
     shippingtype: "shippingtype",
@@ -1530,10 +1531,12 @@ export const langKeys = {
     unlock: 'unlock',
     invoice: 'invoice',
     invoice_generation: 'invoice_generation',
-
+    whatsappinformationimportant: "whatsappinformationimportant",
 
     businessname: 'businessname',
     fiscaladdress: 'fiscaladdress',
+    billingcontact: "billingcontact",
+    billingcontactmail: "billingcontactmail",
     sunatcountry: 'sunatcountry',
     contactemail: 'contactemail',
     autosendinvoice: 'autosendinvoice',
