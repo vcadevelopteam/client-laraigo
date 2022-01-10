@@ -37,7 +37,8 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: "white"
     },
     filterComponent: {
-        width: '220px'
+        minWidth: '220px',
+        maxWidth: '260px'
     },
     containerHeader: {
         display: 'flex',
@@ -315,6 +316,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                     allFilters.map(filtro => (
                         (filtro.values[0].multiselect ?
                             <FieldMultiSelect
+                                limitTags={1}
                                 label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
                                 className={classes.filterComponent}
                                 key={filtro.values[0].isListDomains ? filtro.values[0].filter + "_" + filtro.values[0].domainname : filtro.values[0].filter}

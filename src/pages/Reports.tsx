@@ -76,7 +76,8 @@ const useStyles = makeStyles((theme) => ({
         flexWrap: 'wrap'
     },
     filterComponent: {
-        width: '220px'
+        minWidth: '220px',
+        maxWidth: '260px'
     },
     containerFilterGeneral: {
         display: 'flex',
@@ -319,6 +320,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                             {!allFilters ? null : allFilters.map(filtro => (
                                                 (filtro.values[0].multiselect ?
                                                     <FieldMultiSelect
+                                                        limitTags={1}
                                                         label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
                                                         className={classes.filterComponent}
                                                         key={filtro.values[0].filter}

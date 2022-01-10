@@ -316,6 +316,7 @@ interface TemplateAutocompleteProps extends InputProps {
     loading?: boolean;
     triggerOnChangeOnFirst?: boolean;
     readOnly?: boolean;
+    limitTags?: number;
 }
 
 export const FieldEdit: React.FC<InputProps> = ({ label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard" }) => {
@@ -492,7 +493,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null, variant = "standard", uset = false, prefixTranslation = "" }) => {
+export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null, variant = "standard", uset = false, prefixTranslation = "", limitTags = -1 }) => {
     const { t } = useTranslation();
     const [optionsSelected, setOptionsSelected] = useState<Dictionary[]>([]);
 
@@ -513,6 +514,7 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
             }
             <Autocomplete
                 multiple
+                limitTags={limitTags}
                 filterSelectedOptions
                 style={style}
                 disabled={disabled}
