@@ -481,11 +481,12 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         dispatch(archiveLead(insArchiveLead(lead.value!)));
     }, [lead, dispatch]);
 
-    const handleUpdateLeadTags = useCallback((tags: string, value: string, action: "NEWTAG" | "REMOVETAG") => {
+    const handleUpdateLeadTags = useCallback((tags: string, value: any, action: "NEWTAG" | "REMOVETAG") => {
         if (edit === false) return;
 
+        const desc = String(typeof value === "object" ? value?.domaindesc || '-' : value);
         const data: ICrmLeadTagsSave = {
-            history_description: value,
+            history_description: desc,
             history_status: "ACTIVO",
             history_type: action,
             leadid: Number(match.params.id),
@@ -661,11 +662,11 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                         const tags = value.map((o: any) => o.domaindesc || o).join();
                                         setValue('tags', tags);
 
-                                        if (value2.action === "create-option") {
-                                            handleUpdateLeadTags(tags, value2.option.option, "NEWTAG");
-                                        } else {
-                                            handleUpdateLeadTags(tags, value2.option.option, "REMOVETAG");
-                                        }
+                                        handleUpdateLeadTags(
+                                            tags,
+                                            value2.option.option,
+                                            value2.action === "remove-option" ? "REMOVETAG" : "NEWTAG",
+                                        );
                                     }}
                                     error={errors?.tags?.message}
                                     loading={false}
@@ -2050,6 +2051,22 @@ const TabPanelLeadHistory: FC<TabPanelLeadHistoryProps> = ({ history, loading })
         }
     }, []);
 
+    const ItemDescription = useCallback(({ item }: { item: ICrmLeadHistory }): JSX.Element => {
+        switch (item.type) {
+            case "CHANGESTATUS": // cambio de fase/columna
+                const lastIndex = item.description.lastIndexOf('(');
+                const desc = item.description.slice(0, lastIndex);
+                const owner = item.description.slice(lastIndex);
+                return (
+                    <span>
+                        <Trans i18nKey={desc.trim().toLowerCase()} />
+                        {` ${owner}`}
+                    </span>
+                );
+            default: return <span>{item.description}</span>;
+        }
+    }, []);
+
     if (loading) {
         return <Loading />;
     }
@@ -2060,7 +2077,7 @@ const TabPanelLeadHistory: FC<TabPanelLeadHistoryProps> = ({ history, loading })
                     <TimelineItem key={i} className={classes.timelineItemBefore}>
                         <TimelineSeparator>
                             <TimelineDot className={classes.timelineDot}>
-                                <Icon type={item.type}  />
+                                <Icon type={item.type} />
                             </TimelineDot>
                             <TimelineConnector className={classes.timelineDot} />
                         </TimelineSeparator>
@@ -2075,7 +2092,7 @@ const TabPanelLeadHistory: FC<TabPanelLeadHistoryProps> = ({ history, loading })
                                         {formatDate(item.createdate)}
                                     </span>
                                 </div>
-                                {item.description && <span>{item.description}</span>}
+                                {item.description && <span><ItemDescription item={item} /></span>}
                             </div>
                         </TimelineContent>
                     </TimelineItem>
