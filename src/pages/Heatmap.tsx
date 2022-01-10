@@ -20,8 +20,6 @@ const hoursProm=["00:00 a 01:00","01:00 a 02:00","02:00 a 03:00","03:00 a 04:00"
 
 
 const LIMITHOUR = 24;
-const lowestcolornum = parseInt("55bd84",16)
-const higuestcolornum = parseInt("fb5f5f",16)
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -342,14 +340,21 @@ const MainHeatMap: React.FC = () => {
         setheatMapConversationsData(arrayfree)
 
         function gradient(num:number,rowcounter:number){
-            let scale = num/rowmax
-            if(isNaN(scale)) scale=0
-
+            let scale = 255/(rowmax/2)
+            if(isNaN(scale)||rowmax===0) scale=0
+            
             if ( rowcounter >= 24 ) {
-                return "FFFFFF";
+                return "FFFFFF"
             }
-
-            return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*scale).toString(16)
+            if ( num <=  rowmax/2) {
+                let number=Math.floor((num * scale)).toString(16)
+                return "00".slice(number.length) + number + "ff00"
+            }
+            if(rowmax === num){
+                return "FF0000"
+            }
+            let number= Math.floor((255-(num-rowmax/2)* scale)).toString(16)
+            return  "FF" +"00".slice(number.length) + number +"00"  
         }
         
         let rowcounter = 0;
@@ -480,13 +485,21 @@ const MainHeatMap: React.FC = () => {
         setaverageHeatMapTMOData(arrayfree)
                 
         function gradient(num:number,rowcounter:number){
-            let scale = num/rowmax
-            if(isNaN(scale)) scale=0
-            if ( rowcounter >= 24 ) {
-                return "FFFFFF";
-            }
+            let scale = 255/(rowmax/2)
+            if(isNaN(scale)||rowmax===0) scale=0
             
-            return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*scale).toString(16)
+            if ( rowcounter >= 24 ) {
+                return "FFFFFF"
+            }
+            if ( num <=  rowmax/2) {
+                let number=Math.floor((num * scale)).toString(16)
+                return "00".slice(number.length) + number + "ff00"
+            }
+            if(rowmax === num){
+                return "FF0000"
+            }
+            let number= Math.floor((255-(num-rowmax/2)* scale)).toString(16)
+            return  "FF" +"00".slice(number.length) + number +"00"  
         }
         
         let rowcounter = 0;
@@ -506,9 +519,7 @@ const MainHeatMap: React.FC = () => {
                     let mm = timespenttotal[1] === "00" ? "" : (timespenttotal[1] + "m ")
                     let ss = timespenttotal[2]
                     let seconds = parseInt(timespenttotal[0])*3600+parseInt(timespenttotal[1])*60+parseInt(timespenttotal[2])
-                    if (props.data[rowcounter]) {
-                        color = gradient(seconds,rowcounter)
-                    }
+                    color = gradient(seconds,rowcounter)
                     return (
                         <div
                             style={{background: `#${color}`, textAlign: "center", color:"black"}}
@@ -624,13 +635,21 @@ const MainHeatMap: React.FC = () => {
         setheatmapaverageagentTMEData(arrayfree)
                 
         function gradient(num:number,rowcounter:number){
-            let scale = num/rowmax
-            if(isNaN(scale)) scale=0
+            let scale = 255/(rowmax/2)
+            if(isNaN(scale)||rowmax===0) scale=0
             if ( rowcounter >= 24 ) {
-                return "FFFFFF";
+                return "FFFFFF"
+            }
+            if ( num <=  rowmax/2) {
+                let number=Math.floor((num * scale)).toString(16)
+                return "00".slice(number.length) + number + "ff00"
             }
             
-            return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*scale).toString(16)
+            let number= Math.floor((255-(num-rowmax/2)* scale)).toString(16)
+            if(rowmax === num){
+                return "FF0000"
+            }
+            return  "FF" +"00".slice(number.length) + number +"00"  
         }
 
         let rowcounter = 0;
@@ -769,13 +788,21 @@ const MainHeatMap: React.FC = () => {
         setuserAverageReplyTimexFechaData(arrayfree)
                 
         function gradient(num:number,rowcounter:number){
-            let scale = num/rowmax
-            if(isNaN(scale)) scale=0
-            if ( rowcounter >= 24 ) {
-                return "FFFFFF";
-            }
+            let scale = 255/(rowmax/2)
+            if(isNaN(scale)||rowmax===0) scale=0
             
-            return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*scale).toString(16)
+            if ( rowcounter >= 24 ) {
+                return "FFFFFF"
+            }
+            if ( num <=  rowmax/2) {
+                let number=Math.floor((num * scale)).toString(16)
+                return "00".slice(number.length) + number + "ff00"
+            }
+            if(rowmax === num){
+                return "FF0000"
+            }
+            let number= Math.floor((255-(num-rowmax/2)* scale)).toString(16)
+            return  "FF" +"00".slice(number.length) + number +"00"  
         }
         
         let rowcounter = 0;
@@ -913,13 +940,21 @@ const MainHeatMap: React.FC = () => {
         setpersonAverageReplyTimexFechaData(arrayfree)
                 
         function gradient(num:number,rowcounter:number){
-            let scale = num/rowmax
-            if(isNaN(scale)) scale=0
-            if ( rowcounter >= 24 ) {
-                return "FFFFFF";
-            }
+            let scale = 255/(rowmax/2)
+            if(isNaN(scale)||rowmax===0) scale=0
             
-            return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*scale).toString(16)
+            if ( rowcounter >= 24 ) {
+                return "FFFFFF"
+            }
+            if ( num <=  rowmax/2) {
+                let number=Math.floor((num * scale)).toString(16)
+                return "00".slice(number.length) + number + "ff00"
+            }
+            if(rowmax === num){
+                return "FF0000"
+            }
+            let number= Math.floor((255-(num-rowmax/2)* scale)).toString(16)
+            return  "FF" +"00".slice(number.length) + number +"00"  
         }
         
         let rowcounter = 0;
@@ -1323,14 +1358,22 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
 
         let m=0;
         function gradient(num:number){
-            let scale = num/rowmax
-            if(isNaN(scale)) scale=0
+            let scale = 255/(rowmax/2)
+            if(isNaN(scale)||rowmax===0) scale=0
+            
             m++;
             if ((listadvisers.length)*dateend<m){
                 return "FFFFFF"
             }
-            
-            return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*scale).toString(16)
+            if ( num <=  rowmax/2) {
+                let number=Math.floor((num * scale)).toString(16)
+                return "00".slice(number.length) + number + "ff00"
+            }
+            if(rowmax === num){
+                return "FF0000"
+            }
+            let number= Math.floor((255-(num-rowmax/2)* scale)).toString(16)
+            return  "FF" +"00".slice(number.length) + number +"00"  
         }
         
         const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor|horanum/gi.test(key)).map(([key, value]) => ({
@@ -1377,7 +1420,6 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
         }
         objectlast[`totalcol`] = 0;
         arrayfree.push(objectlast)
-        console.log(data)
         data.filter((x:any) => listadvisers.filter((e:any) => e.userid === x.userid).length>0).forEach((row:any) => {
             const day = parseInt(row.fecha.split("-")[2])
             const hour = row.userid;
@@ -1394,14 +1436,22 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
 
         let m=0;
         function gradient(num:number){
-            let scale = num/rowmax
-            if(isNaN(scale)) scale=0
+            let scale = 255/(rowmax/2)
+            if(isNaN(scale)||rowmax===0) scale=0
+            
             m++;
             if ((listadvisers.length)*dateend<m){
                 return "FFFFFF"
             }
-
-            return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*scale).toString(16)
+            if ( num <=  rowmax/2) {
+                let number=Math.floor((num * scale)).toString(16)
+                return "00".slice(number.length) + number + "ff00"
+            }
+            if(rowmax === num){
+                return "FF0000"
+            }
+            let number= Math.floor((255-(num-rowmax/2)* scale)).toString(16)
+            return  "FF" +"00".slice(number.length) + number +"00"  
         }
         
         const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor|horanum/gi.test(key)).map(([key, value]) => ({
@@ -1445,9 +1495,16 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
         
         settasaAbandonosxAsesorData(arrayfree)
         
-        function gradient(porcentage:number){
-
-            return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*porcentage).toString(16)
+        function gradient(num:number){
+            let scale = 255/(1/2)
+            if(isNaN(scale)) scale=0
+            
+            if ( num <=  1/2) {
+                let number=Math.floor((num * scale)).toString(16)
+                return "00".slice(number.length) + number + "ff00"
+            }
+            let number= Math.floor((255-(num-1/2)* scale)).toString(16)
+            return  "FF" +"00".slice(number.length) + number +"00"  
         }
         
         const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor|horanum/gi.test(key)).map(([key, value]) => ({
@@ -1487,7 +1544,6 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
         }
         objectlast[`totalcol`] = 0;
         arrayfree.push(objectlast)
-        console.log(data)
         data.filter((x:any) => listadvisers.filter((e:any) => e.userid === x.userid).length>0).forEach((row:any) => {
             const day = parseInt(row.fecha.split("-")[2])
             const hour = row.userid;
@@ -1503,15 +1559,24 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
         setCantidadOportunidadesData(arrayfree)
 
         let m=0;
+        
         function gradient(num:number){
-            let scale = num/rowmax
-            if(isNaN(scale)) scale=0
+            let scale = 255/(rowmax/2)
+            if(isNaN(scale)||rowmax===0) scale=0
+            
             m++;
             if ((listadvisers.length)*dateend<m){
                 return "FFFFFF"
             }
-
-            return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*scale).toString(16)
+            if ( num <=  rowmax/2) {
+                let number=Math.floor((num * scale)).toString(16)
+                return "00".slice(number.length) + number + "ff00"
+            }
+            if(rowmax === num){
+                return "FF0000"
+            }
+            let number= Math.floor((255-(num-rowmax/2)* scale)).toString(16)
+            return  "FF" +"00".slice(number.length) + number +"00"  
         }
         
         const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor|horanum/gi.test(key)).map(([key, value]) => ({
@@ -1556,8 +1621,16 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
         
         setTasaOportunidadesData(arrayfree)
         
-        function gradient(porcentage:number){
-            return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*porcentage).toString(16)
+        function gradient(num:number){
+            let scale = 255/(1/2)
+            if(isNaN(scale)) scale=0
+            
+            if ( num <=  1/2) {
+                let number=Math.floor((num * scale)).toString(16)
+                return "00".slice(number.length) + number + "ff00"
+            }
+            let number= Math.floor((255-(num-1/2)* scale)).toString(16)
+            return  "FF" +"00".slice(number.length) + number +"00"  
         }
         
         const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor/gi.test(key)).map(([key, value]) => ({
@@ -1616,15 +1689,22 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
         let m=0;
         
         function gradient(num:number){
+            let scale = 255/(rowmax/2)
+            if(isNaN(scale)||rowmax===0) scale=0
+            
             m++;
             if ((listadvisers.length)*dateend<m){
-                return "00000000"
+                return "FFFFFF"
             }
-            
-            let scale = num/rowmax
-            if(isNaN(scale)) scale=0
-            
-            return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*scale).toString(16)
+            if ( num <=  rowmax/2) {
+                let number=Math.floor((num * scale)).toString(16)
+                return "00".slice(number.length) + number + "ff00"
+            }
+            if(rowmax === num){
+                return "FF0000"
+            }
+            let number= Math.floor((255-(num-rowmax/2)* scale)).toString(16)
+            return  "FF" +"00".slice(number.length) + number +"00"  
         }
         
         const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor|horanum/gi.test(key)).map(([key, value]) => ({
@@ -1670,9 +1750,16 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
         
         setefectividadxAsesorData(arrayfree)
         
-        function gradient(porcentage:number){
-
-            return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*porcentage).toString(16)
+        function gradient(num:number){
+            let scale = 255/(1/2)
+            if(isNaN(scale)) scale=0
+            
+            if ( num <=  1/2) {
+                let number=Math.floor((num * scale)).toString(16)
+                return "00".slice(number.length) + number + "ff00"
+            }
+            let number= Math.floor((255-(num-1/2)* scale)).toString(16)
+            return  "FF" +"00".slice(number.length) + number +"00"  
         }
         
         const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor/gi.test(key)).map(([key, value]) => ({
@@ -1711,8 +1798,16 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
         
         setefectividadxAsesorOportunidadData(arrayfree)
         
-        function gradient(porcentage:number){
-            return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*porcentage).toString(16)
+        function gradient(num:number){
+            let scale = 255/(1/2)
+            if(isNaN(scale)) scale=0
+            
+            if ( num <=  1/2) {
+                let number=Math.floor((num * scale)).toString(16)
+                return "00".slice(number.length) + number + "ff00"
+            }
+            let number= Math.floor((255-(num-1/2)* scale)).toString(16)
+            return  "FF" +"00".slice(number.length) + number +"00"  
         }
         
         const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor/gi.test(key)).map(([key, value]) => ({
@@ -2077,12 +2172,19 @@ const HeatMapTicket: React.FC = () => {
             arrayfree = arrayfree.map((x:any) => x.hournum === hour ? ({...x, [`day${day}`]: row.value}) : x) 
             rowmax = row.value>rowmax ? row.value:rowmax;
         })
-
         function gradient(num:number){
-            let scale = num/rowmax
-            if(isNaN(scale)) scale=0
-
-            return Math.floor(lowestcolornum+(higuestcolornum-lowestcolornum)*scale).toString(16)
+            let scale = 255/(rowmax/2)
+            if(isNaN(scale)||rowmax===0) scale=0
+            
+            if ( num <=  rowmax/2) {
+                let number=Math.floor((num * scale)).toString(16)
+                return "00".slice(number.length) + number + "ff00"
+            }
+            if(rowmax === num){
+                return "FF0000"
+            }
+            let number= Math.floor((255-(num-rowmax/2)* scale)).toString(16)
+            return  "FF" +"00".slice(number.length) + number +"00"  
         }
         
         setasesoresConectadosData(arrayfree);
