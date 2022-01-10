@@ -2021,7 +2021,7 @@ export const heatmappage1 = ({ communicationchannel, startdate, enddate, closedb
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
-export const heatmappage1detail = ({ communicationchannel, startdate, enddate, closedby, horanum }: Dictionary): IRequestBody => ({
+export const heatmappage1detail = ({ communicationchannel, startdate, enddate, closedby, horanum, option }: Dictionary): IRequestBody => ({
     key: "UFN_REPORT_HEATMAP_PAGE1_DATE_DETAIL_SEL",
     method: "UFN_REPORT_HEATMAP_PAGE1_DATE_DETAIL_SEL",
     parameters: {
@@ -2030,6 +2030,7 @@ export const heatmappage1detail = ({ communicationchannel, startdate, enddate, c
         enddate,
         closedby,
         horanum,
+        option,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
