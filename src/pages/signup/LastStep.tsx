@@ -86,6 +86,7 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
                 rolecompany: lastfields.companyrole,
                 paymentplanid: planData.data[0].paymentplanid,
                 paymentplan: planData.data[0].plan,
+                sunatcountry: "",
             },
             channellist: requestchannels
         }
