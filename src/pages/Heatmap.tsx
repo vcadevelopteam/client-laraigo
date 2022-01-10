@@ -138,6 +138,7 @@ const MainHeatMap: React.FC = () => {
             const day = column.id.replace('day','');
             const hour = row.hour - 1;
             const hournum = row.hournum.replace('a','-');
+            let option = '';
             switch (grid) {
                 case '1.1':
                     setModalTitle(`Tickets ${t(langKeys.day)} ${day} ${hournum}`)
@@ -176,6 +177,7 @@ const MainHeatMap: React.FC = () => {
                     ])
                     break;
                 case '1.3':
+                    option = 'TME';
                     setModalTitle(`Tickets ${t(langKeys.day)} ${day} ${hournum}`)
                     setModalColumns([
                         { Header: t(langKeys.ticket), accessor: 'ticketnum',
@@ -194,6 +196,7 @@ const MainHeatMap: React.FC = () => {
                     ])
                     break;
                 case '1.4':
+                    option = 'TMR';
                     setModalTitle(`Tickets ${t(langKeys.day)} ${day} ${hournum}`)
                     setModalColumns([
                         { Header: t(langKeys.ticket), accessor: 'ticketnum',
@@ -212,6 +215,7 @@ const MainHeatMap: React.FC = () => {
                     ])
                     break;
                 case '1.5':
+                    option = 'TMRCLIENT';
                     setModalTitle(`Tickets ${t(langKeys.day)} ${day} ${hournum}`)
                     setModalColumns([
                         { Header: t(langKeys.ticket), accessor: 'ticketnum',
@@ -235,7 +239,8 @@ const MainHeatMap: React.FC = () => {
                 ...dataMainHeatMap,
                 startdate: new Date(year, mes-1, day),
                 enddate: new Date(year, mes-1, day),
-                horanum: ['TOTAL','PRM'].includes(row.hournum) ? '' : hour
+                horanum: ['TOTAL','PRM'].includes(row.hournum) ? '' : hour,
+                option: option
             })]));
             dispatch(showBackdrop(true));
             setWaitDetail(true);
