@@ -368,6 +368,7 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                             />
                         }
                     </div>
+                    {['SUPERADMIN'].includes(user?.roledesc || "") &&
                     <div className="row-zyx">
                         {edit ?
                             (
@@ -421,7 +422,7 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                                 className="col-6"
                             />
                         }
-                    </div>
+                    </div>}
                     <div className="row-zyx">
                         {edit ?
                             <FieldEdit
