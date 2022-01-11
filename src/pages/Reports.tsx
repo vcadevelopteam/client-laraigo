@@ -23,6 +23,7 @@ import AssessorProductivity from 'components/report/AssessorProductivity';
 import DetailReportDesigner from 'pages/ReportTemplate';
 import { SkeletonReport } from 'components';
 import AddIcon from '@material-ui/icons/Add';
+import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Menu from '@material-ui/core/Menu';
@@ -64,6 +65,9 @@ const useStyles = makeStyles((theme) => ({
     },
     containerSearch: {
         width: '100%',
+        display: 'flex',
+        gap: theme.spacing(1),
+        alignItems: 'center',
         [theme.breakpoints.up('sm')]: {
             width: '50%',
         },
@@ -83,7 +87,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         justifyContent: 'space-between',
         backgroundColor: '#FFF',
-        padding: theme.spacing(2),
+        padding: theme.spacing(1),
     },
     title: {
         fontSize: '22px',
@@ -161,27 +165,27 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                     });
                     break;
                 case "date":
-                        columns.push({
-                            Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
-                            accessor: x.proargnames,
-                            type: "date",
-                            Cell: (props: any) => {
-                                const column = props.cell.column;
-                                const row = props.cell.row.original;
-                                return (<div>
-                                    {new Date(
-                                        row[column.id].split('-')[0],
-                                        row[column.id].split('-')[1]-1,
-                                        row[column.id].split('-')[2]
-                                    ).toLocaleString(undefined, {
-                                        year: "numeric",
-                                        month: "2-digit",
-                                        day: "2-digit"
-                                    })}
-                                </div>)
-                            }
-                        });
-                        break;
+                    columns.push({
+                        Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                        accessor: x.proargnames,
+                        type: "date",
+                        Cell: (props: any) => {
+                            const column = props.cell.column;
+                            const row = props.cell.row.original;
+                            return (<div>
+                                {new Date(
+                                    row[column.id].split('-')[0],
+                                    row[column.id].split('-')[1] - 1,
+                                    row[column.id].split('-')[2]
+                                ).toLocaleString(undefined, {
+                                    year: "numeric",
+                                    month: "2-digit",
+                                    day: "2-digit"
+                                })}
+                            </div>)
+                        }
+                    });
+                    break;
                 default:
                     switch (row?.origin) {
                         case "loginhistory":
@@ -506,11 +510,26 @@ const Reports: FC = () => {
                         <Box className={classes.containerFilterGeneral}>
                             <span></span>
                             <div className={classes.containerSearch}>
-                                <SearchField
-                                    colorPlaceHolder='#FFF'
-                                    handleChangeOther={handleFiend}
-                                    lazy
-                                />
+                                <div style={{ flex: 1 }}>
+                                    <SearchField
+                                        colorPlaceHolder='#FFF'
+                                        handleChangeOther={handleFiend}
+                                        lazy
+                                    />
+                                </div>
+                                <Button
+                                    // className={classes.button}
+                                    variant="contained"
+                                    color="primary"
+                                    // disabled={loading}
+                                    startIcon={<AddIcon color="secondary" />}
+                                    onClick={() => {
+                                        setViewSelected("view-3");
+                                        setRowReportSelected({ row: null, edit: true });
+                                    }}
+                                    style={{ backgroundColor: "#55BD84" }}
+                                >{t(langKeys.register)}
+                                </Button>
                             </div>
                         </Box>
                         <div className={classes.containerDetails}>
@@ -638,22 +657,6 @@ const Reports: FC = () => {
                                     </MenuItem>
                                     <MenuItem onClick={(e) => handleDelete(rowReportSelected?.row)}>{t(langKeys.delete)}</MenuItem>
                                 </Menu>
-                                <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
-                                    <Card style={{ height: '100%', minHeight: 211 }}>
-                                        <CardActionArea
-                                            onClick={() => {
-                                                setViewSelected("view-3");
-                                                setRowReportSelected({ row: null, edit: true });
-                                            }}
-                                            style={{ marginLeft: 'auto', marginRight: 'auto', width: '100%', height: '100%', display: 'flex', alignItems: 'center' }}
-                                        >
-                                            <AddIcon
-                                                color="action"
-                                                style={{ width: 60, height: 60 }}
-                                            />
-                                        </CardActionArea>
-                                    </Card>
-                                </Grid>
                             </Grid>
                         </div>
                     </>

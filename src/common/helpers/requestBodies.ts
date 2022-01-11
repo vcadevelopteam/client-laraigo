@@ -2430,3 +2430,15 @@ export const getBillingPeriodCalcRefreshAll = (exchangerate: number): IRequestBo
         exchangerate
     },
 });
+
+export const getTableOrigin = (): IRequestBody => ({
+    method: "UFN_REPORT_PERSONALIZED_ORIGIN_SEL",
+    key: "UFN_REPORT_PERSONALIZED_ORIGIN_SEL",
+    parameters: {},
+});
+
+export const getColumnsOrigin = (tablename: string): IRequestBody => ({
+    method: "UFN_REPORT_PERSONALIZED_COLUMNS_SEL",
+    key: "UFN_REPORT_PERSONALIZED_COLUMNS_SEL",
+    parameters: { tablename },
+});

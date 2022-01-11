@@ -631,7 +631,7 @@ export const langKeys = {
 
     name: 'name',
     name_plural: 'name_plural',
-
+    data_origin: 'data_origin',
     username: 'username',
     password: 'password',
 

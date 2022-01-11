@@ -1465,6 +1465,7 @@ const translation: LangKeys = {
     manageChannel_plural: 'Gestionar canales',
     manageQuickReply: 'Gestionar respuesta rápida',
     manageQuickReply_plural: 'Gestionar respuestas rápidas',
+    data_origin: 'Origen de datos',
     manageDomain: 'Gestionar dominio',
     manageDomain_plural: 'Gestionar dominios',
     manageForbiddenWord: 'Gestionar palabra prohibida',

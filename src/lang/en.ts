@@ -584,7 +584,7 @@ const translation: LangKeys = {
     return: "Return",
     hsm_template: 'HSM template',
     hsm_template_plural: 'HSM templates',
-
+    data_origin: 'Data origin',
     kpimanager: 'KPI Manager',
     kpimanager_detail: 'KPI Manager Detail',
     kpimanager_plural: 'KPI Manager',
