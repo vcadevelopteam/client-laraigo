@@ -1610,8 +1610,10 @@ const translation: LangKeys = {
     summary: 'Resumen',
     dueDate: 'Fecha de vencimiento',
     assignedTo: 'Asignado a',
+    ticketbase: "Considerar como base el total de tickets",
     schedule: 'Programar',
     billingcontact: "Contacto de Facturación",
+    oportunitybase: "Considerar como base el total de oportunidades",
     billingcontactmail: "Correo electrónico de contacto de facturación",
 
     suspend_ticket: 'Suspender ticket',

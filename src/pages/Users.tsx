@@ -972,12 +972,7 @@ const Users: FC = () => {
                 NoFilter: true
             },
             {
-                Header: t(langKeys.user),
-                accessor: 'usr',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.email),
+                Header: `${t(langKeys.email)} (${t(langKeys.user)})`,
                 accessor: 'email',
                 NoFilter: true
             },
