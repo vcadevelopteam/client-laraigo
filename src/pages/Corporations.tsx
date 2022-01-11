@@ -78,12 +78,12 @@ const Corporations: FC = () => {
             },
             {
                 Header: t(langKeys.type),
-                accessor: 'type',
+                accessor: 'typedesc',
                 NoFilter: true,
-                Cell: (props: any) => {
-                    const { type } = props.cell.row.original;
-                    return (t(`type_corp_${type}`.toLowerCase()) || "").toUpperCase()
-                }
+                // Cell: (props: any) => {
+                //     const { type } = props.cell.row.original;
+                //     return (t(`type_corp_${type}`.toLowerCase()) || "").toUpperCase()
+                // }
             },
             {
                 Header: t(langKeys.billingplan),
@@ -92,13 +92,13 @@ const Corporations: FC = () => {
             },
             {
                 Header: t(langKeys.status),
-                accessor: 'status',
+                accessor: 'statusdesc',
                 NoFilter: true,
-                prefixTranslation: 'status_',
-                Cell: (props: any) => {
-                    const { status } = props.cell.row.original;
-                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
-                }
+                // prefixTranslation: 'status_',
+                // Cell: (props: any) => {
+                //     const { status } = props.cell.row.original;
+                //     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
+                // }
             }
         ],
         []
@@ -166,13 +166,16 @@ const Corporations: FC = () => {
     }
 
     if (viewSelected === "view-1") {
-
         return (
             <TableZyx
                 columns={columns}
                 onClickRow={handleEdit}
                 titlemodule={t(langKeys.corporation_plural, { count: 2 })}
-                data={mainResult.mainData.data}
+                data={mainResult.mainData.data.map(x => ({
+                    ...x,
+                    typedesc: (t(`type_corp_${x.type}`.toLowerCase()) || "").toUpperCase(),
+                    statusdesc: (t(`status_${x.status}`.toLowerCase()) || "").toUpperCase()
+                }))}
                 download={true}
                 loading={mainResult.mainData.loading}
                 register={['SUPERADMIN'].includes(user?.roledesc || "")}

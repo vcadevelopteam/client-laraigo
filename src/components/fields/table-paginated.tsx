@@ -934,15 +934,14 @@ export function buildQueryFilters(
     for (const key in filters) {
         const value = (filters as any)[key];
         if (key === 'filters' || value === undefined || value === null) continue;
-        params.append(key, String(value));
+        params.set(key, String(value));
     }
 
     const colFilters = filters.filters;
-    console.log('buildQueryFilters', filters);
     for (const key in colFilters) {
         if (typeof colFilters[key] === 'object' && 'value' in colFilters[key] && 'operator' in colFilters[key]) {
-            params.append(key, String(colFilters[key].value));
-            params.append(`${key}-operator`, String(colFilters[key].operator));
+            params.set(key, String(colFilters[key].value));
+            params.set(`${key}-operator`, String(colFilters[key].operator));
         }
     }
 
