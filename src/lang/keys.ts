@@ -647,6 +647,7 @@ export const langKeys = {
     kpimanager_plural: 'kpimanager_plural',
     newkpi: 'newkpi',
     kpiname: 'kpiname',
+    kpi_name: 'kpi_name',
     target: 'target',
     caution_at: 'caution_at',
     alert_at: 'alert_at',
@@ -676,6 +677,7 @@ export const langKeys = {
     status_cerrado: 'status_cerrado',
     status_conectado: 'status_conectado',
     status_desconectado: 'status_desconectado',
+    status_running: 'status_running',
 
     type_corp_ninguno: 'type_corp_ninguno',
     type_corp_natural: 'type_corp_natural',
@@ -880,6 +882,8 @@ export const langKeys = {
 
     editRecord: 'editRecord',
     deleteRecord: 'deleteRecord',
+    change_by: 'change_by',
+    change_date: 'change_date',
     changeDate: 'changeDate',
     search_result: 'search_result',
     without_result: 'without_result',
@@ -1136,6 +1140,7 @@ export const langKeys = {
     error_unexpected_error: 'error_unexpected_error',
     error_null_not_allowed: 'error_null_not_allowed',
     error_function_not_exists: 'error_function_not_exists',
+    error_kpi_sql: 'error_kpi_sql',
 
     dateRangeFilterTitle: 'dateRangeFilterTitle',
     apply: 'apply',
