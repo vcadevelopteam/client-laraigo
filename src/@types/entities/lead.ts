@@ -197,5 +197,7 @@ export interface ICrmLeadSel {
 	campaignid: number;
     /**tags filter */
     tags: string; 
+    /**filtro asesor por ID */
+    userid: number;
 	all?: boolean;
 }

@@ -63,6 +63,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'row',
     gap: '1em',
     alignItems: 'center',
+    flexWrap: 'wrap',
   },
 }));
 
@@ -83,6 +84,8 @@ interface IBoardFilter {
   products: string;
   /**separados por coma */
   tags: string;
+  /**id del asesor */
+  asesorid: number;
 }
 
 const CRM: FC = () => {
@@ -113,12 +116,26 @@ const CRM: FC = () => {
     campaign: Number(query.get('campaign')),
   }), [query]);
   const [display, setDisplay] = useState(query.get('display') || 'BOARD');
-  const [boardFilter, setBoardFilter] = useState<IBoardFilter>({
+  const [boardFilter, setBoardFilterPrivate] = useState<IBoardFilter>({
     campaign: otherParams.campaign,
     customer: otherParams.contact,
     products: otherParams.products,
     tags: otherParams.tags,
+    asesorid: otherParams.asesorid,
   });
+
+  const setBoardFilter = useCallback((prop: React.SetStateAction<typeof boardFilter>) => {
+    if (!user) return;
+
+    if (user.roledesc === "ASESOR") {
+      setBoardFilterPrivate({
+        ...(typeof prop === "function" ? prop(boardFilter) : prop),
+        asesorid: user.userid,
+      });
+    } else {
+      setBoardFilterPrivate(prop);
+    }
+  }, [user, boardFilter]);
 
   useEffect(() => {
       dispatch(getMultiCollection([
@@ -129,6 +146,7 @@ const CRM: FC = () => {
             fullname: boardFilter.customer,
             leadproduct: boardFilter.products,
             tags: boardFilter.tags,
+            userid: boardFilter.asesorid,
           }),
           adviserSel(),
           getCommChannelLst(),
@@ -159,10 +177,11 @@ const CRM: FC = () => {
 
   const fetchBoardLeadsWithFilter = useCallback(() => {
     const newParams = new URLSearchParams(location.search);
-    if (boardFilter.campaign) newParams.set('campaign', String(boardFilter.campaign));
-    if (boardFilter.products) newParams.set('products', String(boardFilter.products));
-    if (boardFilter.tags) newParams.set('tags', String(boardFilter.tags));
-    if (boardFilter.customer) newParams.set('contact', String(boardFilter.customer));
+    newParams.set('campaign', String(boardFilter.campaign));
+    newParams.set('products', String(boardFilter.products));
+    newParams.set('tags', String(boardFilter.tags));
+    newParams.set('contact', String(boardFilter.customer));
+    newParams.set('asesorid', String(boardFilter.asesorid));
     history.push({ search: newParams.toString() });
 
     dispatch(getMultiCollection([
@@ -173,6 +192,7 @@ const CRM: FC = () => {
         fullname: boardFilter.customer,
         leadproduct: boardFilter.products,
         tags: boardFilter.tags,
+        userid: boardFilter.asesorid,
       }),
       adviserSel(),
       getCommChannelLst(),
@@ -755,6 +775,18 @@ const CRM: FC = () => {
           <div className={classes.canvasFiltersHeader}>
             <FieldSelect
               variant="outlined"
+              label={t(langKeys.agent)}
+              className={classes.filterComponent}
+              valueDefault={boardFilter.asesorid}
+              onChange={(value) => setBoardFilter(prev => ({...prev, asesorid: value?.userid || 0}))}
+              data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
+              optionDesc="fullname"
+              optionValue="userid"
+              loading={mainMulti.loading}
+              disabled={user?.roledesc === "ASESOR" || false}
+            />
+            <FieldSelect
+              variant="outlined"
               label={t(langKeys.campaign)}
               className={classes.filterComponent}
               valueDefault={boardFilter.campaign}
@@ -984,12 +1016,10 @@ const CRM: FC = () => {
               onClickRow={onClickRow}
               FiltersElement={filtersElement}
               onFilterChange={f => {
-                console.log('Leads::onFilterChange', f);
-                const params = buildQueryFilters(f);
-                if (allParameters.asesorid) params.set('asesorid', String(allParameters.asesorid));
-                if (allParameters.channel) params.set('channels', String(allParameters.channel));
-                if (allParameters.contact) params.set('contact', String(allParameters.contact));
-                params.set('display', display);
+                const params = buildQueryFilters(f, location.search);
+                params.set('asesorid', String(allParameters.asesorid));
+                params.set('channels', String(allParameters.channel));
+                params.set('contact', String(allParameters.contact));
                 history.push({ search: params.toString() });
               }}
               initialEndDate={params.endDate}
