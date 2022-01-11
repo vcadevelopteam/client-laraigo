@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldEditMulti } from 'components';
-import { calcKPIManager, convertLocalDate, dictToArrayKV, duplicateKPIManager, getDateCleaned, getDateToday, getFirstDayMonth, getLastDayMonth, getValuesFromDomain, insKPIManager, selKPIManager, selKPIManagerHistory } from 'common/helpers';
+import { calcKPIManager, convertLocalDate, dictToArrayKV, getDateCleaned, getDateToday, getFirstDayMonth, getLastDayMonth, getValuesFromDomain, insKPIManager, selKPIManager, selKPIManagerHistory } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -12,7 +12,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, getMultiCollection, execute, resetAllMain, getCollectionAux } from 'store/main/actions';
+import { getCollection, getMultiCollection, execute, resetAllMain, getCollectionAux, getCollectionAux2, resetMainAux, resetMainAux2 } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import { Box, IconButton, ListItemIcon, Menu, MenuItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, Typography } from '@material-ui/core';
@@ -70,13 +70,14 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const mainAuxRes = useSelector(state => state.main.mainAux);
+    const mainAux2Res = useSelector(state => state.main.mainAux2);
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const [pageSelected, setPageSelected] = useState(0);
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
 
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+    const { register, reset, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             id: row?.id || 0,
             kpiname: row?.kpiname || '',
@@ -106,37 +107,40 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
         }
     });
 
-    const [detaildata, setDetaildata] = useState({
+    const [detaildata, setDetaildata] = useState<any>({
         previousvalue: row?.previousvalue,
         currentvalue: row?.currentvalue,
         updatedate: row?.updatedate,
+        target: row?.target,
+        cautionat: row?.cautionat,
+        alertat: row?.alertat
     })
 
     const [gaugeArcs, setGaugeArcs] = useState([0,0,0]);
 
     useEffect(() => {
-        if (row) {
-            if (row.target <= row.alertat) {
+        if (detaildata) {
+            if (detaildata.target <= detaildata.alertat) {
                 setGaugeArcs(
                     [
-                        row.cautionat / (Math.max(detaildata?.currentvalue, Math.ceil(row.alertat * 1.2 / 10) * 10)),
-                        (row.alertat - row.cautionat) / (Math.max(detaildata?.currentvalue, Math.ceil(row.alertat * 1.2 / 10) * 10)),
-                        ((Math.max(detaildata?.currentvalue, Math.ceil(row.alertat * 1.2 / 10) * 10)) - row.alertat) / (Math.max(detaildata?.currentvalue, Math.ceil(row.alertat * 1.2 / 10) * 10)) 
+                        detaildata.cautionat / (Math.max(detaildata?.currentvalue, Math.ceil(detaildata.alertat * 1.2 / 10) * 10)),
+                        (detaildata.alertat - detaildata.cautionat) / (Math.max(detaildata?.currentvalue, Math.ceil(detaildata.alertat * 1.2 / 10) * 10)),
+                        ((Math.max(detaildata?.currentvalue, Math.ceil(detaildata.alertat * 1.2 / 10) * 10)) - detaildata.alertat) / (Math.max(detaildata?.currentvalue, Math.ceil(detaildata.alertat * 1.2 / 10) * 10)) 
                     ]
                 )
             }
             else {
                 setGaugeArcs(
                     [
-                        row.alertat / (Math.max(detaildata?.currentvalue, Math.ceil(row.target * 1.2 / 10) * 10)),
-                        (row.cautionat - row.alertat) / (Math.max(detaildata?.currentvalue, Math.ceil(row.target * 1.2 / 10) * 10)),
-                        ((Math.max(detaildata?.currentvalue, Math.ceil(row.target * 1.2 / 10) * 10)) - row.cautionat) / (Math.max(detaildata?.currentvalue, Math.ceil(row.target * 1.2 / 10) * 10))
+                        detaildata.alertat / (Math.max(detaildata?.currentvalue, Math.ceil(detaildata.target * 1.2 / 10) * 10)),
+                        (detaildata.cautionat - detaildata.alertat) / (Math.max(detaildata?.currentvalue, Math.ceil(detaildata.target * 1.2 / 10) * 10)),
+                        ((Math.max(detaildata?.currentvalue, Math.ceil(detaildata.target * 1.2 / 10) * 10)) - detaildata.cautionat) / (Math.max(detaildata?.currentvalue, Math.ceil(detaildata.target * 1.2 / 10) * 10))
                     ]
                 )
             }
         }
-    }, [row])
-
+    }, [detaildata])
+    
     React.useEffect(() => {
         register('kpiname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -147,6 +151,68 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
         register('taskinterval', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register('taskstartdate', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
+
+    useEffect(() => {
+        if (row?.id) {
+            dispatch(showBackdrop(true));
+            dispatch(getCollectionAux2(selKPIManager(row.id)))
+        }
+        return () => {
+            dispatch(resetMainAux());
+            dispatch(resetMainAux2());
+        }
+    }, [])
+
+    useEffect(() => {
+        if (!mainAux2Res.loading && !mainAux2Res.error && mainAux2Res.data?.length > 0) {
+            reset({
+                id: mainAux2Res.data[0]?.id || 0,
+                kpiname: mainAux2Res.data[0]?.kpiname || '',
+                description: mainAux2Res.data[0]?.description || '',
+                status: mainAux2Res.data[0]?.status || 'ACTIVO',
+                type: mainAux2Res.data[0]?.type || '',
+                sqlselect: mainAux2Res.data[0]?.sqlselect || '',
+                sqlwhere: mainAux2Res.data[0]?.sqlwhere || '',
+                target: mainAux2Res.data[0]?.target || 0,
+                cautionat: mainAux2Res.data[0]?.cautionat || 0,
+                alertat: mainAux2Res.data[0]?.alertat || 0,
+
+                taskperiod: mainAux2Res.data[0]?.taskperiod || 'DAY',
+                taskinterval: mainAux2Res.data[0]?.taskinterval || 1,
+                taskstartdate: mainAux2Res.data[0]?.taskstartdate ? new Date(new Date(mainAux2Res.data[0]?.taskstartdate).getTime() - new Date().getTimezoneOffset() * 60000).toISOString() : new Date().toISOString(),
+
+                previousvalue: mainAux2Res.data[0]?.previousvalue,
+                currentvalue: mainAux2Res.data[0]?.currentvalue,
+                updatedate: mainAux2Res.data[0]?.updatedate,
+
+                createdate: mainAux2Res.data[0]?.createdate,
+                createby: mainAux2Res.data[0]?.createby,
+                changedate: mainAux2Res.data[0]?.changedate,
+                changeby: mainAux2Res.data[0]?.changeby,
+
+                operation: mainAux2Res.data[0]?.id ? "EDIT" : "INSERT",
+            });
+            setDetaildata({
+                previousvalue: mainAux2Res.data[0]?.previousvalue,
+                currentvalue: mainAux2Res.data[0]?.currentvalue,
+                updatedate: convertLocalDate(mainAux2Res.data[0]?.updatedate).toLocaleString(undefined, {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "numeric",
+                    minute: "numeric",
+                    second: "numeric"
+                }),
+                target: mainAux2Res.data[0]?.target || 0,
+                cautionat: mainAux2Res.data[0]?.cautionat || 0,
+                alertat: mainAux2Res.data[0]?.alertat || 0,
+            })
+            dispatch(showBackdrop(false));
+        }
+        else if (executeRes.error) {
+            dispatch(showBackdrop(false));
+        }
+    }, [mainAux2Res])
 
     useEffect(() => {
         if (waitSave) {
@@ -275,7 +341,10 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                     <div>
                         <TemplateBreadcrumbs
                             breadcrumbs={arrayBread}
-                            handleClick={setViewSelected}
+                            handleClick={(view) => {
+                                dispatch(getCollection(selKPIManager(0)));
+                                setViewSelected(view);
+                            }}
                         />
                         <TitleDetail
                             title={row?.id ? `${row.kpiname}` : t(langKeys.newkpi)}
@@ -288,7 +357,10 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                             color="primary"
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => setViewSelected("view-1")}
+                            onClick={() => {
+                                dispatch(getCollection(selKPIManager(0)));
+                                setViewSelected("view-1")
+                            }}
                         >{t(langKeys.back)}</Button>
                         {edit &&
                             <Button
@@ -562,7 +634,7 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                                         <TableCell>{row?.status}</TableCell>
                                         <TableCell>{detaildata?.currentvalue}</TableCell>
                                         <TableCell>{detaildata?.previousvalue}</TableCell>
-                                        <TableCell>{row?.target}</TableCell>
+                                        <TableCell>{detaildata?.target}</TableCell>
                                         <TableCell>{detaildata?.currentvalue - row?.target}</TableCell>
                                         <TableCell>
                                             <GaugeChart
@@ -570,16 +642,16 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                                                 id="gauge-chart"
                                                 arcsLength={gaugeArcs}
                                                 colors={
-                                                    row.target < row.alertat
+                                                    detaildata.target < detaildata.alertat
                                                     ? ['#5BE12C', '#F5CD19', '#EA4228']
                                                     : ['#EA4228', '#F5CD19', '#5BE12C']
                                                 }
                                                 textColor="#000000"
                                                 animate={false}
                                                 percent={
-                                                    row.target < row.alertat
-                                                    ? detaildata?.currentvalue / (Math.max(detaildata?.currentvalue, Math.ceil(row.alertat * 1.2 / 10) * 10))
-                                                    : detaildata?.currentvalue / (Math.max(detaildata?.currentvalue, Math.ceil(row.target * 1.2 / 10) * 10))
+                                                    detaildata.target < detaildata.alertat
+                                                    ? detaildata?.currentvalue / (Math.max(detaildata?.currentvalue, Math.ceil(detaildata.alertat * 1.2 / 10) * 10))
+                                                    : detaildata?.currentvalue / (Math.max(detaildata?.currentvalue, Math.ceil(detaildata.target * 1.2 / 10) * 10))
                                                 }
                                                 formatTextValue={() => ``}
                                             /></TableCell>
@@ -596,12 +668,12 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                         <div className="row-zyx">
                             <FieldView
                                 label={t(langKeys.createdBy)}
-                                value={row?.createby}
+                                value={getValues('createby')}
                                 className="col-6"
                             />
                              <FieldView
                                 label={t(langKeys.creationDate)}
-                                value={row?.createdate && convertLocalDate(row?.createdate).toLocaleString(undefined, {
+                                value={row?.createdate && convertLocalDate(getValues('createdate')).toLocaleString(undefined, {
                                     year: "numeric",
                                     month: "2-digit",
                                     day: "2-digit",
@@ -615,12 +687,12 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                         <div className="row-zyx">
                         <FieldView
                                 label={t(langKeys.change_by)}
-                                value={row?.changeby}
+                                value={getValues('changeby')}
                                 className="col-6"
                             />
                              <FieldView
                                 label={t(langKeys.change_date)}
-                                value={row?.changedate && convertLocalDate(row?.changedate).toLocaleString(undefined, {
+                                value={row?.changedate && convertLocalDate(getValues('changedate')).toLocaleString(undefined, {
                                     year: "numeric",
                                     month: "2-digit",
                                     day: "2-digit",
