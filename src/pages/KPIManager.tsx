@@ -403,7 +403,7 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                                     className="col-6"
                                     valueDefault={getValues('sqlwhere')}
                                     onChange={(value) => setValue('sqlwhere', value)}
-                                    error={errors?.sqlselect?.message}
+                                    error={errors?.sqlwhere?.message}
                                     disabled={!['SUPERADMIN'].includes(user?.roledesc || "")}
                                 />
                                 :
