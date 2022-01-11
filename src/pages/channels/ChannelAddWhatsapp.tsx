@@ -167,6 +167,28 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
     }
 
     useEffect(() => {
+        if (roledesc !== "SUPERADMIN" && !edit && whatsAppData?.typeWhatsApp==="DIALOG") {
+            setSetRegister360(true);
+            setSetRegisterSmooch(false);
+
+            let partialField = fields;
+            partialField.type = "DIALOG";
+            
+            setFields(partialField);
+        }
+    
+        if (roledesc !== "SUPERADMIN" && !edit && whatsAppData?.typeWhatsApp==="SMOOCH") {
+            setSetRegister360(false);
+            setSetRegisterSmooch(true);
+
+            let partialField = fields;
+            partialField.type = "WHATSAPPSMOOCHINSERT";
+            
+            setFields(partialField);
+        }
+    }, [whatsAppData])
+
+    useEffect(() => {
         if (edit) {
             if (setParameters) {
                 setSetParameters(false);
@@ -305,7 +327,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
             return (
                 <div style={{ width: '100%' }}>
                     <Breadcrumbs aria-label="breadcrumb">
-                        <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD) }}>
+                        <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD, whatsAppData) }}>
                             {"<< Previous"}
                         </Link>
                     </Breadcrumbs>
@@ -318,7 +340,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                 variant="contained"
                                 color="primary"
                                 disabled={false}
-                                onClick={() => { history.push(paths.CHANNELS) }}
+                                onClick={() => { history.push(paths.CHANNELS_ADD, whatsAppData) }}
                                 >{t(langKeys.close)}
                             </Button>
                             :
@@ -348,7 +370,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
             return (
                 <div style={{ width: '100%' }}>
                     <Breadcrumbs aria-label="breadcrumb">
-                        <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD) }}>
+                        <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD, whatsAppData) }}>
                             {"<< Previous"}
                         </Link>
                     </Breadcrumbs>
@@ -361,7 +383,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                 variant="contained"
                                 color="primary"
                                 disabled={false}
-                                onClick={() => { history.push(paths.CHANNELS) }}
+                                onClick={() => { history.push(paths.CHANNELS_ADD, whatsAppData) }}
                                 >{t(langKeys.close)}
                             </Button>
                             :
@@ -418,7 +440,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                 <div style={{ width: '100%' }}>
                     <div style={{ width: '100%' }}>
                         <Breadcrumbs aria-label="breadcrumb">
-                            <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD) }}>
+                            <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD, whatsAppData) }}>
                                 {"<< Previous"}
                             </Link>
                         </Breadcrumbs>
@@ -467,7 +489,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
             return (
                 <div style={{ width: '100%' }}>
                     <Breadcrumbs aria-label="breadcrumb">
-                        <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD) }}>
+                        <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD, whatsAppData) }}>
                             {"<< Previous"}
                         </Link>
                     </Breadcrumbs>
@@ -499,7 +521,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
             return (
                 <div style={{ width: '100%' }}>
                     <Breadcrumbs aria-label="breadcrumb">
-                        <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD) }}>
+                        <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD, whatsAppData) }}>
                             {"<< Previous"}
                         </Link>
                     </Breadcrumbs>
@@ -562,13 +584,12 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                 return (
                     <div style={{ width: '100%' }}>
                         <Breadcrumbs aria-label="breadcrumb">
-                            <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD) }}>
+                            <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD, whatsAppData) }}>
                                 {"<< Previous"}
                             </Link>
                         </Breadcrumbs>
                         <div>
                             <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.whatsapptitle)}</div>
-        
                             {
                                 edit ?
                                 <Button
@@ -576,7 +597,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                     variant="contained"
                                     color="primary"
                                     disabled={false}
-                                    onClick={() => { history.push(paths.CHANNELS) }}
+                                    onClick={() => { history.push(paths.CHANNELS_ADD, whatsAppData) }}
                                     >{t(langKeys.close)}
                                 </Button>
                                 :
@@ -849,7 +870,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                     <div style={{ flex: "1", margin: "0px 15px"}}>
                                         {edit ?
                                         <Button
-                                            onClick={() => { history.push(paths.CHANNELS) }}
+                                            onClick={() => { history.push(paths.CHANNELS_ADD, whatsAppData) }}
                                             className={classes.button2}
                                             disabled={false}
                                             variant="contained"
