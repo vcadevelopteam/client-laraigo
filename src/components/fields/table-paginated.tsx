@@ -252,7 +252,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
                 setFilters({
                     ...filters,
                     [header]: {
-                        value: op,
+                        value: '',
                         operator: op
                     },
                 }, 0)
