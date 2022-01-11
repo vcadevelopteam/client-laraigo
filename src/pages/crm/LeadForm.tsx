@@ -682,7 +682,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                         valueDefault={getValues('userid')}
                                         loading={advisers.loading}
                                         data={advisers.data}
-                                        optionDesc="firstname"
+                                        optionDesc="fullname"
                                         optionValue="userid"
                                         onChange={(value) => setValue('userid', value ? value.userid : '')}
                                         error={errors?.userid?.message}
@@ -2092,7 +2092,7 @@ const TabPanelLeadHistory: FC<TabPanelLeadHistoryProps> = ({ history, loading })
                                         {formatDate(item.createdate)}
                                     </span>
                                 </div>
-                                {item.description && <span><ItemDescription item={item} /></span>}
+                                {item.description && <ItemDescription item={item} />}
                             </div>
                         </TimelineContent>
                     </TimelineItem>
