@@ -1,5 +1,6 @@
 import React, { FC, useState } from "react";
-import { Box, makeStyles, Typography, Paper } from '@material-ui/core';
+import { Box, makeStyles, Typography, Breadcrumbs, Paper } from '@material-ui/core';
+import Link from '@material-ui/core/Link';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router";
@@ -92,6 +93,7 @@ export const ChannelAdd: FC = () => {
     const { t } = useTranslation();
 
     if (typeof whatsAppData === 'undefined' || !whatsAppData) {
+        console.log(whatsAppData);
         history.push(paths.CHANNELS);
     }
 
@@ -99,22 +101,22 @@ export const ChannelAdd: FC = () => {
         {
             icon: c => <FacebookWallIcon className={c} />,
             label: 'Facebook',
-            onClick: () => {history.push(paths.CHANNELS_ADD_FACEBOOK.path)},
-        },
-        {
-            icon: c => <InstagramIcon className={c} />,
-            label: 'Instagram',
-            onClick: () => {history.push(paths.CHANNELS_ADD_INSTAGRAM.path)},
-        },
-        {
-            icon: c => <InstagramIcon className={c} />,
-            label: 'Instagram DM',
-            onClick: () => {history.push(paths.CHANNELS_ADD_INSTAGRAMDM.path)},
+            onClick: () => {history.push(paths.CHANNELS_ADD_FACEBOOK.path, whatsAppData)},
         },
         {
             icon: c => <FacebookMessengerIcon className={c} />,
             label: 'Messenger',
-            onClick: () => {history.push(paths.CHANNELS_ADD_MESSENGER.path)},
+            onClick: () => {history.push(paths.CHANNELS_ADD_MESSENGER.path, whatsAppData)},
+        },
+        {
+            icon: c => <InstagramIcon className={c} />,
+            label: 'Instagram',
+            onClick: () => {history.push(paths.CHANNELS_ADD_INSTAGRAM.path, whatsAppData)},
+        },
+        {
+            icon: c => <InstagramIcon className={c} />,
+            label: 'Instagram DM',
+            onClick: () => {history.push(paths.CHANNELS_ADD_INSTAGRAMDM.path, whatsAppData)},
         },
         {
             icon: c => <WhatsappIcon className={c}/>,
@@ -124,17 +126,17 @@ export const ChannelAdd: FC = () => {
         {
             icon: c => <TelegramIcon className={c} />,
             label: 'Telegram',
-            onClick: () => {history.push(paths.CHANNELS_ADD_TELEGRAM.path)},
+            onClick: () => {history.push(paths.CHANNELS_ADD_TELEGRAM.path, whatsAppData)},
         },
         {
             icon: c => <TwitterIcon className={c} />,
             label: 'Twitter',
-            onClick: () => {history.push(paths.CHANNELS_ADD_TWITTER.path)},
+            onClick: () => {history.push(paths.CHANNELS_ADD_TWITTER.path, whatsAppData)},
         },
         {
             icon: c => <TwitterIcon className={c} />,
             label: 'Twitter DM',
-            onClick: () => {history.push(paths.CHANNELS_ADD_TWITTERDM.path)},
+            onClick: () => {history.push(paths.CHANNELS_ADD_TWITTERDM.path, whatsAppData)},
         },
     ];
 
@@ -163,12 +165,12 @@ export const ChannelAdd: FC = () => {
         {
             icon: c => <AppleIcon className={c} />,
             label: 'iOS SDk',
-            onClick: () => history.push(paths.CHANNELS_ADD_IOS.path),
+            onClick: () => history.push(paths.CHANNELS_ADD_IOS.path, whatsAppData),
         },
         {
             icon: c => <AndroidIcon className={c} />,
             label: 'Android SDK',
-            onClick: () => history.push(paths.CHANNELS_ADD_ANDROID.path),
+            onClick: () => history.push(paths.CHANNELS_ADD_ANDROID.path, whatsAppData),
         },
     ];
 
@@ -194,6 +196,11 @@ export const ChannelAdd: FC = () => {
         );
     };
     return (<Box className={classes.root}>
+        <Breadcrumbs aria-label="breadcrumb">
+            <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS)}}>
+                {"<< Previous"}
+            </Link>
+        </Breadcrumbs>
         <div className={classes.content}>
             <h2 className={classes.title}>{t(langKeys.channeladdtitle)}</h2>
             <div style={{ height: 29 }} />

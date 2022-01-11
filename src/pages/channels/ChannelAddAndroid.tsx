@@ -6,7 +6,7 @@ import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import { ColorInput, FieldEdit } from "components";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import paths from "common/constants/paths";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
@@ -22,6 +22,11 @@ const useChannelAddStyles = makeStyles(theme => ({
         width: "180px"
     },
 }));
+
+interface whatsAppData {
+    typeWhatsApp?: string;
+    row?: any;
+}
 
 export const ChannelAddAndroid: FC = () => {
     const [waitSave, setWaitSave] = useState(false);
@@ -58,14 +63,20 @@ export const ChannelAddAndroid: FC = () => {
         "type": "SMOOCHANDROID",
     })
 
+    const location = useLocation<whatsAppData>();
+
+    const whatsAppData = location.state as whatsAppData | null;
+
     async function finishreg() {
         setsetins(true)
         dispatch(insertChannel(fields))
         setWaitSave(true);
     }
+
     async function goback() {
         history.push(paths.CHANNELS);
     }
+
     useEffect(() => {
         if (!mainResult.loading && setins){
             if (executeResult) {
@@ -101,7 +112,7 @@ export const ChannelAddAndroid: FC = () => {
     return (
         <div style={{ width: '100%' }}>
             <Breadcrumbs aria-label="breadcrumb">
-                <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD)}}>
+                <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD, whatsAppData)}}>
                     {"<< Previous"}
                 </Link>
             </Breadcrumbs>
