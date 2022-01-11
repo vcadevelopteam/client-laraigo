@@ -58,7 +58,8 @@ export const Step2_5: FC<{ setMainData: (param: any) => void, mainData: any, set
     const [disablebutton, setdisablebutton] = useState(true);
     const mainResult = useSelector(state => state.main);
     useEffect(() => {
-        setdisablebutton((!(mainData.doctype) || isNaN(parseInt(mainData.docnumber)) || mainData.businessname === ""|| mainData.fiscaladdress === ""|| mainData.billingcontact === ""|| mainData.billingcontactmail === ""))
+        debugger
+        setdisablebutton((isNaN(mainData.doctype) || isNaN(parseInt(mainData.docnumber)) || mainData.businessname === ""|| mainData.fiscaladdress === ""|| mainData.billingcontact === ""|| mainData.billingcontactmail === ""))
     }, [mainData])
     function maindataChange(field: string, value: any) {
         setMainData((p: any) => ({ ...p, [field]: value }))
