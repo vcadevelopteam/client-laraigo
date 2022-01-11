@@ -1264,7 +1264,7 @@ const translation: LangKeys = {
     report_interaction_originalname: 'Original name',
     report_interaction_channel: 'Channel',
     report_interaction_agent: 'Agent',
-    report_interaction_intent: 'Intent',
+    report_interaction_intent: 'Intention',
     report_interaction_interactiontype: 'Interaction type',
     report_interaction_interactiontext: 'Text interaction',
     report_interaction_clientnumber: 'Client number',
