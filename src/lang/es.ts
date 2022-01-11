@@ -213,7 +213,7 @@ const translation: LangKeys = {
     tme_help: 'Tiempo promedio de primera respuesta del asesor',
     tmr: 'TMR',
     tmr_help: 'Tiempo promedio de respuesta del asesor',
-    tmr_client: 'TMR client',
+    tmr_client: 'TMR Cliente',
     tmr_client_help: 'Tiempo promedio de respuesta del cliente',
     lowestvalue: "Valor más bajo",
     tmepercentobj: 'TME% objetivo',
