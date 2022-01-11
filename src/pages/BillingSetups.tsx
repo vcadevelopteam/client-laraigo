@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateSwitch, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, IOSSwitch } from 'components';
-import { billingSupportIns, getBillingConfigurationSel, getBillingSupportSel, getPlanSel, getPaymentPlanSel, billingConfigurationIns, getBillingConversationSel, billingConversationIns, getBillingNotificationSel, billingNotificationIns, getOrgSelList, getCorpSel, getBillingPeriodHSMSel, billingPeriodHSMUpd, getLocaleDateString, getAppsettingInvoiceSel, updateAppsettingInvoice, getValuesFromDomainCorp } from 'common/helpers';
+import { billingSupportIns, getBillingConfigurationSel, getBillingSupportSel, getPlanSel, getPaymentPlanSel, billingConfigurationIns, getBillingConversationSel, billingConversationIns, getBillingNotificationSel, billingNotificationIns, getOrgSelList, getCorpSel, getBillingPeriodHSMSel, billingPeriodHSMUpd, getLocaleDateString, getAppsettingInvoiceSel, updateAppsettingInvoice, getValuesFromDomainCorp, getBillingMessagingSel, billingMessagingIns } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -30,20 +30,13 @@ interface RowSelected {
     row: Dictionary | null,
     edit: boolean
 }
+
 interface DetailSupportPlanProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     fetchData: () => void,
     dataPlan: any[];
 }
-interface DetailSupportPlanProps2 {
-    data: RowSelected;
-    setViewSelected: (view: string) => void;
-    fetchData: () => void,
-    dataPlan: any;
-}
-
-
 
 const arrayBreadCostPerHSMPeriod = [
     { id: "view-1", name: "Cost Per HSM Period" },
@@ -59,11 +52,8 @@ const StyledTableCell = withStyles((theme) => ({
       fontSize: 14,
     },
   }))(TableCell);
-  
 
-
-
-const years = [{desc:"2010"},{desc:"2011"},{desc:"2012"},{desc:"2013"},{desc:"2014"},{desc:"2015"},{desc:"2016"},{desc:"2017"},{desc:"2018"},{desc:"2020"},{desc:"2021"},{desc:"2022"},{desc:"2023"},{desc:"2024"},{desc:"2025"}]
+const years = [{desc:"2010"},{desc:"2011"},{desc:"2012"},{desc:"2013"},{desc:"2014"},{desc:"2015"},{desc:"2016"},{desc:"2017"},{desc:"2018"},{desc:"2019"},{desc:"2020"},{desc:"2021"},{desc:"2022"},{desc:"2023"},{desc:"2024"},{desc:"2025"}]
 const months =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" },]
 
 export const DateOptionsMenuComponent = (value: any, handleClickItemMenu: (key: any) => void) => {
@@ -111,6 +101,9 @@ const useStyles = makeStyles((theme) => ({
     },
     commentary: {
         fontStyle:"italic"
+    },
+    section: {
+        fontWeight:"bold"
     }
 }));
 
@@ -535,6 +528,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const mainResult = useSelector(state => state.main);
     const multiResult = useSelector(state => state.main.multiDataAux);
     
+    const [blockUbigee, setBlockUbigee] = useState(false);
     const [domainCurrency, setDomainCurrency] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
     const [domainDocument, setDomainDocument] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
     const [domainInvoiceProvider, setDomainInvoiceProvider] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
@@ -570,7 +564,18 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         "sunatusername": "",
         "paymentprovider": "",
         "publickey": "",
-        "privatekey": ""
+        "privatekey": "",
+        "ticketserie": "",
+        "ticketcorrelative": 0,
+        "invoicecreditserie": "",
+        "invoicecreditcorrelative": 0,
+        "ticketcreditserie": "",
+        "ticketcreditcorrelative": 0,
+        "detraction": 0.00,
+        "detractioncode": "",
+        "detractionaccount": "",
+        "operationcodeperu": "",
+        "operationcodeother": ""
     })
 
     useEffect(() => {
@@ -621,6 +626,17 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                     setValue("paymentprovider", mainResult.mainData.data[0].paymentprovider);
                     setValue("publickey", mainResult.mainData.data[0].publickey);
                     setValue("privatekey", mainResult.mainData.data[0].privatekey);
+                    setValue("ticketserie", mainResult.mainData.data[0].ticketserie);
+                    setValue("ticketcorrelative", mainResult.mainData.data[0].ticketcorrelative);
+                    setValue("invoicecreditserie", mainResult.mainData.data[0].invoicecreditserie);
+                    setValue("invoicecreditcorrelative", mainResult.mainData.data[0].invoicecreditcorrelative);
+                    setValue("ticketcreditserie", mainResult.mainData.data[0].ticketcreditserie);
+                    setValue("ticketcreditcorrelative", mainResult.mainData.data[0].ticketcreditcorrelative);
+                    setValue("detraction", mainResult.mainData.data[0].detraction);
+                    setValue("detractioncode", mainResult.mainData.data[0].detractioncode);
+                    setValue("detractionaccount", mainResult.mainData.data[0].detractionaccount);
+                    setValue("operationcodeperu", mainResult.mainData.data[0].operationcodeperu);
+                    setValue("operationcodeother", mainResult.mainData.data[0].operationcodeother);
 
                     setFields({
                         "ruc": mainResult.mainData.data[0].ruc,
@@ -647,7 +663,18 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         "sunatusername": mainResult.mainData.data[0].sunatusername,
                         "paymentprovider": mainResult.mainData.data[0].paymentprovider,
                         "publickey": mainResult.mainData.data[0].publickey,
-                        "privatekey": mainResult.mainData.data[0].privatekey
+                        "privatekey": mainResult.mainData.data[0].privatekey,
+                        "ticketserie": mainResult.mainData.data[0].ticketserie,
+                        "ticketcorrelative": mainResult.mainData.data[0].ticketcorrelative,
+                        "invoicecreditserie": mainResult.mainData.data[0].invoicecreditserie,
+                        "invoicecreditcorrelative": mainResult.mainData.data[0].invoicecreditcorrelative,
+                        "ticketcreditserie": mainResult.mainData.data[0].ticketcreditserie,
+                        "ticketcreditcorrelative": mainResult.mainData.data[0].ticketcreditcorrelative,
+                        "detraction": mainResult.mainData.data[0].detraction,
+                        "detractioncode": mainResult.mainData.data[0].detractioncode,
+                        "detractionaccount": mainResult.mainData.data[0].detractionaccount,
+                        "operationcodeperu": mainResult.mainData.data[0].operationcodeperu,
+                        "operationcodeother": mainResult.mainData.data[0].operationcodeother
                     });
                 }
             }
@@ -728,6 +755,17 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             paymentprovider: fields.paymentprovider,
             publickey: fields.publickey,
             privatekey: fields.privatekey,
+            ticketserie: fields.ticketserie,
+            ticketcorrelative: fields.ticketcorrelative,
+            invoicecreditserie: fields.invoicecreditserie,
+            invoicecreditcorrelative: fields.invoicecreditcorrelative,
+            ticketcreditserie: fields.ticketcreditserie,
+            ticketcreditcorrelative: fields.ticketcreditcorrelative,
+            detraction: fields.detraction,
+            detractioncode: fields.detractioncode,
+            detractionaccount: fields.detractionaccount,
+            operationcodeperu: fields.operationcodeperu,
+            operationcodeother: fields.operationcodeother,
         }
     });
     React.useEffect(() => {        
@@ -735,7 +773,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         register('businessname', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
         register('tradename', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
         register('fiscaladdress', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('ubigeo', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
+        register('ubigeo', { validate: (value) => ((value && value.length>0) || blockUbigee) || "" + t(langKeys.field_required) });
         register('country', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
         register('emittertype', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
         register('currency', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
@@ -756,6 +794,17 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         register('paymentprovider', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
         register('publickey', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
         register('privatekey', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
+        register('ticketserie', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
+        register('ticketcorrelative');
+        register('invoicecreditserie', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
+        register('invoicecreditcorrelative');
+        register('ticketcreditserie', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
+        register('ticketcreditcorrelative');
+        register('detraction');
+        register('detractioncode', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
+        register('detractionaccount', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
+        register('operationcodeperu', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
+        register('operationcodeother', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
     }, [register]);
 
     const onSubmit = handleSubmit((data) => {
@@ -828,12 +877,13 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             valueDefault={getValues('ubigeo')}
                             onChange={(value) => setValue('ubigeo', value)}
                             error={errors?.ubigeo?.message}
+                            disabled={blockUbigee}
                         /> 
                         <FieldSelect
                             label={t(langKeys.billingcountry)}
                             className="col-6"
                             valueDefault={getValues('country')}
-                            onChange={(value) => setValue('country', value.code)}
+                            onChange={(value) => { setValue('country', value?.code); if (value?.code !== 'PE') { setValue('ubigeo', ''); setBlockUbigee(true); } else { setBlockUbigee(false); } }}
                             error={errors?.country?.message}
                             data={dataPlan}
                             optionDesc="description"
@@ -887,7 +937,58 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             onChange={(value) => setValue('invoicecorrelative', value)}
                             error={errors?.invoicecorrelative?.message}
                             type='number'
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.ticketserial)}
+                            className="col-6"
+                            valueDefault={getValues('ticketserie')}
+                            onChange={(value) => setValue('ticketserie', value)}
+                            error={errors?.ticketserie?.message}
                         /> 
+                        <FieldEdit
+                            label={t(langKeys.ticketcorrelative)}
+                            className="col-6"
+                            valueDefault={getValues('ticketcorrelative')}
+                            onChange={(value) => setValue('ticketcorrelative', value)}
+                            error={errors?.ticketcorrelative?.message}
+                            type='number'
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.invoicecreditserial)}
+                            className="col-6"
+                            valueDefault={getValues('invoicecreditserie')}
+                            onChange={(value) => setValue('invoicecreditserie', value)}
+                            error={errors?.invoicecreditserie?.message}
+                        /> 
+                        <FieldEdit
+                            label={t(langKeys.invoicecreditcorrelative)}
+                            className="col-6"
+                            valueDefault={getValues('invoicecreditcorrelative')}
+                            onChange={(value) => setValue('invoicecreditcorrelative', value)}
+                            error={errors?.invoicecreditcorrelative?.message}
+                            type='number'
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.ticketcreditserial)}
+                            className="col-6"
+                            valueDefault={getValues('ticketcreditserie')}
+                            onChange={(value) => setValue('ticketcreditserie', value)}
+                            error={errors?.ticketcreditserie?.message}
+                        /> 
+                        <FieldEdit
+                            label={t(langKeys.ticketcreditcorrelative)}
+                            className="col-6"
+                            valueDefault={getValues('ticketcreditcorrelative')}
+                            onChange={(value) => setValue('ticketcreditcorrelative', value)}
+                            error={errors?.ticketcreditcorrelative?.message}
+                            type='number'
+                        />
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
@@ -907,6 +1008,46 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         />
                     </div>
                     <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.detractioncode)}
+                            className="col-6"
+                            valueDefault={getValues('detractioncode')}
+                            onChange={(value) => setValue('detractioncode', value)}
+                            error={errors?.detractioncode?.message}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.detraction)}
+                            className="col-6"
+                            valueDefault={getValues('detraction')}
+                            onChange={(value) => setValue('detraction', value)}
+                            error={errors?.detraction?.message}
+                            type='number'
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.detractionaccount)}
+                            className="col-6"
+                            valueDefault={getValues('detractionaccount')}
+                            onChange={(value) => setValue('detractionaccount', value)}
+                            error={errors?.detractionaccount?.message}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.operationcodeperu)}
+                            className="col-6"
+                            valueDefault={getValues('operationcodeperu')}
+                            onChange={(value) => setValue('operationcodeperu', value)}
+                            error={errors?.operationcodeperu?.message}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.operationcodeother)}
+                            className="col-6"
+                            valueDefault={getValues('operationcodeother')}
+                            onChange={(value) => setValue('operationcodeother', value)}
+                            error={errors?.operationcodeother?.message}
+                        />
                         <FieldSelect
                             label={t(langKeys.billingprintingformat)}
                             loading={domainPrinting.loading}
@@ -920,6 +1061,8 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             uset={true}
                             prefixTranslation='billingfield_'
                         />
+                    </div>
+                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.billingxmlversion)}
                             className="col-6"
@@ -927,8 +1070,6 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             onChange={(value) => setValue('xmlversion', value)}
                             error={errors?.xmlversion?.message}
                         />
-                    </div>
-                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.billingublversion)}
                             className="col-6"
@@ -936,20 +1077,22 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             onChange={(value) => setValue('ublversion', value)}
                             error={errors?.ublversion?.message}
                         />
+                    </div>
+                    <div className="row-zyx">
                         <TemplateSwitch
                             label={t(langKeys.billingreturnpdf)}
                             className="col-6"
                             valueDefault={getValues('returnpdf')}
                             onChange={(value) => setValue('returnpdf', value)}
                         />
-                    </div>
-                    <div className="row-zyx">
                         <TemplateSwitch
                             label={t(langKeys.billingreturncsv)}
                             className="col-6"
                             valueDefault={getValues('returnxmlsunat')}
                             onChange={(value) => setValue('returnxmlsunat', value)}
                         />
+                    </div>
+                    <div className="row-zyx">
                         <TemplateSwitch
                             label={t(langKeys.billingreturnxml)}
                             className="col-6"
@@ -1684,6 +1827,14 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                     const { clientstartfee } = props.cell.row.original;
                     return (clientstartfee || 0).toFixed(3);
                 }
+            },
+            {
+                Header: t(langKeys.freeconversations),
+                accessor: 'freeconversations',
+                Cell: (props: any) => {
+                    const { freeconversations } = props.cell.row.original;
+                    return (freeconversations || 0).toFixed(0);
+                }
             }
         ],
         []
@@ -1705,7 +1856,7 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.conversationcost).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
@@ -1852,6 +2003,7 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
             companystartfee: row?.companystartfee || 0.0,
             clientstartfee: row?.clientstartfee || 0.0,
             vcacomission: row?.vcacomission || 0.0,
+            freeconversations: row?.freeconversations || 0,
             description: row?.description || "",
             status: row? row.status : 'ACTIVO',
             type: row? row.type : '',
@@ -1879,9 +2031,10 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
         register('operation');
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('countrycode', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('companystartfee', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('clientstartfee', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('vcacomission', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('companystartfee', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
+        register('clientstartfee', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
+        register('freeconversations', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
+        register('vcacomission', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
     }, [edit, register]);
 
     useEffect(() => {
@@ -1892,7 +2045,7 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.conversationcost).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
@@ -2011,6 +2164,14 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                                 onChange={(value) => setValue('clientstartfee', value)}
                                 valueDefault={getValues('clientstartfee')}
                                 error={errors?.clientstartfee?.message}
+                                type="number"
+                                className="col-6"
+                            />
+                            <FieldEdit
+                                label={t(langKeys.freeconversations)}
+                                onChange={(value) => setValue('freeconversations', value)}
+                                valueDefault={getValues('freeconversations')}
+                                error={errors?.freeconversations?.message}
                                 type="number"
                                 className="col-6"
                             />
@@ -2189,7 +2350,7 @@ const NotificationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.notificationcost).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
@@ -2388,7 +2549,7 @@ const DetailNotificationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.notificationcost).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
@@ -2882,7 +3043,7 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({ data: { row, edit
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.supportplan).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
@@ -3002,6 +3163,435 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({ data: { row, edit
     );
 }
 
+const MessagingCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
+    const dispatch = useDispatch();
+
+    const { t } = useTranslation();
+
+    const classes = useStyles();
+    const executeResult = useSelector(state => state.main.execute);
+    const mainResult = useSelector(state => state.main);
+
+    const [dataMain, setdataMain] = useState({
+        countrycode: "",
+        year: String(new Date().getFullYear()),
+        month: (new Date().getMonth() + 1).toString().padStart(2, "0")
+    });
+    const [disableSearch, setdisableSearch] = useState(false);
+    const [duplicateop, setduplicateop] = useState(false);
+    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
+    const [viewSelected, setViewSelected] = useState("view-1");
+    const [waitSave, setWaitSave] = useState(false);
+
+    function search(){
+        dispatch(showBackdrop(true))
+        dispatch(getCollection(getBillingMessagingSel(dataMain)))
+    }
+
+    useEffect(() => {
+        setdisableSearch(dataMain.year === "" ) 
+    }, [dataMain])
+
+    useEffect(() => {
+        search()
+    }, [])
+
+    useEffect(() => {
+        if (!mainResult.mainData.loading){
+            dispatch(showBackdrop(false))
+        }
+    }, [mainResult])
+
+    const columns = React.useMemo(
+        () => [
+            {
+                accessor: 'billingmessagingid',
+                isComponent: true,
+                minWidth: 60,
+                width: '1%',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <TemplateIcons
+                            deleteFunction={() => handleDelete(row)}
+                            editFunction={() => handleEdit(row)}
+                            //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
+                            //extraOption={t(langKeys.duplicate)}
+                        />
+                    )
+                }
+            },
+            {
+                Header: t(langKeys.year),
+                accessor: 'year',
+            },
+            {
+                Header: t(langKeys.month),
+                accessor: 'month',
+            },
+            {
+                Header: t(langKeys.pricepersms),
+                accessor: 'pricepersms',
+                Cell: (props: any) => {
+                    const { pricepersms } = props.cell.row.original;
+                    return (pricepersms || 0).toFixed(3);
+                }
+            },
+            {
+                Header: t(langKeys.vcacomissionpersms),
+                accessor: 'vcacomissionpersms',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { vcacomissionpersms } = props.cell.row.original;
+                    return (vcacomissionpersms || 0).toFixed(3);
+                }
+            },
+            {
+                Header: t(langKeys.pricepermail),
+                accessor: 'pricepermail',
+                Cell: (props: any) => {
+                    const { pricepermail } = props.cell.row.original;
+                    return (pricepermail || 0).toFixed(3);
+                }
+            },
+            {
+                Header: t(langKeys.vcacomissionpermail),
+                accessor: 'vcacomissionpermail',
+                Cell: (props: any) => {
+                    const { vcacomissionpermail } = props.cell.row.original;
+                    return (vcacomissionpermail || 0).toFixed(3);
+                }
+            }
+        ],
+        []
+    );
+
+    const fetchData = () => dispatch(getCollection(getBillingMessagingSel(dataMain)));
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeResult.loading && !executeResult.error) {
+                if(duplicateop){
+                    setduplicateop(false)
+                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_duplicate) }))
+                }else{
+
+                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                }
+                fetchData();
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.messagingcost).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [executeResult, waitSave])
+
+    const handleRegister = () => {
+        setViewSelected("view-2");
+        setRowSelected({ row: null, edit: true });
+    }
+
+    const handleView = (row: Dictionary) => {
+        setduplicateop(true)
+        const callback = () => {
+            dispatch(execute(billingMessagingIns({ ...row, operation: 'DUPLICATE', id: 0 })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_duplicate),
+            callback
+        }))
+    }
+
+    const handleEdit = (row: Dictionary) => {
+        setViewSelected("view-2");
+        setRowSelected({ row, edit: true });
+    }
+
+    const handleDelete = (row: Dictionary) => {
+        const callback = () => {
+            dispatch(execute(billingMessagingIns({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.billingmessagingid })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_delete),
+            callback
+        }))
+    }
+
+    if (viewSelected === "view-1") {
+        return (
+            <Fragment>
+                <TableZyx
+                    columns={columns}                    
+                    ButtonsElement={() => (
+                        <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
+                            <FieldSelect
+                                label={t(langKeys.year)}
+                                style={{width: 150}}
+                                valueDefault={dataMain.year}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||""}))}
+                                data={years}
+                                optionDesc="desc"
+                                optionValue="desc"
+                            />
+                            <FieldMultiSelect
+                                label={t(langKeys.month)}
+                                style={{width: 300}}
+                                valueDefault={dataMain.month}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
+                                data={months}
+                                uset={true}
+                                prefixTranslation="month_"
+                                optionDesc="val"
+                                optionValue="val"
+                            />
+                            <Button
+                                disabled={mainResult.mainData.loading || disableSearch}
+                                variant="contained"
+                                color="primary"
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                onClick={() => search()}
+                            >{t(langKeys.search)}
+                            </Button>
+                        </div>
+                    )}
+                    data={mainResult.mainData.data}
+                    filterGeneral={false}
+                    download={true}
+                    loading={mainResult.mainData.loading}
+                    register={true}
+                    handleRegister={handleRegister}
+                />
+            </Fragment>
+        )
+    }
+    else if (viewSelected === "view-2") {
+        return (
+            <DetailMessagingCost
+                data={rowSelected}
+                setViewSelected={setViewSelected}
+                fetchData={fetchData}
+                dataPlan = {dataPlan}
+            />
+        )
+    } else
+        return null;
+}
+
+const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, setViewSelected, fetchData,dataPlan }) => {
+    const dispatch = useDispatch();
+
+    const { t } = useTranslation();
+
+    const classes = useStyles();
+    const executeRes = useSelector(state => state.main.execute);
+
+    const [datetoshow, setdatetoshow] = useState(
+        row? `${row.year}-${String(row.month).padStart(2, '0')}` : `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`
+    )
+    const [waitSave, setWaitSave] = useState(false);
+
+    const arrayBreadConversationCost = [
+        { id: "view-1", name: t(langKeys.messagingcost) },
+        { id: "view-2", name: t(langKeys.messagingcostdetail) }
+    ];
+
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+        defaultValues: {
+            id: row? row.billingmessagingid : 0,
+            year: row?.year ||new Date().getFullYear(),
+            month: row?.month ||new Date().getMonth() + 1,
+            pricepersms: row?.pricepersms || 0.0,
+            vcacomissionpersms: row?.vcacomissionpersms || 0.0,
+            pricepermail: row?.pricepermail || 0.0,
+            vcacomissionpermail: row?.vcacomissionpermail || 0.0,
+            description: row?.description || "",
+            status: row? row.status : 'ACTIVO',
+            type: row? row.type : '',
+            operation: row? "UPDATE" : "INSERT",
+        }
+    });
+
+    function handleDateChange(e: any){
+        if(e!==""){
+            let datetochange = new Date(e+"-02")
+            let mes = datetochange?.getMonth()+1
+            let year = datetochange?.getFullYear()
+            setdatetoshow(`${year}-${String(mes).padStart(2, '0')}`)
+            setValue('year',year)
+            setValue('month',mes)
+        }
+    }
+
+    React.useEffect(() => {
+        register('id');
+        register('year');
+        register('month');
+        register('pricepersms', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
+        register('vcacomissionpersms', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
+        register('pricepermail', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
+        register('vcacomissionpermail', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
+        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('status');
+        register('type');
+        register('operation');
+    }, [edit, register]);
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(row? langKeys.successful_edit : langKeys.successful_register) }))
+                fetchData && fetchData();
+                dispatch(showBackdrop(false));
+                setViewSelected("view-1")
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.messagingcost).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                setWaitSave(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [executeRes, waitSave])
+
+    const onSubmit = handleSubmit((data) => {
+        const callback = () => {
+            dispatch(execute(billingMessagingIns(data)));
+            dispatch(showBackdrop(true));
+            setWaitSave(true)
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
+    });
+
+    return (
+        <div style={{ width: '100%' }}>
+            <form onSubmit={onSubmit}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={arrayBreadConversationCost}
+                            handleClick={setViewSelected}
+                        />
+                        <TitleDetail
+                            title={row? `${row.description}` : t(langKeys.newmessagingplan)}
+                        />
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => setViewSelected("view-1")}
+                        >{t(langKeys.back)}</Button>
+                        {edit &&
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                type="submit"
+                                startIcon={<SaveIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >{t(langKeys.save)}
+                            </Button>
+                        }
+                    </div>
+                </div>
+                <div className={classes.containerDetail}>
+                    <div className="row-zyx">
+                        <TextField
+                            id="date"
+                            className="col-6"
+                            type="month"
+                            variant="outlined"
+                            onChange={(e)=>handleDateChange(e.target.value)}
+                            value={datetoshow}
+                            size="small"
+                        />
+                        <FieldEdit
+                            className="col-6"
+                            label={t(langKeys.description)}
+                            onChange={(value) => setValue('description', value)}
+                            valueDefault={getValues('description')}
+                            error={errors?.description?.message}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldView
+                            label=''
+                            value={t(langKeys.smssection)}
+                            className={classes.section}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.pricepersms)}
+                            onChange={(value) => setValue('pricepersms', value)}
+                            valueDefault={getValues('pricepersms')}
+                            error={errors?.pricepersms?.message}
+                            type="number"
+                            className="col-6"
+                        />
+                        <FieldEdit
+                            label={t(langKeys.vcacomissionpersms)}
+                            onChange={(value) => setValue('vcacomissionpersms', value)}
+                            valueDefault={getValues('vcacomissionpersms')}
+                            error={errors?.vcacomissionpersms?.message}
+                            type="number"
+                            className="col-6"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldView
+                            label=''
+                            value={t(langKeys.mailsection)}
+                            className={classes.section}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.pricepermail)}
+                            onChange={(value) => setValue('pricepermail', value)}
+                            valueDefault={getValues('pricepermail')}
+                            error={errors?.pricepermail?.message}
+                            type="number"
+                            className="col-6"
+                        />
+                        <FieldEdit
+                            label={t(langKeys.vcacomissionpermail)}
+                            onChange={(value) => setValue('vcacomissionpermail', value)}
+                            valueDefault={getValues('vcacomissionpermail')}
+                            error={errors?.vcacomissionpermail?.message}
+                            type="number"
+                            className="col-6"
+                        />
+                    </div>
+                </div>
+            </form>
+        </div>
+    );
+}
+
 const BillingSetup: FC = () => {
     const dispatch = useDispatch();
 
@@ -3067,6 +3657,9 @@ const BillingSetup: FC = () => {
                 {user?.roledesc === "SUPERADMIN" && 
                     <AntTab label={t(langKeys.supportplan)} />
                 }
+                {user?.roledesc === "SUPERADMIN" && 
+                    <AntTab label={t(langKeys.messagingcost)} />
+                }
                 {/*user?.roledesc === "SUPERADMIN" && 
                     <AntTab label={t(langKeys.costperHSMperiod)} />
                 */}
@@ -3094,6 +3687,11 @@ const BillingSetup: FC = () => {
             {pageSelected === 4 &&
                 <div style={{ marginTop: 16 }}>
                     <SupportPlan dataPlan={dataPlan}/>
+                </div>
+            }
+            {pageSelected === 5 &&
+                <div style={{ marginTop: 16 }}>
+                    <MessagingCost dataPlan={countryList}/>
                 </div>
             }
             {/*pageSelected === 6 &&

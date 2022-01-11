@@ -1810,6 +1810,27 @@ export const langKeys = {
     costnotificaton: 'costnotificaton',
 
     sendToHistory: 'sendToHistory',
+    ticketserial: 'ticketserial',
+    ticketcorrelative: 'ticketcorrelative',
+    invoicecreditserial: 'invoicecreditserial',
+    invoicecreditcorrelative: 'invoicecreditcorrelative',
+    ticketcreditserial: 'ticketcreditserial',
+    ticketcreditcorrelative: 'ticketcreditcorrelative',
+    detraction: 'detraction',
+    detractioncode: 'detractioncode',
+    detractionaccount: 'detractionaccount',
+    operationcodeperu: 'operationcodeperu',
+    operationcodeother: 'operationcodeother',
+    freeconversations: 'freeconversations',
+    messagingcost: 'messagingcost',
+    pricepersms: 'pricepersms',
+    vcacomissionpersms: 'vcacomissionpersms',
+    pricepermail: 'pricepermail',
+    vcacomissionpermail: 'vcacomissionpermail',
+    messagingcostdetail: 'messagingcostdetail',
+    smssection: 'smssection',
+    mailsection: 'mailsection',
+    newmessagingplan: "newmessagingplan",
 };
 
 export type LangKeys = typeof langKeys;
