@@ -6,12 +6,17 @@ import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import { ColorInput, FieldEdit } from "components";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import paths from "common/constants/paths";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { insertChannel } from "store/channel/actions";
 import { TelegramIcon } from "icons";
+
+interface whatsAppData {
+    typeWhatsApp?: string;
+    row?: any;
+}
 
 const useChannelAddStyles = makeStyles(theme => ({
     centerbutton: {
@@ -64,6 +69,10 @@ export const ChannelAddTelegram: FC = () => {
         }
     })
 
+    const location = useLocation<whatsAppData>();
+
+    const whatsAppData = location.state as whatsAppData | null;
+
     async function finishreg() {
         setsetins(true)
         dispatch(insertChannel(fields))
@@ -110,7 +119,7 @@ export const ChannelAddTelegram: FC = () => {
         return (
             <div style={{ width: '100%' }}>
                 <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD)}}>
+                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD, whatsAppData)}}>
                         {"<< Previous"}
                     </Link>
                 </Breadcrumbs>

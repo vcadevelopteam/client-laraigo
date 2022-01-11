@@ -30,6 +30,7 @@ export const langKeys = {
     namehsm: "namehsm",
     shippingdate: "shippingdate",
     shippingtype: "shippingtype",
+    oportunitybase: "oportunitybase",
     tmo: "tmo",
     cantidadOportunidades: "cantidadOportunidades",
     tmo_help: 'tmo_help',
@@ -37,6 +38,7 @@ export const langKeys = {
     reasons_disconnection: 'reasons_disconnection',
     billbyorg: 'billbyorg',
     evidenceofpayment: "evidenceofpayment",
+    ticketbase: "ticketbase",
     additional_information: 'additional_information',
     id_payment: 'id_payment',
     resume: "resume",
@@ -631,7 +633,7 @@ export const langKeys = {
 
     name: 'name',
     name_plural: 'name_plural',
-
+    data_origin: 'data_origin',
     username: 'username',
     password: 'password',
 
@@ -1832,6 +1834,27 @@ export const langKeys = {
     costnotificaton: 'costnotificaton',
 
     sendToHistory: 'sendToHistory',
+    ticketserial: 'ticketserial',
+    ticketcorrelative: 'ticketcorrelative',
+    invoicecreditserial: 'invoicecreditserial',
+    invoicecreditcorrelative: 'invoicecreditcorrelative',
+    ticketcreditserial: 'ticketcreditserial',
+    ticketcreditcorrelative: 'ticketcreditcorrelative',
+    detraction: 'detraction',
+    detractioncode: 'detractioncode',
+    detractionaccount: 'detractionaccount',
+    operationcodeperu: 'operationcodeperu',
+    operationcodeother: 'operationcodeother',
+    freeconversations: 'freeconversations',
+    messagingcost: 'messagingcost',
+    pricepersms: 'pricepersms',
+    vcacomissionpersms: 'vcacomissionpersms',
+    pricepermail: 'pricepermail',
+    vcacomissionpermail: 'vcacomissionpermail',
+    messagingcostdetail: 'messagingcostdetail',
+    smssection: 'smssection',
+    mailsection: 'mailsection',
+    newmessagingplan: "newmessagingplan",
 };
 
 export type LangKeys = typeof langKeys;

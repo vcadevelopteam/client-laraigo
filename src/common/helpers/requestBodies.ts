@@ -1897,6 +1897,7 @@ export const getOneLeadSel = (id: string | number): IRequestBody => ({
         leadproduct: '',
         campaignid: 0,
         tags: '',
+        userid: 0,
         all: false,
     },
 });
@@ -2180,10 +2181,10 @@ export const getBillingConversationSel = ({ year, month, countrycode = "" }: Dic
 })
 
 
-export const billingConversationIns = ({ year, month, countrycode, id, companystartfee, clientstartfee, vcacomission, description, status, type, operation }: Dictionary): IRequestBody => ({
+export const billingConversationIns = ({ year, month, countrycode, id, companystartfee, clientstartfee, vcacomission, freeconversations, description, status, type, operation }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGCONVERSATION_INS",
     key: "UFN_BILLINGCONVERSATION_INS",
-    parameters: { year, month, countrycode, id, companystartfee, clientstartfee, vcacomission, description, status, type, operation }
+    parameters: { year, month, countrycode, id, companystartfee, clientstartfee, vcacomission, freeconversations, description, status, type, operation }
 })
 
 export const getBillingPeriodSel = ({ corpid, orgid, year, month, billingplan, supportplan }: Dictionary): IRequestBody => ({
@@ -2382,10 +2383,10 @@ export const getAppsettingInvoiceSel = () => ({
     parameters: {},
 });
 
-export const updateAppsettingInvoice = ({ ruc, businessname, tradename, fiscaladdress, ubigeo, country, emittertype, currency, invoiceserie, invoicecorrelative, annexcode, igv, printingformat, xmlversion, ublversion, returnpdf, returnxmlsunat, returnxml, invoiceprovider, sunaturl, token, sunatusername, paymentprovider, publickey, privatekey }: Dictionary): IRequestBody => ({
+export const updateAppsettingInvoice = ({ ruc, businessname, tradename, fiscaladdress, ubigeo, country, emittertype, currency, invoiceserie, invoicecorrelative, annexcode, igv, printingformat, xmlversion, ublversion, returnpdf, returnxmlsunat, returnxml, invoiceprovider, sunaturl, token, sunatusername, paymentprovider, publickey, privatekey, ticketserie, ticketcorrelative, invoicecreditserie, invoicecreditcorrelative, ticketcreditserie, ticketcreditcorrelative, detraction, detractioncode, detractionaccount, operationcodeperu, operationcodeother }: Dictionary): IRequestBody => ({
     method: "UFN_APPSETTING_INVOICE_UPDATE",
     key: "UFN_APPSETTING_INVOICE_UPDATE",
-    parameters: { ruc, businessname, tradename, fiscaladdress, ubigeo, country, emittertype, currency, invoiceserie, invoicecorrelative, annexcode, igv, printingformat, xmlversion, ublversion, returnpdf, returnxmlsunat, returnxml, invoiceprovider, sunaturl, token, sunatusername, paymentprovider, publickey, privatekey }
+    parameters: { ruc, businessname, tradename, fiscaladdress, ubigeo, country, emittertype, currency, invoiceserie, invoicecorrelative, annexcode, igv, printingformat, xmlversion, ublversion, returnpdf, returnxmlsunat, returnxml, invoiceprovider, sunaturl, token, sunatusername, paymentprovider, publickey, privatekey, ticketserie, ticketcorrelative, invoicecreditserie, invoicecreditcorrelative, ticketcreditserie, ticketcreditcorrelative, detraction, detractioncode, detractionaccount, operationcodeperu, operationcodeother }
 });
 
 export const getBillingNotificationSel = ({ year, month, countrycode = "" }: Dictionary): IRequestBody => ({
@@ -2430,3 +2431,27 @@ export const getBillingPeriodCalcRefreshAll = (exchangerate: number): IRequestBo
         exchangerate
     },
 });
+
+export const getTableOrigin = (): IRequestBody => ({
+    method: "UFN_REPORT_PERSONALIZED_ORIGIN_SEL",
+    key: "UFN_REPORT_PERSONALIZED_ORIGIN_SEL",
+    parameters: {},
+});
+
+export const getColumnsOrigin = (tablename: string): IRequestBody => ({
+    method: "UFN_REPORT_PERSONALIZED_COLUMNS_SEL",
+    key: "UFN_REPORT_PERSONALIZED_COLUMNS_SEL",
+    parameters: { tablename },
+});
+export const getBillingMessagingSel = ({ year, month }: Dictionary): IRequestBody => ({
+    method: "UFN_BILLINGMESSAGING_SEL",
+    key: "UFN_BILLINGMESSAGING_SEL",
+    parameters: { year, month }
+})
+
+
+export const billingMessagingIns = ({ year, month, id, pricepersms, vcacomissionpersms, pricepermail, vcacomissionpermail, description, status, type, operation }: Dictionary): IRequestBody => ({
+    method: "UFN_BILLINGMESSAGING_INS",
+    key: "UFN_BILLINGMESSAGING_INS",
+    parameters: { year, month, id, pricepersms, vcacomissionpersms, pricepermail, vcacomissionpermail, description, status, type, operation }
+})

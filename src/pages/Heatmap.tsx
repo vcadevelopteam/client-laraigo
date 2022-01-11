@@ -1511,7 +1511,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
             let number= Math.floor((255-(num-1/2)* scale)).toString(16)
             return  "FF" +"00".slice(number.length) + number +"00"  
         }
-        
+        debugger
         const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor|horanum/gi.test(key)).map(([key, value]) => ({
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : (key==="asesor" ? "ASESOR" : "TOTAL"),
             accessor: key,
@@ -2033,8 +2033,8 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                                 <TemplateSwitchYesNo
                                     valueDefault={typeEfectiveness}
                                     onChange={(value) => settypeEfectiveness(value)}
-                                    textYes={t(langKeys.ticket)}
-                                    textNo={t(langKeys.opportunity_plural)}
+                                    textYes={t(langKeys.ticketbase)}
+                                    textNo={t(langKeys.oportunitybase)}
                                     labelPlacement="start"
                                     style={{padding: 10}}
                                 />
