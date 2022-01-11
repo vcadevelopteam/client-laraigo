@@ -678,8 +678,8 @@ const CRM: FC = () => {
     if (!(Object.keys(selectedRows).length === 0 && personsSelected.length === 0)) {
         setPersonsSelected(p => Object.keys(selectedRows).map(x => mainPaginated.data.find(y => y.leadid === parseInt(x)) || p.find(y => y.leadid === parseInt(x)) || {}))
     }
-// eslint-disable-next-line react-hooks/exhaustive-deps
-}, [selectedRows])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedRows])
 
   useEffect(() => {
     const p = new URLSearchParams(location.search);
@@ -687,11 +687,18 @@ const CRM: FC = () => {
     history.push({ search: p.toString() });
   }, [display, history]);
 
+  const campaigns = useMemo(() => { 
+    if (!mainMulti.data[4]?.data) return [];
+    return (mainMulti.data[4].data as ICampaignLst[]).sort((a, b) => {
+      return a.description.localeCompare(b.description);
+    });
+  }, [mainMulti.data[4]]);
+
   const filtersElement = useMemo(() => (
     <>
       <FieldSelect
         variant="outlined"
-        label={t(langKeys.user)}
+        label={t(langKeys.agent)}
         className={classes.filterComponent}
         valueDefault={allParameters.asesorid}
         onChange={(value) => setAllParameters({...allParameters, asesorid: value?.userid})}
@@ -752,7 +759,7 @@ const CRM: FC = () => {
               className={classes.filterComponent}
               valueDefault={boardFilter.campaign}
               onChange={(v: ICampaignLst) => setBoardFilter(prev => ({ ...prev, campaign: v?.id || 0 }))}
-              data={mainMulti.data[4]?.data || []}
+              data={campaigns}
               loading={mainMulti.loading}
               optionDesc="description"
               optionValue="id"
@@ -833,7 +840,7 @@ const CRM: FC = () => {
                       //       ref={provided.innerRef}
                       //     >
                               <DraggableLeadColumn 
-                                title={t(column.description.toLowerCase())} 
+                                title={t(column.description.toLowerCase())}
                                 key={index+1} 
                                 snapshot={null} 
                                 // provided={provided} 

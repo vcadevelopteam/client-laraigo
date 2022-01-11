@@ -2012,15 +2012,15 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
                 </Grid>
                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                     <Property
-                        title={<Trans i18nKey={langKeys.internalIdentifier} />}
-                        subtitle={personIdentifier}
+                        title={<Trans i18nKey={langKeys.personIdentifier} />}
+                        subtitle={channel.personcommunicationchannelowner}
                         m={1}
                     />
                 </Grid>
                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                     <Property
-                        title={<Trans i18nKey={langKeys.personIdentifier} />}
-                        subtitle={channel.personcommunicationchannelowner}
+                        title={<Trans i18nKey={langKeys.internalIdentifier} />}
+                        subtitle={personIdentifier}
                         m={1}
                     />
                 </Grid>

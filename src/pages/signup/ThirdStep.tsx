@@ -137,6 +137,22 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
             selected: listchannels.facebook
         },
         {
+            icon: <FacebookMessengerIcon className={classes.icon} />,
+            label: 'Messenger',
+            key: 'messenger',
+            onClick: () => {
+                if(listchannels.messenger){
+                    setselectedChannels(selectedChannels-1)
+                    setlistchannels((p: any) => ({ ...p, messenger: !p.messenger }))
+                }
+                else if(limitChannels>selectedChannels){
+                    listchannels.messenger?setselectedChannels(selectedChannels-1):setselectedChannels(selectedChannels+1);
+                    setlistchannels((p: any) => ({ ...p, messenger: !p.messenger }))
+                }
+            },
+            selected: listchannels.messenger
+        },
+        {
             icon: <InstagramIcon color="inherit" />,
             label: 'Instagram',
             key: 'instagram',
@@ -167,22 +183,6 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
                 }
             },
             selected: listchannels.instagramDM
-        },
-        {
-            icon: <FacebookMessengerIcon className={classes.icon} />,
-            label: 'Messenger',
-            key: 'messenger',
-            onClick: () => {
-                if(listchannels.messenger){
-                    setselectedChannels(selectedChannels-1)
-                    setlistchannels((p: any) => ({ ...p, messenger: !p.messenger }))
-                }
-                else if(limitChannels>selectedChannels){
-                    listchannels.messenger?setselectedChannels(selectedChannels-1):setselectedChannels(selectedChannels+1);
-                    setlistchannels((p: any) => ({ ...p, messenger: !p.messenger }))
-                }
-            },
-            selected: listchannels.messenger
         },
         {
             icon: <WhatsAppIcon color="inherit" />,
@@ -300,22 +300,6 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
             selected: listchannels.sms
         },
         {
-            icon: <AndroidIcon className={classes.icon} />,
-            label: 'Android SDK',
-            key: 'android',
-            onClick: () => {
-                if(listchannels.android){
-                    setselectedChannels(selectedChannels-1)
-                    setlistchannels((p: any) => ({ ...p, android: !p.android }))
-                }
-                else if(limitChannels>selectedChannels){
-                    listchannels.android?setselectedChannels(selectedChannels-1):setselectedChannels(selectedChannels+1);
-                    setlistchannels((p: any) => ({ ...p, android: !p.android }))
-                }
-            },
-            selected: listchannels.android
-        },
-        {
             icon: <AppleIcon className={classes.icon} />,
             label: 'iOS SDk',
             key: 'apple',
@@ -330,6 +314,22 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
                 }
             },
             selected: listchannels.apple
+        },
+        {
+            icon: <AndroidIcon className={classes.icon} />,
+            label: 'Android SDK',
+            key: 'android',
+            onClick: () => {
+                if(listchannels.android){
+                    setselectedChannels(selectedChannels-1)
+                    setlistchannels((p: any) => ({ ...p, android: !p.android }))
+                }
+                else if(limitChannels>selectedChannels){
+                    listchannels.android?setselectedChannels(selectedChannels-1):setselectedChannels(selectedChannels+1);
+                    setlistchannels((p: any) => ({ ...p, android: !p.android }))
+                }
+            },
+            selected: listchannels.android
         },
     ];
 

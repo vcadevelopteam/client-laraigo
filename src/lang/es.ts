@@ -347,6 +347,7 @@ const translation: LangKeys = {
     signupstep1title: '¡Registrate en menos de un minuto!',
     signupfacebookbutton: 'Registrate por Facebook',
     mobilephoneoptional: "Teléfono móvil (opcional)",
+    signupstep1title25: "Complete la información fiscal",
     laraigouse: "¿Para qué deseas usar laraigo?",
     reason_sales: "Ventas",
     reason_marketing: "Marketing",
@@ -1604,10 +1605,13 @@ const translation: LangKeys = {
     newActivity: 'Nueva actividad',
     markDone: 'Hecho',
     activityType: 'Tipo de actividad',
+    whatsappinformationimportant: "Para poder realizar la vinculación de un canal WhatsApp se debe contar con la Verificación de Negocio de Facebook. Caso contrario, se tendrán las siguientes restricciones: Se podrá enviar un máximo de 50 HSM por día, Se podrá manejar un máximo de 2 cuentas por ID Facebook, No se podrá solicitar Check verde a WhatsApp",
     summary: 'Resumen',
     dueDate: 'Fecha de vencimiento',
     assignedTo: 'Asignado a',
     schedule: 'Programar',
+    billingcontact: "Contacto de Facturación",
+    billingcontactmail: "Correo electrónico de contacto de facturación",
 
     suspend_ticket: 'Suspender ticket',
     activate_ticket: 'Activar ticket',
@@ -1638,7 +1642,7 @@ const translation: LangKeys = {
     won: 'Ganado',
     lost: 'Perdido',
     billbyorg: 'Facturación por organización',
-
+    
     businessname: 'Razón Social',
     fiscaladdress: 'Dirección fiscal',
     sunatcountry: 'Pais',

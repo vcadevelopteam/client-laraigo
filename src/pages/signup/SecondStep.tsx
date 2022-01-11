@@ -51,11 +51,12 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
     const [errors, setErrors] = useState<Dictionary>({
         firstandlastname: "",
         companybusinessname: "",
+        country: ""
     });
     const [disablebutton, setdisablebutton] = useState(true);
     const mainResult = useSelector(state => state.main);
     useEffect(() => {
-        setdisablebutton(!(mainData.firstandlastname !== "" && mainData.companybusinessname !== ""))
+        setdisablebutton(!(mainData.firstandlastname !== "" && mainData.companybusinessname !== "" && mainData.country!== ""))
     }, [mainData])
     function maindataChange(field: string, value: any) {
         setMainData((p: any) => ({ ...p, [field]: value }))
@@ -84,7 +85,7 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
     }, []);
 
     useEffect(() => {
-        setMainData((p:any) => ({ ...p, country: countrycode, countryname: countryname, currency: currency }))
+        setMainData((p:any) => ({ ...p, country: countrycode, countryname: countryname, currency: currency, doctype: countrycode==="PE"?1:0 }))
     }, [countrycode, countryname, currency]);
     
     useEffect(() => {
@@ -100,7 +101,6 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
             }
         }
     }, [ressignup])
-
     
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
@@ -138,12 +138,16 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
                     onChange={(e) => maindataChange('companybusinessname', e.target.value)}
                 />                
                 <FieldSelect
-                    onChange={(value) => setMainData((p:any) => ({ ...p, country: value?.code || "", currency: value?.currencycode || "", countryname: value?.description }))}
+                    onChange={(value) => {
+                        setErrors(p => ({ ...p, country: !(value?.code) ? t(langKeys.field_required) : "" }))
+                        setMainData((p:any) => ({ ...p, doctype: value?.code==="PE"?1:0, country: value?.code || "", currency: value?.currencycode || "", countryname: value?.description }))
+                    }}
                     variant="outlined"
                     className="col-6"
                     style={{margin:"15px 0"}}
                     label={t(langKeys.country)}
                     valueDefault={mainData.country}
+                    error={errors.country}
                     data={ressignup.data}
                     optionDesc="description"
                     optionValue="code"
@@ -175,7 +179,7 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
                     optionValue="domainvalue"
                 />
                 <Button
-                    onClick={() => { setStep(3) }}
+                    onClick={() => { setStep(2.5) }}
                     className={classes.button}
                     fullWidth
                     variant="contained"
