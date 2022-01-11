@@ -126,10 +126,17 @@ export const SignUp: FC = () => {
         googleid: "",
         join_reason: "",
         country: "",
-        currency: ""
+        currency: "",
+        doctype: 0,
+        docnumber: "",
+        businessname: "",
+        fiscaladdress: "",
+        billingcontact: "",
+        billingcontactmail: "",
     });
     function setDefaultMainData(){
-        setMainData({
+        setMainData((prev)=>({
+            ...prev,
             email: "",
             password: "",
             confirmpassword: "",
@@ -140,7 +147,24 @@ export const SignUp: FC = () => {
             googleid: "",
             join_reason: "",
             country: "",
-        })
+            doctype: 0,
+            docnumber: "",
+            businessname: "",
+            fiscaladdress: "",
+            billingcontact: "",
+            billingcontactmail: "",
+        }))
+    }
+    function setDefaultMainData2(){
+        setMainData((prev)=>({
+            ...prev,
+            doctype: 0,
+            docnumber: "",
+            businessname: "",
+            fiscaladdress: "",
+            billingcontact: "",
+            billingcontactmail: "",
+        }))
     }
     useEffect(() => {
         dispatch(verifyPlan(token))
@@ -168,13 +192,19 @@ export const SignUp: FC = () => {
                 ios: false,
             })
         }else{
+            console.log(step)
             if(step===2){
                 setDefaultMainData()
             }
             if(step===4){
                 setrequestchannels([])
             }
-            setStep(step-1)
+            if(step===2.5){
+                setDefaultMainData2()
+                setStep(2)
+            }else{
+                setStep(step-1)
+            }
         }
         setOpenWarning(false);
     };
@@ -231,9 +261,11 @@ export const SignUp: FC = () => {
                     <div className={classes.separator}> </div>
                     <div className={step === 2 ? classes.purplecircle : classes.notthisstep}> 2 </div>
                     <div className={classes.separator}> </div>
-                    <div className={step === 3 ? classes.purplecircle : classes.notthisstep}> 3 </div>
+                    <div className={step === 2.5 ? classes.purplecircle : classes.notthisstep}> 3 </div>
                     <div className={classes.separator}> </div>
-                    <div className={step === 4 ? classes.purplecircle : classes.notthisstep}> 4 </div>
+                    <div className={step === 3 ? classes.purplecircle : classes.notthisstep}> 4 </div>
+                    <div className={classes.separator}> </div>
+                    <div className={step === 4 ? classes.purplecircle : classes.notthisstep}> 5 </div>
                 </div>
             </div>
             <div style={{ display: "flex", height: '100%' }}>

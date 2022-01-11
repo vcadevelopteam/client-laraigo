@@ -3,8 +3,8 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldEditMulti } from 'components';
-import { calcKPIManager, convertLocalDate, dictToArrayKV, duplicateKPIManager, getDateToday, getFirstDayMonth, getLastDayMonth, getValuesFromDomain, insKPIManager, selKPIManager, selKPIManagerHistory } from 'common/helpers';
+import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldEditMulti } from 'components';
+import { calcKPIManager, convertLocalDate, dictToArrayKV, duplicateKPIManager, getDateCleaned, getDateToday, getFirstDayMonth, getLastDayMonth, getValuesFromDomain, insKPIManager, selKPIManager, selKPIManagerHistory } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -15,11 +15,15 @@ import { useForm } from 'react-hook-form';
 import { getCollection, getMultiCollection, execute, resetAllMain, getCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, Typography } from '@material-ui/core';
+import { Box, IconButton, ListItemIcon, Menu, MenuItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, Typography } from '@material-ui/core';
 import { Range } from 'react-date-range';
 import { DateRangePicker } from 'components';
-import { CalendarIcon, SearchIcon, DuplicateIcon } from 'icons';
+import { CalendarIcon, DuplicateIcon } from 'icons';
 import GaugeChart from 'react-gauge-chart'
+import {Search as SearchIcon }  from '@material-ui/icons';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import DeleteIcon from '@material-ui/icons/Delete';
+import UpdateIcon from '@material-ui/icons/Update';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -98,7 +102,7 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
             changedate: row?.changedate,
             changeby: row?.changeby,
 
-            operation: row ? "EDIT" : "INSERT",
+            operation: row && row.id ? "EDIT" : "INSERT",
         }
     });
 
@@ -230,12 +234,25 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
     useEffect(() => {
         if (waitCalc) {
             if (!executeRes.loading && !executeRes.error && executeRes.data) {
-                setDetaildata({
-                    previousvalue: executeRes.data[0].p_previousvalue,
-                    currentvalue: executeRes.data[0].p_currentvalue,
-                    updatedate: executeRes.data[0].p_updatedate
-                })
-                fetchData && fetchData();
+                if (executeRes.data[0].p_success) {
+                    setDetaildata({
+                        previousvalue: executeRes.data[0].p_previousvalue,
+                        currentvalue: executeRes.data[0].p_currentvalue,
+                        updatedate: convertLocalDate(executeRes.data[0].p_updatedate).toLocaleString(undefined, {
+                            year: "numeric",
+                            month: "2-digit",
+                            day: "2-digit",
+                            hour: "numeric",
+                            minute: "numeric",
+                            second: "numeric"
+                        })
+                    })
+                    fetchData && fetchData();
+                }
+                else {
+                    const errormessage = t(langKeys.error_kpi_sql, { error: executeRes.data[0].p_error })
+                    dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                }
                 setWaitCalc(false);
                 dispatch(showBackdrop(false));
             } else if (executeRes.error) {
@@ -261,7 +278,7 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
-                            title={row ? `${row.kpiname}` : t(langKeys.newkpi)}
+                            title={row?.id ? `${row.kpiname}` : t(langKeys.newkpi)}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -303,7 +320,7 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                     <div className="row-zyx">
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.kpiname)}
+                                label={t(langKeys.kpi_name)}
                                 className="col-4"
                                 onChange={(value) => setValue('kpiname', value)}
                                 valueDefault={getValues("kpiname")}
@@ -347,7 +364,7 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                             : <FieldView
                                 label={t(langKeys.status)}
                                 value={row ? (row.status || "") : ""}
-                                className="col-6"
+                                className="col-4"
                             />
                         }
                     </div>
@@ -386,7 +403,7 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                                     className="col-6"
                                     valueDefault={getValues('sqlwhere')}
                                     onChange={(value) => setValue('sqlwhere', value)}
-                                    error={errors?.sqlselect?.message}
+                                    error={errors?.sqlwhere?.message}
                                     disabled={!['SUPERADMIN'].includes(user?.roledesc || "")}
                                 />
                                 :
@@ -512,7 +529,7 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                             />
                         }
                     </div>
-                    {row && <div className="row-zyx">
+                    {(row && row.id) && <div className="row-zyx">
                         <Box style={{display: 'flex', justifyContent: 'space-between'}}>
                             <Typography variant="h6" component="h6">
                                 {t(langKeys.graphic_detail)}
@@ -525,7 +542,7 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                             </Button>
                         </Box>
                         <Box>
-                            {t(langKeys.last_update)}: {convertLocalDate(detaildata?.updatedate).toLocaleString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "numeric", minute: "numeric", second: "numeric"})}
+                            {t(langKeys.last_update)}: {detaildata?.updatedate}
                         </Box>
                         <TableContainer>
                             <Table aria-label="simple table">
@@ -596,12 +613,12 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                         </div>
                         <div className="row-zyx">
                         <FieldView
-                                label={t(langKeys.modifiedBy)}
+                                label={t(langKeys.change_by)}
                                 value={row?.changeby}
                                 className="col-6"
                             />
                              <FieldView
-                                label={t(langKeys.modificationDate)}
+                                label={t(langKeys.change_date)}
                                 value={row?.changedate && convertLocalDate(row?.changedate).toLocaleString(undefined, {
                                     year: "numeric",
                                     month: "2-digit",
@@ -632,7 +649,7 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                                             startIcon={<CalendarIcon />}
                                             onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
                                         >
-                                            {format(dateRange.startDate!) + " - " + format(dateRange.endDate!)}
+                                            {getDateCleaned(dateRange.startDate!) + " - " + getDateCleaned(dateRange.endDate!)}
                                         </Button>
                                     </DateRangePicker>
                                     <Button
@@ -660,6 +677,86 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
     );
 }
 
+const IconOptions: React.FC<{
+    onDelete?: (e?: any) => void;
+    onDuplicate?: (e?: any) => void;
+    onCalc?: (e?: any) => void;
+}> = ({ onDelete, onDuplicate, onCalc }) => {
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const { t } = useTranslation();
+
+    const handleClose = () => setAnchorEl(null);
+    return (
+        <>
+            <IconButton
+                aria-label="more"
+                aria-controls="long-menu"
+                aria-haspopup="true"
+                size="small"
+                onClick={(e) => {
+                    e.stopPropagation();
+                    setAnchorEl(e.currentTarget);
+                }}
+            >
+                <MoreVertIcon />
+            </IconButton>
+            <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                getContentAnchorEl={null}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                open={Boolean(anchorEl)}
+                onClick={(e) => e.stopPropagation()}
+                onClose={handleClose}
+            >
+                {onDelete &&
+                    <MenuItem onClick={(e) => {
+                        e.stopPropagation();
+                        setAnchorEl(null);
+                        onDelete();
+                    }}>
+                        <ListItemIcon color="inherit">
+                            <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                        </ListItemIcon>
+                        {t(langKeys.delete)}
+                    </MenuItem>
+                }
+                {onDuplicate &&
+                    <MenuItem onClick={(e) => {
+                        e.stopPropagation();
+                        setAnchorEl(null);
+                        onDuplicate();
+                    }}>
+                        <ListItemIcon>
+                            <DuplicateIcon width={18} style={{ fill: '#7721AD' }} />
+                        </ListItemIcon>
+                        {t(langKeys.duplicate)}
+                    </MenuItem>
+                }
+                {onCalc &&
+                    <MenuItem onClick={(e) => {
+                        e.stopPropagation();
+                        setAnchorEl(null);
+                        onCalc();
+                    }}>
+                        <ListItemIcon>
+                            <UpdateIcon width={18} style={{ fill: '#7721AD' }} />
+                        </ListItemIcon>
+                        {t(langKeys.calculate)}
+                    </MenuItem>
+                }
+            </Menu>
+        </>
+    )
+}
+
 const KPIManager: FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -670,6 +767,23 @@ const KPIManager: FC = () => {
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
     const [waitDuplicate, setWaitDuplicate] = useState(false);
+    const [waitCalc, setWaitCalc] = useState(false);
+    const [dataGrid, setDataGrid] = useState<any[]>([]);
+
+    useEffect(() => {
+        setDataGrid(mainResult.mainData.data.map(d => (
+            {
+                ...d,
+                updatedate: convertLocalDate(d.updatedate).toLocaleString(undefined, {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "numeric",
+                    minute: "numeric",
+                    second: "numeric"
+                })
+        })))
+    }, [mainResult.mainData.data])
 
     const columns = React.useMemo(
         () => [
@@ -682,13 +796,16 @@ const KPIManager: FC = () => {
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (
-                        <TemplateIcons
-                            viewFunction={() => handleView(row)}
-                            deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
-                            extraOption={t(langKeys.duplicate)}
-                            extraFunction={() => handleDuplicate(row)}
-                            ExtraICon={() => <DuplicateIcon width={28} style={{ fill: '#7721AD' }} />}
+                        <IconOptions
+                            onDelete={() => {
+                                handleDelete(row);
+                            }}
+                            onDuplicate={() => {
+                                handleDuplicate(row);
+                            }}
+                            onCalc={() => {
+                                handleCalc(row)
+                            }}
                         />
                     )
                 }
@@ -719,22 +836,6 @@ const KPIManager: FC = () => {
                 Header: t(langKeys.last_update),
                 accessor: 'updatedate',
                 NoFilter: true,
-                Cell: (props: any) => {
-                    const column = props.cell.column;
-                    const row = props.cell.row.original;
-                    return (
-                        row[column.id]
-                        ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
-                            year: "numeric",
-                            month: "2-digit",
-                            day: "2-digit",
-                            hour: "numeric",
-                            minute: "numeric",
-                            second: "numeric"
-                        })
-                        : ''
-                    )
-                }
             },
             {
                 Header: t(langKeys.status),
@@ -808,10 +909,28 @@ const KPIManager: FC = () => {
     }
 
     const handleDuplicate = (row: Dictionary) => {
-        dispatch(execute(duplicateKPIManager(row?.id)));
-        dispatch(showBackdrop(true));
-        setWaitDuplicate(true);
+        setViewSelected("view-2");
+        setRowSelected({ row: {
+            kpiname: row.kpiname,
+            description: row.description,
+            status: row.status,
+            type: row.type,
+            sqlselect: row.sqlselect,
+            sqlwhere: row.sqlwhere,
+            target: row.target,
+            cautionat: row.cautionat,
+            alertat: row.alertat,
+            taskperiod: row.taskperiod,
+            taskinterval: row.taskinterval,
+            taskstartdate: row.taskstartdate,
+        }, edit: true });
     }
+
+    const handleCalc = (row: Dictionary) => {
+        dispatch(execute(calcKPIManager(row?.id)));
+        dispatch(showBackdrop(true));
+        setWaitCalc(true);
+    };
 
     useEffect(() => {
         if (waitDuplicate) {
@@ -829,13 +948,34 @@ const KPIManager: FC = () => {
         }
     }, [executeResult, waitDuplicate])
 
+    useEffect(() => {
+        if (waitCalc) {
+            if (!executeResult.loading && !executeResult.error && executeResult.data) {
+                if (executeResult.data[0].p_success) {
+                    fetchData && fetchData();
+                }
+                else {
+                    const errormessage = t(langKeys.error_kpi_sql, { error: executeResult.data[0].p_error })
+                    dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                }
+                dispatch(showBackdrop(false));
+                setWaitCalc(false);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.kpimanager_plural).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitCalc(false);
+            }
+        }
+    }, [executeResult, waitCalc])
+
     if (viewSelected === "view-1") {
         return (
             <TableZyx
                 onClickRow={handleEdit}
                 columns={columns}
                 titlemodule={t(langKeys.kpimanager_plural, { count: 2 })}
-                data={mainResult.mainData.data || []}
+                data={dataGrid}
                 download={true}
                 loading={mainResult.mainData.loading}
                 register={true}

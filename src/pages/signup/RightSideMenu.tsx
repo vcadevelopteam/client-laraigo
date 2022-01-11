@@ -2,6 +2,7 @@
 import { FC } from "react";
 import {FirstStep} from './FirstStep';
 import {SecondStep} from './SecondStep';
+import {Step2_5} from './Step2_5';
 import {ThirdStep} from './ThirdStep';
 import {LastStep} from './LastStep';
 import {ChannelAddFacebook} from './ChannelAddFacebook'
@@ -53,7 +54,18 @@ export const RightSideMenu: FC<{
             >
             </SecondStep>
         )
-    }else if(step===3&&!sendchannels){
+    }else if(step===2.5){
+        return (
+            <Step2_5
+                setMainData={setMainData}
+                mainData={mainData}
+                setStep={setStep}
+                setOpenWarning={setOpenWarning}
+            >
+            </Step2_5>
+        )
+    }
+    else if(step===3&&!sendchannels){
         return (
             <ThirdStep
                 setlistchannels={setlistchannels}

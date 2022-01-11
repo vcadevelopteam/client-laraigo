@@ -26,6 +26,7 @@ export const langKeys = {
     interval: 'interval',
     clientname: "clientname",
     tos: "tos",
+    signupstep1title25: "signupstep1title25",
     namehsm: "namehsm",
     shippingdate: "shippingdate",
     shippingtype: "shippingtype",
@@ -647,6 +648,7 @@ export const langKeys = {
     kpimanager_plural: 'kpimanager_plural',
     newkpi: 'newkpi',
     kpiname: 'kpiname',
+    kpi_name: 'kpi_name',
     target: 'target',
     caution_at: 'caution_at',
     alert_at: 'alert_at',
@@ -676,6 +678,7 @@ export const langKeys = {
     status_cerrado: 'status_cerrado',
     status_conectado: 'status_conectado',
     status_desconectado: 'status_desconectado',
+    status_running: 'status_running',
 
     type_corp_ninguno: 'type_corp_ninguno',
     type_corp_natural: 'type_corp_natural',
@@ -880,6 +883,8 @@ export const langKeys = {
 
     editRecord: 'editRecord',
     deleteRecord: 'deleteRecord',
+    change_by: 'change_by',
+    change_date: 'change_date',
     changeDate: 'changeDate',
     search_result: 'search_result',
     without_result: 'without_result',
@@ -1136,6 +1141,7 @@ export const langKeys = {
     error_unexpected_error: 'error_unexpected_error',
     error_null_not_allowed: 'error_null_not_allowed',
     error_function_not_exists: 'error_function_not_exists',
+    error_kpi_sql: 'error_kpi_sql',
 
     dateRangeFilterTitle: 'dateRangeFilterTitle',
     apply: 'apply',
@@ -1242,7 +1248,7 @@ export const langKeys = {
     ticket_tiempoprimerarespuestaasesor: 'ticket_tiempoprimerarespuestaasesor',
     ticket_tiempoprimerarespuestaasesor_help: 'ticket_tiempoprimerarespuestaasesor_help',
     ticket_tiempopromediorespuestaasesor: 'ticket_tiempopromediorespuestaasesor',
-    ticket_tiempopromediorespuestaasesor_help: 'ticket_tiempopromediorespuestaasesor',
+    ticket_tiempopromediorespuestaasesor_help: 'ticket_tiempopromediorespuestaasesor_help',
     ticket_tiempopromediorespuestapersona: 'ticket_tiempopromediorespuestapersona',
     ticket_duraciontotal: 'ticket_duraciontotal',
     ticket_duraciontotal_help: 'ticket_duraciontotal_help',
@@ -1530,10 +1536,12 @@ export const langKeys = {
     unlock: 'unlock',
     invoice: 'invoice',
     invoice_generation: 'invoice_generation',
-
+    whatsappinformationimportant: "whatsappinformationimportant",
 
     businessname: 'businessname',
     fiscaladdress: 'fiscaladdress',
+    billingcontact: "billingcontact",
+    billingcontactmail: "billingcontactmail",
     sunatcountry: 'sunatcountry',
     contactemail: 'contactemail',
     autosendinvoice: 'autosendinvoice',
