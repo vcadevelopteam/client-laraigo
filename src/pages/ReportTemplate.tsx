@@ -29,6 +29,10 @@ import { DialogZyx, AntTab } from 'components'
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { SearchIcon } from 'icons';
+import { FixedSizeList } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
+import { Done } from '@material-ui/icons';
+
 
 interface RowSelected {
     row: Dictionary | null,
@@ -82,6 +86,14 @@ const useStyles = makeStyles((theme) => ({
         lineHeight: 1.5,
         paddingTop: 10.5,
         paddingBottom: 10.5
+    },
+    nodata: {
+        color: '#898989',
+        width: '100%',
+        display: 'flex',
+        height: '100%',
+        alignItems: 'center',
+        justifyContent: 'center'
     }
 }));
 
@@ -109,8 +121,9 @@ type FormFields = {
 const DialogManageColumns: React.FC<{
     setOpenDialogVariables: (param: any) => void;
     handlerNewColumn: (param: any) => void;
+    setColumnsSelected: (param: any) => void;
     openDialogVariables: boolean;
-}> = ({ setOpenDialogVariables, openDialogVariables, handlerNewColumn }) => {
+}> = ({ setOpenDialogVariables, openDialogVariables, handlerNewColumn, setColumnsSelected }) => {
 
     const classes = useStyles();
     const { t } = useTranslation();
@@ -136,8 +149,8 @@ const DialogManageColumns: React.FC<{
     }, [openDialogVariables])
 
     useEffect(() => {
-        setShowColumnsTable(prev => prev.map((x: Dictionary) => columnsAdded.find(y => y.columnname === x.columnname) ? { ...x, disabled: true } : x));
-        setColumnsTable(prev => prev.map((x: Dictionary) => columnsAdded.find(y => y.columnname === x.columnname) ? { ...x, disabled: true } : x));
+        setShowColumnsTable(prev => prev.map((x: Dictionary) => columnsAdded.find(y => y.columnname === x.columnname) ? { ...x, disabled: true } : { ...x, disabled: false }));
+        setColumnsTable(prev => prev.map((x: Dictionary) => columnsAdded.find(y => y.columnname === x.columnname) ? { ...x, disabled: true } : { ...x, disabled: false }));
         setColumnsToAdd({});
     }, [columnsAdded])
 
@@ -169,7 +182,29 @@ const DialogManageColumns: React.FC<{
             delete columnsToAdd[column.columnname];
     }, [setColumnsToAdd])
 
-    console.log(columnsToAdd);
+    const RenderRow = React.useCallback(
+        ({ index, style }) => {
+            const item = showcolumnsTable[index]
+            return (
+                <div style={style}>
+                    <div key={item.columnname} style={{ width: '100%' }}>
+                        <FormControlLabel
+                            control={(
+                                <Checkbox
+                                    size='small'
+                                    disabled={!!item.disabled}
+                                    color="primary"
+                                    onChange={(e) => handlerChecked(item, e.target.checked)}
+                                    name="checkedA" />
+                            )}
+                            label={item.description}
+                        />
+                    </div>
+                </div>
+            )
+        },
+        [showcolumnsTable]
+    )
 
     return (
         <DialogZyx
@@ -179,62 +214,91 @@ const DialogManageColumns: React.FC<{
             buttonText1={t(langKeys.cancel)}
             handleClickButton1={() => setOpenDialogVariables(false)}
         >
-            <div style={{ display: 'flex', gap: 16 }}>
-                <div style={{ flex: 1 }}>
-                    <FieldEdit
-                        variant='standard'
-                        fregister={{
-                            placeholder: t(langKeys.search)
-                        }}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <SearchIcon />
-                                </InputAdornment>
-                            )
-                        }}
-                        onChange={onChange}
-                    />
-                    <div style={{ display: 'flex', flexDirection: 'column', maxHeight: 300, overflowY: 'auto', marginTop: 4 }}>
-                        {showcolumnsTable.map((item, index) => (
-                            <div key={item.columnname} style={{ width: '100%' }}>
-                                <FormControlLabel
-                                    control={(
-                                        <Checkbox
-                                            size='small'
-                                            disabled={!!item.disabled}
-                                            // checked={filterCheckBox.ASIGNADO}
-                                            color="primary"
-                                            onChange={(e) => handlerChecked(item, e.target.checked)}
-                                            name="checkedA" />
-                                    )}
-                                    label={item.description}
-                                />
-                            </div>
-                        ))}
+            <div style={{ display: 'flex' }}>
+                <div style={{ flex: 1, padding: 16, paddingTop: 16, paddingBottom: 8 }}>
+                    <div style={{ fontSize: 20, fontWeight: 500, marginBottom: 8 }}>
+                        Columnas disponibles
                     </div>
-                    <div style={{ textAlign: 'right' }}>
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            disabled={Object.keys(columnsToAdd).length === 0}
-                            startIcon={<AddIcon color="secondary" />}
-                            onClick={() => setColumnsAdded(prev => ([...prev, ...Object.values(columnsToAdd)]))}
-                        >{t(langKeys.add)}
-                        </Button>
+                    <div>
+                        <FieldEdit
+                            variant='standard'
+                            fregister={{
+                                placeholder: t(langKeys.search)
+                            }}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                )
+                            }}
+                            onChange={onChange}
+                        />
+                        <div style={{ display: 'flex', flexDirection: 'column', height: 320, overflowY: 'auto', marginTop: 4 }}>
+                            <AutoSizer>
+                                {({ height, width }: any) => (
+                                    <FixedSizeList
+                                        width={width}
+                                        height={height}
+                                        itemCount={showcolumnsTable.length}
+                                        itemSize={42}
+                                    >
+                                        {RenderRow}
+                                    </FixedSizeList>
+                                )}
+                            </AutoSizer>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={Object.keys(columnsToAdd).length === 0}
+                                startIcon={<AddIcon color="secondary" />}
+                                onClick={() => setColumnsAdded(prev => ([...prev, ...Object.values(columnsToAdd)]))}
+                            >{t(langKeys.add)}
+                            </Button>
+                        </div>
+
                     </div>
                 </div>
-                <div style={{ flex: 1 }}>
-                    <div style={{ height: 35, borderBottom: '1px solid rgba(0, 0, 0, 0.42)', color: 'rgb(167 166 170)', display: 'flex', alignItems: 'center' }}>
-                        Seleccionados ({columnsAdded.length})
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', maxHeight: 300, overflowY: 'auto', marginTop: 4 }}>
-                        {columnsAdded.map((item, index) => (
-                            <div key={item.columnname} className={classes.itemSelected}>
-                                {item.description}
-                            </div>
-                        ))}
+                <div style={{ flex: 1, backgroundColor: '#f5f5f5', paddingTop: 48 }}>
+                    <div style={{ paddingLeft: 24, paddingRight: 24 }}>
+                        <div style={{ height: 35, borderBottom: '1px solid rgba(0, 0, 0, 0.42)', color: 'rgb(167 166 170)', display: 'flex', alignItems: 'center' }}>
+                            Seleccionados ({columnsAdded.length})
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', overflowY: 'auto', marginTop: 4, height: 320, marginBottom: 4 }}>
+                            {columnsAdded.length === 0 ? (
+                                <div className={classes.nodata}>
+                                    Seleccione un campo y luego añadelo
+                                </div>
+                            ) : columnsAdded.map((item) => (
+                                <div key={item.columnname} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div className={classes.itemSelected}>
+                                        {item.description}
+                                    </div>
+                                    <IconButton size='small' onClick={() => {
+                                        setColumnsAdded(prev => prev.filter(x => x.columnname !== item.columnname))
+                                    }}>
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </div>
+                            ))}
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={columnsAdded.length === 0}
+                                startIcon={<Done color="secondary" />}
+                                onClick={() => {
+                                    setColumnsSelected(columnsAdded);
+                                    setOpenDialogVariables(false);
+                                }}
+                            >{t(langKeys.accept)}
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -246,7 +310,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [openDialogVariables, setOpenDialogVariables] = useState(false);
-
+    const [columnsSelected, setColumnsSelected] = useState<Dictionary[]>([])
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -510,6 +574,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                 setOpenDialogVariables={setOpenDialogVariables}
                 openDialogVariables={openDialogVariables}
                 handlerNewColumn={handlerNewColumn}
+                setColumnsSelected={setColumnsSelected}
             />
         </>
     );
