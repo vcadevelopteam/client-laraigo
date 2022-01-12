@@ -75,6 +75,13 @@ const useStyles = makeStyles((theme) => ({
         '&:hover': {
             backgroundColor: '#e1e1e1'
         }
+    },
+    itemSelected: {
+        fontSize: 14,
+        fontWeight: 400,
+        lineHeight: 1.5,
+        paddingTop: 10.5,
+        paddingBottom: 10.5
     }
 }));
 
@@ -111,6 +118,7 @@ const DialogManageColumns: React.FC<{
     const [columnsTable, setColumnsTable] = useState<Dictionary[]>([]);
     const [showcolumnsTable, setShowColumnsTable] = useState<Dictionary[]>([]);
     const [columnsToAdd, setColumnsToAdd] = useState<Dictionary>({});
+    const [columnsAdded, setColumnsAdded] = useState<Dictionary[]>([]);
     const timeOut = React.useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
@@ -122,14 +130,21 @@ const DialogManageColumns: React.FC<{
 
     useEffect(() => {
         if (openDialogVariables) {
-            setColumnsToAdd({})
+            setColumnsToAdd({});
+            setColumnsAdded([]);
         }
     }, [openDialogVariables])
 
+    useEffect(() => {
+        setShowColumnsTable(prev => prev.map((x: Dictionary) => columnsAdded.find(y => y.columnname === x.columnname) ? { ...x, disabled: true } : x));
+        setColumnsTable(prev => prev.map((x: Dictionary) => columnsAdded.find(y => y.columnname === x.columnname) ? { ...x, disabled: true } : x));
+        setColumnsToAdd({});
+    }, [columnsAdded])
+
     const handleChange = (text: string) => {
-        if (text === '') 
+        if (text === '')
             setShowColumnsTable(columnsTable);
-         else 
+        else
             setShowColumnsTable(columnsTable.filter(x => x.description.toLowerCase().includes(text.toLowerCase())));
     }
 
@@ -150,7 +165,7 @@ const DialogManageColumns: React.FC<{
                 ...prev,
                 [column.columnname]: column
             }));
-        else 
+        else
             delete columnsToAdd[column.columnname];
     }, [setColumnsToAdd])
 
@@ -160,7 +175,7 @@ const DialogManageColumns: React.FC<{
         <DialogZyx
             maxWidth="md"
             open={openDialogVariables}
-            title="Columnas disponibles"
+            title=""
             buttonText1={t(langKeys.cancel)}
             handleClickButton1={() => setOpenDialogVariables(false)}
         >
@@ -187,6 +202,7 @@ const DialogManageColumns: React.FC<{
                                     control={(
                                         <Checkbox
                                             size='small'
+                                            disabled={!!item.disabled}
                                             // checked={filterCheckBox.ASIGNADO}
                                             color="primary"
                                             onChange={(e) => handlerChecked(item, e.target.checked)}
@@ -204,13 +220,22 @@ const DialogManageColumns: React.FC<{
                             color="primary"
                             disabled={Object.keys(columnsToAdd).length === 0}
                             startIcon={<AddIcon color="secondary" />}
-                            // style={{ backgroundColor: "#55BD84" }}
+                            onClick={() => setColumnsAdded(prev => ([...prev, ...Object.values(columnsToAdd)]))}
                         >{t(langKeys.add)}
                         </Button>
                     </div>
                 </div>
                 <div style={{ flex: 1 }}>
-                    variables2
+                    <div style={{ height: 35, borderBottom: '1px solid rgba(0, 0, 0, 0.42)', color: 'rgb(167 166 170)', display: 'flex', alignItems: 'center' }}>
+                        Seleccionados ({columnsAdded.length})
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', maxHeight: 300, overflowY: 'auto', marginTop: 4 }}>
+                        {columnsAdded.map((item, index) => (
+                            <div key={item.columnname} className={classes.itemSelected}>
+                                {item.description}
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </DialogZyx>
