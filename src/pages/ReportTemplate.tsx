@@ -98,12 +98,25 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type IColumnTemplate = {
-    key: string;
-    value: string;
-    filter: string;
-    hasFilter: boolean;
+    columnname: string;
+    description: string;
+    type: string;
+    alias: string;
     id: any;
 }
+
+type IFilter = {
+    columnname: string;
+    type: string;
+    id: any;
+}
+
+type ISummarization = {
+    columnname: string;
+    function: string;
+    id: any;
+}
+
 type FormFields = {
     reporttemplateid: number;
     description: string;
@@ -115,15 +128,17 @@ type FormFields = {
     tags: string;
     operation: string;
     dataorigin: string;
-    columns: IColumnTemplate[]
+    columns: IColumnTemplate[],
+    filters: IFilter[],
+    summarizations: ISummarization[],
 }
 
 const DialogManageColumns: React.FC<{
     setOpenDialogVariables: (param: any) => void;
-    handlerNewColumn: (param: any) => void;
     setColumnsSelected: (param: any) => void;
     openDialogVariables: boolean;
-}> = ({ setOpenDialogVariables, openDialogVariables, handlerNewColumn, setColumnsSelected }) => {
+    columnsAlreadySelected: IColumnTemplate[];
+}> = ({ setOpenDialogVariables, openDialogVariables, setColumnsSelected, columnsAlreadySelected }) => {
 
     const classes = useStyles();
     const { t } = useTranslation();
@@ -135,18 +150,16 @@ const DialogManageColumns: React.FC<{
     const timeOut = React.useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
-        if (!mainAuxRes.error && !mainAuxRes.loading && mainAuxRes.key === "UFN_REPORT_PERSONALIZED_COLUMNS_SEL") {
-            setColumnsTable(mainAuxRes.data);
-            setShowColumnsTable(mainAuxRes.data);
-        }
-    }, [mainAuxRes])
+        if (!mainAuxRes.error && !mainAuxRes.loading && mainAuxRes.key === "UFN_REPORT_PERSONALIZED_COLUMNS_SEL" && openDialogVariables) {
+            const datafiltered = mainAuxRes.data.filter(x => columnsAlreadySelected.findIndex(y => y.columnname === x.columnname) === -1);
+            setColumnsTable(datafiltered);
+            setShowColumnsTable(datafiltered);
 
-    useEffect(() => {
-        if (openDialogVariables) {
             setColumnsToAdd({});
             setColumnsAdded([]);
         }
-    }, [openDialogVariables])
+    }, [mainAuxRes, openDialogVariables])
+
 
     useEffect(() => {
         setShowColumnsTable(prev => prev.map((x: Dictionary) => columnsAdded.find(y => y.columnname === x.columnname) ? { ...x, disabled: true } : { ...x, disabled: false }));
@@ -162,7 +175,9 @@ const DialogManageColumns: React.FC<{
     }
 
     const onChange = (text: string) => {
-        if (timeOut.current) clearTimeout(timeOut.current);
+        if (timeOut.current)
+            clearTimeout(timeOut.current);
+
         timeOut.current = setTimeout(() => {
             handleChange(text);
             if (timeOut.current) {
@@ -205,6 +220,9 @@ const DialogManageColumns: React.FC<{
         },
         [showcolumnsTable]
     )
+
+    if (!openDialogVariables)
+        return null;
 
     return (
         <DialogZyx
@@ -310,12 +328,21 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [openDialogVariables, setOpenDialogVariables] = useState(false);
-    const [columnsSelected, setColumnsSelected] = useState<Dictionary[]>([])
+    const [columnsSelected, setColumnsSelected] = useState<Dictionary[]>([]);
+    const [dataColumns, setDataColumns] = useState<Dictionary[]>([]);
+    const mainAuxRes = useSelector(state => state.main.mainAux);
+
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataTables = multiData[4] && multiData[4].success ? multiData[4].data : [];
+
+    useEffect(() => {
+        if (!mainAuxRes.error && !mainAuxRes.loading && mainAuxRes.key === "UFN_REPORT_PERSONALIZED_COLUMNS_SEL") {
+            setDataColumns(mainAuxRes.data);
+        }
+    }, [mainAuxRes])
 
     const { control, register, trigger, handleSubmit, setValue, getValues, formState: { errors } } = useForm<FormFields>({
         defaultValues: {
@@ -323,20 +350,35 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
             description: row?.description || '',
             status: row?.status || 'ACTIVO',
             dataorigin: row?.dataorigin || '',
-            startdate: row?.startdate || false,
-            finishdate: row?.finishdate || false,
-            usergroup: row?.usergroup || false,
-            channels: row?.channels || false,
-            tags: row?.tags || false,
             columns: row?.columns || [],
+            filters: row?.filters || [],
+            summarizations: row?.summarizations || [],
             operation: row ? "EDIT" : "INSERT"
         }
     });
 
-    const { fields, append: fieldsAppend, remove: fieldRemove } = useFieldArray({
+    const { fields: fieldsColumns, append: columnsAppend, remove: columnRemove } = useFieldArray({
         control,
         name: 'columns',
     });
+
+    const { fields: fieldsFilters, append: filtersAppend, remove: filterRemove } = useFieldArray({
+        control,
+        name: 'filters',
+    });
+
+    const { fields: fieldsSummarization, append: summarizationsAppend, remove: summarizationRemove } = useFieldArray({
+        control,
+        name: 'summarizations',
+    });
+
+    useEffect(() => {
+        if (columnsSelected.length > 0) {
+            columnsAppend(columnsSelected.map(item => ({ columnname: item.columnname, description: item.description, alias: '', type: item.type })));
+        }
+    }, [columnsSelected]);
+
+
 
     React.useEffect(() => {
         register('description', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
@@ -361,8 +403,8 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
     }, [executeRes, waitSave])
 
     const onSubmit = handleSubmit((data) => {
-        const { reporttemplateid, description, status, startdate, finishdate, usergroup, channels, tags, operation, columns } = data;
-        const filters = { startdate, finishdate, usergroup, channels, tags, operation }
+        const { reporttemplateid, description, status, columns, filters, summarizations } = data;
+        // const filters = { startdate, finishdate, usergroup, channels, tags, operation }
 
         if (columns.length === 0) {
             return;
@@ -373,8 +415,9 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                 description,
                 status,
                 type: '',
+                filtersjson: JSON.stringify(filters),
+                summarizationsjson: JSON.stringify(summarizations),
                 columnjson: JSON.stringify(columns),
-                filterjson: JSON.stringify(filters),
                 operation: data.operation
             })));
             dispatch(showBackdrop(true));
@@ -388,10 +431,8 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
         }))
     });
 
-    const handlerNewColumn = (item: Dictionary | null | undefined = null) => fieldsAppend({ key: item?.key || '', value: item?.value || '', filter: '', hasFilter: false });
-
     const handlerDeleteColumn = (index: number) => {
-        fieldRemove(index)
+        columnRemove(index)
     };
 
     const selectDataOrigin = (tablename: string) => {
@@ -466,9 +507,6 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                     <div className={classes.containerDetail}>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <div className={classes.title}>{t(langKeys.column_plural)}</div>
-                            {/* <IconButton onClick={() => setOpenDialogVariables(true)}>
-                                <InfoIcon />
-                            </IconButton> */}
                         </div>
                         <TableContainer>
                             <Table size="small">
@@ -487,13 +525,13 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                 <AddIcon color="primary" />
                                             </IconButton>
                                         </TableCell>
-                                        <TableCell>{t(langKeys.name)}</TableCell>
+                                        <TableCell>{t(langKeys.column)}</TableCell>
                                         <TableCell>{t(langKeys.description)}</TableCell>
-                                        <TableCell style={{ maxWidth: 200 }}>{t(langKeys.filters)}</TableCell>
+                                        <TableCell>{t(langKeys.type)}</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {fields.map((item: IColumnTemplate, i) =>
+                                    {fieldsColumns.map((item: IColumnTemplate, i: number) =>
                                         <TableRow key={item.id}>
                                             <TableCell width={30}>
                                                 <div style={{ display: 'flex' }}>
@@ -508,59 +546,40 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                             <TableCell>
                                                 <FieldEditArray
                                                     fregister={{
-                                                        ...register(`columns.${i}.key`, {
+                                                        ...register(`columns.${i}.description`, {
                                                             validate: (value: any) => (value && value.length) || t(langKeys.field_required)
                                                         })
                                                     }}
-                                                    valueDefault={item.key}
-                                                    error={errors?.columns?.[i]?.key?.message}
-                                                    onChange={(value) => setValue(`columns.${i}.key`, "" + value)}
+                                                    disabled={true}
+                                                    valueDefault={item.description}
+                                                    error={errors?.columns?.[i]?.description?.message}
+                                                    onChange={(value) => setValue(`columns.${i}.description`, "" + value)}
                                                 />
                                             </TableCell>
                                             <TableCell>
                                                 <FieldEditArray
                                                     fregister={{
-                                                        ...register(`columns.${i}.value`, {
+                                                        ...register(`columns.${i}.alias`, {
                                                             validate: (value: any) => (value && value.length) || t(langKeys.field_required)
                                                         }),
                                                     }}
-                                                    valueDefault={item.value}
-                                                    error={errors?.columns?.[i]?.value?.message}
-                                                    onChange={(value) => setValue(`columns.${i}.value`, value)}
+                                                    valueDefault={item.alias}
+                                                    error={errors?.columns?.[i]?.alias?.message}
+                                                    onChange={(value) => setValue(`columns.${i}.alias`, value)}
                                                 />
                                             </TableCell>
-                                            <TableCell style={{ maxWidth: 200 }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                                                    <TemplateSwitchArray
-                                                        error={errors?.columns?.[i]?.hasFilter?.message}
-                                                        fregister={{
-                                                            ...register(`columns.${i}.hasFilter`)
-                                                        }}
-                                                        label=""
-                                                        onChange={(value) => {
-                                                            setValue(`columns.${i}.hasFilter`, value);
-                                                            trigger(`columns.${i}.hasFilter`)
-                                                            if (!value) {
-                                                                setValue(`columns.${i}.filter`, "");
-                                                                trigger(`columns.${i}.filter`)
-                                                            }
-                                                        }}
-                                                        defaultValue={item.hasFilter}
-                                                    />
-                                                    {getValues(`columns.${i}.hasFilter`) &&
-                                                        <FieldEditArray
-                                                            fregister={{
-                                                                ...register(`columns.${i}.filter`, {
-                                                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                                                })
-                                                            }}
-                                                            style={{ flex: 1 }}
-                                                            valueDefault={item.filter}
-                                                            error={errors?.columns?.[i]?.filter?.message}
-                                                            onChange={(value) => setValue(`columns.${i}.filter`, value)}
-                                                        />
-                                                    }
-                                                </div>
+                                            <TableCell>
+                                                <FieldEditArray
+                                                    fregister={{
+                                                        ...register(`columns.${i}.type`, {
+                                                            validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                        }),
+                                                    }}
+                                                    disabled={true}
+                                                    valueDefault={item.type}
+                                                    error={errors?.columns?.[i]?.type?.message}
+                                                    onChange={(value) => setValue(`columns.${i}.type`, value)}
+                                                />
                                             </TableCell>
                                         </TableRow>
                                     )}
@@ -568,12 +587,194 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                             </Table>
                         </TableContainer>
                     </div>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                        <div style={{ flex: 1 }} className={classes.containerDetail}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <div className={classes.title}>{t(langKeys.filters)}</div>
+                            </div>
+                            <div>
+                                <TableContainer>
+                                    <Table size="small">
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={async () => {
+                                                            const haveDataOrigin = await trigger('dataorigin');
+                                                            if (haveDataOrigin) {
+                                                                filtersAppend({ columnname: '', type: '' });
+                                                            }
+                                                        }}
+                                                    >
+                                                        <AddIcon color="primary" />
+                                                    </IconButton>
+                                                </TableCell>
+                                                <TableCell>{t(langKeys.column)}</TableCell>
+                                                <TableCell>{t(langKeys.type)}</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {fieldsFilters.map((item: IFilter, i: number) =>
+                                                <TableRow key={item.id}>
+                                                    <TableCell width={30}>
+                                                        <div style={{ display: 'flex' }}>
+                                                            <IconButton
+                                                                size="small"
+                                                                onClick={() => handlerDeleteColumn(i)}
+                                                            >
+                                                                <DeleteIcon style={{ color: '#777777' }} />
+                                                            </IconButton>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <FieldSelect
+                                                            label={t(langKeys.column)}
+                                                            valueDefault={getValues(`filters.${i}.columnname`)}
+                                                            fregister={{
+                                                                ...register(`filters.${i}.columnname`, {
+                                                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                                })
+                                                            }}
+                                                            variant='outlined'
+                                                            onChange={(value) => {
+                                                                console.log("value?.type", value?.type)
+                                                                setValue(`filters.${i}.columnname`, value?.columnname || '');
+                                                                setValue(`filters.${i}.type`, value?.type || '');
+                                                                trigger(`filters.${i}`);
+                                                            }}
+                                                            // onChange={onChangeOrganization}
+                                                            // triggerOnChangeOnFirst={true}
+                                                            error={errors?.filters?.[i]?.columnname?.message}
+                                                            data={dataColumns}
+                                                            optionDesc="description"
+                                                            optionValue="columnname"
+                                                        />
+                                                        {/* <FieldEditArray
+                                                            fregister={{
+                                                                ...register(`filters.${i}.description`, {
+                                                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                                })
+                                                            }}
+                                                            disabled={true}
+                                                            valueDefault={item.description}
+                                                            error={errors?.columns?.[i]?.description?.message}
+                                                            onChange={(value) => setValue(`filters.${i}.description`, "" + value)}
+                                                        /> */}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <FieldEditArray
+                                                            valueDefault={getValues(`filters.${i}.type`)}
+                                                            fregister={{
+                                                                ...register(`filters.${i}.type`),
+                                                            }}
+                                                            disabled={true}
+                                                            // valueDefault={item.type}
+                                                            error={errors?.filters?.[i]?.type?.message}
+                                                            onChange={(value) => setValue(`filters.${i}.type`, value)}
+                                                        />
+                                                    </TableCell>
+                                                </TableRow>
+                                            )}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            </div>
+                        </div>
+
+                        <div style={{ flex: 1 }} className={classes.containerDetail}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <div className={classes.title}>{"Sumarización"}</div>
+                            </div>
+                            <div>
+                                <TableContainer>
+                                    <Table size="small">
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={async () => {
+                                                            const haveDataOrigin = await trigger('dataorigin');
+                                                            if (haveDataOrigin) {
+                                                                setOpenDialogVariables(true);
+                                                            }
+                                                        }}
+                                                    >
+                                                        <AddIcon color="primary" />
+                                                    </IconButton>
+                                                </TableCell>
+                                                <TableCell>{t(langKeys.column)}</TableCell>
+                                                <TableCell>{t(langKeys.description)}</TableCell>
+                                                <TableCell>{t(langKeys.type)}</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {fieldsColumns.map((item: IColumnTemplate, i: number) =>
+                                                <TableRow key={item.id}>
+                                                    <TableCell width={30}>
+                                                        <div style={{ display: 'flex' }}>
+                                                            <IconButton
+                                                                size="small"
+                                                                onClick={() => handlerDeleteColumn(i)}
+                                                            >
+                                                                <DeleteIcon style={{ color: '#777777' }} />
+                                                            </IconButton>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <FieldEditArray
+                                                            fregister={{
+                                                                ...register(`columns.${i}.description`, {
+                                                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                                })
+                                                            }}
+                                                            disabled={true}
+                                                            valueDefault={item.description}
+                                                            error={errors?.columns?.[i]?.description?.message}
+                                                            onChange={(value) => setValue(`columns.${i}.description`, "" + value)}
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <FieldEditArray
+                                                            fregister={{
+                                                                ...register(`columns.${i}.alias`, {
+                                                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                                }),
+                                                            }}
+                                                            valueDefault={item.alias}
+                                                            error={errors?.columns?.[i]?.alias?.message}
+                                                            onChange={(value) => setValue(`columns.${i}.alias`, value)}
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <FieldEditArray
+                                                            fregister={{
+                                                                ...register(`columns.${i}.type`, {
+                                                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                                }),
+                                                            }}
+                                                            disabled={true}
+                                                            valueDefault={item.type}
+                                                            error={errors?.columns?.[i]?.type?.message}
+                                                            onChange={(value) => setValue(`columns.${i}.type`, value)}
+                                                        />
+                                                    </TableCell>
+                                                </TableRow>
+                                            )}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            </div>
+                        </div>
+                    </div>
                 </form>
             </div>
             <DialogManageColumns
                 setOpenDialogVariables={setOpenDialogVariables}
                 openDialogVariables={openDialogVariables}
-                handlerNewColumn={handlerNewColumn}
+                // handlerNewColumn={handlerNewColumn}
+                columnsAlreadySelected={fieldsColumns}
                 setColumnsSelected={setColumnsSelected}
             />
         </>
