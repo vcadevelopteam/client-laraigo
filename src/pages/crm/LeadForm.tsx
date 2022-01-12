@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, IconButton, Checkbox, Tabs, Avatar, Paper, InputAdornment } from '@material-ui/core';
-import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, PhoneFieldEdit, RadioGroudFieldEdit, TitleDetail, AntTabPanel, FieldMultiSelect, RichText } from 'components';
+import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, PhoneFieldEdit, RadioGroudFieldEdit, TitleDetail, AntTabPanel, FieldMultiSelect, RichText, CurrencyFieldEdit } from 'components';
 import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
@@ -191,6 +191,11 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         if (allOk) {
             const data = getValues();
             const callback = () => {
+                const lostPhase = phases.data.find(x => x.description.toLowerCase() === 'lost');
+                if (lostPhase?.columnid === data.columnid) {
+                    data.status = "CERRADO";
+                }
+
                 if (edit) {
                     dispatch(saveLeadAction(insLead2(data, data.operation), false));
                 } else {
@@ -478,7 +483,12 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
 
     const handleCloseLead = useCallback(() => {
         if (!lead.value) return;
-        dispatch(archiveLead(insArchiveLead(lead.value!)));
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_close),
+            callback: () => dispatch(archiveLead(insArchiveLead(lead.value!))),
+        }))
     }, [lead, dispatch]);
 
     const handleUpdateLeadTags = useCallback((tags: string, value: any, action: "NEWTAG" | "REMOVETAG") => {
@@ -519,6 +529,22 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const isStatusClosed = useCallback(() => {
         return lead.value?.status === "CERRADO";
     }, [lead]);
+
+    const canBeSentToHistory = useMemo(() => {
+        if (!lead.value || phases.data.length === 0) return false;
+
+        const wonIndex = phases.data.findIndex(x => x.description.toLowerCase() === 'won');
+        if (wonIndex !== -1 && phases.data[wonIndex].columnid === lead.value.columnid) {
+            return true;
+        }
+
+        const lostIndex = phases.data.findIndex(x => x.description.toLowerCase() === 'lost');
+        if (wonIndex !== -1 && phases.data[lostIndex].columnid === lead.value.columnid) {
+            return true;
+        }
+        
+        return false;
+    }, [lead, phases]);
 
     const translatedPhases = useMemo(() => phases.data.map(x => ({
         columnid: x.columnid,
@@ -596,7 +622,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 color="secondary"
                                 startIcon={<ArchiveIcon />}
                                 onClick={handleCloseLead}
-                                disabled={iSProcessLoading()}
+                                disabled={!canBeSentToHistory || iSProcessLoading()}
                             >
                                 <Trans i18nKey={langKeys.sendToHistory} />
                             </Button>
@@ -638,12 +664,11 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                         readOnly: isStatusClosed() || iSProcessLoading(),
                                     }}
                                 />
-                                <FieldEdit
+                                <CurrencyFieldEdit
                                     label={t(langKeys.expected_revenue)}
                                     className={classes.field}
-                                    type="number"
                                     onChange={(value) => setValue('expected_revenue', value)}
-                                    valueDefault={getValues('expected_revenue')}
+                                    valueDefault={String(getValues('expected_revenue'))}
                                     error={errors?.expected_revenue?.message}
                                     InputProps={{
                                         startAdornment: !user ? null : (

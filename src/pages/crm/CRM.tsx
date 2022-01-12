@@ -14,7 +14,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { DialogZyx3Opt, FieldEdit, FieldMultiSelect, FieldSelect } from "components";
 import { Search as SearchIcon, ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon, Add as AddIcon } from '@material-ui/icons';
 import { Button, IconButton } from "@material-ui/core";
-import { Dictionary, ICampaignLst, ICrmLead, IDomain, IFetchData } from "@types";
+import { Dictionary, ICampaignLst, IChannel, ICrmLead, IDomain, IFetchData } from "@types";
 import TablePaginated, { buildQueryFilters, useQueryParams } from 'components/fields/table-paginated';
 import { makeStyles } from '@material-ui/core/styles';
 import { Rating } from '@material-ui/lab';
@@ -714,6 +714,20 @@ const CRM: FC = () => {
     });
   }, [mainMulti.data[4]]);
 
+  const tags = useMemo(() => { 
+    if (!mainMulti.data[6]?.data) return [];
+    return (mainMulti.data[6].data as any[]).sort((a, b) => {
+      return a.tags.localeCompare(b.tags);
+    });
+  }, [mainMulti.data[6]]);
+
+  const channels = useMemo(() => { 
+    if (!mainMulti.data[3]?.data) return [];
+    return (mainMulti.data[3].data as IChannel[]).sort((a, b) => {
+      return a.communicationchanneldesc.localeCompare(b.communicationchanneldesc);
+    });
+  }, [mainMulti.data[3]]);
+
   const filtersElement = useMemo(() => (
     <>
       <FieldSelect
@@ -733,7 +747,7 @@ const CRM: FC = () => {
           className={classes.filterComponent}
           valueDefault={allParameters.channel}
           onChange={(value) => setAllParameters({...allParameters, channel: value?.map((o: Dictionary) => o['communicationchannelid']).join(',')})}
-          data={mainMulti.data[3]?.data?.sort((a, b) => a?.communicationchanneldesc?.toLowerCase() > b?.communicationchanneldesc?.toLowerCase() ? 1 : -1) || []}
+          data={channels}
           optionDesc={'communicationchanneldesc'}
           optionValue={'communicationchannelid'}
       />
@@ -819,7 +833,7 @@ const CRM: FC = () => {
                 const tags = v?.map((o: any) => o.tags).join(',') || '';
                 setBoardFilter(prev => ({ ...prev, tags }));
               }}
-              data={mainMulti.data[6]?.data || []}
+              data={tags}
               loading={mainMulti.loading}
               optionDesc="tags"
               optionValue="tags"
