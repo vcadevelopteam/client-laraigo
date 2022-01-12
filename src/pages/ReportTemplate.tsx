@@ -29,6 +29,8 @@ import { DialogZyx, AntTab } from 'components'
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { SearchIcon } from 'icons';
+import { FixedSizeList } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -156,6 +158,30 @@ const DialogManageColumns: React.FC<{
 
     console.log(columnsToAdd);
 
+    const RenderRow = React.useCallback(
+        ({ index, style }) => {
+            const item = showcolumnsTable[index]
+            return (
+                <div style={style}>
+                    <div key={item.columnname} style={{ width: '100%' }}>
+                        <FormControlLabel
+                            control={(
+                                <Checkbox
+                                    size='small'
+                                    // checked={filterCheckBox.ASIGNADO}
+                                    color="primary"
+                                    onChange={(e) => handlerChecked(item, e.target.checked)}
+                                    name="checkedA" />
+                            )}
+                            label={item.description}
+                        />
+                    </div>
+                </div>
+            )
+        },
+        [showcolumnsTable]
+    )
+
     return (
         <DialogZyx
             maxWidth="md"
@@ -180,22 +206,19 @@ const DialogManageColumns: React.FC<{
                         }}
                         onChange={onChange}
                     />
-                    <div style={{ display: 'flex', flexDirection: 'column', maxHeight: 300, overflowY: 'auto', marginTop: 4 }}>
-                        {showcolumnsTable.map((item, index) => (
-                            <div key={item.columnname} style={{ width: '100%' }}>
-                                <FormControlLabel
-                                    control={(
-                                        <Checkbox
-                                            size='small'
-                                            // checked={filterCheckBox.ASIGNADO}
-                                            color="primary"
-                                            onChange={(e) => handlerChecked(item, e.target.checked)}
-                                            name="checkedA" />
-                                    )}
-                                    label={item.description}
-                                />
-                            </div>
-                        ))}
+                    <div style={{ display: 'flex', flexDirection: 'column', height: 300, overflowY: 'auto', marginTop: 4 }}>
+                        <AutoSizer>
+                            {({ height, width }: any) => (
+                                <FixedSizeList
+                                    width={width}
+                                    height={height}
+                                    itemCount={showcolumnsTable.length}
+                                    itemSize={30}
+                                >
+                                    {RenderRow}
+                                </FixedSizeList>
+                            )}
+                        </AutoSizer>
                     </div>
                     <div style={{ textAlign: 'right' }}>
                         <Button
