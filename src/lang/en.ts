@@ -725,6 +725,7 @@ const translation: LangKeys = {
     roleincompany: "Your role in the company",
     variableconfiguration: 'Variable Configuration',
     variableconfiguration_plural: 'Variable Configuration',
+    variableconfigurationdetail: 'Variable configuration detail',
     flow: 'Flow',
     color: 'Color',
     suspend_ticket: 'Suspend ticket',
@@ -1867,6 +1868,10 @@ const translation: LangKeys = {
     smssection: 'SMS',
     mailsection: 'Mail',
     newmessagingplan: "New messaging cost",
+
+    fontcolor: 'Font color',
+    fontbold: 'Bold',
+    visible: 'Visible',
 };
 
 const enResource: ResourceLanguage = {
