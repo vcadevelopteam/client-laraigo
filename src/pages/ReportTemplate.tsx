@@ -31,6 +31,8 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import { SearchIcon } from 'icons';
 import { FixedSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
+import { Done } from '@material-ui/icons';
+
 
 interface RowSelected {
     row: Dictionary | null,
@@ -77,6 +79,21 @@ const useStyles = makeStyles((theme) => ({
         '&:hover': {
             backgroundColor: '#e1e1e1'
         }
+    },
+    itemSelected: {
+        fontSize: 14,
+        fontWeight: 400,
+        lineHeight: 1.5,
+        paddingTop: 10.5,
+        paddingBottom: 10.5
+    },
+    nodata: {
+        color: '#898989',
+        width: '100%',
+        display: 'flex',
+        height: '100%',
+        alignItems: 'center',
+        justifyContent: 'center'
     }
 }));
 
@@ -104,8 +121,9 @@ type FormFields = {
 const DialogManageColumns: React.FC<{
     setOpenDialogVariables: (param: any) => void;
     handlerNewColumn: (param: any) => void;
+    setColumnsSelected: (param: any) => void;
     openDialogVariables: boolean;
-}> = ({ setOpenDialogVariables, openDialogVariables, handlerNewColumn }) => {
+}> = ({ setOpenDialogVariables, openDialogVariables, handlerNewColumn, setColumnsSelected }) => {
 
     const classes = useStyles();
     const { t } = useTranslation();
@@ -113,6 +131,7 @@ const DialogManageColumns: React.FC<{
     const [columnsTable, setColumnsTable] = useState<Dictionary[]>([]);
     const [showcolumnsTable, setShowColumnsTable] = useState<Dictionary[]>([]);
     const [columnsToAdd, setColumnsToAdd] = useState<Dictionary>({});
+    const [columnsAdded, setColumnsAdded] = useState<Dictionary[]>([]);
     const timeOut = React.useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
@@ -124,14 +143,21 @@ const DialogManageColumns: React.FC<{
 
     useEffect(() => {
         if (openDialogVariables) {
-            setColumnsToAdd({})
+            setColumnsToAdd({});
+            setColumnsAdded([]);
         }
     }, [openDialogVariables])
 
+    useEffect(() => {
+        setShowColumnsTable(prev => prev.map((x: Dictionary) => columnsAdded.find(y => y.columnname === x.columnname) ? { ...x, disabled: true } : { ...x, disabled: false }));
+        setColumnsTable(prev => prev.map((x: Dictionary) => columnsAdded.find(y => y.columnname === x.columnname) ? { ...x, disabled: true } : { ...x, disabled: false }));
+        setColumnsToAdd({});
+    }, [columnsAdded])
+
     const handleChange = (text: string) => {
-        if (text === '') 
+        if (text === '')
             setShowColumnsTable(columnsTable);
-         else 
+        else
             setShowColumnsTable(columnsTable.filter(x => x.description.toLowerCase().includes(text.toLowerCase())));
     }
 
@@ -152,11 +178,9 @@ const DialogManageColumns: React.FC<{
                 ...prev,
                 [column.columnname]: column
             }));
-        else 
+        else
             delete columnsToAdd[column.columnname];
     }, [setColumnsToAdd])
-
-    console.log(columnsToAdd);
 
     const RenderRow = React.useCallback(
         ({ index, style }) => {
@@ -168,7 +192,7 @@ const DialogManageColumns: React.FC<{
                             control={(
                                 <Checkbox
                                     size='small'
-                                    // checked={filterCheckBox.ASIGNADO}
+                                    disabled={!!item.disabled}
                                     color="primary"
                                     onChange={(e) => handlerChecked(item, e.target.checked)}
                                     name="checkedA" />
@@ -186,54 +210,96 @@ const DialogManageColumns: React.FC<{
         <DialogZyx
             maxWidth="md"
             open={openDialogVariables}
-            title="Columnas disponibles"
+            title=""
             buttonText1={t(langKeys.cancel)}
             handleClickButton1={() => setOpenDialogVariables(false)}
         >
-            <div style={{ display: 'flex', gap: 16 }}>
-                <div style={{ flex: 1 }}>
-                    <FieldEdit
-                        variant='standard'
-                        fregister={{
-                            placeholder: t(langKeys.search)
-                        }}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <SearchIcon />
-                                </InputAdornment>
-                            )
-                        }}
-                        onChange={onChange}
-                    />
-                    <div style={{ display: 'flex', flexDirection: 'column', height: 300, overflowY: 'auto', marginTop: 4 }}>
-                        <AutoSizer>
-                            {({ height, width }: any) => (
-                                <FixedSizeList
-                                    width={width}
-                                    height={height}
-                                    itemCount={showcolumnsTable.length}
-                                    itemSize={30}
-                                >
-                                    {RenderRow}
-                                </FixedSizeList>
-                            )}
-                        </AutoSizer>
+            <div style={{ display: 'flex' }}>
+                <div style={{ flex: 1, padding: 16, paddingTop: 16, paddingBottom: 8 }}>
+                    <div style={{ fontSize: 20, fontWeight: 500, marginBottom: 8 }}>
+                        Columnas disponibles
                     </div>
-                    <div style={{ textAlign: 'right' }}>
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            disabled={Object.keys(columnsToAdd).length === 0}
-                            startIcon={<AddIcon color="secondary" />}
-                            // style={{ backgroundColor: "#55BD84" }}
-                        >{t(langKeys.add)}
-                        </Button>
+                    <div>
+                        <FieldEdit
+                            variant='standard'
+                            fregister={{
+                                placeholder: t(langKeys.search)
+                            }}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                )
+                            }}
+                            onChange={onChange}
+                        />
+                        <div style={{ display: 'flex', flexDirection: 'column', height: 320, overflowY: 'auto', marginTop: 4 }}>
+                            <AutoSizer>
+                                {({ height, width }: any) => (
+                                    <FixedSizeList
+                                        width={width}
+                                        height={height}
+                                        itemCount={showcolumnsTable.length}
+                                        itemSize={42}
+                                    >
+                                        {RenderRow}
+                                    </FixedSizeList>
+                                )}
+                            </AutoSizer>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={Object.keys(columnsToAdd).length === 0}
+                                startIcon={<AddIcon color="secondary" />}
+                                onClick={() => setColumnsAdded(prev => ([...prev, ...Object.values(columnsToAdd)]))}
+                            >{t(langKeys.add)}
+                            </Button>
+                        </div>
+
                     </div>
                 </div>
-                <div style={{ flex: 1 }}>
-                    variables2
+                <div style={{ flex: 1, backgroundColor: '#f5f5f5', paddingTop: 48 }}>
+                    <div style={{ paddingLeft: 24, paddingRight: 24 }}>
+                        <div style={{ height: 35, borderBottom: '1px solid rgba(0, 0, 0, 0.42)', color: 'rgb(167 166 170)', display: 'flex', alignItems: 'center' }}>
+                            Seleccionados ({columnsAdded.length})
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', overflowY: 'auto', marginTop: 4, height: 320, marginBottom: 4 }}>
+                            {columnsAdded.length === 0 ? (
+                                <div className={classes.nodata}>
+                                    Seleccione un campo y luego añadelo
+                                </div>
+                            ) : columnsAdded.map((item) => (
+                                <div key={item.columnname} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div className={classes.itemSelected}>
+                                        {item.description}
+                                    </div>
+                                    <IconButton size='small' onClick={() => {
+                                        setColumnsAdded(prev => prev.filter(x => x.columnname !== item.columnname))
+                                    }}>
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </div>
+                            ))}
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={columnsAdded.length === 0}
+                                startIcon={<Done color="secondary" />}
+                                onClick={() => {
+                                    setColumnsSelected(columnsAdded);
+                                    setOpenDialogVariables(false);
+                                }}
+                            >{t(langKeys.accept)}
+                            </Button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </DialogZyx>
@@ -244,7 +310,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [openDialogVariables, setOpenDialogVariables] = useState(false);
-
+    const [columnsSelected, setColumnsSelected] = useState<Dictionary[]>([])
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -508,6 +574,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                 setOpenDialogVariables={setOpenDialogVariables}
                 openDialogVariables={openDialogVariables}
                 handlerNewColumn={handlerNewColumn}
+                setColumnsSelected={setColumnsSelected}
             />
         </>
     );
