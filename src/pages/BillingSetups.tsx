@@ -253,7 +253,7 @@ const DetailCostPerHSMPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row,
                         <FieldView
                             className="col-6"
                             label={t(langKeys.wacost)}
-                            value={getValues("hsmcost").toFixed(2)}
+                            value={getValues("hsmcost").toFixed(4)}
                         />
                     </div>
                     <div className="row-zyx">
@@ -268,7 +268,7 @@ const DetailCostPerHSMPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row,
                         <FieldView
                             className="col-6"
                             label={t(langKeys.hsmshippingcost)}
-                            value={getValues("hsmcharge").toFixed(2)}
+                            value={getValues("hsmcharge").toFixed(4)}
                         />
                         
                     </div>
@@ -276,7 +276,7 @@ const DetailCostPerHSMPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row,
                         <FieldView
                             className="col-6"
                             label={t(langKeys.vcacommissioncost)}
-                            value={getValues("hsmutility").toFixed(2)}
+                            value={getValues("hsmutility").toFixed(4)}
                         />
                     </div>
                 </div>
@@ -373,7 +373,7 @@ const CostPerHSMPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { hsmcost } = props.cell.row.original;
-                    return (hsmcost || 0).toFixed(2);
+                    return (hsmcost || 0).toFixed(4);
                 }
             },
             {
@@ -383,7 +383,7 @@ const CostPerHSMPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { hsmutilityfee } = props.cell.row.original;
-                    return (hsmutilityfee || 0).toFixed(2);
+                    return (hsmutilityfee || 0).toFixed(4);
                 }
             },
             {
@@ -393,7 +393,7 @@ const CostPerHSMPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { hsmutility } = props.cell.row.original;
-                    return (hsmutility || 0).toFixed(2);
+                    return (hsmutility || 0).toFixed(4);
                 }
             },
             {
@@ -403,7 +403,7 @@ const CostPerHSMPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { hsmcharge } = props.cell.row.original;
-                    return (hsmcharge || 0).toFixed(2);
+                    return (hsmcharge || 0).toFixed(4);
                 }
             },
         ],
@@ -1261,7 +1261,7 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { basicfee } = props.cell.row.original;
-                    return (basicfee || 0).toFixed(2);
+                    return (basicfee || 0).toFixed(4);
                 }
             },
             {
@@ -1277,7 +1277,7 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { useradditionalfee } = props.cell.row.original;
-                    return (useradditionalfee || 0).toFixed(2);
+                    return (useradditionalfee || 0).toFixed(4);
                 }
             },
             {
@@ -1293,7 +1293,7 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { channelwhatsappfee } = props.cell.row.original;
-                    return (channelwhatsappfee || 0).toFixed(2);
+                    return (channelwhatsappfee || 0).toFixed(4);
                 }
             },
             {
@@ -1309,7 +1309,7 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { clientadditionalfee } = props.cell.row.original;
-                    return (clientadditionalfee || 0).toFixed(2);
+                    return (clientadditionalfee || 0).toFixed(4);
                 }
             },
             {
@@ -1328,7 +1328,7 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { hsmfee } = props.cell.row.original;
-                    return (hsmfee || 0).toFixed(2);
+                    return (hsmfee || 0).toFixed(4);
                 }
             },
         ],
@@ -1536,14 +1536,14 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
         register('channelotherfee');
         register('description');
         register('plan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('basicfee', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('userfreequantity', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('channelfreequantity', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('clientfreequantity', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('useradditionalfee', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('channelwhatsappfee', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('clientadditionalfee', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('hsmfee', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('basicfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('userfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('channelfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('clientfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('useradditionalfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('channelwhatsappfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('clientadditionalfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('hsmfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
     }, [edit, register]);
 
     useEffect(() => {
@@ -1807,9 +1807,11 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             {
                 Header: t(langKeys.billingvcacomission),
                 accessor: 'vcacomission',
+                type: 'number',
+                sortType: 'number',
                 Cell: (props: any) => {
                     const { vcacomission } = props.cell.row.original;
-                    return (vcacomission || 0).toFixed(3);
+                    return (vcacomission || 0).toFixed(4);
                 }
             },
             {
@@ -1819,20 +1821,24 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { companystartfee } = props.cell.row.original;
-                    return (companystartfee || 0).toFixed(3);
+                    return (companystartfee || 0).toFixed(4);
                 }
             },
             {
                 Header: t(langKeys.customerinitiatedcost),
                 accessor: 'clientstartfee',
+                type: 'number',
+                sortType: 'number',
                 Cell: (props: any) => {
                     const { clientstartfee } = props.cell.row.original;
-                    return (clientstartfee || 0).toFixed(3);
+                    return (clientstartfee || 0).toFixed(4);
                 }
             },
             {
                 Header: t(langKeys.freeconversations),
                 accessor: 'freeconversations',
+                type: 'number',
+                sortType: 'number',
                 Cell: (props: any) => {
                     const { freeconversations } = props.cell.row.original;
                     return (freeconversations || 0).toFixed(0);
@@ -2034,10 +2040,12 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
         register('operation');
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('countrycode', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('companystartfee', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
-        register('clientstartfee', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
-        register('freeconversations', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
-        register('vcacomission', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
+        register('companystartfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('clientstartfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('freeconversations', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('vcacomission', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+
+        
     }, [edit, register]);
 
     useEffect(() => {
@@ -2266,71 +2274,87 @@ const NotificationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { vcacomission } = props.cell.row.original;
-                    return (vcacomission || 0).toFixed(3);
+                    return (vcacomission || 0).toFixed(4);
                 }
             },
             {
                 Header: `${t(langKeys.first_plural)} 250k`,
                 accessor: 'c250000',
+                type: 'number',
+                sortType: 'number',
                 Cell: (props: any) => {
                     const { c250000 } = props.cell.row.original;
-                    return (c250000 || 0).toFixed(3);
+                    return (c250000 || 0).toFixed(4);
                 }
             },
             {
                 Header: `${t(langKeys.next_plural)} 750k`,
                 accessor: 'c750000',
+                type: 'number',
+                sortType: 'number',
                 Cell: (props: any) => {
                     const { c750000 } = props.cell.row.original;
-                    return (c750000 || 0).toFixed(3);
+                    return (c750000 || 0).toFixed(4);
                 }
             },
             {
                 Header: `${t(langKeys.next_plural)} 2 ${t(langKeys.millions)}`,
                 accessor: 'c2000000',
+                type: 'number',
+                sortType: 'number',
                 Cell: (props: any) => {
                     const { c2000000 } = props.cell.row.original;
-                    return (c2000000 || 0).toFixed(3);
+                    return (c2000000 || 0).toFixed(4);
                 }
             },
             {
                 Header: `${t(langKeys.next_plural)} 3 ${t(langKeys.millions)}`,
                 accessor: 'c3000000',
+                type: 'number',
+                sortType: 'number',
                 Cell: (props: any) => {
                     const { c3000000 } = props.cell.row.original;
-                    return (c3000000 || 0).toFixed(3);
+                    return (c3000000 || 0).toFixed(4);
                 }
             },
             {
                 Header: `${t(langKeys.next_plural)} 4 ${t(langKeys.millions)}`,
                 accessor: 'c4000000',
+                type: 'number',
+                sortType: 'number',
                 Cell: (props: any) => {
                     const { c4000000 } = props.cell.row.original;
-                    return (c4000000 || 0).toFixed(3);
+                    return (c4000000 || 0).toFixed(4);
                 }
             },
             {
                 Header: `${t(langKeys.next_plural)} 5 ${t(langKeys.millions)}`,
                 accessor: 'c5000000',
+                type: 'number',
+                sortType: 'number',
                 Cell: (props: any) => {
                     const { c5000000 } = props.cell.row.original;
-                    return (c5000000 || 0).toFixed(3);
+                    return (c5000000 || 0).toFixed(4);
                 }
             },
             {
                 Header: `${t(langKeys.next_plural)} 10 ${t(langKeys.millions)}`,
                 accessor: 'c10000000',
+                type: 'number',
+                sortType: 'number',
                 Cell: (props: any) => {
                     const { c10000000 } = props.cell.row.original;
-                    return (c10000000 || 0).toFixed(3);
+                    return (c10000000 || 0).toFixed(4);
                 }
             },
             {
                 Header: `${t(langKeys.greaterthan)} 25 ${t(langKeys.millions)}`,
                 accessor: 'c25000000',
+                type: 'number',
+                sortType: 'number',
                 Cell: (props: any) => {
                     const { c25000000 } = props.cell.row.original;
-                    return (c25000000 || 0).toFixed(3);
+                    return (c25000000 || 0).toFixed(4);
                 }
             },
         ],
@@ -2534,15 +2558,15 @@ const DetailNotificationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
         register('operation');
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('countrycode', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('vcacomission', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('c250000', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('c750000', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('c2000000', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('c3000000', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('c4000000', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('c5000000', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('c10000000', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('c25000000', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('vcacomission', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('c250000', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('c750000', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('c2000000', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('c3000000', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('c4000000', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('c5000000', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('c10000000', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('c25000000', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
     }, [edit, register]);
 
     useEffect(() => {
@@ -2811,7 +2835,7 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { basicfee } = props.cell.row.original;
-                    return (basicfee || 0).toFixed(2);
+                    return (basicfee || 0).toFixed(4);
                 }
             },
             {
@@ -3035,7 +3059,7 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({ data: { row, edit
         register('operation');
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('plan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('basicfee', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
+        register('basicfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
         register('starttime', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('finishtime', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
@@ -3237,9 +3261,11 @@ const MessagingCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             {
                 Header: t(langKeys.pricepersms),
                 accessor: 'pricepersms',
+                type: 'number',
+                sortType: 'number',
                 Cell: (props: any) => {
                     const { pricepersms } = props.cell.row.original;
-                    return (pricepersms || 0).toFixed(3);
+                    return (pricepersms || 0).toFixed(4);
                 }
             },
             {
@@ -3249,23 +3275,27 @@ const MessagingCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { vcacomissionpersms } = props.cell.row.original;
-                    return (vcacomissionpersms || 0).toFixed(3);
+                    return (vcacomissionpersms || 0).toFixed(4);
                 }
             },
             {
                 Header: t(langKeys.pricepermail),
                 accessor: 'pricepermail',
+                type: 'number',
+                sortType: 'number',
                 Cell: (props: any) => {
                     const { pricepermail } = props.cell.row.original;
-                    return (pricepermail || 0).toFixed(3);
+                    return (pricepermail || 0).toFixed(4);
                 }
             },
             {
                 Header: t(langKeys.vcacomissionpermail),
                 accessor: 'vcacomissionpermail',
+                type: 'number',
+                sortType: 'number',
                 Cell: (props: any) => {
                     const { vcacomissionpermail } = props.cell.row.original;
-                    return (vcacomissionpermail || 0).toFixed(3);
+                    return (vcacomissionpermail || 0).toFixed(4);
                 }
             }
         ],
@@ -3339,6 +3369,7 @@ const MessagingCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         return (
             <Fragment>
                 <TableZyx
+                    onClickRow={handleEdit}
                     columns={columns}                    
                     ButtonsElement={() => (
                         <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
@@ -3447,10 +3478,10 @@ const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
         register('id');
         register('year');
         register('month');
-        register('pricepersms', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
-        register('vcacomissionpersms', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
-        register('pricepermail', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
-        register('vcacomissionpermail', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
+        register('pricepersms', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('vcacomissionpersms', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('pricepermail', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('vcacomissionpermail', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('status');
         register('type');

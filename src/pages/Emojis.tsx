@@ -81,11 +81,11 @@ const Emojis: FC = () => {
                         return emojiResult.find(x => x.emojidec === emoji?.emojidec && x?.restricted === true);
                     }
                     default: {
-                        return emoji?.categorydesc === category;
+                        return emoji?.categorydesc === category && !emojiResult.find(x => x.emojidec === emoji?.emojidec && (x?.favorite === true || x?.restricted === true));
                     }
                 }
             } else {
-                return String(emoji?.description).toLowerCase().includes(searchValue.toLowerCase());
+                return String(emoji?.description).toLowerCase().includes(searchValue.toLowerCase()) && emoji?.categorydesc === category;
             }
         }), [category, searchValue, emojis, emojiResult]);
 
@@ -138,7 +138,6 @@ const Emojis: FC = () => {
                             <Emoji
                                 key={"menuEmoji_" + emoji?.emojidec}
                                 emoji={emoji}
-                                setOpenDialog={setOpenDialog}
                                 setEmojiSelected={setEmojiSelected}
                                 fetchData={fetchData}
                                 category={category}
@@ -147,14 +146,6 @@ const Emojis: FC = () => {
                     }
                 </div>
             </div>
-
-            <EmojiDetails
-                openModal={openDialog}
-                setOpenModal={setOpenDialog}
-                multiData={mainResult.multiData.data}
-                fetchData={fetchData}
-                emoji={emojiSelected}
-            />
 
         </div>
     )
@@ -228,16 +219,11 @@ const TabEmoji: FC<{ groups: Dictionary, setCategory: (categorydesc: any) => voi
     )
 })
 
-const Emoji: FC<{ emoji: Dictionary, setOpenDialog: (openDialog: boolean) => void, setEmojiSelected: (emojiSelected: Dictionary) => void, fetchData: () => void, category:string }> = React.memo(({ emoji, setOpenDialog, setEmojiSelected, fetchData,category }) => {
+const Emoji: FC<{ emoji: Dictionary, setEmojiSelected: (emojiSelected: Dictionary) => void, fetchData: () => void, category:string }> = React.memo(({ emoji, setEmojiSelected, fetchData,category }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [anchorEl, setAnchorEl] = useState(null);
 
-    const handleDoubleClick = (emoji: Dictionary) => {
-        dispatch(getCollectionAux(getEmojiSel(emoji?.emojidec)));
-        setEmojiSelected(emoji);
-        setOpenDialog(true);
-    };
     const handleClick = (event: any) => {
         event.preventDefault();
         setAnchorEl(event.currentTarget);
@@ -278,7 +264,6 @@ const Emoji: FC<{ emoji: Dictionary, setOpenDialog: (openDialog: boolean) => voi
                     aria-controls="simple-menu" aria-haspopup="true"
                     onContextMenu={handleClick}
                     key={'button_' + emoji?.emojidec}
-                    onDoubleClick={() => handleDoubleClick(emoji)}
                     style={{ padding: 0, minWidth: 50 }}>
                     <label
                         key={'label_' + emoji?.emojidec}
@@ -304,163 +289,6 @@ const Emoji: FC<{ emoji: Dictionary, setOpenDialog: (openDialog: boolean) => voi
             </Menu>
         </>
     )
-})
-
-const EmojiDetails: React.FC<ModalProps> = React.memo(({ fetchData, setOpenModal, multiData, emoji, openModal }) => {
-    const { t } = useTranslation();
-    const dispatch = useDispatch();
-    const user = useSelector(state => state.login.validateToken.user);
-    const mainAuxResult = useSelector(state => state.main.mainAux);
-    const dataOrganization = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const datachannels = useSelector(state => state.main.multiDataAux);
-    const [allParameters, setAllParameters] = useState({});
-    const [emojiOrganization, setEmojiOrganization] = useState<Dictionary[]>([]);
-    const [waitSave, setWaitSave] = useState(false);
-
-    const { handleSubmit, setValue, reset, getValues } = useForm();
-
-    const onSubmit = handleSubmit((data) => {
-        if (waitSave) {
-            const callback = () => {
-                dispatch(execute(insEmoji({
-                    ...emoji,
-                    ...allParameters,
-                    communicationchannel: datachannels?.data[0]?.data.map((o: Dictionary) => o.domainvalue).join(),
-                    favorite: false,
-                    restricted: false,
-                    allchannels: false
-                })));
-
-                fetchData();
-                dispatch(resetMainAux());
-                setOpenModal(false);
-            }
-
-            dispatch(manageConfirmation({
-                visible: true,
-                question: t(langKeys.confirmation_save),
-                callback
-            }))
-        }
-    });
-
-    const setValueChannel = (orgid: number) => {
-        dispatch(getMultiCollectionAux([getValuesFromDomain(orgid === undefined ? "" : "TIPOCANAL", "", orgid)]));
-        setAllParameters({ ...allParameters, orgid: getValues('organization') });
-        setWaitSave(false);
-        setEmojiOrganization(mainAuxResult.data.filter(x => x.orgid === orgid));
-    }
-
-    const setFavoritesChange = () => {
-        setAllParameters({ ...allParameters, favoritechannels: getValues('favorites') });
-        setWaitSave(true);
-    }
-
-    const setRestrictedChange = () => {
-        setAllParameters({ ...allParameters, restrictedchannels: getValues('restricted') });
-        setWaitSave(true);
-    }
-
-    useEffect(() => {
-        if (openModal) {
-            reset({
-                organization: '',
-                favorites: '',
-                restricted: ''
-            })
-        }
-
-        dispatch(getMultiCollectionAux([getValuesFromDomain("", "", 0)]));
-
-        setEmojiOrganization([]);
-        setAllParameters({});
-        setWaitSave(false);
-
-    }, [openModal]);
-
-    return (
-        <DialogZyx
-            open={openModal}
-            title={t(langKeys.emoji)}
-            buttonText1={t(langKeys.cancel)}
-            buttonText2={t(langKeys.save)}
-            handleClickButton1={() => setOpenModal(false)}
-            handleClickButton2={onSubmit}
-            button2Type="submit"
-        >
-            <Grid container spacing={1} style={{ paddingBottom: 40 }}>
-                <Grid item xs={12} md={6} lg={6}>
-                    <h1 style={{ fontSize: 120, margin: 0, textAlign: 'center' }}>{emoji?.emojichar}</h1>
-                </Grid>
-                <Grid item xs={12} md={6} lg={6}>
-                    <Grid item xs={12} md={12} lg={12} style={{ paddingTop: 20, paddingBottom: 25 }}>
-                        <FieldEdit
-                            label={t(langKeys.emoji_name)}
-                            disabled={true}
-                            className="col-6"
-                            valueDefault={emoji?.description}
-                        />
-                    </Grid>
-                    <Grid item xs={12} md={12} lg={12}>
-                        <FieldEdit
-                            label={t(langKeys.emoji_category_name)}
-                            disabled={true}
-                            className="col-6"
-                            valueDefault={emoji?.categorydesc}
-                        />
-                    </Grid>
-                </Grid>
-            </Grid>
-
-            <div className="row-zyx">
-                <FieldEdit
-                    label={t(langKeys.corporation)}
-                    disabled={true}
-                    className="col-6"
-                    valueDefault={user?.corpdesc}
-                />
-                <FieldSelect
-                    label={t(langKeys.organization)}
-                    className="col-6"
-                    valueDefault={getValues('organization')}
-                    data={dataOrganization}
-                    optionDesc="orgdesc"
-                    optionValue="orgid"
-                    onChange={(value) => {
-                        setValue('organization', value?.orgid)
-                        setValueChannel(value?.orgid)
-                    }}
-                />
-            </div>
-            <div className="row-zyx">
-                <FieldMultiSelect
-                    label={t(langKeys.emoji_favorites)}
-                    style={{ paddingBottom: 25 }}
-                    valueDefault={emojiOrganization[0]?.favoritechannels}
-                    data={datachannels?.data[0]?.data}
-                    optionDesc="domaindesc"
-                    optionValue="domainvalue"
-                    loading={datachannels?.loading}
-                    onChange={(value) => {
-                        setValue('favorites', value.map((o: Dictionary) => o.domainvalue).join())
-                        setFavoritesChange();
-                    }}
-                />
-                <FieldMultiSelect
-                    label={t(langKeys.emoji_restricted)}
-                    valueDefault={emojiOrganization[0]?.restrictedchannels}
-                    data={datachannels?.data[0]?.data}
-                    optionDesc="domaindesc"
-                    optionValue="domainvalue"
-                    loading={datachannels?.loading}
-                    onChange={(value) => {
-                        setValue('restricted', value.map((o: Dictionary) => o.domainvalue).join())
-                        setRestrictedChange();
-                    }}
-                />
-            </div>
-        </DialogZyx>
-    );
 })
 
 export default Emojis;

@@ -283,7 +283,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { totalcharge } = props.cell.row.original;
-                    return (totalcharge || 0).toFixed(2);
+                    return (totalcharge || 0).toFixed(4);
                 }
             },
         ],
@@ -710,7 +710,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                             className="col-6"
                             label={t(langKeys.costbasedonthesupportplan)}
-                            value={getValues('supportbasicfee').toFixed(2)}
+                            value={getValues('supportbasicfee').toFixed(4)}
                             />
                         }
                     </div>
@@ -768,13 +768,13 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                                 className="col-6"
                                 label={t(langKeys.useradditionalfee)}
-                                value={getValues('useradditionalfee').toFixed(2)}
+                                value={getValues('useradditionalfee').toFixed(4)}
                             />
                         }
                         <FieldView
                             className="col-6"
                             label={t(langKeys.useradditionalcharge)}
-                            value={getValues("useradditionalcharge").toFixed(2)}
+                            value={getValues("useradditionalcharge").toFixed(4)}
                         />
                     </div>
                 </div>}
@@ -791,7 +791,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                                 className="col-6"
                                 label={t(langKeys.channelfreequantity)}
-                                value={getValues('channelfreequantity').toFixed(2)}
+                                value={getValues('channelfreequantity').toFixed(4)}
                             />
                         }
                         { edit ? <FieldEdit
@@ -805,7 +805,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                                 className="col-6"
                                 label={t(langKeys.channelwhatsappfee)}
-                                value={getValues('channelwhatsappfee').toFixed(2)}
+                                value={getValues('channelwhatsappfee').toFixed(4)}
                             />
                         }
                     </div>
@@ -825,7 +825,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         <FieldView
                             className="col-6"
                             label={t(langKeys.channelcharge)}
-                            value={getValues("channelcharge").toFixed(2)}
+                            value={getValues("channelcharge").toFixed(4)}
                         />
                     </div>
                 </div>}
@@ -851,14 +851,14 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationcompanywhatfee)}
-                            value={getValues("conversationcompanywhatfee").toFixed(2)}
+                            value={getValues("conversationcompanywhatfee").toFixed(4)}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationcompanywhatcharge)}
-                            value={getValues("conversationcompanywhatcharge").toFixed(2)}
+                            value={getValues("conversationcompanywhatcharge").toFixed(4)}
                         />
                     </div>
                     <div className="row-zyx">
@@ -870,19 +870,19 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationclientwhatfee)}
-                            value={getValues("conversationclientwhatfee").toFixed(2)}
+                            value={getValues("conversationclientwhatfee").toFixed(4)}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationclientwhatcharge)}
-                            value={getValues("conversationclientwhatcharge").toFixed(2)}
+                            value={getValues("conversationclientwhatcharge").toFixed(4)}
                         />
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationwhatcharge)}
-                            value={getValues("conversationwhatcharge").toFixed(2)}
+                            value={getValues("conversationwhatcharge").toFixed(4)}
                         />
                     </div>
                 </div>}
@@ -920,13 +920,13 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                                 className="col-6"
                                 label={t(langKeys.clientadditionalfee)}
-                                value={getValues("clientadditionalfee").toFixed(2)}
+                                value={getValues("clientadditionalfee").toFixed(4)}
                             />
                         }
                         <FieldView
                             className="col-6"
                             label={t(langKeys.clientadditionalcharge)}
-                            value={getValues("clientadditionalcharge").toFixed(2)}
+                            value={getValues("clientadditionalcharge").toFixed(4)}
                         />
                     </div>
                 </div>}
@@ -956,7 +956,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                                 className="col-6"
                                 label={`${t(langKeys.additionalservicefee)} 1`}
-                                value={getValues("additionalservicefee1").toFixed(2)}
+                                value={getValues("additionalservicefee1").toFixed(4)}
                             />
                         }
                     </div>
@@ -985,7 +985,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                                 className="col-6"
                                 label={`${t(langKeys.additionalservicefee)} 2`}
-                                value={getValues("additionalservicefee2").toFixed(2)}
+                                value={getValues("additionalservicefee2").toFixed(4)}
                             />
                         }
                     </div>
@@ -1014,7 +1014,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                                 className="col-6"
                                 label={`${t(langKeys.additionalservicefee)} 3`}
-                                value={getValues("additionalservicefee3").toFixed(2)}
+                                value={getValues("additionalservicefee3").toFixed(4)}
                             />
                         }
                     </div>
@@ -1593,6 +1593,12 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
             {
                 Header: t(langKeys.totalamount),
                 accessor: 'totalamount',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { totalamount } = props.cell.row.original;
+                    return (totalamount || 0).toFixed(4);
+                }
             },
             {
                 Header: t(langKeys.paymentstatus),
@@ -1907,6 +1913,11 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 Header: t(langKeys.amount),
                 accessor: 'totalamount',
                 type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { totalamount } = props.cell.row.original;
+                    return (totalamount || 0).toFixed(4);
+                }
             },
             {
                 Header: t(langKeys.invoicestatus),

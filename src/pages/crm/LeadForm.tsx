@@ -535,7 +535,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <div className={classes.root}>
-                <form /*onSubmit={onSubmit}*/>
+                <form>
                     <Breadcrumbs aria-label="breadcrumb">
                         <Link
                             underline="hover"
@@ -1840,15 +1840,15 @@ const FileCollectionPreview: FC<FileCollectionPreviewProps> = ({ files, onCloseF
 
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
-            children.push(<FilePreview src={file} onClose={() => onCloseFile?.(file)} />);
+            children.push(<FilePreview key={i} src={file} onClose={() => onCloseFile?.(file)} />);
         }
 
         return children;
     }, []);
 
     const buildStringChildren = useCallback((files: string) => {
-        return files.split(',').map(file => {
-            return <FilePreview src={file} />;
+        return files.split(',').map((file, i) => {
+            return <FilePreview key={i} src={file} />;
         });
     }, []);
 

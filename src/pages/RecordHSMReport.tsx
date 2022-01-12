@@ -10,7 +10,7 @@ import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { getMultiCollection, getMultiCollectionAux, resetMultiMainAux } from 'store/main/actions';
+import { getMultiCollection, getMultiCollectionAux, getMultiCollectionAux2, resetMultiMainAux } from 'store/main/actions';
 import { showBackdrop } from 'store/popus/actions';
 import { CalendarIcon } from 'icons';
 import { Range } from 'react-date-range';
@@ -60,11 +60,11 @@ const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { r
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const multiDataAux = useSelector(state => state.main.multiDataAux);
+    const multiDataAux2 = useSelector(state => state.main.multiDataAux2);
 
     function search(){
         dispatch(showBackdrop(true))
-        dispatch(getMultiCollectionAux([
+        dispatch(getMultiCollectionAux2([
             getRecordHSMReport({
                 name: row?.name || "",
                 from: row?.from || "",
@@ -74,10 +74,10 @@ const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { r
         ]))
     }
     useEffect(() => {
-        if (!multiDataAux.loading){
+        if (!multiDataAux2.loading){
             dispatch(showBackdrop(false))
         }
-    }, [multiDataAux])
+    }, [multiDataAux2])
 
     useEffect(() => {
         search()
@@ -152,9 +152,9 @@ const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { r
                         >{t(langKeys.back)}</Button>
                     )}
                     columns={columns}
-                    data={multiDataAux.data[0]?.data||[]}
+                    data={multiDataAux2.data[0]?.data||[]}
                     download={true}
-                    loading={multiDataAux.loading}
+                    loading={multiDataAux2.loading}
                     register={false}
                     filterGeneral={false}
                 // fetchData={fetchData}

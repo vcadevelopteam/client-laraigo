@@ -1523,7 +1523,10 @@ const translation: LangKeys = {
     message_thanks_for_register: '¡Gracias por registrarse en nuestra plataforma!',
     message_click_to_login: 'Haga click en continuar para ir al login',
 
-    app_whitelist: "Whitelist",
+    app_whitelist: "Whitelist",    
+    app_invoice: "Factura",
+    "app_validación de inputs": "Validación de inputs",
+    "app_kpi manager": "Administrador de KPI",
     app_inappropriatewords: "Palabras prohibidas",
     app_intelligentmodels: "Modelos IA",
     app_sla: "Acuerdos de nivel de servicio",
@@ -1610,8 +1613,10 @@ const translation: LangKeys = {
     summary: 'Resumen',
     dueDate: 'Fecha de vencimiento',
     assignedTo: 'Asignado a',
+    ticketbase: "Considerar como base el total de tickets",
     schedule: 'Programar',
     billingcontact: "Contacto de Facturación",
+    oportunitybase: "Considerar como base el total de oportunidades",
     billingcontactmail: "Correo electrónico de contacto de facturación",
 
     suspend_ticket: 'Suspender ticket',

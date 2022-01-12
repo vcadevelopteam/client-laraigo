@@ -61,10 +61,6 @@ interface ModalProps {
     setAllIndex: (index: any) => void;
     handleDelete: (row: Dictionary | null, index: number) => void;
 }
-const arrayBread = [
-    { id: "view-1", name: "Users" },
-    { id: "view-2", name: "User detail" }
-];
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -160,8 +156,22 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
         if (indexGroups > -1)
             setDataGroups({ loading: false, data: resFromOrg.data[indexGroups] && resFromOrg.data[indexGroups].success ? resFromOrg.data[indexGroups].data : [] });
 
-        if (indexApplications > -1)
-            setDataApplications({ loading: false, data: resFromOrg.data[indexApplications] && resFromOrg.data[indexApplications].success ? resFromOrg.data[indexApplications].data : [] });
+        if (indexApplications > -1){
+            let tempdata = resFromOrg.data[indexApplications] && resFromOrg.data[indexApplications].success ? resFromOrg.data[indexApplications].data.map(x => ({
+                ...x,
+                description: (t(`app_${x.description}`.toLowerCase()) || "").toUpperCase(),
+            })): []
+            tempdata.sort(function(a, b) {
+                if (a.description < b.description) {
+                  return -1;
+                }
+                if (a.description > b.description) {
+                  return 1;
+                }
+                return 0;
+            })
+            setDataApplications({ loading: false, data: resFromOrg.data[indexApplications] && resFromOrg.data[indexApplications].success ? tempdata : [] });
+        }
     }, [resFromOrg])
 
     useEffect(() => {
@@ -324,7 +334,6 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                             /> 
 
                             <FieldSelect
-                                uset={true}
                                 label={t(langKeys.default_application)}
                                 className={classes.mb2}
                                 valueDefault={row?.redirect || ""}
@@ -333,7 +342,6 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 data={dataApplications.data}
                                 loading={dataApplications.loading}
                                 triggerOnChangeOnFirst={true}
-                                prefixTranslation="app_"
                                 optionDesc="description"
                                 optionValue="path"
                             /> 
@@ -595,7 +603,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
             company: row?.company || '',
             billinggroupid: row?.billinggroupid || 0,
             registercode: row?.registercode || '',
-            twofactorauthentication: row?.twofactorauthentication || 'INACTIVO',
+            twofactorauthentication: row?.twofactorauthentication || false,
             status: row?.status || 'ACTIVO',
             image: row?.image || null,
             send_password_by_email: false,
@@ -643,8 +651,6 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
             setDataOrganizations(p => [...p, null]);
     }, [register]);
 
-    console.log(dataOrganizations)
-
     useEffect(() => {
         if (allIndex.length === dataOrganizations.length && triggerSave) {
             setTriggerSave(false);
@@ -664,7 +670,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
             const callback = () => {
                 dispatch(showBackdrop(true));
                 dispatch(execute({
-                    header: insUser({ ...data, usr: data.email, twofactorauthentication: data.twofactorauthentication === 'ACTIVO' }),
+                    header: insUser({ ...data, usr: data.email}),
                     detail: [...dataOrganizations.filter(x => x && x?.operation).map(x => x && insOrgUser(x)), ...orgsToDelete.map(x => insOrgUser(x))]!
                 }, true));
                 setWaitSave(true)
@@ -696,6 +702,11 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
         setValue('status', (value ? value.domainvalue : ''));
         value && setOpenDialogStatus(true)
     }
+    
+    const arrayBread = [
+        { id: "view-1", name: t(langKeys.user_plural) },
+        { id: "view-2", name: `${t(langKeys.user)} ${t(langKeys.detail)}` }
+    ];
 
     return (
         <div style={{ width: '100%' }}>
@@ -836,8 +847,8 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                         <FieldSelect
                             label={t(langKeys.twofactorauthentication)}
                             className="col-6"
-                            valueDefault={row?.twofactorauthentication ? 'ACTIVO' : "INACTIVO"}
-                            onChange={(value) => setValue('twofactorauthentication', (value ? value.domainvalue : ''))}
+                            valueDefault={getValues('twofactorauthentication') ? 'ACTIVO' : "INACTIVO"}
+                            onChange={(value) => setValue('twofactorauthentication', (value ? value.domainvalue === 'ACTIVO' : false))}
                             error={errors?.twofactorauthentication?.message}
                             data={dataStatus}
                             uset={true}
@@ -972,12 +983,7 @@ const Users: FC = () => {
                 NoFilter: true
             },
             {
-                Header: t(langKeys.user),
-                accessor: 'usr',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.email),
+                Header: `${t(langKeys.email)} (${t(langKeys.user)})`,
                 accessor: 'email',
                 NoFilter: true
             },
@@ -1019,7 +1025,7 @@ const Users: FC = () => {
             domains.value?.userstatus?.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`status_${d.domainvalue?.toLowerCase()}`) }), {}),
             {},
             {},
-            {1:'true',0:'false'},
+            {'true':'true','false':'false'},
             domains.value?.roles?.reduce((a, d) => ({ ...a, [d.roleid]: d.roldesc }), {}),
             dataOrganizationsTmp.reduce((a, d) => ({ ...a, [d.orgid]: d.orgdesc }), {}),
         ];
@@ -1059,7 +1065,7 @@ const Users: FC = () => {
     const fetchData = () => dispatch(getCollection(getUserSel(0)));
 
     useEffect(() => {
-        mainResult.data && setdataUsers(mainResult.data.map(x => ({ ...x, twofactorauthentication: !!x.twofactorauthentication ? t(langKeys.affirmative) : t(langKeys.negative) })));
+        mainResult.data && setdataUsers(mainResult.data);
     }, [mainResult]);
 
     useEffect(() => {
@@ -1136,6 +1142,7 @@ const Users: FC = () => {
     const handleUpload = async (files: any) => {
         const file = files?.item(0);
         if (file) {
+            debugger
             let excel: any = await uploadExcel(file, undefined);
             let data = array_trimmer(excel);
             data = data.filter((f: any) =>
@@ -1149,7 +1156,6 @@ const Users: FC = () => {
                 && (f.organization === undefined || Object.keys(dataOrganizationsTmp.reduce((a: any, d) => ({ ...a, [d.orgid]: `${d.orgid}` }), {})).includes('' + f.organization)) 
             );
             console.log(data)
-            debugger
             if (data.length > 0) {
                 dispatch(showBackdrop(true));
                 let table: Dictionary = data.reduce((a: any, d) => ({
@@ -1203,6 +1209,7 @@ const Users: FC = () => {
         }
     }
     const handleDropUsers = async (files: any) => {
+        debugger
         const file = files?.item(0);
         if (file) {
             let excel: any = await uploadExcel(file, undefined);
@@ -1218,10 +1225,9 @@ const Users: FC = () => {
                     [`${d.username}_${d.status}`]: {
                         ...dataUsers.filter(x=> x.usr===d.username)[0],
                         status: Boolean(d.delete)? "ELIMINADO":d.status,
-                        operation: Boolean(d.delete)?"DELETE":"UPDATE",
+                        operation: d.delete === 0?"DELETE":"UPDATE",
                     }
                 }), {});
-                debugger
                 Object.values(table).forEach((p) => {
                     dispatch(execute(insUser({ ...p, id: p.userid, pwdchangefirstlogin: false })));
                 });
@@ -1290,12 +1296,12 @@ const Users: FC = () => {
                             <input
                                 name="file"
                                 accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv"
-                                id="laraigo-upload-csv-file"
+                                id="laraigo-dropusers-csv-file"
                                 type="file"
                                 style={{ display: 'none' }}
                                 onChange={(e) => handleDropUsers(e.target.files)}
                             />
-                            <label htmlFor="laraigo-upload-csv-file">
+                            <label htmlFor="laraigo-dropusers-csv-file">
                                 <Button
                                     variant="contained"
                                     component="span"
