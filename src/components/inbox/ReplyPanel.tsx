@@ -467,7 +467,8 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             } else {
                 setShowReply(true);
             }
-        }
+        } else 
+            setShowReply(true)
     }, [ticketSelected])
 
     const reasignTicket = React.useCallback(() => {
