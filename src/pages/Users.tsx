@@ -173,7 +173,6 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
             setDataApplications({ loading: false, data: resFromOrg.data[indexApplications] && resFromOrg.data[indexApplications].success ? tempdata : [] });
         }
     }, [resFromOrg])
-
     useEffect(() => {
         //PARA MODALES SE DEBE RESETEAR EN EL EDITAR
         reset({
@@ -190,7 +189,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
             groups: row?.groups || '',
             labels: row?.labels || '',
             status: 'DESCONECTADO',
-            bydefault: row ? row.bydefault : true,
+            bydefault: row?.bydefault || false,
         })
 
         register('orgid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
@@ -315,7 +314,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                             <TemplateSwitchYesNo
                                 label={t(langKeys.default_organization)}
                                 className={classes.mb2}
-                                valueDefault={row ? row.bydefault : true}
+                                valueDefault={row?.bydefault || false}
                                 onChange={(value) => setValue('bydefault', value)}/>
                             <FieldSelect
                                 label={t(langKeys.supervisor)}

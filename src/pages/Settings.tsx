@@ -345,8 +345,6 @@ const Settings: FC = () => {
             }));
         }
     }, [setting, dispatch]);
-
-    console.log(setting);
     const { value } = setting;
     return (
         <div className={classes.root}>
@@ -356,121 +354,218 @@ const Settings: FC = () => {
                 </Title>
             </Box>
             <div style={{ height: 23 }} />
-            <Grid container direction="row">
-                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-                    <Grid container direction="column">
-                        {user?.roledesc === "SUPERADMIN" && (
-                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                <ItemTile
-                                    title={<Trans i18nKey={langKeys.corporation} count={2} />}
-                                    subtitle={<SubtitleText value={value?.num_corp} i18nKey={langKeys.corporation} />}
-                                    icon={<Corporation2Icon />}
-                                    helpText={
-                                        <HelpText
-                                            i18nKey={langKeys.manageCorporation}
-                                            count={2}
-                                            onClick={() => history.push(paths.CORPORATIONS)}
+            {user?.roledesc!=='SUPERVISOR'?
+                <>
+                    <Grid container direction="row">
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Grid container direction="column">
+                                {user?.roledesc === "SUPERADMIN" && (
+                                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                        <ItemTile
+                                            title={<Trans i18nKey={langKeys.corporation} count={2} />}
+                                            subtitle={<SubtitleText value={value?.num_corp} i18nKey={langKeys.corporation} />}
+                                            icon={<Corporation2Icon />}
+                                            helpText={
+                                                <HelpText
+                                                    i18nKey={langKeys.manageCorporation}
+                                                    count={2}
+                                                    onClick={() => history.push(paths.CORPORATIONS)}
+                                                />
+                                            }
+                                            m={2}
                                         />
-                                    }
-                                    m={2}
-                                />
+                                    </Grid>
+                                )}
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    <ItemTile
+                                        title={<Trans i18nKey={langKeys.organization} count={2} />}
+                                        subtitle={<SubtitleText value={value?.num_org} i18nKey={langKeys.activeOrganization} />}
+                                        icon={<OrganizationsIcon fill="inherit" stroke="inherit" />}
+                                        helpText={
+                                            <HelpText
+                                                i18nKey={langKeys.manageOrganization}
+                                                count={2}
+                                                onClick={() => history.push(paths.ORGANIZATIONS)}
+                                            />
+                                        }
+                                        m={2}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    <ItemTile
+                                        title={<Trans i18nKey={langKeys.channel} count={2} />}
+                                        subtitle={<SubtitleText value={value?.num_channels} i18nKey={langKeys.activeChannel} />}
+                                        icon={<ChannelsIcon fill="inherit" stroke="inherit" />}
+                                        helpText={
+                                            <HelpText
+                                                i18nKey={langKeys.manageChannel}
+                                                count={2}
+                                                onClick={() => history.push(paths.CHANNELS)}
+                                            />
+                                        }
+                                        m={2}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    <ItemTile
+                                        title={<Trans i18nKey={langKeys.user} count={2} />}
+                                        subtitle={<SubtitleText value={value?.num_users} i18nKey={langKeys.activeUser} />}
+                                        icon={<UserGroupIcon fill="inherit" stroke="inherit" />}
+                                        helpText={
+                                            <HelpText
+                                                i18nKey={langKeys.manageUser}
+                                                count={2}
+                                                onClick={() => history.push(paths.USERS)}
+                                            />
+                                        }
+                                        m={2}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    <ItemTile
+                                        title={<Trans i18nKey={langKeys.quickreply} count={2} />}
+                                        subtitle={<SubtitleText value={value?.num_quickreply} i18nKey={langKeys.quickreply} />}
+                                        icon={<QuickReplyIcon fill="inherit" stroke="inherit" />}
+                                        helpText={
+                                            <HelpText
+                                                i18nKey={langKeys.manageQuickReply}
+                                                count={2}
+                                                onClick={() => history.push(paths.QUICKREPLIES)}
+                                            />
+                                        }
+                                        m={2}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    <ItemTile
+                                        title={<Trans i18nKey={langKeys.classification} count={2} />}
+                                        subtitle={<SubtitleText value={value?.num_classification} i18nKey={langKeys.classification} />}
+                                        icon={<ClassificationIcon fill="inherit" stroke="inherit" />}
+                                        helpText={
+                                            <HelpText
+                                                i18nKey={langKeys.manageClassification}
+                                                count={2}
+                                                onClick={() => history.push(paths.TIPIFICATIONS)}
+                                            />
+                                        }
+                                        m={2}
+                                    />
+                                </Grid>                        
+                                
                             </Grid>
-                        )}
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <ItemTile
-                                title={<Trans i18nKey={langKeys.organization} count={2} />}
-                                subtitle={<SubtitleText value={value?.num_org} i18nKey={langKeys.activeOrganization} />}
-                                icon={<OrganizationsIcon fill="inherit" stroke="inherit" />}
-                                helpText={
-                                    <HelpText
-                                        i18nKey={langKeys.manageOrganization}
-                                        count={2}
-                                        onClick={() => history.push(paths.ORGANIZATIONS)}
-                                    />
-                                }
-                                m={2}
-                            />
                         </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <ItemTile
-                                title={<Trans i18nKey={langKeys.channel} count={2} />}
-                                subtitle={<SubtitleText value={value?.num_channels} i18nKey={langKeys.activeChannel} />}
-                                icon={<ChannelsIcon fill="inherit" stroke="inherit" />}
-                                helpText={
-                                    <HelpText
-                                        i18nKey={langKeys.manageChannel}
-                                        count={2}
-                                        onClick={() => history.push(paths.CHANNELS)}
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Grid container direction="column">
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    <ItemTile
+                                        title={<Trans i18nKey={langKeys.domain} count={2} />}
+                                        subtitle={<SubtitleText value={value?.num_domain} i18nKey={langKeys.domain} />}
+                                        icon={<DomainsIcon fill="inherit" stroke="inherit" />}
+                                        helpText={
+                                            <HelpText
+                                                i18nKey={langKeys.manageDomain}
+                                                count={2}
+                                                onClick={() => history.push(paths.DOMAINS)}
+                                            />
+                                        }
+                                        m={2}
                                     />
-                                }
-                                m={2}
-                            />
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    <ItemTile
+                                        title={<Trans i18nKey={langKeys.restrictedEmoji} count={2} />}
+                                        subtitle={<SubtitleText value={value?.num_restricted_emojis} i18nKey={langKeys.restrictedEmoji} />}
+                                        icon={<EmojiSadFaceIcon fill="inherit" stroke="inherit" />}
+                                        helpText={
+                                            <HelpText
+                                                i18nKey={langKeys.manageRestrictedEmoji}
+                                                count={2}
+                                                onClick={() => history.push(paths.EMOJIS)}
+                                            />
+                                        }
+                                        m={2}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    <ItemTile
+                                        title={<Trans i18nKey={langKeys.forbiddenWord} count={2} />}
+                                        subtitle={<SubtitleText value={value?.num_forbidden_words} i18nKey={langKeys.forbiddenWord} />}
+                                        icon={<ForbiddenWordsIcon fill="inherit" stroke="inherit" />}
+                                        helpText={
+                                            <HelpText
+                                                i18nKey={langKeys.manageForbiddenWord}
+                                                count={2}
+                                                onClick={() => history.push(paths.INAPPROPRIATEWORDS)}
+                                            />
+                                        }
+                                        m={2}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    <ItemTile
+                                        title={<Trans i18nKey={langKeys.integration} count={2} />}
+                                        subtitle={<SubtitleText value={value?.num_integrations} i18nKey={langKeys.integration} />}
+                                        icon={<IntegrationIcon fill="inherit" stroke="inherit" />}
+                                        helpText={
+                                            <HelpText
+                                                i18nKey={langKeys.manageIntegration}
+                                                count={2}
+                                                onClick={() => history.push(paths.INTEGRATIONMANAGER)}
+                                            />
+                                        }
+                                        m={2}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    <ItemTile
+                                        title={<Trans i18nKey={langKeys.serviceLevelAgreement} count={2} />}
+                                        subtitle={<SubtitleText value={value?.num_sla} i18nKey={langKeys.agreement} />}
+                                        icon={<SLAIcon fill="inherit" stroke="inherit" />}
+                                        helpText={
+                                            <HelpText
+                                                i18nKey={langKeys.manageAgreement}
+                                                count={2}
+                                                onClick={() => history.push(paths.SLA)}
+                                            />
+                                        }
+                                        m={2}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    <ItemTile
+                                        title={<Trans i18nKey={langKeys.inputvalidation} count={2} />}
+                                        subtitle={<SubtitleText value={value?.num_inputvalidation} i18nKey={langKeys.inputvalidation} />}
+                                        icon={<InputIcon fill="inherit" stroke="inherit" />}
+                                        helpText={
+                                            <HelpText
+                                                i18nKey={langKeys.manageInputValidation}
+                                                count={2}
+                                                onClick={() => history.push(paths.INPUTVALIDATION)}
+                                            />
+                                        }
+                                        m={2}
+                                    />
+                                </Grid>
+                            </Grid>
                         </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <ItemTile
-                                title={<Trans i18nKey={langKeys.user} count={2} />}
-                                subtitle={<SubtitleText value={value?.num_users} i18nKey={langKeys.activeUser} />}
-                                icon={<UserGroupIcon fill="inherit" stroke="inherit" />}
-                                helpText={
-                                    <HelpText
-                                        i18nKey={langKeys.manageUser}
-                                        count={2}
-                                        onClick={() => history.push(paths.USERS)}
-                                    />
-                                }
-                                m={2}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <ItemTile
-                                title={<Trans i18nKey={langKeys.quickreply} count={2} />}
-                                subtitle={<SubtitleText value={value?.num_quickreply} i18nKey={langKeys.quickreply} />}
-                                icon={<QuickReplyIcon fill="inherit" stroke="inherit" />}
-                                helpText={
-                                    <HelpText
-                                        i18nKey={langKeys.manageQuickReply}
-                                        count={2}
-                                        onClick={() => history.push(paths.QUICKREPLIES)}
-                                    />
-                                }
-                                m={2}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <ItemTile
-                                title={<Trans i18nKey={langKeys.classification} count={2} />}
-                                subtitle={<SubtitleText value={value?.num_classification} i18nKey={langKeys.classification} />}
-                                icon={<ClassificationIcon fill="inherit" stroke="inherit" />}
-                                helpText={
-                                    <HelpText
-                                        i18nKey={langKeys.manageClassification}
-                                        count={2}
-                                        onClick={() => history.push(paths.TIPIFICATIONS)}
-                                    />
-                                }
-                                m={2}
-                            />
-                        </Grid>                        
-                        
                     </Grid>
-                </Grid>
-                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-                    <Grid container direction="column">
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <ItemTile
-                                title={<Trans i18nKey={langKeys.domain} count={2} />}
-                                subtitle={<SubtitleText value={value?.num_domain} i18nKey={langKeys.domain} />}
-                                icon={<DomainsIcon fill="inherit" stroke="inherit" />}
-                                helpText={
-                                    <HelpText
-                                        i18nKey={langKeys.manageDomain}
-                                        count={2}
-                                        onClick={() => history.push(paths.DOMAINS)}
-                                    />
-                                }
-                                m={2}
+                    <ItemTile
+                        title={<Trans i18nKey={langKeys.property} count={2} />}
+                        subtitle={<SubtitleText value={value?.num_property} i18nKey={langKeys.activeProperty} />}
+                        icon={<ConfigPropertiesIcon fill="inherit" stroke="inherit" />}
+                        helpText={
+                            <HelpText
+                                i18nKey={langKeys.manageproperty}
+                                count={2}
+                                onClick={() => history.push(paths.PROPERTIES)}
                             />
-                        </Grid>
+                        }
+                        m={2}
+                    />
+                </>
+                :
+                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                    <Grid container direction="column">
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <ItemTile
                                 title={<Trans i18nKey={langKeys.restrictedEmoji} count={2} />}
@@ -486,82 +581,9 @@ const Settings: FC = () => {
                                 m={2}
                             />
                         </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <ItemTile
-                                title={<Trans i18nKey={langKeys.forbiddenWord} count={2} />}
-                                subtitle={<SubtitleText value={value?.num_forbidden_words} i18nKey={langKeys.forbiddenWord} />}
-                                icon={<ForbiddenWordsIcon fill="inherit" stroke="inherit" />}
-                                helpText={
-                                    <HelpText
-                                        i18nKey={langKeys.manageForbiddenWord}
-                                        count={2}
-                                        onClick={() => history.push(paths.INAPPROPRIATEWORDS)}
-                                    />
-                                }
-                                m={2}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <ItemTile
-                                title={<Trans i18nKey={langKeys.integration} count={2} />}
-                                subtitle={<SubtitleText value={value?.num_integrations} i18nKey={langKeys.integration} />}
-                                icon={<IntegrationIcon fill="inherit" stroke="inherit" />}
-                                helpText={
-                                    <HelpText
-                                        i18nKey={langKeys.manageIntegration}
-                                        count={2}
-                                        onClick={() => history.push(paths.INTEGRATIONMANAGER)}
-                                    />
-                                }
-                                m={2}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <ItemTile
-                                title={<Trans i18nKey={langKeys.serviceLevelAgreement} count={2} />}
-                                subtitle={<SubtitleText value={value?.num_sla} i18nKey={langKeys.agreement} />}
-                                icon={<SLAIcon fill="inherit" stroke="inherit" />}
-                                helpText={
-                                    <HelpText
-                                        i18nKey={langKeys.manageAgreement}
-                                        count={2}
-                                        onClick={() => history.push(paths.SLA)}
-                                    />
-                                }
-                                m={2}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <ItemTile
-                                title={<Trans i18nKey={langKeys.inputvalidation} count={2} />}
-                                subtitle={<SubtitleText value={value?.num_inputvalidation} i18nKey={langKeys.inputvalidation} />}
-                                icon={<InputIcon fill="inherit" stroke="inherit" />}
-                                helpText={
-                                    <HelpText
-                                        i18nKey={langKeys.manageInputValidation}
-                                        count={2}
-                                        onClick={() => history.push(paths.INPUTVALIDATION)}
-                                    />
-                                }
-                                m={2}
-                            />
-                        </Grid>
                     </Grid>
                 </Grid>
-            </Grid>
-            <ItemTile
-                title={<Trans i18nKey={langKeys.property} count={2} />}
-                subtitle={<SubtitleText value={value?.num_property} i18nKey={langKeys.activeProperty} />}
-                icon={<ConfigPropertiesIcon fill="inherit" stroke="inherit" />}
-                helpText={
-                    <HelpText
-                        i18nKey={langKeys.manageproperty}
-                        count={2}
-                        onClick={() => history.push(paths.PROPERTIES)}
-                    />
-                }
-                m={2}
-            />
+            }
         </div>
     );
 }
