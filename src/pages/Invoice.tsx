@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx } from 'components';
-import { selInvoice, insInvoice, cancelInvoice, getLocaleDateString, selInvoiceClient, selInvoiceChangePaymentStatus, regenerateInvoice, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, getBillingPeriodCalc, exportExcel } from 'common/helpers';
+import { selInvoice, insInvoice, cancelInvoice, getLocaleDateString, selInvoiceClient, selInvoiceChangePaymentStatus, regenerateInvoice, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, exportExcel } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -18,7 +18,6 @@ import { sendInvoice } from 'store/culqi/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { Box, FormHelperText, Grid, IconButton, MenuItem, Tabs, TextField } from '@material-ui/core';
 import * as locale from "date-fns/locale";
-import Menu from '@material-ui/core/Menu';
 import { DownloadIcon } from 'icons';
 import {
     Close,
@@ -29,8 +28,6 @@ import {
 import PaymentIcon from '@material-ui/icons/Payment';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
-import Visibility from '@material-ui/icons/Visibility';
-import MoreVert from '@material-ui/icons/MoreVert';
 import Fab from '@material-ui/core/Fab';
 import CulqiModal from 'components/fields/CulqiModal';
 import { getCountryList } from 'store/signup/actions';
@@ -190,6 +187,12 @@ const useStyles = makeStyles((theme) => ({
     transparent: {
         color:"transparent",
     },
+    commentary: {
+        fontStyle:"italic"
+    },
+    section: {
+        fontWeight:"bold"
+    }
 }));
 
 const isEmpty = (str?: string) => {
@@ -512,7 +515,17 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
             additionalservicename3: row?.additionalservicename3||"",
             additionalservicefee3: row?.additionalservicefee3||0,
             force: row?.force||true,
-            totalcharge: row?.totalcharge||0
+            totalcharge: row?.totalcharge||0,
+            conversationclientwhatfreequantity: row?.conversationclientwhatfreequantity||0,
+            conversationcompanywhatfreequantity: row?.conversationcompanywhatfreequantity||0,
+            unitpricepersms: row?.unitpricepersms||0,
+            vcacomissionpersms: row?.vcacomissionpersms||0,
+            smsquantity: row?.smsquantity||0,
+            smscost: row?.smscost||0,
+            unitepricepermail: row?.unitepricepermail||0,
+            vcacomissionpermail: row?.vcacomissionpermail||0,
+            mailquantity: row?.mailquantity||0,
+            mailcost: row?.mailcost||0,
         }
     });
 
@@ -523,15 +536,15 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
         register('month');
         register('billingplan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('supportplan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('basicfee');
-        register('userfreequantity');
-        register('useradditionalfee');
-        register('channelfreequantity');
-        register('channelwhatsappfee');
+        register('basicfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('userfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('useradditionalfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('channelfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('channelwhatsappfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
         register('channelotherfee');
-        register('clientfreequantity');
-        register('clientadditionalfee');
-        register('supportbasicfee');
+        register('clientfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('clientadditionalfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('supportbasicfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
         register('additionalservicename1');
         register('additionalservicefee1');
         register('additionalservicename2');
@@ -540,6 +553,16 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
         register('additionalservicefee3');
         register('force');
         register('totalcharge');
+        register('conversationclientwhatfreequantity');
+        register('conversationcompanywhatfreequantity');
+        register('unitpricepersms');
+        register('vcacomissionpersms');
+        register('smsquantity');
+        register('smscost');
+        register('unitepricepermail');
+        register('vcacomissionpermail');
+        register('mailquantity');
+        register('mailcost');
     }, [edit, register]);
 
     useEffect(() => {
@@ -620,6 +643,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                     <AntTab label={t(langKeys.channel_plural)}/>
                     <AntTab label={t(langKeys.conversation)}/>
                     <AntTab label={t(langKeys.contact_plural)}/>
+                    <AntTab label={t(langKeys.messaging)}/>
                     <AntTab label="Extras"/>
                 </Tabs>
                 {pageSelected === 0  && <div className={classes.containerDetail}>
@@ -653,7 +677,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             className="col-6"
                             valueDefault={getValues("billingplan")}
                             variant="outlined"
-                            onChange={(value) => setValue('billingplan',value.plan)}
+                            onChange={(value) => setValue('billingplan',value?.plan)}
                             data={dataPaymentPlanList}
                             error={errors?.billingplan?.message}
                             optionDesc="plan"
@@ -670,7 +694,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             className="col-6"
                             valueDefault={getValues("supportplan")}
                             variant="outlined"
-                            onChange={(value) => setValue('supportplan',value.description)}
+                            onChange={(value) => setValue('supportplan',value?.description)}
                             data={dataPlanList}
                             error={errors?.supportplan?.message}
                             optionDesc="description"
@@ -843,25 +867,6 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         />
                     </div>
                     <div className="row-zyx">
-                    <FieldView
-                            className="col-6"
-                            label={t(langKeys.conversationcompanywhatquantity)}
-                            value={getValues("conversationcompanywhatquantity").toString()}
-                        />
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.conversationcompanywhatfee)}
-                            value={getValues("conversationcompanywhatfee").toFixed(4)}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.conversationcompanywhatcharge)}
-                            value={getValues("conversationcompanywhatcharge").toFixed(4)}
-                        />
-                    </div>
-                    <div className="row-zyx">
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationclientwhatquantity)}
@@ -869,16 +874,47 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         />
                         <FieldView
                             className="col-6"
-                            label={t(langKeys.conversationclientwhatfee)}
-                            value={getValues("conversationclientwhatfee").toFixed(4)}
+                            label={t(langKeys.conversationclientwhatfreequantity)}
+                            value={getValues("conversationclientwhatfreequantity").toString()}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldView
                             className="col-6"
+                            label={t(langKeys.conversationclientwhatfee)}
+                            value={getValues("conversationclientwhatfee").toFixed(4)}
+                        />
+                        <FieldView
+                            className="col-6"
                             label={t(langKeys.conversationclientwhatcharge)}
                             value={getValues("conversationclientwhatcharge").toFixed(4)}
                         />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.conversationcompanywhatquantity)}
+                            value={getValues("conversationcompanywhatquantity").toString()}
+                        />
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.conversationcompanywhatfreequantity)}
+                            value={getValues("conversationcompanywhatfreequantity").toString()}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.conversationcompanywhatfee)}
+                            value={getValues("conversationcompanywhatfee").toFixed(4)}
+                        />
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.conversationcompanywhatcharge)}
+                            value={getValues("conversationcompanywhatcharge").toFixed(4)}
+                        />
+                    </div>
+                    <div className="row-zyx">
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationwhatcharge)}
@@ -931,6 +967,92 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                     </div>
                 </div>}
                 {pageSelected === 5  && <div className={classes.containerDetail}>
+                    <div className="row-zyx">
+                        { edit ? <FieldEdit
+                            label={t(langKeys.unitpricepersms)}
+                            onChange={(value) => setValue('unitpricepersms', value)}
+                            valueDefault={getValues('unitpricepersms')}
+                            error={errors?.unitpricepersms?.message}
+                            type="number"
+                            className="col-6"
+                        /> :
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.unitpricepersms)}
+                                value={getValues("unitpricepersms").toFixed(4)}
+                            />
+                        }
+                        { edit ? <FieldEdit
+                            label={t(langKeys.vcacomissionpersms)}
+                            onChange={(value) => setValue('vcacomissionpersms', value)}
+                            valueDefault={getValues('vcacomissionpersms')}
+                            error={errors?.vcacomissionpersms?.message}
+                            type="number"
+                            className="col-6"
+                        /> :
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.vcacomissionpersms)}
+                                value={getValues("vcacomissionpersms").toFixed(4)}
+                            />
+                        }
+                    </div>
+                    <div className="row-zyx">
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.smsquantity)}
+                            value={getValues("smsquantity").toFixed(0)}
+                        />
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.smscost)}
+                            value={getValues("smscost").toFixed(4)}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        { edit ? <FieldEdit
+                            label={t(langKeys.unitepricepermail)}
+                            onChange={(value) => setValue('unitepricepermail', value)}
+                            valueDefault={getValues('unitepricepermail')}
+                            error={errors?.unitepricepermail?.message}
+                            type="number"
+                            className="col-6"
+                        /> :
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.unitepricepermail)}
+                                value={getValues("unitepricepermail").toFixed(4)}
+                            />
+                        }
+                        { edit ? <FieldEdit
+                            label={t(langKeys.vcacomissionpermail)}
+                            onChange={(value) => setValue('vcacomissionpermail', value)}
+                            valueDefault={getValues('vcacomissionpermail')}
+                            error={errors?.vcacomissionpermail?.message}
+                            type="number"
+                            className="col-6"
+                        /> :
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.vcacomissionpermail)}
+                                value={getValues("vcacomissionpermail").toFixed(4)}
+                            />
+                        }
+                    </div>
+                    <div className="row-zyx">
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.mailquantity)}
+                            value={getValues("mailquantity").toFixed(0)}
+                        />
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.mailcost)}
+                            value={getValues("mailcost").toFixed(4)}
+                        />
+                    </div>
+                </div>}
+                {pageSelected === 6  && <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         { edit ? <FieldEdit
                             label={`${t(langKeys.additionalservicename)} 1`}
@@ -1478,7 +1600,8 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
     const executeRes = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main);
     const user = useSelector(state => state.login.validateToken.user);
-    //const multiData = useSelector(state => state.main.multiData);
+
+    const [openDialogPassword, setOpenDialogPassword] = useState(false);
 
     const [dataMain, setdataMain] = useState({
         corpid: user?.corpid || 0,
@@ -1494,7 +1617,9 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
     const [rowSelect, setRowSelect] = useState(false);
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitSave, setWaitSave] = useState(false);
-    
+    const [modalRowSelect, setModalRowSelect] = useState<Dictionary | null>(null);
+    const [modalRowSend, setModalRowSend] = useState(false);
+   
 
     const fetchData = () => dispatch(getCollection(selInvoiceClient(dataMain)));
 
@@ -1518,6 +1643,13 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
             }
         }
     }, [rowSelected, rowSelect])
+
+    useEffect(() => {
+        if (modalRowSend) {
+            setOpenDialogPassword(true);
+            setModalRowSend(false);
+        }
+    }, [modalRowSelect, modalRowSend])
 
     useEffect(() => {
         setdisableSearch(dataMain.year === "" ) 
@@ -1558,15 +1690,14 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                     if (row.paymentstatus !== "PENDING")
                         return null;
                     return (
-                        <CulqiModal
-                            type="CHARGE"
-                            invoiceid={row.invoiceid}
-                            title={t(row.docnumber)}
-                            description=""
-                            currency={row.currency}
-                            amount={row.totalamount * 100}
-                            callbackOnSuccess={search}
-                        ></CulqiModal>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            style={{ width: 80, backgroundColor: "#55BD84" }}
+                            startIcon={<PaymentIcon style={{ color: 'white' }} />}
+                            onClick={() => {setModalRowSelect(row); setModalRowSend(true)}}
+                        >{t(langKeys.pay)}
+                        </Button>
                     )
                 }
             },
@@ -1630,7 +1761,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                                 { (urlpdf ?
                                     <a href={urlpdf} target="_blank" style={{ display: "block" }} rel="noreferrer">{docnumber}</a>
                                     :
-                                    <b style={{ display: "block" }}>{`${docnumber}0000`}</b>)
+                                    <b style={{ display: "block" }}>{`0000-0000`}</b>)
                                 }
                             </div>
                         </Fragment>
@@ -1679,90 +1810,96 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
 
     if (viewSelected === "view-1") {
         return (
-            <TableZyx
-                columns={columns}
-                ButtonsElement={() => (
-                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                        <FieldSelect
-                            label={t(langKeys.year)}
-                            style={{width: 140}}
-                            valueDefault={dataMain.year}
-                            variant="outlined"
-                            onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||""}))}
-                            data={years}
-                            optionDesc="desc"
-                            optionValue="desc"
-                        />
-                        <FieldMultiSelect
-                            label={t(langKeys.month)}
-                            style={{width: 214}}
-                            valueDefault={dataMain.month}
-                            variant="outlined"
-                            onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
-                            data={months}
-                            uset={true}
-                            prefixTranslation="month_"
-                            optionDesc="val"
-                            optionValue="val"
-                        />
-                        <FieldSelect
-                            label={t(langKeys.corporation)}
-                            className={classes.fieldsfilter}
-                            valueDefault={dataMain.corpid}
-                            variant="outlined"
-                            onChange={(value) => setdataMain(prev=>({...prev,corpid:value?.corpid||0,orgid:0}))}
-                            data={dataCorpList}
-                            optionDesc="description"
-                            optionValue="corpid"
-                        />
-                        <FieldSelect
-                            label={t(langKeys.organization)}
-                            className={classes.fieldsfilter}
-                            valueDefault={dataMain.orgid}
-                            variant="outlined"
-                            onChange={(value) => setdataMain(prev=>({...prev,orgid:value?.orgid||0}))}
-                            data={dataOrgList.filter((e:any)=>{return e.corpid===dataMain.corpid})}
-                            optionDesc="orgdesc"
-                            optionValue="orgid"
-                        />
-                        <FieldSelect
-                            label={t(langKeys.currency)}
-                            className={classes.fieldsfilter}
-                            valueDefault={dataMain.currency}
-                            variant="outlined"
-                            onChange={(value) => setdataMain(prev=>({...prev,currency:value?.value||''}))}
-                            data={datacurrency}
-                            optionDesc="description"
-                            optionValue="value"
-                        />
-                        <FieldSelect
-                            label={t(langKeys.paymentstatus)}
-                            className={classes.fieldsfilter}
-                            valueDefault={dataMain.paymentstatus}
-                            variant="outlined"
-                            onChange={(value) => setdataMain(prev=>({...prev,paymentstatus:value?.value||''}))}
-                            data={datapaymentstatus}
-                            optionDesc="description"
-                            optionValue="value"
-                        />
-                        <Button
-                            disabled={mainResult.mainData.loading || disableSearch}
-                            variant="contained"
-                            color="primary"
-                            style={{ width: 120, backgroundColor: "#55BD84" }}
-                            startIcon={<SearchIcon style={{ color: 'white' }} />}
-                            onClick={search}
-                        >{t(langKeys.search)}
-                        </Button>
-                    </div>
-                )}
-                // titlemodule={t(langKeys.billingplan, { count: 2 })}
-                data={dataInvoice}
-                filterGeneral={false}
-                loading={mainResult.mainData.loading}
-                download={true}
-                register={false}
-            />
+            <div style={{ width: '100%' }}>
+                <TableZyx
+                    columns={columns}
+                    ButtonsElement={() => (
+                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                            <FieldSelect
+                                label={t(langKeys.year)}
+                                style={{width: 140}}
+                                valueDefault={dataMain.year}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||""}))}
+                                data={years}
+                                optionDesc="desc"
+                                optionValue="desc"
+                            />
+                            <FieldMultiSelect
+                                label={t(langKeys.month)}
+                                style={{width: 214}}
+                                valueDefault={dataMain.month}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
+                                data={months}
+                                uset={true}
+                                prefixTranslation="month_"
+                                optionDesc="val"
+                                optionValue="val"
+                            />
+                            <FieldSelect
+                                label={t(langKeys.corporation)}
+                                className={classes.fieldsfilter}
+                                valueDefault={dataMain.corpid}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev=>({...prev,corpid:value?.corpid||0,orgid:0}))}
+                                data={dataCorpList}
+                                optionDesc="description"
+                                optionValue="corpid"
+                            />
+                            <FieldSelect
+                                label={t(langKeys.organization)}
+                                className={classes.fieldsfilter}
+                                valueDefault={dataMain.orgid}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev=>({...prev,orgid:value?.orgid||0}))}
+                                data={dataOrgList.filter((e:any)=>{return e.corpid===dataMain.corpid})}
+                                optionDesc="orgdesc"
+                                optionValue="orgid"
+                            />
+                            <FieldSelect
+                                label={t(langKeys.currency)}
+                                className={classes.fieldsfilter}
+                                valueDefault={dataMain.currency}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev=>({...prev,currency:value?.value||''}))}
+                                data={datacurrency}
+                                optionDesc="description"
+                                optionValue="value"
+                            />
+                            <FieldSelect
+                                label={t(langKeys.paymentstatus)}
+                                className={classes.fieldsfilter}
+                                valueDefault={dataMain.paymentstatus}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev=>({...prev,paymentstatus:value?.value||''}))}
+                                data={datapaymentstatus}
+                                optionDesc="description"
+                                optionValue="value"
+                            />
+                            <Button
+                                disabled={mainResult.mainData.loading || disableSearch}
+                                variant="contained"
+                                color="primary"
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                onClick={search}
+                            >{t(langKeys.search)}
+                            </Button>
+                        </div>
+                    )}
+                    data={dataInvoice}
+                    filterGeneral={false}
+                    loading={mainResult.mainData.loading}
+                    download={true}
+                    register={false}
+                />
+                <ModalPayments
+                    openModal={openDialogPassword}
+                    setOpenModal={setOpenDialogPassword}
+                    row={modalRowSelect}
+                />
+            </div>
         )
     } else {
         return (
@@ -1773,6 +1910,104 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
             />
         );
     }
+}
+
+interface ModalPasswordProps {
+    openModal: boolean;
+    setOpenModal: (value: boolean) => any;
+    row: any;
+}
+
+const ModalPayments: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, row }) => {
+    const { t } = useTranslation();
+
+    const classes = useStyles();
+
+    const handleCancelModal = () => {
+        setOpenModal(false);
+        clearErrors();
+    }
+
+    const { register, handleSubmit, setValue, getValues, formState: { errors }, trigger, clearErrors } = useForm({
+        defaultValues: {
+            purchaseorder: '',
+            comments: ''
+        }
+    });
+
+    useEffect(() => {
+        register('purchaseorder');
+        register('comments');
+    }, [])
+    
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.paymentinformation)}
+            buttonText1={t(langKeys.cancel)}
+            handleClickButton1={handleCancelModal}
+        >
+            <div className="row-zyx">
+                <FieldView
+                    className="col-6"
+                    label={t(langKeys.servicedescription)}
+                    value={row?.description || ''}
+                />
+                <FieldView
+                    className="col-6"
+                    label={t(langKeys.totalamount)}
+                    value={(row?.totalamount || 0).toFixed(4)}
+                />
+            </div>
+            <div className="row-zyx">
+                <FieldView
+                    className={classes.section}
+                    label={''}
+                    value={t(langKeys.additional_information)}
+                />
+            </div>
+            <div className="row-zyx">
+                <FieldView
+                    className={classes.commentary}
+                    label={''}
+                    value={t(langKeys.additionalinformation1)}
+                />
+            </div>
+            <div className="row-zyx">
+                <FieldView
+                    className={classes.commentary}
+                    label={''}
+                    value={t(langKeys.additionalinformation2)}
+                />
+            </div>
+            <div className="row-zyx">
+                <FieldEdit
+                    label={t(langKeys.purchaseorder)}
+                    onChange={(value) => setValue('purchaseorder', value)}
+                    valueDefault={getValues('purchaseorder')}
+                    error={errors?.purchaseorder?.message}
+                    className="col-6"
+                />
+                <FieldEdit
+                    label={t(langKeys.comments)}
+                    onChange={(value) => setValue('comments', value)}
+                    valueDefault={getValues('comments')}
+                    error={errors?.comments?.message}
+                    className="col-6"
+                />
+            </div>
+            <CulqiModal
+                type="CHARGE"
+                invoiceid={row?.invoiceid}
+                title={row?.description}
+                description=""
+                currency={row?.currency}
+                amount={row?.totalamount * 100}
+                callbackOnSuccess={handleCancelModal}
+                buttontitle={t(langKeys.proceedpayment)}
+            ></CulqiModal>
+        </DialogZyx>
+    )
 }
 
 const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
@@ -1786,7 +2021,6 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const executeRes = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main);
     const user = useSelector(state => state.login.validateToken.user);
-    //const multiData = useSelector(state => state.main.multiData);
 
     const [dataMain, setdataMain] = useState({
         corpid: user?.corpid || 0,
@@ -1841,28 +2075,6 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
 
     const columns = React.useMemo(
         () => [
-            // {
-            //     accessor: 'billingsupportid',
-            //     isComponent: true,
-            //     minWidth: 60,
-            //     width: '1%',
-            //     Cell: (props: any) => {
-            //         const row = props.cell.row.original;
-            //         return (
-            //             <>
-            //                 <IconButton
-            //                     aria-label="more"
-            //                     aria-controls="long-menu"
-            //                     aria-haspopup="true"
-            //                     size="small"
-            //                     onClick={() => handleView(row)}
-            //                 >
-            //                     <Visibility style={{ color: '#B6B4BA' }} />
-            //                 </IconButton>
-            //             </>
-            //         )
-            //     }
-            // },
             {
                 Header: t(langKeys.corporation),
                 accessor: 'corpdesc',
@@ -1887,10 +2099,10 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                     return (
                         <Fragment>
                             <div>
-                                { (receiverdoctype == '6' ?
+                                { receiverdoctype ? ((receiverdoctype == '6' ?
                                     <span style={{ display: "block" }}>{t(langKeys.emissorinvoice)}</span>
                                     :
-                                    <span style={{ display: "block" }}>{t(langKeys.emissorticket)}</span>)
+                                    <span style={{ display: "block" }}>{t(langKeys.emissorticket)}</span>)) : <span style={{ display: "block" }}>{"PENDING"}</span>
                                 }
                             </div>
                         </Fragment>
@@ -1900,10 +2112,38 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             {
                 Header: t(langKeys.businessname),
                 accessor: 'receiverbusinessname',
+                Cell: (props: any) => {
+                    const receiverbusinessname = props.cell.row.original.receiverbusinessname;
+                    return (
+                        <Fragment>
+                            <div>
+                                { receiverbusinessname ?
+                                    <span style={{ display: "block" }}>{receiverbusinessname}</span>
+                                    :
+                                    <span style={{ display: "block" }}>{"PENDING"}</span>
+                                }
+                            </div>
+                        </Fragment>
+                    )
+                }
             },
             {
                 Header: t(langKeys.documentnumber),
                 accessor: 'receiverdocnum',
+                Cell: (props: any) => {
+                    const receiverdocnum = props.cell.row.original.receiverdocnum;
+                    return (
+                        <Fragment>
+                            <div>
+                                { receiverdocnum ?
+                                    <span style={{ display: "block" }}>{receiverdocnum}</span>
+                                    :
+                                    <span style={{ display: "block" }}>{"PENDING"}</span>
+                                }
+                            </div>
+                        </Fragment>
+                    )
+                }
             },
             {
                 Header: t(langKeys.currency),

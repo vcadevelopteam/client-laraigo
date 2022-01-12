@@ -32,6 +32,7 @@ interface CulqiModalProps {
     options?: CulqiOptionsProps;
     callbackOnSuccess?: () => void;
     metadata?: Dictionary;
+    buttontitle?: string;
 }
 
 const publickey = apiUrls.CULQIKEY;
@@ -61,7 +62,8 @@ const CulqiModal: FC<CulqiModalProps> = ({
     limit,
     options = {},
     metadata, 
-    callbackOnSuccess
+    callbackOnSuccess,
+    buttontitle
 }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -151,7 +153,7 @@ const CulqiModal: FC<CulqiModalProps> = ({
                         startIcon={<AttachMoneyIcon color="secondary" />}
                         style={{ backgroundColor: "#55BD84" }}
                         onClick={openCulqi}
-                    >{t(langKeys.pay)}</Button>
+                    >{buttontitle ? buttontitle : t(langKeys.pay)}</Button>
                 )
             }}
         </Culqi>

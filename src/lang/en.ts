@@ -921,7 +921,7 @@ const translation: LangKeys = {
     billinginformation:"Billing information",
     clientadditionalcharge: "Cost for additional contacts",
     supportbasicfee: "Support cost",
-    totalcharge: "Total amount",
+    totalcharge: "Total Amount",
     issuerruc: "Issuer ruc",
     issuerbusinessname: "Issuer business name",
     issuertradename: "Issuer trade name",
@@ -1864,6 +1864,19 @@ const translation: LangKeys = {
     smssection: 'SMS',
     mailsection: 'Mail',
     newmessagingplan: "New messaging cost",
+    conversationclientwhatfreequantity: "Number of free WA conversations initiated by the client",
+    conversationcompanywhatfreequantity: "Number of free WA conversations initiated by the business",
+    unitpricepersms: "UP per SMS",
+    smsquantity: "SMS quantity",
+    smscost: "SMS cost",
+    unitepricepermail: "UP per mail",
+    mailquantity: "Mail quantity",
+    mailcost: "Mail cost",
+    messaging: "Messaging",
+    servicedescription: "Service description",
+    additionalinformation1: "Once the payment is completed, the invoice will be generated automatically",
+    additionalinformation2: "If you wish to include additional information before the invoice is generated, fill the information before paying",
+    proceedpayment: "Proceed to Payment",
 };
 
 const enResource: ResourceLanguage = {

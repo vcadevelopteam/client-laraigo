@@ -1855,6 +1855,19 @@ export const langKeys = {
     smssection: 'smssection',
     mailsection: 'mailsection',
     newmessagingplan: "newmessagingplan",
+    conversationclientwhatfreequantity: "conversationclientwhatfreequantity",
+    conversationcompanywhatfreequantity: "conversationcompanywhatfreequantity",
+    unitpricepersms: "unitpricepersms",
+    smsquantity: "smsquantity",
+    smscost: "smscost",
+    unitepricepermail: "unitepricepermail",
+    mailquantity: "mailquantity",
+    mailcost: "mailcost",
+    messaging: "messaging",
+    servicedescription: "servicedescription",
+    additionalinformation1: "additionalinformation1",
+    additionalinformation2: "additionalinformation2",
+    proceedpayment: "proceedpayment",
 };
 
 export type LangKeys = typeof langKeys;
