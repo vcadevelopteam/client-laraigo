@@ -3,13 +3,11 @@ import React, { useEffect, useState } from 'react'; // we need this to make JSX 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldEditArray, TemplateSwitchArray, TemplateSwitch } from 'components';
+import { TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldEditArray } from 'components';
 import { insertReportTemplate, getColumnsOrigin } from 'common/helpers';
 import { Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
-import Tabs from '@material-ui/core/Tabs';
 import SaveIcon from '@material-ui/icons/Save';
-import { variablesTemplate } from 'common/constants'
 import { useTranslation, Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -25,14 +23,13 @@ import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import { DialogZyx, AntTab } from 'components'
+import { DialogZyx } from 'components'
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { SearchIcon } from 'icons';
 import { FixedSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { Done } from '@material-ui/icons';
-
 
 interface RowSelected {
     row: Dictionary | null,
@@ -48,6 +45,16 @@ interface DetailReportDesignerProps {
     multiData: MultiData[];
     fetchData: () => void
 }
+
+const dataSummarization = [
+    { function: 'total'},
+    { function: 'count'},
+    { function: 'average'},
+    { function: 'minimum'},
+    { function: 'maximum'},
+    { function: 'median'},
+    { function: 'mode'},
+];
 
 const arrayBread = [
     { id: "view-1", name: "Reports" },
@@ -106,6 +113,7 @@ type IColumnTemplate = {
 }
 
 type IFilter = {
+    description: string;
     columnname: string;
     type: string;
     id: any;
@@ -113,6 +121,7 @@ type IFilter = {
 
 type ISummarization = {
     columnname: string;
+    description: string;
     function: string;
     id: any;
 }
@@ -130,7 +139,7 @@ type FormFields = {
     dataorigin: string;
     columns: IColumnTemplate[],
     filters: IFilter[],
-    summarizations: ISummarization[],
+    summary: ISummarization[],
 }
 
 const DialogManageColumns: React.FC<{
@@ -344,6 +353,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
         }
     }, [mainAuxRes])
 
+    console.log(row)
     const { control, register, trigger, handleSubmit, setValue, getValues, formState: { errors } } = useForm<FormFields>({
         defaultValues: {
             reporttemplateid: row?.reporttemplateid || 0,
@@ -352,7 +362,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
             dataorigin: row?.dataorigin || '',
             columns: row?.columns || [],
             filters: row?.filters || [],
-            summarizations: row?.summarizations || [],
+            summary: row?.summary || [],
             operation: row ? "EDIT" : "INSERT"
         }
     });
@@ -367,18 +377,28 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
         name: 'filters',
     });
 
-    const { fields: fieldsSummarization, append: summarizationsAppend, remove: summarizationRemove } = useFieldArray({
+    const { fields: fieldsSummarization, append: summaryAppend, remove: summarizationRemove } = useFieldArray({
         control,
-        name: 'summarizations',
+        name: 'summary',
     });
 
     useEffect(() => {
+            setValue("columns", row?.columns || []);
+            trigger("columns");
+            setValue("filters", row?.filters || []);
+            trigger("filters");
+            setValue("summary", row?.summary || []);
+            trigger("summary");
+            if (row?.reporttemplateid) {
+
+            }
+    }, [])
+
+    useEffect(() => {
         if (columnsSelected.length > 0) {
-            columnsAppend(columnsSelected.map(item => ({ columnname: item.columnname, description: item.description, alias: '', type: item.type })));
+            columnsAppend(columnsSelected.map(item => ({ columnname: item.columnname, description: item.description, alias: item.description, type: item.type })));
         }
     }, [columnsSelected]);
-
-
 
     React.useEffect(() => {
         register('description', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
@@ -403,9 +423,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
     }, [executeRes, waitSave])
 
     const onSubmit = handleSubmit((data) => {
-        const { reporttemplateid, description, status, columns, filters, summarizations } = data;
-        // const filters = { startdate, finishdate, usergroup, channels, tags, operation }
-
+        const { reporttemplateid, description, status, columns, filters, summary, dataorigin } = data;
         if (columns.length === 0) {
             return;
         }
@@ -415,8 +433,9 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                 description,
                 status,
                 type: '',
-                filtersjson: JSON.stringify(filters),
-                summarizationsjson: JSON.stringify(summarizations),
+                dataorigin,
+                filterjson: JSON.stringify(filters),
+                summaryjson: JSON.stringify(summary),
                 columnjson: JSON.stringify(columns),
                 operation: data.operation
             })));
@@ -430,10 +449,6 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
             callback
         }))
     });
-
-    const handlerDeleteColumn = (index: number) => {
-        columnRemove(index)
-    };
 
     const selectDataOrigin = (tablename: string) => {
         setValue('dataorigin', tablename);
@@ -490,6 +505,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                             onChange={(value) => selectDataOrigin(value ? value.tablename : '')}
                             error={errors?.dataorigin?.message}
                             data={dataTables}
+                            triggerOnChangeOnFirst={true}
                             optionDesc="tablename"
                             optionValue="tablename"
                         />
@@ -537,24 +553,14 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                 <div style={{ display: 'flex' }}>
                                                     <IconButton
                                                         size="small"
-                                                        onClick={() => handlerDeleteColumn(i)}
+                                                        onClick={() => columnRemove(i)}
                                                     >
                                                         <DeleteIcon style={{ color: '#777777' }} />
                                                     </IconButton>
                                                 </div>
                                             </TableCell>
                                             <TableCell>
-                                                <FieldEditArray
-                                                    fregister={{
-                                                        ...register(`columns.${i}.description`, {
-                                                            validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                                        })
-                                                    }}
-                                                    disabled={true}
-                                                    valueDefault={item.description}
-                                                    error={errors?.columns?.[i]?.description?.message}
-                                                    onChange={(value) => setValue(`columns.${i}.description`, "" + value)}
-                                                />
+                                                {item.description}
                                             </TableCell>
                                             <TableCell>
                                                 <FieldEditArray
@@ -569,17 +575,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                 />
                                             </TableCell>
                                             <TableCell>
-                                                <FieldEditArray
-                                                    fregister={{
-                                                        ...register(`columns.${i}.type`, {
-                                                            validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                                        }),
-                                                    }}
-                                                    disabled={true}
-                                                    valueDefault={item.type}
-                                                    error={errors?.columns?.[i]?.type?.message}
-                                                    onChange={(value) => setValue(`columns.${i}.type`, value)}
-                                                />
+                                                {item.type}
                                             </TableCell>
                                         </TableRow>
                                     )}
@@ -621,7 +617,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                         <div style={{ display: 'flex' }}>
                                                             <IconButton
                                                                 size="small"
-                                                                onClick={() => handlerDeleteColumn(i)}
+                                                                onClick={() => filterRemove(i)}
                                                             >
                                                                 <DeleteIcon style={{ color: '#777777' }} />
                                                             </IconButton>
@@ -641,38 +637,16 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                                 console.log("value?.type", value?.type)
                                                                 setValue(`filters.${i}.columnname`, value?.columnname || '');
                                                                 setValue(`filters.${i}.type`, value?.type || '');
-                                                                trigger(`filters.${i}`);
+                                                                trigger(`filters.${i}.type`);
                                                             }}
-                                                            // onChange={onChangeOrganization}
-                                                            // triggerOnChangeOnFirst={true}
                                                             error={errors?.filters?.[i]?.columnname?.message}
                                                             data={dataColumns}
                                                             optionDesc="description"
                                                             optionValue="columnname"
                                                         />
-                                                        {/* <FieldEditArray
-                                                            fregister={{
-                                                                ...register(`filters.${i}.description`, {
-                                                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                                                })
-                                                            }}
-                                                            disabled={true}
-                                                            valueDefault={item.description}
-                                                            error={errors?.columns?.[i]?.description?.message}
-                                                            onChange={(value) => setValue(`filters.${i}.description`, "" + value)}
-                                                        /> */}
                                                     </TableCell>
                                                     <TableCell>
-                                                        <FieldEditArray
-                                                            valueDefault={getValues(`filters.${i}.type`)}
-                                                            fregister={{
-                                                                ...register(`filters.${i}.type`),
-                                                            }}
-                                                            disabled={true}
-                                                            // valueDefault={item.type}
-                                                            error={errors?.filters?.[i]?.type?.message}
-                                                            onChange={(value) => setValue(`filters.${i}.type`, value)}
-                                                        />
+                                                        {item.type}
                                                     </TableCell>
                                                 </TableRow>
                                             )}
@@ -684,7 +658,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
 
                         <div style={{ flex: 1 }} className={classes.containerDetail}>
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <div className={classes.title}>{"Sumarización"}</div>
+                                <div className={classes.title}>{"Resumen"}</div>
                             </div>
                             <div>
                                 <TableContainer>
@@ -697,7 +671,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                         onClick={async () => {
                                                             const haveDataOrigin = await trigger('dataorigin');
                                                             if (haveDataOrigin) {
-                                                                setOpenDialogVariables(true);
+                                                                summaryAppend({ columnname: '', function: '' });
                                                             }
                                                         }}
                                                     >
@@ -706,58 +680,53 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                 </TableCell>
                                                 <TableCell>{t(langKeys.column)}</TableCell>
                                                 <TableCell>{t(langKeys.description)}</TableCell>
-                                                <TableCell>{t(langKeys.type)}</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {fieldsColumns.map((item: IColumnTemplate, i: number) =>
+                                            {fieldsSummarization.map((item: ISummarization, i: number) =>
                                                 <TableRow key={item.id}>
                                                     <TableCell width={30}>
                                                         <div style={{ display: 'flex' }}>
                                                             <IconButton
                                                                 size="small"
-                                                                onClick={() => handlerDeleteColumn(i)}
+                                                                onClick={() => summarizationRemove(i)}
                                                             >
                                                                 <DeleteIcon style={{ color: '#777777' }} />
                                                             </IconButton>
                                                         </div>
                                                     </TableCell>
                                                     <TableCell>
-                                                        <FieldEditArray
+                                                        <FieldSelect
+                                                            label={t(langKeys.column)}
+                                                            valueDefault={getValues(`summary.${i}.columnname`)}
                                                             fregister={{
-                                                                ...register(`columns.${i}.description`, {
+                                                                ...register(`summary.${i}.columnname`, {
                                                                     validate: (value: any) => (value && value.length) || t(langKeys.field_required)
                                                                 })
                                                             }}
-                                                            disabled={true}
-                                                            valueDefault={item.description}
-                                                            error={errors?.columns?.[i]?.description?.message}
-                                                            onChange={(value) => setValue(`columns.${i}.description`, "" + value)}
+                                                            variant='outlined'
+                                                            onChange={(value) => setValue(`summary.${i}.columnname`, value?.columnname || '')}
+                                                            error={errors?.summary?.[i]?.columnname?.message}
+                                                            data={dataColumns}
+                                                            optionDesc="description"
+                                                            optionValue="columnname"
                                                         />
                                                     </TableCell>
                                                     <TableCell>
-                                                        <FieldEditArray
+                                                        <FieldSelect
+                                                            label={t(langKeys.column)}
+                                                            valueDefault={getValues(`summary.${i}.function`)}
                                                             fregister={{
-                                                                ...register(`columns.${i}.alias`, {
+                                                                ...register(`summary.${i}.function`, {
                                                                     validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                                                }),
+                                                                })
                                                             }}
-                                                            valueDefault={item.alias}
-                                                            error={errors?.columns?.[i]?.alias?.message}
-                                                            onChange={(value) => setValue(`columns.${i}.alias`, value)}
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <FieldEditArray
-                                                            fregister={{
-                                                                ...register(`columns.${i}.type`, {
-                                                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                                                }),
-                                                            }}
-                                                            disabled={true}
-                                                            valueDefault={item.type}
-                                                            error={errors?.columns?.[i]?.type?.message}
-                                                            onChange={(value) => setValue(`columns.${i}.type`, value)}
+                                                            variant='outlined'
+                                                            onChange={(value) => setValue(`summary.${i}.function`, value?.function || '')}
+                                                            error={errors?.summary?.[i]?.function?.message}
+                                                            data={dataSummarization}
+                                                            optionDesc="function"
+                                                            optionValue="function"
                                                         />
                                                     </TableCell>
                                                 </TableRow>
@@ -773,7 +742,6 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
             <DialogManageColumns
                 setOpenDialogVariables={setOpenDialogVariables}
                 openDialogVariables={openDialogVariables}
-                // handlerNewColumn={handlerNewColumn}
                 columnsAlreadySelected={fieldsColumns}
                 setColumnsSelected={setColumnsSelected}
             />

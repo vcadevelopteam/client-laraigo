@@ -392,7 +392,8 @@ const Reports: FC = () => {
                     const rr = [...reportsResult.mainData.data, ...reportsResult.mainAux.data.map(x => ({
                         ...x,
                         columns: x.columnjson ? JSON.parse(x.columnjson) : [],
-                        ...(x.filterjson ? JSON.parse(x.filterjson) : {})
+                        filters: x.filterjson ? JSON.parse(x.filterjson) : [],
+                        summary: x.summaryjson ? JSON.parse(x.summaryjson) : [],
                     }))];
                     setAllReports(rr);
                     setallReportsToShow(rr);
@@ -600,7 +601,6 @@ const Reports: FC = () => {
                                         <Card style={{ position: 'relative' }}>
                                             <CardActionArea
                                                 onClick={() => {
-                                                    console.log(report)
                                                     setViewSelected("view-4");
                                                     setRowReportSelected({ row: report, edit: true });
                                                 }}
