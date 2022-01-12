@@ -196,6 +196,7 @@ interface TemplateDialogProps {
     buttonText2?: string;
     buttonText1?: string;
     buttonText3?: string;
+    zIndex?: number;
     handleClickButton2?: (param: any) => void;
     handleClickButton1?: (param: any) => void;
     handleClickButton3?: (param: any) => void;
@@ -206,12 +207,12 @@ interface TemplateDialogProps {
     maxWidth?: false | "sm" | "xs" | "md" | "lg" | "xl" | undefined;
 }
 
-export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText1, buttonText2, handleClickButton2, handleClickButton1, title, maxWidth = "sm", button2Type = "button", button1Type = "button" }) => (
+export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText1, buttonText2, handleClickButton2, handleClickButton1, title, maxWidth = "sm", button2Type = "button", button1Type = "button", zIndex = 1300 }) => (
     <Dialog
         open={open}
         fullWidth
         maxWidth={maxWidth}
-        style={{ zIndex: 1300 }}>
+        style={{ zIndex }}>
         <form onSubmit={(button1Type === "submit" ? handleClickButton1 : (button2Type === "submit" ? handleClickButton2 : () => { }))}>
             {title && <DialogTitle>{title}</DialogTitle>}
             <DialogContent>
