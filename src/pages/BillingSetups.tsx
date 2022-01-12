@@ -1536,14 +1536,14 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
         register('channelotherfee');
         register('description');
         register('plan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('basicfee', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
-        register('userfreequantity', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
-        register('channelfreequantity', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
-        register('clientfreequantity', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
-        register('useradditionalfee', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
-        register('channelwhatsappfee', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
-        register('clientadditionalfee', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
-        register('hsmfee', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
+        register('basicfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('userfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('channelfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('clientfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('useradditionalfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('channelwhatsappfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('clientadditionalfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('hsmfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
     }, [edit, register]);
 
     useEffect(() => {
@@ -2040,10 +2040,12 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
         register('operation');
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('countrycode', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('companystartfee', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
-        register('clientstartfee', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
-        register('freeconversations', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
-        register('vcacomission', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
+        register('companystartfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('clientstartfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('freeconversations', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('vcacomission', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+
+        
     }, [edit, register]);
 
     useEffect(() => {
@@ -2556,15 +2558,15 @@ const DetailNotificationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
         register('operation');
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('countrycode', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('vcacomission', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
-        register('c250000', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
-        register('c750000', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
-        register('c2000000', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
-        register('c3000000', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
-        register('c4000000', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
-        register('c5000000', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
-        register('c10000000', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
-        register('c25000000', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
+        register('vcacomission', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('c250000', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('c750000', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('c2000000', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('c3000000', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('c4000000', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('c5000000', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('c10000000', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('c25000000', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
     }, [edit, register]);
 
     useEffect(() => {
@@ -3057,7 +3059,7 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({ data: { row, edit
         register('operation');
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('plan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('basicfee', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
+        register('basicfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
         register('starttime', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('finishtime', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
@@ -3476,10 +3478,10 @@ const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
         register('id');
         register('year');
         register('month');
-        register('pricepersms', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
-        register('vcacomissionpersms', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
-        register('pricepermail', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
-        register('vcacomissionpermail', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
+        register('pricepersms', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('vcacomissionpersms', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('pricepermail', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('vcacomissionpermail', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('status');
         register('type');
