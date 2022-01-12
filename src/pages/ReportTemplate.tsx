@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldEditArray, TemplateSwitchArray, TemplateSwitch } from 'components';
-import {insertReportTemplate} from 'common/helpers';
+import { insertReportTemplate, getColumnsOrigin } from 'common/helpers';
 import { Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
@@ -13,19 +13,22 @@ import { variablesTemplate } from 'common/constants'
 import { useTranslation, Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { execute } from 'store/main/actions';
+import { execute, getCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import { IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
-import InfoIcon from '@material-ui/icons/Info';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { DialogZyx, AntTab } from 'components'
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import { SearchIcon } from 'icons';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -92,64 +95,123 @@ type FormFields = {
     channels: string;
     tags: string;
     operation: string;
+    dataorigin: string;
     columns: IColumnTemplate[]
 }
 
-const DialogVariables: React.FC<{
+const DialogManageColumns: React.FC<{
     setOpenDialogVariables: (param: any) => void;
     handlerNewColumn: (param: any) => void;
     openDialogVariables: boolean;
 }> = ({ setOpenDialogVariables, openDialogVariables, handlerNewColumn }) => {
+
     const classes = useStyles();
-    const [pageSelected, setPageSelected] = useState(0);
     const { t } = useTranslation();
-    const [variablesToShow, setVariablesToShow] = useState<Dictionary[]>([])
+    const mainAuxRes = useSelector(state => state.main.mainAux);
+    const [columnsTable, setColumnsTable] = useState<Dictionary[]>([]);
+    const [showcolumnsTable, setShowColumnsTable] = useState<Dictionary[]>([]);
+    const [columnsToAdd, setColumnsToAdd] = useState<Dictionary>({});
+    const timeOut = React.useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
-        if (pageSelected === 0) {
-            setVariablesToShow(variablesTemplate.filter(x => x.group === "personinformation"))
-        } else if (pageSelected === 1) {
-            setVariablesToShow(variablesTemplate.filter(x => x.group === "ticketinformation"))
-        } else if (pageSelected === 2) {
-            setVariablesToShow(variablesTemplate.filter(x => x.group === "AIservices"))
-        } else if (pageSelected === 3) {
-            setVariablesToShow(variablesTemplate.filter(x => x.group === "systemvariables"))
-        } else if (pageSelected === 4) {
-            setVariablesToShow(variablesTemplate.filter(x => x.group === "odoovariables"))
+        if (!mainAuxRes.error && !mainAuxRes.loading && mainAuxRes.key === "UFN_REPORT_PERSONALIZED_COLUMNS_SEL") {
+            setColumnsTable(mainAuxRes.data);
+            setShowColumnsTable(mainAuxRes.data);
         }
-    }, [pageSelected])
+    }, [mainAuxRes])
+
+    useEffect(() => {
+        if (openDialogVariables) {
+            setColumnsToAdd({})
+        }
+    }, [openDialogVariables])
+
+    const handleChange = (text: string) => {
+        if (text === '') 
+            setShowColumnsTable(columnsTable);
+         else 
+            setShowColumnsTable(columnsTable.filter(x => x.description.toLowerCase().includes(text.toLowerCase())));
+    }
+
+    const onChange = (text: string) => {
+        if (timeOut.current) clearTimeout(timeOut.current);
+        timeOut.current = setTimeout(() => {
+            handleChange(text);
+            if (timeOut.current) {
+                clearTimeout(timeOut.current);
+                timeOut.current = null;
+            }
+        }, 1000);;
+    };
+
+    const handlerChecked = React.useCallback((column: Dictionary, checked: boolean) => {
+        if (checked)
+            setColumnsToAdd(prev => ({
+                ...prev,
+                [column.columnname]: column
+            }));
+        else 
+            delete columnsToAdd[column.columnname];
+    }, [setColumnsToAdd])
+
+    console.log(columnsToAdd);
 
     return (
         <DialogZyx
+            maxWidth="md"
             open={openDialogVariables}
-            title=""
+            title="Columnas disponibles"
             buttonText1={t(langKeys.cancel)}
             handleClickButton1={() => setOpenDialogVariables(false)}
         >
-            <Tabs
-                value={pageSelected}
-                indicatorColor="primary"
-                variant="fullWidth"
-                style={{ borderBottom: '1px solid #EBEAED' }}
-                textColor="primary"
-                onChange={(_, value) => setPageSelected(value)}
-            >
-                <AntTab label={t(langKeys.personinformation)} />
-                <AntTab label={t(langKeys.ticketinformation)} />
-                <AntTab label={t(langKeys.AIservices)} />
-                <AntTab label={t(langKeys.systemvariables)} />
-                <AntTab label={t(langKeys.odoovariables)} />
-            </Tabs>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, paddingTop: 16, justifyContent: 'center' }}>
-                {variablesToShow.map((x, index) => (
-                    <div
-                        key={index}
-                        className={classes.variableInfo}
-                        onClick={() => handlerNewColumn({ key: x.variable, value: x.variable })}
-                    >
-                        {x.variable}
+            <div style={{ display: 'flex', gap: 16 }}>
+                <div style={{ flex: 1 }}>
+                    <FieldEdit
+                        variant='standard'
+                        fregister={{
+                            placeholder: t(langKeys.search)
+                        }}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchIcon />
+                                </InputAdornment>
+                            )
+                        }}
+                        onChange={onChange}
+                    />
+                    <div style={{ display: 'flex', flexDirection: 'column', maxHeight: 300, overflowY: 'auto', marginTop: 4 }}>
+                        {showcolumnsTable.map((item, index) => (
+                            <div key={item.columnname} style={{ width: '100%' }}>
+                                <FormControlLabel
+                                    control={(
+                                        <Checkbox
+                                            size='small'
+                                            // checked={filterCheckBox.ASIGNADO}
+                                            color="primary"
+                                            onChange={(e) => handlerChecked(item, e.target.checked)}
+                                            name="checkedA" />
+                                    )}
+                                    label={item.description}
+                                />
+                            </div>
+                        ))}
                     </div>
-                ))}
+                    <div style={{ textAlign: 'right' }}>
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            disabled={Object.keys(columnsToAdd).length === 0}
+                            startIcon={<AddIcon color="secondary" />}
+                            // style={{ backgroundColor: "#55BD84" }}
+                        >{t(langKeys.add)}
+                        </Button>
+                    </div>
+                </div>
+                <div style={{ flex: 1 }}>
+                    variables2
+                </div>
             </div>
         </DialogZyx>
     )
@@ -163,14 +225,15 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
-
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
+    const dataTables = multiData[4] && multiData[4].success ? multiData[4].data : [];
 
     const { control, register, trigger, handleSubmit, setValue, getValues, formState: { errors } } = useForm<FormFields>({
         defaultValues: {
             reporttemplateid: row?.reporttemplateid || 0,
             description: row?.description || '',
             status: row?.status || 'ACTIVO',
+            dataorigin: row?.dataorigin || '',
             startdate: row?.startdate || false,
             finishdate: row?.finishdate || false,
             usergroup: row?.usergroup || false,
@@ -185,9 +248,10 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
         control,
         name: 'columns',
     });
-    
+
     React.useEffect(() => {
         register('description', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('dataorigin', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('status', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
     }, [edit, register]);
 
@@ -241,10 +305,15 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
         fieldRemove(index)
     };
 
+    const selectDataOrigin = (tablename: string) => {
+        setValue('dataorigin', tablename);
+        if (tablename)
+            dispatch(getCollectionAux(getColumnsOrigin(tablename)));
+    }
+
     return (
         <>
             <div style={{ width: '100%' }}>
-                {/* <div className="col-12" style={{ overflowWrap: 'break-word' }}>{JSON.stringify(getValues())}</div> */}
                 <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <div>
@@ -276,69 +345,41 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                             </Button>
                         </div>
                     </div>
-                    <div style={{ marginBottom: 0, display: 'flex', gap: 8 }} >
-                        <div className={`row-zyx ${classes.containerDetail}`} style={{ width: '50%', marginBottom: 0 }}>
-                            <FieldEdit
-                                label={t(langKeys.title)} //transformar a multiselect
-                                className="col-12"
-                                onChange={(value) => setValue('description', value)}
-                                valueDefault={row ? (row.description || "") : ""}
-                                error={errors?.description?.message}
-                            />
-                            <FieldSelect
-                                label={t(langKeys.status)}
-                                className="col-12"
-                                valueDefault={row?.status || 'ACTIVO'}
-                                onChange={(value) => setValue('status', value ? value.domainvalue : '')}
-                                error={errors?.status?.message}
-                                data={dataStatus}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                            />
-                        </div>
-                        <div className={`row-zyx ${classes.containerDetail}`} style={{ width: '50%', marginBottom: 0 }}>
-                            <div style={{ fontSize: 15, fontWeight: 500 }}>{t(langKeys.filters)}</div>
-                            <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                                <TemplateSwitch
-                                    label={t(langKeys.startDate)}
-                                    style={{ flex: '0 0 150px' }}
-                                    valueDefault={row?.startdate || false}
-                                    onChange={(value) => setValue('startdate', value)}
-                                />
-                                <TemplateSwitch
-                                    label={t(langKeys.endDate)}
-                                    style={{ flex: '0 0 150px' }}
-                                    valueDefault={row?.finishdate || false}
-                                    onChange={(value) => setValue('finishdate', value)}
-                                />
-                                <TemplateSwitch
-                                    label={t(langKeys.usergroup)}
-                                    style={{ flex: '0 0 150px' }}
-                                    valueDefault={row?.usergroup || false}
-                                    onChange={(value) => setValue('usergroup', value)}
-                                />
-                                <TemplateSwitch
-                                    label={t(langKeys.channel_plural)}
-                                    style={{ flex: '0 0 150px' }}
-                                    valueDefault={row?.channels || false}
-                                    onChange={(value) => setValue('channels', value)}
-                                />
-                                <TemplateSwitch
-                                    label={t(langKeys.tag)}
-                                    style={{ flex: '0 0 150px' }}
-                                    valueDefault={row?.tags || false}
-                                    onChange={(value) => setValue('tags', value)}
-                                />
-
-                            </div>
-                        </div>
+                    <div className={`row-zyx ${classes.containerDetail}`} style={{ marginBottom: 0 }}>
+                        <FieldEdit
+                            label={t(langKeys.title)} //transformar a multiselect
+                            className="col-4"
+                            onChange={(value) => setValue('description', value)}
+                            valueDefault={row ? (row.description || "") : ""}
+                            error={errors?.description?.message}
+                        />
+                        <FieldSelect
+                            label={t(langKeys.data_origin)}
+                            className="col-4"
+                            valueDefault={row?.dataorigin || 'ACTIVO'}
+                            onChange={(value) => selectDataOrigin(value ? value.tablename : '')}
+                            error={errors?.dataorigin?.message}
+                            data={dataTables}
+                            optionDesc="tablename"
+                            optionValue="tablename"
+                        />
+                        <FieldSelect
+                            label={t(langKeys.status)}
+                            className="col-4"
+                            valueDefault={row?.status || 'ACTIVO'}
+                            onChange={(value) => setValue('status', value ? value.domainvalue : '')}
+                            error={errors?.status?.message}
+                            data={dataStatus}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
                     </div>
                     <div className={classes.containerDetail}>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <div className={classes.title}>{t(langKeys.column_plural)}</div>
-                            <IconButton onClick={() => setOpenDialogVariables(true)}>
+                            {/* <IconButton onClick={() => setOpenDialogVariables(true)}>
                                 <InfoIcon />
-                            </IconButton>
+                            </IconButton> */}
                         </div>
                         <TableContainer>
                             <Table size="small">
@@ -347,7 +388,12 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                         <TableCell>
                                             <IconButton
                                                 size="small"
-                                                onClick={() => handlerNewColumn()}
+                                                onClick={async () => {
+                                                    const haveDataOrigin = await trigger('dataorigin');
+                                                    if (haveDataOrigin) {
+                                                        setOpenDialogVariables(true);
+                                                    }
+                                                }}
                                             >
                                                 <AddIcon color="primary" />
                                             </IconButton>
@@ -435,7 +481,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                     </div>
                 </form>
             </div>
-            <DialogVariables
+            <DialogManageColumns
                 setOpenDialogVariables={setOpenDialogVariables}
                 openDialogVariables={openDialogVariables}
                 handlerNewColumn={handlerNewColumn}
