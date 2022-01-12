@@ -3339,6 +3339,7 @@ const MessagingCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         return (
             <Fragment>
                 <TableZyx
+                    onClickRow={handleEdit}
                     columns={columns}                    
                     ButtonsElement={() => (
                         <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
