@@ -263,7 +263,7 @@ const TmpRichResponseIcon: React.FC<{ classes: any, setText: (param: string) => 
             newUserGroup: '',
             observation: 'Reassigned from supervisor',
             newConversation: true,
-            wasanswered: true
+            wasanswered: ticketSelected?.isAnswered || false
         }));
         dispatch(emitEvent({
             event: 'reassignTicket',
