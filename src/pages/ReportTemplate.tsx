@@ -575,7 +575,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                 />
                                             </TableCell>
                                             <TableCell>
-                                                {item.type}
+                                                {t(`typepg_${item.type}`)}
                                             </TableCell>
                                         </TableRow>
                                     )}
