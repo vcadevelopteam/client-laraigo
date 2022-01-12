@@ -645,6 +645,7 @@ interface TemplateSwitchPropsYesNo extends InputProps {
     textYes?: string;
     textNo?: string;
     labelPlacement?: "start" | "end" | "bottom" | "top" | undefined;
+    disabled? : boolean;
 }
 
 export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, onChange, valueDefault, label, style }) => {
@@ -664,7 +665,7 @@ export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, onCha
         </div>
     );
 }
-export const TemplateSwitchYesNo: React.FC<TemplateSwitchPropsYesNo> = ({ className, onChange, valueDefault, label, style, textYes, textNo, labelPlacement = "end" }) => {
+export const TemplateSwitchYesNo: React.FC<TemplateSwitchPropsYesNo> = ({ className, onChange, valueDefault, label, style, textYes, textNo, labelPlacement = "end", disabled = false }) => {
     const [checkedaux, setChecked] = useState(false);
     const { t } = useTranslation();
 
@@ -678,7 +679,7 @@ export const TemplateSwitchYesNo: React.FC<TemplateSwitchPropsYesNo> = ({ classN
             <FormControlLabel
                 labelPlacement={labelPlacement}
                 style={{ paddingLeft: 10 }}
-                control={<IOSSwitch checked={checkedaux} onChange={(e) => {
+                control={<IOSSwitch checked={checkedaux} disabled={disabled} onChange={(e) => {
                     setChecked(e.target.checked);
                     onChange && onChange(e.target.checked)
                 }} />}
@@ -892,7 +893,7 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisNoShow, on
                         <Picker
                             onSelect={onSelect}
                             sheetSize={32}
-                            emojisToShowFilter={emojisNoShow && emojisNoShow.length > 0 ? (emoji: any) => emojisNoShow.indexOf(emoji.unified) === -1 : undefined}
+                            emojisToShowFilter={emojisNoShow && emojisNoShow.length > 0 ? (emoji: any) => emojisNoShow.map(x => x.toUpperCase()).indexOf(emoji.unified.toUpperCase()) === -1 : undefined}
                         />
                     </div>
                 )}
