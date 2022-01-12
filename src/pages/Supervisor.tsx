@@ -12,7 +12,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { GetIcon } from 'components'
 import { getAgents, selectAgent, emitEvent, cleanAlerts, cleanInboxSupervisor } from 'store/inbox/actions';
 import { getMultiCollection, resetAllMain } from 'store/main/actions';
-import { getValuesFromDomainLight, getCommChannelLst, getListUsers, getClassificationLevel1, getListQuickReply, getMessageTemplateLst } from 'common/helpers';
+import { getValuesFromDomainLight, getCommChannelLst, getListUsers, getClassificationLevel1, getListQuickReply, getMessageTemplateLst, getEmojiAllSel } from 'common/helpers';
 import { setOpenDrawer } from 'store/popus/actions';
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
@@ -342,6 +342,7 @@ const Supervisor: FC = () => {
             getValuesFromDomainLight("OPORTUNIDADPRODUCTOS"),
             getValuesFromDomainLight("MOTIVOSUSPENSION"),
             getValuesFromDomainLight("OPORTUNIDADETIQUETAS"),
+            getEmojiAllSel(),
         ]))
         return () => {
             dispatch(resetAllMain());

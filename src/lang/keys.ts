@@ -1628,6 +1628,9 @@ export const langKeys = {
     message_click_to_login: 'message_click_to_login',
 
     app_whitelist: "app_whitelist",
+    "app_validación de inputs": "app_validación_de_inputs",
+    "app_kpi manager": "app_kpi manager",
+    app_invoice: "app_invoice",
     app_inappropriatewords: "app_inappropriatewords",
     app_intelligentmodels: "app_intelligentmodels",
     app_sla: "app_sla",

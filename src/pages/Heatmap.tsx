@@ -364,7 +364,7 @@ const MainHeatMap: React.FC = () => {
         
         let rowcounter = 0;
         
-        const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/hour|horanum/gi.test(key)).map(([key, value]) => ({
+        const arraytemplate = arrayfree.length > 0 ? Object.entries(arrayfree[0]).filter(([key]) => !/hour|horanum/gi.test(key)).map(([key, value]) => ({
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : "Promedio",
             accessor: key,
             NoFilter: true,
@@ -392,7 +392,7 @@ const MainHeatMap: React.FC = () => {
                     return <div style={{textAlign: "center", fontWeight: "bold",background: "white"}}>{props.data[rowcounter-1][key]>0?(props.data[rowcounter-1][key].toFixed(2)):"0"}</div>
                 }
             },
-        }));
+        })) : [];
         setheatMapConversations([
             {
                 Header: `Hora`,
@@ -509,7 +509,7 @@ const MainHeatMap: React.FC = () => {
         
         let rowcounter = 0;
 
-        const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/hour|horanum/gi.test(key)).map(([key, value]) => ({
+        const arraytemplate = arrayfree.length > 0 ? Object.entries(arrayfree[0]).filter(([key]) => !/hour|horanum/gi.test(key)).map(([key, value]) => ({
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : "Promedio",
             accessor: key,
             NoFilter: true,
@@ -544,7 +544,7 @@ const MainHeatMap: React.FC = () => {
                     return <div style={{textAlign: "center", fontWeight: "bold",background: "white"}}>{`${hh}${mm}${ss}s`}</div>
                 }
             },
-        }));
+        })) : [];
         setaverageHeatMapTMOTitle([
             {
                 Header: `Hora`,
@@ -659,7 +659,7 @@ const MainHeatMap: React.FC = () => {
 
         let rowcounter = 0;
 
-        const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/hour|horanum/gi.test(key)).map(([key, value]) => ({
+        const arraytemplate = arrayfree.length > 0 ? Object.entries(arrayfree[0]).filter(([key]) => !/hour|horanum/gi.test(key)).map(([key, value]) => ({
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : "Promedio",
             accessor: key,
             NoFilter: true,
@@ -697,7 +697,7 @@ const MainHeatMap: React.FC = () => {
                     return <div style={{textAlign: "center", fontWeight: "bold",background: "white"}}>{`${hh}${mm}${ss}s`}</div>
                 }
             },
-        }));
+        })) : [];
 
         setheatmapaverageagentTMETitle([
             {
@@ -812,7 +812,7 @@ const MainHeatMap: React.FC = () => {
         
         let rowcounter = 0;
 
-        const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/hour|horanum/gi.test(key)).map(([key, value]) => ({
+        const arraytemplate = arrayfree.length > 0 ? Object.entries(arrayfree[0]).filter(([key]) => !/hour|horanum/gi.test(key)).map(([key, value]) => ({
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : "Promedio",
             accessor: key,
             NoFilter: true,
@@ -849,7 +849,7 @@ const MainHeatMap: React.FC = () => {
                     return <div style={{textAlign: "center", fontWeight: "bold",background: "white"}}>{`${hh}${mm}${ss}s`}</div>
                 }
             },
-        }));
+        })) : [];
 
         setuserAverageReplyTimexFechaTitle([
             {
@@ -964,7 +964,7 @@ const MainHeatMap: React.FC = () => {
         
         let rowcounter = 0;
 
-        const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/hour|horanum/gi.test(key)).map(([key, value]) => ({
+        const arraytemplate = arrayfree.length > 0 ? Object.entries(arrayfree[0]).filter(([key]) => !/hour|horanum/gi.test(key)).map(([key, value]) => ({
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : "Promedio",
             accessor: key,
             NoFilter: true,
@@ -1001,7 +1001,7 @@ const MainHeatMap: React.FC = () => {
                     return <div style={{textAlign: "center", fontWeight: "bold",background: "white"}}>{`${hh}${mm}${ss}s`}</div>
                 }
             },
-        }));
+        })) : [];
 
         setpersonAverageReplyTimexFechaTitle([
             {
@@ -1381,7 +1381,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
             return  "FF" +"00".slice(number.length) + number +"00"  
         }
         
-        const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor|horanum/gi.test(key)).map(([key, value]) => ({
+        const arraytemplate = arrayfree.length > 0 ? Object.entries(arrayfree[0]).filter(([key]) => !/asesor|horanum/gi.test(key)).map(([key, value]) => ({
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : (key==="asesor" ? "ASESOR" : "TOTAL"),
             accessor: key,
             NoFilter: true,
@@ -1400,11 +1400,11 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                     return <div style={{textAlign: "center", fontWeight: "bold",background: "white"}}>{(props.cell.row.original[key])}</div>
                 }
             },
-        }));
-        arraytemplate.shift()
+        })) : [];
+        arraytemplate?.shift()
         setCompletadosxAsesorTitle([
             {
-                Header: `Adviser`,
+                Header: t(langKeys.advisor),
                 accessor: "asesor",
                 NoFilter: true,
                 NoSort: true,
@@ -1459,7 +1459,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
             return  "FF" +"00".slice(number.length) + number +"00"  
         }
         
-        const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor|horanum/gi.test(key)).map(([key, value]) => ({
+        const arraytemplate = arrayfree.length > 0 ? Object.entries(arrayfree[0]).filter(([key]) => !/asesor|horanum/gi.test(key)).map(([key, value]) => ({
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : (key==="asesor" ? "ASESOR" : "TOTAL"),
             accessor: key,
             NoFilter: true,
@@ -1477,11 +1477,11 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                     return <div style={{textAlign: "center", fontWeight: "bold",background: "white"}}>{(props.cell.row.original[key])}</div>
                 }
             },
-        }));
-        arraytemplate.shift()
+        })) : [];
+        arraytemplate?.shift()
         setabandonosxAsesorTitle([
             {
-                Header: `Adviser`,
+                Header: t(langKeys.advisor),
                 accessor: "asesor",
                 NoFilter: true,
                 NoSort: true,
@@ -1511,8 +1511,8 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
             let number= Math.floor((255-(num-1/2)* scale)).toString(16)
             return  "FF" +"00".slice(number.length) + number +"00"  
         }
-        debugger
-        const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor|horanum/gi.test(key)).map(([key, value]) => ({
+
+        const arraytemplate = arrayfree.length > 0 ? Object.entries(arrayfree[0]).filter(([key]) => !/asesor|horanum/gi.test(key)).map(([key, value]) => ({
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : (key==="asesor" ? "ASESOR" : "TOTAL"),
             accessor: key,
             NoFilter: true,
@@ -1523,12 +1523,12 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                 return (
                     <div style={{background: `#${color}`, textAlign: "center", color:"black"} } >{number}</div>)
             },
-        }));
-        arraytemplate.shift()
-        arraytemplate.pop()
+        })) : [];
+        arraytemplate?.shift()
+        arraytemplate?.pop()
         settasaAbandonosxAsesorTitle([
             {
-                Header: `Adviser`,
+                Header: t(langKeys.advisor),
                 accessor: "asesor",
                 NoFilter: true,
                 NoSort: true,
@@ -1584,7 +1584,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
             return  "FF" +"00".slice(number.length) + number +"00"  
         }
         
-        const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor|horanum/gi.test(key)).map(([key, value]) => ({
+        const arraytemplate = arrayfree.length > 0 ? Object.entries(arrayfree[0]).filter(([key]) => !/asesor|horanum/gi.test(key)).map(([key, value]) => ({
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : (key==="asesor" ? "ASESOR" : "TOTAL"),
             accessor: key,
             NoFilter: true,
@@ -1602,11 +1602,11 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                     return <div style={{textAlign: "center", fontWeight: "bold",background: "white"}}>{(props.cell.row.original[key])}</div>
                 }
             },
-        }));
-        arraytemplate.shift()
+        })) : [];
+        arraytemplate?.shift()
         setCantidadOportunidadesTitle([
             {
-                Header: `Adviser`,
+                Header: t(langKeys.advisor),
                 accessor: "asesor",
                 NoFilter: true,
                 NoSort: true,
@@ -1638,7 +1638,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
             return  "FF" +"00".slice(number.length) + number +"00"  
         }
         
-        const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor/gi.test(key)).map(([key, value]) => ({
+        const arraytemplate = arrayfree.length > 0 ? Object.entries(arrayfree[0]).filter(([key]) => !/asesor/gi.test(key)).map(([key, value]) => ({
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : (key==="asesor" ? "ASESOR" : "TOTAL"),
             accessor: key,
             NoFilter: true,
@@ -1648,12 +1648,12 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                 let number = `${(Number(props.cell.row.original[key])*100).toFixed(0)} %`
                 return <div style={{background: `#${color}`, textAlign: "center", color:"black"}} >{number}</div>
             },
-        }));
-        arraytemplate.shift()
-        arraytemplate.pop()
+        })) : [];
+        arraytemplate?.shift()
+        arraytemplate?.pop()
         setTasaOportunidadesTitle([
             {
-                Header: `Adviser`,
+                Header: t(langKeys.advisor),
                 accessor: "asesor",
                 NoFilter: true,
                 NoSort: true,
@@ -1712,7 +1712,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
             return  "FF" +"00".slice(number.length) + number +"00"  
         }
         
-        const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor|horanum/gi.test(key)).map(([key, value]) => ({
+        const arraytemplate = arrayfree.length > 0 ? Object.entries(arrayfree[0]).filter(([key]) => !/asesor|horanum/gi.test(key)).map(([key, value]) => ({
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : (key==="asesor" ? "ASESOR" : "TOTAL"),
             accessor: key,
             NoFilter: true,
@@ -1730,11 +1730,11 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                     return <div style={{textAlign: "center", fontWeight: "bold",background: "white"}}>{(props.cell.row.original[key])}</div>
                 }
             },
-        }));
-        arraytemplate.shift()
+        })) : [];
+        arraytemplate?.shift()
         setventasxAsesorTitle([
             {
-                Header: `Adviser`,
+                Header: t(langKeys.advisor),
                 accessor: "asesor",
                 NoFilter: true,
                 NoSort: true,
@@ -1767,7 +1767,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
             return  "FF" +"00".slice(number.length) + number +"00"  
         }
         
-        const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor/gi.test(key)).map(([key, value]) => ({
+        const arraytemplate = arrayfree.length > 0 ? Object.entries(arrayfree[0]).filter(([key]) => !/asesor/gi.test(key)).map(([key, value]) => ({
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : (key==="asesor" ? "ASESOR" : "TOTAL"),
             accessor: key,
             NoFilter: true,
@@ -1777,12 +1777,12 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                 let number = `${(Number(props.cell.row.original[key])*100).toFixed(0)} %`
                 return <div style={{background: `#${color}`, textAlign: "center", color:"black"}} >{number}</div>
             },
-        }));
-        arraytemplate.shift()
-        arraytemplate.pop()
+        })) : [];
+        arraytemplate?.shift()
+        arraytemplate?.pop()
         setefectividadxAsesorTitle([
             {
-                Header: `Adviser`,
+                Header: t(langKeys.advisor),
                 accessor: "asesor",
                 NoFilter: true,
                 NoSort: true,
@@ -1815,7 +1815,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
             return  "FF" +"00".slice(number.length) + number +"00"  
         }
         
-        const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor/gi.test(key)).map(([key, value]) => ({
+        const arraytemplate = arrayfree.length > 0 ? Object.entries(arrayfree[0]).filter(([key]) => !/asesor/gi.test(key)).map(([key, value]) => ({
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : (key==="asesor" ? "ASESOR" : "TOTAL"),
             accessor: key,
             NoFilter: true,
@@ -1825,12 +1825,12 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                 let number = `${(Number(props.cell.row.original[key])*100).toFixed(0)} %`
                 return <div style={{background: `#${color}`, textAlign: "center", color:"black"}} >{number}</div>
             },
-        }));
-        arraytemplate.shift()
-        arraytemplate.pop()
+        })) : [];
+        arraytemplate?.shift()
+        arraytemplate?.pop()
         setefectividadxAsesorOportunidadTitle([
             {
-                Header: `Adviser`,
+                Header: t(langKeys.advisor),
                 accessor: "asesor",
                 NoFilter: true,
                 NoSort: true,
@@ -2194,7 +2194,7 @@ const HeatMapTicket: React.FC = () => {
         
         setasesoresConectadosData(arrayfree);
 
-        const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/hour|horanum/gi.test(key)).map(([key, value]) => ({
+        const arraytemplate = arrayfree.length > 0 ? Object.entries(arrayfree[0]).filter(([key]) => !/hour|horanum/gi.test(key)).map(([key, value]) => ({
             Header: `${key.split('day')[1]}/${mes}`,
             accessor: key,
             NoFilter: true,
@@ -2212,7 +2212,7 @@ const HeatMapTicket: React.FC = () => {
                     </div>
                 )
             },
-        }));
+        })) : [];
 
         setasesoresConectadosTitle([
             {
