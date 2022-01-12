@@ -847,6 +847,7 @@ const translation: LangKeys = {
 
     variableconfiguration: 'Configuración de variables',
     variableconfiguration_plural: 'Configuración de variables',
+    variableconfigurationdetail: 'Detalle de configuracion de variable',
     flow: 'Flujo',
     color: 'Color',
     bold: 'Negrita',
@@ -1857,6 +1858,10 @@ const translation: LangKeys = {
     smssection: 'SMS',
     mailsection: 'Correo',
     newmessagingplan: "Nuevo costo de mensajeria",
+
+    fontcolor: 'Color',
+    fontbold: 'Negrita',
+    visible: 'Visible',
 };
 
 const esResource: ResourceLanguage = {
