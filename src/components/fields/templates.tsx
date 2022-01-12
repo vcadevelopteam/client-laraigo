@@ -878,7 +878,7 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisNoShow, on
     const handleClick = () => setOpen((prev) => !prev);
     const { t } = useTranslation();
     const handleClickAway = () => setOpen(false);
-
+    
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
             <span style={style}>

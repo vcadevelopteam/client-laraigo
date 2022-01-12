@@ -574,7 +574,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     useEffect(() => {
         if (!multiData.loading && !multiData.error && multiData?.data[4]) {
             setquickReplies(multiData?.data[4].data)
-            setemojilist(multiData?.data[10].data.filter(x=>(x.restricted)).map(x=>x.emojidec))
+            setemojilist(multiData?.data[10].data.filter(x => (x.restricted)).map(x => x.emojihex))
             setquickRepliesToShow(multiData?.data[4].data.filter(x => !!x.favorite))
         }
     }, [multiData])
@@ -737,7 +737,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                             <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
                             <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
                             {/* <TmpRichResponseIcon classes={classes} setText={setText} /> */}
-                            <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} emojisNoShow={emojilist}/>
+                            <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} emojisNoShow={emojilist} />
                             <UploaderIcon type="image" classes={classes} setFiles={setFiles} />
                         </div>
                         <div className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(text || files.filter(x => !!x.url).length > 0) })} onClick={triggerReplyMessage}>
