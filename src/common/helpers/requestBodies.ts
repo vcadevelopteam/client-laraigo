@@ -516,15 +516,15 @@ export const getQuickrepliesSel = (id: number): IRequestBody => ({
     }
 })
 
-export const insCorp = ({ id, description, type, status, logo, logotype, operation, paymentplanid = 0, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, billbyorg = false }: Dictionary): IRequestBody => ({
+export const insCorp = ({ id, description, type, status, logo, logotype, operation, paymentplanid = 0, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, billbyorg = false, credittype="" }: Dictionary): IRequestBody => ({
     method: "UFN_CORP_INS",
     key: "UFN_CORP_INS",
-    parameters: { companysize: null, id, description, type, status, logo, logotype, operation, paymentplanid, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, billbyorg }
+    parameters: { companysize: null, id, description, type, status, logo, logotype, operation, paymentplanid, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, billbyorg,credittype }
 });
-export const insOrg = ({ corpid, description, status, type, id, operation, currency, email = "", password = "", port = 0, host, ssl, default_credentials, private_mail, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, iconbot = "", iconadvisor="", iconclient="" }: Dictionary): IRequestBody => ({
+export const insOrg = ({ corpid, description, status, type, id, operation, currency, email = "", password = "", port = 0, host, ssl, default_credentials, private_mail, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, iconbot = "", iconadvisor="", iconclient="", credittype="" }: Dictionary): IRequestBody => ({
     method: "UFN_ORG_INS",
     key: "UFN_ORG_INS",
-    parameters: { corpid, id, description, status, type, operation, currency, email, password, port: parseInt(port), host, ssl, default_credentials, private_mail, country: null, timezoneoffset: null, timezone: null, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice,iconbot,iconadvisor, iconclient }
+    parameters: { corpid, id, description, status, type, operation, currency, email, password, port: parseInt(port), host, ssl, default_credentials, private_mail, country: null, timezoneoffset: null, timezone: null, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice,iconbot,iconadvisor, iconclient,credittype }
 });
 
 export const insQuickreplies = ({ id, classificationid, description, quickreply, status, type, operation, favorite }: Dictionary): IRequestBody => ({
