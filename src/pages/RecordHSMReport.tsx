@@ -10,7 +10,7 @@ import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { getMultiCollection, getMultiCollectionAux, getMultiCollectionAux2, resetMultiMainAux } from 'store/main/actions';
+import { getMultiCollection, getMultiCollectionAux, getMultiCollectionAux2, resetMultiMain, resetMultiMainAux } from 'store/main/actions';
 import { showBackdrop } from 'store/popus/actions';
 import { CalendarIcon } from 'icons';
 import { Range } from 'react-date-range';
@@ -85,26 +85,10 @@ const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { r
 
     const columns = React.useMemo(
         () => [
-            /*{
-                accessor: 'inputvalidationid',
-                NoFilter: true,
-                isComponent: true,
-                hidden: true
-            },*/
             {
-                Header: t(langKeys.clientname),
+                Header: t(langKeys.recipientsname),
                 accessor: 'clientname',
                 NoFilter: true
-            },
-            {
-                Header: t(langKeys.status),
-                accessor: 'status',
-                NoFilter: true,
-                prefixTranslation: 'status_',
-                Cell: (props: any) => {
-                    const { status } = props.cell.row.original;
-                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
-                }
             },
             {
                 Header: t(langKeys.contact),
@@ -125,6 +109,16 @@ const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { r
                 Header: t(langKeys.group),
                 accessor: 'group',
                 NoFilter: true
+            },
+            {
+                Header: t(langKeys.status),
+                accessor: 'status',
+                NoFilter: true,
+                prefixTranslation: 'status_',
+                Cell: (props: any) => {
+                    const { status } = props.cell.row.original;
+                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
+                }
             },
             {
                 Header: t(langKeys.body),
@@ -194,7 +188,7 @@ const RecordHSMRecord: FC = () => {
                 }
             },
             {
-                Header: t(langKeys.namehsm),
+                Header: t(langKeys.shippingreason),
                 accessor: 'name',
                 NoFilter: true
             },
@@ -204,22 +198,9 @@ const RecordHSMRecord: FC = () => {
                 NoFilter: true
             },
             {
-                Header: t(langKeys.phone),
-                accessor: 'phone',
+                Header: t(langKeys.shippingfrom),
+                accessor: 'from',
                 NoFilter: true,
-                Cell: (props: any) => {
-                    const { from } = props.cell.row.original;
-                    return from;
-                }
-            },
-            {
-                Header: t(langKeys.mail),
-                accessor: 'mail',
-                NoFilter: true,
-                Cell: (props: any) => {
-                    const { from } = props.cell.row.original;
-                    return from;
-                }
             },
             {
                 Header: t(langKeys.total),
@@ -284,8 +265,9 @@ const RecordHSMRecord: FC = () => {
     }
     useEffect(() => {
         dispatch(getMultiCollectionAux([getValuesFromDomain("SHIPPINGTYPES")]));
-        search()
+        // search();
         return () => {
+            dispatch(resetMultiMain());
             dispatch(resetMultiMainAux());
         }
     }, [])

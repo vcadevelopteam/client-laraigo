@@ -363,13 +363,15 @@ const TableZyx = React.memo(({
             if (type === 'boolean') {
                 setoperator(op)
                 setValue(operator);
-                setFilter({ value, operator, type });
+                setFilter({ value, operator: op, type });
             } else if (type === "select") {
                 setValue(op);
-                setFilter({ value: op, operator, type });
+                setFilter({ value: op, operator: op, type });
             } else {
+                if (['isempty', 'isnotempty', 'isnull', 'isnotnull'].includes(op) || !!value) {
+                    setFilter({ value, operator: op, type });
+                }
                 setoperator(op)
-                setFilter({ value, operator, type });
             }
         };
         const handleClickMenu = (event: any) => {
@@ -487,14 +489,13 @@ const TableZyx = React.memo(({
 
     const filterCellValue = React.useCallback((rows, id, filterValue) => {
         const { value, operator, type } = filterValue;
-
+        debugger;
         return rows.filter((row: any) => {
             const cellvalue = row.values[id];
             if (cellvalue === null || cellvalue === undefined)
                 return false;
-            if (!(['isempty', 'isnotempty', 'isnull', 'isnotnull'].includes(operator) || type === 'boolean')
-                && (value || '') === '')
-                return true;
+            // if (!(['isempty', 'isnotempty', 'isnull', 'isnotnull'].includes(operator) || type === 'boolean') && (value || '') === '')
+            //     return true;
             switch (type) {
                 case "number":
                     switch (operator) {
@@ -819,22 +820,22 @@ const TableZyx = React.memo(({
 
             {HeadComponent && <HeadComponent />}
 
-            <TableContainer component="div" style={{ position: "relative" }}>
+            <TableContainer style={{ position: "relative" }}>
                 <Box overflow="auto" >
-                    <Table component="div" size="small" {...getTableProps()} aria-label="enhanced table" aria-labelledby="tableTitle">
-                        <TableHead component="div" style={{ display: useSelection ? 'flex' : 'table-header-group' }}>
+                    <Table size="small" {...getTableProps()} aria-label="enhanced table" aria-labelledby="tableTitle">
+                        <TableHead style={{ display: useSelection ? 'flex' : 'table-header-group' }}>
                             {headerGroups.map((headerGroup) => (
-                                <TableRow component="div" {...headerGroup.getHeaderGroupProps()}>
+                                <TableRow  {...headerGroup.getHeaderGroupProps()}>
                                     {headerGroup.headers.map((column, ii) => (
                                         column.activeOnHover ?
                                             <th style={{ width: "0px" }} key="header-floating"></th> :
-                                            <TableCell component="div" key={ii} style={useSelection ? { minWidth: `${column.width}px`, maxWidth: `${column.width}px` } : {}}>
+                                            <TableCell key={ii} style={useSelection ? { minWidth: `${column.width}px`, maxWidth: `${column.width}px` } : {}}>
                                                 {column.isComponent ?
                                                     column.render('Header') :
                                                     (<>
                                                         <div className={classes.containerHeaderColumn}>
                                                             <Box
-                                                                component="div"
+
                                                                 {...column.getHeaderProps(column.getSortByToggleProps({ title: 'ordenar' }))}
                                                                 style={{
                                                                     whiteSpace: 'nowrap',
@@ -867,7 +868,7 @@ const TableZyx = React.memo(({
                             ))}
                         </TableHead>
                         <TableBody
-                            component="div"
+
                             {...getTableBodyProps()}
                             style={{ backgroundColor: 'white' }}
                         >
@@ -1004,14 +1005,14 @@ export default TableZyx;
 const LoadingSkeleton: React.FC<{ columns: number }> = ({ columns }) => {
     const items: React.ReactNode[] = [];
     for (let i = 0; i < columns; i++) {
-        items.push(<TableCell component="div" key={`table-simple-skeleton-${i}`}><Skeleton /></TableCell>);
+        items.push(<TableCell key={`table-simple-skeleton-${i}`}><Skeleton /></TableCell>);
     }
     return (
         <>
-            <TableRow component="div" key="1aux1">
+            <TableRow key="1aux1">
                 {items}
             </TableRow>
-            <TableRow component="div" key="2aux2">
+            <TableRow key="2aux2">
                 {items}
             </TableRow>
         </>

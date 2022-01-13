@@ -32,6 +32,10 @@ interface CulqiModalProps {
     options?: CulqiOptionsProps;
     callbackOnSuccess?: () => void;
     metadata?: Dictionary;
+    buttontitle?: string;
+    purchaseorder?: string;
+    comments?: string;
+    tipocredito?: string;
 }
 
 const publickey = apiUrls.CULQIKEY;
@@ -61,7 +65,11 @@ const CulqiModal: FC<CulqiModalProps> = ({
     limit,
     options = {},
     metadata, 
-    callbackOnSuccess
+    callbackOnSuccess,
+    buttontitle,
+    purchaseorder,
+    comments,
+    tipocredito
 }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -73,7 +81,10 @@ const CulqiModal: FC<CulqiModalProps> = ({
             invoiceid,
             settings: { title, description, currency, amount },
             token,
-            metadata
+            metadata,
+            purchaseorder,
+            comments,
+            tipocredito
         }));
     }
 
@@ -151,7 +162,7 @@ const CulqiModal: FC<CulqiModalProps> = ({
                         startIcon={<AttachMoneyIcon color="secondary" />}
                         style={{ backgroundColor: "#55BD84" }}
                         onClick={openCulqi}
-                    >{t(langKeys.pay)}</Button>
+                    >{buttontitle ? buttontitle : t(langKeys.pay)}</Button>
                 )
             }}
         </Culqi>

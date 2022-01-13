@@ -2455,3 +2455,9 @@ export const billingMessagingIns = ({ year, month, id, pricepersms, vcacomission
     key: "UFN_BILLINGMESSAGING_INS",
     parameters: { year, month, id, pricepersms, vcacomissionpersms, pricepermail, vcacomissionpermail, description, status, type, operation }
 })
+
+export const invoiceRefreshTest = (): IRequestBody => ({
+    method: "UFN_INVOICE_REFRESHTEST",
+    key: "UFN_INVOICE_REFRESHTEST",
+    parameters: { },
+});

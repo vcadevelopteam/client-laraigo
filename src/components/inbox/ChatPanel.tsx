@@ -412,7 +412,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
             ...data,
             newUserId: data.newUserId || 3,
             newConversation: true,
-            wasanswered: true
+            wasanswered: ticketSelected?.isAnswered || false
         }
         dispatch(reassignTicket(dd));
         dispatch(showBackdrop(true));

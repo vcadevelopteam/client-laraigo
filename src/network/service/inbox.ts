@@ -85,14 +85,14 @@ export function replyTicket(params: IReplyTicketParams | IReplyTicketParams[], i
 }
 
 export function reassignTicket(paramtmp: IReassignicketParams) {
-    const { newUserId, newUserGroup, observation } = paramtmp
+    const { newUserId, newUserGroup, observation, wasanswered } = paramtmp
     const data = {
         ...paramtmp,
         comment: observation,
         newuserid: newUserId,
         usergroup: newUserGroup,
         newConversation: true,
-        isanswered: true,
+        isanswered: wasanswered,
     }
     return APIManager.post(apiUrls.REASSIGN_TICKET, { data: { data } }, true);
 }
