@@ -127,6 +127,7 @@ const Dashboard: FC = () => {
                 success: false,
                 show: true,
             }));
+            dispatch(resetDeleteDashboardTemplate());
         } else if (dashboardtemplateDelete.success) {
             dispatch(showSnackbar({
                 message: "Se eliminó el dashboard",
@@ -134,6 +135,7 @@ const Dashboard: FC = () => {
                 show: true,
             }));
             dispatch(getCollection(getDashboardTemplateSel()));
+            dispatch(resetDeleteDashboardTemplate());
         }
     }, [dashboardtemplateDelete, history, t, dispatch]);
 
