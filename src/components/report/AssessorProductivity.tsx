@@ -156,11 +156,11 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                 accessor: 'minfirstreplytime',
                 NoFilter: false
             },
-            {
-                Header: t(langKeys.report_userproductivity_avgtotalduration),
-                accessor: 'avgtotalduration',
-                NoFilter: false
-            },
+            // {
+            //     Header: t(langKeys.report_userproductivity_avgtotalduration),
+            //     accessor: 'avgtotalduration',
+            //     NoFilter: false
+            // },
             {
                 Header: t(langKeys.report_userproductivity_maxtotalduration),
                 accessor: 'maxtotalduration',
@@ -222,7 +222,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
             }
             if(mainAux.data.length >0){
                 
-                mainAux.data.forEach((x,i)=>{
+                mainAux.data.filter(x => x.usertype !== 'HOLDING').forEach((x,i)=>{
                     if (i===0){
                         maxminaux ={
                             maxticketsclosed: x.closedtickets,

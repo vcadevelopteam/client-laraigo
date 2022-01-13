@@ -1221,7 +1221,7 @@ const translation: LangKeys = {
     report_productivity_closetype: 'Tipo de cierre',
     report_productivity_startdate: 'Fecha de inicio',
     report_productivity_starttime: 'Hora de inicio',
-    report_productivity_enddate: 'Fecha de fin',
+    report_productivity_enddate: 'Fecha fin',
     report_productivity_endtime: 'Hora fin',
     report_productivity_derivationdate: 'Fecha de derivación',
     report_productivity_derivationtime: 'Hora de derivación',
@@ -1236,7 +1236,7 @@ const translation: LangKeys = {
     report_productivity_lastname: 'Apellido',
     report_productivity_email: 'Correo',
     report_productivity_phone: 'Teléfono',
-    report_productivity_swingingtimes: 'N° balanceo',
+    report_productivity_swingingtimes: 'N° Balanceo',
     report_productivity_tmoagent: 'TMO asesor',
     report_productivity_holdingholdtime: 'Tiempo de espera en holding',
 
@@ -1277,7 +1277,7 @@ const translation: LangKeys = {
 
     report_userproductivity_userid: 'Id',
     report_userproductivity_user: 'Usuario del asesor',
-    report_userproductivity_fullname: 'Nombre del asesor',
+    report_userproductivity_fullname: 'Asesor',
     report_userproductivity_hourfirstlogin: 'Hora de primer logueo',
     report_userproductivity_totaltickets: 'Cantidad de tickets',
     report_userproductivity_closedtickets: 'Cerrados',
