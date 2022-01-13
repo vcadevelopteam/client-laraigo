@@ -20,6 +20,7 @@ import {
     getCollection, resetAllMain, getMultiCollection,
     execute, getCollectionAux, resetMainAux, getMultiCollectionAux
 } from 'store/main/actions';
+import { saveUser } from 'store/activationuser/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import AddIcon from '@material-ui/icons/Add';
@@ -156,17 +157,17 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
         if (indexGroups > -1)
             setDataGroups({ loading: false, data: resFromOrg.data[indexGroups] && resFromOrg.data[indexGroups].success ? resFromOrg.data[indexGroups].data : [] });
 
-        if (indexApplications > -1){
+        if (indexApplications > -1) {
             let tempdata = resFromOrg.data[indexApplications] && resFromOrg.data[indexApplications].success ? resFromOrg.data[indexApplications].data.map(x => ({
                 ...x,
                 description: (t(`app_${x.description}`.toLowerCase()) || "").toUpperCase(),
-            })): []
-            tempdata.sort(function(a, b) {
+            })) : []
+            tempdata.sort(function (a, b) {
                 if (a.description < b.description) {
-                  return -1;
+                    return -1;
                 }
                 if (a.description > b.description) {
-                  return 1;
+                    return 1;
                 }
                 return 0;
             })
@@ -283,7 +284,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 data={dataOrganizations.data}
                                 optionDesc="orgdesc"
                                 optionValue="orgid"
-                            /> 
+                            />
                             <FieldSelect
                                 label={t(langKeys.role)}
                                 className={classes.mb2}
@@ -294,7 +295,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 data={dataRoles}
                                 optionDesc="roldesc"
                                 optionValue="roleid"
-                            /> 
+                            />
                             <FieldMultiSelect //los multiselect te devuelven un array de objetos en OnChange por eso se le recorre
                                 label={t(langKeys.channel)}
                                 className={classes.mb2}
@@ -315,7 +316,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 label={t(langKeys.default_organization)}
                                 className={classes.mb2}
                                 valueDefault={row?.bydefault || false}
-                                onChange={(value) => setValue('bydefault', value)}/>
+                                onChange={(value) => setValue('bydefault', value)} />
                             <FieldSelect
                                 label={t(langKeys.supervisor)}
                                 className={classes.mb2}
@@ -330,7 +331,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 loading={dataSupervisors.loading}
                                 optionDesc="userdesc"
                                 optionValue="usr"
-                            /> 
+                            />
 
                             <FieldSelect
                                 label={t(langKeys.default_application)}
@@ -343,7 +344,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 triggerOnChangeOnFirst={true}
                                 optionDesc="description"
                                 optionValue="path"
-                            /> 
+                            />
                             <FieldMultiSelect //los multiselect te devuelven un array de objetos en OnChange por eso se le recorre
                                 label={t(langKeys.group)}
                                 className={classes.mb2}
@@ -354,7 +355,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 data={dataGroups.data}
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
-                            /> 
+                            />
                         </div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
@@ -524,7 +525,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
     const { t } = useTranslation();
 
     const [waitSave, setWaitSave] = useState(false);
-    const executeRes = useSelector(state => state.main.execute);
+    const executeRes = useSelector(state => state.activationuser.saveUser);
     const detailRes = useSelector(state => state.main.mainAux); //RESULTADO DEL DETALLE
 
     const [dataOrganizations, setDataOrganizations] = useState<(Dictionary | null)[]>([]);
@@ -589,14 +590,14 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
-            id: edit? (row?.userid || 0): 0,
-            operation: edit?(row ? "EDIT" : "INSERT"):"INSERT",
+            id: edit ? (row?.userid || 0) : 0,
+            operation: edit ? (row ? "EDIT" : "INSERT") : "INSERT",
             description: row?.description || '',
             firstname: row?.firstname || '',
             lastname: row?.lastname || '',
-            password: edit? (row?.password || ''):"",
+            password: edit ? (row?.password || '') : "",
             // usr: row?.usr || '',
-            email: edit? (row?.email || ''):"",
+            email: edit ? (row?.email || '') : "",
             doctype: row?.doctype || '',
             docnum: row?.docnum || '',
             company: row?.company || '',
@@ -668,8 +669,8 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
 
             const callback = () => {
                 dispatch(showBackdrop(true));
-                dispatch(execute({
-                    header: insUser({ ...data, usr: data.email}),
+                dispatch(saveUser({
+                    header: insUser({ ...data, usr: data.email, language: t(langKeys.currentlanguage) }),
                     detail: [...dataOrganizations.filter(x => x && x?.operation).map(x => x && insOrgUser(x)), ...orgsToDelete.map(x => insOrgUser(x))]!
                 }, true));
                 setWaitSave(true)
@@ -684,12 +685,12 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
     }, [allIndex, triggerSave])
 
 
-    const onSubmit = handleSubmit((data) => {    
+    const onSubmit = handleSubmit((data) => {
         if (!row && !data.password) {
             dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.password_required) }));
             return;
         }
-        if(!edit && data.password === ""){
+        if (!edit && data.password === "") {
             dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.password_required) }));
             return;
         }
@@ -701,7 +702,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
         setValue('status', (value ? value.domainvalue : ''));
         value && setOpenDialogStatus(true)
     }
-    
+
     const arrayBread = [
         { id: "view-1", name: t(langKeys.user_plural) },
         { id: "view-2", name: `${t(langKeys.user)} ${t(langKeys.detail)}` }
@@ -717,7 +718,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
-                            title={ edit? (row ? `${row.firstname} ${row.lastname}` : t(langKeys.newuser)):t(langKeys.newuser) }
+                            title={edit ? (row ? `${row.firstname} ${row.lastname}` : t(langKeys.newuser)) : t(langKeys.newuser)}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -736,7 +737,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                                 type="button"
                                 startIcon={<LockOpenIcon color="secondary" />}
                                 onClick={() => setOpenDialogPassword(true)}
-                            >{t( edit? (row ? langKeys.changePassword : langKeys.setpassword):langKeys.setpassword)}</Button>
+                            >{t(edit ? (row ? langKeys.changePassword : langKeys.setpassword) : langKeys.setpassword)}</Button>
                             <Button
                                 variant="contained"
                                 color="primary"
@@ -788,7 +789,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                         <FieldEdit
                             label={`${t(langKeys.email)} (${t(langKeys.user)})`}
                             className="col-6"
-                            valueDefault={edit? (row?.email || ""): ""}
+                            valueDefault={edit ? (row?.email || "") : ""}
                             onChange={(value) => setValue('email', value)}
                             error={errors?.email?.message}
                         />
@@ -833,7 +834,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             data={dataBillingGroups}
                             optionDesc="domaindesc"
                             optionValue="domainid"
-                        /> 
+                        />
                         <FieldEdit
                             label={t(langKeys.registerCode)}
                             className="col-6"
@@ -854,7 +855,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             prefixTranslation="status_"
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
-                        /> 
+                        />
                         <FieldSelect
                             label={t(langKeys.status)}
                             className="col-6"
@@ -866,7 +867,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             prefixTranslation="status_"
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
-                        /> 
+                        />
                     </div>
                 </div>
             </form>
@@ -1024,7 +1025,7 @@ const Users: FC = () => {
             domains.value?.userstatus?.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`status_${d.domainvalue?.toLowerCase()}`) }), {}),
             {},
             {},
-            {'true':'true','false':'false'},
+            { 'true': 'true', 'false': 'false' },
             domains.value?.roles?.reduce((a, d) => ({ ...a, [d.roleid]: d.roldesc }), {}),
             dataOrganizationsTmp.reduce((a, d) => ({ ...a, [d.orgid]: d.orgdesc }), {}),
         ];
@@ -1051,7 +1052,7 @@ const Users: FC = () => {
         const data = [
             {},
             domains.value?.userstatus?.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`status_${d.domainvalue?.toLowerCase()}`) }), {}),
-            {0:'true',1:'false'},
+            { 0: 'true', 1: 'false' },
         ];
         const header = [
             'username',
@@ -1145,14 +1146,14 @@ const Users: FC = () => {
             let excel: any = await uploadExcel(file, undefined);
             let data = array_trimmer(excel);
             data = data.filter((f: any) =>
-                (f.company === undefined || Object.keys(domains.value?.company?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.company)) 
+                (f.company === undefined || Object.keys(domains.value?.company?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.company))
                 && (f.doctype === undefined || Object.keys(domains.value?.docTypes?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.doctype))
                 && (f.billinggroup === undefined || Object.keys(domains.value?.billinggroups?.reduce((a: any, d) => ({ ...a, [d.domainid]: `${d.domainid}` }), {})).includes('' + f.billinggroup))
                 && (f.twofactorauthentication === undefined || Object.keys(domains.value?.genericstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.twofactorauthentication))
                 && (f.status === undefined || Object.keys(domains.value?.userstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.status))
-                && (f.pwdchangefirstlogin === undefined || ["true","false"].includes('' + f.pwdchangefirstlogin))
+                && (f.pwdchangefirstlogin === undefined || ["true", "false"].includes('' + f.pwdchangefirstlogin))
                 && (f.role === undefined || Object.keys(domains.value?.roles?.reduce((a: any, d) => ({ ...a, [d.roleid]: `${d.roleid}` }), {})).includes('' + f.role))
-                && (f.organization === undefined || Object.keys(dataOrganizationsTmp.reduce((a: any, d) => ({ ...a, [d.orgid]: `${d.orgid}` }), {})).includes('' + f.organization)) 
+                && (f.organization === undefined || Object.keys(dataOrganizationsTmp.reduce((a: any, d) => ({ ...a, [d.orgid]: `${d.orgid}` }), {})).includes('' + f.organization))
             );
             console.log(data)
             if (data.length > 0) {
@@ -1173,18 +1174,18 @@ const Users: FC = () => {
                         status: d.status,
                         operation: "INSERT",
                         company: d.company,
-                        twofactorauthentication: d.twofactorauthentication==="ACTIVO",
+                        twofactorauthentication: d.twofactorauthentication === "ACTIVO",
                         registercode: d.registercode,
                         billinggroupid: d.billinggroup,
                         image: d?.image || "",
-                        detail:{
+                        detail: {
                             roleid: d.role,
                             orgid: d.organization,
                             bydefault: true,
-                            labels:  "",
-                            groups:  "",
-                            channels:  "",
-                            status:  d.status,
+                            labels: "",
+                            groups: "",
+                            channels: "",
+                            status: d.status,
                             type: "NINGUNO",
                             supervisor: "",
                             operation: "INSERT",
@@ -1215,16 +1216,16 @@ const Users: FC = () => {
             let data = array_trimmer(excel);
             data = data.filter((f: any) =>
                 (f.status === undefined || Object.keys(domains.value?.userstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.status))
-                && (f.delete === undefined || [0,1].includes(Number(f.delete)))
+                && (f.delete === undefined || [0, 1].includes(Number(f.delete)))
             );
             if (data.length > 0) {
                 dispatch(showBackdrop(true));
                 let table: Dictionary = data.reduce((a: any, d) => ({
                     ...a,
                     [`${d.username}_${d.status}`]: {
-                        ...dataUsers.filter(x=> x.usr===d.username)[0],
-                        status: Boolean(d.delete)? "ELIMINADO":d.status,
-                        operation: d.delete === 0?"DELETE":"UPDATE",
+                        ...dataUsers.filter(x => x.usr === d.username)[0],
+                        status: Boolean(d.delete) ? "ELIMINADO" : d.status,
+                        operation: d.delete === 0 ? "DELETE" : "UPDATE",
                     }
                 }), {});
                 Object.values(table).forEach((p) => {
@@ -1309,7 +1310,7 @@ const Users: FC = () => {
                                     startIcon={<ClearIcon color="secondary" />}
                                     //onClick={handleTemplate}
                                     style={{ backgroundColor: "#fb5f5f" }}>
-                                <Trans i18nKey={langKeys.dropusers} />
+                                    <Trans i18nKey={langKeys.dropusers} />
                                 </Button>
                             </label>
                         </>

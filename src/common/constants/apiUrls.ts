@@ -1,4 +1,4 @@
-const ENV = "DEVELOP";
+const ENV = "LOCAL";
 
 const APIS_URL = {
     DEVELOP: {
@@ -73,6 +73,7 @@ export const apiUrls = {
     REASSIGN_TICKET: `${BASE_URL}/ticket/reassign`,
     SEND_HSM: `${BASE_URL}/ticket/send/hsm`,
     UPDATE_USER: `${BASE_URL}/user/update/info`,
+    SAVE_USER: `${BASE_URL}/user/sendmail/password`,
 
 
     INTEGRATION_URL: `${BASE_URL}/load`,

@@ -22,6 +22,13 @@ export const langKeys = {
     period: "period",
     boticon: "boticon",
     advisoricon: "advisoricon",
+    typecredit: "typecredit",
+    typecredit_alcontado: "typecredit_alcontado",
+    typecredit_15: "typecredit_15",
+    typecredit_30: "typecredit_30",
+    typecredit_45: "typecredit_45",
+    typecredit_60: "typecredit_60",
+    typecredit_90: "typecredit_90",
     clienticon: "clienticon",
     interval: 'interval',
     clientname: "clientname",
@@ -916,6 +923,9 @@ export const langKeys = {
     namespace: 'namespace',
     category: 'category',
     language: 'language',
+    
+    currentlanguage: 'currentlanguage',
+
     templatetype: 'templatetype',
     templatestandard: 'templatestandard',
     templatemultimedia: 'templatemultimedia',

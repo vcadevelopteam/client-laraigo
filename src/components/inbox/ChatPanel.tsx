@@ -49,6 +49,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
     const { control, register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<any>({
         defaultValues: {
             hsmtemplateid: 0,
+            hsmtemplatename: '',
             observation: '',
             variables: []
         }
@@ -112,6 +113,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
 
             setBodyMessage(value.body);
             setValue('hsmtemplateid', value ? value.id : 0);
+            setValue('hsmtemplatename', value ? value.name : '');
 
             const wordList = value.body?.split(/[\s,.;()!?¡]+/);
             setBodyCleaned(value.body);
@@ -120,6 +122,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
 
             setValue('variables', varaiblesCleaned.map((x: string) => ({ name: x, text: '', type: 'text' })));
         } else {
+            setValue('hsmtemplatename', '');
             setValue('variables', []);
             setBodyMessage('');
             setValue('hsmtemplateid', 0);
@@ -135,15 +138,17 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
         })
         const bb = {
             hsmtemplateid: data.hsmtemplateid,
+            hsmtemplatename: data.hsmtemplatename,
             communicationchannelid: ticketSelected?.communicationchannelid!!,
             platformtype: ticketSelected?.communicationchannelsite!!,
             communicationchanneltype: ticketSelected?.communicationchanneltype!!,
+            shippingreason: "INBOX",
             listmembers: [{
                 personid: person.data?.personid || 0,
                 phone: person.data?.phone!! + "",
                 firstname: person.data?.firstname + "",
                 lastname: person.data?.lastname + "",
-                parameters: data.variables
+                parameters: data.variables,
             }]
         }
         dispatch(sendHSM(bb))

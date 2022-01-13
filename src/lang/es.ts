@@ -2,6 +2,7 @@ import { ResourceLanguage } from 'i18next';
 import { LangKeys } from './keys';
 
 const translation: LangKeys = {
+    currentlanguage:'es',
     english: 'Inglés',
     spanish: 'Español',
 
@@ -1523,6 +1524,13 @@ const translation: LangKeys = {
     message_please_wait: 'Por favor espere unos momentos...',
     message_try_later: 'Algo inesperado sucedió, inténtelo de nuevo más tarde...',
     message_account_already_activated: 'Cuenta ya activa!',
+    typecredit: "Tipo de crédito",
+    typecredit_alcontado: "Al contado",
+    typecredit_15: "Crédito a 15 días",
+    typecredit_30: "Crédito a 30 días",
+    typecredit_45: "Crédito a 45 días",
+    typecredit_60: "Crédito a 60 días",
+    typecredit_90: "Crédito a 90 días",
     message_account_activated: 'Su cuenta se ha activado satisfactoriamente!',
     message_thanks_for_register: '¡Gracias por registrarse en nuestra plataforma!',
     message_click_to_login: 'Haga click en continuar para ir al login',
