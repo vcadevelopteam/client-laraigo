@@ -165,6 +165,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
             setBodyMessage('')
             reset({
                 hsmtemplateid: 0,
+                hsmtemplatename: '',
                 variables: [],
                 communicationchannelid: 0,
                 communicationchanneltype: ''
@@ -189,10 +190,12 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
         if (value) {
             setBodyMessage(value.body);
             setValue('hsmtemplateid', value ? value.id : 0);
+            setValue('hsmtemplatename', value ? value.name : '');
             const variablesList = value.body.match(/({{)(.*?)(}})/g) || [];
             const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
             setValue('variables', varaiblesCleaned.map((x: string) => ({ name: x, text: '', type: 'text' })));
         } else {
+            setValue('hsmtemplatename', '');
             setValue('variables', []);
             setBodyMessage('');
             setValue('hsmtemplateid', 0);
@@ -202,10 +205,12 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
     const onSubmit = handleSubmit((data) => {
         const messagedata = {
             hsmtemplateid: data.hsmtemplateid,
+            hsmtemplatename: data.hsmtemplatename,
             communicationchannelid: data.communicationchannelid,
             communicationchanneltype: data.communicationchanneltype,
             platformtype: data.communicationchanneltype,
             type,
+            shippingreason: "PERSON",
             listmembers: personWithData.map(person => ({
                 personid: person.personid,
                 phone: person.phone || "",

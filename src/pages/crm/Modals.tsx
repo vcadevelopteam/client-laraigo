@@ -189,6 +189,7 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
     const { control, register, handleSubmit, setValue, getValues, trigger, reset, formState: { errors } } = useForm<any>({
         defaultValues: {
             hsmtemplateid: 0,
+            hsmtemplatename: '',
             observation: '',
             communicationchannelid: 0,
             communicationchanneltype: '',
@@ -283,10 +284,12 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
         if (value) {
             setBodyMessage(value.body);
             setValue('hsmtemplateid', value ? value.id : 0);
+            setValue('hsmtemplatename', value ? value.id : '');
             const variablesList = value.body.match(/({{)(.*?)(}})/g) || [];
             const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
             setValue('variables', varaiblesCleaned.map((x: string) => ({ name: x, text: '', type: 'text' })));
         } else {
+            setValue('hsmtemplatename', '');
             setValue('variables', []);
             setBodyMessage('');
             setValue('hsmtemplateid', 0);
@@ -296,10 +299,12 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
     const onSubmit = handleSubmit((data) => {
         const messagedata = {
             hsmtemplateid: data.hsmtemplateid,
+            hsmtemplatename: data.hsmtemplatename,
             communicationchannelid: data.communicationchannelid,
             communicationchanneltype: data.communicationchanneltype,
             platformtype: data.communicationchanneltype,
             type: messagetype,
+            shippingreason: "LEAD",
             listmembers: personsWithData.map((person: Dictionary) => ({
                 personid: person.personid,
                 phone: person.phone || "",

@@ -29,11 +29,13 @@ interface IMember {
 }
 export interface ISendHSM {
     hsmtemplateid: number;
+    hsmtemplatename: number;
     communicationchannelid: number;
     platformtype: string;
     communicationchanneltype: string;
     listmembers: IMember[];
     type?: string;
+    shippingreason: string;
 }
 
 export interface IReplyTicketParams extends ITicket {
