@@ -61,12 +61,11 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
 
     const dataStatus = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataClassification = multiData[2] && multiData[2].success ? multiData[2].data : [];
-
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
             id: row?.inappropriatewordsid|| 0,
-            classification: row?.classification||"",
+            classification: row?.classificationdata||"",
             description: row?.description || '',
             defaultanswer: row?.defaultanswer || '',
             status: row?.status || 'ACTIVO',
@@ -153,7 +152,7 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
                         <FieldSelect
                             label={t(langKeys.classification)}
                             className="col-12"
-                            valueDefault={row?.classification || ""}
+                            valueDefault={row?.classificationdata || ""}
                             onChange={(value) => setValue('classification', (value?.domainvalue||""))}
                             error={errors?.classification?.message}
                             uset={true}
@@ -378,6 +377,7 @@ const InappropriateWords: FC = () => {
                 data={mainResult.mainData.data.map(x => ({
                     ...x,
                     classification: (t(`${x.classification}`.toLowerCase()) || "").toUpperCase(),
+                    classificationdata: x.classification,
                     statusdesc: (t(`status_${x.status}`.toLowerCase()) || "").toUpperCase()
                 }))}
                 download={true}

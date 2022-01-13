@@ -5,7 +5,7 @@ import { setUserType, emitEvent, cleanAlerts } from 'store/inbox/actions';
 import { useDispatch } from 'react-redux';
 import InboxPanel from 'components/inbox/InboxPanel'
 import { getMultiCollection, resetAllMain } from 'store/main/actions';
-import { getMessageTemplateLst, getValuesFromDomainLight, getCommChannelLst, getListUsers, getClassificationLevel1, getListQuickReply, getEmojiAllSel } from 'common/helpers';
+import { getMessageTemplateLst, getValuesFromDomainLight, getCommChannelLst, getListUsers, getClassificationLevel1, getListQuickReply, getEmojiAllSel, getInappropriateWordsSel } from 'common/helpers';
 
 const MessageInbox: React.FC = () => {
     const dispatch = useDispatch();
@@ -63,6 +63,7 @@ const MessageInbox: React.FC = () => {
             getValuesFromDomainLight("MOTIVOSUSPENSION"),
             getValuesFromDomainLight("OPORTUNIDADETIQUETAS"),
             getEmojiAllSel(),
+            getInappropriateWordsSel(0),
         ]))
         setinitial(false)
         return () => {
