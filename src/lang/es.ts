@@ -1321,6 +1321,11 @@ const translation: LangKeys = {
     report_userproductivity_cardavgmin_tmoagent: 'TMO asesor promedio más bajo',
     report_userproductivity_cardminmin_tmoagent: 'TMO asesor más bajo',
 
+    report_userproductivity_maxticketsclosedasesorhelptext: 'Cantidad de tickets cerrados',
+    report_userproductivity_minticketsclosedasesorhelptext: 'Cantidad de tickets cerrados',
+    report_userproductivity_maxtimeconnectedasesorhelptext: 'Tiempo conectado',
+    report_userproductivity_mintimeconnectedasesorhelptext: 'Tiempo conectado',
+
     report_userproductivity_filter_channels: 'Canal',
     report_userproductivity_filter_group: 'Grupo',
     report_userproductivity_filter_status: 'Estado usuario',
