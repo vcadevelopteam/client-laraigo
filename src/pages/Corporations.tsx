@@ -113,7 +113,8 @@ const Corporations: FC = () => {
             getValuesFromDomain("ESTADOGENERICO"),
             getValuesFromDomain("TIPOCORP"),
             getPaymentPlanSel(),
-            getBusinessDocType()
+            getBusinessDocType(),
+            getValuesFromDomain("TYPECREDIT"),
         ]));
         return () => {
             dispatch(resetAllMain());
@@ -207,6 +208,7 @@ interface DetailCorporationProps {
 const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
+    const [billbyorg, setbillbyorg] = useState(row?.billbyorg || false);
     const [doctype, setdoctype] = useState("");
     const dataDocType = multiData[3] && multiData[3].success ? multiData[3].data : [];
     const doctypeListPE = dataDocType.filter(x=>(x.code==='1'||x.code==='4'||x.code==='6'))
@@ -219,6 +221,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
     const dataType = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataPaymentPlan = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const countryList = useSelector(state => state.signup.countryList);
+    const typeofcreditList = multiData[4] && multiData[4].success ? multiData[4].data : [];
 
     const { register, handleSubmit, setValue, trigger, getValues, formState: { errors } } = useForm({
         defaultValues: {
@@ -238,8 +241,9 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
             contactemail: row?.contactemail || '',
             contact: row?.contact || '',
             autosendinvoice: row?.autosendinvoice || false,
+            credittype: row?.credittype || "typecredit_alcontado",
             operation: row ? "UPDATE" : "INSERT",
-            companysize: null
+            companysize: null,
         }
     });
 
@@ -247,8 +251,16 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('doctype', { validate: (value) => !billbyorg?((value && value.length) || t(langKeys.field_required)):null });
+        register('docnum', { validate: (value) => !billbyorg?((value && value.length) || t(langKeys.field_required)):null });
+        register('businessname', { validate: (value) => !billbyorg?((value && value.length) || t(langKeys.field_required)):null });
+        register('fiscaladdress', { validate: (value) => !billbyorg?((value && value.length) || t(langKeys.field_required)):null });
+        register('contact', { validate: (value) => !billbyorg?((value && value.length) || t(langKeys.field_required)):null });
+        register('contactemail', { validate: (value) => !billbyorg?((value && value.length) || t(langKeys.field_required)):null });
+        register('sunatcountry', { validate: (value) => !billbyorg?((value && value.length) || t(langKeys.field_required)):null });
+        register('credittype', { validate: (value) => !billbyorg?((value && value.length) || t(langKeys.field_required)):null });
         register('paymentplanid');
-    }, [register]);
+    }, [register,billbyorg]);
 
     useEffect(() => {
     }, [executeRes, waitSave])
@@ -281,6 +293,20 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                 fd.append('file', data.logotype, data.logotype.name);
                 data.logotype = (await CommonService.uploadFile(fd)).data["url"];
             }
+            if(data.billbyorg){
+                data={
+                    ...data,
+                    doctype: "",
+                    docnum: "",
+                    businessname: "",
+                    fiscaladdress: "",
+                    contact: "",
+                    contactemail: "",
+                    sunatcountry: "",
+                    autosendinvoice: false,
+                }
+            }
+            console.log(data)
             setWaitSave(true)
             dispatch(execute(insCorp(data)));
         }
@@ -297,8 +323,6 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
         { id: "view-1", name: t(langKeys.corporation) },
         { id: "view-2", name: t(langKeys.corporationdetail) }
     ];
-
-    console.log(getValues('billbyorg'))
 
     return (
         <div style={{ width: '100%' }}>
@@ -400,6 +424,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                             valueDefault={getValues('billbyorg')}
                             onChange={(value) => {
                                 setValue('billbyorg', value);
+                                setbillbyorg(value);
                                 trigger('billbyorg');
                             }}
                         />
@@ -471,6 +496,20 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                     optionDesc="description"
                                     optionValue="code"
                                 />
+                                <FieldSelect
+                                    label={t(langKeys.typecredit)}
+                                    className="col-6"
+                                    valueDefault={getValues("credittype")}
+                                    onChange={(value) => {setValue("credittype", value?.domainvalue || "");}}
+                                    error={errors?.credittype?.message}
+                                    disabled={user?.roledesc !== "SUPERADMIN"}
+                                    data={typeofcreditList}
+                                    uset={true}
+                                    optionDesc="domainvalue"
+                                    optionValue="domainvalue"
+                                />
+                            </div>
+                            <div className="row-zyx">
                                 <TemplateSwitch
                                     label={t(langKeys.autosendinvoice)}
                                     className="col-6"

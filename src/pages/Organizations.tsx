@@ -98,7 +98,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const { t } = useTranslation();
     const [pageSelected, setPageSelected] = useState(0);
     const [showPassword, setShowPassword] = useState(false);
-    const [showCredential, setShowCredential] = useState(row?.default_credentials || false);    
+    const [showCredential, setShowCredential] = useState(row?.private_mail || false);    
     const uploadResult = useSelector(state => state.main.uploadFile);
     const [valuefile, setvaluefile] = useState('')
     const [idUpload, setIdUpload] = useState('');
@@ -108,6 +108,11 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         iconadvisor: row?.iconadvisor|| "",
         iconclient: row?.iconclient|| "",
     });
+    const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
+    const dataType = multiData[1] && multiData[1].success ? multiData[1].data : [];
+    const dataCorp = multiData[2] && multiData[2].success ? multiData[2].data : [];
+    const dataDocType = multiData[3] && multiData[3].success ? multiData[3].data : [];
+    const typeofcreditList = multiData[4] && multiData[4].success ? multiData[4].data : [];
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
@@ -138,6 +143,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             iconbot: row?.iconbot||"",
             iconadvisor: row?.iconadvisor||"",
             iconclient: row?.iconclient||"",
+            credittype: row?.credittype || "typecredit_alcontado",
         }
     });
     const [chatBtn, setChatBtn] = useState<File | null>(getValues("iconbot") as File);
@@ -149,6 +155,14 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('currency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('doctype', { validate: (value) => getValues('billbyorg')?((value && value.length) || t(langKeys.field_required)):null });
+        register('docnum', { validate: (value) => getValues('billbyorg')?((value && value.length) || t(langKeys.field_required)):null });
+        register('businessname', { validate: (value) => getValues('billbyorg')?((value && value.length) || t(langKeys.field_required)):null });
+        register('fiscaladdress', { validate: (value) => getValues('billbyorg')?((value && value.length) || t(langKeys.field_required)):null });
+        register('contact', { validate: (value) => getValues('billbyorg')?((value && value.length) || t(langKeys.field_required)):null });
+        register('contactemail', { validate: (value) => getValues('billbyorg')?((value && value.length) || t(langKeys.field_required)):null });
+        register('sunatcountry', { validate: (value) => getValues('billbyorg')?((value && value.length) || t(langKeys.field_required)):null });
+        register('credittype', { validate: (value) => getValues('billbyorg')?((value && value.length) || t(langKeys.field_required)):null });
         register('host');
         register('ssl');
         register('private_mail');
@@ -181,10 +195,6 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             }
         }
     }, [waitSaveUpload, uploadResult, dispatch, idUpload])
-    const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataType = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    const dataCorp = multiData[2] && multiData[2].success ? multiData[2].data : [];
-    const dataDocType = multiData[3] && multiData[3].success ? multiData[3].data : [];
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
@@ -490,6 +500,19 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     optionDesc="description"
                                     optionValue="code"
                                 />
+                                <FieldSelect
+                                    label={t(langKeys.typecredit)}
+                                    className="col-6"
+                                    valueDefault={getValues("credittype")}
+                                    onChange={(value) => {setValue("credittype", value?.domainvalue || "");}}
+                                    error={errors?.credittype?.message}
+                                    data={typeofcreditList}
+                                    uset={true}
+                                    optionDesc="domainvalue"
+                                    optionValue="domainvalue"
+                                />
+                            </div>
+                            <div className="row-zyx">
                                 <TemplateSwitch
                                     label={t(langKeys.autosendinvoice)}
                                     disabled={user?.roledesc !== "SUPERADMIN"}
@@ -508,7 +531,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 <TemplateSwitch
                                     label={t(langKeys.private_mail)}
                                     className="col-6"
-                                    valueDefault={showCredential}
+                                    valueDefault={getValues("private_mail")}
                                     onChange={(value) => { setValue('private_mail', value); setShowCredential(value) }}
                                 /> :
                                 <FieldView
@@ -830,7 +853,8 @@ const Organizations: FC = () => {
             getValuesFromDomain("ESTADOGENERICO"),
             getValuesFromDomain("TIPOORG"),
             getCorpSel(0),
-            getBusinessDocType()
+            getBusinessDocType(),
+            getValuesFromDomain("TYPECREDIT"),
         ]));
         return () => {
             dispatch(resetAllMain());
