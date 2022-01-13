@@ -42,7 +42,7 @@ import {
 } from 'react-table'
 import { Range } from 'react-date-range';
 import { DateRangePicker } from 'components';
-import { Checkbox, Typography } from '@material-ui/core';
+import { Checkbox } from '@material-ui/core';
 import { BooleanOptionsMenuComponent, DateOptionsMenuComponent, SelectFilterTmp, OptionsMenuComponent, TimeOptionsMenuComponent } from './table-simple';
 import { getDateToday, getFirstDayMonth, getLastDayMonth, getDateCleaned } from 'common/helpers';
 
@@ -141,7 +141,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
 
     useEffect(() => {
         switch (type) {
-            case "number": case "date": case "datetime-local": case "time": case "select":
+            case "number": case "number-centered": case "date": case "datetime-local": case "time": case "select":
                 setoperator("equals");
                 break;
             case "boolean":
@@ -155,7 +155,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
     }, [type])
 
     useEffect(() => {
-        if (type === "number")
+        if (['number','number-centered'].includes(type))
             setoperator("equals");
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [type])
@@ -223,7 +223,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
                     },
                 }, 0)
             }
-        } else if (type === "number") {
+        } else if (['number','number-centered'].includes(type)) {
             if (op === 'isempty' ||
                 op === 'isnotempty' ||
                 op === 'isnull' ||
@@ -318,6 +318,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
             setValue(filters?.[header]?.value || '');
             if (filters?.[header]) setoperator(filters[header].operator);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filters]);
 
     return (
@@ -341,7 +342,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
                         {!['date', 'time'].includes(type) &&
                             <Input
                                 style={{ fontSize: '15px', minWidth: '100px' }}
-                                type={type === "number" ? "number" : "text"}
+                                type={['number','number-centered'].includes(type) ? "number" : "text"}
                                 fullWidth
                                 value={value}
                                 onKeyDown={keyPress}
@@ -582,6 +583,7 @@ const TableZyx = React.memo(({
         if (triggerSearch) {
             triggerSearch && triggertmp(true);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [triggerSearch])
 
     useEffect(() => {
@@ -599,6 +601,7 @@ const TableZyx = React.memo(({
 
     useEffect(() => {
         onFilterChange?.(tFilters);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tFilters]);
 
     const exportData = () => {
@@ -790,7 +793,7 @@ const TableZyx = React.memo(({
                                                             overflow: 'hidden',
                                                             textOverflow: 'ellipsis',
                                                             whiteSpace: 'nowrap',
-                                                            textAlign: cell.column.type === "number" ? "right" : "left",
+                                                            textAlign: cell.column.type === "number" ? "right" : (cell.column.type?.includes('centered') ? "center" : "left"),
                                                         },
                                                     })}
                                                     onClick={() => cell.column.id !== "selection" ? onClickRow && onClickRow(row.original) : null}

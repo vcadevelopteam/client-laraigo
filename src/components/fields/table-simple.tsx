@@ -272,7 +272,7 @@ export const TimeOptionsMenuComponent = (value: any, handleClickItemMenu: (key: 
 export const OptionsMenuComponent = (type: string, operator: string, handleClickItemMenu: (key: any) => void) => {
     const { t } = useTranslation();
     switch (type) {
-        case "number":
+        case "number": case "number-centered":
             return (
                 numberOptionsMenu.map((option) => (
                     <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
@@ -406,7 +406,7 @@ const TableZyx = React.memo(({
 
         useEffect(() => {
             switch (type) {
-                case "number":
+                case "number": case "number-centered":
                 case "date":
                 case "datetime-local":
                 case "time":
@@ -497,7 +497,7 @@ const TableZyx = React.memo(({
             // if (!(['isempty', 'isnotempty', 'isnull', 'isnotnull'].includes(operator) || type === 'boolean') && (value || '') === '')
             //     return true;
             switch (type) {
-                case "number":
+                case "number": case "number-centered":
                     switch (operator) {
                         case 'greater':
                             return cellvalue > Number(value);
@@ -694,7 +694,7 @@ const TableZyx = React.memo(({
                                     overflow: 'hidden',
                                     textOverflow: 'ellipsis',
                                     whiteSpace: 'nowrap',
-                                    textAlign: cell.column.type === "number" ? "right" : "left",
+                                    textAlign: cell.column.type === "number" ? "right" : (cell.column.type?.includes('centered') ? "center" : "left"),
                                 },
                             })}
                         >
@@ -905,7 +905,7 @@ const TableZyx = React.memo(({
                                                                 textOverflow: 'ellipsis',
                                                                 whiteSpace: 'nowrap',
                                                                 ...(toolsFooter ? {} : { padding: '0px' }),
-                                                                textAlign: cell.column.type === "number" ? "right" : "left",
+                                                                textAlign: cell.column.type === "number" ? "right" : (cell.column.type?.includes('centered') ? "center" : "left"),
                                                             },
                                                         })}
                                                         onClick={() => cell.column.id !== "selection" ? onClickRow && onClickRow(row.original) : null}
