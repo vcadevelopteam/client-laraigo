@@ -1866,6 +1866,20 @@ export const langKeys = {
     fontcolor: 'fontcolor',
     fontbold: 'fontbold',
     visible: 'visible',
+    conversationclientwhatfreequantity: "conversationclientwhatfreequantity",
+    conversationcompanywhatfreequantity: "conversationcompanywhatfreequantity",
+    unitpricepersms: "unitpricepersms",
+    smsquantity: "smsquantity",
+    smscost: "smscost",
+    unitepricepermail: "unitepricepermail",
+    mailquantity: "mailquantity",
+    mailcost: "mailcost",
+    messaging: "messaging",
+    servicedescription: "servicedescription",
+    additionalinformation1: "additionalinformation1",
+    additionalinformation2: "additionalinformation2",
+    proceedpayment: "proceedpayment",
+    credittype: "credittype",
 };
 
 export type LangKeys = typeof langKeys;
