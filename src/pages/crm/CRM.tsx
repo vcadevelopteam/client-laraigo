@@ -1,4 +1,4 @@
-import { adviserSel, convertLocalDate, getCampaignLst, getColumnsSel, getCommChannelLst, getLeadExport, getLeadsSel, getLeadTasgsSel, getPaginatedLead, getValuesFromDomain, insArchiveLead, insColumns, insLead, insLead2, updateColumnsLeads, updateColumnsOrder } from "common/helpers";
+import { adviserSel, convertLocalDate, getAdviserFilteredUserRol, getCampaignLst, getColumnsSel, getCommChannelLst, getLeadExport, getLeadsSel, getLeadTasgsSel, getPaginatedLead, getValuesFromDomain, insArchiveLead, insColumns, insLead, insLead2, updateColumnsLeads, updateColumnsOrder } from "common/helpers";
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
@@ -147,8 +147,10 @@ const CRM: FC = () => {
             leadproduct: boardFilter.products,
             tags: boardFilter.tags,
             userid: boardFilter.asesorid,
+            supervisorid: user?.userid || 0,
           }),
-          adviserSel(),
+          // adviserSel(),
+          getAdviserFilteredUserRol(),
           getCommChannelLst(),
           getCampaignLst(),
           getValuesFromDomain('OPORTUNIDADPRODUCTOS'),
@@ -193,8 +195,10 @@ const CRM: FC = () => {
         leadproduct: boardFilter.products,
         tags: boardFilter.tags,
         userid: boardFilter.asesorid,
+        supervisorid: user?.userid || 0,
       }),
-      adviserSel(),
+      // adviserSel(),
+      getAdviserFilteredUserRol(),
       getCommChannelLst(),
       getCampaignLst(),
       getValuesFromDomain('OPORTUNIDADPRODUCTOS'),
@@ -707,22 +711,22 @@ const CRM: FC = () => {
     history.push({ search: p.toString() });
   }, [display, history]);
 
-  const campaigns = useMemo(() => { 
-    if (!mainMulti.data[4]?.data) return [];
+  const campaigns = useMemo(() => {
+    if (!mainMulti.data[4]?.data || mainMulti.data[4]?.key !== "UFN_CAMPAIGN_LST") return [];
     return (mainMulti.data[4].data as ICampaignLst[]).sort((a, b) => {
       return a.description.localeCompare(b.description);
     });
   }, [mainMulti.data[4]]);
 
-  const tags = useMemo(() => { 
-    if (!mainMulti.data[6]?.data) return [];
+  const tags = useMemo(() => {
+    if (!mainMulti.data[6]?.data || mainMulti.data[6]?.key !== "UFN_LEAD_TAGSDISTINCT_SEL") return [];
     return (mainMulti.data[6].data as any[]).sort((a, b) => {
-      return a.tags.localeCompare(b.tags);
+      return a.tags?.localeCompare(b.tags || '') || 0;
     });
   }, [mainMulti.data[6]]);
 
-  const channels = useMemo(() => { 
-    if (!mainMulti.data[3]?.data) return [];
+  const channels = useMemo(() => {
+    if (!mainMulti.data[3]?.data || mainMulti.data[3]?.key !== "UFN_COMMUNICATIONCHANNEL_LST") return [];
     return (mainMulti.data[3].data as IChannel[]).sort((a, b) => {
       return a.communicationchanneldesc.localeCompare(b.communicationchanneldesc);
     });
@@ -730,7 +734,7 @@ const CRM: FC = () => {
 
   const filtersElement = useMemo(() => (
     <>
-      <FieldSelect
+      {(user && user.roledesc !== "ASESOR") && <FieldSelect
         variant="outlined"
         label={t(langKeys.agent)}
         className={classes.filterComponent}
@@ -740,7 +744,7 @@ const CRM: FC = () => {
         optionDesc={'fullname'}
         optionValue={'userid'}
         disabled={user?.roledesc === "ASESOR" || false}
-      />
+      />}
       <FieldMultiSelect
           variant="outlined"
           label={t(langKeys.channel)}
@@ -787,7 +791,7 @@ const CRM: FC = () => {
         {display === 'BOARD' &&
         <div style={{ display: "flex", flexDirection: 'column', height: "100%" }}>
           <div className={classes.canvasFiltersHeader}>
-            <FieldSelect
+            {(user && user.roledesc !== "ASESOR") && <FieldSelect
               variant="outlined"
               label={t(langKeys.agent)}
               className={classes.filterComponent}
@@ -798,7 +802,7 @@ const CRM: FC = () => {
               optionValue="userid"
               loading={mainMulti.loading}
               disabled={user?.roledesc === "ASESOR" || false}
-            />
+            />}
             <FieldSelect
               variant="outlined"
               label={t(langKeys.campaign)}
