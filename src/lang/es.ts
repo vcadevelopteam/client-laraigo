@@ -2,6 +2,7 @@ import { ResourceLanguage } from 'i18next';
 import { LangKeys } from './keys';
 
 const translation: LangKeys = {
+    currentlanguage:'es',
     english: 'Inglés',
     spanish: 'Español',
 
@@ -1221,7 +1222,7 @@ const translation: LangKeys = {
     report_productivity_closetype: 'Tipo de cierre',
     report_productivity_startdate: 'Fecha de inicio',
     report_productivity_starttime: 'Hora de inicio',
-    report_productivity_enddate: 'Fecha de fin',
+    report_productivity_enddate: 'Fecha fin',
     report_productivity_endtime: 'Hora fin',
     report_productivity_derivationdate: 'Fecha de derivación',
     report_productivity_derivationtime: 'Hora de derivación',
@@ -1236,7 +1237,7 @@ const translation: LangKeys = {
     report_productivity_lastname: 'Apellido',
     report_productivity_email: 'Correo',
     report_productivity_phone: 'Teléfono',
-    report_productivity_swingingtimes: 'N° balanceo',
+    report_productivity_swingingtimes: 'N° Balanceo',
     report_productivity_tmoagent: 'TMO asesor',
     report_productivity_holdingholdtime: 'Tiempo de espera en holding',
 
@@ -1277,7 +1278,7 @@ const translation: LangKeys = {
 
     report_userproductivity_userid: 'Id',
     report_userproductivity_user: 'Usuario del asesor',
-    report_userproductivity_fullname: 'Nombre del asesor',
+    report_userproductivity_fullname: 'Asesor',
     report_userproductivity_hourfirstlogin: 'Hora de primer logueo',
     report_userproductivity_totaltickets: 'Cantidad de tickets',
     report_userproductivity_closedtickets: 'Cerrados',
@@ -1319,6 +1320,11 @@ const translation: LangKeys = {
     report_userproductivity_cardmaxmax_tmoagent: 'TMO asesor más alto',
     report_userproductivity_cardavgmin_tmoagent: 'TMO asesor promedio más bajo',
     report_userproductivity_cardminmin_tmoagent: 'TMO asesor más bajo',
+
+    report_userproductivity_maxticketsclosedasesorhelptext: 'Cantidad de tickets cerrados',
+    report_userproductivity_minticketsclosedasesorhelptext: 'Cantidad de tickets cerrados',
+    report_userproductivity_maxtimeconnectedasesorhelptext: 'Tiempo conectado',
+    report_userproductivity_mintimeconnectedasesorhelptext: 'Tiempo conectado',
 
     report_userproductivity_filter_channels: 'Canal',
     report_userproductivity_filter_group: 'Grupo',
@@ -1523,6 +1529,13 @@ const translation: LangKeys = {
     message_please_wait: 'Por favor espere unos momentos...',
     message_try_later: 'Algo inesperado sucedió, inténtelo de nuevo más tarde...',
     message_account_already_activated: 'Cuenta ya activa!',
+    typecredit: "Tipo de crédito",
+    typecredit_alcontado: "Al contado",
+    typecredit_15: "Crédito a 15 días",
+    typecredit_30: "Crédito a 30 días",
+    typecredit_45: "Crédito a 45 días",
+    typecredit_60: "Crédito a 60 días",
+    typecredit_90: "Crédito a 90 días",
     message_account_activated: 'Su cuenta se ha activado satisfactoriamente!',
     message_thanks_for_register: '¡Gracias por registrarse en nuestra plataforma!',
     message_click_to_login: 'Haga click en continuar para ir al login',

@@ -61,12 +61,11 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
 
     const dataStatus = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataClassification = multiData[2] && multiData[2].success ? multiData[2].data : [];
-
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
             id: row?.inappropriatewordsid|| 0,
-            classification: row?.classification||"",
+            classification: row?.classificationdata||"",
             description: row?.description || '',
             defaultanswer: row?.defaultanswer || '',
             status: row?.status || 'ACTIVO',
@@ -153,9 +152,10 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
                         <FieldSelect
                             label={t(langKeys.classification)}
                             className="col-12"
-                            valueDefault={row?.classification || ""}
-                            onChange={(value) => setValue('status', (value?value.domainvalue:""))}
+                            valueDefault={row?.classificationdata || ""}
+                            onChange={(value) => setValue('classification', (value?.domainvalue||""))}
                             error={errors?.classification?.message}
+                            uset={true}
                             data={dataClassification}
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
@@ -234,11 +234,6 @@ const InappropriateWords: FC = () => {
                 Header: t(langKeys.classification),
                 accessor: 'classification',
                 NoFilter: true,
-                prefixTranslation: '',
-                Cell: (props: any) => {
-                    const { classification } = props.cell.row.original;
-                    return (t(`${classification}`.toLowerCase()) || "").toUpperCase()
-                }
             },
             {
                 Header: t(langKeys.description),
@@ -254,11 +249,6 @@ const InappropriateWords: FC = () => {
                 Header: t(langKeys.status),
                 accessor: 'status',
                 NoFilter: true,
-                prefixTranslation: 'status_',
-                Cell: (props: any) => {
-                    const { status } = props.cell.row.original;
-                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
-                }
             },
             
         ],
@@ -369,9 +359,13 @@ const InappropriateWords: FC = () => {
     }
 
     const handleTemplate = () => {
-        const data = [mainResult.multiData.data[2].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domainvalue}),{}), {}, {}, mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domainvalue}),{})];
+        const data = [
+            mainResult.multiData.data[2].data.reduce((a,d) => ({...a, [d.domainvalue]: t(`${d.domainvalue}`)}),{}), 
+            {},
+            {},
+            mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.domainvalue]: t(`${d.domainvalue}`)}),{})];
         const header = ['classification', 'description', 'defaultanswer', 'status'];
-        exportExcel(t(langKeys.template), templateMaker(data, header));
+        exportExcel(`${t(langKeys.template)} ${t(langKeys.inappropriatewords)}`, templateMaker(data, header));
     }
 
     if (viewSelected === "view-1") {
@@ -380,7 +374,12 @@ const InappropriateWords: FC = () => {
             <TableZyx
                 columns={columns}
                 titlemodule={t(langKeys.inappropriatewords, { count: 2 })}
-                data={mainResult.mainData.data}
+                data={mainResult.mainData.data.map(x => ({
+                    ...x,
+                    classification: (t(`${x.classification}`.toLowerCase()) || "").toUpperCase(),
+                    classificationdata: x.classification,
+                    statusdesc: (t(`status_${x.status}`.toLowerCase()) || "").toUpperCase()
+                }))}
                 download={true}
                 onClickRow={handleEdit}
                 loading={mainResult.mainData.loading}

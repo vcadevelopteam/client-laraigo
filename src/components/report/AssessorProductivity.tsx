@@ -8,15 +8,16 @@ import { getUserProductivitySel } from "common/helpers/requestBodies";
 import { DateRangePicker, FieldMultiSelect, FieldSelect, IOSSwitch } from "components";
 import { makeStyles } from '@material-ui/core/styles';
 import FormControlLabel from "@material-ui/core/FormControlLabel/FormControlLabel";
-import { Box, Button, Card, CardContent, Grid, Typography } from "@material-ui/core";
+import { Box, Button, Card, CardContent, Grid, Tooltip, Typography } from "@material-ui/core";
 import { CalendarIcon, DownloadIcon, SearchIcon } from "icons";
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import { Range } from 'react-date-range';
 import IndicatorPanel from "./IndicatorPanel";
 import clsx from 'clsx';
 import ThumbDownIcon from '@material-ui/icons/ThumbDown';
 import ThumbUpIcon from '@material-ui/icons/ThumbUp';
 import TableZyx from "components/fields/table-simple";
-import { exportExcel } from 'common/helpers';
+import { exportExcel, isJson } from 'common/helpers';
 import { langKeys } from "lang/keys";
 import { Dictionary, MultiData } from "@types";
 
@@ -63,6 +64,11 @@ const useStyles = makeStyles((theme) => ({
     BackGrGreen: {
         backgroundColor: "#55bd84",
     },
+    iconHelpText: {
+        width: 15,
+        height: 15,
+        cursor: 'pointer',
+    }
 }));
 
 const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
@@ -156,11 +162,11 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                 accessor: 'minfirstreplytime',
                 NoFilter: false
             },
-            {
-                Header: t(langKeys.report_userproductivity_avgtotalduration),
-                accessor: 'avgtotalduration',
-                NoFilter: false
-            },
+            // {
+            //     Header: t(langKeys.report_userproductivity_avgtotalduration),
+            //     accessor: 'avgtotalduration',
+            //     NoFilter: false
+            // },
             {
                 Header: t(langKeys.report_userproductivity_maxtotalduration),
                 accessor: 'maxtotalduration',
@@ -202,9 +208,26 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                 Header: t(langKeys.report_userproductivity_groups),
                 accessor: 'groups',
                 NoFilter: false
-            }
+            },
+            ...(mainAux.data.length > 0 ?
+                [...Array.from(new Set((mainAux.data as any).reduce((ac: string[], x: any) => (
+                    x.desconectedtimejson ? [...ac, ...Object.keys(JSON.parse(x.desconectedtimejson))] : ac), []))).map((d: any) =>
+                        ({
+                            Header: d,
+                            accessor: d.toLowerCase(),
+                            NoFilter: false,
+                            Cell: (props: any) => {
+                                const { desconectedtimejson } = props.cell.row.original;
+                                return (
+                                    desconectedtimejson && isJson(desconectedtimejson) ? (JSON.parse(desconectedtimejson)[d] || '') : ''
+                                )
+                            }
+                        })
+                    )
+                ] : []
+            )
         ],
-        [isday]
+        [isday,mainAux]
     );
 
     useEffect(() => {
@@ -222,7 +245,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
             }
             if(mainAux.data.length >0){
                 
-                mainAux.data.forEach((x,i)=>{
+                mainAux.data.filter(x => x.usertype !== 'HOLDING').forEach((x,i)=>{
                     if (i===0){
                         maxminaux ={
                             maxticketsclosed: x.closedtickets,
@@ -499,9 +522,15 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                             <div style={{flex: 1}}>
                                 <Typography variant="subtitle1" >
                                     {maxmin.maxticketsclosedasesor} ({maxmin.maxticketsclosed})
+                                    <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.report_userproductivity_maxticketsclosedasesorhelptext)}</div>} arrow placement="top" >
+                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                    </Tooltip>
                                 </Typography>
                                 <Typography variant="subtitle1">
                                     {maxmin.minticketsclosedasesor} ({maxmin.minticketsclosed})
+                                    <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.report_userproductivity_minticketsclosedasesorhelptext)}</div>} arrow placement="top" >
+                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                    </Tooltip>
                                 </Typography>
                             </div>
                         </CardContent>
@@ -521,9 +550,15 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                             <div style={{flex: 1}}>
                                 <Typography variant="subtitle1">
                                     {maxmin.maxtimeconnectedasesor} ({maxmin.maxtimeconnected} m)
+                                    <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.report_userproductivity_maxtimeconnectedasesorhelptext)}</div>} arrow placement="top" >
+                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                    </Tooltip>
                                 </Typography>
                                 <Typography variant="subtitle1">
                                     {maxmin.mintimeconnectedasesor} ({maxmin.mintimeconnected} m)
+                                    <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.report_userproductivity_mintimeconnectedasesorhelptext)}</div>} arrow placement="top" >
+                                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                    </Tooltip>
                                 </Typography>
                             </div>
                         </CardContent>

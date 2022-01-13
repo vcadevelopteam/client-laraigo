@@ -124,11 +124,21 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
         reportColumns.forEach(x => {
             switch (x.proargtype) {
                 case "bigint":
-                    columns.push({
-                        Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
-                        accessor: x.proargnames,
-                        type: "number"
-                    });
+                    if (x.proargnames.includes('year') || x.proargnames.includes('month') || x.proargnames.includes('week') || x.proargnames.includes('day') || x.proargnames.includes('hour')) {
+                        columns.push({
+                            Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                            accessor: x.proargnames,
+                            type: "number-centered"
+                        });
+                    }
+                    else {
+                        columns.push({
+                            Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                            accessor: x.proargnames,
+                            type: "number"
+                        });
+
+                    }
                     break;
                 case "boolean":
                     columns.push({
