@@ -1870,6 +1870,7 @@ const translation: LangKeys = {
     additionalinformation1: "Una vez realizado el pago, se generara la factura de manera automática",
     additionalinformation2: "Si desea incluir información adicional antes de enviar la factura, ingrese los datos antes de realizar el pago",
     proceedpayment: "Proceder a Pagar",
+    credittype: "Tipo de credito",
 };
 
 const esResource: ResourceLanguage = {

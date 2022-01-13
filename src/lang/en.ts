@@ -1877,6 +1877,7 @@ const translation: LangKeys = {
     additionalinformation1: "Once the payment is completed, the invoice will be generated automatically",
     additionalinformation2: "If you wish to include additional information before the invoice is generated, fill the information before paying",
     proceedpayment: "Proceed to Payment",
+    credittype: "Credit type",
 };
 
 const enResource: ResourceLanguage = {

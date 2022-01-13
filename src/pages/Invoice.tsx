@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx } from 'components';
-import { selInvoice, insInvoice, cancelInvoice, getLocaleDateString, selInvoiceClient, selInvoiceChangePaymentStatus, regenerateInvoice, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, exportExcel } from 'common/helpers';
+import { selInvoice, insInvoice, cancelInvoice, getLocaleDateString, selInvoiceClient, selInvoiceChangePaymentStatus, regenerateInvoice, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, exportExcel, invoiceRefreshTest } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -70,6 +70,8 @@ const StyledTableCell = withStyles((theme) => ({
 
 const StyledTableRow = withStyles((theme) => ({
 }))(TableRow);
+
+const datacredit = [{value:'0',description: "AL CONTADO"}, {value:'15',description: "CREDITO A 15 DIAS"}, {value:'30',description: "CREDITO A 30 DIAS"}, {value:'45',description: "CREDITO A 45 DIAS"}, {value:'60',description: "CREDITO A 60 DIAS"},  {value:'90',description: "CREDITO A 90 DIAS"}]
 
 const datatotalize = [{value:1,description: "CORPORATION"},{value:2,description: "ORGANIZATION"}]
 
@@ -202,6 +204,11 @@ const isEmpty = (str?: string) => {
 const invocesBread = [
     { id: "view-1", name: "Invoices" },
     { id: "view-2", name: "Invoice detail" }
+];
+
+const paymentBread = [
+    { id: "view-1", name: "Payment" },
+    { id: "view-2", name: "Payment detail" }
 ];
 
 const YEARS = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }]
@@ -1601,8 +1608,6 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
     const mainResult = useSelector(state => state.main);
     const user = useSelector(state => state.login.validateToken.user);
 
-    const [openDialogPassword, setOpenDialogPassword] = useState(false);
-
     const [dataMain, setdataMain] = useState({
         corpid: user?.corpid || 0,
         month: (new Date().getMonth() + 1).toString().padStart(2, "0"),
@@ -1617,13 +1622,15 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
     const [rowSelect, setRowSelect] = useState(false);
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitSave, setWaitSave] = useState(false);
+    const [waitRefresh, setWaitRefresh] = useState(false);
     const [modalRowSelect, setModalRowSelect] = useState<Dictionary | null>(null);
     const [modalRowSend, setModalRowSend] = useState(false);
-   
 
     const fetchData = () => dispatch(getCollection(selInvoiceClient(dataMain)));
 
     const search = () => dispatch(getCollection(selInvoiceClient(dataMain)));
+
+    const refreshAll = () => { dispatch(execute(invoiceRefreshTest())); setWaitRefresh(true) }
 
     useEffect(() => {
         fetchData()
@@ -1646,7 +1653,8 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
 
     useEffect(() => {
         if (modalRowSend) {
-            setOpenDialogPassword(true);
+            setViewSelected("view-2");
+            setRowSelected(modalRowSelect);
             setModalRowSend(false);
         }
     }, [modalRowSelect, modalRowSend])
@@ -1670,6 +1678,22 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
             }
         }
     }, [executeRes, waitSave])
+
+    useEffect(() => {
+        if (waitRefresh) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.success) }))
+                fetchData && fetchData();
+                dispatch(showBackdrop(false));
+                setViewSelected("view-1")
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                setWaitRefresh(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [executeRes, waitRefresh])
 
     useEffect(() => {
         if (!mainResult.mainData.loading && !mainResult.mainData.error) {
@@ -1886,6 +1910,15 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                                 onClick={search}
                             >{t(langKeys.search)}
                             </Button>
+                            <Button
+                                disabled={mainResult.mainData.loading || disableSearch}
+                                variant="contained"
+                                color="primary"
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                startIcon={<RefreshIcon style={{ color: 'white' }} />}
+                                onClick={refreshAll}
+                            >{t(langKeys.refresh)}
+                            </Button>
                         </div>
                     )}
                     data={dataInvoice}
@@ -1894,16 +1927,11 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                     download={true}
                     register={false}
                 />
-                <ModalPayments
-                    openModal={openDialogPassword}
-                    setOpenModal={setOpenDialogPassword}
-                    row={modalRowSelect}
-                />
             </div>
         )
     } else {
         return (
-            <BillingDetail
+            <PaymentsDetail
                 fetchData={fetchData}
                 data={rowSelected}
                 setViewSelected={setViewSelected}
@@ -1912,101 +1940,114 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
     }
 }
 
-interface ModalPasswordProps {
-    openModal: boolean;
-    setOpenModal: (value: boolean) => any;
-    row: any;
-}
-
-const ModalPayments: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, row }) => {
+const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) => {
     const { t } = useTranslation();
 
     const classes = useStyles();
 
-    const handleCancelModal = () => {
-        setOpenModal(false);
-        clearErrors();
+    const [comments, setComments] = useState('');
+    const [purchaseOrder, setPurchaseOrder] = useState('');
+    const [creditType, setCreditType] = useState('');
+    
+    const handleCulqiSuccess = () => {
+        fetchData();
+        setViewSelected("view-1");
     }
 
-    const { register, handleSubmit, setValue, getValues, formState: { errors }, trigger, clearErrors } = useForm({
-        defaultValues: {
-            purchaseorder: '',
-            comments: ''
-        }
-    });
-
-    useEffect(() => {
-        register('purchaseorder');
-        register('comments');
-    }, [])
-    
     return (
-        <DialogZyx
-            open={openModal}
-            title={t(langKeys.paymentinformation)}
-            buttonText1={t(langKeys.cancel)}
-            handleClickButton1={handleCancelModal}
-        >
-            <div className="row-zyx">
-                <FieldView
-                    className="col-6"
-                    label={t(langKeys.servicedescription)}
-                    value={row?.description || ''}
-                />
-                <FieldView
-                    className="col-6"
-                    label={t(langKeys.totalamount)}
-                    value={(row?.totalamount || 0).toFixed(4)}
-                />
+        <div style={{ width: '100%' }}>
+            <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={paymentBread}
+                            handleClick={setViewSelected}
+                        />
+                        <TitleDetail
+                            title={data?.description}
+                        />
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        {data?.paymentstatus === "PENDING" &&
+                            <CulqiModal
+                                type="CHARGE"
+                                invoiceid={data?.invoiceid}
+                                title={data?.description}
+                                description=""
+                                currency={data?.currency}
+                                amount={data?.totalamount * 100}
+                                callbackOnSuccess={() => { handleCulqiSuccess() }}
+                                buttontitle={t(langKeys.proceedpayment)}
+                                purchaseorder={purchaseOrder}
+                                comments={comments}
+                                tipocredito={creditType}
+                            ></CulqiModal>
+                        }
+                    </div>
+                </div>
+                <div style={{ backgroundColor: 'white', padding: 16 }}>
+                <div className="row-zyx">
+                    <FieldView
+                        className="col-6"
+                        label={t(langKeys.servicedescription)}
+                        value={data?.description || ''}
+                    />
+                    <FieldView
+                        className="col-6"
+                        label={t(langKeys.totalamount)}
+                        value={(data?.totalamount || 0).toFixed(4)}
+                    />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldView
+                            className={classes.section}
+                            label={''}
+                            value={t(langKeys.additional_information)}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldView
+                            className={classes.commentary}
+                            label={''}
+                            value={t(langKeys.additionalinformation1)}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldView
+                            className={classes.commentary}
+                            label={''}
+                            value={t(langKeys.additionalinformation2)}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.purchaseorder)}
+                            onChange={(value) => setPurchaseOrder(value)}
+                            valueDefault={purchaseOrder}
+                            className="col-6"
+                        />
+                        <FieldEdit
+                            label={t(langKeys.comments)}
+                            onChange={(value) => setComments(value)}
+                            valueDefault={comments}
+                            className="col-6"
+                        />
+                    </div>
+                    <div className='row-zyx'>
+                        <FieldSelect
+                            label={t(langKeys.credittype)}
+                            className={classes.fieldsfilter}
+                            valueDefault={''}
+                            variant="outlined"
+                            onChange={(value) => setCreditType(value?.value)}
+                            data={datacredit}
+                            optionDesc="description"
+                            optionValue="value"
+                        />
+                    </div>
+                </div>
             </div>
-            <div className="row-zyx">
-                <FieldView
-                    className={classes.section}
-                    label={''}
-                    value={t(langKeys.additional_information)}
-                />
-            </div>
-            <div className="row-zyx">
-                <FieldView
-                    className={classes.commentary}
-                    label={''}
-                    value={t(langKeys.additionalinformation1)}
-                />
-            </div>
-            <div className="row-zyx">
-                <FieldView
-                    className={classes.commentary}
-                    label={''}
-                    value={t(langKeys.additionalinformation2)}
-                />
-            </div>
-            <div className="row-zyx">
-                <FieldEdit
-                    label={t(langKeys.purchaseorder)}
-                    onChange={(value) => setValue('purchaseorder', value)}
-                    valueDefault={getValues('purchaseorder')}
-                    error={errors?.purchaseorder?.message}
-                    className="col-6"
-                />
-                <FieldEdit
-                    label={t(langKeys.comments)}
-                    onChange={(value) => setValue('comments', value)}
-                    valueDefault={getValues('comments')}
-                    error={errors?.comments?.message}
-                    className="col-6"
-                />
-            </div>
-            <CulqiModal
-                type="CHARGE"
-                invoiceid={row?.invoiceid}
-                title={row?.description}
-                description=""
-                currency={row?.currency}
-                amount={row?.totalamount * 100}
-                callbackOnSuccess={handleCancelModal}
-                buttontitle={t(langKeys.proceedpayment)}
-            ></CulqiModal>
-        </DialogZyx>
+        </div >
     )
 }
 

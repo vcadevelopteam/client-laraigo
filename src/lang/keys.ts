@@ -1868,6 +1868,7 @@ export const langKeys = {
     additionalinformation1: "additionalinformation1",
     additionalinformation2: "additionalinformation2",
     proceedpayment: "proceedpayment",
+    credittype: "credittype",
 };
 
 export type LangKeys = typeof langKeys;
