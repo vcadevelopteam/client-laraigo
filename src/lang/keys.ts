@@ -916,6 +916,9 @@ export const langKeys = {
     namespace: 'namespace',
     category: 'category',
     language: 'language',
+    
+    currentlanguage: 'currentlanguage',
+
     templatetype: 'templatetype',
     templatestandard: 'templatestandard',
     templatemultimedia: 'templatemultimedia',

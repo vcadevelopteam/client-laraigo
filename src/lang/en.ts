@@ -2,6 +2,7 @@ import { ResourceLanguage } from 'i18next';
 import { LangKeys } from './keys';
 
 const translation: LangKeys = {
+    currentlanguage: 'en',
     english: 'English',
     spanish: 'Spanish',
 
