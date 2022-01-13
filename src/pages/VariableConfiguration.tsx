@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { FC, useEffect, useMemo, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import IconButton from '@material-ui/core/IconButton';
@@ -32,11 +32,6 @@ interface DetailProps {
     multiData: MultiData[];
     fetchData: () => void;
 }
-
-const arrayBread = [
-    { id: "view-1", name: "Variable Configuration" },
-    { id: "view-2", name: "Variable Configuration detail" }
-];
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -200,7 +195,7 @@ const VariableConfiguration: FC = () => {
                     return { variable, description, fontcolor, fontbold, priority, visible }
             });
             let filename = `variableconfiguration_${rowSelected.row?.title}.csv`;
-            downloadCSV(filename, mapdata);
+            downloadCSV(filename, mapdata, { headers: key => t(key) });
         }
     }
 
@@ -305,6 +300,11 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
             callback
         }))
     };
+
+    const arrayBread = useMemo(() => ([
+        { id: "view-1", name: t(langKeys.variableconfiguration, { count: 2 }) },
+        { id: "view-2", name: t(langKeys.variableconfigurationdetail) },
+    ]), [t]);
 
     const columns = React.useMemo(
         () => [

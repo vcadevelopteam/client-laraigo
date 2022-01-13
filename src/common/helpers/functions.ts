@@ -79,9 +79,39 @@ export function filterIf(data: Dictionary[], rif?: string, rifvalue?: string) {
     return data.filter(d => [null, undefined].includes(d.rif) || (d.rif === rif && d.rifvalue === rifvalue));
 }
 
-export function downloadCSV(filename: string, data: Dictionary[]) {
-    let columns = Object.keys(data[0]);
-    let headers = columns.join(';');
+interface DownloadCSVOptions {
+    headers?: string[] | ((header: string, index: number) => string);
+}
+
+export function downloadCSV(filename: string, data: Dictionary[], options: DownloadCSVOptions = {}) {
+    const columns = Object.keys(data[0]);
+    let headers = "";
+    if (options.headers) {
+        if (options.headers.length !== columns.length) {
+            console.warn('La cantidad de columnas de data[0] no coinciden con el de header de las opciones');
+        }
+
+        if (typeof options.headers === "function") {
+            // Se ejecuta una funcion para cada key de columns
+            for (let i = 0; i< columns.length; i++) {
+                const result = options.headers(columns[i], i);
+                if (i < columns.length - 1) {
+                    headers += `${result};`;
+                } else {
+                    headers += result;
+                }
+            }
+        } else if (Array.isArray(options.headers)) {
+            // Se coloca el header en el mismo orden y cantidad
+            headers = options.headers.join(';');
+        } else {
+            throw 'El tipo de options.header no es valido';
+        }
+        
+    } else {
+        headers = columns.join(';');
+    }
+
     let csv = headers;
     data.forEach(dt => {
         csv += '\r\n';

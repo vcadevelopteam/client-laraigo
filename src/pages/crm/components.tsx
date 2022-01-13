@@ -196,7 +196,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
                         className: classes.popoverPaper,
                     }}
                 >
-                    <Button
+                    {/* <Button
                         variant="text"
                         color="inherit"
                         fullWidth
@@ -205,7 +205,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
                         style={{ fontWeight: "normal", textTransform: "uppercase" }}
                     >
                         <Trans i18nKey={langKeys.close} />
-                    </Button>
+                    </Button> */}
                     <Button
                         variant="text"
                         color="inherit"

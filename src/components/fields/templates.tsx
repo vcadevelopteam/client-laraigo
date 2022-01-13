@@ -26,7 +26,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Tab, { TabProps } from '@material-ui/core/Tab';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { FormControlLabel, FormHelperText, OutlinedInputProps, Radio, RadioGroup, RadioGroupProps, useTheme, TypographyVariant } from '@material-ui/core';
+import { FormControlLabel, FormHelperText, OutlinedInputProps, Radio, RadioGroup, RadioGroupProps, useTheme, TypographyVariant, InputBaseComponentProps } from '@material-ui/core';
 import { Divider, Grid, ListItem, ListItemText, styled } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
@@ -55,6 +55,7 @@ import {
 } from 'icons';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import MuiPhoneNumber, { MaterialUiPhoneNumberProps } from 'material-ui-phone-number';
+import NumberFormat from 'react-number-format';
 
 interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
@@ -196,6 +197,7 @@ interface TemplateDialogProps {
     buttonText2?: string;
     buttonText1?: string;
     buttonText3?: string;
+    zIndex?: number;
     handleClickButton2?: (param: any) => void;
     handleClickButton1?: (param: any) => void;
     handleClickButton3?: (param: any) => void;
@@ -206,12 +208,12 @@ interface TemplateDialogProps {
     maxWidth?: false | "sm" | "xs" | "md" | "lg" | "xl" | undefined;
 }
 
-export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText1, buttonText2, handleClickButton2, handleClickButton1, title, maxWidth = "sm", button2Type = "button", button1Type = "button" }) => (
+export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText1, buttonText2, handleClickButton2, handleClickButton1, title, maxWidth = "sm", button2Type = "button", button1Type = "button", zIndex = 1300 }) => (
     <Dialog
         open={open}
         fullWidth
         maxWidth={maxWidth}
-        style={{ zIndex: 1300 }}>
+        style={{ zIndex }}>
         <form onSubmit={(button1Type === "submit" ? handleClickButton1 : (button2Type === "submit" ? handleClickButton2 : () => { }))}>
             {title && <DialogTitle>{title}</DialogTitle>}
             <DialogContent>
@@ -357,6 +359,72 @@ export const FieldEdit: React.FC<InputProps> = ({ label, size, className, disabl
         </div>
     )
 }
+
+interface CurrencyFieldEdit extends Omit<InputProps, 'type'> {
+    type?: 'text';
+}
+
+export const CurrencyFieldEdit: FC<CurrencyFieldEdit> = ({
+    label,
+    size,
+    className,
+    disabled = false,
+    valueDefault = "",
+    onChange,
+    error,
+    type = "text",
+    rows = 1,
+    fregister = {},
+    inputProps = {},
+    InputProps = {},
+    variant = "standard",
+}) => {
+    const [value, setvalue] = useState("");
+
+    useEffect(() => {
+        setvalue(valueDefault);
+    }, [valueDefault])
+
+    return (
+        <div className={className}>
+            {variant === "standard" &&
+                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+            }
+            <NumberFormat
+                customInput={TextField}
+                thousandSeparator
+                autoComplete="off"
+                
+                {...fregister}
+                color="primary"
+                fullWidth
+                label={variant !== "standard" && label}
+                disabled={disabled}
+                type={type}
+                value={value}
+                variant={variant}
+                error={!!error}
+                helperText={error || null}
+                rows={rows}
+                size={size}
+                // onChange={(e) => {
+                //     setvalue(e.target.value);
+                //     onChange && onChange(e.target.value);
+                // }}
+                onValueChange={(values) => { // { formattedValue, value }
+                    setvalue(values.value);
+                    onChange && onChange(values.value);
+                }}
+                // onBlur={(e) => {
+                //     onBlur && onBlur(e.target.value);
+                // }}
+                inputProps={inputProps}
+                InputProps={InputProps}
+            />
+        </div>
+    );
+}
+
 export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {}, inputProps = {} }) => {
     const [value, setvalue] = useState("");
 

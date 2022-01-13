@@ -1007,6 +1007,7 @@ export const langKeys = {
 
     variableconfiguration: 'variableconfiguration',
     variableconfiguration_plural: 'variableconfiguration_plural',
+    variableconfigurationdetail: 'variableconfigurationdetail',
     flow: 'flow',
     color: 'color',
     bold: 'bold',
@@ -1861,6 +1862,10 @@ export const langKeys = {
     smssection: 'smssection',
     mailsection: 'mailsection',
     newmessagingplan: "newmessagingplan",
+
+    fontcolor: 'fontcolor',
+    fontbold: 'fontbold',
+    visible: 'visible',
 };
 
 export type LangKeys = typeof langKeys;
