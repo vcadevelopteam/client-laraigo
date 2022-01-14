@@ -1901,7 +1901,8 @@ export const getOneLeadSel = (id: string | number): IRequestBody => ({
         leadproduct: '',
         campaignid: 0,
         tags: '',
-        userid: 0,
+        userid: 0, // filtro asesor
+        supervisorid: 0, // id del usuario de la sesión 
         all: false,
     },
 });
@@ -2464,4 +2465,10 @@ export const invoiceRefreshTest = (): IRequestBody => ({
     method: "UFN_INVOICE_REFRESHTEST",
     key: "UFN_INVOICE_REFRESHTEST",
     parameters: { },
+});
+
+export const getAdviserFilteredUserRol = (): IRequestBody => ({
+    method: "UFN_ADVISERSBYUSERID_SEL",
+    key: "UFN_ADVISERSBYUSERID_SEL",
+    parameters: {},
 });

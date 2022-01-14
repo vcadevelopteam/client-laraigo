@@ -1454,6 +1454,11 @@ export const langKeys = {
     report_userproductivity_cardavgmin_tmoagent: 'report_userproductivity_cardavgmin_tmoagent',
     report_userproductivity_cardminmin_tmoagent: 'report_userproductivity_cardminmin_tmoagent',
 
+    report_userproductivity_maxticketsclosedasesorhelptext: 'report_userproductivity_maxticketsclosedasesorhelptext',
+    report_userproductivity_minticketsclosedasesorhelptext: 'report_userproductivity_minticketsclosedasesorhelptext',
+    report_userproductivity_maxtimeconnectedasesorhelptext: 'report_userproductivity_maxtimeconnectedasesorhelptext',
+    report_userproductivity_mintimeconnectedasesorhelptext: 'report_userproductivity_mintimeconnectedasesorhelptext',
+
     report_userproductivity_filter_channels: 'report_userproductivity_filter_channels',
     report_userproductivity_filter_group: 'report_userproductivity_filter_group',
     report_userproductivity_filter_status: 'report_userproductivity_filter_status',

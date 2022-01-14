@@ -453,6 +453,8 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const [typeHotKey, setTypeHotKey] = useState("")
     const [quickReplies, setquickReplies] = useState<Dictionary[]>([])
     const [emojilist, setemojilist] = useState<string[]>([])
+    const [inappropiatewordsList, setinnappropiatewordsList] = useState<Dictionary[]>([])
+    const [inappropiatewords, setinnappropiatewords] = useState<string[]>([])
     const [quickRepliesToShow, setquickRepliesToShow] = useState<Dictionary[]>([])
     const [richResponseToShow, setRichResponseToShow] = useState<Dictionary[]>([])
     const [showReply, setShowReply] = useState(true);
@@ -525,32 +527,44 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             }
             if (text) {
                 const textCleaned = text.trim();
+                let errormessage = "";
+                const wordlist = textCleaned.split(" ").map(x=>x.toLowerCase())
+                inappropiatewordsList.forEach(x=>{
+                    if(wordlist.includes(x.description.toLowerCase())){
+                        errormessage=x.defaultanswer
+                    }
+                })
                 if (textCleaned) {
-                    wasSend = true
-                    const newInteractionSocket = {
-                        ...ticketSelected!!,
-                        interactionid: 0,
-                        typemessage: "text",
-                        typeinteraction: null,
-                        lastmessage: textCleaned,
-                        createdate: new Date().toISOString(),
-                        userid: 0,
-                        usertype: "agent",
-                        ticketWasAnswered: !ticketSelected!!.isAnswered,
-                    }
-                    if (userType === "AGENT") {
-                        dispatch(emitEvent({
-                            event: 'newMessageFromAgent',
-                            data: newInteractionSocket
+                    if(!errormessage){
+
+                        wasSend = true
+                        const newInteractionSocket = {
+                            ...ticketSelected!!,
+                            interactionid: 0,
+                            typemessage: "text",
+                            typeinteraction: null,
+                            lastmessage: textCleaned,
+                            createdate: new Date().toISOString(),
+                            userid: 0,
+                            usertype: "agent",
+                            ticketWasAnswered: !ticketSelected!!.isAnswered,
+                        }
+                        if (userType === "AGENT") {
+                            dispatch(emitEvent({
+                                event: 'newMessageFromAgent',
+                                data: newInteractionSocket
+                            }));
+                        }
+                        //send to answer with integration
+                        dispatch(replyTicket({
+                            ...ticketSelected!!,
+                            interactiontype: "text",
+                            interactiontext: textCleaned,
                         }));
+                        setText("");
+                    }else{
+                        dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                     }
-                    //send to answer with integration
-                    dispatch(replyTicket({
-                        ...ticketSelected!!,
-                        interactiontype: "text",
-                        interactiontext: textCleaned,
-                    }));
-                    setText("");
                 }
             }
 
@@ -574,9 +588,11 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
 
     useEffect(() => {
         if (!multiData.loading && !multiData.error && multiData?.data[4]) {
-            setquickReplies(multiData?.data[4].data)
-            setemojilist(multiData?.data[10].data.filter(x => (x.restricted)).map(x => x.emojihex))
-            setquickRepliesToShow(multiData?.data[4].data.filter(x => !!x.favorite))
+            setquickReplies(multiData?.data[4].data||[])
+            setquickRepliesToShow(multiData?.data[4].data.filter(x => !!x.favorite)||[])
+            setemojilist(multiData?.data[10].data.filter(x => (x.restricted)).map(x => x.emojihex)||[])
+            setinnappropiatewordsList(multiData?.data[11].data.filter(x=>(x.status==="ACTIVO"))||[])
+            setinnappropiatewords(multiData?.data[11].data.filter(x=>(x.status==="ACTIVO")).map(y=>(y.description))||[])
         }
     }, [multiData])
 
