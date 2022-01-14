@@ -2192,6 +2192,8 @@ const translation: LangKeys = {
     ACTIVITYDISCARD: 'Actividad programada cancelada',
     ACTIVITYUPDATE: 'Actividad actualizada',
     CHANGEAGENT: 'Cambio de asesor',
+    NEWPRODUCT: 'Nuevo producto',
+    REMOVEPRODUCT: 'Producto eliminado',
 
     repeatPassword: 'Repetir contraseña',
     passwordsMustBeEqual: 'Las contraseñas deben ser iguales',

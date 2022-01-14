@@ -61,7 +61,7 @@ export const routes: RouteConfig[] = [
         description: <Trans i18nKey={langKeys.lead} count={2} />,
         tooltip: <Trans i18nKey={langKeys.lead} count={2} />,
         path: paths.CRM,
-        icon: (className) => <CRMIcon style={{ width: 30, height: 30 }} className={className} />,
+        icon: (className) => <CRMIcon style={{ width: 22, height: 26 }} className={className} />,
     },
     // {
     //     key: paths.EMAIL_INBOX,
