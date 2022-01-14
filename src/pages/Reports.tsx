@@ -14,7 +14,7 @@ import { langKeys } from 'lang/keys';
 import { TemplateBreadcrumbs, SearchField, FieldSelect, FieldMultiSelect, SkeletonReportCard } from 'components';
 import { useSelector } from 'hooks';
 import { Dictionary, IFetchData, MultiData, IRequestBody } from "@types";
-import { getReportSel, getReportTemplateSel, getValuesFromDomain, getTagsChatflow, getCommChannelLst, getReportColumnSel, getReportFilterSel, getPaginatedForReports, getReportExport, insertReportTemplate, convertLocalDate, getTableOrigin } from 'common/helpers';
+import { getReportSel, getReportTemplateSel, getValuesFromDomain, getTagsChatflow, getCommChannelLst, getReportColumnSel, getReportFilterSel, getPaginatedForReports, getReportExport, insertReportTemplate, convertLocalDate, getTableOrigin, getVariablesByOrg } from 'common/helpers';
 import { getCollection, getCollectionAux, execute, resetMain, getCollectionPaginated, resetCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetMainAux, getMultiCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
@@ -427,10 +427,7 @@ const Reports: FC = () => {
 
         dispatch(getMultiCollectionAux([
             getValuesFromDomain("ESTADOGENERICO"),
-            getValuesFromDomain("GRUPOS"),
-            getTagsChatflow(),
-            getCommChannelLst(),
-            getTableOrigin()
+            getTableOrigin(),
         ]));
 
         return () => {
@@ -679,7 +676,7 @@ const Reports: FC = () => {
             <DetailReportDesigner
                 data={rowReportSelected}
                 setViewSelected={setViewSelected}
-                multiData={reportsResult.multiDataAux.data}
+                // multiData={reportsResult.multiDataAux.data}
                 fetchData={fetchData}
             />
         )
@@ -687,7 +684,6 @@ const Reports: FC = () => {
         return (
             <ReportPersonalized
                 item={rowReportSelected.row!! as IReport}
-                multiData={reportsResult.multiDataAux.data}
                 setViewSelected={setViewSelected}
             />
         )

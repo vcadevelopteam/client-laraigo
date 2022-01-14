@@ -2,7 +2,7 @@
 import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { TemplateBreadcrumbs, DateRangePicker, FieldMultiSelect, FieldSelect } from 'components';
+import { TemplateBreadcrumbs, DateRangePicker, FieldEdit, FieldSelect } from 'components';
 import { Dictionary } from "@types";
 import TableZyx from 'components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
         gap: theme.spacing(1),
         marginTop: theme.spacing(1),
         backgroundColor: '#FFF',
-        padding: theme.spacing(2),
+        padding: theme.spacing(1),
     },
     itemFilter: {
         flex: '0 0 220px',
@@ -50,11 +50,6 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-interface MultiData {
-    data: Dictionary[];
-    success: boolean;
-}
-
 export interface IReport {
     columns: Dictionary[];
     filters: Dictionary[];
@@ -65,7 +60,6 @@ export interface IReport {
 interface DetailReportProps {
     item: IReport;
     setViewSelected: (view: string) => void;
-    multiData: MultiData[];
 }
 
 const initialRange = {
@@ -79,8 +73,9 @@ const format = (date: Date) => date.toISOString().split('T')[0];
 const FilterDynamic: FC<{ filter: Dictionary, setFiltersDynamic: (param: any) => void }> = ({ filter, setFiltersDynamic }) => {
     const [openDialogDate, setOpenDialogDate] = useState(false);
     const [dateRange, setDateRange] = useState<Range>(initialRange);
-    const classes = useStyles()
-
+    const classes = useStyles();
+    const { t } = useTranslation();
+    
     useEffect(() => {
         setFiltersDynamic((prev: any) => ({
             ...prev,
@@ -113,16 +108,27 @@ const FilterDynamic: FC<{ filter: Dictionary, setFiltersDynamic: (param: any) =>
         )
     } else {
         return (
-            <div>dev</div>
+            <FieldEdit
+                label={filter.type === "variable" ? filter.description : t(`personalizedreport_${filter.description}`)}
+                variant="outlined"
+                size="small"
+                onChange={(value) =>   setFiltersDynamic((prev: any) => ({
+                    ...prev,
+                    [filter.columnname]: {
+                        ...prev[filter.columnname],
+                        value: value
+                    }
+                }))}
+            />
         )
     }
 }
 
-const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, multiData, item: { columns, summaries, filters, description } }) => {
+const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { columns, summaries, filters, description } }) => {
     const classes = useStyles()
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    
+
     const [filtersDynamic, setFiltersDynamic] = useState<Dictionary>(filters.reduce((acc: Dictionary, item: Dictionary) => ({
         ...acc,
         [item.columnname]: item
@@ -130,7 +136,7 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, multiData,
 
     const columnsDynamic = React.useMemo(
         () => columns.map((x: Dictionary) => ({
-            Header: x.description,
+            Header: x.alias,
             accessor: x.columnname.replace(".", ""),
         })), [columns]
     )

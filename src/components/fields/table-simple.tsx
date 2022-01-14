@@ -489,7 +489,6 @@ const TableZyx = React.memo(({
 
     const filterCellValue = React.useCallback((rows, id, filterValue) => {
         const { value, operator, type } = filterValue;
-        debugger;
         return rows.filter((row: any) => {
             const cellvalue = row.values[id];
             if (cellvalue === null || cellvalue === undefined)
