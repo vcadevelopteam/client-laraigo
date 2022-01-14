@@ -121,6 +121,11 @@ const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { r
                 }
             },
             {
+                Header: t(langKeys.communicationtemplate),
+                accessor: 'templatename',
+                NoFilter: true
+            },
+            {
                 Header: t(langKeys.body),
                 accessor: 'body',
                 NoFilter: true
@@ -280,7 +285,7 @@ const RecordHSMRecord: FC = () => {
         if (!multiDataAux.loading){
             setshippingTypesData(multiDataAux.data[0]?.data||[])
         }
-    }, [multiData])
+    }, [multiDataAux])
 
     const handleView = (row: Dictionary) => {
         setViewSelected("view-2");

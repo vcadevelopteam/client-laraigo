@@ -90,6 +90,7 @@ const useStyles = makeStyles((theme) => ({
 const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, dataCurrency }) => {
     const countryList = useSelector(state => state.signup.countryList);
     const user = useSelector(state => state.login.validateToken.user);
+    const roledesc =user?.roledesc || "";
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [waitSaveUpload, setWaitSaveUpload] = useState(false);
@@ -101,6 +102,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const [showCredential, setShowCredential] = useState(row?.private_mail || false);    
     const uploadResult = useSelector(state => state.main.uploadFile);
     const [valuefile, setvaluefile] = useState('')
+    const [doctype, setdoctype] = useState(row?.doctype || '')
     const [idUpload, setIdUpload] = useState('');
     const [iconupload, seticonupload] = useState('');
     const [iconsurl, seticonsurl] = useState({
@@ -345,7 +347,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                     <div className="row-zyx">
                         {edit ?
                             (
-                                !row && ['SUPERADMIN'].includes(user?.roledesc || "") ?
+                                !row && ['SUPERADMIN'].includes(roledesc || "") ?
                                     <FieldSelect
                                         label={t(langKeys.corporation)}
                                         className="col-6"
@@ -353,7 +355,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                         onChange={(value) => setValue('corpid', value?.corpid)}
                                         error={errors?.corpid?.message}
                                         data={dataCorp}
-                                        disabled={!['SUPERADMIN'].includes(user?.roledesc || "")}
+                                        disabled={!['SUPERADMIN'].includes(roledesc || "")}
                                         optionDesc="description"
                                         optionValue="corpid"
                                     />
@@ -442,8 +444,9 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 <FieldSelect
                                     label={t(langKeys.docType)}
                                     className="col-6"
-                                    valueDefault={getValues("doctype")}
-                                    onChange={(value) => setValue("doctype", value?.code || "")}
+                                    valueDefault={doctype}
+                                    disabled={doctype==="0"}
+                                    onChange={(value) => {setValue("doctype", value?.code || "");setdoctype(value?.code || "")}}
                                     error={errors?.doctype?.message}
                                     data={dataDocType}
                                     optionDesc="description"
@@ -494,7 +497,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     label={t(langKeys.country)}
                                     className="col-6"
                                     valueDefault={getValues("sunatcountry")}
-                                    onChange={(value) => setValue("sunatcountry", value.code)}
+                                    onChange={(value) => {setValue("sunatcountry", value?.code||"");setdoctype(value?.code==="PE"?"1":"0")}}
                                     error={errors?.sunatcountry?.message}
                                     data={countryList.data}
                                     optionDesc="description"
@@ -506,6 +509,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     valueDefault={getValues("credittype")}
                                     onChange={(value) => {setValue("credittype", value?.domainvalue || "");}}
                                     error={errors?.credittype?.message}
+                                    disabled={roledesc !== "SUPERADMIN"}
                                     data={typeofcreditList}
                                     uset={true}
                                     optionDesc="domainvalue"
@@ -515,7 +519,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                             <div className="row-zyx">
                                 <TemplateSwitch
                                     label={t(langKeys.autosendinvoice)}
-                                    disabled={user?.roledesc !== "SUPERADMIN"}
+                                    disabled={roledesc !== "SUPERADMIN"}
                                     className="col-6"
                                     valueDefault={getValues('autosendinvoice')}
                                     onChange={(value) => setValue('autosendinvoice', value)}
