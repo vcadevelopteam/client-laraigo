@@ -189,13 +189,8 @@ const RecordHSMRecord: FC = () => {
             },
             {
                 Header: t(langKeys.shippingreason),
-                accessor: 'name',
+                accessor: 'name_translated',
                 NoFilter: true,
-                prefixTranslation: 'report_sentmessages_',
-                Cell: (props: any) => {
-                    const { translationname } = props.cell.row.original;
-                    return (t(`${translationname}`.toLowerCase()) || "").toUpperCase()
-                }
             },
             {
                 Header: t(langKeys.shippingdate),
@@ -299,7 +294,10 @@ const RecordHSMRecord: FC = () => {
                 onClickRow={handleView}    
                 columns={columns}
                 titlemodule={t(langKeys.recordhsmreport, { count: 2 })}
-                data={multiData.data[0]?.data||[]}
+                data={multiData.data[0]?.data.map(x => ({
+                    ...x,
+                    name_translated: x.name !== x.translationname?(t(`report_sentmessages_${x.name}`.toLowerCase()) || "").toUpperCase():x.name.toUpperCase(),
+                }))||[]}
                 ButtonsElement={() => (
                     <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
                         <FieldSelect
