@@ -1,4 +1,4 @@
-import { DashboardTemplateSave, Dictionary, IChannel, IChatWebAdd, ICrmLead, ICrmLeadActivitySave, ICrmLeadNoteSave, ICrmLeadSel, ICrmLeadTagsSave, ILead, IPerson, IRequestBody, IRequestBodyPaginated } from '@types';
+import { DashboardTemplateSave, Dictionary, IChannel, IChatWebAdd, ICrmLead, ICrmLeadActivitySave, ICrmLeadHistoryIns, ICrmLeadNoteSave, ICrmLeadSel, ICrmLeadTagsSave, ILead, IPerson, IRequestBody, IRequestBodyPaginated } from '@types';
 import { uuidv4 } from '.';
 
 type ID = string | number;
@@ -2125,7 +2125,7 @@ export const updateLeadTagsIns = (tags: ICrmLeadTagsSave): IRequestBody => ({
     parameters: tags,
 });
 
-export const leadHistoryIns = ({ leadid, historyleadid, description, type, status, operation }: Dictionary): IRequestBody => ({
+export const leadHistoryIns = ({ leadid, historyleadid, description, type, status, operation }: ICrmLeadHistoryIns): IRequestBody => ({
     key: "UFN_HISTORYLEAD_INS",
     method: "UFN_HISTORYLEAD_INS",
     parameters: {

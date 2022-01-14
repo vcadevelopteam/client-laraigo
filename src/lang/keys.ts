@@ -2195,6 +2195,8 @@ export const langKeys = {
     ACTIVITYDISCARD: 'ACTIVITYDISCARD',
     ACTIVITYUPDATE: 'ACTIVITYUPDATE',
     CHANGEAGENT: 'CHANGEAGENT',
+    NEWPRODUCT: 'NEWPRODUCT',
+    REMOVEPRODUCT: 'REMOVEPRODUCT',
     
     repeatPassword: 'repeatPassword',
     passwordsMustBeEqual: 'passwordsMustBeEqual',

@@ -5,13 +5,13 @@ import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useRouteMatch } from 'react-router';
-import { insLead2, adviserSel, getPaginatedPerson as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSel, insArchiveLead, leadHistorySel, updateLeadTagsIns, getLeadsSel } from 'common/helpers';
+import { insLead2, adviserSel, getPaginatedPerson as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSel, insArchiveLead, leadHistorySel, updateLeadTagsIns, getLeadsSel, leadHistoryIns } from 'common/helpers';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { archiveLead, getAdvisers, getLead, getLeadActivities, getLeadHistory, getLeadLogNotes, getLeadPhases, markDoneActivity, resetArchiveLead, resetGetLead, resetGetLeadActivities, resetGetLeadHistory, resetGetLeadLogNotes, resetGetLeadPhases, resetMarkDoneActivity, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLeadActivity, saveLeadLogNote, saveLeadWithFiles, updateLeadTags, saveLead as saveLeadAction, resetGetLeadProductsDomain, getLeadProductsDomain, getLeadTagsDomain, resetGetLeadTagsDomain } from 'store/lead/actions';
-import { Dictionary, ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, ICrmLeadHistory, ICrmLeadNote, ICrmLeadNoteSave, ICrmLeadTagsSave, IDomain, IFetchData, IPerson } from '@types';
+import { Dictionary, ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, ICrmLeadHistory, ICrmLeadHistoryIns, ICrmLeadNote, ICrmLeadNoteSave, ICrmLeadProductsSave, ICrmLeadTagsSave, IDomain, IFetchData, IPerson } from '@types';
 import { manageConfirmation, showSnackbar } from 'store/popus/actions';
 import { Rating, Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineSeparator } from '@material-ui/lab';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -140,7 +140,10 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const leadProductsDomain = useSelector(state => state.lead.leadProductsDomain);
     const leadTagsDomain = useSelector(state => state.lead.leadTagsDomain);
 
-    const { register, handleSubmit, setValue, getValues, formState: { errors }, reset, trigger } = useForm<any>({
+    const leadProductsChanges = useRef<ICrmLeadHistoryIns[]>([]);
+    const leadTagsChanges = useRef<ICrmLeadHistoryIns[]>([]);
+
+    const { register, setValue, getValues, formState: { errors }, reset, trigger } = useForm<any>({
         defaultValues: {
             leadid: 0,
             description: '',
@@ -197,7 +200,11 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 }
 
                 if (edit) {
-                    dispatch(saveLeadAction(insLead2(data, data.operation), false));
+                    dispatch(saveLeadAction([
+                        insLead2(data, data.operation),
+                        ...leadProductsChanges.current.map(leadHistoryIns),
+                        ...leadTagsChanges.current.map(leadHistoryIns),
+                    ], false));
                 } else {
                     dispatch(saveLeadWithFiles(async (uploader) => {
                         const notes = (data.notes || []) as ICrmLeadNoteSave[];
@@ -500,20 +507,70 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         }))
     }, [lead, dispatch]);
 
-    const handleUpdateLeadTags = useCallback((tags: string, value: any, action: "NEWTAG" | "REMOVETAG") => {
-        if (edit === false) return;
+    const handleUpdateLeadTags = useCallback((value: any, action: "NEWTAG" | "REMOVETAG") => {
+        if (edit === false || !lead.value) return;
 
         const desc = String(typeof value === "object" ? value?.domaindesc || '-' : value);
-        const data: ICrmLeadTagsSave = {
-            history_description: desc,
-            history_status: "ACTIVO",
-            history_type: action,
-            leadid: Number(match.params.id),
-            tags,
-        };
+        const tagsAlreadyHasChange = leadTagsChanges.current.some(x => x.description === desc);
+        const previousTagsIncludeDesc = lead.value.tags.includes(desc);
 
-        dispatch(updateLeadTags(updateLeadTagsIns(data)));
-    }, [edit, match.params.id, dispatch]);
+        console.log('handleUpdateLeadTags:', action, previousTagsIncludeDesc, tagsAlreadyHasChange);
+        if (
+            (!previousTagsIncludeDesc && !tagsAlreadyHasChange) ||
+            (action === "REMOVETAG" && previousTagsIncludeDesc && !tagsAlreadyHasChange)
+        ) {
+            leadTagsChanges.current.push({
+                description: desc,
+                status: "ACTIVO",
+                type: action,
+                leadid: Number(match.params.id),
+                operation: "INSERT",
+                historyleadid: 0,
+            });
+        } else if (action === "NEWTAG" && !previousTagsIncludeDesc && tagsAlreadyHasChange) {
+            const historyBody = leadTagsChanges.current.find(x => x.description !== desc);
+            if (historyBody) {
+                historyBody.type = action;
+            }
+        } else  if (
+            (action === "REMOVETAG" && !previousTagsIncludeDesc && tagsAlreadyHasChange) ||
+            (action === "NEWTAG" && previousTagsIncludeDesc && tagsAlreadyHasChange)
+        ) {
+            leadTagsChanges.current = leadTagsChanges.current.filter(x => x.description !== desc)
+        }
+    }, [lead, edit, match.params.id, dispatch]);
+
+    const handleUpdateLeadProducts = useCallback((value: any, action: "NEWPRODUCT" | "REMOVEPRODUCT") => {
+        if (edit === false || !lead.value) return;
+
+        const desc = String(typeof value === "object" ? value?.domaindesc || '-' : value);
+        const productAlreadyHasChange = leadProductsChanges.current.some(x => x.description === desc);
+        const previousProductsIncludeDesc = lead.value.leadproduct.includes(desc);
+
+        if (
+            (!previousProductsIncludeDesc && !productAlreadyHasChange) ||
+            (action === "REMOVEPRODUCT" && previousProductsIncludeDesc && !productAlreadyHasChange)
+        ) {
+            leadProductsChanges.current.push({
+                description: desc,
+                status: "ACTIVO",
+                type: action,
+                leadid: Number(match.params.id),
+                operation: "INSERT",
+                historyleadid: 0,
+            });
+        } else if (action === "NEWPRODUCT" && !previousProductsIncludeDesc && productAlreadyHasChange) {
+            const historyBody = leadProductsChanges.current.find(x => x.description !== desc);
+            if (historyBody) {
+                historyBody.type = action;
+            }
+        } else  if (
+            (action === "REMOVEPRODUCT" && !previousProductsIncludeDesc && productAlreadyHasChange) ||
+            (action === "NEWPRODUCT" && previousProductsIncludeDesc && productAlreadyHasChange)
+        ) {
+            leadProductsChanges.current = leadProductsChanges.current.filter(x => x.description !== desc)
+        }
+    }, [lead, edit, match.params.id, dispatch]);
 
     const iSProcessLoading = useCallback(() => {
         return (
@@ -692,12 +749,11 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     label={t(langKeys.tags)}
                                     className={classes.field}
                                     valueDefault={getValues('tags')}
-                                    onChange={(value: ({domaindesc: string} | string)[], value2: {action: "create-option" | "remove-option", option: {option: string}}) => {
+                                    onChange={(value: ({domaindesc: string} | string)[], value2: {action: "create-option" | "remove-option" | "select-option", option: {option: string}}) => {
                                         const tags = value.map((o: any) => o.domaindesc || o).join();
                                         setValue('tags', tags);
 
                                         handleUpdateLeadTags(
-                                            tags,
                                             value2.option.option,
                                             value2.action === "remove-option" ? "REMOVETAG" : "NEWTAG",
                                         );
@@ -727,7 +783,16 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     label={t(langKeys.product, { count: 2 })}
                                     className={classes.field}
                                     valueDefault={getValues('leadproduct')}
-                                    onChange={(v) => setValue('leadproduct', v?.map((o: Dictionary) => o['domainvalue']).join(',') || '')}
+                                    onChange={(v, value2: {action: "remove-option" | "select-option", option: {option: any}}) => {
+                                        console.log(value2);
+                                        const products = v?.map((o: Dictionary) => o['domainvalue']).join(',') || '';
+                                        setValue('leadproduct', products);
+
+                                        handleUpdateLeadProducts(
+                                            value2.option.option,
+                                            value2.action === "remove-option" ? "REMOVEPRODUCT" : "NEWPRODUCT",
+                                        );
+                                    }}
                                     data={leadProductsDomain.data}
                                     loading={leadProductsDomain.loading}
                                     optionDesc="domaindesc"
@@ -2077,6 +2142,8 @@ const TabPanelLeadHistory: FC<TabPanelLeadHistoryProps> = ({ history, loading })
             case "REMOVETAG": return <LocalOfferIcon width={24} style={{ fill: 'white' }} />;
             case "CLOSEDLEAD": return <CancelIcon width={24} style={{ fill: 'white' }} />;
             case "CHANGEAGENT": return <TrackChangesIcon width={24} style={{ fill: 'white' }} />;
+            case "NEWPRODUCT":
+            case "REMOVEPRODUCT":
             case "ACTIVITYDONE":
             case "ACTIVITYDISCARD":
             case "ACTIVITYCHANGESTATUS":

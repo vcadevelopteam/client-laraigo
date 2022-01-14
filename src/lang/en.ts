@@ -2201,6 +2201,8 @@ const translation: LangKeys = {
     ACTIVITYDISCARD: 'Discarded scheduled activity',
     ACTIVITYUPDATE: 'Activity update',
     CHANGEAGENT: 'Agent change',
+    NEWPRODUCT: 'New Product',
+    REMOVEPRODUCT: 'Removed product',
 
     repeatPassword: 'Repeat password',
     passwordsMustBeEqual: 'Passwords must be equal',

@@ -165,6 +165,23 @@ export interface ICrmLeadTagsSave {
 	history_status: string;
 }
 
+export interface ICrmLeadProductsSave {
+	leadid: number;
+	products: string;
+	history_description: string;
+	history_type: "NEWPRODUCT" | "REMOVEPRODUCT";
+	history_status: string;
+}
+
+export interface ICrmLeadHistoryIns {
+    leadid: number | string;
+    historyleadid?: number;
+    description: string;
+    type: string;
+    status?: "ACTIVO" | "ELIMINADO";
+    operation: "UPDATE" | "INSERT" | "DELETE";
+}
+
 export interface ICrmGridPerson {
     corpid: number;
     orgid: number;
