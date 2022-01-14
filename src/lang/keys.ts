@@ -932,6 +932,7 @@ export const langKeys = {
     newmessagetemplate: 'newmessagetemplate',
     messagetemplate: 'messagetemplate',
     messagetemplate_plural: 'messagetemplate_plural',
+    communicationtemplate: 'communicationtemplate',
     creationdate: 'creationdate',
     messagetype: 'messagetype',
     sms: 'sms',

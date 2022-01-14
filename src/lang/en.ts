@@ -625,6 +625,7 @@ const translation: LangKeys = {
     newmessagetemplate: 'New Message Template',
     messagetemplate: 'Message Template',
     messagetemplate_plural: 'Message Templates',
+    communicationtemplate: 'Communication template',
     creationdate: 'Creation Date',
     messagetype: 'Message Type',
     sms: 'SMS',

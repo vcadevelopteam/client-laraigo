@@ -121,6 +121,11 @@ const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { r
                 }
             },
             {
+                Header: t(langKeys.communicationtemplate),
+                accessor: 'templatename',
+                NoFilter: true
+            },
+            {
                 Header: t(langKeys.body),
                 accessor: 'body',
                 NoFilter: true
