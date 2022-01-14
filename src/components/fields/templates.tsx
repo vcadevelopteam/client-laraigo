@@ -295,6 +295,7 @@ interface InputProps {
     className?: any;
     valueDefault?: any;
     disabled?: boolean;
+    
     onChange?: (param: any, param2?: any | null) => void;
     onBlur?: (param: any, param2?: any | null) => void;
     style?: any;
@@ -331,7 +332,7 @@ export const FieldEdit: React.FC<InputProps> = ({ label, size, className, disabl
     return (
         <div className={className}>
             {variant === "standard" &&
-                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">{label}</Box>
             }
             <TextField
                 {...fregister}

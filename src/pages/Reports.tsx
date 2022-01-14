@@ -14,7 +14,7 @@ import { langKeys } from 'lang/keys';
 import { TemplateBreadcrumbs, SearchField, FieldSelect, FieldMultiSelect, SkeletonReportCard } from 'components';
 import { useSelector } from 'hooks';
 import { Dictionary, IFetchData, MultiData, IRequestBody } from "@types";
-import { getReportSel, getReportTemplateSel, getValuesFromDomain, getTagsChatflow, getCommChannelLst, getReportColumnSel, getReportFilterSel, getPaginatedForReports, getReportExport, insertReportTemplate, convertLocalDate } from 'common/helpers';
+import { getReportSel, getReportTemplateSel, getValuesFromDomain, getTagsChatflow, getCommChannelLst, getReportColumnSel, getReportFilterSel, getPaginatedForReports, getReportExport, insertReportTemplate, convertLocalDate, getTableOrigin } from 'common/helpers';
 import { getCollection, getCollectionAux, execute, resetMain, getCollectionPaginated, resetCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetMainAux, getMultiCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
@@ -28,7 +28,7 @@ import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import ReportPersonalized from 'components/personalizedreport/ReportPersonalized'
+import ReportPersonalized, { IReport } from 'components/personalizedreport/ReportPersonalized'
 import Heatmap from './Heatmap';
 import RecordHSMRecord from './RecordHSMReport';
 
@@ -402,7 +402,8 @@ const Reports: FC = () => {
                     const rr = [...reportsResult.mainData.data, ...reportsResult.mainAux.data.map(x => ({
                         ...x,
                         columns: x.columnjson ? JSON.parse(x.columnjson) : [],
-                        ...(x.filterjson ? JSON.parse(x.filterjson) : {})
+                        filters: x.filterjson ? JSON.parse(x.filterjson) : [],
+                        summaries: x.summaryjson ? JSON.parse(x.summaryjson) : [],
                     }))];
                     setAllReports(rr);
                     setallReportsToShow(rr);
@@ -428,7 +429,8 @@ const Reports: FC = () => {
             getValuesFromDomain("ESTADOGENERICO"),
             getValuesFromDomain("GRUPOS"),
             getTagsChatflow(),
-            getCommChannelLst()
+            getCommChannelLst(),
+            getTableOrigin()
         ]));
 
         return () => {
@@ -609,7 +611,6 @@ const Reports: FC = () => {
                                         <Card style={{ position: 'relative' }}>
                                             <CardActionArea
                                                 onClick={() => {
-                                                    console.log(report)
                                                     setViewSelected("view-4");
                                                     setRowReportSelected({ row: report, edit: true });
                                                 }}
@@ -685,7 +686,7 @@ const Reports: FC = () => {
     } else if (viewSelected === "view-4") {
         return (
             <ReportPersonalized
-                item={rowReportSelected.row!!}
+                item={rowReportSelected.row!! as IReport}
                 multiData={reportsResult.multiDataAux.data}
                 setViewSelected={setViewSelected}
             />
