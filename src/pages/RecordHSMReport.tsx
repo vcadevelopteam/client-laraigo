@@ -280,7 +280,7 @@ const RecordHSMRecord: FC = () => {
         if (!multiDataAux.loading){
             setshippingTypesData(multiDataAux.data[0]?.data||[])
         }
-    }, [multiData])
+    }, [multiDataAux])
 
     const handleView = (row: Dictionary) => {
         setViewSelected("view-2");
