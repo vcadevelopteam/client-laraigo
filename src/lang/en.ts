@@ -806,6 +806,7 @@ const translation: LangKeys = {
     log: 'Log',
     execute: 'Execute',
     sent: 'sent',
+    errorneedvalues: "The list of values ​​must have at least one element",
     campaign_in_execution: 'Campaign in execution',
     file_without_data: 'File without data',
     too_many_records: 'Too many records',
