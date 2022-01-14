@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
+import clsx from 'clsx';
 import Button from '@material-ui/core/Button';
 import { TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldEditArray } from 'components';
 import { insertReportTemplate, getColumnsOrigin } from 'common/helpers';
@@ -35,14 +36,10 @@ interface RowSelected {
     row: Dictionary | null,
     edit: boolean
 }
-interface MultiData {
-    data: Dictionary[];
-    success: boolean;
-}
+
 interface DetailReportDesignerProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
-    multiData: MultiData[];
     fetchData: () => void
 }
 
@@ -101,6 +98,9 @@ const useStyles = makeStyles((theme) => ({
         height: '100%',
         alignItems: 'center',
         justifyContent: 'center'
+    },
+    colorVariable: {
+        color: '#7721AD'
     }
 }));
 
@@ -121,6 +121,9 @@ type IFilter = {
     columnname: string;
     type: string;
     id: any;
+    join_alias: string;
+    join_on: string;
+    join_table: string;
 }
 
 type ISummarization = {
@@ -157,6 +160,7 @@ const DialogManageColumns: React.FC<{
     const classes = useStyles();
     const { t } = useTranslation();
     const mainAuxRes = useSelector(state => state.main.mainAux);
+    const multiDataAux = useSelector(state => state.main.multiDataAux);
     const [columnsTable, setColumnsTable] = useState<Dictionary[]>([]);
     const [showcolumnsTable, setShowColumnsTable] = useState<Dictionary[]>([]);
     const [columnsToAdd, setColumnsToAdd] = useState<Dictionary>({});
@@ -166,14 +170,21 @@ const DialogManageColumns: React.FC<{
     useEffect(() => {
         if (!mainAuxRes.error && !mainAuxRes.loading && mainAuxRes.key === "UFN_REPORT_PERSONALIZED_COLUMNS_SEL" && openDialogVariables) {
             const datafiltered = mainAuxRes.data.filter(x => columnsAlreadySelected.findIndex(y => y.columnname === x.columnname) === -1);
-            setColumnsTable(datafiltered);
-            setShowColumnsTable(datafiltered);
+
+            const columnsVariable = datafiltered.filter(x => x.type === "variable");
+            const columnsNotVariable = datafiltered.filter(x => x.type !== "variable");
+
+            const dataaux = [...columnsNotVariable, ...columnsVariable].map(x => ({
+                ...x,
+                descriptionT: x.type === "variable" ? x.description : t(`personalizedreport_${x.description}`)
+            }))
+            setColumnsTable(dataaux);
+            setShowColumnsTable(dataaux);
 
             setColumnsToAdd({});
             setColumnsAdded([]);
         }
     }, [mainAuxRes, openDialogVariables])
-
 
     useEffect(() => {
         setShowColumnsTable(prev => prev.map((x: Dictionary) => columnsAdded.find(y => y.columnname === x.columnname) ? { ...x, disabled: true } : { ...x, disabled: false }));
@@ -185,7 +196,7 @@ const DialogManageColumns: React.FC<{
         if (text === '')
             setShowColumnsTable(columnsTable);
         else
-            setShowColumnsTable(columnsTable.filter(x => x.description.toLowerCase().includes(text.toLowerCase())));
+            setShowColumnsTable(columnsTable.filter(x => x.descriptionT.toLowerCase().includes(text.toLowerCase())));
     }
 
     const onChange = (text: string) => {
@@ -226,7 +237,9 @@ const DialogManageColumns: React.FC<{
                                     onChange={(e) => handlerChecked(item, e.target.checked)}
                                     name="checkedA" />
                             )}
-                            label={item.description}
+                            label={<div className={clsx({
+                                [classes.colorVariable]: item.type === "variable"
+                            })}>{item.descriptionT}</div>}
                         />
                     </div>
                 </div>
@@ -307,7 +320,7 @@ const DialogManageColumns: React.FC<{
                             ) : columnsAdded.map((item) => (
                                 <div key={item.columnname} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <div className={classes.itemSelected}>
-                                        {item.description}
+                                        {item.descriptionT}
                                     </div>
                                     <IconButton size='small' onClick={() => {
                                         setColumnsAdded(prev => prev.filter(x => x.columnname !== item.columnname))
@@ -338,27 +351,34 @@ const DialogManageColumns: React.FC<{
     )
 }
 
-const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
+const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row, edit }, setViewSelected, fetchData }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [openDialogVariables, setOpenDialogVariables] = useState(false);
     const [columnsSelected, setColumnsSelected] = useState<Dictionary[]>([]);
     const [dataColumns, setDataColumns] = useState<Dictionary[]>([]);
     const mainAuxRes = useSelector(state => state.main.mainAux);
-
+    const multiDataAux = useSelector(state => state.main.multiDataAux);
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataTables = multiData[4] && multiData[4].success ? multiData[4].data : [];
+
+
+    const dataStatus = multiDataAux.data?.[0] && multiDataAux.data?.[0].success ? multiDataAux.data?.[0].data : [];
+    const dataTables = multiDataAux.data?.[1] && multiDataAux.data?.[1].success ? multiDataAux.data?.[1].data : [];
+    // const dataVariables = multiData[2] && multiData[2].success ? multiData[2].data : [];
+
+
 
     useEffect(() => {
         if (!mainAuxRes.error && !mainAuxRes.loading && mainAuxRes.key === "UFN_REPORT_PERSONALIZED_COLUMNS_SEL") {
-            setDataColumns(mainAuxRes.data);
+            setDataColumns(mainAuxRes.data.map(x => ({
+                ...x,
+                descriptionT: x.type === "variable" ? x.description : t(`personalizedreport_${x.description}`)
+            })));
         }
     }, [mainAuxRes])
 
-    console.log(row)
     const { control, register, trigger, handleSubmit, setValue, getValues, formState: { errors } } = useForm<FormFields>({
         defaultValues: {
             reporttemplateid: row?.reporttemplateid || 0,
@@ -398,7 +418,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
 
     useEffect(() => {
         if (columnsSelected.length > 0) {
-            columnsAppend(columnsSelected);
+            columnsAppend(columnsSelected.map(x => ({ ...x, alias: x.descriptionT })));
         }
     }, [columnsSelected]);
 
@@ -420,7 +440,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
-            }
+            } 
         }
     }, [executeRes, waitSave])
 
@@ -561,8 +581,8 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                     </IconButton>
                                                 </div>
                                             </TableCell>
-                                            <TableCell>
-                                                {item.description}
+                                            <TableCell width={230}>
+                                                {item.type === "variable" ? item.description : t(`personalizedreport_${item.description}`)}
                                             </TableCell>
                                             <TableCell>
                                                 <FieldEditArray
@@ -625,7 +645,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                             </IconButton>
                                                         </div>
                                                     </TableCell>
-                                                    <TableCell>
+                                                    <TableCell >
                                                         <FieldSelect
                                                             label={t(langKeys.column)}
                                                             valueDefault={getValues(`filters.${i}.columnname`)}
@@ -636,19 +656,21 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                             }}
                                                             variant='outlined'
                                                             onChange={(value) => {
-                                                                console.log("value?.type", value?.type)
                                                                 setValue(`filters.${i}.columnname`, value?.columnname || '');
                                                                 setValue(`filters.${i}.type`, value?.type || '');
                                                                 setValue(`filters.${i}.description`, value?.description || '');
                                                                 trigger(`filters.${i}.type`);
+                                                                setValue(`filters.${i}.join_alias`, value?.join_alias || '');
+                                                                setValue(`filters.${i}.join_on`, value?.join_on || '');
+                                                                setValue(`filters.${i}.join_table`, value?.join_table || '');
                                                             }}
                                                             error={errors?.filters?.[i]?.columnname?.message}
                                                             data={dataColumns}
-                                                            optionDesc="description"
+                                                            optionDesc="descriptionT"
                                                             optionValue="columnname"
                                                         />
                                                     </TableCell>
-                                                    <TableCell>
+                                                    <TableCell width={180}>
                                                         {getValues(`filters.${i}.type`)}
                                                     </TableCell>
                                                 </TableRow>
@@ -714,7 +736,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                             }}
                                                             error={errors?.summary?.[i]?.columnname?.message}
                                                             data={fieldsColumns.filter(x => ["double precision", "bigint", "integer", "numeric", "interval"].includes(x.type))}
-                                                            optionDesc="description"
+                                                            optionDesc="descriptionT"
                                                             optionValue="columnname"
                                                         />
                                                     </TableCell>

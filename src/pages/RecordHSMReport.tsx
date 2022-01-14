@@ -189,8 +189,8 @@ const RecordHSMRecord: FC = () => {
             },
             {
                 Header: t(langKeys.shippingreason),
-                accessor: 'name',
-                NoFilter: true
+                accessor: 'name_translated',
+                NoFilter: true,
             },
             {
                 Header: t(langKeys.shippingdate),
@@ -294,7 +294,10 @@ const RecordHSMRecord: FC = () => {
                 onClickRow={handleView}    
                 columns={columns}
                 titlemodule={t(langKeys.recordhsmreport, { count: 2 })}
-                data={multiData.data[0]?.data||[]}
+                data={multiData.data[0]?.data.map(x => ({
+                    ...x,
+                    name_translated: x.name !== x.translationname?(t(`report_sentmessages_${x.name}`.toLowerCase()) || "").toUpperCase():x.name.toUpperCase(),
+                }))||[]}
                 ButtonsElement={() => (
                     <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
                         <FieldSelect
@@ -307,6 +310,8 @@ const RecordHSMRecord: FC = () => {
                             data={shippingTypesData}
                             optionValue="domainvalue"
                             optionDesc="domainvalue"
+                            uset={true}
+                            prefixTranslation='type_shippingtype_'
                         />
                         <DateRangePicker
                             open={openDateRangeCreateDateModal}
