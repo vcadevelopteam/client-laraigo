@@ -797,6 +797,7 @@ const translation: LangKeys = {
     newmessagetemplate: 'Nueva plantilla de comunicación',
     messagetemplate: 'Plantilla de comunicación',
     messagetemplate_plural: 'Plantillas de comunicación',
+    communicationtemplate: 'Plantilla de comunicación',
     creationdate: 'Fecha Creación',
     messagetype: 'Tipo de Mensaje',
     sms: 'SMS',
