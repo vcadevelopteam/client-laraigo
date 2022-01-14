@@ -2,23 +2,17 @@
 import React, { FC, useEffect, useMemo, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import IconButton from '@material-ui/core/IconButton';
-import Button from '@material-ui/core/Button';
 import { TemplateBreadcrumbs } from 'components';
 import { getValuesFromDomain, getVariableConfigurationLst, getVariableConfigurationSel, downloadCSV, uploadCSV, insarrayVariableConfiguration } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import TableZyxEditable from 'components/fields/table-editable';
-import { makeStyles } from '@material-ui/core/styles';
-import { useTranslation } from 'react-i18next';
+import { Menu, Button, IconButton, makeStyles, MenuItem, ListItemIcon, ListItemText } from '@material-ui/core';
+import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { getCollection, getMultiCollection, execute, getCollectionAux, resetMainAux, resetAllMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import VisibilityIcon from '@material-ui/icons/Visibility';
-import GetAppIcon from '@material-ui/icons/GetApp';
-import PublishIcon from '@material-ui/icons/Publish';
-import SaveIcon from '@material-ui/icons/Save';
-import ClearIcon from '@material-ui/icons/Clear';
+import { MoreVert as MoreVertIcon, GetApp as GetAppIcon, Publish as PublishIcon, Save as SaveIcon, Clear as ClearIcon } from '@material-ui/icons';
 import { chatblock_reset } from 'store/botdesigner/actions';
 
 interface RowSelected {
@@ -65,6 +59,58 @@ const VariableConfiguration: FC = () => {
 
     const columns = React.useMemo(
         () => [
+            // {
+            //     accessor: 'chatblockid',
+            //     NoFilter: true,
+            //     isComponent: true,
+            //     Cell: (props: any) => {
+            //         const row = props.cell.row.original;
+            //         const id = props.cell.row.id;
+            //         return (
+            //             <React.Fragment>
+            //                 <IconButton
+            //                     aria-label="more"
+            //                     aria-controls="long-menu"
+            //                     aria-haspopup="true"    
+            //                     size="small"
+            //                     onClick={(e) => {
+            //                         e.stopPropagation();
+            //                         handleDownload(row);
+            //                     }}>
+            //                     <GetAppIcon
+            //                         titleAccess={t(langKeys.download)}
+            //                         style={{ color: '#B6B4BA' }} />
+            //                 </IconButton>
+            //                 <input
+            //                     id={`upload-file${id}`}
+            //                     name="file"
+            //                     type="file"
+            //                     accept="text/csv"
+            //                     value={valuefile}
+            //                     style={{ display: 'none' }}
+            //                     onChange={(e) => {
+            //                         handleUpload(row, e.target.files);
+            //                     }}
+            //                     onClick={(e) => {
+            //                         e.stopPropagation();
+            //                     }}
+            //                 />
+            //                 <label htmlFor={`upload-file${id}`}>
+            //                     <IconButton
+            //                         size="small"
+            //                         component="span"
+            //                         onClick={(e: any) => {
+            //                             e.stopPropagation();
+            //                         }}>
+            //                         <PublishIcon
+            //                             titleAccess={t(langKeys.import)}
+            //                             style={{ color: '#B6B4BA' }}/>
+            //                     </IconButton>
+            //                 </label> 
+            //             </React.Fragment>
+            //         )
+            //     }
+            // },
             {
                 accessor: 'chatblockid',
                 NoFilter: true,
@@ -73,48 +119,16 @@ const VariableConfiguration: FC = () => {
                     const row = props.cell.row.original;
                     const id = props.cell.row.id;
                     return (
-                        <React.Fragment>
-                            <IconButton
-                                aria-label="more"
-                                aria-controls="long-menu"
-                                aria-haspopup="true"    
-                                size="small"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDownload(row);
-                                }}>
-                                <GetAppIcon
-                                    titleAccess={t(langKeys.download)}
-                                    style={{ color: '#B6B4BA' }} />
-                            </IconButton>
-                            <input
-                                id={`upload-file${id}`}
-                                name="file"
-                                type="file"
-                                accept="text/csv"
-                                value={valuefile}
-                                style={{ display: 'none' }}
-                                onChange={(e) => {
-                                    handleUpload(row, e.target.files);
-                                }}
-                                onClick={(e: any) => {
-                                    e.stopPropagation();
-                                }}
-                            />
-                            <label htmlFor={`upload-file${id}`}>
-                                <IconButton
-                                    size="small"
-                                    component="span"
-                                    onClick={(e: any) => {
-                                        e.stopPropagation();
-                                    }}>
-                                    <PublishIcon
-                                        titleAccess={t(langKeys.import)}
-                                        style={{ color: '#B6B4BA' }}/>
-                                </IconButton>
-                            </label> 
-                        </React.Fragment>
-                    )
+                        <TemplateIcons
+                            layoutKey={id}
+                            valuefile={valuefile}
+                            exportFn={e => {
+                                e.stopPropagation();
+                                handleDownload(row);
+                            }}
+                            importFn={e => handleUpload(row, e.target.files)}
+                        />
+                    );
                 }
             },
             {
@@ -195,7 +209,7 @@ const VariableConfiguration: FC = () => {
                     return { variable, description, fontcolor, fontbold, priority, visible }
             });
             let filename = `variableconfiguration_${rowSelected.row?.title}.csv`;
-            downloadCSV(filename, mapdata, { headers: key => t(key) });
+            downloadCSV(filename, mapdata);
         }
     }
 
@@ -454,3 +468,85 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
 }
 
 export default VariableConfiguration;
+
+interface TemplateIconsProps {
+    layoutKey: string;
+    valuefile: string;
+    exportFn: (event: React.MouseEvent<HTMLLIElement>) => void;
+    importFn: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+export const TemplateIcons: React.FC<TemplateIconsProps> = ({ layoutKey, valuefile, exportFn, importFn }) => {
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const handleClose = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setAnchorEl(null);
+    };
+    
+    return (
+        <div style={{ whiteSpace: 'nowrap', display: 'flex' }}>
+            <IconButton
+                aria-label="more"
+                aria-controls="long-menu"
+                aria-haspopup="true"
+                size="small"
+
+                onClick={(e) => {
+                    e.stopPropagation();
+                    setAnchorEl(e.currentTarget);
+                }}
+            >
+                <MoreVertIcon style={{ color: '#B6B4BA' }} />
+            </IconButton>
+            <input
+                id={`${layoutKey}-import-input`}
+                name="file"
+                type="file"
+                accept="text/csv"
+                value={valuefile}
+                style={{ display: 'none' }}
+                onChange={importFn}
+                onClick={e => e.stopPropagation()}
+            />
+            <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                getContentAnchorEl={null}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+            >
+                <MenuItem
+                    onClick={e => {
+                        exportFn(e);
+                        handleClose(e);
+                    }}
+                >
+                    <ListItemIcon color="inherit">
+                        <GetAppIcon width={22} style={{ fill: '#7721AD' }} />
+                    </ListItemIcon>
+                    <ListItemText>
+                        <Trans i18nKey={langKeys.download} />
+                    </ListItemText>
+                </MenuItem>
+                <label htmlFor={`${layoutKey}-import-input`}>
+                    <MenuItem onClick={handleClose}>
+                        <ListItemIcon color="inherit">
+                            <PublishIcon width={18} style={{ fill: '#7721AD' }} />
+                        </ListItemIcon>
+                        <ListItemText>
+                            <Trans i18nKey={langKeys.import} />
+                        </ListItemText>
+                    </MenuItem>
+                </label>
+            </Menu>
+        </div>
+    )
+}

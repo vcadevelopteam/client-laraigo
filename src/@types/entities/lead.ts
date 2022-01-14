@@ -199,7 +199,7 @@ export interface ICrmLeadSel {
     tags: string; 
     /**filtro asesor por ID */
     userid: number;
-    /**id del usuario de la sesión  */
+    /**id del usuario de la sesión - OBLIGATORIO no puede ser cero */
     supervisorid: number;
 	all?: boolean;
 }

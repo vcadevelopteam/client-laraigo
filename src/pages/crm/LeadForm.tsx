@@ -5,7 +5,7 @@ import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useRouteMatch } from 'react-router';
-import { insLead2, getOneLeadSel, adviserSel, getPaginatedPerson as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSel, insArchiveLead, leadHistorySel, updateLeadTagsIns } from 'common/helpers';
+import { insLead2, adviserSel, getPaginatedPerson as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSel, insArchiveLead, leadHistorySel, updateLeadTagsIns, getLeadsSel } from 'common/helpers';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
 import { useDispatch } from 'react-redux';
@@ -235,7 +235,16 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     useEffect(() => {
         if (edit === true) {
             const leadId = match.params.id;
-            dispatch(getLead(getOneLeadSel(leadId)));
+            dispatch(getLead(getLeadsSel({
+                id: Number(leadId),
+                campaignid: 0,
+                fullname: '',
+                leadproduct: '',
+                tags: '',
+                userid: 0,
+                supervisorid: user?.userid || 0, // Obligatorio sin ser cero
+                all: false,
+            })));
             dispatch(getLeadActivities(leadActivitySel(leadId)));
             dispatch(getLeadLogNotes(leadLogNotesSel(leadId)));
             dispatch(getLeadHistory(leadHistorySel(leadId)));
