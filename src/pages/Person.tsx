@@ -183,6 +183,8 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
             } else {
                 setPersonWithData(persons.filter(x => x.phone && x.phone.length > 0))
             }
+        } else {
+            setWaitClose(false);
         }
     }, [openModal])
 
