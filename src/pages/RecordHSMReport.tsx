@@ -190,7 +190,12 @@ const RecordHSMRecord: FC = () => {
             {
                 Header: t(langKeys.shippingreason),
                 accessor: 'name',
-                NoFilter: true
+                NoFilter: true,
+                prefixTranslation: 'report_sentmessages_',
+                Cell: (props: any) => {
+                    const { translationname } = props.cell.row.original;
+                    return (t(`${translationname}`.toLowerCase()) || "").toUpperCase()
+                }
             },
             {
                 Header: t(langKeys.shippingdate),
@@ -307,6 +312,8 @@ const RecordHSMRecord: FC = () => {
                             data={shippingTypesData}
                             optionValue="domainvalue"
                             optionDesc="domainvalue"
+                            uset={true}
+                            prefixTranslation='type_shippingtype_'
                         />
                         <DateRangePicker
                             open={openDateRangeCreateDateModal}

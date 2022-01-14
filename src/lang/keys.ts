@@ -893,6 +893,10 @@ export const langKeys = {
     type_ocupation_998: "998",
     type_ocupation_999: "999",
 
+    type_shippingtype_hsm: 'type_shippingtype_hsm',
+    type_shippingtype_mail: 'type_shippingtype_mail',
+    type_shippingtype_sms: 'type_shippingtype_sms',
+
     typepg_bigint: 'typepg_bigint',
     typepg_boolean: 'typepg_boolean',
     "typepg_character varying": 'typepg_character',
@@ -1464,6 +1468,12 @@ export const langKeys = {
     report_userproductivity_filter_group: 'report_userproductivity_filter_group',
     report_userproductivity_filter_status: 'report_userproductivity_filter_status',
     report_userproductivity_filter_includebot: 'report_userproductivity_filter_includebot',
+
+    report_sentmessages_api: 'report_sentmessages_api',
+    report_sentmessages_lead: 'report_sentmessages_lead',
+    report_sentmessages_person: 'report_sentmessages_person',
+    report_sentmessages_inbox: 'report_sentmessages_inbox',
+    report_sentmessages_chatflow: 'report_sentmessages_chatflow',
 
     "personalizedreport_conversation.userjoy": "personalizedreport_conversation.userjoy",
     "personalizedreport_conversation.userfear": "personalizedreport_conversation.userfear",
