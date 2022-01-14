@@ -725,6 +725,7 @@ const translation: LangKeys = {
     typepg_numeric: 'número',
     typepg_text: 'texto',
     "typepg_timestamp without time zone": 'fecha',
+    typepg_variable: 'variable',
 
     organizationclass: "Organización de Clasificaciones",
     editRecord: 'Editar registro',

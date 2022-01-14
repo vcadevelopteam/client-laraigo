@@ -543,6 +543,7 @@ const translation: LangKeys = {
     typepg_numeric: 'number',
     typepg_text: 'string',
     "typepg_timestamp without time zone": 'date',
+    typepg_variable: 'variable',
 
     animals: "Animals",
     objects: "Objects",

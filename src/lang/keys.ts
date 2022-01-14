@@ -905,6 +905,7 @@ export const langKeys = {
     typepg_numeric: 'typepg_numeric',
     typepg_text: 'typepg_text',
     "typepg_timestamp without time zone": 'typepg_timestamp without time zone',
+    typepg_variable: 'typepg_variable',
 
     editRecord: 'editRecord',
     deleteRecord: 'deleteRecord',
