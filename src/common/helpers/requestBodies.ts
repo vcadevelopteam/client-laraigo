@@ -236,6 +236,11 @@ export const getInappropriateWordsSel = (id: number): IRequestBody => ({
     }
 });
 
+export const getInappropriateWordsLst = (): IRequestBody => ({
+    method: "UFN_INAPPROPRIATEWORDS_LST",
+    parameters: {}
+});
+
 export const insInappropriateWords = ({ id, description, status, type, username, operation, classification, defaultanswer }: Dictionary): IRequestBody => ({
     method: "UFN_INAPPROPRIATEWORDS_INS",
     parameters: { id, description, status, type, username, operation, classification, defaultanswer }
@@ -2470,5 +2475,11 @@ export const invoiceRefreshTest = (): IRequestBody => ({
 export const getAdviserFilteredUserRol = (): IRequestBody => ({
     method: "UFN_ADVISERSBYUSERID_SEL",
     key: "UFN_ADVISERSBYUSERID_SEL",
+    parameters: {},
+});
+
+export const getVariablesByOrg = (): IRequestBody => ({
+    method: "UFN_REPORT_PERSONALIZED_VARIABLE_SEL",
+    key: "UFN_REPORT_PERSONALIZED_VARIABLE_SEL",
     parameters: {},
 });

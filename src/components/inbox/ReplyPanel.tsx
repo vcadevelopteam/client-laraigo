@@ -454,7 +454,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const [quickReplies, setquickReplies] = useState<Dictionary[]>([])
     const [emojilist, setemojilist] = useState<string[]>([])
     const [inappropiatewordsList, setinnappropiatewordsList] = useState<Dictionary[]>([])
-    const [inappropiatewords, setinnappropiatewords] = useState<string[]>([])
+    // const [inappropiatewords, setinnappropiatewords] = useState<string[]>([])
     const [quickRepliesToShow, setquickRepliesToShow] = useState<Dictionary[]>([])
     const [richResponseToShow, setRichResponseToShow] = useState<Dictionary[]>([])
     const [showReply, setShowReply] = useState(true);
@@ -469,7 +469,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             } else {
                 setShowReply(true);
             }
-        } else 
+        } else
             setShowReply(true)
     }, [ticketSelected])
 
@@ -527,15 +527,19 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             }
             if (text) {
                 const textCleaned = text.trim();
-                let errormessage = "";
-                const wordlist = textCleaned.split(" ").map(x=>x.toLowerCase())
-                inappropiatewordsList.forEach(x=>{
-                    if(wordlist.includes(x.description.toLowerCase())){
-                        errormessage=x.defaultanswer
-                    }
-                })
+                // let errormessage = "";
+                
+                const wordlist = textCleaned.split(" ").map(x => x.toLowerCase())
+                
+                const errormessage = inappropiatewordsList.find(x => wordlist.includes(x.description.toLowerCase()))?.defaultanswer || "";
+                
+                // inappropiatewordsList.forEach(x => {
+                //     if (wordlist.includes(x.description.toLowerCase())) {
+                //         errormessage = x.defaultanswer
+                //     }
+                // })
                 if (textCleaned) {
-                    if(!errormessage){
+                    if (!errormessage) {
 
                         wasSend = true
                         const newInteractionSocket = {
@@ -562,7 +566,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                             interactiontext: textCleaned,
                         }));
                         setText("");
-                    }else{
+                    } else {
                         dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                     }
                 }
@@ -588,11 +592,11 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
 
     useEffect(() => {
         if (!multiData.loading && !multiData.error && multiData?.data[4]) {
-            setquickReplies(multiData?.data[4].data||[])
-            setquickRepliesToShow(multiData?.data[4].data.filter(x => !!x.favorite)||[])
-            setemojilist(multiData?.data[10].data.filter(x => (x.restricted)).map(x => x.emojihex)||[])
-            setinnappropiatewordsList(multiData?.data[11].data.filter(x=>(x.status==="ACTIVO"))||[])
-            setinnappropiatewords(multiData?.data[11].data.filter(x=>(x.status==="ACTIVO")).map(y=>(y.description))||[])
+            setquickReplies(multiData?.data[4].data || [])
+            setquickRepliesToShow(multiData?.data[4].data.filter(x => !!x.favorite) || [])
+            setemojilist(multiData?.data[10].data.filter(x => (x.restricted)).map(x => x.emojihex) || [])
+            setinnappropiatewordsList(multiData?.data?.[11]?.data || [])
+            // setinnappropiatewords(multiData?.data[11].data.filter(x => (x.status === "ACTIVO")).map(y => (y.description)) || [])
         }
     }, [multiData])
 
