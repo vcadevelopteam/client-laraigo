@@ -3,29 +3,33 @@ import React, { useEffect, useState } from 'react'; // we need this to make JSX 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldEditArray, TemplateSwitchArray, TemplateSwitch } from 'components';
-import {insertReportTemplate} from 'common/helpers';
+import { TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldEditArray } from 'components';
+import { insertReportTemplate, getColumnsOrigin } from 'common/helpers';
 import { Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
-import Tabs from '@material-ui/core/Tabs';
 import SaveIcon from '@material-ui/icons/Save';
-import { variablesTemplate } from 'common/constants'
 import { useTranslation, Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { execute } from 'store/main/actions';
+import { execute, getCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import { IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
-import InfoIcon from '@material-ui/icons/Info';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import { DialogZyx, AntTab } from 'components'
+import { DialogZyx } from 'components'
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import { SearchIcon } from 'icons';
+import { FixedSizeList } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
+import { Done } from '@material-ui/icons';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -41,6 +45,16 @@ interface DetailReportDesignerProps {
     multiData: MultiData[];
     fetchData: () => void
 }
+
+const dataSummarization = [
+    { function: 'total' },
+    { function: 'count' },
+    { function: 'average' },
+    { function: 'minimum' },
+    { function: 'maximum' },
+    { function: 'median' },
+    { function: 'mode' },
+];
 
 const arrayBread = [
     { id: "view-1", name: "Reports" },
@@ -72,16 +86,51 @@ const useStyles = makeStyles((theme) => ({
         '&:hover': {
             backgroundColor: '#e1e1e1'
         }
+    },
+    itemSelected: {
+        fontSize: 14,
+        fontWeight: 400,
+        lineHeight: 1.5,
+        paddingTop: 10.5,
+        paddingBottom: 10.5
+    },
+    nodata: {
+        color: '#898989',
+        width: '100%',
+        display: 'flex',
+        height: '100%',
+        alignItems: 'center',
+        justifyContent: 'center'
     }
 }));
 
 type IColumnTemplate = {
-    key: string;
-    value: string;
-    filter: string;
-    hasFilter: boolean;
+    columnname: string;
+    description: string;
+    join_alias: string;
+    join_on: string;
+    join_table: string;
+    tablename: string;
+    type: string;
+    alias: string;
     id: any;
 }
+
+type IFilter = {
+    description: string;
+    columnname: string;
+    type: string;
+    id: any;
+}
+
+type ISummarization = {
+    columnname: string;
+    type: string;
+    description: string;
+    function: string;
+    id: any;
+}
+
 type FormFields = {
     reporttemplateid: number;
     description: string;
@@ -92,64 +141,198 @@ type FormFields = {
     channels: string;
     tags: string;
     operation: string;
-    columns: IColumnTemplate[]
+    dataorigin: string;
+    columns: IColumnTemplate[],
+    filters: IFilter[],
+    summary: ISummarization[],
 }
 
-const DialogVariables: React.FC<{
+const DialogManageColumns: React.FC<{
     setOpenDialogVariables: (param: any) => void;
-    handlerNewColumn: (param: any) => void;
+    setColumnsSelected: (param: any) => void;
     openDialogVariables: boolean;
-}> = ({ setOpenDialogVariables, openDialogVariables, handlerNewColumn }) => {
+    columnsAlreadySelected: IColumnTemplate[];
+}> = ({ setOpenDialogVariables, openDialogVariables, setColumnsSelected, columnsAlreadySelected }) => {
+
     const classes = useStyles();
-    const [pageSelected, setPageSelected] = useState(0);
     const { t } = useTranslation();
-    const [variablesToShow, setVariablesToShow] = useState<Dictionary[]>([])
+    const mainAuxRes = useSelector(state => state.main.mainAux);
+    const [columnsTable, setColumnsTable] = useState<Dictionary[]>([]);
+    const [showcolumnsTable, setShowColumnsTable] = useState<Dictionary[]>([]);
+    const [columnsToAdd, setColumnsToAdd] = useState<Dictionary>({});
+    const [columnsAdded, setColumnsAdded] = useState<Dictionary[]>([]);
+    const timeOut = React.useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
-        if (pageSelected === 0) {
-            setVariablesToShow(variablesTemplate.filter(x => x.group === "personinformation"))
-        } else if (pageSelected === 1) {
-            setVariablesToShow(variablesTemplate.filter(x => x.group === "ticketinformation"))
-        } else if (pageSelected === 2) {
-            setVariablesToShow(variablesTemplate.filter(x => x.group === "AIservices"))
-        } else if (pageSelected === 3) {
-            setVariablesToShow(variablesTemplate.filter(x => x.group === "systemvariables"))
-        } else if (pageSelected === 4) {
-            setVariablesToShow(variablesTemplate.filter(x => x.group === "odoovariables"))
+        if (!mainAuxRes.error && !mainAuxRes.loading && mainAuxRes.key === "UFN_REPORT_PERSONALIZED_COLUMNS_SEL" && openDialogVariables) {
+            const datafiltered = mainAuxRes.data.filter(x => columnsAlreadySelected.findIndex(y => y.columnname === x.columnname) === -1);
+            setColumnsTable(datafiltered);
+            setShowColumnsTable(datafiltered);
+
+            setColumnsToAdd({});
+            setColumnsAdded([]);
         }
-    }, [pageSelected])
+    }, [mainAuxRes, openDialogVariables])
+
+
+    useEffect(() => {
+        setShowColumnsTable(prev => prev.map((x: Dictionary) => columnsAdded.find(y => y.columnname === x.columnname) ? { ...x, disabled: true } : { ...x, disabled: false }));
+        setColumnsTable(prev => prev.map((x: Dictionary) => columnsAdded.find(y => y.columnname === x.columnname) ? { ...x, disabled: true } : { ...x, disabled: false }));
+        setColumnsToAdd({});
+    }, [columnsAdded])
+
+    const handleChange = (text: string) => {
+        if (text === '')
+            setShowColumnsTable(columnsTable);
+        else
+            setShowColumnsTable(columnsTable.filter(x => x.description.toLowerCase().includes(text.toLowerCase())));
+    }
+
+    const onChange = (text: string) => {
+        if (timeOut.current)
+            clearTimeout(timeOut.current);
+
+        timeOut.current = setTimeout(() => {
+            handleChange(text);
+            if (timeOut.current) {
+                clearTimeout(timeOut.current);
+                timeOut.current = null;
+            }
+        }, 1000);;
+    };
+
+    const handlerChecked = React.useCallback((column: Dictionary, checked: boolean) => {
+        if (checked)
+            setColumnsToAdd(prev => ({
+                ...prev,
+                [column.columnname]: column
+            }));
+        else
+            delete columnsToAdd[column.columnname];
+    }, [setColumnsToAdd])
+
+    const RenderRow = React.useCallback(
+        ({ index, style }) => {
+            const item = showcolumnsTable[index]
+            return (
+                <div style={style}>
+                    <div key={item.columnname} style={{ width: '100%' }}>
+                        <FormControlLabel
+                            control={(
+                                <Checkbox
+                                    size='small'
+                                    disabled={!!item.disabled}
+                                    color="primary"
+                                    onChange={(e) => handlerChecked(item, e.target.checked)}
+                                    name="checkedA" />
+                            )}
+                            label={item.description}
+                        />
+                    </div>
+                </div>
+            )
+        },
+        [showcolumnsTable]
+    )
+
+    if (!openDialogVariables)
+        return null;
 
     return (
         <DialogZyx
+            maxWidth="md"
             open={openDialogVariables}
             title=""
             buttonText1={t(langKeys.cancel)}
             handleClickButton1={() => setOpenDialogVariables(false)}
         >
-            <Tabs
-                value={pageSelected}
-                indicatorColor="primary"
-                variant="fullWidth"
-                style={{ borderBottom: '1px solid #EBEAED' }}
-                textColor="primary"
-                onChange={(_, value) => setPageSelected(value)}
-            >
-                <AntTab label={t(langKeys.personinformation)} />
-                <AntTab label={t(langKeys.ticketinformation)} />
-                <AntTab label={t(langKeys.AIservices)} />
-                <AntTab label={t(langKeys.systemvariables)} />
-                <AntTab label={t(langKeys.odoovariables)} />
-            </Tabs>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, paddingTop: 16, justifyContent: 'center' }}>
-                {variablesToShow.map((x, index) => (
-                    <div
-                        key={index}
-                        className={classes.variableInfo}
-                        onClick={() => handlerNewColumn({ key: x.variable, value: x.variable })}
-                    >
-                        {x.variable}
+            <div style={{ display: 'flex' }}>
+                <div style={{ flex: 1, padding: 16, paddingTop: 16, paddingBottom: 8 }}>
+                    <div style={{ fontSize: 20, fontWeight: 500, marginBottom: 8 }}>
+                        Columnas disponibles
                     </div>
-                ))}
+                    <div>
+                        <FieldEdit
+                            variant='standard'
+                            fregister={{
+                                placeholder: t(langKeys.search)
+                            }}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                )
+                            }}
+                            onChange={onChange}
+                        />
+                        <div style={{ display: 'flex', flexDirection: 'column', height: 320, overflowY: 'auto', marginTop: 4 }}>
+                            <AutoSizer>
+                                {({ height, width }: any) => (
+                                    <FixedSizeList
+                                        width={width}
+                                        height={height}
+                                        itemCount={showcolumnsTable.length}
+                                        itemSize={42}
+                                    >
+                                        {RenderRow}
+                                    </FixedSizeList>
+                                )}
+                            </AutoSizer>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={Object.keys(columnsToAdd).length === 0}
+                                startIcon={<AddIcon color="secondary" />}
+                                onClick={() => setColumnsAdded(prev => ([...prev, ...Object.values(columnsToAdd)]))}
+                            >{t(langKeys.add)}
+                            </Button>
+                        </div>
+
+                    </div>
+                </div>
+                <div style={{ flex: 1, backgroundColor: '#f5f5f5', paddingTop: 48 }}>
+                    <div style={{ paddingLeft: 24, paddingRight: 24 }}>
+                        <div style={{ height: 35, borderBottom: '1px solid rgba(0, 0, 0, 0.42)', color: 'rgb(167 166 170)', display: 'flex', alignItems: 'center' }}>
+                            Seleccionados ({columnsAdded.length})
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', overflowY: 'auto', marginTop: 4, height: 320, marginBottom: 4 }}>
+                            {columnsAdded.length === 0 ? (
+                                <div className={classes.nodata}>
+                                    Seleccione un campo y luego añadelo
+                                </div>
+                            ) : columnsAdded.map((item) => (
+                                <div key={item.columnname} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div className={classes.itemSelected}>
+                                        {item.description}
+                                    </div>
+                                    <IconButton size='small' onClick={() => {
+                                        setColumnsAdded(prev => prev.filter(x => x.columnname !== item.columnname))
+                                    }}>
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </div>
+                            ))}
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={columnsAdded.length === 0}
+                                startIcon={<Done color="secondary" />}
+                                onClick={() => {
+                                    setColumnsSelected(columnsAdded);
+                                    setOpenDialogVariables(false);
+                                }}
+                            >{t(langKeys.accept)}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </DialogZyx>
     )
@@ -159,35 +342,69 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [openDialogVariables, setOpenDialogVariables] = useState(false);
+    const [columnsSelected, setColumnsSelected] = useState<Dictionary[]>([]);
+    const [dataColumns, setDataColumns] = useState<Dictionary[]>([]);
+    const mainAuxRes = useSelector(state => state.main.mainAux);
 
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
-
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
+    const dataTables = multiData[4] && multiData[4].success ? multiData[4].data : [];
 
+    useEffect(() => {
+        if (!mainAuxRes.error && !mainAuxRes.loading && mainAuxRes.key === "UFN_REPORT_PERSONALIZED_COLUMNS_SEL") {
+            setDataColumns(mainAuxRes.data);
+        }
+    }, [mainAuxRes])
+
+    console.log(row)
     const { control, register, trigger, handleSubmit, setValue, getValues, formState: { errors } } = useForm<FormFields>({
         defaultValues: {
             reporttemplateid: row?.reporttemplateid || 0,
             description: row?.description || '',
             status: row?.status || 'ACTIVO',
-            startdate: row?.startdate || false,
-            finishdate: row?.finishdate || false,
-            usergroup: row?.usergroup || false,
-            channels: row?.channels || false,
-            tags: row?.tags || false,
+            dataorigin: row?.dataorigin || '',
             columns: row?.columns || [],
+            filters: row?.filters || [],
+            summary: row?.summary || [],
             operation: row ? "EDIT" : "INSERT"
         }
     });
 
-    const { fields, append: fieldsAppend, remove: fieldRemove } = useFieldArray({
+    const { fields: fieldsColumns, append: columnsAppend, remove: columnRemove } = useFieldArray({
         control,
         name: 'columns',
     });
-    
+
+    const { fields: fieldsFilters, append: filtersAppend, remove: filterRemove } = useFieldArray({
+        control,
+        name: 'filters',
+    });
+
+    const { fields: fieldsSummarization, append: summaryAppend, remove: summarizationRemove } = useFieldArray({
+        control,
+        name: 'summary',
+    });
+
+    useEffect(() => {
+        setValue("columns", row?.columns || []);
+        trigger("columns");
+        setValue("filters", row?.filters || []);
+        trigger("filters");
+        setValue("summary", row?.summaries || []);
+        trigger("summary");
+    }, [])
+
+    useEffect(() => {
+        if (columnsSelected.length > 0) {
+            columnsAppend(columnsSelected);
+        }
+    }, [columnsSelected]);
+
     React.useEffect(() => {
         register('description', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('dataorigin', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('status', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
     }, [edit, register]);
 
@@ -208,9 +425,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
     }, [executeRes, waitSave])
 
     const onSubmit = handleSubmit((data) => {
-        const { reporttemplateid, description, status, startdate, finishdate, usergroup, channels, tags, operation, columns } = data;
-        const filters = { startdate, finishdate, usergroup, channels, tags, operation }
-
+        const { reporttemplateid, description, status, columns, filters, summary, dataorigin } = data;
         if (columns.length === 0) {
             return;
         }
@@ -220,8 +435,10 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                 description,
                 status,
                 type: '',
-                columnjson: JSON.stringify(columns),
+                dataorigin,
                 filterjson: JSON.stringify(filters),
+                summaryjson: JSON.stringify(summary),
+                columnjson: JSON.stringify(columns),
                 operation: data.operation
             })));
             dispatch(showBackdrop(true));
@@ -235,16 +452,15 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
         }))
     });
 
-    const handlerNewColumn = (item: Dictionary | null | undefined = null) => fieldsAppend({ key: item?.key || '', value: item?.value || '', filter: '', hasFilter: false });
-
-    const handlerDeleteColumn = (index: number) => {
-        fieldRemove(index)
-    };
+    const selectDataOrigin = (tablename: string) => {
+        setValue('dataorigin', tablename);
+        if (tablename)
+            dispatch(getCollectionAux(getColumnsOrigin(tablename)));
+    }
 
     return (
         <>
             <div style={{ width: '100%' }}>
-                {/* <div className="col-12" style={{ overflowWrap: 'break-word' }}>{JSON.stringify(getValues())}</div> */}
                 <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <div>
@@ -276,69 +492,39 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                             </Button>
                         </div>
                     </div>
-                    <div style={{ marginBottom: 0, display: 'flex', gap: 8 }} >
-                        <div className={`row-zyx ${classes.containerDetail}`} style={{ width: '50%', marginBottom: 0 }}>
-                            <FieldEdit
-                                label={t(langKeys.title)} //transformar a multiselect
-                                className="col-12"
-                                onChange={(value) => setValue('description', value)}
-                                valueDefault={row ? (row.description || "") : ""}
-                                error={errors?.description?.message}
-                            />
-                            <FieldSelect
-                                label={t(langKeys.status)}
-                                className="col-12"
-                                valueDefault={row?.status || 'ACTIVO'}
-                                onChange={(value) => setValue('status', value ? value.domainvalue : '')}
-                                error={errors?.status?.message}
-                                data={dataStatus}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                            />
-                        </div>
-                        <div className={`row-zyx ${classes.containerDetail}`} style={{ width: '50%', marginBottom: 0 }}>
-                            <div style={{ fontSize: 15, fontWeight: 500 }}>{t(langKeys.filters)}</div>
-                            <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                                <TemplateSwitch
-                                    label={t(langKeys.startDate)}
-                                    style={{ flex: '0 0 150px' }}
-                                    valueDefault={row?.startdate || false}
-                                    onChange={(value) => setValue('startdate', value)}
-                                />
-                                <TemplateSwitch
-                                    label={t(langKeys.endDate)}
-                                    style={{ flex: '0 0 150px' }}
-                                    valueDefault={row?.finishdate || false}
-                                    onChange={(value) => setValue('finishdate', value)}
-                                />
-                                <TemplateSwitch
-                                    label={t(langKeys.usergroup)}
-                                    style={{ flex: '0 0 150px' }}
-                                    valueDefault={row?.usergroup || false}
-                                    onChange={(value) => setValue('usergroup', value)}
-                                />
-                                <TemplateSwitch
-                                    label={t(langKeys.channel_plural)}
-                                    style={{ flex: '0 0 150px' }}
-                                    valueDefault={row?.channels || false}
-                                    onChange={(value) => setValue('channels', value)}
-                                />
-                                <TemplateSwitch
-                                    label={t(langKeys.tag)}
-                                    style={{ flex: '0 0 150px' }}
-                                    valueDefault={row?.tags || false}
-                                    onChange={(value) => setValue('tags', value)}
-                                />
-
-                            </div>
-                        </div>
+                    <div className={`row-zyx ${classes.containerDetail}`} style={{ marginBottom: 0 }}>
+                        <FieldEdit
+                            label={t(langKeys.title)} //transformar a multiselect
+                            className="col-4"
+                            onChange={(value) => setValue('description', value)}
+                            valueDefault={row ? (row.description || "") : ""}
+                            error={errors?.description?.message}
+                        />
+                        <FieldSelect
+                            label={t(langKeys.data_origin)}
+                            className="col-4"
+                            valueDefault={row?.dataorigin || 'ACTIVO'}
+                            onChange={(value) => selectDataOrigin(value ? value.tablename : '')}
+                            error={errors?.dataorigin?.message}
+                            data={dataTables}
+                            triggerOnChangeOnFirst={true}
+                            optionDesc="tablename"
+                            optionValue="tablename"
+                        />
+                        <FieldSelect
+                            label={t(langKeys.status)}
+                            className="col-4"
+                            valueDefault={row?.status || 'ACTIVO'}
+                            onChange={(value) => setValue('status', value ? value.domainvalue : '')}
+                            error={errors?.status?.message}
+                            data={dataStatus}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
                     </div>
                     <div className={classes.containerDetail}>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <div className={classes.title}>{t(langKeys.column_plural)}</div>
-                            <IconButton onClick={() => setOpenDialogVariables(true)}>
-                                <InfoIcon />
-                            </IconButton>
                         </div>
                         <TableContainer>
                             <Table size="small">
@@ -347,85 +533,51 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                         <TableCell>
                                             <IconButton
                                                 size="small"
-                                                onClick={() => handlerNewColumn()}
+                                                onClick={async () => {
+                                                    const haveDataOrigin = await trigger('dataorigin');
+                                                    if (haveDataOrigin) {
+                                                        setOpenDialogVariables(true);
+                                                    }
+                                                }}
                                             >
                                                 <AddIcon color="primary" />
                                             </IconButton>
                                         </TableCell>
-                                        <TableCell>{t(langKeys.name)}</TableCell>
+                                        <TableCell>{t(langKeys.column)}</TableCell>
                                         <TableCell>{t(langKeys.description)}</TableCell>
-                                        <TableCell style={{ maxWidth: 200 }}>{t(langKeys.filters)}</TableCell>
+                                        <TableCell>{t(langKeys.type)}</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {fields.map((item: IColumnTemplate, i) =>
+                                    {fieldsColumns.map((item: IColumnTemplate, i: number) =>
                                         <TableRow key={item.id}>
                                             <TableCell width={30}>
                                                 <div style={{ display: 'flex' }}>
                                                     <IconButton
                                                         size="small"
-                                                        onClick={() => handlerDeleteColumn(i)}
+                                                        onClick={() => columnRemove(i)}
                                                     >
                                                         <DeleteIcon style={{ color: '#777777' }} />
                                                     </IconButton>
                                                 </div>
                                             </TableCell>
                                             <TableCell>
-                                                <FieldEditArray
-                                                    fregister={{
-                                                        ...register(`columns.${i}.key`, {
-                                                            validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                                        })
-                                                    }}
-                                                    valueDefault={item.key}
-                                                    error={errors?.columns?.[i]?.key?.message}
-                                                    onChange={(value) => setValue(`columns.${i}.key`, "" + value)}
-                                                />
+                                                {item.description}
                                             </TableCell>
                                             <TableCell>
                                                 <FieldEditArray
                                                     fregister={{
-                                                        ...register(`columns.${i}.value`, {
+                                                        ...register(`columns.${i}.alias`, {
                                                             validate: (value: any) => (value && value.length) || t(langKeys.field_required)
                                                         }),
                                                     }}
-                                                    valueDefault={item.value}
-                                                    error={errors?.columns?.[i]?.value?.message}
-                                                    onChange={(value) => setValue(`columns.${i}.value`, value)}
+                                                    valueDefault={item.alias}
+                                                    error={errors?.columns?.[i]?.alias?.message}
+                                                    onChange={(value) => setValue(`columns.${i}.alias`, value)}
                                                 />
                                             </TableCell>
-                                            <TableCell style={{ maxWidth: 200 }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                                                    <TemplateSwitchArray
-                                                        error={errors?.columns?.[i]?.hasFilter?.message}
-                                                        fregister={{
-                                                            ...register(`columns.${i}.hasFilter`)
-                                                        }}
-                                                        label=""
-                                                        onChange={(value) => {
-                                                            setValue(`columns.${i}.hasFilter`, value);
-                                                            trigger(`columns.${i}.hasFilter`)
-                                                            if (!value) {
-                                                                setValue(`columns.${i}.filter`, "");
-                                                                trigger(`columns.${i}.filter`)
-                                                            }
-                                                        }}
-                                                        defaultValue={item.hasFilter}
-                                                    />
-                                                    {getValues(`columns.${i}.hasFilter`) &&
-                                                        <FieldEditArray
-                                                            fregister={{
-                                                                ...register(`columns.${i}.filter`, {
-                                                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                                                })
-                                                            }}
-                                                            style={{ flex: 1 }}
-                                                            valueDefault={item.filter}
-                                                            error={errors?.columns?.[i]?.filter?.message}
-                                                            onChange={(value) => setValue(`columns.${i}.filter`, value)}
-                                                        />
-                                                    }
-                                                </div>
+                                            <TableCell>
+                                                {t(`typepg_${item.type}`)}
                                             </TableCell>
                                         </TableRow>
                                     )}
@@ -433,12 +585,171 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                             </Table>
                         </TableContainer>
                     </div>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                        <div style={{ flex: 1 }} className={classes.containerDetail}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <div className={classes.title}>{t(langKeys.filters)}</div>
+                            </div>
+                            <div>
+                                <TableContainer>
+                                    <Table size="small">
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={async () => {
+                                                            const haveDataOrigin = await trigger('dataorigin');
+                                                            if (haveDataOrigin) {
+                                                                filtersAppend({ columnname: '', type: '', description: '' });
+                                                            }
+                                                        }}
+                                                    >
+                                                        <AddIcon color="primary" />
+                                                    </IconButton>
+                                                </TableCell>
+                                                <TableCell>{t(langKeys.column)}</TableCell>
+                                                <TableCell>{t(langKeys.type)}</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {fieldsFilters.map((item: IFilter, i: number) =>
+                                                <TableRow key={item.id}>
+                                                    <TableCell width={30}>
+                                                        <div style={{ display: 'flex' }}>
+                                                            <IconButton
+                                                                size="small"
+                                                                onClick={() => filterRemove(i)}
+                                                            >
+                                                                <DeleteIcon style={{ color: '#777777' }} />
+                                                            </IconButton>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <FieldSelect
+                                                            label={t(langKeys.column)}
+                                                            valueDefault={getValues(`filters.${i}.columnname`)}
+                                                            fregister={{
+                                                                ...register(`filters.${i}.columnname`, {
+                                                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                                })
+                                                            }}
+                                                            variant='outlined'
+                                                            onChange={(value) => {
+                                                                console.log("value?.type", value?.type)
+                                                                setValue(`filters.${i}.columnname`, value?.columnname || '');
+                                                                setValue(`filters.${i}.type`, value?.type || '');
+                                                                setValue(`filters.${i}.description`, value?.description || '');
+                                                                trigger(`filters.${i}.type`);
+                                                            }}
+                                                            error={errors?.filters?.[i]?.columnname?.message}
+                                                            data={dataColumns}
+                                                            optionDesc="description"
+                                                            optionValue="columnname"
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {getValues(`filters.${i}.type`)}
+                                                    </TableCell>
+                                                </TableRow>
+                                            )}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            </div>
+                        </div>
+
+                        <div style={{ flex: 1 }} className={classes.containerDetail}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <div className={classes.title}>{"Resumen"}</div>
+                            </div>
+                            <div>
+                                <TableContainer>
+                                    <Table size="small">
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={async () => {
+                                                            const haveDataOrigin = await trigger('dataorigin');
+                                                            if (haveDataOrigin) {
+                                                                summaryAppend({ columnname: '', function: '' });
+                                                            }
+                                                        }}
+                                                    >
+                                                        <AddIcon color="primary" />
+                                                    </IconButton>
+                                                </TableCell>
+                                                <TableCell>{t(langKeys.column)}</TableCell>
+                                                <TableCell>{t(langKeys.description)}</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {fieldsSummarization.map((item: ISummarization, i: number) =>
+                                                <TableRow key={item.id}>
+                                                    <TableCell width={30}>
+                                                        <div style={{ display: 'flex' }}>
+                                                            <IconButton
+                                                                size="small"
+                                                                onClick={() => summarizationRemove(i)}
+                                                            >
+                                                                <DeleteIcon style={{ color: '#777777' }} />
+                                                            </IconButton>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <FieldSelect
+                                                            label={t(langKeys.column)}
+                                                            valueDefault={getValues(`summary.${i}.columnname`)}
+                                                            fregister={{
+                                                                ...register(`summary.${i}.columnname`, {
+                                                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                                })
+                                                            }}
+                                                            variant='outlined'
+                                                            onChange={(value) => {
+                                                                setValue(`summary.${i}.type`, value?.type || '');
+                                                                setValue(`summary.${i}.columnname`, value?.columnname || '')
+                                                            }}
+                                                            error={errors?.summary?.[i]?.columnname?.message}
+                                                            data={fieldsColumns.filter(x => ["double precision", "bigint", "integer", "numeric", "interval"].includes(x.type))}
+                                                            optionDesc="description"
+                                                            optionValue="columnname"
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <FieldSelect
+                                                            label={t(langKeys.column)}
+                                                            valueDefault={getValues(`summary.${i}.function`)}
+                                                            fregister={{
+                                                                ...register(`summary.${i}.function`, {
+                                                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                                })
+                                                            }}
+                                                            variant='outlined'
+                                                            onChange={(value) => setValue(`summary.${i}.function`, value?.function || '')}
+                                                            error={errors?.summary?.[i]?.function?.message}
+                                                            data={dataSummarization}
+                                                            optionDesc="function"
+                                                            optionValue="function"
+                                                        />
+                                                    </TableCell>
+                                                </TableRow>
+                                            )}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            </div>
+                        </div>
+                    </div>
                 </form>
             </div>
-            <DialogVariables
+            <DialogManageColumns
                 setOpenDialogVariables={setOpenDialogVariables}
                 openDialogVariables={openDialogVariables}
-                handlerNewColumn={handlerNewColumn}
+                columnsAlreadySelected={fieldsColumns}
+                setColumnsSelected={setColumnsSelected}
             />
         </>
     );

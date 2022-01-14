@@ -635,6 +635,7 @@ const TableModal: FC<TableModalProps> = ({ title, open, rawColumns, dateRange, o
         parameters: {
             offset: (new Date().getTimezoneOffset() / 60) * -1,
         },
+        summaries: [],
         filters: [
             {
                 column: "startdate",

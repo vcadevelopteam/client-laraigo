@@ -43,7 +43,8 @@ type IFilter = {
 }
 
 export interface IRequestBodyDynamic {
-    columns: IColumnTemplate[];
-    filters: IFilter[];
+    columns: Dictionary[];
+    summaries: Dictionary[];
+    filters: Dictionary[];
     parameters: Dictionary
 }
