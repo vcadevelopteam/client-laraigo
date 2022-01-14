@@ -828,6 +828,7 @@ const translation: LangKeys = {
     removebutton: 'Quitar botón',
     import: 'Importar',
     integrationmanager: 'Administrador de Integraciones',
+    integrationmanagerdetail: 'Detalle del Administrador de Integraciones',
     integrationmanager_plural: 'Administrador de Integraciones',
     newintegrationmanager: 'Nueva integración',
     standard: 'Estándar',

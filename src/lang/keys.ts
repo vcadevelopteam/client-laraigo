@@ -966,6 +966,7 @@ export const langKeys = {
     removebutton: 'removebutton',
 
     integrationmanager: 'integrationmanager',
+    integrationmanagerdetail: 'integrationmanagerdetail',
     integrationmanager_plural: 'integrationmanager_plural',
     newintegrationmanager: 'newintegrationmanager',
     standard: 'standard',

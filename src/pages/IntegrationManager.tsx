@@ -35,10 +35,6 @@ interface DetailProps {
     multiData: MultiData[];
     fetchData: () => void
 }
-const arrayBread = [
-    { id: "view-1", name: "Integration Manager" },
-    { id: "view-2", name: "Integration Manager detail" }
-];
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -152,13 +148,8 @@ const IntegrationManager: FC = () => {
             },
             {
                 Header: t(langKeys.type),
-                accessor: 'type',
+                accessor: 'type_translated',
                 NoFilter: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    const column = props.cell.column;
-                    return t(`${row[column.id]?.toLowerCase()}`).toUpperCase()
-                }
             },
             {
                 Header: t(langKeys.status),
@@ -241,7 +232,10 @@ const IntegrationManager: FC = () => {
             <TableZyx
                 columns={columns}
                 titlemodule={t(langKeys.integrationmanager_plural, { count: 2 })}
-                data={mainResult.mainData.data}
+                data={mainResult.mainData.data.map(x => ({
+                    ...x,
+                    type_translated: (t(`${x.type}`.toLowerCase()) || "").toUpperCase(),
+                }))}
                 onClickRow={handleEdit}
                 download={true}
                 loading={mainResult.mainData.loading}
@@ -656,6 +650,11 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
             }
         }
     }, [executeRes, waitDelete]);
+    
+    const arrayBread = [
+        { id: "view-1", name: t(langKeys.integrationmanager) },
+        { id: "view-2", name: t(langKeys.integrationmanagerdetail) }
+    ];
 
     return (
         <div style={{ width: '100%' }}>
@@ -815,63 +814,40 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                             }
                         </div>
                         <div className="row-zyx">
-                            {edit ?
-                                <FieldSelect
-                                    uset={true}
-                                    fregister={{...register(`authorization.type`, {
-                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                    })}}       
-                                    label={t(langKeys.authorization)}
-                                    valueDefault={getValues('authorization.type')}
-                                    onChange={onChangeAuthorization}
-                                    error={errors?.authorization?.type?.message}
-                                    data={dictToArrayKV(dataAuthorizationType)}
-                                    optionDesc="value"
-                                    optionValue="key"
-                                />
-                                :
-                                <FieldView
-                                    label={t(langKeys.authorization)}
-                                    value={row?.authorization?.type || ""}
-                                    className="col-12"
-                                />
-                            }
+                            <FieldSelect
+                                uset={true}
+                                fregister={{...register(`authorization.type`, {
+                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                })}}       
+                                label={t(langKeys.authorization)}
+                                valueDefault={getValues('authorization.type')}
+                                onChange={onChangeAuthorization}
+                                error={errors?.authorization?.type?.message}
+                                data={dictToArrayKV(dataAuthorizationType)}
+                                optionDesc="value"
+                                optionValue="key"
+                            />
                         </div>
                         {getValues('authorization.type') === 'BASIC' ?
                             <div className="row-zyx">
-                                {edit ?
-                                    <React.Fragment>
-                                        <FieldEdit
-                                            fregister={{...register(`authorization.username`)}}
-                                            label={t(langKeys.username)}
-                                            className="col-6"
-                                            valueDefault={getValues('authorization.username')}
-                                            onChange={(value) => setValue('authorization.username', value)}
-                                            error={errors?.authorization?.username?.message}
-                                        />
-                                        <FieldEdit
-                                            fregister={{...register(`authorization.password`)}}
-                                            label={t(langKeys.password)}
-                                            className="col-6"
-                                            valueDefault={getValues('authorization.password')}
-                                            onChange={(value) => setValue('authorization.password', value)}
-                                            error={errors?.authorization?.password?.message}
-                                        />
-                                    </React.Fragment>
-                                    :
-                                    <React.Fragment>
-                                        <FieldView
-                                            label={t(langKeys.username)}
-                                            value={row?.authorization?.username || ""}
-                                            className="col-6"
-                                        />
-                                        <FieldView
-                                            label={t(langKeys.password)}
-                                            value={row?.authorization?.password || ""}
-                                            className="col-6"
-                                        />
-                                    </React.Fragment>
-                                }
+                                <React.Fragment>
+                                    <FieldEdit
+                                        fregister={{...register(`authorization.username`, { validate: (value:any) => getValues('authorization.type')==="BASIC"?((value && value.length) || t(langKeys.field_required)):null })}}
+                                        label={t(langKeys.username)}
+                                        className="col-6"
+                                        valueDefault={getValues('authorization.username')}
+                                        onChange={(value) => setValue('authorization.username', value)}
+                                        error={errors?.authorization?.username?.message}
+                                    />
+                                    <FieldEdit
+                                        fregister={{...register(`authorization.password`, { validate: (value:any) => getValues('authorization.type')==="BASIC"?((value && value.length) || t(langKeys.field_required)):null })}}
+                                        label={t(langKeys.password)}
+                                        className="col-6"
+                                        valueDefault={getValues('authorization.password')}
+                                        onChange={(value) => setValue('authorization.password', value)}
+                                        error={errors?.authorization?.password?.message}
+                                    />
+                                </React.Fragment>
                             </div>
                             :
                             null
@@ -880,7 +856,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                             <div className="row-zyx">
                                 {edit ?
                                     <FieldEdit
-                                        fregister={{...register(`authorization.token`)}}
+                                        fregister={{...register(`authorization.token`, { validate: (value:any) => getValues('authorization.type')==="BEARER"?((value && value.length) || t(langKeys.field_required)):null })}}
                                         label={t(langKeys.token)}
                                         className="col-12"
                                         valueDefault={getValues('authorization.token')}
