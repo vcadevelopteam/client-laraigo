@@ -42,10 +42,6 @@ interface ModalProps {
     updateRecords?: (record: any) => void;
 }
 
-const arrayBread = [
-    { id: "view-1", name: "Domains" },
-    { id: "view-2", name: "Domain detail" }
-];
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -290,7 +286,9 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
     }, [register]);
 
     const onSubmit = handleSubmit((data) => {
+        debugger
         const callback = () => {
+            debugger
             dispatch(showBackdrop(true));
             dispatch(execute({
                 header: insDomain({ ...data }),
@@ -302,14 +300,21 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
 
             setWaitSave(true);
         }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))
+        if(!!dataDomain.length){
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_save),
+                callback
+            }))
+        }else{
+            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.errorneedvalues) }))
+        }
     });
 
+    const arrayBread = [
+        { id: "view-1", name: t(langKeys.domain)},
+        { id: "view-2", name: `${t(langKeys.domain)} ${t(langKeys.detail)}` }
+    ];
     return (
         <div style={{width: "100%"}}>
             <form onSubmit={onSubmit}>

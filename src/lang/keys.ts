@@ -32,6 +32,7 @@ export const langKeys = {
     clienticon: "clienticon",
     interval: 'interval',
     clientname: "clientname",
+    errorneedvalues: "errorneedvalues",
     tos: "tos",
     signupstep1title25: "signupstep1title25",
     recipientsname: "recipientsname",

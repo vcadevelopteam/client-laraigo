@@ -1875,6 +1875,7 @@ const translation: LangKeys = {
     setting: 'Coniguración',
     setting_plural: 'Configuraciones',
     restrictedEmoji: 'Emoji restringido',
+    errorneedvalues: "La lista de valores debe tener al menos un elemento",
     restrictedEmoji_plural: 'Emojis restringidos',
     integration: 'Integración',
     integration_plural: 'Integraciones',
