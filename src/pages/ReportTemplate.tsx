@@ -47,13 +47,13 @@ interface DetailReportDesignerProps {
 }
 
 const dataSummarization = [
-    { function: 'total'},
-    { function: 'count'},
-    { function: 'average'},
-    { function: 'minimum'},
-    { function: 'maximum'},
-    { function: 'median'},
-    { function: 'mode'},
+    { function: 'total' },
+    { function: 'count' },
+    { function: 'average' },
+    { function: 'minimum' },
+    { function: 'maximum' },
+    { function: 'median' },
+    { function: 'mode' },
 ];
 
 const arrayBread = [
@@ -107,6 +107,10 @@ const useStyles = makeStyles((theme) => ({
 type IColumnTemplate = {
     columnname: string;
     description: string;
+    join_alias: string;
+    join_on: string;
+    join_table: string;
+    tablename: string;
     type: string;
     alias: string;
     id: any;
@@ -121,6 +125,7 @@ type IFilter = {
 
 type ISummarization = {
     columnname: string;
+    type: string;
     description: string;
     function: string;
     id: any;
@@ -383,20 +388,17 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
     });
 
     useEffect(() => {
-            setValue("columns", row?.columns || []);
-            trigger("columns");
-            setValue("filters", row?.filters || []);
-            trigger("filters");
-            setValue("summary", row?.summary || []);
-            trigger("summary");
-            if (row?.reporttemplateid) {
-
-            }
+        setValue("columns", row?.columns || []);
+        trigger("columns");
+        setValue("filters", row?.filters || []);
+        trigger("filters");
+        setValue("summary", row?.summaries || []);
+        trigger("summary");
     }, [])
 
     useEffect(() => {
         if (columnsSelected.length > 0) {
-            columnsAppend(columnsSelected.map(item => ({ columnname: item.columnname, description: item.description, alias: item.description, type: item.type })));
+            columnsAppend(columnsSelected);
         }
     }, [columnsSelected]);
 
@@ -599,7 +601,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                         onClick={async () => {
                                                             const haveDataOrigin = await trigger('dataorigin');
                                                             if (haveDataOrigin) {
-                                                                filtersAppend({ columnname: '', type: '' });
+                                                                filtersAppend({ columnname: '', type: '', description: '' });
                                                             }
                                                         }}
                                                     >
@@ -637,6 +639,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                                 console.log("value?.type", value?.type)
                                                                 setValue(`filters.${i}.columnname`, value?.columnname || '');
                                                                 setValue(`filters.${i}.type`, value?.type || '');
+                                                                setValue(`filters.${i}.description`, value?.description || '');
                                                                 trigger(`filters.${i}.type`);
                                                             }}
                                                             error={errors?.filters?.[i]?.columnname?.message}
@@ -646,7 +649,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                         />
                                                     </TableCell>
                                                     <TableCell>
-                                                        {item.type}
+                                                        {getValues(`filters.${i}.type`)}
                                                     </TableCell>
                                                 </TableRow>
                                             )}
@@ -705,9 +708,12 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                                 })
                                                             }}
                                                             variant='outlined'
-                                                            onChange={(value) => setValue(`summary.${i}.columnname`, value?.columnname || '')}
+                                                            onChange={(value) => {
+                                                                setValue(`summary.${i}.type`, value?.type || '');
+                                                                setValue(`summary.${i}.columnname`, value?.columnname || '')
+                                                            }}
                                                             error={errors?.summary?.[i]?.columnname?.message}
-                                                            data={dataColumns}
+                                                            data={fieldsColumns.filter(x => ["double precision", "bigint", "integer", "numeric", "interval"].includes(x.type))}
                                                             optionDesc="description"
                                                             optionValue="columnname"
                                                         />

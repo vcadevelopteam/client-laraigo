@@ -28,7 +28,7 @@ import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import ReportPersonalized from 'components/personalizedreport/ReportPersonalized'
+import ReportPersonalized, { IReport } from 'components/personalizedreport/ReportPersonalized'
 import Heatmap from './Heatmap';
 import RecordHSMRecord from './RecordHSMReport';
 
@@ -393,7 +393,7 @@ const Reports: FC = () => {
                         ...x,
                         columns: x.columnjson ? JSON.parse(x.columnjson) : [],
                         filters: x.filterjson ? JSON.parse(x.filterjson) : [],
-                        summary: x.summaryjson ? JSON.parse(x.summaryjson) : [],
+                        summaries: x.summaryjson ? JSON.parse(x.summaryjson) : [],
                     }))];
                     setAllReports(rr);
                     setallReportsToShow(rr);
@@ -676,7 +676,7 @@ const Reports: FC = () => {
     } else if (viewSelected === "view-4") {
         return (
             <ReportPersonalized
-                item={rowReportSelected.row!!}
+                item={rowReportSelected.row!! as IReport}
                 multiData={reportsResult.multiDataAux.data}
                 setViewSelected={setViewSelected}
             />

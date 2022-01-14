@@ -46,13 +46,14 @@ export const getCollectionDynamic = (requestBody: IRequestBodyDynamic): IActionC
 export const resetMainDynamic = (): IActionCall => ({ type: actionTypes.DATA_DYNAMIC_RESET });
 
 
-export const exportDynamic = (requestBody: IRequestBodyDynamic, reportName: string = "", formatToExport: "excel" | "csv" = "excel"): IActionCall => ({
+export const exportDynamic = (requestBody: IRequestBodyDynamic, reportName: string = "", formatToExport: "excel" | "csv" = "excel", headerClient: Dictionary[] | null = null): IActionCall => ({
     callAPI: () => CommonService.mainDynamicExport({
         ...requestBody,
         parameters: {
             ...requestBody.parameters,
             formatToExport,
-            reportName
+            reportName, 
+            headerClient
         }
     }),
     types: {

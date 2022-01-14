@@ -55,8 +55,15 @@ interface MultiData {
     success: boolean;
 }
 
+export interface IReport {
+    columns: Dictionary[];
+    filters: Dictionary[];
+    summaries: Dictionary[];
+    description: string;
+}
+
 interface DetailReportProps {
-    item: Dictionary;
+    item: IReport;
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
 }
@@ -69,37 +76,72 @@ const initialRange = {
 
 const format = (date: Date) => date.toISOString().split('T')[0];
 
-const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, multiData, item: { columns, finishdate,
-    startdate, channels, tags, usergroup, description } }) => {
+const FilterDynamic: FC<{ filter: Dictionary, setFiltersDynamic: (param: any) => void }> = ({ filter, setFiltersDynamic }) => {
+    const [openDialogDate, setOpenDialogDate] = useState(false);
+    const [dateRange, setDateRange] = useState<Range>(initialRange);
+    const classes = useStyles()
+
+    useEffect(() => {
+        setFiltersDynamic((prev: any) => ({
+            ...prev,
+            [filter.columnname]: {
+                ...prev[filter.columnname],
+                start: getDateCleaned(dateRange.startDate!!),
+                end: getDateCleaned(dateRange.endDate!!)
+            }
+        }))
+    }, [dateRange])
+
+    if (filter.type === "timestamp without time zone" || filter.type === "date") {
+        return (
+            <div>
+                <DateRangePicker
+                    open={openDialogDate}
+                    setOpen={setOpenDialogDate}
+                    range={dateRange}
+                    onSelect={setDateRange}
+                >
+                    <Button
+                        className={classes.itemDate}
+                        startIcon={<CalendarIcon />}
+                        onClick={() => setOpenDialogDate(!openDialogDate)}
+                    >
+                        {format(dateRange.startDate!) + " - " + format(dateRange.endDate!)}
+                    </Button>
+                </DateRangePicker>
+            </div>
+        )
+    } else {
+        return (
+            <div>dev</div>
+        )
+    }
+}
+
+const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, multiData, item: { columns, summaries, filters, description } }) => {
     const classes = useStyles()
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const [columnsDynamic, setcolumnsDynamic] = useState([])
-    const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
-    const [openDateRangeFinishDateModal, setOpenDateRangeFinishDateModal] = useState(false);
-    const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
-    const [dateRangeFinishDate, setDateRangeFinishDate] = useState<Range>(initialRange);
-    const [filters, setFilters] = useState({
-        usergroup: "",
-        communicationchannelid: "",
-        tag: ""
-    })
+    
+    const [filtersDynamic, setFiltersDynamic] = useState<Dictionary>(filters.reduce((acc: Dictionary, item: Dictionary) => ({
+        ...acc,
+        [item.columnname]: item
+    }), {}));
+
+    const columnsDynamic = React.useMemo(
+        () => columns.map((x: Dictionary) => ({
+            Header: x.description,
+            accessor: x.columnname.replace(".", ""),
+        })), [columns]
+    )
 
     useEffect(() => {
         dispatch(resetMainDynamic())
         dispatch(resetExportMainDynamic())
-        setcolumnsDynamic(columns.map((x: Dictionary) => ({
-            Header: x.value,
-            accessor: x.key,
-        })))
     }, [])
 
     const mainDynamic = useSelector(state => state.main.mainDynamic);
     const resExportDynamic = useSelector(state => state.main.exportDynamicData);
-
-    const dataGroups = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    const dataTags = multiData[2] && multiData[2].success ? multiData[2].data : [];
-    const dataChannels = multiData[3] && multiData[3].success ? multiData[3].data : [];
 
     useEffect(() => {
         if (!resExportDynamic.loading && !resExportDynamic.error && resExportDynamic.url) {
@@ -116,33 +158,14 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, multiData,
             parameters: {
                 offset: (new Date().getTimezoneOffset() / 60) * -1,
             },
-            filters: [
-                ...(startdate ? [{
-                    column: "startdate",
-                    start: getDateCleaned(dateRangeCreateDate.startDate!!),
-                    end: getDateCleaned(dateRangeCreateDate.endDate!!)
-                }] : []),
-                ...(finishdate ? [{
-                    column: "finishdate",
-                    start: getDateCleaned(dateRangeFinishDate.startDate!!),
-                    end: getDateCleaned(dateRangeFinishDate.endDate!!)
-                }] : []),
-                ...(usergroup ? [{
-                    column: "usergroup",
-                    value: filters.usergroup
-                }] : []),
-                ...(tags ? [{
-                    column: "tag",
-                    value: filters.tag
-                }] : []),
-                ...(channels ? [{
-                    column: "communicationchannelid",
-                    value: filters.communicationchannelid
-                }] : []),
-            ]
+            summaries,
+            filters: Object.values(filtersDynamic)
         }
         if (isExport)
-            dispatch(exportDynamic(body, description));
+            dispatch(exportDynamic(body, description, "excel", columnsDynamic.map(x => ({
+                key: x.accessor,
+                alias: x.Header
+            }))));
         else
             dispatch(getCollectionDynamic(body));
     }
@@ -155,72 +178,14 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, multiData,
             />
             <div className={classes.containerFilters}>
                 <div className={classes.itemFlex}>
-                    {startdate &&
-                        <DateRangePicker
-                            open={openDateRangeCreateDateModal}
-                            setOpen={setOpenDateRangeCreateDateModal}
-                            range={dateRangeCreateDate}
-                            onSelect={setDateRangeCreateDate}
-                        >
-                            <Button
-                                className={classes.itemDate}
-                                startIcon={<CalendarIcon />}
-                                onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
-                            >
-                                {format(dateRangeCreateDate.startDate!) + " - " + format(dateRangeCreateDate.endDate!)}
-                            </Button>
-                        </DateRangePicker>
-                    }
-                    {finishdate &&
-                        <DateRangePicker
-                            open={openDateRangeFinishDateModal}
-                            setOpen={setOpenDateRangeFinishDateModal}
-                            range={dateRangeFinishDate}
-                            onSelect={setDateRangeFinishDate}
-                        >
-                            <Button
-                                disabled={mainDynamic.loading}
-                                className={classes.itemDate}
-                                startIcon={<CalendarIcon />}
-                                onClick={() => setOpenDateRangeFinishDateModal(!openDateRangeFinishDateModal)}
-                            >
-                                {format(dateRangeFinishDate.startDate!) + " - " + format(dateRangeFinishDate.endDate!)}
-                            </Button>
-                        </DateRangePicker>
-                    }
-                    {tags &&
-                        <FieldSelect
-                            label={t(langKeys.tag)}
-                            className={classes.itemFilter}
-                            onChange={(value) => setFilters(p => ({ ...p, tag: value.tag }))}
-                            data={dataTags}
-                            optionDesc="tag"
-                            variant="outlined"
-                            optionValue="tag"
+                    {Object.values(filters).map((filter: Dictionary) => (
+
+                        <FilterDynamic
+                            key={filter.columnname}
+                            filter={filter}
+                            setFiltersDynamic={setFiltersDynamic}
                         />
-                    }
-                    {channels &&
-                        <FieldMultiSelect
-                            label={t(langKeys.channel_plural)}
-                            className={classes.itemFilter}
-                            variant="outlined"
-                            onChange={(value) => setFilters(p => ({ ...p, communicationchannelid: value.map((o: Dictionary) => o.communicationchannelid).join() }))}
-                            data={dataChannels}
-                            optionDesc="communicationchanneldesc"
-                            optionValue="communicationchannelid"
-                        />
-                    }
-                    {usergroup &&
-                        <FieldMultiSelect
-                            label={t(langKeys.group_plural)}
-                            className={classes.itemFilter}
-                            variant="outlined"
-                            onChange={(value) => setFilters(p => ({ ...p, usergroup: value.map((o: Dictionary) => o.domainvalue).join() }))}
-                            data={dataGroups}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                        />
-                    }
+                    ))}
                     <Button
                         disabled={mainDynamic.loading}
                         variant="contained"
@@ -238,7 +203,6 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, multiData,
                         color="primary"
                         disabled={resExportDynamic.loading}
                         onClick={() => onSearch(true)}
-                        // onClick={() => exportExcel(String(titlemodule) + "Report", data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
                         startIcon={<DownloadIcon />}
                     >{t(langKeys.download)}
                     </Button>
@@ -250,7 +214,6 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, multiData,
                 data={mainDynamic.data}
                 download={false}
                 loading={mainDynamic.loading}
-            // fetchData={fetchData}
             />
         </div >
     )
