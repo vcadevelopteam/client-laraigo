@@ -713,6 +713,10 @@ const translation: LangKeys = {
     type_ocupation_998: "NO DECLARA",
     type_ocupation_999: "OTROS",
 
+    type_shippingtype_hsm: 'HSM',
+    type_shippingtype_mail: 'CORREO',
+    type_shippingtype_sms: 'SMS',
+
     typepg_bigint: 'número',
     typepg_boolean: 'booleano',
     "typepg_character varying": 'texto',
@@ -725,6 +729,7 @@ const translation: LangKeys = {
     typepg_numeric: 'número',
     typepg_text: 'texto',
     "typepg_timestamp without time zone": 'fecha',
+    typepg_variable: 'variable',
 
     organizationclass: "Organización de Clasificaciones",
     editRecord: 'Editar registro',
@@ -1343,6 +1348,12 @@ const translation: LangKeys = {
     report_userproductivity_filter_group: 'Grupo',
     report_userproductivity_filter_status: 'Estado usuario',
     report_userproductivity_filter_includebot: 'Incluir bot',
+
+    report_sentmessages_api: 'Envío por API',
+    report_sentmessages_lead: 'Envío desde oportunidades',
+    report_sentmessages_person: 'Envío desde personas',
+    report_sentmessages_inbox: 'Envío desde inbox',
+    report_sentmessages_chatflow: 'Envío desde flujo',
 
     "personalizedreport_conversation.context": "contexto de la conversación",
     "personalizedreport_conversation.personaveragereplytime": "tiempo promedio de respuesta de la persona de la conversación",
