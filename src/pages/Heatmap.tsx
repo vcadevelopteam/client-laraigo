@@ -1286,12 +1286,6 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
     }, [])
 
     useEffect(() => {
-
-        if(!multiDataAux2.loading && realizedsearch){
-            setlistadvisers(multiDataAux2.data[0]?.data||[])
-        }
-    }, [multiDataAux2,realizedsearch])
-    useEffect(() => {
         if(waitDetail) {
             if (!mainAux.loading){
                 dispatch(showBackdrop(false));
@@ -1307,7 +1301,9 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
             let year = dataMainHeatMap.startdate?.getFullYear()
             let dateend = new Date(year, mes, 0).getDate()
             let arrayfree:any = []
-            listadvisers.forEach((row:any) => {
+            setlistadvisers(multiData.data[1]?.data||[])
+            let tempadviserlist = multiData.data[1]?.data||[]
+            tempadviserlist.forEach((row:any) => {
                 
                 const objectfree: Dictionary = {
                     asesor: capitalize(row.userdesc),
@@ -1321,25 +1317,24 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
             })
             setrealizedsearch(false)
             dispatch(showBackdrop(false))         
-            initCompletadosxAsesorGrid(multiData.data[0]?.data||[],arrayfree)
-            initAbandonosxAsesorGrid(multiData.data[0]?.data||[],arrayfree)
+            initCompletadosxAsesorGrid(multiData.data[0]?.data||[],arrayfree,tempadviserlist)
+            initAbandonosxAsesorGrid(multiData.data[0]?.data||[],arrayfree,tempadviserlist)
             initTasaAbandonosxAsesorGrid(multiData.data[0]?.data||[],arrayfree)
-            initCantidadOportunidadesGrid(multiData.data[0]?.data||[],arrayfree)
+            initCantidadOportunidadesGrid(multiData.data[0]?.data||[],arrayfree,tempadviserlist)
             initTasaOportunidadesGrid(multiData.data[0]?.data||[],arrayfree)
-            initVentasxAsesorGrid(multiData.data[0]?.data||[],arrayfree)            
+            initVentasxAsesorGrid(multiData.data[0]?.data||[],arrayfree,tempadviserlist)            
             initEfectividadxAsesorGrid(multiData.data[0]?.data||[],arrayfree)
             initEfectividadxAsesorxoportunitiesGrid(multiData.data[0]?.data||[],arrayfree)
             
         }
     }, [multiData,realizedsearch])
 
-    function initCompletadosxAsesorGrid(data:any,arraything:any){
+    function initCompletadosxAsesorGrid(data:any,arraything:any,tempadviserlist:any){
         let arrayfree: any = [...arraything];
         let mes = dataMainHeatMap.startdate?.getMonth()+1
         let year = dataMainHeatMap.startdate?.getFullYear()
         let rowmax = 0;
         let dateend = new Date(year, mes, 0).getDate()
-
         const objectlast:any = { asesor: "TOTAL" , userid: 0};
         for(let j = 1; j <= dateend; j++) {
             objectlast[`day${j}`] = 0;
@@ -1347,7 +1342,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
         objectlast[`totalcol`] = 0;
         arrayfree.push(objectlast)
         
-        data.filter((x:any) => listadvisers.filter((e:any) => e.userid === x.userid).length>0).forEach((row:any) => {
+        data.filter((x:any) => tempadviserlist.filter((e:any) => e.userid === x.userid).length>0).forEach((row:any) => {
             const day = parseInt(row.fecha.split("-")[2])
             const hour = row.userid;
             arrayfree = arrayfree.map((x:any) => x.userid === hour ? ({
@@ -1356,8 +1351,8 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                 [`totalcol`]: x.totalcol + row.completadosxasesor
             }) : x) 
             rowmax = row.completadosxasesor>rowmax ? row.completadosxasesor:rowmax;
-            arrayfree[listadvisers.length][`day${day}`] += row.completadosxasesor;
-            arrayfree[listadvisers.length][`totalcol`] += row.completadosxasesor;
+            arrayfree[tempadviserlist.length][`day${day}`] += row.completadosxasesor;
+            arrayfree[tempadviserlist.length][`totalcol`] += row.completadosxasesor;
         })
         setCompletadosxAsesorData(arrayfree)
 
@@ -1367,7 +1362,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
             if(isNaN(scale)||rowmax===0) scale=0
             
             m++;
-            if ((listadvisers.length)*dateend<m){
+            if ((tempadviserlist.length)*dateend<m){
                 return "FFFFFF"
             }
             if ( num <=  rowmax/2) {
@@ -1412,7 +1407,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
             ...arraytemplate
         ])
     }
-    function initAbandonosxAsesorGrid(data:any,arraything:any){
+    function initAbandonosxAsesorGrid(data:any,arraything:any,tempadviserlist:any){
         let arrayfree: any = [...arraything];
         let mes = dataMainHeatMap.startdate?.getMonth()+1
         let year = dataMainHeatMap.startdate?.getFullYear()
@@ -1425,7 +1420,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
         }
         objectlast[`totalcol`] = 0;
         arrayfree.push(objectlast)
-        data.filter((x:any) => listadvisers.filter((e:any) => e.userid === x.userid).length>0).forEach((row:any) => {
+        data.filter((x:any) => tempadviserlist.filter((e:any) => e.userid === x.userid).length>0).forEach((row:any) => {
             const day = parseInt(row.fecha.split("-")[2])
             const hour = row.userid;
             arrayfree = arrayfree.map((x:any) => x.userid === hour ? ({
@@ -1434,8 +1429,8 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                 [`totalcol`]: x.totalcol + row.abandonosxasesor
             }) : x) 
             rowmax = row.abandonosxasesor>rowmax ? row.abandonosxasesor:rowmax;
-            arrayfree[listadvisers.length][`day${day}`] += row.abandonosxasesor;
-            arrayfree[listadvisers.length][`totalcol`] += row.abandonosxasesor;
+            arrayfree[tempadviserlist.length][`day${day}`] += row.abandonosxasesor;
+            arrayfree[tempadviserlist.length][`totalcol`] += row.abandonosxasesor;
         })
         setabandonosxAsesorData(arrayfree)
 
@@ -1445,7 +1440,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
             if(isNaN(scale)||rowmax===0) scale=0
             
             m++;
-            if ((listadvisers.length)*dateend<m){
+            if ((tempadviserlist.length)*dateend<m){
                 return "FFFFFF"
             }
             if ( num <=  rowmax/2) {
@@ -1536,7 +1531,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
             ...arraytemplate
         ])
     }
-    function initCantidadOportunidadesGrid(data:any,arraything:any){
+    function initCantidadOportunidadesGrid(data:any,arraything:any,tempadviserlist:any){
         let arrayfree: any = [...arraything];
         let mes = dataMainHeatMap.startdate?.getMonth()+1
         let year = dataMainHeatMap.startdate?.getFullYear()
@@ -1549,7 +1544,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
         }
         objectlast[`totalcol`] = 0;
         arrayfree.push(objectlast)
-        data.filter((x:any) => listadvisers.filter((e:any) => e.userid === x.userid).length>0).forEach((row:any) => {
+        data.filter((x:any) => tempadviserlist.filter((e:any) => e.userid === x.userid).length>0).forEach((row:any) => {
             const day = parseInt(row.fecha.split("-")[2])
             const hour = row.userid;
             arrayfree = arrayfree.map((x:any) => x.userid === hour ? ({
@@ -1558,8 +1553,8 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                 [`totalcol`]: x.totalcol + row.oportunidadesxasesor
             }) : x) 
             rowmax = row.oportunidadesxasesor>rowmax ? row.oportunidadesxasesor:rowmax;
-            arrayfree[listadvisers.length][`day${day}`] += row.oportunidadesxasesor;
-            arrayfree[listadvisers.length][`totalcol`] += row.oportunidadesxasesor;
+            arrayfree[tempadviserlist.length][`day${day}`] += row.oportunidadesxasesor;
+            arrayfree[tempadviserlist.length][`totalcol`] += row.oportunidadesxasesor;
         })
         setCantidadOportunidadesData(arrayfree)
 
@@ -1570,7 +1565,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
             if(isNaN(scale)||rowmax===0) scale=0
             
             m++;
-            if ((listadvisers.length)*dateend<m){
+            if ((tempadviserlist.length)*dateend<m){
                 return "FFFFFF"
             }
             if ( num <=  rowmax/2) {
@@ -1662,7 +1657,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
         ])
     }
 
-    function initVentasxAsesorGrid(data:any,arraything:any){
+    function initVentasxAsesorGrid(data:any,arraything:any,tempadviserlist:any){
         let arrayfree: any = [...arraything];
         let mes = dataMainHeatMap.startdate?.getMonth()+1
         let year = dataMainHeatMap.startdate?.getFullYear()
@@ -1676,7 +1671,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
         objectlast[`totalcol`] = 0;
         arrayfree.push(objectlast)
         
-        data.filter((x:any) => listadvisers.filter((e:any) => e.userid === x.userid).length>0).forEach((row:any) => {
+        data.filter((x:any) => tempadviserlist.filter((e:any) => e.userid === x.userid).length>0).forEach((row:any) => {
             const day = parseInt(row.fecha.split("-")[2])
             const hour = row.userid;
             arrayfree = arrayfree.map((x:any) => x.userid === hour ? ({
@@ -1685,8 +1680,8 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                 [`totalcol`]: x.totalcol + row.ventasxasesor
             }) : x) 
             rowmax = row.ventasxasesor>rowmax ? row.ventasxasesor:rowmax;
-            arrayfree[listadvisers.length][`day${day}`] += row.ventasxasesor;
-            arrayfree[listadvisers.length][`totalcol`] += row.ventasxasesor;
+            arrayfree[tempadviserlist.length][`day${day}`] += row.ventasxasesor;
+            arrayfree[tempadviserlist.length][`totalcol`] += row.ventasxasesor;
         })
         
         setventasxAsesorData(arrayfree)
@@ -1698,7 +1693,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
             if(isNaN(scale)||rowmax===0) scale=0
             
             m++;
-            if ((listadvisers.length)*dateend<m){
+            if ((tempadviserlist.length)*dateend<m){
                 return "FFFFFF"
             }
             if ( num <=  rowmax/2) {
@@ -1850,11 +1845,9 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
         setCantidadOportunidadesData([])
         setrealizedsearch(true)
         dispatch(showBackdrop(true))
-        dispatch(getMultiCollectionAux2([
-            getasesoresbyorgid(dataMainHeatMap.closedby),            
-        ]))
         dispatch(getMultiCollection([
-            heatmappage2(dataMainHeatMap)
+            heatmappage2(dataMainHeatMap),
+            getasesoresbyorgid(dataMainHeatMap.closedby)
         ]));
     }
     function handleDateChange(e: any){
