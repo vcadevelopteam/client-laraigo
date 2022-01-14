@@ -93,7 +93,6 @@ const Emojis: FC = () => {
         fetchData();
 
         emojis.sort((a, b) => a.categoryorder - b.categoryorder);
-        console.log(emojis)
         setGroups(Array.from(new Set(Object.values(emojis.map(a => a.categorydesc)))));
 
         dispatch(getMultiCollection([
@@ -104,9 +103,6 @@ const Emojis: FC = () => {
             dispatch(resetAllMain());
         };
     }, []);
-    useEffect(() => {
-        console.log(groups)
-    }, [groups]);
 
     return (
         <div className={classes.container}>
@@ -278,13 +274,24 @@ const Emoji: FC<{ emoji: Dictionary, setEmojiSelected: (emojiSelected: Dictionar
                 onClose={handleOnClose}
             >
                 <MenuItem key={"menu_item_x_" + emoji?.emojidec} style={{textAlign: "center"}}>{emoji?.description}</MenuItem>
-                {category==="FAVORITES"?
+                {category==="FAVORITES" &&
+                <>
                     <MenuItem key={"menu_item_1_" + emoji?.emojidec} onClick={() => handleExecution(false,false)}>{t(langKeys.emoji_removefavorites)}</MenuItem>
-                    : <MenuItem key={"menu_item_1_" + emoji?.emojidec} onClick={() => handleExecution(true,false)}>{t(langKeys.emoji_favorites)}</MenuItem>
+                    <MenuItem key={"menu_item_2_" + emoji?.emojidec} onClick={() => handleExecution(false,true)}>{t(langKeys.emoji_restricted)}</MenuItem>
+                </>
                 }
-                {category==="RESTRICTED"?
+                {category==="RESTRICTED"&&
+                 <>
                     <MenuItem key={"menu_item_2_" + emoji?.emojidec} onClick={() => handleExecution(false,false)}>{t(langKeys.emoji_removerestricted)}</MenuItem>
-                    :<MenuItem key={"menu_item_2_" + emoji?.emojidec} onClick={() => handleExecution(false,true)}>{t(langKeys.emoji_restricted)}</MenuItem>
+                    <MenuItem key={"menu_item_1_" + emoji?.emojidec} onClick={() => handleExecution(true,false)}>{t(langKeys.emoji_favorites)}</MenuItem>
+                 </>
+                }
+                {(category!=="RESTRICTED" && category!=="FAVORITES") &&
+                <>
+                    <MenuItem key={"menu_item_1_" + emoji?.emojidec} onClick={() => handleExecution(true,false)}>{t(langKeys.emoji_favorites)}</MenuItem>
+                    <MenuItem key={"menu_item_2_" + emoji?.emojidec} onClick={() => handleExecution(false,true)}>{t(langKeys.emoji_restricted)}</MenuItem>
+                </>
+                    
                 }
             </Menu>
         </>

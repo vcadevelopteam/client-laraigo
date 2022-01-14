@@ -208,11 +208,9 @@ interface DetailCorporationProps {
 const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
-    const [billbyorg, setbillbyorg] = useState(row?.billbyorg || false);
-    const [doctype, setdoctype] = useState("");
+    const [billbyorg, setbillbyorg] = useState(row?.billbyorg || false);    
+    const [doctype, setdoctype] = useState(row?.doctype || '')
     const dataDocType = multiData[3] && multiData[3].success ? multiData[3].data : [];
-    const doctypeListPE = dataDocType.filter(x=>(x.code==='1'||x.code==='4'||x.code==='6'))
-    const doctypeListOther = dataDocType.filter(x=>(x.code==='0'))
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -435,11 +433,11 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                 <FieldSelect
                                     label={t(langKeys.docType)}
                                     className="col-6"
-                                    valueDefault={getValues("doctype")}
-                                    onChange={(value) => {setValue("doctype", value?.code || ""); setdoctype( value?.code || "")}}
+                                    valueDefault={doctype}
+                                    disabled={doctype==="0"}
+                                    onChange={(value) => {setValue("doctype", value?.code || "");setdoctype(value?.code || "")}}
                                     error={errors?.doctype?.message}
-                                    disabled={doctype === "0"}
-                                    data={doctype === "0"? doctypeListOther : doctypeListPE}
+                                    data={dataDocType}
                                     optionDesc="description"
                                     optionValue="code"
                                 />
@@ -484,13 +482,11 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                 />
                             </div>
                             <div className="row-zyx">
-                                <FieldSelect
+                            <FieldSelect
                                     label={t(langKeys.country)}
                                     className="col-6"
                                     valueDefault={getValues("sunatcountry")}
-                                    onChange={(value) => {setValue("sunatcountry", value?.code || "");
-                                        setdoctype(value?.code!=="PE"?"0":"")
-                                    }}
+                                    onChange={(value) => {setValue("sunatcountry", value?.code||"");setdoctype(value?.code==="PE"?"1":"0")}}
                                     error={errors?.sunatcountry?.message}
                                     data={countryList.data}
                                     optionDesc="description"

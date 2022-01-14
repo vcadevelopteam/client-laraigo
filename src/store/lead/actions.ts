@@ -14,8 +14,14 @@ export const getLead = (body: IRequestBody): IActionCall => ({
 
 export const resetGetLead = (): IActionCall => ({type: actionTypes.GET_LEAD_RESET});
 
-export const saveLead = (body: IRequestBody | ITransaction, transaction: boolean = false): IActionCall => ({
-    callAPI: () => CommonService.main(body, transaction),
+export const saveLead = (body: IRequestBody | ITransaction | IRequestBody[], transaction: boolean = false): IActionCall => ({
+    callAPI: () => {
+        if (Array.isArray(body)) {
+            if (transaction) console.error('No puede ser un multiMain y transacción a la vez');
+            return CommonService.multiMain(body);
+        }
+        return CommonService.main(body, transaction);
+    },
     types: {
         loading: actionTypes.SAVE_LEAD,
         success: actionTypes.SAVE_LEAD_SUCCESS,

@@ -564,25 +564,48 @@ const Settings: FC = () => {
                     />
                 </>
                 :
-                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                    <Grid container direction="column">
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <ItemTile
-                                title={<Trans i18nKey={langKeys.restrictedEmoji} count={2} />}
-                                subtitle={<SubtitleText value={value?.num_restricted_emojis} i18nKey={langKeys.restrictedEmoji} />}
-                                icon={<EmojiSadFaceIcon fill="inherit" stroke="inherit" />}
-                                helpText={
-                                    <HelpText
-                                        i18nKey={langKeys.manageRestrictedEmoji}
-                                        count={2}
-                                        onClick={() => history.push(paths.EMOJIS)}
-                                    />
-                                }
-                                m={2}
-                            />
+                <>
+                <Grid container direction="row">
+                    <Grid item xs={12} sm={12} md={12} lg={6} xl={6}>
+                        <Grid container direction="column">
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                <ItemTile
+                                    title={<Trans i18nKey={langKeys.domain} count={2} />}
+                                    subtitle={<SubtitleText value={value?.num_domain} i18nKey={langKeys.domain} />}
+                                    icon={<DomainsIcon fill="inherit" stroke="inherit" />}
+                                    helpText={
+                                        <HelpText
+                                            i18nKey={langKeys.manageDomain}
+                                            count={2}
+                                            onClick={() => history.push(paths.DOMAINS)}
+                                        />
+                                    }
+                                    m={2}
+                                />
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={12} lg={6} xl={6}>
+                        <Grid container direction="column">
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                <ItemTile
+                                    title={<Trans i18nKey={langKeys.restrictedEmoji} count={2} />}
+                                    subtitle={<SubtitleText value={value?.num_restricted_emojis} i18nKey={langKeys.restrictedEmoji} />}
+                                    icon={<EmojiSadFaceIcon fill="inherit" stroke="inherit" />}
+                                    helpText={
+                                        <HelpText
+                                            i18nKey={langKeys.manageRestrictedEmoji}
+                                            count={2}
+                                            onClick={() => history.push(paths.EMOJIS)}
+                                        />
+                                    }
+                                    m={2}
+                                />
+                            </Grid>
                         </Grid>
                     </Grid>
                 </Grid>
+                </>
             }
         </div>
     );
