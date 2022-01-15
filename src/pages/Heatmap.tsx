@@ -6,7 +6,7 @@ import React, { FC, Fragment, useEffect, useState ,useCallback} from 'react';
 import { FieldMultiSelect } from "components";
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { showBackdrop } from 'store/popus/actions';
+import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { getasesoresbyorgid, getValuesFromDomain, heatmappage1, heatmappage1detail, heatmappage2, heatmappage2detail1, heatmappage2detail2, heatmappage3, heatmappage3detail } from 'common/helpers/requestBodies';
 import { getCollectionAux, getMultiCollection, getMultiCollectionAux, getMultiCollectionAux2, resetMainAux, resetMultiMain, resetMultiMainAux, resetMultiMainAux2 } from 'store/main/actions';
 import { useSelector } from 'hooks';
@@ -256,13 +256,18 @@ const MainHeatMap: React.FC = () => {
     }, [multiDataAux2])
     
     function handleDateChange(e: any){
-        let datetochange = new Date(e+"-02")
-        let mes = datetochange?.getMonth()+1
-        let year = datetochange?.getFullYear()
-        let startdate = new Date(year, mes-1, 1)
-        let enddate = new Date(year, mes, 0)
-        let datetoshow = `${startdate.getFullYear()}-${String(startdate.getMonth()+1).padStart(2, '0')}`
-        setdataMainHeatMap(prev=>({...prev,startdate,enddate,datetoshow}))
+        if (e === '') {
+            setdataMainHeatMap(prev=>({...prev, datetoshow: e}))
+        }
+        else {
+            let datetochange = new Date(e+"-02")
+            let mes = datetochange?.getMonth()+1
+            let year = datetochange?.getFullYear()
+            let startdate = new Date(year, mes-1, 1)
+            let enddate = new Date(year, mes, 0)
+            let datetoshow = `${startdate.getFullYear()}-${String(startdate.getMonth()+1).padStart(2, '0')}`
+            setdataMainHeatMap(prev=>({...prev,startdate,enddate,datetoshow}))
+        }
     }
 
     useEffect(() => {
@@ -290,16 +295,21 @@ const MainHeatMap: React.FC = () => {
     }, [])
 
     function search(){
-        setheatMapConversationsData([])
-        setaverageHeatMapTMOData([])
-        setheatmapaverageagentTMEData([])
-        setuserAverageReplyTimexFechaData([])
-        setpersonAverageReplyTimexFechaData([])
-        setrealizedsearch(true)
-        dispatch(showBackdrop(true))
-        dispatch(getMultiCollection([
-            heatmappage1(dataMainHeatMap)
-        ]));
+        if (dataMainHeatMap.datetoshow === '') {
+            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.date_format_error) }))
+        }
+        else {
+            setheatMapConversationsData([])
+            setaverageHeatMapTMOData([])
+            setheatmapaverageagentTMEData([])
+            setuserAverageReplyTimexFechaData([])
+            setpersonAverageReplyTimexFechaData([])
+            setrealizedsearch(true)
+            dispatch(showBackdrop(true))
+            dispatch(getMultiCollection([
+                heatmappage1(dataMainHeatMap)
+            ]));
+        }
     }
 
     function initAtencionesxFechaAsesorGrid(data:any){
@@ -1834,30 +1844,40 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
         ])
     }
     async function search(){
-        setlistadvisers([])
-        setCompletadosxAsesorData([])
-        setabandonosxAsesorData([])
-        settasaAbandonosxAsesorData([])
-        setTasaOportunidadesData([])
-        setventasxAsesorData([])
-        setefectividadxAsesorOportunidadData([])
-        setefectividadxAsesorData([])
-        setCantidadOportunidadesData([])
-        setrealizedsearch(true)
-        dispatch(showBackdrop(true))
-        dispatch(getMultiCollection([
-            heatmappage2(dataMainHeatMap),
-            getasesoresbyorgid(dataMainHeatMap.closedby)
-        ]));
+        if (dataMainHeatMap.datetoshow === '') {
+            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.date_format_error) }))
+        }
+        else {
+            setlistadvisers([])
+            setCompletadosxAsesorData([])
+            setabandonosxAsesorData([])
+            settasaAbandonosxAsesorData([])
+            setTasaOportunidadesData([])
+            setventasxAsesorData([])
+            setefectividadxAsesorOportunidadData([])
+            setefectividadxAsesorData([])
+            setCantidadOportunidadesData([])
+            setrealizedsearch(true)
+            dispatch(showBackdrop(true))
+            dispatch(getMultiCollection([
+                heatmappage2(dataMainHeatMap),
+                getasesoresbyorgid(dataMainHeatMap.closedby)
+            ]));
+        }
     }
     function handleDateChange(e: any){
-        let datetochange = new Date(e+"-02")
-        let mes = datetochange?.getMonth()+1
-        let year = datetochange?.getFullYear()
-        let startdate = new Date(year, mes-1, 1)
-        let enddate = new Date(year, mes, 0)
-        let datetoshow = `${startdate.getFullYear()}-${String(startdate.getMonth()+1).padStart(2, '0')}`
-        setdataMainHeatMap(prev=>({...prev,startdate,enddate,datetoshow}))
+        if (e === '') {
+            setdataMainHeatMap(prev=>({...prev, datetoshow: e}))
+        }
+        else {
+            let datetochange = new Date(e+"-02")
+            let mes = datetochange?.getMonth()+1
+            let year = datetochange?.getFullYear()
+            let startdate = new Date(year, mes-1, 1)
+            let enddate = new Date(year, mes, 0)
+            let datetoshow = `${startdate.getFullYear()}-${String(startdate.getMonth()+1).padStart(2, '0')}`
+            setdataMainHeatMap(prev=>({...prev,startdate,enddate,datetoshow}))
+        }
     }
     return (
         <div>
@@ -2127,22 +2147,32 @@ const HeatMapTicket: React.FC = () => {
     }, [multiData,realizedsearch])
 
     function search(){
-        setasesoresConectadosData([])
-        setrealizedsearch(true)
-        dispatch(showBackdrop(true))
-        dispatch(getMultiCollection([
-            heatmappage3(dataMainHeatMap)
-        ]));
+        if (dataMainHeatMap.datetoshow === '') {
+            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.date_format_error) }))
+        }
+        else {
+            setasesoresConectadosData([])
+            setrealizedsearch(true)
+            dispatch(showBackdrop(true))
+            dispatch(getMultiCollection([
+                heatmappage3(dataMainHeatMap)
+            ]));
+        }
     }
 
     function handleDateChange(e: any){
-        let datetochange = new Date(e+"-02")
-        let mes = datetochange?.getMonth()+1
-        let year = datetochange?.getFullYear()
-        let startdate = new Date(year, mes-1, 1)
-        let enddate = new Date(year, mes, 0)
-        let datetoshow = `${startdate.getFullYear()}-${String(startdate.getMonth()+1).padStart(2, '0')}`
-        setdataMainHeatMap(prev=>({...prev,startdate,enddate,datetoshow}))
+        if (e === '') {
+            setdataMainHeatMap(prev=>({...prev, datetoshow: e}))
+        }
+        else {
+            let datetochange = new Date(e+"-02")
+            let mes = datetochange?.getMonth()+1
+            let year = datetochange?.getFullYear()
+            let startdate = new Date(year, mes-1, 1)
+            let enddate = new Date(year, mes, 0)
+            let datetoshow = `${startdate.getFullYear()}-${String(startdate.getMonth()+1).padStart(2, '0')}`
+            setdataMainHeatMap(prev=>({...prev,startdate,enddate,datetoshow}))
+        }
     }
 
     function initAsesoresConectadosGrid(data:any){
