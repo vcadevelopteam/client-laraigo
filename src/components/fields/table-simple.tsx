@@ -328,6 +328,7 @@ const TableZyx = React.memo(({
     onFilterChange,
     initialPageIndex = 0,
     initialFilters = {},
+    helperText = "",
 }: TableConfig) => {
     const classes = useStyles();
     const [tFilters, setTFilters] = useState<ITablePaginatedFilter>({
@@ -709,7 +710,12 @@ const TableZyx = React.memo(({
     return (
         <Box width={1} >
             <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
-                {titlemodule ? <span className={classes.title}>{titlemodule}</span> : (<div>
+                {titlemodule ? <span className={classes.title}>
+                    {titlemodule}
+                    {helperText!==""?<Tooltip title={<div style={{ fontSize: 12 }}>{helperText}</div>} arrow placement="top" >
+                        <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                    </Tooltip>:""}
+                    </span> : (<div>
                     {ButtonsElement && <ButtonsElement />}
                 </div>)}
                 <span className={classes.containerButtons}>

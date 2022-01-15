@@ -1512,6 +1512,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
             accessor: key,
             NoFilter: true,
             NoSort: true,
+            type: "porcentage",
             Cell: (props: any) => {
                 let color=gradient(Number(props.cell.row.original[key]))
                 let number = `${(Number(props.cell.row.original[key])*100).toFixed(0)} %`
@@ -1638,6 +1639,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
             accessor: key,
             NoFilter: true,
             NoSort: true,
+            type: "porcentage",
             Cell: (props: any) => {
                 let color=gradient(Number(props.cell.row.original[key]))
                 let number = `${(Number(props.cell.row.original[key])*100).toFixed(0)} %`
@@ -1767,6 +1769,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
             accessor: key,
             NoFilter: true,
             NoSort: true,
+            type: "porcentage",
             Cell: (props: any) => {
                 let color=gradient(Number(props.cell.row.original[key]))
                 let number = `${(Number(props.cell.row.original[key])*100).toFixed(0)} %`
@@ -1815,6 +1818,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
             accessor: key,
             NoFilter: true,
             NoSort: true,
+            type: "porcentage",
             Cell: (props: any) => {
                 let color=gradient(Number(props.cell.row.original[key]))
                 let number = `${(Number(props.cell.row.original[key])*100).toFixed(0)} %`
@@ -1933,6 +1937,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                         pageSizeDefault={50}
                         filterGeneral={false}
                         toolsFooter={false}
+                        helperText={t(langKeys.notecompletedasesors)}
                     />
                 </div>:""
             }
@@ -1947,6 +1952,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                         pageSizeDefault={50}
                         filterGeneral={false}
                         toolsFooter={false}
+                        helperText={t(langKeys.noteabandonedasesors)}
                     />
                 </div>:""
             }

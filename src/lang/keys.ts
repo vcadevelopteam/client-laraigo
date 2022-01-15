@@ -29,6 +29,8 @@ export const langKeys = {
     typecredit_45: "typecredit_45",
     typecredit_60: "typecredit_60",
     typecredit_90: "typecredit_90",
+    notecompletedasesors: "notecompletedasesors",
+    noteabandonedasesors: "noteabandonedasesors",
     clienticon: "clienticon",
     interval: 'interval',
     clientname: "clientname",
