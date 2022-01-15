@@ -53,7 +53,7 @@ export interface TableConfig {
     onClickRow?: (param?: any) => void;
     /**cualquier filtro */
     onFilterChange?: (filter: ITablePaginatedFilter) => void;
-
+    helperText?:string;
     initialPageIndex?: number;
     initialStartDate?: number | null;
     initialEndDate?: number | null;

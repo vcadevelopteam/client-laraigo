@@ -1345,6 +1345,8 @@ const translation: LangKeys = {
     report_userproductivity_minticketsclosedasesorhelptext: 'Cantidad de tickets cerrados',
     report_userproductivity_maxtimeconnectedasesorhelptext: 'Tiempo conectado',
     report_userproductivity_mintimeconnectedasesorhelptext: 'Tiempo conectado',
+    notecompletedasesors: "Se considerará una conversación completada cuando exista una respuesta del asesor y posterior a ello una respuesta del cliente.",
+    noteabandonedasesors: "Se considerará un abandono a los tickets que después de la primera interacción del asesor ya no tenga respuesta del cliente ",
 
     report_userproductivity_filter_channels: 'Canal',
     report_userproductivity_filter_group: 'Grupo',
