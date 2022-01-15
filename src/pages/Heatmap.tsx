@@ -1975,7 +1975,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                 <div style={{padding:10}}>
                     <TableZyx
                         columns={cantidadOportunidadesTitle}
-                        titlemodule={t(langKeys.cantidadOportunidades)}
+                        titlemodule={t(langKeys.oportunidadesxAsesor)}
                         data={cantidadOportunidadesData}
                         download={true}
                         pageSizeDefault={50}
