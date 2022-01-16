@@ -1883,6 +1883,8 @@ const translation: LangKeys = {
     whatsappchannel: "WhatsApp channel",
     otherchannels: "Other channel",
     freecontacts: "Free contacts",
+    create_custom_report: 'Create custom report',
+    column_at_least_required: 'You must register at least one column.',
     periodamount: "Period amount",
     servicedata: "Service data",
     interaction_plural: "Interactions",

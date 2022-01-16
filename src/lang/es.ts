@@ -767,7 +767,7 @@ const translation: LangKeys = {
     least_user_or_group: 'Debe elegir al menos usuario o grupo',
     tipification: 'Clasificación',
     tipification_plural: 'Clasificaciones',
-
+    column_at_least_required: 'Debe registrar al menos una columna.',
     report_designer: 'Diseñador de reportes',
     column_plural: 'Columnas',
     new_report_designer: 'Nuevo reporte',
@@ -1877,6 +1877,7 @@ const translation: LangKeys = {
     agreement_plural: 'Acuerdos',
     setting: 'Coniguración',
     setting_plural: 'Configuraciones',
+    create_custom_report: 'Crear reporte personalizado',
     restrictedEmoji: 'Emoji restringido',
     errorneedvalues: "La lista de valores debe tener al menos un elemento",
     restrictedEmoji_plural: 'Emojis restringidos',

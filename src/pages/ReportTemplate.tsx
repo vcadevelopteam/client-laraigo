@@ -31,6 +31,7 @@ import { SearchIcon } from 'icons';
 import { FixedSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { Done } from '@material-ui/icons';
+import { ChartCategoryAxisNotesLabel } from '@progress/kendo-react-charts';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -160,7 +161,6 @@ const DialogManageColumns: React.FC<{
     const classes = useStyles();
     const { t } = useTranslation();
     const mainAuxRes = useSelector(state => state.main.mainAux);
-    const multiDataAux = useSelector(state => state.main.multiDataAux);
     const [columnsTable, setColumnsTable] = useState<Dictionary[]>([]);
     const [showcolumnsTable, setShowColumnsTable] = useState<Dictionary[]>([]);
     const [columnsToAdd, setColumnsToAdd] = useState<Dictionary>({});
@@ -176,7 +176,8 @@ const DialogManageColumns: React.FC<{
 
             const dataaux = [...columnsNotVariable, ...columnsVariable].map(x => ({
                 ...x,
-                descriptionT: x.type === "variable" ? x.description : t(`personalizedreport_${x.description}`)
+                descriptionT: x.type === "variable" ? x.description : t(`personalizedreport_${x.description}`),
+                checked: false
             }))
             setColumnsTable(dataaux);
             setShowColumnsTable(dataaux);
@@ -187,8 +188,12 @@ const DialogManageColumns: React.FC<{
     }, [mainAuxRes, openDialogVariables])
 
     useEffect(() => {
-        setShowColumnsTable(prev => prev.map((x: Dictionary) => columnsAdded.find(y => y.columnname === x.columnname) ? { ...x, disabled: true } : { ...x, disabled: false }));
-        setColumnsTable(prev => prev.map((x: Dictionary) => columnsAdded.find(y => y.columnname === x.columnname) ? { ...x, disabled: true } : { ...x, disabled: false }));
+        const columnsAddedIndexed = columnsAdded.reduce((acc, item) => ({
+            ...acc,
+            [item.columnname]: item
+        }), {})
+        setShowColumnsTable(prev => prev.map((x: Dictionary) => columnsAddedIndexed[x.columnname] ? { ...x, disabled: true, checked: true } : { ...x, disabled: false, checked: false }));
+        setColumnsTable(prev => prev.map((x: Dictionary) => columnsAddedIndexed[x.columnname] ? { ...x, disabled: true, checked: true } : { ...x, disabled: false, checked: false }));
         setColumnsToAdd({});
     }, [columnsAdded])
 
@@ -218,20 +223,27 @@ const DialogManageColumns: React.FC<{
                 ...prev,
                 [column.columnname]: column
             }));
-        else
-            delete columnsToAdd[column.columnname];
+        else {
+            setColumnsToAdd(prev => {
+                const tmp = { ...prev };
+                delete tmp[column.columnname];
+                return tmp
+            });
+        }
     }, [setColumnsToAdd])
 
     const RenderRow = React.useCallback(
         ({ index, style }) => {
             const item = showcolumnsTable[index]
+
             return (
-                <div style={style}>
+                <div key={item.columnname} style={style}>
                     <div key={item.columnname} style={{ width: '100%' }}>
                         <FormControlLabel
                             control={(
                                 <Checkbox
                                     size='small'
+                                    checked={!!columnsToAdd[item.columnname] || !!item.disabled}
                                     disabled={!!item.disabled}
                                     color="primary"
                                     onChange={(e) => handlerChecked(item, e.target.checked)}
@@ -245,7 +257,7 @@ const DialogManageColumns: React.FC<{
                 </div>
             )
         },
-        [showcolumnsTable]
+        [showcolumnsTable, columnsToAdd]
     )
 
     if (!openDialogVariables)
@@ -366,9 +378,6 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
 
     const dataStatus = multiDataAux.data?.[0] && multiDataAux.data?.[0].success ? multiDataAux.data?.[0].data : [];
     const dataTables = multiDataAux.data?.[1] && multiDataAux.data?.[1].success ? multiDataAux.data?.[1].data : [];
-    // const dataVariables = multiData[2] && multiData[2].success ? multiData[2].data : [];
-
-
 
     useEffect(() => {
         if (!mainAuxRes.error && !mainAuxRes.loading && mainAuxRes.key === "UFN_REPORT_PERSONALIZED_COLUMNS_SEL") {
@@ -440,13 +449,14 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
-            } 
+            }
         }
     }, [executeRes, waitSave])
 
     const onSubmit = handleSubmit((data) => {
         const { reporttemplateid, description, status, columns, filters, summary, dataorigin } = data;
         if (columns.length === 0) {
+            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.column_at_least_required) }))
             return;
         }
         const callback = () => {

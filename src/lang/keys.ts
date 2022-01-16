@@ -367,8 +367,9 @@ export const langKeys = {
     designed_reports: 'designed_reports',
     filters: 'filters',
     pay: 'pay',
-
-    personinformation: 'personinformation',
+    create_custom_report: 'create_custom_report',
+    column_at_least_required: 'column_at_least_required',
+    personinformation: 'personinformation',    
     ticketinformation: 'ticketinformation',
     AIservices: 'AIservices',
     systemvariables: 'systemvariables',

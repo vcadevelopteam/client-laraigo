@@ -537,7 +537,7 @@ const Reports: FC = () => {
                                         setRowReportSelected({ row: null, edit: true });
                                     }}
                                     style={{ backgroundColor: "#55BD84" }}
-                                >{t(langKeys.register)}
+                                >{t(langKeys.create_custom_report)}
                                 </Button>
                             </div>
                         </Box>
