@@ -369,6 +369,7 @@ export const langKeys = {
     filters: 'filters',
     pay: 'pay',
     create_custom_report: 'create_custom_report',
+    search_ticket: 'search_ticket',
     column_at_least_required: 'column_at_least_required',
     personinformation: 'personinformation',    
     ticketinformation: 'ticketinformation',

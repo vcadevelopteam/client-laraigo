@@ -464,7 +464,7 @@ const ItemGroupInteraction: React.FC<{ classes: any, groupInteraction: IGroupInt
             <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     {interactions.map((item: IInteraction, index: number) => (
-                        <div key={index} className={clsx({
+                        <div key={index} id={`interaction-${item.interactionid}`} className={clsx({
                             [classes.interactionAgent]: usertype !== "client",
                             [classes.interactionFromPost]: ticketSelected?.communicationchanneltype === "FBWA"
                         })}>

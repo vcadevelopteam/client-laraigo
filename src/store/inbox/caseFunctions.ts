@@ -351,12 +351,20 @@ export const connectAgentWS = (state: IState, action: IAction): IState => {
 
     return {
         ...state,
+        agentToReassignList: state.agentToReassignList.map(x => x.userid === data.userid ? { ...x, status: data.isconnected ? 'ACTIVO' : "DESCONECTADO" } : x),
         agentList: {
             data: newAgentList,
             count: action.payload.count,
             loading: false,
             error: false,
         },
+    };
+}
+
+export const setAgentsToReassign = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        agentToReassignList: action.payload
     };
 }
 
@@ -589,12 +597,14 @@ export const personSawChat = (state: IState, action: IAction): IState => {
 export const getDataTicket = (state: IState): IState => ({
     ...state,
     interactionList: { ...state.interactionList, loading: true, error: false },
+    interactionBaseList: [],
     person: { ...state.person, loading: true, error: false },
 });
 
 export const getDataTicketSuccess = (state: IState, action: IAction): IState => ({
     ...state,
     ticketSelected: { ...state.ticketSelected!!, isAnswered: action.payload.data[0].data.some((x: IInteraction) => x.userid === state.agentSelected?.userid && x.interactiontype !== "LOG") },
+    interactionBaseList: action.payload.data?.[0]?.data || [],
     interactionList: {
         data: getGroupInteractions(cleanLogsReassignedTask(action.payload.data[0].data)),
         count: action.payload.count,

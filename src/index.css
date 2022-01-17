@@ -285,3 +285,10 @@ code {
 .rdrInputRange {
     display: none!important
 }
+
+.item-result-searcher div{
+    background-color: #5d99ef!important;
+    -webkit-transition: background-color 900ms linear;
+    -ms-transition: background-color 900ms linear;
+    transition: background-color 900ms linear;
+}

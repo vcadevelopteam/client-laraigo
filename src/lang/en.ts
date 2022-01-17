@@ -3,6 +3,7 @@ import { LangKeys } from './keys';
 
 const translation: LangKeys = {
     currentlanguage: 'en',
+    search_ticket: 'Search in conversation',
     english: 'English',
     spanish: 'Spanish',
 
