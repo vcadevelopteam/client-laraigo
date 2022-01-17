@@ -73,6 +73,7 @@ const Properties: FC = () => {
 
     const executeResult = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main);
+    const user = useSelector(state => state.login.validateToken.user);
 
     const classes = useStyles();
 
@@ -112,6 +113,12 @@ const Properties: FC = () => {
         setViewSelected('view-2');
         setRowSelected({ row, edit: true });
     }
+    
+    const handleRegister = () => {
+        setViewSelected("view-2");
+        setRowSelected({ row: null, edit: true });
+    }
+
 
     useEffect(() => {
 
@@ -193,7 +200,8 @@ const Properties: FC = () => {
                     filterGeneral={false}
                     onClickRow={handleEdit}
                     loading={mainResult.mainData.loading}
-                    register={false}
+                    register={['SUPERADMIN'].includes(user?.roledesc || "")}
+                    handleRegister={handleRegister}
                 />
             </div>
         )
