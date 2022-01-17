@@ -141,12 +141,13 @@ export const getChannelsByOrg = (orgid?: number | null, keytmp?: any): IRequestB
     }
 });
 
-export const getValuesFromDomain = (domainname: string, keytmp?: any, orgid?: number | null): IRequestBody => ({
+export const getValuesFromDomain = (domainname: string, keytmp?: any, orgid?: number | null,corpid?: number | null): IRequestBody => ({
     method: "UFN_DOMAIN_LST_VALORES",
     key: "UFN_DOMAIN_LST_VALORES" + (keytmp || ""),
     parameters: {
         domainname,
-        orgid: orgid || undefined
+        orgid: orgid || undefined,
+        corpid: corpid || undefined
     }
 });
 // solo devuelve desc y value, no id (USAR ESTE PARA LOS SELECTS SIMPLES DE DOMINIOS)
@@ -280,11 +281,12 @@ export const getCorpSel = (id: number): IRequestBody => ({
         all: id === 0,
     }
 });
-export const getOrgSel = (id: number): IRequestBody => ({
+export const getOrgSel = (id: number, corpid?:number): IRequestBody => ({
     method: "UFN_ORG_SEL",
     parameters: {
         orgid: id,
         all: id === 0,
+        corpid
     }
 });
 export const getOrgSelList = (id: number): IRequestBody => ({
@@ -744,12 +746,14 @@ export const deldataIntegrationManager = (id: number): IRequestBody => ({
     }
 });
 
-export const getChannelSel = (id: number): IRequestBody => ({
+export const getChannelSel = (id: number,orgid?:number,corpid?:number): IRequestBody => ({
     method: "UFN_COMMUNICATIONCHANNEL_SEL",
     parameters: {
         communicationchannelid: id,
         personcommunicationchannel: "",
         all: id === 0,
+        orgid,
+        corpid
     }
 });
 export const getasesoresbyorgid = (closedby: string): IRequestBody => ({
