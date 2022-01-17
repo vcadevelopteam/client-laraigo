@@ -368,6 +368,7 @@ export const langKeys = {
     filters: 'filters',
     pay: 'pay',
     create_custom_report: 'create_custom_report',
+    create_custom_dashboard: 'create_custom_dashboard',
     column_at_least_required: 'column_at_least_required',
     personinformation: 'personinformation',    
     ticketinformation: 'ticketinformation',
@@ -2336,6 +2337,11 @@ export const langKeys = {
     additionalinformation2: "additionalinformation2",
     proceedpayment: "proceedpayment",
     credittype: "credittype",
+
+    groupment: 'groupment',
+    contentType: 'contentType',
+    chartType: 'chartType',
+    invalidEntry: 'invalidEntry',
 };
 
 export type LangKeys = typeof langKeys;

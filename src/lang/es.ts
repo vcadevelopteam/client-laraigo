@@ -1878,6 +1878,7 @@ const translation: LangKeys = {
     setting: 'Coniguración',
     setting_plural: 'Configuraciones',
     create_custom_report: 'Crear reporte personalizado',
+    create_custom_dashboard: 'Crear dashboard personalizado',
     restrictedEmoji: 'Emoji restringido',
     errorneedvalues: "La lista de valores debe tener al menos un elemento",
     restrictedEmoji_plural: 'Emojis restringidos',
@@ -2336,6 +2337,11 @@ const translation: LangKeys = {
     additionalinformation2: "Si desea incluir información adicional antes de enviar la factura, ingrese los datos antes de realizar el pago",
     proceedpayment: "Proceder a Pagar",
     credittype: "Tipo de credito",
+
+    groupment: 'Agrupamiento',
+    contentType: 'Tipo de contenido',
+    chartType: 'Tipo de gráfico',
+    invalidEntry: 'Entrada invalida',
 };
 
 const esResource: ResourceLanguage = {
