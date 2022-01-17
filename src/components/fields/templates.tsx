@@ -949,9 +949,6 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisNoShow, em
     const handleClick = () => setOpen((prev) => !prev);
     const { t } = useTranslation();
     const handleClickAway = () => setOpen(false);
-
-    
-
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
             <span style={style}>
@@ -967,6 +964,19 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisNoShow, em
                             onSelect={onSelect}
                             native={true}
                             sheetSize={32}
+                            i18n={{ search: t(langKeys.search), 
+                                categories: {
+                                    search: t(langKeys.search_result),
+                                    recent: t(langKeys.favorites),
+                                    people: t(langKeys.emoticons),
+                                    nature: t(langKeys.animals),
+                                    foods: t(langKeys.food),
+                                    activity: t(langKeys.activities),
+                                    places: t(langKeys.travel),
+                                    objects: t(langKeys.objects),
+                                    symbols: t(langKeys.symbols),
+                                    flags: t(langKeys.flags),
+                                }}} 
                             recent={emojiFavorite?.map(x => (EMOJISINDEXED as Dictionary)?.[x || ""]?.id || '')}
                             emojisToShowFilter={emojisNoShow && emojisNoShow.length > 0 ? (emoji: any) => emojisNoShow.map(x => x.toUpperCase()).indexOf(emoji.unified.toUpperCase()) === -1 : undefined}
                         />
