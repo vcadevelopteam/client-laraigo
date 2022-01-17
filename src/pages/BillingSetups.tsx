@@ -449,7 +449,7 @@ const CostPerHSMPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 style={{width: 150}}
                                 valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||""}))}
+                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||0}))}
                                 data={years}
                                 optionDesc="desc"
                                 optionValue="desc"
@@ -576,7 +576,8 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         "detractioncode": "",
         "detractionaccount": "",
         "operationcodeperu": "",
-        "operationcodeother": ""
+        "operationcodeother": "",
+        "culqiurl": "",
     })
 
     useEffect(() => {
@@ -638,6 +639,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                     setValue("detractionaccount", mainResult.mainData.data[0].detractionaccount);
                     setValue("operationcodeperu", mainResult.mainData.data[0].operationcodeperu);
                     setValue("operationcodeother", mainResult.mainData.data[0].operationcodeother);
+                    setValue("culqiurl", mainResult.mainData.data[0].culqiurl);
 
                     setFields({
                         "ruc": mainResult.mainData.data[0].ruc,
@@ -675,7 +677,8 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         "detractioncode": mainResult.mainData.data[0].detractioncode,
                         "detractionaccount": mainResult.mainData.data[0].detractionaccount,
                         "operationcodeperu": mainResult.mainData.data[0].operationcodeperu,
-                        "operationcodeother": mainResult.mainData.data[0].operationcodeother
+                        "operationcodeother": mainResult.mainData.data[0].operationcodeother,
+                        "culqiurl": mainResult.mainData.data[0].culqiurl,
                     });
                 }
             }
@@ -767,14 +770,15 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             detractionaccount: fields.detractionaccount,
             operationcodeperu: fields.operationcodeperu,
             operationcodeother: fields.operationcodeother,
+            culqiurl: fields.culqiurl,
         }
     });
-    React.useEffect(() => {        
+    React.useEffect(() => {       
         register('ruc', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
         register('businessname', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
         register('tradename', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
         register('fiscaladdress', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('ubigeo', { validate: (value) => ((value && value.length>0) || blockUbigee) || "" + t(langKeys.field_required) });
+        register('ubigeo', { validate: (value) => getValues('country') === 'PE'?(((value && value.length > 0)) || "" + t(langKeys.field_required)): true })
         register('country', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
         register('emittertype', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
         register('currency', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
@@ -806,6 +810,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         register('detractionaccount', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
         register('operationcodeperu', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
         register('operationcodeother', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
+        register('culqiurl', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
     }, [register]);
 
     const onSubmit = handleSubmit((data) => {
@@ -841,7 +846,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
 
                     <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.billingruc)}
+                            label={t(langKeys.billingsetupruc)}
                             className="col-6"
                             valueDefault={getValues('ruc')}
                             onChange={(value) => setValue('ruc', value)}
@@ -1162,14 +1167,21 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             prefixTranslation='billingfield_'
                         />
                         <FieldEdit
+                            label={t(langKeys.billingpaymentendpoint)}
+                            className="col-6"
+                            valueDefault={getValues('culqiurl')}
+                            onChange={(value) => setValue('culqiurl', value)}
+                            error={errors?.culqiurl?.message}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
                             label={t(langKeys.billingpublickey)}
                             className="col-6"
                             valueDefault={getValues('publickey')}
                             onChange={(value) => setValue('publickey', value)}
                             error={errors?.publickey?.message}
                         />
-                    </div>
-                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.billingprivatekey)}
                             className="col-6"
@@ -1261,7 +1273,7 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { basicfee } = props.cell.row.original;
-                    return (basicfee || 0).toFixed(4);
+                    return (basicfee || 0).toFixed(2);
                 }
             },
             {
@@ -1411,7 +1423,7 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 style={{width: 150}}
                                 valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||""}))}
+                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||0}))}
                                 data={years}
                                 optionDesc="desc"
                                 optionValue="desc"
@@ -1615,13 +1627,15 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                     <div className="row-zyx">
                         <TextField
                             id="date"
-                            className="col-6"
+                            className="col-12"
                             type="month"
                             variant="outlined"
                             onChange={(e)=>handleDateChange(e.target.value)}
                             value={datetoshow}
                             size="small"
                         />
+                    </div>
+                    <div className="row-zyx">
                         <FieldSelect
                             label="Plan"
                             className="col-6"
@@ -1632,8 +1646,6 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             optionValue="plan"
                             error={errors?.plan?.message}
                         />
-                    </div>
-                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.costbasedonthecontractedplan)}
                             onChange={(value) => setValue('basicfee', value)}
@@ -1642,7 +1654,8 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             type="number"
                             className="col-6"
                         />
-                        
+                    </div>
+                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.numberofagentshired)}
                             onChange={(value) => setValue('userfreequantity', value)}
@@ -1651,8 +1664,6 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             type="number"
                             className="col-6"
                         />
-                    </div>
-                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.useradditionalfee)}
                             onChange={(value) => setValue('useradditionalfee', value)}
@@ -1661,6 +1672,8 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             type="number"
                             className="col-6"
                         />
+                    </div>
+                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.channelfreequantity)}
                             onChange={(value) => setValue('channelfreequantity', value)}
@@ -1669,8 +1682,6 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             type="number"
                             className="col-6"
                         />
-                    </div>
-                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.channelwhatsappfee)}
                             onChange={(value) => setValue('channelwhatsappfee', value)}
@@ -1679,6 +1690,8 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             type="number"
                             className="col-6"
                         />
+                    </div>
+                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.clientfreequantity)}
                             onChange={(value) => setValue('clientfreequantity', value)}
@@ -1687,8 +1700,6 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             type="number"
                             className="col-6"
                         />
-                    </div>
-                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.clientadditionalfee)}
                             onChange={(value) => setValue('clientadditionalfee', value)}
@@ -1697,6 +1708,8 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             type="number"
                             className="col-6"
                         />
+                    </div>
+                    <div className="row-zyx">
                         <div className={"col-6"} style={{ paddingBottom: '3px' }}>
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.allowhsm)}</Box>
                             <FormControlLabel
@@ -1705,21 +1718,11 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                                 label={""}
                             />                        
                         </div>
-                    </div>
-                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.hsmfee)}
                             onChange={(value) => setValue('hsmfee', value)}
                             valueDefault={getValues('hsmfee')}
                             error={errors?.hsmfee?.message}
-                            type="number"
-                            className="col-6"
-                        />
-                        <FieldEdit
-                            label={t(langKeys.channelotherfee)}
-                            onChange={(value) => setValue('channelotherfee', value)}
-                            valueDefault={getValues('channelotherfee')}
-                            error={errors?.channelotherfee?.message}
                             type="number"
                             className="col-6"
                         />
@@ -1797,12 +1800,12 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 accessor: 'month',
             },
             {
-                Header: t(langKeys.country),
-                accessor: 'country',
-            },
-            {
                 Header: t(langKeys.countrycode),
                 accessor: 'countrycode',
+            },
+            {
+                Header: t(langKeys.country),
+                accessor: 'country',
             },
             {
                 Header: t(langKeys.billingvcacomission),
@@ -1924,7 +1927,7 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 style={{width: 150}}
                                 valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||""}))}
+                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||0}))}
                                 data={years}
                                 optionDesc="desc"
                                 optionValue="desc"
@@ -2115,10 +2118,65 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                 </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        <FieldView
-                            label=''
-                            value={t(langKeys.costcommentary)}
-                            className={classes.commentary}
+                        <TextField
+                            id="date"
+                            className="col-12"
+                            type="month"
+                            variant="outlined"
+                            onChange={(e)=>handleDateChange(e.target.value)}
+                            value={datetoshow}
+                            size="small"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldSelect
+                            label={t(langKeys.country)}
+                            className="col-12"
+                            valueDefault={getValues("countrycode")}
+                            variant="outlined"
+                            onChange={(value) => setValue("countrycode",value.code)}
+                            error={errors?.countrycode?.message}
+                            data={dataPlan}
+                            optionDesc="description"
+                            optionValue="code"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.billingvcacomission)}
+                            onChange={(value) => setValue('vcacomission', value)}
+                            valueDefault={getValues('vcacomission')}
+                            error={errors?.vcacomission?.message}
+                            type="number"
+                            className="col-6"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.coststartedbycompany)}
+                            onChange={(value) => setValue('companystartfee', value)}
+                            valueDefault={getValues('companystartfee')}
+                            error={errors?.companystartfee?.message}
+                            type="number"
+                            className="col-6"
+                        />
+                        <FieldEdit
+                            label={t(langKeys.customerinitiatedcost)}
+                            onChange={(value) => setValue('clientstartfee', value)}
+                            valueDefault={getValues('clientstartfee')}
+                            error={errors?.clientstartfee?.message}
+                            type="number"
+                            className="col-6"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.freeconversations)}
+                            onChange={(value) => setValue('freeconversations', value)}
+                            valueDefault={getValues('freeconversations')}
+                            error={errors?.freeconversations?.message}
+                            type="number"
+                            className="col-6"
                         />
                     </div>
                     <div className="row-zyx">
@@ -2130,62 +2188,11 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                         />
                     </div>
                     <div className="row-zyx">
-                            <TextField
-                                id="date"
-                                className="col-6"
-                                type="month"
-                                variant="outlined"
-                                onChange={(e)=>handleDateChange(e.target.value)}
-                                value={datetoshow}
-                                size="small"
-                            />
-                            <FieldSelect
-                                label={t(langKeys.country)}
-                                className="col-6"
-                                valueDefault={getValues("countrycode")}
-                                variant="outlined"
-                                onChange={(value) => setValue("countrycode",value.code)}
-                                error={errors?.countrycode?.message}
-                                data={dataPlan}
-                                optionDesc="description"
-                                optionValue="code"
-                            />
-                    </div>
-                    <div className="row-zyx">
-                            <FieldEdit
-                                label={t(langKeys.billingvcacomission)}
-                                onChange={(value) => setValue('vcacomission', value)}
-                                valueDefault={getValues('vcacomission')}
-                                error={errors?.vcacomission?.message}
-                                type="number"
-                                className="col-6"
-                            />
-                            <FieldEdit
-                                label={t(langKeys.coststartedbycompany)}
-                                onChange={(value) => setValue('companystartfee', value)}
-                                valueDefault={getValues('companystartfee')}
-                                error={errors?.companystartfee?.message}
-                                type="number"
-                                className="col-6"
-                            />
-                    </div>
-                    <div className="row-zyx">
-                            <FieldEdit
-                                label={t(langKeys.customerinitiatedcost)}
-                                onChange={(value) => setValue('clientstartfee', value)}
-                                valueDefault={getValues('clientstartfee')}
-                                error={errors?.clientstartfee?.message}
-                                type="number"
-                                className="col-6"
-                            />
-                            <FieldEdit
-                                label={t(langKeys.freeconversations)}
-                                onChange={(value) => setValue('freeconversations', value)}
-                                valueDefault={getValues('freeconversations')}
-                                error={errors?.freeconversations?.message}
-                                type="number"
-                                className="col-6"
-                            />
+                        <FieldView
+                            label=''
+                            value={t(langKeys.costcommentary)}
+                            className={classes.commentary}
+                        />
                     </div>
                 </div>
             </form>
@@ -2260,12 +2267,12 @@ const NotificationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 accessor: 'month',
             },
             {
-                Header: t(langKeys.country),
-                accessor: 'country',
-            },
-            {
                 Header: t(langKeys.countrycode),
                 accessor: 'countrycode',
+            },
+            {
+                Header: t(langKeys.country),
+                accessor: 'country',
             },
             {
                 Header: t(langKeys.billingvcacomission),
@@ -2437,7 +2444,7 @@ const NotificationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 style={{width: 150}}
                                 valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||""}))}
+                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||0}))}
                                 data={years}
                                 optionDesc="desc"
                                 optionValue="desc"
@@ -2636,10 +2643,109 @@ const DetailNotificationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                 </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        <FieldView
-                            label=''
-                            value={t(langKeys.costnotificaton)}
-                            className={classes.commentary}
+                        <TextField
+                            id="date"
+                            className="col-12"
+                            type="month"
+                            variant="outlined"
+                            onChange={(e)=>handleDateChange(e.target.value)}
+                            value={datetoshow}
+                            size="small"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldSelect
+                            label={t(langKeys.country)}
+                            className="col-12"
+                            valueDefault={getValues("countrycode")}
+                            variant="outlined"
+                            onChange={(value) => setValue("countrycode",value.code)}
+                            error={errors?.countrycode?.message}
+                            data={dataPlan}
+                            optionDesc="description"
+                            optionValue="code"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.billingvcacomission)}
+                            onChange={(value) => setValue('vcacomission', value)}
+                            valueDefault={getValues('vcacomission')}
+                            error={errors?.vcacomission?.message}
+                            type="number"
+                            className="col-6"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={`${t(langKeys.first_plural)} 250k`}
+                            onChange={(value) => setValue('c250000', value)}
+                            valueDefault={getValues('c250000')}
+                            error={errors?.c250000?.message}
+                            type="number"
+                            className="col-6"
+                        />
+                        <FieldEdit
+                            label={`${t(langKeys.next_plural)} 750k`}
+                            onChange={(value) => setValue('c750000', value)}
+                            valueDefault={getValues('c750000')}
+                            error={errors?.c750000?.message}
+                            type="number"
+                            className="col-6"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={`${t(langKeys.next_plural)} 2 ${t(langKeys.millions)}`}
+                            onChange={(value) => setValue('c2000000', value)}
+                            valueDefault={getValues('c2000000')}
+                            error={errors?.c2000000?.message}
+                            type="number"
+                            className="col-6"
+                        />
+                        <FieldEdit
+                            label={`${t(langKeys.next_plural)} 3 ${t(langKeys.millions)}`}
+                            onChange={(value) => setValue('c3000000', value)}
+                            valueDefault={getValues('c3000000')}
+                            error={errors?.c3000000?.message}
+                            type="number"
+                            className="col-6"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={`${t(langKeys.next_plural)} 4 ${t(langKeys.millions)}`}
+                            onChange={(value) => setValue('c4000000', value)}
+                            valueDefault={getValues('c4000000')}
+                            error={errors?.c4000000?.message}
+                            type="number"
+                            className="col-6"
+                        />
+                        <FieldEdit
+                            label={`${t(langKeys.next_plural)} 5 ${t(langKeys.millions)}`}
+                            onChange={(value) => setValue('c5000000', value)}
+                            valueDefault={getValues('c5000000')}
+                            error={errors?.c5000000?.message}
+                            type="number"
+                            className="col-6"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={`${t(langKeys.next_plural)} 10 ${t(langKeys.millions)}`}
+                            onChange={(value) => setValue('c10000000', value)}
+                            valueDefault={getValues('c10000000')}
+                            error={errors?.c10000000?.message}
+                            type="number"
+                            className="col-6"
+                        />
+                        <FieldEdit
+                            label={`${t(langKeys.greaterthan)} 25 ${t(langKeys.millions)}`}
+                            onChange={(value) => setValue('c25000000', value)}
+                            valueDefault={getValues('c25000000')}
+                            error={errors?.c25000000?.message}
+                            type="number"
+                            className="col-6"
                         />
                     </div>
                     <div className="row-zyx">
@@ -2651,108 +2757,11 @@ const DetailNotificationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                         />
                     </div>
                     <div className="row-zyx">
-                            <TextField
-                                id="date"
-                                className="col-6"
-                                type="month"
-                                variant="outlined"
-                                onChange={(e)=>handleDateChange(e.target.value)}
-                                value={datetoshow}
-                                size="small"
-                            />
-                            <FieldSelect
-                                label={t(langKeys.country)}
-                                className="col-6"
-                                valueDefault={getValues("countrycode")}
-                                variant="outlined"
-                                onChange={(value) => setValue("countrycode",value.code)}
-                                error={errors?.countrycode?.message}
-                                data={dataPlan}
-                                optionDesc="description"
-                                optionValue="code"
-                            />
-                    </div>
-                    <div className="row-zyx">
-                            <FieldEdit
-                                label={t(langKeys.billingvcacomission)}
-                                onChange={(value) => setValue('vcacomission', value)}
-                                valueDefault={getValues('vcacomission')}
-                                error={errors?.vcacomission?.message}
-                                type="number"
-                                className="col-6"
-                            />
-                            <FieldEdit
-                                label={`${t(langKeys.first_plural)} 250k`}
-                                onChange={(value) => setValue('c250000', value)}
-                                valueDefault={getValues('c250000')}
-                                error={errors?.c250000?.message}
-                                type="number"
-                                className="col-6"
-                            />
-                    </div>
-                    <div className="row-zyx">
-                            <FieldEdit
-                                label={`${t(langKeys.next_plural)} 750k`}
-                                onChange={(value) => setValue('c750000', value)}
-                                valueDefault={getValues('c750000')}
-                                error={errors?.c750000?.message}
-                                type="number"
-                                className="col-6"
-                            />
-                            <FieldEdit
-                                label={`${t(langKeys.next_plural)} 2 ${t(langKeys.millions)}`}
-                                onChange={(value) => setValue('c2000000', value)}
-                                valueDefault={getValues('c2000000')}
-                                error={errors?.c2000000?.message}
-                                type="number"
-                                className="col-6"
-                            />
-                    </div>
-                    <div className="row-zyx">
-                            <FieldEdit
-                                label={`${t(langKeys.next_plural)} 3 ${t(langKeys.millions)}`}
-                                onChange={(value) => setValue('c3000000', value)}
-                                valueDefault={getValues('c3000000')}
-                                error={errors?.c3000000?.message}
-                                type="number"
-                                className="col-6"
-                            />
-                            <FieldEdit
-                                label={`${t(langKeys.next_plural)} 4 ${t(langKeys.millions)}`}
-                                onChange={(value) => setValue('c4000000', value)}
-                                valueDefault={getValues('c4000000')}
-                                error={errors?.c4000000?.message}
-                                type="number"
-                                className="col-6"
-                            />
-                    </div>
-                    <div className="row-zyx">
-                            <FieldEdit
-                                label={`${t(langKeys.next_plural)} 5 ${t(langKeys.millions)}`}
-                                onChange={(value) => setValue('c5000000', value)}
-                                valueDefault={getValues('c5000000')}
-                                error={errors?.c5000000?.message}
-                                type="number"
-                                className="col-6"
-                            />
-                            <FieldEdit
-                                label={`${t(langKeys.next_plural)} 10 ${t(langKeys.millions)}`}
-                                onChange={(value) => setValue('c10000000', value)}
-                                valueDefault={getValues('c10000000')}
-                                error={errors?.c10000000?.message}
-                                type="number"
-                                className="col-6"
-                            />
-                    </div>
-                    <div className="row-zyx">
-                            <FieldEdit
-                                label={`${t(langKeys.greaterthan)} 25 ${t(langKeys.millions)}`}
-                                onChange={(value) => setValue('c25000000', value)}
-                                valueDefault={getValues('c25000000')}
-                                error={errors?.c25000000?.message}
-                                type="number"
-                                className="col-6"
-                            />
+                        <FieldView
+                            label=''
+                            value={t(langKeys.costnotificaton)}
+                            className={classes.commentary}
+                        />
                     </div>
                 </div>
             </form>
@@ -2821,8 +2830,6 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             {
                 Header: t(langKeys.month),
                 accessor: 'month',
-                type: "number",
-                sortType: "number"
             },
             {
                 Header: t(langKeys.supportplan),
@@ -2835,7 +2842,7 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { basicfee } = props.cell.row.original;
-                    return (basicfee || 0).toFixed(4);
+                    return (basicfee || 0).toFixed(2);
                 }
             },
             {
@@ -2936,7 +2943,7 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 style={{width: 150}}
                                 valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||""}))}
+                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||0}))}
                                 data={years}
                                 optionDesc="desc"
                                 optionValue="desc"
@@ -3378,7 +3385,7 @@ const MessagingCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 style={{width: 150}}
                                 valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||""}))}
+                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||0}))}
                                 data={years}
                                 optionDesc="desc"
                                 optionValue="desc"
@@ -3600,6 +3607,13 @@ const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                     <div className="row-zyx">
                         <FieldView
                             label=''
+                            value={'*'+t(langKeys.messagingcostsmsnote)}
+                            className={classes.commentary}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldView
+                            label=''
                             value={t(langKeys.mailsection)}
                             className={classes.section}
                         />
@@ -3691,10 +3705,10 @@ const BillingSetup: FC = () => {
                     <AntTab label={t(langKeys.notificationcost)} />
                 }
                 {user?.roledesc === "SUPERADMIN" && 
-                    <AntTab label={t(langKeys.supportplan)} />
+                    <AntTab label={t(langKeys.messagingcost)} />
                 }
                 {user?.roledesc === "SUPERADMIN" && 
-                    <AntTab label={t(langKeys.messagingcost)} />
+                    <AntTab label={t(langKeys.supportplan)} />
                 }
                 {/*user?.roledesc === "SUPERADMIN" && 
                     <AntTab label={t(langKeys.costperHSMperiod)} />
@@ -3722,12 +3736,12 @@ const BillingSetup: FC = () => {
             }
             {pageSelected === 4 &&
                 <div style={{ marginTop: 16 }}>
-                    <SupportPlan dataPlan={dataPlan}/>
+                    <MessagingCost dataPlan={countryList}/>
                 </div>
             }
             {pageSelected === 5 &&
                 <div style={{ marginTop: 16 }}>
-                    <MessagingCost dataPlan={countryList}/>
+                    <SupportPlan dataPlan={dataPlan}/>
                 </div>
             }
             {/*pageSelected === 6 &&

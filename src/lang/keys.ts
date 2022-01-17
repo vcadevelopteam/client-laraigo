@@ -2382,6 +2382,9 @@ export const langKeys = {
     privacypolicy43: "privacypolicy43",
     previoustext: "previoustext",
     whatsappsubtitle1: "whatsappsubtitle1",
+    billingsetupruc: "billingsetupruc",
+    billingpaymentendpoint: "billingpaymentendpoint",
+    messagingcostsmsnote: "messagingcostsmsnote",
 };
 
 export type LangKeys = typeof langKeys;
