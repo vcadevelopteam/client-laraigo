@@ -9,15 +9,13 @@ import { emojis } from "common/constants";
 import { LaraigoAnimalIcon, LaraigoBanderaIcon, LaraigoCaraIcon, LaraigoCarroIcon, LaraigoComidaIcon, LaraigoDeporteIcon, LaraigoFocoIcon, LaraigoHashtagIcon, LaraigoRecienteIcon,LaraigoBlockedIcon } from "icons";
 import Tabs from "@material-ui/core/Tabs/Tabs";
 import Tab from "@material-ui/core/Tab/Tab";
-import { DialogZyx, FieldEdit, FieldMultiSelect, FieldSelect } from "components/fields/templates";
 import { useDispatch } from "react-redux";
-import { execute, getCollection, getCollectionAux, getMultiCollection, getMultiCollectionAux, resetAllMain, resetMainAux } from "store/main/actions";
-import { getEmojiAllSel, getEmojiSel, getOrgsByCorp, getValuesFromDomain, insEmoji } from "common/helpers";
+import { execute, getCollection, getMultiCollection, resetAllMain } from "store/main/actions";
+import { getEmojiAllSel, getOrgsByCorp, insEmoji } from "common/helpers";
 import { useSelector } from 'hooks';
 import { Dictionary, MultiData } from "@types";
-import { useForm } from "react-hook-form";
 import { Button, Grid, Menu, MenuItem, Tooltip } from "@material-ui/core";
-import { manageConfirmation } from "store/popus/actions";
+import { manageConfirmation, showBackdrop } from "store/popus/actions";
 
 interface ModalProps {
     fetchData: () => void;
@@ -58,12 +56,11 @@ const Emojis: FC = () => {
     const mainResult = useSelector(state => state.main);
     const emojiResult = useSelector(state => state.main.mainData.data);
     const [groups, setGroups] = useState<Dictionary>([]);
-    const [openDialog, setOpenDialog] = useState(false);
-    const [emojiSelected, setEmojiSelected] = useState<Dictionary>([]);
+    const [getEmojiList, setGetEmojiList] = useState(false);
     const [category, setCategory] = useState('FAVORITES');
     const [searchValue, setSearchValue] = useState('');
 
-    const fetchData = () => dispatch(getCollection(getEmojiAllSel()));
+    const fetchData = () => {setGetEmojiList(true);dispatch(getCollection(getEmojiAllSel()))};
 
 
     const handleFiend = (searchValue: string) => {
@@ -89,6 +86,14 @@ const Emojis: FC = () => {
             }
         }), [category, searchValue, emojis, emojiResult]);
 
+    useEffect(() => {
+        if(getEmojiList){
+            if(!mainResult.mainData.loading){
+                setGetEmojiList(false)
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [mainResult.mainData]);
     useEffect(() => {
         fetchData();
 
@@ -134,7 +139,6 @@ const Emojis: FC = () => {
                             <Emoji
                                 key={"menuEmoji_" + emoji?.emojidec}
                                 emoji={emoji}
-                                setEmojiSelected={setEmojiSelected}
                                 fetchData={fetchData}
                                 category={category}
                             />
@@ -215,22 +219,34 @@ const TabEmoji: FC<{ groups: Dictionary, setCategory: (categorydesc: any) => voi
     )
 })
 
-const Emoji: FC<{ emoji: Dictionary, setEmojiSelected: (emojiSelected: Dictionary) => void, fetchData: () => void, category:string }> = React.memo(({ emoji, setEmojiSelected, fetchData,category }) => {
+const Emoji: FC<{ emoji: Dictionary, fetchData: () => void, category:string }> = React.memo(({ emoji, fetchData,category }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [anchorEl, setAnchorEl] = useState(null);
+    const [sendIns, setSendIns] = useState(false);
+    const executeEmoji = useSelector(state => state.main.execute);
 
     const handleClick = (event: any) => {
         event.preventDefault();
         setAnchorEl(event.currentTarget);
     };
-    //RESTRICTED
-    //FAVORITES
+
+    useEffect(() => {
+        if(sendIns){
+            if(!executeEmoji.loading){
+                setSendIns(false);
+                fetchData();
+            }
+        }
+    }, [executeEmoji]);
 
     const handleExecution = (favorite: boolean,restricted: boolean) => {
         setAnchorEl(null);
 
         const callback = () => {
+            setSendIns(true)
+            dispatch(showBackdrop(true));
+            debugger
             dispatch(execute(insEmoji({
                 ...emoji,
                 communicationchannel: "",
@@ -238,8 +254,6 @@ const Emoji: FC<{ emoji: Dictionary, setEmojiSelected: (emojiSelected: Dictionar
                 restricted,
                 allchannels: true
             })));
-
-            fetchData();
         }
 
         dispatch(manageConfirmation({
