@@ -143,7 +143,7 @@ export const FirstStep: FC<{ setMainData: (param: any) => void, mainData: any, s
         <>
             <meta name="google-signin-client_id" content="792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com" />
             <script src="https://apis.google.com/js/platform.js" async defer></script>
-            <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", marginBottom: 32 }}>{t(langKeys.signupstep1title)}</div>
+            <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", marginBottom: 32 , marginTop: 15}}>{t(langKeys.signupstep1title)}</div>
             <FacebookLogin
                 appId={apiUrls.FACEBOOKAPP}
                 callback={onAuthWithFacebook}

@@ -145,7 +145,7 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlis
         setFields(partialf)
     }
     if(viewSelected==="view1"){
-        return (<div style={{ width: '100%' }}>
+        return (<div style={{marginTop: "auto",marginBottom: "auto",maxHeight: "100%"}}>
             <Breadcrumbs aria-label="breadcrumb">
                 <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
                     {t(langKeys.previoustext)}
@@ -296,7 +296,7 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlis
             </div>
         </div>)
     }else if (viewSelected==="view2" && provider==="DIALOG"){
-        return (<div style={{ width: '100%' }}>
+        return (<div style={{marginTop: "auto",marginBottom: "auto",maxHeight: "100%"}}>
             <Breadcrumbs aria-label="breadcrumb">
                 <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
                     {t(langKeys.previoustext)}
@@ -326,7 +326,7 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlis
         </div>)
     }
     else{
-        return (<div style={{ width: '100%' }}>
+        return (<div style={{marginTop: "auto",marginBottom: "auto",maxHeight: "100%"}}>
             <Breadcrumbs aria-label="breadcrumb">
                 <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view1") }}>
                     {t(langKeys.previoustext)}
