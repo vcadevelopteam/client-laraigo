@@ -496,8 +496,11 @@ const TableZyx = React.memo(({
                 return false;
             // if (!(['isempty', 'isnotempty', 'isnull', 'isnotnull'].includes(operator) || type === 'boolean') && (value || '') === '')
             //     return true;
+            if (value === '')
+                return true
             switch (type) {
                 case "number": case "number-centered":
+                    console.log(Number(value))
                     switch (operator) {
                         case 'greater':
                             return cellvalue > Number(value);

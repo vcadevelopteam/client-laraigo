@@ -9,7 +9,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent, sendHSM, updatePerson, changeStatusTicket } from 'store/inbox/actions';
+import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent, sendHSM, updatePerson, changeStatusTicket, setAgentsToReassign } from 'store/inbox/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { changeStatus, insertClassificationConversation, insLeadPerson } from 'common/helpers';
 import { execute } from 'store/main/actions';
@@ -21,11 +21,15 @@ import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Rating from '@material-ui/lab/Rating';
-import { Box } from '@material-ui/core';
-import InputAdornment from '@material-ui/core/InputAdornment';
+import { Box, InputBase } from '@material-ui/core';
 import StarIcon from '@material-ui/icons/Star';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import PauseIcon from '@material-ui/icons/Pause';
+import SearchIcon from '@material-ui/icons/Search';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import CloseIcon from '@material-ui/icons/Close';
 
 const dataPriority = [
     { option: 'HIGH' },
@@ -350,9 +354,9 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     const dispatch = useDispatch();
     const [waitReassign, setWaitReassign] = useState(false);
 
-    const [agentsConnected, setAgentsConnected] = useState<Dictionary[]>([]);
     const multiData = useSelector(state => state.main.multiData);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const agentToReassignList = useSelector(state => state.inbox.agentToReassignList);
     const userType = useSelector(state => state.inbox.userType);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const reassigningRes = useSelector(state => state.inbox.triggerReassignTicket);
@@ -391,7 +395,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
 
     useEffect(() => {
         if (multiData?.data[1])
-            setAgentsConnected(multiData?.data[1].data)
+            dispatch(setAgentsToReassign(multiData?.data?.[1].data || []))
     }, [multiData])
 
     useEffect(() => {
@@ -442,7 +446,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                     valueDefault={"" + getValues('newUserId')}
                     onChange={(value) => setValue('newUserId', value ? value.userid : 0)}
                     error={errors?.newUserId?.message}
-                    data={agentsConnected}
+                    data={agentToReassignList.filter(x => x.status === "ACTIVO")}
                     optionDesc="displayname"
                     optionValue="userid"
                 />
@@ -800,7 +804,7 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
         </DialogZyx>)
 }
 
-const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
+const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any) => void }> = ({ classes, setShowSearcher }) => {
     const { t } = useTranslation();
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const handleClose = () => setAnchorEl(null);
@@ -820,6 +824,18 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
     return (
         <>
             <div className={classes.containerButtonsChat}>
+                <Tooltip title={t(langKeys.search_ticket) + ""} arrow placement="top">
+                    <IconButton onClick={() => setShowSearcher(true)}>
+                        <SearchIcon width={24} height={24} fill="#8F92A1" />
+                    </IconButton>
+                </Tooltip>
+                {ticketSelected?.status !== 'CERRADO' &&
+                    <Tooltip title={t(langKeys.close_ticket) + ""} arrow placement="top">
+                        <IconButton onClick={() => closeTicket("CERRADO")}>
+                            <CloseTicketIcon width={24} height={24} fill="#8F92A1" />
+                        </IconButton>
+                    </Tooltip>
+                }
                 {ticketSelected?.status === 'SUSPENDIDO' &&
                     <Tooltip title={t(langKeys.activate_ticket) + ""} arrow placement="top">
                         <IconButton onClick={() => closeTicket("ASIGNADO")}>
@@ -831,13 +847,6 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
                     <Tooltip title={t(langKeys.suspend_ticket) + ""} arrow placement="top">
                         <IconButton onClick={() => closeTicket("SUSPENDIDO")}>
                             <PauseIcon width={24} height={24} fill="#8F92A1" />
-                        </IconButton>
-                    </Tooltip>
-                }
-                {ticketSelected?.status !== 'CERRADO' &&
-                    <Tooltip title={t(langKeys.close_ticket) + ""} arrow placement="top">
-                        <IconButton onClick={() => closeTicket("CERRADO")}>
-                            <CloseTicketIcon width={24} height={24} fill="#8F92A1" />
                         </IconButton>
                     </Tooltip>
                 }
@@ -930,11 +939,106 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
     )
 }
 
+const typeText = ["text", "post-text", "reply-text", "quickreply", "carousel", "LOG"]
+
+const applySearch = (list: Dictionary[], index: number) => {
+    const inthtml = document.getElementById(`interaction-${list[index].interactionid}`)
+    if (inthtml) {
+        inthtml.scrollIntoView({ block: "center" });
+        inthtml.classList.add('item-result-searcher');
+        setTimeout(() => {
+            inthtml.classList.remove('item-result-searcher');
+        }, 500);
+    }
+}
+
+const SearchOnInteraction: React.FC<{ setShowSearcher: (param: any) => void }> = ({ setShowSearcher }) => {
+    const [value, setvalue] = useState('');
+    const timeOut = React.useRef<NodeJS.Timeout | null>(null);
+    const { t } = useTranslation();
+
+    const interactionList = useSelector(state => state.inbox.interactionBaseList);
+    const [indexSearch, setIndexSearch] = useState(0);
+    const [triggerSearch, setTriggerSearch] = useState(false);
+    const [listFound, setListFound] = useState<Dictionary[]>([]);
+
+    const handleChange = (e: any) => {
+        const text = e.target.value.toLocaleLowerCase().trim();
+        if (text) {
+            const inttfound = interactionList.filter(x => x.interactiontext.toLocaleLowerCase().includes(text) && typeText.includes(x.interactiontype))
+            setListFound(inttfound);
+
+            if (inttfound.length > 0) {
+                setIndexSearch(0);
+                setTriggerSearch(!triggerSearch);
+            }
+        }
+    }
+
+    useEffect(() => {
+        if (listFound.length > 0) {
+            applySearch(listFound, indexSearch);
+        }
+    }, [triggerSearch])
+
+    const handlerManageFilter = (type: string) => {
+        if (type === "down") {
+            const neworden = indexSearch - 1 < 0 ? listFound.length - 1 : indexSearch - 1;
+            setIndexSearch(neworden);
+        } else {
+            const neworden = indexSearch + 1 > listFound.length - 1 ? 0 : indexSearch + 1;
+            setIndexSearch(neworden);
+        }
+        setTriggerSearch(!triggerSearch);
+    }
+
+    const onChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
+        setvalue(event.target.value);
+
+        if (timeOut.current) clearTimeout(timeOut.current);
+
+        timeOut.current = setTimeout(() => {
+            handleChange(event);
+            if (timeOut.current) {
+                clearTimeout(timeOut.current);
+                timeOut.current = null;
+            }
+        }, 300);;
+    };
+
+    return (
+        <div style={{ backgroundColor: 'white', border: '1px solid #e1e1e1', borderRadius: 16, paddingLeft: 4, paddingRight: 4, display: 'flex', alignItems: 'center' }}>
+            <IconButton size="small" onClick={() => setShowSearcher(false)}>
+                <CloseIcon style={{ color: '#8F92A1' }} />
+            </IconButton>
+            <InputBase
+                color="primary"
+                fullWidth
+                autoFocus
+                value={value}
+                onChange={onChange}
+                placeholder={t(langKeys.search)}
+                style={{ marginTop: 2, marginBottom: 2 }}
+            />
+            <div style={{ display: 'inline', color: '#8F92A1' }}>
+                {indexSearch + 1}/{listFound.length}
+            </div>
+            <IconButton size="small" onClick={() => handlerManageFilter('up')}>
+                <KeyboardArrowDownIcon style={{ color: '#8F92A1' }} />
+            </IconButton>
+            <IconButton size="small" onClick={() => handlerManageFilter('down')}>
+                <KeyboardArrowUpIcon style={{ color: '#8F92A1' }} />
+            </IconButton>
+
+        </div>
+    )
+}
+
 const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
     const dispatch = useDispatch();
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const person = useSelector(state => state.inbox.person.data);
-
+    const [showSearcher, setShowSearcher] = useState(false);
     const showInfoPanelTrigger = () => dispatch(showInfoPanel())
 
     return (
@@ -953,8 +1057,13 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
                         </div>
                     </div>
                 </div>
-                <ButtonsManageTicket classes={classes} />
+                <ButtonsManageTicket classes={classes} setShowSearcher={setShowSearcher} />
             </div>
+            {showSearcher &&
+                <div style={{ position: 'absolute', zIndex: 1, right: 16, marginTop: 8 }}>
+                    <SearchOnInteraction setShowSearcher={setShowSearcher} />
+                </div>
+            }
         </div>
     )
 }

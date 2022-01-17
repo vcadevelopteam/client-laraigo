@@ -138,6 +138,7 @@ export const langKeys = {
     supportplan:"supportplan",
     month: "month",
     inputvalidation: "inputvalidation",
+    inputvalidationerror: "inputvalidationerror",
     receiverdoctype: "receiverdoctype",
     receiverdocnum: "receiverdocnum",
     receiverbusinessname: "receiverbusinessname",
@@ -369,6 +370,7 @@ export const langKeys = {
     pay: 'pay',
     create_custom_report: 'create_custom_report',
     create_custom_dashboard: 'create_custom_dashboard',
+    search_ticket: 'search_ticket',
     column_at_least_required: 'column_at_least_required',
     personinformation: 'personinformation',    
     ticketinformation: 'ticketinformation',
@@ -1032,6 +1034,9 @@ export const langKeys = {
     lead_plural: 'lead_plural',
     lastnote: 'lastnote',
 
+    available_columns: 'available_columns',
+    selected_plural: 'selected_plural',
+    select_a_field_then_add_it: 'select_a_field_then_add_it',
     
     priority_high: 'priority_high',
     priority_medium: 'priority_medium',

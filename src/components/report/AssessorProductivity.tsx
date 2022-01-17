@@ -92,6 +92,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
         mintimeconnected: "0",
         mintimeconnectedasesor: "",
     });
+    const [desconectedmotives, setDesconectedmotives] = useState<any[]>([]);
 
     
     const [detailCustomReport, setDetailCustomReport] = useState<{
@@ -210,24 +211,17 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                 NoFilter: false
             },
             ...(mainAux.data.length > 0 ?
-                [...Array.from(new Set((mainAux.data as any).reduce((ac: string[], x: any) => (
-                    x.desconectedtimejson ? [...ac, ...Object.keys(JSON.parse(x.desconectedtimejson))] : ac), []))).map((d: any) =>
+                [...desconectedmotives.map((d: any) =>
                         ({
                             Header: d,
-                            accessor: d.toLowerCase(),
+                            accessor: d,
                             NoFilter: false,
-                            Cell: (props: any) => {
-                                const { desconectedtimejson } = props.cell.row.original;
-                                return (
-                                    desconectedtimejson && isJson(desconectedtimejson) ? (JSON.parse(desconectedtimejson)[d] || '') : ''
-                                )
-                            }
                         })
                     )
                 ] : []
             )
         ],
-        [isday,mainAux]
+        [isday,mainAux,desconectedmotives]
     );
 
     useEffect(() => {
@@ -244,7 +238,9 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                 mintimeconnectedasesor: "",
             }
             if(mainAux.data.length >0){
-                
+                const desconedtedmotives = Array.from(new Set((mainAux.data as any).reduce((ac: string[], x: any) => (
+                    x.desconectedtimejson ? [...ac, ...Object.keys(JSON.parse(x.desconectedtimejson))] : ac), [])));
+                setDesconectedmotives([...desconedtedmotives]);
                 mainAux.data.filter(x => x.usertype !== 'HOLDING').forEach((x,i)=>{
                     if (i===0){
                         maxminaux ={
@@ -572,7 +568,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                     variant="contained"
                     color="primary"
                     disabled={detailCustomReport.loading}
-                    onClick={() => exportExcel("report" + (new Date().toISOString()), detailCustomReport.data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
+                    onClick={() => exportExcel("report" + (new Date().toISOString()), detailCustomReport.data.map(x => ({...x, ...JSON.parse(x.desconectedtimejson)})), columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
                     startIcon={<DownloadIcon />}
                 >{t(langKeys.download)}
                 </Button>
@@ -580,7 +576,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
 
             <TableZyx
                 columns={columns}
-                data={detailCustomReport.data}
+                data={detailCustomReport.data.map(x => ({...x, ...JSON.parse(x.desconectedtimejson)}))}
                 download={false}
                 loading={detailCustomReport.loading}
                 filterGeneral={false}

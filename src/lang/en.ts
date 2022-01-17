@@ -3,6 +3,7 @@ import { LangKeys } from './keys';
 
 const translation: LangKeys = {
     currentlanguage: 'en',
+    search_ticket: 'Search in conversation',
     english: 'English',
     spanish: 'Spanish',
 
@@ -713,6 +714,7 @@ const translation: LangKeys = {
     closedbyadviser: "Closed by agent",
     closedbybot: "Closed by bot",
     informationTMO: "Information TMO",
+    inputvalidationerror: "There is already a data input validation registered.",
     informationTME: "Information TME",
     informationNPS: "Information NPS",
     informationCSAT: "Information CSAT",
@@ -844,6 +846,11 @@ const translation: LangKeys = {
     cancel: 'Cancel',
     comments: 'Comments',
     lastnote: 'Last note',
+
+    available_columns: 'Available columns',
+    selected_plural: 'Selected',
+    select_a_field_then_add_it: 'Select a field then add it',
+
     default_application: 'Default application',
     default_organization: 'Default organization',
     password_required: 'Password is required',

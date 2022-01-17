@@ -141,12 +141,13 @@ export const getChannelsByOrg = (orgid?: number | null, keytmp?: any): IRequestB
     }
 });
 
-export const getValuesFromDomain = (domainname: string, keytmp?: any, orgid?: number | null): IRequestBody => ({
+export const getValuesFromDomain = (domainname: string, keytmp?: any, orgid?: number | null,corpid?: number | null): IRequestBody => ({
     method: "UFN_DOMAIN_LST_VALORES",
     key: "UFN_DOMAIN_LST_VALORES" + (keytmp || ""),
     parameters: {
         domainname,
-        orgid: orgid || undefined
+        orgid: orgid || undefined,
+        corpid: corpid || undefined
     }
 });
 // solo devuelve desc y value, no id (USAR ESTE PARA LOS SELECTS SIMPLES DE DOMINIOS)
@@ -200,10 +201,10 @@ export const insOrgUser = ({ roleid, orgid, bydefault, labels, groups, channels,
     parameters: { orgid, roleid, usersupervisor: supervisor, bydefault, labels, groups, channels, status, type, defaultsort: 1, operation, redirect }
 });
 
-export const insProperty = ({ orgid, communicationchannelid, id, propertyname, propertyvalue, description, status, type, category, domainname, group, level, operation }: Dictionary): IRequestBody => ({
+export const insProperty = ({ orgid, communicationchannelid, id, propertyname, propertyvalue, description, status, type, category, domainname, group, level, operation, corpid }: Dictionary): IRequestBody => ({
     method: "UFN_PROPERTY_INS",
     key: "UFN_PROPERTY_INS",
-    parameters: { orgid, communicationchannelid, id, propertyname, propertyvalue, description, status, type, category, domainname, group, level, operation }
+    parameters: { orgid, communicationchannelid, id, propertyname, propertyvalue, description, status, type, category, domainname, group, level, operation, corpid }
 });
 
 
@@ -280,11 +281,12 @@ export const getCorpSel = (id: number): IRequestBody => ({
         all: id === 0,
     }
 });
-export const getOrgSel = (id: number): IRequestBody => ({
+export const getOrgSel = (id: number, corpid?:number): IRequestBody => ({
     method: "UFN_ORG_SEL",
     parameters: {
         orgid: id,
         all: id === 0,
+        corpid
     }
 });
 export const getOrgSelList = (id: number): IRequestBody => ({
@@ -703,7 +705,8 @@ export const insIntegrationManager = ({
     level,
     fields,
     apikey,
-    operation
+    operation,
+    orgid
 }: Dictionary): IRequestBody => ({
     method: "UFN_INTEGRATIONMANAGER_INS",
     parameters: {
@@ -723,7 +726,8 @@ export const insIntegrationManager = ({
         level,
         fields: JSON.stringify(fields),
         apikey,
-        operation
+        operation,
+        orgid
     }
 });
 
@@ -742,12 +746,14 @@ export const deldataIntegrationManager = (id: number): IRequestBody => ({
     }
 });
 
-export const getChannelSel = (id: number): IRequestBody => ({
+export const getChannelSel = (id: number,orgid?:number,corpid?:number): IRequestBody => ({
     method: "UFN_COMMUNICATIONCHANNEL_SEL",
     parameters: {
         communicationchannelid: id,
         personcommunicationchannel: "",
         all: id === 0,
+        orgid,
+        corpid
     }
 });
 export const getasesoresbyorgid = (closedby: string): IRequestBody => ({
@@ -846,7 +852,8 @@ export const getTicketsByFilter = (lastmessage: string, start_createticket: stri
         channels,
         conversationstatus,
         displayname,
-        phone
+        phone,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
 

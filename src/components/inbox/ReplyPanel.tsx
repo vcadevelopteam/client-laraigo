@@ -452,7 +452,8 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
 
     const [typeHotKey, setTypeHotKey] = useState("")
     const [quickReplies, setquickReplies] = useState<Dictionary[]>([])
-    const [emojilist, setemojilist] = useState<string[]>([])
+    const [emojiNoShow, setemojiNoShow] = useState<string[]>([])
+    const [emojiFavorite, setemojiFavorite] = useState<string[]>([])
     const [inappropiatewordsList, setinnappropiatewordsList] = useState<Dictionary[]>([])
     // const [inappropiatewords, setinnappropiatewords] = useState<string[]>([])
     const [quickRepliesToShow, setquickRepliesToShow] = useState<Dictionary[]>([])
@@ -489,7 +490,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                 userid: agentSelected?.userid,
                 newuserid: 0,
             }
-        }));
+        })); 
     }, [dispatch, ticketSelected, agentSelected])
 
     const triggerReplyMessage = () => {
@@ -594,7 +595,8 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
         if (!multiData.loading && !multiData.error && multiData?.data[4]) {
             setquickReplies(multiData?.data[4].data || [])
             setquickRepliesToShow(multiData?.data[4].data.filter(x => !!x.favorite) || [])
-            setemojilist(multiData?.data[10].data.filter(x => (x.restricted)).map(x => x.emojihex) || [])
+            setemojiNoShow(multiData?.data[10].data.filter(x => (!!x.restricted)).map(x => x.emojihex) || [])
+            setemojiFavorite(multiData?.data[10].data.filter(x => (!!x.favorite)).map(x => x.emojihex) || [])
             setinnappropiatewordsList(multiData?.data?.[11]?.data || [])
             // setinnappropiatewords(multiData?.data[11].data.filter(x => (x.status === "ACTIVO")).map(y => (y.description)) || [])
         }
@@ -758,7 +760,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                             <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
                             <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
                             {/* <TmpRichResponseIcon classes={classes} setText={setText} /> */}
-                            <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} emojisNoShow={emojilist} />
+                            <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite}/>
                             <UploaderIcon type="image" classes={classes} setFiles={setFiles} />
                         </div>
                         <div className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(text || files.filter(x => !!x.url).length > 0) })} onClick={triggerReplyMessage}>

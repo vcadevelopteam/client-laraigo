@@ -31,7 +31,6 @@ import { SearchIcon } from 'icons';
 import { FixedSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { Done } from '@material-ui/icons';
-import { ChartCategoryAxisNotesLabel } from '@progress/kendo-react-charts';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -54,9 +53,9 @@ const dataSummarization = [
     { function: 'mode' },
 ];
 
-const arrayBread = [
-    { id: "view-1", name: "Reports" },
-    { id: "view-2", name: "Create a report" }
+const arrayBread = (view1: string, view2: string) => [
+    { id: "view-1", name: view1 },
+    { id: "view-2", name: view2 }
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -268,13 +267,17 @@ const DialogManageColumns: React.FC<{
             maxWidth="md"
             open={openDialogVariables}
             title=""
+            button2Type="submit"
             buttonText1={t(langKeys.cancel)}
-            handleClickButton1={() => setOpenDialogVariables(false)}
+            handleClickButton2={(e) => {
+                e.preventDefault();
+            }}
+            handleClickButton1={(e) => setOpenDialogVariables(false)}
         >
             <div style={{ display: 'flex' }}>
                 <div style={{ flex: 1, padding: 16, paddingTop: 16, paddingBottom: 8 }}>
                     <div style={{ fontSize: 20, fontWeight: 500, marginBottom: 8 }}>
-                        Columnas disponibles
+                        {t(langKeys.available_columns)}
                     </div>
                     <div>
                         <FieldEdit
@@ -322,12 +325,12 @@ const DialogManageColumns: React.FC<{
                 <div style={{ flex: 1, backgroundColor: '#f5f5f5', paddingTop: 48 }}>
                     <div style={{ paddingLeft: 24, paddingRight: 24 }}>
                         <div style={{ height: 35, borderBottom: '1px solid rgba(0, 0, 0, 0.42)', color: 'rgb(167 166 170)', display: 'flex', alignItems: 'center' }}>
-                            Seleccionados ({columnsAdded.length})
+                            {t(langKeys.selected_plural)} ({columnsAdded.length})
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', overflowY: 'auto', marginTop: 4, height: 320, marginBottom: 4 }}>
                             {columnsAdded.length === 0 ? (
                                 <div className={classes.nodata}>
-                                    Seleccione un campo y luego añadelo
+                                    {t(langKeys.select_a_field_then_add_it)}
                                 </div>
                             ) : columnsAdded.map((item) => (
                                 <div key={item.columnname} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -397,7 +400,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
             columns: row?.columns || [],
             filters: row?.filters || [],
             summary: row?.summary || [],
-            operation: row ? "EDIT" : "INSERT"
+            operation: row?.reporttemplateid ? "EDIT" : "INSERT"
         }
     });
 
@@ -486,6 +489,8 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
         setValue('dataorigin', tablename);
         if (tablename)
             dispatch(getCollectionAux(getColumnsOrigin(tablename)));
+        else
+            setDataColumns([]);
     }
 
     return (
@@ -495,7 +500,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <div>
                             <TemplateBreadcrumbs
-                                breadcrumbs={arrayBread}
+                                breadcrumbs={arrayBread(t(langKeys.report_plural), (row?.reporttemplateid ? t(langKeys.edit) : t(langKeys.new)) + " " + t(langKeys.report).toLocaleLowerCase())}
                                 handleClick={setViewSelected}
                             />
                             <TitleDetail
@@ -563,14 +568,10 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                         <TableCell>
                                             <IconButton
                                                 size="small"
-                                                onClick={async () => {
-                                                    const haveDataOrigin = await trigger('dataorigin');
-                                                    if (haveDataOrigin) {
-                                                        setOpenDialogVariables(true);
-                                                    }
-                                                }}
+                                                disabled={mainAuxRes.loading || dataColumns.length === 0}
+                                                onClick={async () => setOpenDialogVariables(true)}
                                             >
-                                                <AddIcon color="primary" />
+                                                <AddIcon />
                                             </IconButton>
                                         </TableCell>
                                         <TableCell>{t(langKeys.column)}</TableCell>
@@ -635,7 +636,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                             }
                                                         }}
                                                     >
-                                                        <AddIcon color="primary" />
+                                                        <AddIcon />
                                                     </IconButton>
                                                 </TableCell>
                                                 <TableCell>{t(langKeys.column)}</TableCell>
@@ -710,7 +711,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                             }
                                                         }}
                                                     >
-                                                        <AddIcon color="primary" />
+                                                        <AddIcon />
                                                     </IconButton>
                                                 </TableCell>
                                                 <TableCell>{t(langKeys.column)}</TableCell>
