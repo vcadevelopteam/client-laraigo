@@ -1891,6 +1891,7 @@ const translation: LangKeys = {
     otherchannels: "Other channel",
     freecontacts: "Free contacts",
     create_custom_report: 'Create custom report',
+    create_custom_dashboard: 'Create custom dashboard',
     column_at_least_required: 'You must register at least one column.',
     periodamount: "Period amount",
     servicedata: "Service data",
@@ -2351,6 +2352,11 @@ const translation: LangKeys = {
     additionalinformation2: "If you wish to include additional information before the invoice is generated, fill the information before paying",
     proceedpayment: "Proceed to Payment",
     credittype: "Credit type",
+
+    groupment: 'Groupment',
+    contentType: 'Content type',
+    chartType: 'Chart type',
+    invalidEntry: 'Invalid entry',
 };
 
 const enResource: ResourceLanguage = {

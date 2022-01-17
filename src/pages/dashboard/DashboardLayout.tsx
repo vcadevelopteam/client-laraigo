@@ -23,6 +23,9 @@ import TableZyx from "components/fields/table-simple";
 const ReactGridLayout = WidthProvider(RGL);
 
 interface Item {
+    description: string;
+    contentType: string;
+    kpi: string;
     reporttemplateid: number;
     grouping: string;
     graph: string;

@@ -16,8 +16,8 @@ import { Box, IconButton } from '@material-ui/core';
 import { Dictionary, MultiData } from '@types';
 import { FieldEdit, FieldEditArray, FieldSelect, FieldView, TemplateBreadcrumbs, TemplateSwitchArray, TitleDetail } from 'components';
 
-import { getDistinctPropertySel, getPropertySel, getValuesFromDomain, insProperty } from 'common/helpers';
-import { getCollection, getCollectionAux, getMultiCollection, getMultiCollectionAux, resetMain, resetMainAux, execute } from 'store/main/actions';
+import { getDistinctPropertySel, getPropertySel, getValuesFromDomain, insProperty, getCorpSel, getOrgSel, getChannelSel } from 'common/helpers';
+import { getCollection, getCollectionAux, getMultiCollection, getMultiCollectionAux, resetMain, resetMainAux, execute, getCollectionAux2, resetMainAux2, getMultiCollectionAux2 } from 'store/main/actions';
 import { langKeys } from 'lang/keys';
 import { makeStyles } from '@material-ui/core/styles';
 import { showBackdrop, showSnackbar, manageConfirmation } from 'store/popus/actions';
@@ -25,11 +25,6 @@ import { useDispatch } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useSelector } from 'hooks';
 import { useTranslation } from 'react-i18next';
-
-const arrayBread = [
-    { id: 'view-1', name: 'Properties' },
-    { id: 'view-2', name: 'Property detail' }
-];
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -113,12 +108,11 @@ const Properties: FC = () => {
         setViewSelected('view-2');
         setRowSelected({ row, edit: true });
     }
-    
+
     const handleRegister = () => {
         setViewSelected("view-2");
         setRowSelected({ row: null, edit: true });
     }
-
 
     useEffect(() => {
 
@@ -126,7 +120,11 @@ const Properties: FC = () => {
     }, [categoryFilter, levelFilter]);
 
     useEffect(() => {
-        dispatch(getMultiCollection([getValuesFromDomain('ESTADOGENERICO')]));
+        dispatch(getMultiCollection([
+            getValuesFromDomain('ESTADOGENERICO'),
+            getCorpSel(0),
+            getOrgSel(0),
+        ]));
         return () => {
             dispatch(resetMain());
         };
@@ -228,13 +226,24 @@ interface DetailPropertyProps {
 }
 
 const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fetchData, multiData, setViewSelected }) => {
+    const user = useSelector(state => state.login.validateToken.user);
     const [domainTable, setDomainTable] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
     const [waitSave, setWaitSave] = useState(false);
+    const [mainaux2loading, setmainaux2loading] = useState(false);
+    const [multi2loading, setmulti2loading] = useState(false);
+    const [level, setlevel] = useState(row?.level || "");
+    const corpList = multiData[1] && multiData[1].success? multiData[1].data : [];
+    const [orgList, setorgList] = useState<any>([]);
+    const [channelList, setchannelList] = useState<any>([]);
+    const [groupList, setgroupList] = useState<any>([]);
+    const allowEdition = !(['SUPERADMIN'].includes(user?.roledesc || ""))
 
     const detailResult = useSelector(state => state.main.mainAux);
+    const detailResult2 = useSelector(state => state.main.mainAux2);
     const executeRes = useSelector(state => state.main.execute);
     const responseFromSelect = useSelector(state => state.main.multiDataAux);
-    const user = useSelector(state => state.login.validateToken.user);
+    const responseFromSelect2 = useSelector(state => state.main.multiDataAux2);
+    
 
     const classes = useStyles();
 
@@ -242,9 +251,11 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
 
     const dispatch = useDispatch();
 
-    const { control, register, handleSubmit, trigger, setValue, formState: { errors } } = useForm<any>({
+    const { control, register, handleSubmit, trigger, setValue,getValues, formState: { errors } } = useForm<any>({
         defaultValues: {
-            table: []
+            level: row?.level || "",
+            corpid: row?.corpid || user?.corpid,
+            table: [],
         }
     });
 
@@ -292,11 +303,33 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
     }
 
     useEffect(() => {
-        fetchDetailData(row?.corpid, row?.propertyname, row?.description, row?.category, row?.level);
+        setmainaux2loading(true);
+        dispatch(getCollectionAux2(getOrgSel(0,row?.corpid || user?.corpid)))
+        if(row?.corpid){
+            fetchDetailData(row?.corpid, row?.propertyname, row?.description, row?.category, row?.level);
+        }
         return () => {
             dispatch(resetMainAux());
+            dispatch(resetMainAux2());
         };
     }, []);
+    useEffect(() => {
+        if(mainaux2loading){
+            if(!detailResult2.loading){
+                setmainaux2loading(false)
+                setorgList(detailResult2.data)
+            }
+        }
+    }, [detailResult2]);
+    useEffect(() => {
+        if(multi2loading){
+            if(!responseFromSelect2.loading){
+                setchannelList(responseFromSelect2.data[0] && responseFromSelect2.data[0].success? responseFromSelect2.data[0].data : [])
+                setgroupList(responseFromSelect2.data[1] && responseFromSelect2.data[1].success? responseFromSelect2.data[1].data : [])
+                setmulti2loading(false)
+            }
+        }
+    }, [responseFromSelect2]);
 
     useEffect(() => {
         if (!detailResult.loading && !detailResult.error) {
@@ -341,6 +374,26 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
         }
     }, [executeRes, waitSave])
 
+    const arrayBread = [
+        { id: 'view-1', name: t(langKeys.property) },
+        { id: 'view-2', name: `${t(langKeys.property)} ${t(langKeys.detail)}` }
+    ];
+
+    function corpChange(corpid:any){
+        //setorgList(unfilteredOrgs.filter(x=>x.corpid===corpid)); 
+        setmainaux2loading(true);
+        dispatch(getCollectionAux2(getOrgSel(0,corpid)))
+        setValue("corpid",corpid)
+    }
+    function changeOrg(value:any){
+        setmulti2loading(true)
+        dispatch(getMultiCollectionAux2([
+            getChannelSel(0,value?.orgid,value?.corpid),
+            getValuesFromDomain('GRUPOS',"tst",value?.orgid,value?.corpid),
+        ]))
+        setValue('orgid',value?.orgid||0)
+    }
+
     return (
         <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
@@ -364,90 +417,125 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
                             onClick={() => setViewSelected('view-1')}>
                             {t(langKeys.back)}
                         </Button>
-                        {edit &&
-                            <Button
-                                className={classes.button}
-                                variant='contained'
-                                color='primary'
-                                type='submit'
-                                startIcon={<SaveIcon color='secondary' />}
-                                style={{ backgroundColor: '#55BD84' }}>
-                                {t(langKeys.save)}
-                            </Button>
-                        }
+                        <Button
+                            className={classes.button}
+                            variant='contained'
+                            color='primary'
+                            type='submit'
+                            startIcon={<SaveIcon color='secondary' />}
+                            style={{ backgroundColor: '#55BD84' }}>
+                            {t(langKeys.save)}
+                        </Button>
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
                     <div className='row-zyx'>
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.corporation)}
-                                className='col-6'
-                                valueDefault={row ? (row.corpdesc || '') : user?.corpdesc}
-                                disabled={true}
-                            />
-                            : <FieldView
-                                label={t(langKeys.corporation)}
-                                value={row ? (row.corpdesc || '') : ''}
-                                className='col-6'
-                            />
-                        }
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.name)}
-                                className='col-6'
-                                valueDefault={row ? (row.propertyname || '') : ''}
-                                disabled={true}
-                            />
-                            : <FieldView
-                                label={t(langKeys.name)}
-                                value={row ? (row.propertyname || '') : ''}
-                                className='col-6'
-                            />
-                        }
+                        <FieldSelect
+                            label={t(langKeys.corporation)}
+                            className="col-6"
+                            valueDefault={getValues("corpid")}
+                            onChange={(value) =>corpChange(value?.corpid||0)}
+                            error={errors?.corpid?.message}
+                            data={corpList}
+                            disabled={allowEdition}
+                            optionDesc="description"
+                            optionValue="corpid"
+                        />
+                        <FieldEdit
+                            label={t(langKeys.name)}
+                            className='col-6'
+                            valueDefault={row?.propertyname || ''}
+                            disabled={allowEdition}
+                        />
                     </div>
                     <div className='row-zyx'>
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.description)}
-                                className='col-6'
-                                valueDefault={row ? (row.description || '') : ''}
-                                disabled={true}
-                            />
-                            : <FieldView
-                                label={t(langKeys.description)}
-                                value={row ? (row.description || '') : ''}
-                                className='col-6'
-                            />
-                        }
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.category)}
-                                className='col-6'
-                                valueDefault={row ? (row.category || '') : ''}
-                                disabled={true}
-                            />
-                            : <FieldView
-                                label={t(langKeys.category)}
-                                value={row ? (row.category || '') : ''}
-                                className='col-6'
-                            />
-                        }
+                        <FieldEdit
+                            label={t(langKeys.description)}
+                            className='col-6'
+                            valueDefault={row?.description || ''}
+                            disabled={allowEdition}
+                        />
+                        <FieldSelect
+                            label={t(langKeys.category)}
+                            className="col-6"
+                            valueDefault={row?.category || ''}
+                            onChange={(value) => setValue('category', value?.categoryvalue)}
+                            error={errors?.category?.message}
+                            data={[
+                                { categorydesc: t(langKeys.closure), categoryvalue: 'CLOSURE' },
+                                { categorydesc: t(langKeys.message), categoryvalue: 'MESSAGE' },
+                                { categorydesc: t(langKeys.system), categoryvalue: 'SYSTEM' },
+                                { categorydesc: t(langKeys.indicators), categoryvalue: 'INDICATORS' },
+                                { categorydesc: t(langKeys.quiz), categoryvalue: 'QUIZ' },
+                                { categorydesc: t(langKeys.labels), categoryvalue: 'LABELS' }
+                            ]}
+                            disabled={allowEdition}
+                            optionDesc="categorydesc"
+                            optionValue="categoryvalue"
+                        />
                     </div>
-                    <div className='row-zyx'>
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.level)}
-                                className='col-6'
-                                valueDefault={row ? (row.level || '') : ''}
-                                disabled={true}
-                            />
-                            : <FieldView
-                                label={t(langKeys.level)}
-                                value={row ? (row.level || '') : ''}
-                                className='col-6'
-                            />
-                        }
+                    <div className='row-zyx'>                        
+                        <FieldSelect
+                            label={t(langKeys.level)}
+                            className="col-6"
+                            valueDefault={getValues('level')}
+                            onChange={(value) => {
+                                setlevel(value?.levelvalue||"");
+                                setValue('level', value?.levelvalue)
+                            }}
+                            error={errors?.level?.message}
+                            data={[
+                                { leveldesc: t(langKeys.corporation), levelvalue: 'CORPORATION' },
+                                { leveldesc: t(langKeys.organization), levelvalue: 'ORGANIZATION' },
+                                { leveldesc: t(langKeys.channel), levelvalue: 'CHANNEL' },
+                                { leveldesc: t(langKeys.group), levelvalue: 'GROUP' }
+                            ]}
+                            disabled={allowEdition}
+                            optionDesc="leveldesc"
+                            optionValue="levelvalue"
+                        />
+                        <FieldEdit
+                            label={t(langKeys.value)}
+                            className='col-6'
+                            valueDefault={row?.value || ''}
+                            disabled={allowEdition}
+                        />
+                    </div>
+                    <div className='row-zyx'>                        
+                        {(level!=="" && level !== "CORPORATION") && <FieldSelect
+                            label={t(langKeys.organization)}
+                            className="col-6"
+                            valueDefault={row?.orgid || ''}
+                            onChange={(value) => changeOrg(value)}
+                            error={errors?.orgid?.message}
+                            data={orgList}
+                            loading={detailResult2.loading}
+                            disabled={allowEdition}
+                            optionDesc="orgdesc"
+                            optionValue="orgid"
+                        />}
+                        {level==="CHANNEL" && <FieldSelect
+                            label={t(langKeys.channel)}
+                            className="col-6"
+                            valueDefault={row?.communicationchannelid || ''}
+                            onChange={(value) => setValue('communicationchannelid', value?.communicationchannelid)}
+                            error={errors?.communicationchannelid?.message}
+                            data={channelList}
+                            disabled={allowEdition}
+                            optionDesc="communicationchanneldesc"
+                            optionValue="communicationchannelid"
+                        />}
+                        {level==="GROUP" && <FieldSelect
+                            label={t(langKeys.group_plural)}
+                            className="col-6"
+                            valueDefault={row?.groupid || ''}
+                            onChange={(value) => setValue('groupid', value?.groupid)}
+                            error={errors?.groupid?.message}
+                            data={groupList}
+                            disabled={allowEdition}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />}
                     </div>
                 </div>
 

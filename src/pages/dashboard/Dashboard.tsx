@@ -1,7 +1,7 @@
 import { FC, Fragment, useCallback, useEffect, useState } from 'react';
-import { Box, Card, CardActionArea, CardContent, CardMedia, CircularProgress, Grid, IconButton, makeStyles, Menu, MenuItem, Typography } from '@material-ui/core';
+import { Box, Button, Card, CardActionArea, CardContent, CardMedia, CircularProgress, Grid, IconButton, makeStyles, Menu, MenuItem, Typography } from '@material-ui/core';
 import { Add as AddIcon, MoreVert as MoreVertIcon } from '@material-ui/icons';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { getDashboardTemplateIns, getDashboardTemplateSel } from 'common/helpers';
 import { getCollection, resetMain, resetCollectionPaginated, resetMultiMain, resetMainAux } from 'store/main/actions';
@@ -82,7 +82,7 @@ const Dashboard: FC = () => {
     const dashboardtemplateDelete = useSelector(state => state.dashboard.dashboardtemplateDelete);    
     const [searchValue, setSearchValue] = useState('');
     const [allDashboards, setAllDashboards] = useState<any>([]);
-    const [allDashboardsToShow, setallDashboardsToShow] = useState<any>([]);
+    const [allDashboardsToShow, setallDashboardsToShow] = useState<any[]>([]);
 
     
     useEffect(() => {
@@ -172,7 +172,7 @@ const Dashboard: FC = () => {
             <div className={classes.container}>
                 <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
                     <span className={classes.title}>
-                        {t(langKeys.dashboard_plural)}
+                        {t(langKeys.dashboard_plural)} ({allDashboardsToShow.length + 3})
                     </span>
                 </Box>
                 <Box className={classes.containerFilterGeneral}>
@@ -181,9 +181,20 @@ const Dashboard: FC = () => {
                         <SearchField
                             colorPlaceHolder='#FFF'
                             handleChangeOther={handleFiend}
+                            disabled={dashboardtemplates.loading}
                             lazy
                         />
                     </div>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={dashboardtemplates.loading}
+                        startIcon={<AddIcon color="secondary" />}
+                        onClick={() => history.push(paths.DASHBOARD_ADD)}
+                        style={{ backgroundColor: "#55BD84" }}
+                    >
+                        <Trans i18nKey={langKeys.create_custom_dashboard} />
+                    </Button>
                 </Box>
                 <div className={classes.containerDetails}>
                     <Grid container spacing={3}>
@@ -254,28 +265,6 @@ const Dashboard: FC = () => {
                                 />
                             </Grid>
                         ))}
-                        <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
-                            <Card style={{ height: '100%', minHeight: 211 }}>
-                                <CardActionArea
-                                    onClick={() => {
-                                        history.push(paths.DASHBOARD_ADD);
-                                    }}
-                                    style={{
-                                        marginLeft: 'auto',
-                                        marginRight: 'auto',
-                                        width: '100%',
-                                        height: '100%',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                    }}
-                                >
-                                    <AddIcon
-                                        color="action"
-                                        style={{ width: 60, height: 60 }}
-                                    />
-                                </CardActionArea>
-                            </Card>
-                        </Grid>
                     </Grid>
                 </div>
             </div>
