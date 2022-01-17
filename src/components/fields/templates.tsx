@@ -1,8 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
-
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import VisibilityIcon from '@material-ui/icons/Visibility';
+import { emojis } from "common/constants";
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import IconButton from '@material-ui/core/IconButton';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
@@ -56,6 +55,8 @@ import {
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import MuiPhoneNumber, { MaterialUiPhoneNumberProps } from 'material-ui-phone-number';
 import NumberFormat from 'react-number-format';
+
+const EMOJISINDEXED = emojis.reduce((acc, item) => ({...acc, [item.emojihex]: item}), {});
 
 interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
@@ -295,7 +296,7 @@ interface InputProps {
     className?: any;
     valueDefault?: any;
     disabled?: boolean;
-    
+
     onChange?: (param: any, param2?: any | null) => void;
     onBlur?: (param: any, param2?: any | null) => void;
     style?: any;
@@ -395,7 +396,7 @@ export const CurrencyFieldEdit: FC<CurrencyFieldEdit> = ({
                 customInput={TextField}
                 thousandSeparator
                 autoComplete="off"
-                
+
                 {...fregister}
                 color="primary"
                 fullWidth
@@ -714,7 +715,7 @@ interface TemplateSwitchPropsYesNo extends InputProps {
     textYes?: string;
     textNo?: string;
     labelPlacement?: "start" | "end" | "bottom" | "top" | undefined;
-    disabled? : boolean;
+    disabled?: boolean;
 }
 
 export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, onChange, valueDefault, label, style }) => {
@@ -942,13 +943,15 @@ const emojiPickerStyle = makeStyles({
 });
 
 
-export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisNoShow,emojiFavorite, onSelect, style, icon }) => {
+export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisNoShow, emojiFavorite, onSelect, style, icon }) => {
     const [open, setOpen] = React.useState(false);
     const classes = emojiPickerStyle();
     const handleClick = () => setOpen((prev) => !prev);
     const { t } = useTranslation();
     const handleClickAway = () => setOpen(false);
-    debugger
+
+    
+
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
             <span style={style}>
@@ -962,8 +965,9 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisNoShow,emo
                     }}>
                         <Picker
                             onSelect={onSelect}
+                            native={true}
                             sheetSize={32}
-                            recent={emojiFavorite?.map(x => x.toUpperCase())}
+                            recent={emojiFavorite?.map(x => (EMOJISINDEXED as Dictionary)?.[x || ""]?.id || '')}
                             emojisToShowFilter={emojisNoShow && emojisNoShow.length > 0 ? (emoji: any) => emojisNoShow.map(x => x.toUpperCase()).indexOf(emoji.unified.toUpperCase()) === -1 : undefined}
                         />
                     </div>
