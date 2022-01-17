@@ -400,6 +400,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
             let orgdesc = (user?.corpdesc || '').replace(rex1, '_').replace(rex2, '_').toLowerCase();
             let name = data.name.replace(rex1, '').replace(rex2, '_').toLowerCase();
             data.url = `${apiUrls.INTEGRATION_URL}/integration_${corpdesc}_${orgdesc}_${name}`;
+            data.orgid = data.orgid===0? (user?.orgid||0): data.orgid
         }
         
         const callback = () => {
