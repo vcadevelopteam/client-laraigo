@@ -274,7 +274,7 @@ const DialogManageColumns: React.FC<{
             <div style={{ display: 'flex' }}>
                 <div style={{ flex: 1, padding: 16, paddingTop: 16, paddingBottom: 8 }}>
                     <div style={{ fontSize: 20, fontWeight: 500, marginBottom: 8 }}>
-                        Columnas disponibles
+                        {t(langKeys.available_columns)}
                     </div>
                     <div>
                         <FieldEdit
@@ -322,12 +322,12 @@ const DialogManageColumns: React.FC<{
                 <div style={{ flex: 1, backgroundColor: '#f5f5f5', paddingTop: 48 }}>
                     <div style={{ paddingLeft: 24, paddingRight: 24 }}>
                         <div style={{ height: 35, borderBottom: '1px solid rgba(0, 0, 0, 0.42)', color: 'rgb(167 166 170)', display: 'flex', alignItems: 'center' }}>
-                            Seleccionados ({columnsAdded.length})
+                            {t(langKeys.selected_plural)} ({columnsAdded.length})
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', overflowY: 'auto', marginTop: 4, height: 320, marginBottom: 4 }}>
                             {columnsAdded.length === 0 ? (
                                 <div className={classes.nodata}>
-                                    Seleccione un campo y luego añadelo
+                                    {t(langKeys.select_a_field_then_add_it)}
                                 </div>
                             ) : columnsAdded.map((item) => (
                                 <div key={item.columnname} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

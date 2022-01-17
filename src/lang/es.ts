@@ -922,6 +922,10 @@ const translation: LangKeys = {
     file_incompatbile_with_previous_one: 'Archivo incompatible con el anterior',
     pay: 'Pagar',
 
+    available_columns: 'Columnas disponibles',
+    selected_plural: 'Seleccionados',
+    select_a_field_then_add_it: 'Seleccione un campo y luego añadelo',
+
     successful_close_ticket: 'El ticket fue cerrado satisfactoriamente',
     
     successful_suspend_ticket: 'El ticket fue suspendido satisfactoriamente',

@@ -1031,6 +1031,9 @@ export const langKeys = {
     lead_plural: 'lead_plural',
     lastnote: 'lastnote',
 
+    available_columns: 'available_columns',
+    selected_plural: 'selected_plural',
+    select_a_field_then_add_it: 'select_a_field_then_add_it',
     
     priority_high: 'priority_high',
     priority_medium: 'priority_medium',
