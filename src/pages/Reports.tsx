@@ -14,7 +14,7 @@ import { langKeys } from 'lang/keys';
 import { TemplateBreadcrumbs, SearchField, FieldSelect, FieldMultiSelect, SkeletonReportCard } from 'components';
 import { useSelector } from 'hooks';
 import { Dictionary, IFetchData, MultiData, IRequestBody } from "@types";
-import { getReportSel, getReportTemplateSel, getValuesFromDomain, getTagsChatflow, getCommChannelLst, getReportColumnSel, getReportFilterSel, getPaginatedForReports, getReportExport, insertReportTemplate, convertLocalDate, getTableOrigin, getVariablesByOrg } from 'common/helpers';
+import { getReportSel, getReportTemplateSel, getValuesFromDomain, getReportColumnSel, getReportFilterSel, getPaginatedForReports, getReportExport, insertReportTemplate, convertLocalDate, getTableOrigin } from 'common/helpers';
 import { getCollection, getCollectionAux, execute, resetMain, getCollectionPaginated, resetCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetMainAux, getMultiCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
@@ -414,8 +414,10 @@ const Reports: FC = () => {
     }, [reportsResult.mainAux, reportsResult.mainData, waitSave])
 
     useEffect(() => {
-        let temparray = allReports.filter((el: any) => String(t((langKeys as any)[`report_${el.origin}`])).toLowerCase().includes(searchValue.toLowerCase()))
-        setallReportsToShow(temparray)
+        if (searchValue.length >= 3 || searchValue.length === 0) {
+            let temparray = allReports.filter((el: any) => (t((langKeys as any)[`report_${el.origin}`]) + "").toLowerCase().includes(searchValue.toLowerCase()))
+            setallReportsToShow(temparray)
+        }
     }, [searchValue]);
 
     useEffect(() => {
@@ -663,7 +665,18 @@ const Reports: FC = () => {
                                     >
                                         {t(langKeys.edit)}
                                     </MenuItem>
-                                    <MenuItem onClick={(e) => handleDelete(rowReportSelected?.row)}>{t(langKeys.delete)}</MenuItem>
+                                    <MenuItem
+                                        onClick={() => {
+                                            setAnchorEl(null)
+                                            setViewSelected("view-5");
+                                        }}
+                                    >
+                                        {t(langKeys.duplicate)}
+                                    </MenuItem>
+                                    <MenuItem
+                                        onClick={() => handleDelete(rowReportSelected?.row)}>
+                                        {t(langKeys.delete)}
+                                    </MenuItem>
                                 </Menu>
                             </Grid>
                         </div>
@@ -676,7 +689,14 @@ const Reports: FC = () => {
             <DetailReportDesigner
                 data={rowReportSelected}
                 setViewSelected={setViewSelected}
-                // multiData={reportsResult.multiDataAux.data}
+                fetchData={fetchData}
+            />
+        )
+    } else if (viewSelected === "view-5") { //duplicate
+        return (
+            <DetailReportDesigner
+                data={{ ...rowReportSelected, row: { ...rowReportSelected?.row, reporttemplateid: 0 } }}
+                setViewSelected={setViewSelected}
                 fetchData={fetchData}
             />
         )
