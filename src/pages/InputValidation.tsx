@@ -174,6 +174,8 @@ const InputValidation: FC = () => {
                 accessor: 'inputvalidationid',
                 NoFilter: true,
                 isComponent: true,
+                minWidth:60,
+                width: '1%',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (
@@ -191,12 +193,13 @@ const InputValidation: FC = () => {
             {
                 Header: t(langKeys.description),
                 accessor: 'description',
-                NoFilter: true
+                NoFilter: true,
+                width: '25%',
             },
             {
                 Header: t(langKeys.value),
                 accessor: 'inputvalue',
-                NoFilter: true
+                NoFilter: true,
             },
             
         ],

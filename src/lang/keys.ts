@@ -138,6 +138,7 @@ export const langKeys = {
     supportplan:"supportplan",
     month: "month",
     inputvalidation: "inputvalidation",
+    inputvalidationerror: "inputvalidationerror",
     receiverdoctype: "receiverdoctype",
     receiverdocnum: "receiverdocnum",
     receiverbusinessname: "receiverbusinessname",

@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldEditMulti, FieldCheckbox, DialogZyx } from 'components';
-import { getIntegrationManagerSel, insIntegrationManager, getValuesFromDomain, uuidv4, extractVariablesFromArray, downloadJson, uploadExcel, insarrayIntegrationManager, deldataIntegrationManager } from 'common/helpers';
+import { getIntegrationManagerSel, insIntegrationManager, getValuesFromDomain, uuidv4, extractVariablesFromArray, downloadJson, uploadExcel, insarrayIntegrationManager, deldataIntegrationManager, getOrgSel } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -171,6 +171,7 @@ const IntegrationManager: FC = () => {
         fetchData();
         dispatch(getMultiCollection([
             getValuesFromDomain("ESTADOGENERICO"),
+            getOrgSel(0)
         ]));
         return () => {
             dispatch(resetAllMain());
@@ -285,6 +286,7 @@ type FormFields = {
     parameters: Dictionary[],
     variables: string[],
     level: string,
+    orgid: number,
     fields: FieldType[],
     operation: string
 }
@@ -301,7 +303,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
     const [waitImport, setWaitImport] = useState(false);
     const [waitDelete, setWaitDelete] = useState(false);
 
-    // const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
+    const dataOrg = multiData[1] && multiData[1].success ? multiData[1].data : [];
     
     const dataKeys = new Set([...dataLevelKeys, ...(row?.fields?.filter((r: FieldType) => r.key)?.map((r: FieldType) => r.id) || [])]);
 
@@ -323,6 +325,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
             parameters: row ? (row.parameters || []) : [],
             variables: row ? (row.variables || []) : [],
             level: row ? (row.level || 'CORPORATION') : 'CORPORATION',
+            orgid: row?.orgid|| user?.orgid,
             fields: row
             ? (row.fields || [{name: 'corpid', key: true}, {name: 'status', key: false}])
             : [{name: 'corpid', key: true}, {name: 'status', key: false}],
@@ -373,6 +376,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
     }, [executeRes, waitSave])
 
     const onSubmit = handleSubmit((data) => {
+        debugger
         data.variables = data.variables || [];
         if (data.type === 'STANDARD') {
             let v: string[] = [];
@@ -1086,7 +1090,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                             }
                         </div>
                         <div className="row-zyx">
-                            {(edit && getValues('isnew')) ?
+                            {(getValues('isnew')) ?
                                 <FieldEdit
                                     label={t(langKeys.apikey)}
                                     className="col-12"
@@ -1103,7 +1107,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                             }
                         </div>
                         <div className="row-zyx">
-                            {(edit && getValues('isnew')) ?
+                            {(getValues('isnew')) ?
                                 <FieldSelect
                                     uset={true}
                                     fregister={{...register(`level`, {
@@ -1124,6 +1128,32 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                                     value={t(dataLevel[row?.level]) || ""}
                                     className="col-12"
                                 />
+                            }
+                        </div>
+                        <div className="row-zyx">
+                            {(getValues('isnew')) ?
+                                ( getValues('level')==="ORGANIZATION" &&
+                                <FieldSelect
+                                    fregister={{...register(`orgid`, {
+                                        validate: (value: any) => (value && value>0) || t(langKeys.field_required)
+                                    })}}    
+                                    label={t(langKeys.organization)}
+                                    className="col-12"
+                                    valueDefault={getValues('orgid')}
+                                    onChange={(value) => setValue('orgid', value?.orgid || 0)}
+                                    error={errors?.orgid?.message}
+                                    data={dataOrg}
+                                    optionDesc="orgdesc"
+                                    optionValue="orgid"
+                                />)
+                                :
+                                ( !!getValues('orgid') &&
+                                    <FieldView
+                                        label={t(langKeys.organization)}
+                                        value={dataOrg.filter(x=>x.orgid === getValues('orgid'))[0].orgdesc}
+                                        className="col-12"
+                                    />
+                                )
                             }
                         </div>
                         <div className="row-zyx" style={{ alignItems: 'flex-end' }}>

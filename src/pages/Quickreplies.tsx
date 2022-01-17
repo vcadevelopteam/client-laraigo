@@ -41,10 +41,6 @@ interface DetailQuickreplyProps {
     fetchData: () => void
     fetchMultiData: () => void;
 }
-const arrayBread = [
-    { id: "view-1", name: "Quickreplies" },
-    { id: "view-2", name: "Quickreply detail" }
-];
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
@@ -292,6 +288,11 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
             setOpenDialog(true);
         }
     }, [multiData])
+    
+    const arrayBread = [
+        { id: "view-1", name: t(langKeys.quickreply) },
+        { id: "view-2", name: `${t(langKeys.quickreply)} ${t(langKeys.detail)}` }
+    ];
 
     return (
         <div style={{ width: '100%' }}>
