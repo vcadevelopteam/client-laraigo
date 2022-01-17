@@ -108,7 +108,7 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
         <div >
             <Breadcrumbs aria-label="breadcrumb">
                 <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
-                    {"<< Previous"}
+                    {t(langKeys.previoustext)}
                 </Link>
             </Breadcrumbs>
             <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad" }}>{t(langKeys.signupstep1title2)}</div>
@@ -139,8 +139,9 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
                 />                
                 <FieldSelect
                     onChange={(value) => {
-                        setErrors(p => ({ ...p, country: !(value?.code) ? t(langKeys.field_required) : "" }))
-                        setMainData((p:any) => ({ ...p, doctype: value?.code==="PE"?1:0, country: value?.code || "", currency: value?.currencycode || "", countryname: value?.description }))
+                        setErrors(p => ({ ...p, country: !(value?.code) ? t(langKeys.field_required) : "" }));
+                        setMainData((p:any) => ({ ...p, doctype: value?.code==="PE"?1:0, country: value?.code || "", currency: value?.currencycode || "", countryname: value?.description }));
+                        setcountrycode(value?.code || "");
                     }}
                     variant="outlined"
                     className="col-6"

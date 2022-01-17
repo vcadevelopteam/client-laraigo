@@ -73,6 +73,10 @@ export const ChannelAddInstagramDM: FC = () => {
 
     const whatsAppData = location.state as whatsAppData | null;
 
+    const openprivacypolicies = () => {
+        window.open("/privacy", '_blank');
+    }
+    
     async function finishreg() {
         setsetins(true)
         dispatch(insertChannel(fields))
@@ -131,7 +135,7 @@ export const ChannelAddInstagramDM: FC = () => {
             <div style={{ width: '100%' }}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => {e.preventDefault();history.push(paths.CHANNELS_ADD, whatsAppData)}}>
-                        {"<< Previous"}
+                        {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>
@@ -159,7 +163,7 @@ export const ChannelAddInstagramDM: FC = () => {
                         />
     
                     <div style={{ textAlign: "center", color: "#969ea5", fontStyle: "italic" }}>{t(langKeys.connectinsta4)}</div>
-                    <div style={{ textAlign: "center", paddingBottom: "80px", color: "#969ea5" }}><a href="https://app.laraigo.com/privacy" target="_blank" rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
+                    <div style={{ textAlign: "center", paddingBottom: "80px", color: "#969ea5" }}><a style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={openprivacypolicies} rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
     
                 </div>
             </div>
@@ -169,7 +173,7 @@ export const ChannelAddInstagramDM: FC = () => {
             <div style={{ width: '100%' }}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view1") }}>
-                        {"<< Previous"}
+                        {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>
@@ -206,7 +210,7 @@ export const ChannelAddInstagramDM: FC = () => {
             <div style={{ width: '100%' }}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view2") }}>
-                        {"<< Previous"}
+                        {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>

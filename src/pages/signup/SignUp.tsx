@@ -133,6 +133,7 @@ export const SignUp: FC = () => {
         fiscaladdress: "",
         billingcontact: "",
         billingcontactmail: "",
+        autosendinvoice: true,
     });
     function setDefaultMainData(){
         setMainData((prev)=>({
@@ -153,6 +154,7 @@ export const SignUp: FC = () => {
             fiscaladdress: "",
             billingcontact: "",
             billingcontactmail: "",
+            autosendinvoice: true,
         }))
     }
     function setDefaultMainData2(){

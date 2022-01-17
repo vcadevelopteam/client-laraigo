@@ -56,7 +56,7 @@ export const ChannelAddIos: FC<{setrequestchannels:(param:any)=>void,setlistchan
         <div style={{ width: '100%' }}>
             <Breadcrumbs aria-label="breadcrumb">
                 <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
-                    {"<< Previous"}
+                    {t(langKeys.previoustext)}
                 </Link>
             </Breadcrumbs>
             <div>

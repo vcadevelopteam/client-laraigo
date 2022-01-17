@@ -58,9 +58,14 @@ export const Step2_5: FC<{ setMainData: (param: any) => void, mainData: any, set
     const [disablebutton, setdisablebutton] = useState(true);
     const mainResult = useSelector(state => state.main);
     useEffect(() => {
-        debugger
-        setdisablebutton((isNaN(mainData.doctype) || isNaN(parseInt(mainData.docnumber)) || mainData.businessname === ""|| mainData.fiscaladdress === ""|| mainData.billingcontact === ""|| mainData.billingcontactmail === ""))
+        if (mainData.billingcontactmail.includes('@') && mainData.billingcontactmail.includes('.')) {
+            setdisablebutton((isNaN(mainData.doctype) || isNaN(parseInt(mainData.docnumber)) || mainData.businessname === ""|| mainData.fiscaladdress === ""|| mainData.billingcontact === ""|| mainData.billingcontactmail === ""))
+        }
+        else {
+            setdisablebutton(true);
+        }
     }, [mainData])
+
     function maindataChange(field: string, value: any) {
         setMainData((p: any) => ({ ...p, [field]: value }))
         setErrors(p => ({ ...p, [field]: !value ? t(langKeys.field_required) : "" }))
@@ -75,7 +80,7 @@ export const Step2_5: FC<{ setMainData: (param: any) => void, mainData: any, set
         <div >
             <Breadcrumbs aria-label="breadcrumb">
                 <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
-                    {"<< Previous"}
+                    {t(langKeys.previoustext)}
                 </Link>
             </Breadcrumbs>
             <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad" }}>{t(langKeys.signupstep1title25)}</div>
@@ -162,7 +167,10 @@ export const Step2_5: FC<{ setMainData: (param: any) => void, mainData: any, set
                     name="billingcontactmail"
                     error={!!errors.billingcontactmail}
                     helperText={errors.billingcontactmail}
-                    onChange={(e) => maindataChange('billingcontactmail', e.target.value)}
+                    onChange={(e) => {
+                        maindataChange('billingcontactmail', e.target.value);
+                        setErrors(p => ({ ...p, billingcontactmail: e.target.value.includes('@') && e.target.value.includes('.') ? "" : t(langKeys.emailverification) }));
+                    }}
                 /> 
                 <Button
                     onClick={() => { setStep(3) }}

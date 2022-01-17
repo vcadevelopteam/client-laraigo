@@ -58,6 +58,10 @@ export const ChannelAddFacebook: FC<{setrequestchannels:(param:any)=>void,setlis
         }
     })
 
+    const openprivacypolicies = () => {
+        window.open("/privacy", '_blank');
+    }
+    
     async function finishreg() {
         setrequestchannels((p:any)=>([...p,fields]))
         setlistchannels((p:any)=>({...p,facebook:false}))
@@ -99,7 +103,7 @@ export const ChannelAddFacebook: FC<{setrequestchannels:(param:any)=>void,setlis
             <div style={{ width: '100%' }}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
-                        {"<< Previous"}
+                        {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>
@@ -127,7 +131,7 @@ export const ChannelAddFacebook: FC<{setrequestchannels:(param:any)=>void,setlis
                         />
     
                     <div style={{ textAlign: "center", color: "#969ea5", fontStyle: "italic" }}>{t(langKeys.connectface4)}</div>
-                    <div style={{ textAlign: "center", paddingBottom: "80px", color: "#969ea5" }}><a href="https://app.laraigo.com/privacy" target="_blank" rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
+                    <div style={{ textAlign: "center", paddingBottom: "80px", color: "#969ea5" }}><a style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={openprivacypolicies} rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
     
                 </div>
             </div>
@@ -137,7 +141,7 @@ export const ChannelAddFacebook: FC<{setrequestchannels:(param:any)=>void,setlis
             <div style={{ width: '100%' }}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view1") }}>
-                        {"<< Previous"}
+                        {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>
@@ -174,7 +178,7 @@ export const ChannelAddFacebook: FC<{setrequestchannels:(param:any)=>void,setlis
             <div style={{ width: '100%' }}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view2") }}>
-                        {"<< Previous"}
+                        {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>

@@ -71,6 +71,10 @@ export const FirstStep: FC<{ setMainData: (param: any) => void, mainData: any, s
         }
     }, [rescheckuser])
 
+    const openprivacypolicies = () => {
+        window.open("/privacy", '_blank');
+    }
+
     const onGoogleLoginSucess = (r: any) => {
         if (r && r.googleId) {
             const content = {
@@ -89,6 +93,18 @@ export const FirstStep: FC<{ setMainData: (param: any) => void, mainData: any, s
         }
     }
 
+    const onGoogleLoginFailure = (r: any) => {
+        if (r && r.error) {
+            switch (r.error) {
+                case 'idpiframe_initialization_failed':
+                case 'popup_closed_by_user':
+                    break;
+                default:
+                    alert(r.error);
+                    break;
+            }
+        }
+    }
 
     const onAuthWithFacebook = (r: any) => {
         if (r && r.id) {
@@ -125,6 +141,8 @@ export const FirstStep: FC<{ setMainData: (param: any) => void, mainData: any, s
     const handleMouseDownPassword = (event: any) => event.preventDefault();
     return (
         <>
+            <meta name="google-signin-client_id" content="792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com" />
+            <script src="https://apis.google.com/js/platform.js" async defer></script>
             <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", marginBottom: 32 }}>{t(langKeys.signupstep1title)}</div>
             <FacebookLogin
                 appId={apiUrls.FACEBOOKAPP}
@@ -135,20 +153,24 @@ export const FirstStep: FC<{ setMainData: (param: any) => void, mainData: any, s
                 }}
                 textButton={t(langKeys.signup_with_facebook)}
                 icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
+                isDisabled={false}
             />
             <div className={classes.buttonGoogle}>
                 <GoogleLogin
                     clientId="792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com"
                     buttonText={t(langKeys.signupgooglebutton)}
                     style={{ borderRadius: '3px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                    cookiePolicy={'single_host_origin'}
                     onSuccess={onGoogleLoginSucess}
+                    onFailure={onGoogleLoginFailure}
+                    cookiePolicy={'single_host_origin'}
+                    accessType='online'
+                    autoLoad={false}
                 />
             </div>
 
-            <div style={{ display: "flex", alignItems: 'center', marginTop: 40, marginBottom: 32 }}>
+            <div style={{ display: "flex", alignItems: 'center', marginTop: 28, marginBottom: 18 }}>
                 <div className={classes.separator}></div>
-                <div style={{ fontSize: 24, fontWeight: 500, color: "#989898" }}>Or</div>
+                <div style={{ fontSize: 24, fontWeight: 500, color: "#989898" }}>{t(langKeys.signupor)}</div>
                 <div className={classes.separator}></div>
             </div>
 
@@ -232,14 +254,14 @@ export const FirstStep: FC<{ setMainData: (param: any) => void, mainData: any, s
                         ),
                     }}
                 />
-                <div style={{ textAlign: "center", padding: "20px" }}>{t(langKeys.tos)}<a href="https://app.laraigo.com/privacy" target="_blank" rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
+                <div style={{ textAlign: "center", padding: "20px" }}>{t(langKeys.tos)}<a style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={openprivacypolicies} rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
                 <Button
                     onClick={() => { handlesubmit() }}
                     className={classes.button}
                     variant="contained"
                     color="primary"
                     disabled={disablebutton}
-                >{t(langKeys.submit)}
+                >{t(langKeys.next)}
                 </Button>
 
             </div>

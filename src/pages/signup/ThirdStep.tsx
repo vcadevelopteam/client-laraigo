@@ -363,7 +363,7 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
             <div>
                     <Breadcrumbs aria-label="breadcrumb">
                         <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
-                            {"<< Previous"}
+                            {t(langKeys.previoustext)}
                         </Link>
                     </Breadcrumbs>
                 <div className={classes.title}>{t(langKeys.channeladdtitle)}</div>

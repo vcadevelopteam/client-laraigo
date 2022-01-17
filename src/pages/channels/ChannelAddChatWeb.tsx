@@ -1638,7 +1638,7 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
             <div style={{ display: showFinalStep ? 'none' : 'flex', flexDirection: 'column' }}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link color="textSecondary" key="mainview" href="/" onClick={handleGoBack}>
-                        {"<< Previous"}
+                        {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <h2 className={classes.title}>
@@ -1732,7 +1732,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
         <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
             <Breadcrumbs aria-label="breadcrumb">
                 <Link color="textSecondary" key="mainview" href="/" onClick={handleGoBack}>
-                    {"<< Previous"}
+                    {t(langKeys.previoustext)}
                 </Link>
             </Breadcrumbs>
             <div>

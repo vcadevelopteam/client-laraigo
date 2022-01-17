@@ -198,7 +198,7 @@ export const ChannelAdd: FC = () => {
     return (<Box className={classes.root}>
         <Breadcrumbs aria-label="breadcrumb">
             <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS)}}>
-                {"<< Previous"}
+                {t(langKeys.previoustext)}
             </Link>
         </Breadcrumbs>
         <div className={classes.content}>
