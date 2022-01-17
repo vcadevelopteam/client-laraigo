@@ -924,6 +924,7 @@ export const ListItemSkeleton: React.FC = () => (
 
 interface EmojiPickerZyxProps {
     emojisNoShow?: string[];
+    emojiFavorite?: string[];
     onSelect: (e: any) => void;
     style?: React.CSSProperties;
     icon?: (onClick: () => void) => React.ReactNode;
@@ -941,13 +942,13 @@ const emojiPickerStyle = makeStyles({
 });
 
 
-export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisNoShow, onSelect, style, icon }) => {
+export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisNoShow,emojiFavorite, onSelect, style, icon }) => {
     const [open, setOpen] = React.useState(false);
     const classes = emojiPickerStyle();
     const handleClick = () => setOpen((prev) => !prev);
     const { t } = useTranslation();
     const handleClickAway = () => setOpen(false);
-    
+    debugger
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
             <span style={style}>
@@ -962,6 +963,7 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisNoShow, on
                         <Picker
                             onSelect={onSelect}
                             sheetSize={32}
+                            recent={emojiFavorite?.map(x => x.toUpperCase())}
                             emojisToShowFilter={emojisNoShow && emojisNoShow.length > 0 ? (emoji: any) => emojisNoShow.map(x => x.toUpperCase()).indexOf(emoji.unified.toUpperCase()) === -1 : undefined}
                         />
                     </div>
