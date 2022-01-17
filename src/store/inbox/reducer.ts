@@ -1,4 +1,4 @@
-import { IListStatePaginated, ITicket, IGroupInteraction, IPerson, IAgent, Dictionary, IObjectState } from "@types";
+import { IListStatePaginated, ITicket, IGroupInteraction, IPerson, IAgent, Dictionary, IObjectState, IInteraction } from "@types";
 import { createReducer, initialListPaginatedState, initialObjectState } from "common/helpers";
 import * as caseFunctions from './caseFunctions';
 import actionTypes from "./actionTypes";
@@ -26,6 +26,8 @@ export interface IState {
     ticketFilteredList: IListStatePaginated<ITicket>;
     previewTicketList: IListStatePaginated<ITicket>;
     interactionList: IListStatePaginated<IGroupInteraction>;
+    interactionBaseList: IInteraction[];
+    agentToReassignList: Dictionary[];
     interactionExtraList: IListStatePaginated<IGroupInteraction>;
     configurationVariables: IListStatePaginated<Dictionary>;
     richResponseList: IListStatePaginated<Dictionary>;
@@ -60,6 +62,8 @@ export const initialState: IState = {
     ticketFilteredList: initialListPaginatedState,
     ticketList: initialListPaginatedState,
     previewTicketList: initialListPaginatedState,
+    interactionBaseList: [],
+    agentToReassignList: [],
     interactionList: initialListPaginatedState,
     richResponseList: initialListPaginatedState,
     interactionExtraList: initialListPaginatedState,
@@ -198,6 +202,7 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_TIPIFICATION_LEVEL_3_RESET]: caseFunctions.getTipificationLevel3Reset,
     [actionTypes.WS_CONNECTED]: caseFunctions.wsConnect,
     [actionTypes.GO_TO_BOTTOM]: caseFunctions.goToBottom,
+    [actionTypes.SET_AGENTS_TO_REASSIGN]: caseFunctions.setAgentsToReassign,
     [actionTypes.SET_SHOW_GO_TO_BOTTOM]: caseFunctions.showGoToBottom,
     [actionTypes.SET_IS_FILTERING]: caseFunctions.setIsFiltering,
     [actionTypes.UPDATE_PERSON]: caseFunctions.updatePerson,

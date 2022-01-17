@@ -848,7 +848,8 @@ export const getTicketsByFilter = (lastmessage: string, start_createticket: stri
         channels,
         conversationstatus,
         displayname,
-        phone
+        phone,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
 

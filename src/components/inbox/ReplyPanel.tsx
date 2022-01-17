@@ -460,8 +460,6 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const [richResponseToShow, setRichResponseToShow] = useState<Dictionary[]>([])
     const [showReply, setShowReply] = useState(true);
 
-    console.log(emojiFavorite)
-
     useEffect(() => {
         if (ticketSelected?.status === "CERRADO")
             setShowReply(false);

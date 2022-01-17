@@ -1,4 +1,4 @@
-import { IActionCall, IAgent, IInteraction, ITicket, ISendHSM, ICloseTicketsParams, IMassiveCloseTicketsParams, IReplyTicketParams, INewMessageParams, IReassignicketParams, IDeleteTicketParams, IPerson } from "@types";
+import { IActionCall, IAgent, IInteraction, ITicket, ISendHSM, ICloseTicketsParams, IMassiveCloseTicketsParams, IReplyTicketParams, INewMessageParams, IReassignicketParams, IDeleteTicketParams, IPerson, Dictionary } from "@types";
 import { CommonService, InboxService } from "network";
 import actionTypes from "./actionTypes";
 import { getUsersBySupervisor, getTicketsByFilter, getBlocksUserFromChatfow, getConfigurationVariables, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson, getClassificationLevel2, getCommChannelLst, getMessageTemplateSel } from 'common/helpers';
@@ -138,6 +138,8 @@ export const connectAgentUI = (payload: boolean): IActionCall => {
 };
 
 export const goToBottom = (payload: boolean | null): IActionCall => ({ type: actionTypes.GO_TO_BOTTOM, payload });
+
+export const setAgentsToReassign = (payload: Dictionary[]): IActionCall => ({ type: actionTypes.SET_AGENTS_TO_REASSIGN, payload });
 
 export const showGoToBottom = (payload: boolean | null): IActionCall => ({ type: actionTypes.SET_SHOW_GO_TO_BOTTOM, payload });
 
