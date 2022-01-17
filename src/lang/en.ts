@@ -713,6 +713,7 @@ const translation: LangKeys = {
     closedbyadviser: "Closed by agent",
     closedbybot: "Closed by bot",
     informationTMO: "Information TMO",
+    inputvalidationerror: "There is already a data input validation registered.",
     informationTME: "Information TME",
     informationNPS: "Information NPS",
     informationCSAT: "Information CSAT",
