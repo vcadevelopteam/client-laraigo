@@ -570,7 +570,7 @@ const PreviewTickets: React.FC<{ order: number }> = ({ order }) => {
     }
 
     return (
-        <div style={{ display: 'flex', flex: 1 }} className={clsx("scroll-style-go", {
+        <div style={{ display: 'flex', flex: 1, justifyContent: 'start' }} className={clsx("scroll-style-go", {
             [classes.orderDefault]: order === -1,
             [classes.orderReverse]: order === 1,
         })}>

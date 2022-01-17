@@ -361,7 +361,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const reassigningRes = useSelector(state => state.inbox.triggerReassignTicket);
 
-    const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<{
+    const { register, handleSubmit, setValue, getValues, trigger, reset, formState: { errors } } = useForm<{
         newUserId: number;
         newUserGroup: string;
         observation: string;
@@ -380,6 +380,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                     event: 'reassignTicket',
                     data: {
                         ...ticketSelected,
+                        isanswered: ticketSelected?.isAnswered,
                         userid: userType === "AGENT" ? 0 : agentSelected?.userid,
                         newuserid: getValues('newUserId') || 3,
                     }
@@ -392,11 +393,6 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
             }
         }
     }, [reassigningRes, waitReassign])
-
-    useEffect(() => {
-        if (multiData?.data[1])
-            dispatch(setAgentsToReassign(multiData?.data?.[1].data || []))
-    }, [multiData])
 
     useEffect(() => {
         if (openModal) {
@@ -443,8 +439,12 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                 <FieldSelect
                     label={t(langKeys.user_plural)}
                     className="col-12"
-                    valueDefault={"" + getValues('newUserId')}
-                    onChange={(value) => setValue('newUserId', value ? value.userid : 0)}
+                    valueDefault={getValues('newUserId')}
+                    onChange={(value) => {
+                        setValue('newUserId', value ? value.userid : 0);
+                        setValue('newUserGroup', '');
+                        trigger('newUserGroup');
+                    }}
                     error={errors?.newUserId?.message}
                     data={agentToReassignList.filter(x => x.status === "ACTIVO")}
                     optionDesc="displayname"
@@ -454,9 +454,13 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                     label={t(langKeys.group_plural)}
                     className="col-12"
                     valueDefault={getValues('newUserGroup')}
-                    onChange={(value) => setValue('newUserGroup', value ? value.domainvalue : '')}
+                    onChange={(value) => {
+                        setValue('newUserGroup', value ? value.domainvalue : '');
+                        setValue('newUserId', 0);
+                        trigger('newUserId');
+                    }}
                     error={errors?.newUserGroup?.message}
-                    data={multiData?.data?.[3] && multiData?.data[3].data}
+                    data={(multiData?.data?.[3]?.data || []).filter(x => x.domainvalue !== '')}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />
@@ -536,7 +540,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
 
             register('lastname');
             register('firstname', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
-            register('email', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
+            register('email');
             register('phone', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
         }
     }, [openModal])
@@ -714,8 +718,7 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
             register('path1');
             register('classificationid1', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
             register('path2');
-            register('classificationid2', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
-            register('path3');
+            register('classificationid2');
             register('classificationid3');
 
         }
@@ -753,7 +756,7 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
 
     const onSubmit = handleSubmit((data) => {
         dispatch(showBackdrop(true));
-        dispatch(execute(insertClassificationConversation(ticketSelected?.conversationid!!, data.classificationid3 || data.classificationid2, '', 'INSERT')))
+        dispatch(execute(insertClassificationConversation(ticketSelected?.conversationid!!, data.classificationid3 || data.classificationid2 || data.classificationid1, '', 'INSERT')))
         setWaitTipify(true)
     });
 

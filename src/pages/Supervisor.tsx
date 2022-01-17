@@ -10,7 +10,7 @@ import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Tooltip from '@material-ui/core/Tooltip';
 import { GetIcon } from 'components'
-import { getAgents, selectAgent, emitEvent, cleanAlerts, cleanInboxSupervisor } from 'store/inbox/actions';
+import { getAgents, selectAgent, emitEvent, cleanAlerts, cleanInboxSupervisor, setAgentsToReassign } from 'store/inbox/actions';
 import { getMultiCollection, resetAllMain } from 'store/main/actions';
 import { getValuesFromDomainLight, getCommChannelLst, getListUsers, getClassificationLevel1, getListQuickReply, getMessageTemplateLst, getEmojiAllSel, getInappropriateWordsLst } from 'common/helpers';
 import { setOpenDrawer } from 'store/popus/actions';
@@ -327,6 +327,12 @@ const Supervisor: FC = () => {
     const dispatch = useDispatch();
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const wsConnected = useSelector(state => state.inbox.wsConnected);
+    const multiData = useSelector(state => state.main.multiData);
+
+    useEffect(() => {
+        if (multiData?.data[1])
+            dispatch(setAgentsToReassign(multiData?.data?.[1].data || []))
+    }, [multiData])
 
     useEffect(() => {
         dispatch(setOpenDrawer(false));

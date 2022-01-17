@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'hooks';
-import { setUserType, emitEvent, cleanAlerts } from 'store/inbox/actions';
+import { setUserType, emitEvent, cleanAlerts, setAgentsToReassign } from 'store/inbox/actions';
 import { useDispatch } from 'react-redux';
 import InboxPanel from 'components/inbox/InboxPanel'
 import { getMultiCollection, resetAllMain } from 'store/main/actions';
@@ -14,6 +14,8 @@ const MessageInbox: React.FC = () => {
     const user = useSelector(state => state.login.validateToken.user);
     const aNewTicket = useSelector(state => state.inbox.aNewTicket);
     const aNewMessage = useSelector(state => state.inbox.aNewMessage);
+    const multiData = useSelector(state => state.main.multiData);
+
     const [initial, setinitial] = React.useState(true);
     const audioNewTicket = useRef<HTMLAudioElement>(null);
     const audioNewMessage = useRef<HTMLAudioElement>(null);
@@ -48,6 +50,11 @@ const MessageInbox: React.FC = () => {
         }
         setinitial(false)
     }, [aNewMessage])
+
+    useEffect(() => {
+        if (multiData?.data[1])
+            dispatch(setAgentsToReassign(multiData?.data?.[1].data || []))
+    }, [multiData])
 
     useEffect(() => {
         dispatch(setUserType("AGENT"));
