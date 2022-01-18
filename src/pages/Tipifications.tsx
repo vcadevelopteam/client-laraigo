@@ -151,7 +151,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
         defaultValues: {
             type: externalUse ? externalType : (row ? row?.type : 'TIPIFICACION'),
             id: row?.classificationid || 0,
-            description: row?.description || '',
+            description: edit? (row?.description) : '',
             title: row?.title || '',
             parent: row?.parentid || 0,
             communicationchannel: row?.communicationchannel || '',

@@ -24,6 +24,8 @@ export const langKeys = {
     advisoricon: "advisoricon",
     typecredit: "typecredit",
     typecredit_alcontado: "typecredit_alcontado",
+    contactbilling: "contactbilling",
+    billingmail: "billingmail",
     typecredit_15: "typecredit_15",
     typecredit_30: "typecredit_30",
     typecredit_45: "typecredit_45",
