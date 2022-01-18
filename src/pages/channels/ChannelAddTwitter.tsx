@@ -114,7 +114,7 @@ export const ChannelAddTwitter: FC = () => {
             <div style={{ width: '100%' }}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD, whatsAppData)}}>
-                        {"<< Previous"}
+                        {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>
@@ -197,7 +197,7 @@ export const ChannelAddTwitter: FC = () => {
             <div style={{ width: '100%' }}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view1") }}>
-                        {"<< Previous"}
+                        {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>
@@ -239,7 +239,7 @@ export const ChannelAddTwitter: FC = () => {
             <div style={{ width: '100%' }}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view2") }}>
-                        {"<< Previous"}
+                        {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>

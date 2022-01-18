@@ -67,7 +67,7 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlis
     const [coloricon, setcoloricon] = useState("#4AC959");
     const [channelreg, setChannelreg] = useState(true);
     const { t } = useTranslation();
-    const [errors] = useState<Dictionary>({
+    const [errors, setErrors] = useState<Dictionary>({
         accesstoken: "",
         brandName: "",
         brandAddress: "",
@@ -127,6 +127,16 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlis
         partialf.parameters.description = value
         setFields(partialf)
     }
+
+    function disableContinue(value: any) {
+        if (fields.service.email.includes('@') && fields.service.email.includes('.')) {
+            setdisablebutton(!(value) || !(fields.service.lastname) || !(fields.service.email) || !(fields.service.phone) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber))
+        }
+        else {
+            setdisablebutton(true);
+        }
+    }
+
     function setService(value: string, field: string) {
         setNextbutton(value==="")
         let partialf = fields;
@@ -135,53 +145,14 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlis
         setFields(partialf)
     }
     if(viewSelected==="view1"){
-        return (<div style={{ width: '100%' }}>
+        return (<div style={{marginTop: "auto",marginBottom: "auto",maxHeight: "100%"}}>
             <Breadcrumbs aria-label="breadcrumb">
                 <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
-                    {"<< Previous"}
+                    {t(langKeys.previoustext)}
                 </Link>
             </Breadcrumbs>
             <div>    
                 <div >
-                    <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad",marginBottom: 15}}>{t(langKeys.signupstep1title2)}</div>
-                    <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display:"flex"}}>
-                        <TextField
-                            className={classes.fields1}
-                            variant="outlined"
-                            margin="normal"
-                            size="small"
-                            defaultValue={fields.service.brandname}
-                            label={t(langKeys.brandname)}
-                            name="brandname"
-                            error={!!errors.brandname}
-                            helperText={errors.brandname}
-                            onChange={(e) => {
-                                let partialf = fields;
-                                partialf.service.brandname = e.target.value;
-                                setFields(partialf)
-                                setdisablebutton(!(e.target.value) || !(fields.service.brandaddress) || !(fields.service.firstname) || !(fields.service.lastname) || !(fields.service.email) 
-                                        || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber) )
-                            }}
-                        />
-                        <TextField
-                            className={classes.fields2}
-                            variant="outlined"
-                            margin="normal"
-                            size="small"
-                            defaultValue={fields.service.brandaddress}
-                            label={t(langKeys.brandaddress)}
-                            name="brandaddress"
-                            error={!!errors.brandaddress}
-                            helperText={errors.brandaddress}
-                            onChange={(e) => {
-                                let partialf = fields;
-                                partialf.service.brandaddress = e.target.value;
-                                setFields(partialf)
-                                setdisablebutton(!(e.target.value) || !(fields.service.brandname) || !(fields.service.firstname) || !(fields.service.lastname) || !(fields.service.email) 
-                                        || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber) )
-                            }}
-                        />
-                    </div>
                     <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad",marginBottom: 10}}>{t(langKeys.brandpointcontact)}</div>
                     <div style={{ textAlign: "center", fontWeight: 500, fontSize: 16, color: "grey"}}>{t(langKeys.brandpointcontact2)}</div>
                     <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display:"flex"}}>
@@ -199,9 +170,8 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlis
                             onChange={(e) => {
                                 let partialf = fields;
                                 partialf.service.firstname = e.target.value;
-                                setFields(partialf)
-                                setdisablebutton(!(e.target.value) || !(fields.service.brandname) || !(fields.service.brandaddress) || !(fields.service.lastname) || !(fields.service.email) 
-                                        || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber) )
+                                setFields(partialf);
+                                disableContinue(e.target.value);
                             }}
                         />
                         <TextField
@@ -218,9 +188,8 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlis
                             onChange={(e) => {
                                 let partialf = fields;
                                 partialf.service.lastname = e.target.value;
-                                setFields(partialf)
-                                setdisablebutton(!(e.target.value) || !(fields.service.brandname) || !(fields.service.brandaddress) || !(fields.service.firstname) || !(fields.service.email) 
-                                        || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber) )
+                                setFields(partialf);
+                                disableContinue(e.target.value);
                             }}
                         />
                     </div>
@@ -240,9 +209,9 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlis
                             onChange={(e) => {
                                 let partialf = fields;
                                 partialf.service.email = e.target.value;
-                                setFields(partialf)
-                                setdisablebutton(!(e.target.value) || !(fields.service.brandname) || !(fields.service.brandaddress) || !(fields.service.firstname) || !(fields.service.lastname) 
-                                        || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber) )
+                                setFields(partialf);
+                                setErrors(p => ({ ...p, email: e.target.value.includes('@') && e.target.value.includes('.') ? "" : t(langKeys.emailverification) }));
+                                disableContinue(e.target.value);
                             }}
                         />
                         <CssPhonemui
@@ -261,36 +230,13 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlis
                             onChange={(e) => {
                                 let partialf = fields;
                                 partialf.service.phone = e;
-                                setFields(partialf)
-                                setdisablebutton(!(e) || !(fields.service.brandname) || !(fields.service.brandaddress) || !(fields.service.firstname) || !(fields.service.lastname) 
-                                        || !(fields.service.email) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber) )
+                                setFields(partialf);
+                                disableContinue(e);
                             }}
                         />
                     </div>
                     <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey",marginLeft: "15px",marginBottom: "15px"}}>{t(langKeys.emailcondition)}</div>
                     <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad",marginBottom: 10}}>{t(langKeys.whatsappinformation)}</div>
-                    <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display:"flex"}}>
-                        <TextField
-                            className={classes.fields3}
-                            variant="outlined"
-                            margin="normal"
-                            fullWidth
-                            size="small"
-                            defaultValue={fields.service.customerfacebookid}
-                            label={t(langKeys.customerfacebookid)}
-                            name="customerfacebookid"
-                            error={!!errors.customerfacebookid}
-                            helperText={errors.customerfacebookid}
-                            onChange={(e) => {
-                                let partialf = fields;
-                                partialf.service.customerfacebookid = e.target.value;
-                                setFields(partialf)
-                                setdisablebutton(!(e.target.value) || !(fields.service.brandname) || !(fields.service.brandaddress) || !(fields.service.firstname) || !(fields.service.lastname) 
-                                        || !(fields.service.email) || !(fields.service.phone) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber) )
-                            }}
-                        />
-                    </div>
-                    <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey",marginLeft: "15px",marginBottom: "15px"}}>{t(langKeys.whatsappinformation2)}</div>
                     <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display:"flex"}}>
                         <TextField
                             className={classes.fields3}
@@ -306,9 +252,8 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlis
                             onChange={(e) => {
                                 let partialf = fields;
                                 partialf.service.phonenumberwhatsappbusiness = e.target.value;
-                                setFields(partialf)
-                                setdisablebutton(!(e.target.value) || !(fields.service.brandname) || !(fields.service.brandaddress) || !(fields.service.firstname) || !(fields.service.lastname) 
-                                        || !(fields.service.email) || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.nameassociatednumber) )
+                                setFields(partialf);
+                                disableContinue(e.target.value);
                             }}
                         />
                     </div>
@@ -328,14 +273,13 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlis
                             onChange={(e) => {
                                 let partialf = fields;
                                 partialf.service.nameassociatednumber = e.target.value;
-                                setFields(partialf)
-                                setdisablebutton(!(e.target.value) || !(fields.service.brandname) || !(fields.service.brandaddress) || !(fields.service.firstname) || !(fields.service.lastname) 
-                                        || !(fields.service.email) || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) )
+                                setFields(partialf);
+                                disableContinue(e.target.value);
                             }}
                         />
                     </div>
                     <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey",marginLeft: "15px",marginBottom: "20px"}}>{t(langKeys.whatsappinformation4)}</div>
-                    <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey",marginLeft: "15px",marginBottom: "15px"}}>* {t(langKeys.whatsappinformationimportant)}</div>
+                    <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey",marginLeft: "15px",marginBottom: "15px"}}><b>*{t(langKeys.whatsappsubtitle1)}</b></div>
                     <div style={{ width: "100%", margin: "0px 15px"}}>
                         <Button
                             onClick={() => { checkissues() }}
@@ -352,10 +296,10 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlis
             </div>
         </div>)
     }else if (viewSelected==="view2" && provider==="DIALOG"){
-        return (<div style={{ width: '100%' }}>
+        return (<div style={{marginTop: "auto",marginBottom: "auto",maxHeight: "100%"}}>
             <Breadcrumbs aria-label="breadcrumb">
                 <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
-                    {"<< Previous"}
+                    {t(langKeys.previoustext)}
                 </Link>
             </Breadcrumbs>
             <div>
@@ -382,10 +326,10 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlis
         </div>)
     }
     else{
-        return (<div style={{ width: '100%' }}>
+        return (<div style={{marginTop: "auto",marginBottom: "auto",maxHeight: "100%"}}>
             <Breadcrumbs aria-label="breadcrumb">
                 <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view1") }}>
-                    {"<< Previous"}
+                    {t(langKeys.previoustext)}
                 </Link>
             </Breadcrumbs>
             <div>

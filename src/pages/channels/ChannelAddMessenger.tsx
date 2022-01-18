@@ -131,7 +131,7 @@ export const ChannelAddMessenger: FC = () => {
             <div style={{ width: '100%' }}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => {e.preventDefault();history.push(paths.CHANNELS_ADD, whatsAppData)}}>
-                        {"<< Previous"}
+                        {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>
@@ -142,7 +142,7 @@ export const ChannelAddMessenger: FC = () => {
                         <FacebookLogin
                             appId={apiUrls.FACEBOOKAPP}
                             autoLoad={false}
-                            buttonStyle={{ marginLeft: "calc(50% - 135px)", marginTop: "30px", marginBottom: "20px", backgroundColor: "#7721ad", textTransform: "none" }}
+                            buttonStyle={{ marginLeft: "calc(50% - 174px)", marginTop: "16px", marginBottom: "16px", backgroundColor: "#7721ad", textTransform: "none", display: "flex", textAlign: "center", justifyItems: "center", alignItems: "center", justifyContent: "center" }}
                             fields="name,email,picture"
                             scope="pages_manage_engagement,pages_manage_metadata,pages_messaging,pages_read_engagement,pages_read_user_content,pages_show_list,public_profile"
                             callback={processFacebookCallback}
@@ -168,7 +168,7 @@ export const ChannelAddMessenger: FC = () => {
             <div style={{ width: '100%' }}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view1") }}>
-                        {"<< Previous"}
+                        {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>
@@ -205,7 +205,7 @@ export const ChannelAddMessenger: FC = () => {
             <div style={{ width: '100%' }}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view2") }}>
-                        {"<< Previous"}
+                        {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>

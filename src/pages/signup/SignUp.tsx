@@ -133,6 +133,7 @@ export const SignUp: FC = () => {
         fiscaladdress: "",
         billingcontact: "",
         billingcontactmail: "",
+        autosendinvoice: true,
     });
     function setDefaultMainData(){
         setMainData((prev)=>({
@@ -153,6 +154,7 @@ export const SignUp: FC = () => {
             fiscaladdress: "",
             billingcontact: "",
             billingcontactmail: "",
+            autosendinvoice: true,
         }))
     }
     function setDefaultMainData2(){
@@ -199,7 +201,9 @@ export const SignUp: FC = () => {
             if(step===4){
                 setrequestchannels([])
             }
-            if(step===2.5){
+            if(step===3){
+                setStep(2.5)
+            } else if(step===2.5){
                 setDefaultMainData2()
                 setStep(2)
             }else{

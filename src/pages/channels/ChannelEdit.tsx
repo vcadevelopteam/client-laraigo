@@ -102,7 +102,7 @@ const ChannelEdit: FC = () => {
         <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
             <Breadcrumbs aria-label="breadcrumb">
                 <Link color="textSecondary" key="mainview" href="/" onClick={handleGoBack}>
-                    {"<< Previous"}
+                    {t(langKeys.previoustext)}
                 </Link>
             </Breadcrumbs>
             <div>

@@ -206,11 +206,6 @@ const invocesBread = [
     { id: "view-2", name: "Invoice detail" }
 ];
 
-const paymentBread = [
-    { id: "view-1", name: "Payment" },
-    { id: "view-2", name: "Payment detail" }
-];
-
 const YEARS = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }]
 const MONTHS = [{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" },]
 
@@ -293,7 +288,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { totalcharge } = props.cell.row.original;
-                    return (totalcharge || 0).toFixed(4);
+                    return (totalcharge || 0).toFixed(2);
                 }
             },
         ],
@@ -646,9 +641,9 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                     onChange={(_, value) => setPageSelected(value)}
                 >
                     <AntTab label={t(langKeys.generalinformation)}/>
-                    <AntTab label={t(langKeys.agent_plural)}/>
+                    <AntTab label={t(langKeys.agents_plural)}/>
                     <AntTab label={t(langKeys.channel_plural)}/>
-                    <AntTab label={t(langKeys.conversation)}/>
+                    <AntTab label={t(langKeys.conversation_plural)}/>
                     <AntTab label={t(langKeys.contact_plural)}/>
                     <AntTab label={t(langKeys.messaging)}/>
                     <AntTab label="Extras"/>
@@ -697,7 +692,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             />
                         }
                         { edit ? <FieldSelect
-                            label={t(langKeys.supportplan)}
+                            label={t(langKeys.contractedsupportplan)}
                             className="col-6"
                             valueDefault={getValues("supportplan")}
                             variant="outlined"
@@ -709,7 +704,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         /> :
                             <FieldView
                             className="col-6"
-                            label={t(langKeys.supportplan)}
+                            label={t(langKeys.contractedsupportplan)}
                             value={getValues("supportplan")}
                             />
                         }
@@ -741,7 +736,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                             className="col-6"
                             label={t(langKeys.costbasedonthesupportplan)}
-                            value={getValues('supportbasicfee').toFixed(4)}
+                            value={getValues('supportbasicfee').toFixed(2)}
                             />
                         }
                     </div>
@@ -749,7 +744,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         <FieldView
                             className="col-6"
                             label={t(langKeys.totalcharge)}
-                            value={getValues('totalcharge')}
+                            value={getValues('totalcharge').toFixed(2)}
                         />
                     </div>
                 </div>}
@@ -799,13 +794,13 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                                 className="col-6"
                                 label={t(langKeys.useradditionalfee)}
-                                value={getValues('useradditionalfee').toFixed(4)}
+                                value={getValues('useradditionalfee').toFixed(2)}
                             />
                         }
                         <FieldView
                             className="col-6"
                             label={t(langKeys.useradditionalcharge)}
-                            value={getValues("useradditionalcharge").toFixed(4)}
+                            value={getValues("useradditionalcharge").toFixed(2)}
                         />
                     </div>
                 </div>}
@@ -822,7 +817,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                                 className="col-6"
                                 label={t(langKeys.channelfreequantity)}
-                                value={getValues('channelfreequantity').toFixed(4)}
+                                value={getValues('channelfreequantity')}
                             />
                         }
                         { edit ? <FieldEdit
@@ -856,7 +851,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         <FieldView
                             className="col-6"
                             label={t(langKeys.channelcharge)}
-                            value={getValues("channelcharge").toFixed(4)}
+                            value={getValues("channelcharge").toFixed(2)}
                         />
                     </div>
                 </div>}
@@ -894,7 +889,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationclientwhatcharge)}
-                            value={getValues("conversationclientwhatcharge").toFixed(4)}
+                            value={getValues("conversationclientwhatcharge").toFixed(2)}
                         />
                     </div>
                     <div className="row-zyx">
@@ -918,14 +913,14 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationcompanywhatcharge)}
-                            value={getValues("conversationcompanywhatcharge").toFixed(4)}
+                            value={getValues("conversationcompanywhatcharge").toFixed(2)}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationwhatcharge)}
-                            value={getValues("conversationwhatcharge").toFixed(4)}
+                            value={getValues("conversationwhatcharge").toFixed(2)}
                         />
                     </div>
                 </div>}
@@ -969,7 +964,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         <FieldView
                             className="col-6"
                             label={t(langKeys.clientadditionalcharge)}
-                            value={getValues("clientadditionalcharge").toFixed(4)}
+                            value={getValues("clientadditionalcharge").toFixed(2)}
                         />
                     </div>
                 </div>}
@@ -1013,7 +1008,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         <FieldView
                             className="col-6"
                             label={t(langKeys.smscost)}
-                            value={getValues("smscost").toFixed(4)}
+                            value={getValues("smscost").toFixed(2)}
                         />
                     </div>
                     <div className="row-zyx">
@@ -1055,7 +1050,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         <FieldView
                             className="col-6"
                             label={t(langKeys.mailcost)}
-                            value={getValues("mailcost").toFixed(4)}
+                            value={getValues("mailcost").toFixed(2)}
                         />
                     </div>
                 </div>}
@@ -1752,7 +1747,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { totalamount } = props.cell.row.original;
-                    return (totalamount || 0).toFixed(4);
+                    return (totalamount || 0).toFixed(2);
                 }
             },
             {
@@ -1767,7 +1762,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                     return (
                         <Fragment>
                             <div>
-                                {<span onClick={() => {setRowSelected(selectedrow); setRowSelect(true)}} style={{ display: "block", cursor: "pointer", color: "blue", textDecoration: "underline" }}>{t(langKeys.gotoreport)}</span>}
+                                {<span onClick={() => {setRowSelected(selectedrow); setRowSelect(true)}} style={{ display: "block", cursor: "pointer", color: "blue", textDecoration: "underline" }}>{t(langKeys.toreport)}</span>}
                             </div>
                         </Fragment>
                     )
@@ -1778,14 +1773,14 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                 accessor: 'docnumber',
                 Cell: (props: any) => {
                     const urlpdf = props.cell.row.original.urlpdf;
-                    const docnumber = props.cell.row.original.docnumber;
+                    const docnumber = (props.cell.row.original.serie ? props.cell.row.original.serie : 'X000') + '-' + (props.cell.row.original.correlative ? props.cell.row.original.correlative.toString().padStart(8, '0') : '00000000');
                     return (
                         <Fragment>
                             <div>
                                 { (urlpdf ?
                                     <a href={urlpdf} target="_blank" style={{ display: "block" }} rel="noreferrer">{docnumber}</a>
                                     :
-                                    <b style={{ display: "block" }}>{`0000-0000`}</b>)
+                                    <b style={{ display: "block" }}>{`X000-00000000`}</b>)
                                 }
                             </div>
                         </Fragment>
@@ -1801,7 +1796,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                         <Fragment>
                             <div>
                                 { (urlxml ?
-                                    <a href={urlxml} target="_blank" style={{ display: "block" }} rel="noreferrer">{t(langKeys.xmldocument)}</a>
+                                    <a href={urlxml} target="_blank" style={{ display: "block" }} rel="noreferrer">{t(langKeys.xmldocumentopen)}</a>
                                     :
                                     <b style={{ display: "block" }}>{t(langKeys.pendingpayment)}</b>)
                                 }
@@ -1819,7 +1814,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                         <Fragment>
                             <div>
                                 { (urlcdr ?
-                                    <a href={urlcdr} target="_blank" style={{ display: "block" }} rel="noreferrer">{t(langKeys.cdrdocument)}</a>
+                                    <a href={urlcdr} target="_blank" style={{ display: "block" }} rel="noreferrer">{t(langKeys.cdrdocumentopen)}</a>
                                     :
                                     <b style={{ display: "block" }}>{t(langKeys.pendingpayment)}</b>)
                                 }
@@ -1948,11 +1943,47 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
     const [comments, setComments] = useState('');
     const [purchaseOrder, setPurchaseOrder] = useState('');
     const [creditType, setCreditType] = useState('');
+    const [commentsError, setCommentsError] = useState('');
+    const [purchaseOrderError, setPurchaseOrderError] = useState('');
+    const [paymentDisabled, setPaymentDisabled] = useState(false);
     
     const handleCulqiSuccess = () => {
         fetchData();
         setViewSelected("view-1");
     }
+
+    const handlePurchaseOrder = (value: any) => {
+        setPurchaseOrder(value);
+        if (value.length > 15) {
+            setPurchaseOrderError(t(langKeys.validation15char));
+            setPaymentDisabled(true);
+        }
+        else {
+            setPurchaseOrderError('');
+            if (comments.length <= 150) {
+                setPaymentDisabled(false);
+            }
+        }
+    }
+
+    const handleComments = (value: any) => {
+        setComments(value);
+        if (value.length > 150) {
+            setCommentsError(t(langKeys.validation150char));
+            setPaymentDisabled(true);
+        }
+        else {
+            setCommentsError('');
+            if (purchaseOrder.length <= 15) {
+                setPaymentDisabled(false);
+            }
+        }
+    }
+
+    const paymentBread = [
+        { id: "view-1", name: t(langKeys.payment) },
+        { id: "view-2", name: t(langKeys.paymentdetail) }
+    ];
 
     return (
         <div style={{ width: '100%' }}>
@@ -1973,7 +2004,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                                 type="CHARGE"
                                 invoiceid={data?.invoiceid}
                                 title={data?.description}
-                                description=""
+                                description={data?.productdescription}
                                 currency={data?.currency}
                                 amount={data?.totalamount * 100}
                                 callbackOnSuccess={() => { handleCulqiSuccess() }}
@@ -1981,22 +2012,31 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                                 purchaseorder={purchaseOrder}
                                 comments={comments}
                                 tipocredito={creditType}
+                                disabled={paymentDisabled}
+                                successmessage={t(langKeys.culqipaysuccess)}
                             ></CulqiModal>
                         }
                     </div>
                 </div>
                 <div style={{ backgroundColor: 'white', padding: 16 }}>
-                <div className="row-zyx">
-                    <FieldView
-                        className="col-6"
-                        label={t(langKeys.servicedescription)}
-                        value={data?.description || ''}
-                    />
-                    <FieldView
-                        className="col-6"
-                        label={t(langKeys.totalamount)}
-                        value={(data?.totalamount || 0).toFixed(4)}
-                    />
+                    <div className="row-zyx">
+                        <FieldView
+                            className={classes.section}
+                            label={''}
+                            value={t(langKeys.payment_information)}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.servicedescription)}
+                            value={data?.productdescription || ''}
+                        />
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.totalamount)}
+                            value={(data?.currency === 'USD' ? '$' : 'S/')+formatNumber((data?.totalamount || 0))}
+                        />
                     </div>
                     <div className="row-zyx">
                         <FieldView
@@ -2009,34 +2049,38 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                         <FieldView
                             className={classes.commentary}
                             label={''}
-                            value={t(langKeys.additionalinformation1)}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldView
-                            className={classes.commentary}
-                            label={''}
                             value={t(langKeys.additionalinformation2)}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.purchaseorder)}
-                            onChange={(value) => setPurchaseOrder(value)}
+                            onChange={(value) => handlePurchaseOrder(value)}
                             valueDefault={purchaseOrder}
-                            className="col-6"
+                            error={purchaseOrderError}
+                            className="col-12"
                         />
+                    </div>
+                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.comments)}
-                            onChange={(value) => setComments(value)}
+                            onChange={(value) => handleComments(value)}
                             valueDefault={comments}
-                            className="col-6"
+                            error={commentsError}
+                            className="col-12"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldView
+                            className={classes.commentary}
+                            label={''}
+                            value={t(langKeys.additionalinformation1)}
                         />
                     </div>
                     <div className='row-zyx'>
                         <FieldSelect
                             label={t(langKeys.credittype)}
-                            className={classes.fieldsfilter}
+                            className="col-12"
                             valueDefault={''}
                             variant="outlined"
                             onChange={(value) => setCreditType(value?.value)}

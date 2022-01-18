@@ -74,8 +74,13 @@ export const useStyles = makeStyles((theme) => ({
             width: '100%',
             justifyContent: 'center',
         }
-    }
+    },
+
 }));
+
+const openprivacypolicies = () => {
+    window.open("/privacy", '_blank');
+}
 
 export function Copyright() {
     const { t } = useTranslation();
@@ -85,7 +90,7 @@ export function Copyright() {
                 {'Copyright © '} Laraigo {new Date().getFullYear()}
             </Typography>
             <Typography variant="body2" color="textPrimary" align="center">
-                <a href="https://app.laraigo.com/privacy" target="_blank" rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a>
+                <a rel="noopener noreferrer" style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={openprivacypolicies}>{t(langKeys.privacypoliciestitle)}</a>
             </Typography>
         </Fragment>
     );
@@ -111,7 +116,9 @@ const SignIn = () => {
 
     const handleClickShowPassword = () => setShowPassword(!showPassword);
 
-    const handleSignUp = () => history.push(paths.SIGNUPBASIC);
+    const handleSignUp = () => {
+        window.open(paths.SIGNUPBASIC, "_self");
+    }
 
     const handleMouseDownPassword = (event: any) => event.preventDefault();
 
@@ -166,102 +173,109 @@ const SignIn = () => {
     }, [resLogin]);
 
     return (
-        <Container component="main" maxWidth="xs" className={classes.containerLogin}>
-            <div className={classes.childContainer}>
-                <img src="./Laraigo-vertical-logo-name.svg" style={{ height: 200 }} alt="logo" />
-                <div className={classes.paper}>
-                    {resLogin.error && (
-                        <Alert className={classes.alertheader} variant="filled" severity="error">
-                            {t(resLogin.code || "error_unexpected_error")}
-                        </Alert>
-                    )}
-                    <form
-                        className={classes.form}
-                        onSubmit={onSubmitLogin}
-                    >
-                        <TextField
-                            variant="outlined"
-                            margin="normal"
-                            fullWidth
-                            required
-                            value={dataAuth.username}
-                            onChange={e => setDataAuth(p => ({ ...p, username: e.target.value.trim() }))}
-                            label={t(langKeys.username)}
-                            name="usr"
-                        />
-                        <TextField
-                            variant="outlined"
-                            margin="normal"
-                            fullWidth
-                            required
-                            label={t(langKeys.password)}
-                            name="password"
-                            type={showPassword ? 'text' : 'password'}
-                            autoComplete="current-password"
-                            value={dataAuth.password}
-                            onChange={e => setDataAuth(p => ({ ...p, password: e.target.value.trim() }))}
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            aria-label="toggle password visibility"
-                                            onClick={handleClickShowPassword}
-                                            onMouseDown={handleMouseDownPassword}
-                                            edge="end"
-                                        >
-                                            {showPassword ? <Visibility /> : <VisibilityOff />}
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
-                        {!resLogin.loading ?
-                            <div style={{ alignItems: 'center' }}>
-                                <Button
-                                    type="submit"
-                                    fullWidth
-                                    variant="contained"
-                                    color="primary"
-                                    className={classes.submit}>
-                                    <Trans i18nKey={langKeys.logIn} />
-                                </Button>
-                                <FacebookLogin
-                                    appId={apiUrls.FACEBOOKAPP}
-                                    callback={onAuthWithFacebook}
-                                    buttonStyle={{ borderRadius: '3px', height: '48px', display: 'flex', alignItems: 'center', 'fontSize': '14px', fontStyle: 'normal', fontWeight: 600, textTransform: 'none', justifyContent: 'center', width: '100%', marginBottom: '16px' }}
+        <>
+            <meta name="google-signin-client_id" content="792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com" />
+            <script src="https://apis.google.com/js/platform.js" async defer></script>
+            <Container component="main" maxWidth="xs" className={classes.containerLogin}>
+                <div className={classes.childContainer}>
+                    <img src="./Laraigo-vertical-logo-name.svg" style={{ height: 200 }} alt="logo" />
+                    <div className={classes.paper}>
+                        {resLogin.error && (
+                            <Alert className={classes.alertheader} variant="filled" severity="error">
+                                {t(resLogin.code || "error_unexpected_error")}
+                            </Alert>
+                        )}
+                        <form
+                            className={classes.form}
+                            onSubmit={onSubmitLogin}
+                        >
+                            <TextField
+                                variant="outlined"
+                                margin="normal"
+                                fullWidth
+                                required
+                                value={dataAuth.username}
+                                onChange={e => setDataAuth(p => ({ ...p, username: e.target.value.trim() }))}
+                                label={t(langKeys.username)}
+                                name="usr"
+                            />
+                            <TextField
+                                variant="outlined"
+                                margin="normal"
+                                fullWidth
+                                required
+                                label={t(langKeys.password)}
+                                name="password"
+                                type={showPassword ? 'text' : 'password'}
+                                autoComplete="current-password"
+                                value={dataAuth.password}
+                                onChange={e => setDataAuth(p => ({ ...p, password: e.target.value.trim() }))}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={handleClickShowPassword}
+                                                onMouseDown={handleMouseDownPassword}
+                                                edge="end"
+                                            >
+                                                {showPassword ? <Visibility /> : <VisibilityOff />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                            {!resLogin.loading ?
+                                <div style={{ alignItems: 'center' }}>
+                                    <Button
+                                        type="submit"
+                                        fullWidth
+                                        variant="contained"
+                                        color="primary"
+                                        className={classes.submit}>
+                                        <Trans i18nKey={langKeys.logIn} />
+                                    </Button>
+                                    <FacebookLogin
+                                        appId={apiUrls.FACEBOOKAPP}
+                                        callback={onAuthWithFacebook}
+                                        buttonStyle={{ borderRadius: '3px', height: '48px', display: 'flex', alignItems: 'center', 'fontSize': '14px', fontStyle: 'normal', fontWeight: 600, textTransform: 'none', justifyContent: 'center', width: '100%', marginBottom: '16px' }}
 
-                                    textButton={t(langKeys.login_with_facebook)}
-                                    icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
-                                />
-                                <div className={classes.buttonGoogle}>
-                                    <GoogleLogin
-                                        clientId="792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com"
-                                        buttonText={t(langKeys.login_with_google)}
-                                        style={{ justifyContent: 'center', width: '100%' }}
-                                        onSuccess={onGoogleLoginSucess}
-                                        onFailure={onGoogleLoginFailure}
-                                        cookiePolicy={'single_host_origin'}
+                                        textButton={t(langKeys.login_with_facebook)}
+                                        icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
                                     />
-                                </div>
-                            </div> :
-                            <CircularProgress className={classes.progress} />
-                        }
-                        <Grid container>
-                            <Grid item>
-                                <p>
-                                    <Trans i18nKey={langKeys.newRegisterMessage} />
-                                    <span style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={handleSignUp}>{t(langKeys.newRegisterMessage2)}</span>
-                                </p>
+                                    <div className={classes.buttonGoogle}>
+                                        <GoogleLogin
+                                            clientId="792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com"
+                                            buttonText={t(langKeys.login_with_google)}
+                                            style={{ justifyContent: 'center', width: '100%' }}
+                                            onSuccess={onGoogleLoginSucess}
+                                            onFailure={onGoogleLoginFailure}
+                                            cookiePolicy={'single_host_origin'}
+                                            accessType='online'
+                                            autoLoad={false}
+                                        />
+                                    </div>
+                                </div> :
+                                <CircularProgress className={classes.progress} />
+                            }
+                            <Grid container>
+                                <Grid item>
+                                    <p>
+                                        <Trans i18nKey={langKeys.newRegisterMessage} />
+                                        <span style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={handleSignUp}>{t(langKeys.newRegisterMessage2)}</span>
+                                    </p>
+                                </Grid>
                             </Grid>
-                        </Grid>
-                    </form>
+                        </form>
+                    </div>
+                    <Box mt={8}>
+                        <Copyright />
+                    </Box>
                 </div>
-                <Box mt={8}>
-                    <Copyright />
-                </Box>
-            </div>
-            <Popus />
-        </Container>)
+                <Popus />
+            </Container>
+        </>
+        )
 }
 
 export default SignIn;

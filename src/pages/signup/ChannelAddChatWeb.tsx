@@ -781,7 +781,7 @@ const templates: { [x: string]: FieldTemplate } = {
     },
     [SUPPLUNUMBER_FIELD]: {
         text: "Supply Number",
-        node: (onClose, data) => <NameTemplate data={data} onClose={() => onClose(SUPPLUNUMBER_FIELD)} key={SUPPLUNUMBER_FIELD} title={"Supply Number"} />,
+        node: (onClose, data) => <NameTemplate data={data} onClose={() => onClose(SUPPLUNUMBER_FIELD)} key={SUPPLUNUMBER_FIELD} title={<Trans i18nKey={langKeys.supplynumber} />} />,
         data: {
             field: "SUPPLYNUMBER",
             type: "text",
@@ -801,7 +801,7 @@ const templates: { [x: string]: FieldTemplate } = {
                     data={data}
                     onClose={() => onClose(CONTACT)}
                     key={CONTACT}
-                    title={"Contact"}
+                    title={<Trans i18nKey={langKeys.contact} />}
                 />
             );
         },
@@ -820,7 +820,7 @@ const templates: { [x: string]: FieldTemplate } = {
 
 const TabPanelForm: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
     const classes = useTabFormStyles();
-    const [enable, setEnable] = useState(true);
+    const [enable, setEnable] = useState(false);
     const [fieldTemplate, setFieldTemplate] = useState<string>("");
     const [fields, setFields] = useState<FieldTemplate[]>([]);
 
@@ -1467,6 +1467,9 @@ const useStyles = makeStyles(theme => ({
 
 export const ChannelAddChatWeb: FC<{setrequestchannels:(param:any)=>void,setlistchannels:(param:any)=>void,setOpenWarning:(param:any)=>void}> = ({setrequestchannels,setlistchannels,setOpenWarning}) => {
     const classes = useStyles();
+    
+    const { t } = useTranslation();
+
     const dispatch = useDispatch();
     const [tabIndex, setTabIndes] = useState('0');
     const [showFinalStep, setShowFinalStep] = useState(false);
@@ -1559,7 +1562,7 @@ export const ChannelAddChatWeb: FC<{setrequestchannels:(param:any)=>void,setlist
         })}>
             <Breadcrumbs aria-label="breadcrumb">
                 <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
-                    {"<< Previous"}
+                    {t(langKeys.previoustext)}
                 </Link>
             </Breadcrumbs>
             <div style={{ display: showFinalStep ? 'none' : 'flex', flexDirection: 'column' }}>
@@ -1652,7 +1655,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
         <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
             <Breadcrumbs aria-label="breadcrumb">
                 <Link color="textSecondary" key="mainview" href="/" onClick={handleGoBack}>
-                    {"<< Previous"}
+                    {t(langKeys.previoustext)}
                 </Link>
             </Breadcrumbs>
             <div>

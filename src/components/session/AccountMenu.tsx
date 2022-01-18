@@ -87,7 +87,7 @@ const AccountMenu: FC = () => {
         history.push('/usersettings');
     }
     const openprivacypolicies = () => {
-        window.open("https://app.laraigo.com/privacy", '_blank');
+        window.open("/privacy", '_blank');
     }
 
     const open = Boolean(anchorEl);

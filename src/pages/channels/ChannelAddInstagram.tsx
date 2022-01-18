@@ -73,6 +73,10 @@ export const ChannelAddInstagram: FC = () => {
 
     const whatsAppData = location.state as whatsAppData | null;
 
+    const openprivacypolicies = () => {
+        window.open("/privacy", '_blank');
+    }
+    
     async function finishreg() {
         setsetins(true)
         dispatch(insertChannel(fields))
@@ -131,7 +135,7 @@ export const ChannelAddInstagram: FC = () => {
             <div style={{ width: '100%' }}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => {e.preventDefault();history.push(paths.CHANNELS_ADD, whatsAppData)}}>
-                        {"<< Previous"}
+                        {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>
@@ -142,11 +146,12 @@ export const ChannelAddInstagram: FC = () => {
                         <FacebookLogin
                             appId={apiUrls.INSTAGRAMAPP}
                             autoLoad={false}
-                            buttonStyle={{ marginLeft: "calc(50% - 135px)", marginTop: "30px", marginBottom: "20px", backgroundColor: "#7721AD", textTransform: "none" }}
+                            buttonStyle={{ marginLeft: "calc(50% - 174px)", marginTop: "16px", marginBottom: "16px", backgroundColor: "#7721ad", textTransform: "none", display: "flex", textAlign: "center", justifyItems: "center", alignItems: "center", justifyContent: "center" }}
                             fields="name,email,picture"
                             scope="instagram_basic,instagram_manage_comments,instagram_manage_messages,pages_manage_metadata,pages_read_engagement,pages_show_list,public_profile"
                             callback={processFacebookCallback}
                             textButton={t(langKeys.linkinstagrampage)}
+                            icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
                             onClick={(e: any) => {
                                 e.view.window.FB.init({
                                     appId: apiUrls.INSTAGRAMAPP,
@@ -155,11 +160,10 @@ export const ChannelAddInstagram: FC = () => {
                                     version: 'v8.0'
                                 });
                             }}
-                            icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
                         />
     
                     <div style={{ textAlign: "center", color: "#969ea5", fontStyle: "italic" }}>{t(langKeys.connectinsta4)}</div>
-                    <div style={{ textAlign: "center", paddingBottom: "80px", color: "#969ea5" }}><a href="https://app.laraigo.com/privacy" target="_blank" rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
+                    <div style={{ textAlign: "center", paddingBottom: "80px", color: "#969ea5" }}><a style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={openprivacypolicies} rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
     
                 </div>
             </div>
@@ -169,7 +173,7 @@ export const ChannelAddInstagram: FC = () => {
             <div style={{ width: '100%' }}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view1") }}>
-                        {"<< Previous"}
+                        {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>
@@ -206,7 +210,7 @@ export const ChannelAddInstagram: FC = () => {
             <div style={{ width: '100%' }}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view2") }}>
-                        {"<< Previous"}
+                        {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>

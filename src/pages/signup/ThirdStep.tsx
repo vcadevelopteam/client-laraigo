@@ -35,7 +35,7 @@ const useChannelAddStyles = makeStyles(theme => ({
             fontFamily: "Helvetica,sans-serif!important",
             width: "50%",
             marginLeft: "25%",
-            marginBottom: '20px'
+            marginBottom: '20px',
         }
     },
     separator: {
@@ -360,10 +360,10 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
     };
     return (
         <>
-            <div>
+            <div style={{marginTop: "auto",marginBottom: "auto",maxHeight: "100%"}}>
                     <Breadcrumbs aria-label="breadcrumb">
                         <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
-                            {"<< Previous"}
+                            {t(langKeys.previoustext)}
                         </Link>
                     </Breadcrumbs>
                 <div className={classes.title}>{t(langKeys.channeladdtitle)}</div>

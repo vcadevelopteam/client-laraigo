@@ -105,13 +105,13 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
     return (
-        <div >
+        <div style={{marginTop: "auto",marginBottom: "auto",maxHeight: "100%"}}>
             <Breadcrumbs aria-label="breadcrumb">
                 <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
-                    {"<< Previous"}
+                    {t(langKeys.previoustext)}
                 </Link>
             </Breadcrumbs>
-            <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad" }}>{t(langKeys.signupstep1title2)}</div>
+            <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad" , marginTop: 15}}>{t(langKeys.signupstep1title2)}</div>
             <div >
                 <TextField
                     variant="outlined"
@@ -139,8 +139,9 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
                 />                
                 <FieldSelect
                     onChange={(value) => {
-                        setErrors(p => ({ ...p, country: !(value?.code) ? t(langKeys.field_required) : "" }))
-                        setMainData((p:any) => ({ ...p, doctype: value?.code==="PE"?1:0, country: value?.code || "", currency: value?.currencycode || "", countryname: value?.description }))
+                        setErrors(p => ({ ...p, country: !(value?.code) ? t(langKeys.field_required) : "" }));
+                        setMainData((p:any) => ({ ...p, doctype: value?.code==="PE"?1:0, country: value?.code || "", currency: value?.currencycode || "", countryname: value?.description }));
+                        setcountrycode(value?.code || "");
                     }}
                     variant="outlined"
                     className="col-6"

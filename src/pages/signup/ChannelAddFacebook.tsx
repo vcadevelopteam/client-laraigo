@@ -58,6 +58,10 @@ export const ChannelAddFacebook: FC<{setrequestchannels:(param:any)=>void,setlis
         }
     })
 
+    const openprivacypolicies = () => {
+        window.open("/privacy", '_blank');
+    }
+    
     async function finishreg() {
         setrequestchannels((p:any)=>([...p,fields]))
         setlistchannels((p:any)=>({...p,facebook:false}))
@@ -96,10 +100,10 @@ export const ChannelAddFacebook: FC<{setrequestchannels:(param:any)=>void,setlis
     }
     if(viewSelected==="view1"){
         return (
-            <div style={{ width: '100%' }}>
+            <div style={{marginTop: "auto",marginBottom: "auto",maxHeight: "100%"}}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
-                        {"<< Previous"}
+                        {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>
@@ -110,7 +114,7 @@ export const ChannelAddFacebook: FC<{setrequestchannels:(param:any)=>void,setlis
                         <FacebookLogin
                             appId={apiUrls.FACEBOOKAPP}
                             autoLoad={false}
-                            buttonStyle={{ marginLeft: "calc(50% - 135px)", marginTop: "30px", marginBottom: "20px", backgroundColor: "#7721ad", textTransform: "none" }}
+                            buttonStyle={{ marginLeft: "calc(50% - 174px)", marginTop: "16px", marginBottom: "16px", backgroundColor: "#7721ad", textTransform: "none", display: "flex", textAlign: "center", justifyItems: "center", alignItems: "center", justifyContent: "center" }}
                             fields="name,email,picture"
                             scope="pages_manage_engagement,pages_manage_metadata,pages_messaging,pages_read_engagement,pages_read_user_content,pages_show_list,public_profile"
                             callback={processFacebookCallback}
@@ -127,17 +131,17 @@ export const ChannelAddFacebook: FC<{setrequestchannels:(param:any)=>void,setlis
                         />
     
                     <div style={{ textAlign: "center", color: "#969ea5", fontStyle: "italic" }}>{t(langKeys.connectface4)}</div>
-                    <div style={{ textAlign: "center", paddingBottom: "80px", color: "#969ea5" }}><a href="https://app.laraigo.com/privacy" target="_blank" rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
+                    <div style={{ textAlign: "center", paddingBottom: "80px", color: "#969ea5" }}><a style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={openprivacypolicies} rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
     
                 </div>
             </div>
         )
     }else if(viewSelected==="view2"){
         return (
-            <div style={{ width: '100%' }}>
+            <div style={{marginTop: "auto",marginBottom: "auto",maxHeight: "100%"}}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view1") }}>
-                        {"<< Previous"}
+                        {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>
@@ -171,10 +175,10 @@ export const ChannelAddFacebook: FC<{setrequestchannels:(param:any)=>void,setlis
         )
     }else{
         return (
-            <div style={{ width: '100%' }}>
+            <div style={{marginTop: "auto",marginBottom: "auto",maxHeight: "100%"}}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view2") }}>
-                        {"<< Previous"}
+                        {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>

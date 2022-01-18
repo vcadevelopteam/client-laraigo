@@ -73,6 +73,10 @@ export const ChannelAddFacebook: FC = () => {
 
     const whatsAppData = location.state as whatsAppData | null;
 
+    const openprivacypolicies = () => {
+        window.open("/privacy", '_blank');
+    }
+
     async function finishreg() {
         setsetins(true)
         dispatch(insertChannel(fields))
@@ -131,7 +135,7 @@ export const ChannelAddFacebook: FC = () => {
             <div style={{ width: '100%' }}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => {e.preventDefault();history.push(paths.CHANNELS_ADD, whatsAppData)}}>
-                        {"<< Previous"}
+                        {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>
@@ -142,7 +146,7 @@ export const ChannelAddFacebook: FC = () => {
                         <FacebookLogin
                             appId={apiUrls.FACEBOOKAPP}
                             autoLoad={false}
-                            buttonStyle={{ marginLeft: "calc(50% - 135px)", marginTop: "30px", marginBottom: "20px", backgroundColor: "#7721ad", textTransform: "none" }}
+                            buttonStyle={{ marginLeft: "calc(50% - 174px)", marginTop: "16px", marginBottom: "16px", backgroundColor: "#7721ad", textTransform: "none", display: "flex", textAlign: "center", justifyItems: "center", alignItems: "center", justifyContent: "center" }}
                             fields="name,email,picture"
                             scope="pages_manage_engagement,pages_manage_metadata,pages_messaging,pages_read_engagement,pages_read_user_content,pages_show_list,public_profile"
                             callback={processFacebookCallback}
@@ -159,7 +163,7 @@ export const ChannelAddFacebook: FC = () => {
                         />
     
                     <div style={{ textAlign: "center", color: "#969ea5", fontStyle: "italic" }}>{t(langKeys.connectface4)}</div>
-                    <div style={{ textAlign: "center", paddingBottom: "80px", color: "#969ea5" }}><a href="https://app.laraigo.com/privacy" target="_blank" rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
+                    <div style={{ textAlign: "center", paddingBottom: "80px", color: "#969ea5" }}><a style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={openprivacypolicies} rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
     
                 </div>
             </div>
@@ -169,7 +173,7 @@ export const ChannelAddFacebook: FC = () => {
             <div style={{ width: '100%' }}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view1") }}>
-                        {"<< Previous"}
+                        {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>
@@ -207,7 +211,7 @@ export const ChannelAddFacebook: FC = () => {
             <div style={{ width: '100%' }}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view2") }}>
-                        {"<< Previous"}
+                        {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>

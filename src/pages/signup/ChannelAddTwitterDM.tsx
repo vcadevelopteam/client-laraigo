@@ -64,10 +64,10 @@ export const ChannelAddTwitterDM: FC<{setrequestchannels:(param:any)=>void,setli
     }
     if(viewSelected==="view1"){
         return (
-            <div style={{ width: '100%' }}>
+            <div style={{marginTop: "auto",marginBottom: "auto",maxHeight: "100%"}}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
-                        {"<< Previous"}
+                        {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>                
                 <div>
@@ -147,10 +147,10 @@ export const ChannelAddTwitterDM: FC<{setrequestchannels:(param:any)=>void,setli
         )
     }else if(viewSelected==="view2"){
         return (
-            <div style={{ width: '100%' }}>
+            <div style={{marginTop: "auto",marginBottom: "auto",maxHeight: "100%"}}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view1") }}>
-                        {"<< Previous"}
+                        {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>
@@ -189,10 +189,10 @@ export const ChannelAddTwitterDM: FC<{setrequestchannels:(param:any)=>void,setli
         )
     }else{
         return (
-            <div style={{ width: '100%' }}>
+            <div style={{marginTop: "auto",marginBottom: "auto",maxHeight: "100%"}}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view2") }}>
-                        {"<< Previous"}
+                        {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>
