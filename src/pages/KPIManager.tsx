@@ -301,7 +301,8 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
         if (waitCalc) {
             if (!executeRes.loading && !executeRes.error && executeRes.data) {
                 if (executeRes.data[0].p_success) {
-                    setDetaildata({
+                    setDetaildata((prev: any) => ({
+                        ...prev,
                         previousvalue: executeRes.data[0].p_previousvalue,
                         currentvalue: executeRes.data[0].p_currentvalue,
                         updatedate: convertLocalDate(executeRes.data[0].p_updatedate).toLocaleString(undefined, {
@@ -312,7 +313,7 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                             minute: "numeric",
                             second: "numeric"
                         })
-                    })
+                    }))
                     fetchData && fetchData();
                 }
                 else {
