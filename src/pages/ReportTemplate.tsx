@@ -448,7 +448,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.report_name).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));

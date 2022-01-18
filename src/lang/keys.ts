@@ -900,10 +900,6 @@ export const langKeys = {
     type_ocupation_998: "998",
     type_ocupation_999: "999",
 
-    type_shippingtype_hsm: 'type_shippingtype_hsm',
-    type_shippingtype_mail: 'type_shippingtype_mail',
-    type_shippingtype_sms: 'type_shippingtype_sms',
-
     typepg_bigint: 'typepg_bigint',
     typepg_boolean: 'typepg_boolean',
     "typepg_character varying": 'typepg_character',
@@ -1001,6 +997,7 @@ export const langKeys = {
     result: 'result',
     closing_reason: 'closing_reason',
     reassign: 'reassign',
+    report_name: 'report_name',
     reassign_ticket: 'reassign_ticket',
     typify: 'typify',
     typify_ticket: 'typify_ticket',
@@ -1481,6 +1478,15 @@ export const langKeys = {
     report_userproductivity_filter_status: 'report_userproductivity_filter_status',
     report_userproductivity_filter_includebot: 'report_userproductivity_filter_includebot',
 
+    type_shippingtype_hsm: 'type_shippingtype_hsm',
+    type_shippingtype_mail: 'type_shippingtype_mail',
+    type_shippingtype_sms: 'type_shippingtype_sms',
+    type_shippingtype_api: 'type_shippingtype_api',
+    type_shippingtype_lead: 'type_shippingtype_lead',
+    type_shippingtype_person: 'type_shippingtype_person',
+    type_shippingtype_inbox: 'type_shippingtype_inbox',
+    type_shippingtype_chatflow: 'type_shippingtype_chatflow',
+    
     report_sentmessages_api: 'report_sentmessages_api',
     report_sentmessages_lead: 'report_sentmessages_lead',
     report_sentmessages_person: 'report_sentmessages_person',

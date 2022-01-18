@@ -172,13 +172,13 @@ const RecordHSMRecord: FC = () => {
     const { t } = useTranslation();
     const multiData = useSelector(state => state.main.multiData);
     
-    const multiDataAux = useSelector(state => state.main.multiDataAux);
+    // const multiDataAux = useSelector(state => state.main.multiDataAux);
     const classes = useStyles()
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
-    const [shippingTypesData, setshippingTypesData] = useState<any>([]);
+    // const [shippingTypesData, setshippingTypesData] = useState<any>([]);
     const [viewSelected, setViewSelected] = useState("view-1");
-    const [shippingtype, setshippingtype] = useState("");
+    // const [shippingtype, setshippingtype] = useState("");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const columns = React.useMemo(
         () => [
@@ -253,17 +253,17 @@ const RecordHSMRecord: FC = () => {
                 {
                     startdate: dateRangeCreateDate.startDate,
                     enddate: dateRangeCreateDate.endDate,
-                    type: shippingtype
+                    type: '' //shippingtype
                 }
             )
         ]))
     }
     useEffect(() => {
-        dispatch(getMultiCollectionAux([getValuesFromDomain("SHIPPINGTYPES")]));
+        // dispatch(getMultiCollectionAux([getValuesFromDomain("SHIPPINGTYPES")]));
         // search();
         return () => {
             dispatch(resetMultiMain());
-            dispatch(resetMultiMainAux());
+            // dispatch(resetMultiMainAux());
         }
     }, [])
     useEffect(() => {
@@ -271,11 +271,11 @@ const RecordHSMRecord: FC = () => {
             dispatch(showBackdrop(false))
         }
     }, [multiData])
-    useEffect(() => {
-        if (!multiDataAux.loading){
-            setshippingTypesData(multiDataAux.data[0]?.data||[])
-        }
-    }, [multiDataAux])
+    // useEffect(() => {
+    //     if (!multiDataAux.loading){
+    //         setshippingTypesData(multiDataAux.data[0]?.data||[])
+    //     }
+    // }, [multiDataAux])
 
     const handleView = (row: Dictionary) => {
         setViewSelected("view-2");
@@ -310,7 +310,7 @@ const RecordHSMRecord: FC = () => {
                                     {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
                                 </Button>
                             </DateRangePicker>
-                            <FieldSelect
+                            {/* <FieldSelect
                                 onChange={(value) => setshippingtype(value?.domainvalue||"")}
                                 label={t(langKeys.shippingtype)}
                                 loading={multiDataAux.loading}
@@ -322,7 +322,7 @@ const RecordHSMRecord: FC = () => {
                                 optionDesc="domainvalue"
                                 uset={true}
                                 prefixTranslation='type_shippingtype_'
-                            />
+                            /> */}
                             <Button
                                 disabled={multiData.loading}
                                 variant="contained"

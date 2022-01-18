@@ -37,10 +37,6 @@ interface DetailTipificationProps {
     externalSaveHandler?: ({...param}?: any) => void;
     externalCancelHandler?: ({...param}?: any) => void;
 }
-const arrayBread = [
-    { id: "view-1", name: "Tipifications" },
-    { id: "view-2", name: "Tipification detail" }
-];
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -147,7 +143,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
     const { t } = useTranslation();
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataParent = multiData[1] && multiData[1].success ? multiData[1].data : [];
+    const dataParent = multiData[3] && multiData[3].success ? multiData[3].data : [];
 
     const datachannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
     
@@ -223,6 +219,12 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
             callback
         }))
     });
+
+    
+    const arrayBread = [
+        { id: "view-1", name: t(langKeys.tipification)},
+        { id: "view-2", name: `${t(langKeys.tipification)} ${t(langKeys.detail)}` }
+    ];
 
     return (
         <div style={{ width: '100%' }}>
@@ -304,7 +306,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                                 onChange={(value) => setValue('parent', value ? value.classificationid : 0)}
                                 error={errors?.parent?.message}
                                 data={dataParent}
-                                optionDesc="title"
+                                optionDesc="description"
                                 optionValue="classificationid"
                             />
                             : <FieldView
@@ -548,16 +550,19 @@ const Tipifications: FC = () => {
         ],
         []
     );
-    const fetchData = () => dispatch(getCollection(getClassificationSel(0)));
-
-    useEffect(() => {
-        fetchData();
+    const fetchData = () => {
+        dispatch(getCollection(getClassificationSel(0)));
         dispatch(getMultiCollection([
             getValuesFromDomain("ESTADOGENERICO"),
             getParentSel(),
             getValuesFromDomain("TIPOCANAL"),
             getValuesForTree("TIPIFICACION")
         ]));
+    };
+
+    useEffect(() => {
+        fetchData();
+        
         return () => {
             dispatch(resetAllMain());
         };
