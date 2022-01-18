@@ -15,6 +15,7 @@ import { useForm } from 'react-hook-form';
 import { getCollection, resetAllMain, getMultiCollection, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
+import { DuplicateIcon } from 'icons';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -57,6 +58,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
+    console.log(edit)
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
@@ -72,7 +74,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
-            id: row?.slaid || 0,
+            id: edit? row?.slaid : 0,
             description: row?.description || '',
             company: row?.company || '',
             communicationchannelid:  row?.communicationchannelid || '',
@@ -89,7 +91,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
             usertmepercentmax: row?.usertmepercentmax || 0,
 
             organization: row?.organization || '',
-            operation: row ? "EDIT" : "INSERT"
+            operation: edit ? "EDIT" : "INSERT"
         }
     });
 
@@ -167,7 +169,6 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                             style={{ backgroundColor: "#FB5F5F" }}
                             onClick={() => setViewSelected("view-1")}
                         >{t(langKeys.back)}</Button>
-                        {edit &&
                         <Button
                             className={classes.button}
                             variant="contained"
@@ -177,7 +178,6 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                             style={{ backgroundColor: "#55BD84" }}
                         >{t(langKeys.save)}
                         </Button>
-                        }
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
@@ -356,7 +356,9 @@ const SLA: FC = () => {
                     const row = props.cell.row.original;
                     return (
                         <TemplateIcons
-                            viewFunction={() => handleView(row)}
+                            extraOption={t(langKeys.duplicate)}
+                            extraFunction={() => handleDuplicate(row)}
+                            ExtraICon={() => <DuplicateIcon width={28} style={{ fill: '#7721AD' }} />}
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
                         />
@@ -459,10 +461,10 @@ const SLA: FC = () => {
 
     const handleRegister = () => {
         setViewSelected("view-2");
-        setRowSelected({ row: null, edit: true });
+        setRowSelected({ row: null, edit: false });
     }
 
-    const handleView = (row: Dictionary) => {
+    const handleDuplicate = (row: Dictionary) => {
         setViewSelected("view-2");
         setRowSelected({ row, edit: false });
     }
