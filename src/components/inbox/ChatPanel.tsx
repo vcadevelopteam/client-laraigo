@@ -380,6 +380,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                     event: 'reassignTicket',
                     data: {
                         ...ticketSelected,
+                        usergroup: getValues('newUserGroup'),
                         isanswered: ticketSelected?.isAnswered,
                         userid: userType === "AGENT" ? 0 : agentSelected?.userid,
                         newuserid: getValues('newUserId') || 3,
@@ -460,7 +461,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                         trigger('newUserId');
                     }}
                     error={errors?.newUserGroup?.message}
-                    data={(multiData?.data?.[3]?.data || []).filter(x => x.domainvalue !== '')}
+                    data={(multiData?.data?.[3]?.data || []).filter(x => x.domainvalue !== ticketSelected?.usergroup)}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />

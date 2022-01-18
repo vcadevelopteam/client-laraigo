@@ -16,6 +16,7 @@ export interface ITicket {
     countnewmessages: number;
     postexternalid?: string | null;
     commentexternalid?: string | null;
+    usergroup?: string | null;
     replyexternalid?: string | null;
     personlastreplydate?: string | null;
     channelicon: string;
