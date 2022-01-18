@@ -36,6 +36,9 @@ const initialRange = {
     key: 'selection'
 }
 const useStyles = makeStyles((theme) => ({
+    containerHeader: {
+        padding: theme.spacing(1),
+    },
     containerDetail: {
         marginTop: theme.spacing(2),
         padding: theme.spacing(2),
@@ -139,7 +142,7 @@ const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { r
         <div style={{width: '100%'}}>
             <div className={classes.containerDetail}>
                 <TableZyx
-                    titlemodule={row?.campaigname||`${t(langKeys.recordhsmreport)} ${t(langKeys.detail)}`}
+                    titlemodule={`${row?.name_translated} (${row?.shippingdate})` || `${t(langKeys.recordhsmreport)} ${t(langKeys.detail)}`}
                     ButtonsElement={() => (
                         <Button
                             variant="contained"
@@ -179,19 +182,6 @@ const RecordHSMRecord: FC = () => {
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const columns = React.useMemo(
         () => [
-            {
-                accessor: 'inputvalidationid',
-                NoFilter: true,
-                isComponent: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <TemplateIcons
-                            editFunction={() => handleView(row)}
-                        />
-                    )
-                }
-            },
             {
                 Header: t(langKeys.shippingreason),
                 accessor: 'name_translated',
@@ -295,60 +285,62 @@ const RecordHSMRecord: FC = () => {
     if (viewSelected === "view-1") {
 
         return (
-            <TableZyx
-                onClickRow={handleView}    
-                columns={columns}
-                titlemodule={t(langKeys.recordhsmreport, { count: 2 })}
-                data={multiData.data[0]?.data.map(x => ({
-                    ...x,
-                    name_translated: x.name !== x.translationname?(t(`report_sentmessages_${x.name}`.toLowerCase()) || "").toUpperCase():x.name.toUpperCase(),
-                }))||[]}
-                ButtonsElement={() => (
-                    <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
-                        <FieldSelect
-                            onChange={(value) => setshippingtype(value?.domainvalue||"")}
-                            label={t(langKeys.shippingtype)}
-                            loading={multiDataAux.loading}
-                            variant="outlined"
-                            valueDefault={shippingtype}
-                            style={{width: "170px"}}
-                            data={shippingTypesData}
-                            optionValue="domainvalue"
-                            optionDesc="domainvalue"
-                            uset={true}
-                            prefixTranslation='type_shippingtype_'
-                        />
-                        <DateRangePicker
-                            open={openDateRangeCreateDateModal}
-                            setOpen={setOpenDateRangeCreateDateModal}
-                            range={dateRangeCreateDate}
-                            onSelect={setDateRangeCreateDate}
-                        >
-                            <Button
-                                className={classes.itemDate}
-                                startIcon={<CalendarIcon />}
-                                onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
+            <React.Fragment>
+                <div style={{ height: 10 }}></div>
+                <TableZyx
+                    onClickRow={handleView}    
+                    columns={columns}
+                    data={multiData.data[0]?.data.map(x => ({
+                        ...x,
+                        name_translated: x.name !== x.translationname?(t(`report_sentmessages_${x.name}`.toLowerCase()) || "").toUpperCase():x.name.toUpperCase(),
+                    }))||[]}
+                    ButtonsElement={() => (
+                        <div className={classes.containerHeader} style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
+                            <DateRangePicker
+                                open={openDateRangeCreateDateModal}
+                                setOpen={setOpenDateRangeCreateDateModal}
+                                range={dateRangeCreateDate}
+                                onSelect={setDateRangeCreateDate}
                             >
-                                {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
+                                <Button
+                                    className={classes.itemDate}
+                                    startIcon={<CalendarIcon />}
+                                    onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
+                                >
+                                    {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
+                                </Button>
+                            </DateRangePicker>
+                            <FieldSelect
+                                onChange={(value) => setshippingtype(value?.domainvalue||"")}
+                                label={t(langKeys.shippingtype)}
+                                loading={multiDataAux.loading}
+                                variant="outlined"
+                                valueDefault={shippingtype}
+                                style={{width: "170px"}}
+                                data={shippingTypesData}
+                                optionValue="domainvalue"
+                                optionDesc="domainvalue"
+                                uset={true}
+                                prefixTranslation='type_shippingtype_'
+                            />
+                            <Button
+                                disabled={multiData.loading}
+                                variant="contained"
+                                color="primary"
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                onClick={() => search()}
+                            >{t(langKeys.search)}
                             </Button>
-                        </DateRangePicker>
-                        <Button
-                            disabled={multiData.loading}
-                            variant="contained"
-                            color="primary"
-                            startIcon={<SearchIcon style={{ color: 'white' }} />}
-                            style={{ width: 120, backgroundColor: "#55BD84" }}
-                            onClick={() => search()}
-                        >{t(langKeys.search)}
-                        </Button>
-                    </div>
-                )}
-                download={true}
-                filterGeneral={false}
-                loading={multiData.loading}
-                register={false}
-            // fetchData={fetchData}
-            />
+                        </div>
+                    )}
+                    download={true}
+                    filterGeneral={false}
+                    loading={multiData.loading}
+                    register={false}
+                // fetchData={fetchData}
+                />
+            </React.Fragment>
         )
     }
     else if (viewSelected === "view-2") {
