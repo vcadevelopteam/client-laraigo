@@ -106,11 +106,12 @@ export const ChannelAddInstagram: FC<{setrequestchannels:(param:any)=>void,setli
                         <FacebookLogin
                             appId={apiUrls.INSTAGRAMAPP}
                             autoLoad={false}
-                            buttonStyle={{ marginLeft: "calc(50% - 135px)", marginTop: "30px", marginBottom: "20px", backgroundColor: "#7721AD", textTransform: "none" }}
+                            buttonStyle={{ marginLeft: "calc(50% - 174px)", marginTop: "16px", marginBottom: "16px", backgroundColor: "#7721ad", textTransform: "none", display: "flex", textAlign: "center", justifyItems: "center", alignItems: "center", justifyContent: "center" }}
                             fields="name,email,picture"
                             scope="instagram_basic,instagram_manage_comments,instagram_manage_messages,pages_manage_metadata,pages_read_engagement,pages_show_list,public_profile"
                             callback={processFacebookCallback}
                             textButton={t(langKeys.linkinstagrampage)}
+                            icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
                             onClick={(e: any) => {
                                 e.view.window.FB.init({
                                     appId: apiUrls.INSTAGRAMAPP,
@@ -119,7 +120,6 @@ export const ChannelAddInstagram: FC<{setrequestchannels:(param:any)=>void,setli
                                     version: 'v8.0'
                                 });
                             }}
-                            icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
                         />
     
                     <div style={{ textAlign: "center", color: "#969ea5", fontStyle: "italic" }}>{t(langKeys.connectinsta4)}</div>

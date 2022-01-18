@@ -2385,6 +2385,9 @@ export const langKeys = {
     billingsetupruc: "billingsetupruc",
     billingpaymentendpoint: "billingpaymentendpoint",
     messagingcostsmsnote: "messagingcostsmsnote",
+    supplynumber: "supplynumber",
+    channeleditsuccess: "channeleditsuccess",
+    channelcreatesuccess: "channelcreatesuccess",
 };
 
 export type LangKeys = typeof langKeys;

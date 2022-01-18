@@ -155,7 +155,7 @@ export const ChannelAddTelegram: FC = () => {
         return (
             <div style={{ width: '100%' }}>
                 <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view1") }}>
+                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view1"); setNextbutton(true); }}>
                         {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>

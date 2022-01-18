@@ -2385,6 +2385,9 @@ const translation: LangKeys = {
     billingsetupruc: "RUC",
     billingpaymentendpoint: 'URL API Proveedor',
     messagingcostsmsnote: "Aplica solo para Perú",
+    supplynumber: "Número de Suministro",
+    channeleditsuccess: "El canal se edito con éxito",
+    channelcreatesuccess: "El canal se inserto con éxito",
 };
 
 const esResource: ResourceLanguage = {

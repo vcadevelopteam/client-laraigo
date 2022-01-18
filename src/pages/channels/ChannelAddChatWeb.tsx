@@ -795,7 +795,7 @@ const templates: { [x: string]: FieldTemplate } = {
                     data={data}
                     onClose={() => onClose(SUPPLYNUMBER_FIELD)}
                     key={SUPPLYNUMBER_FIELD}
-                    title={"Supply Number"}
+                    title={<Trans i18nKey={langKeys.supplynumber} />}
                 />
             );
         },
@@ -818,7 +818,7 @@ const templates: { [x: string]: FieldTemplate } = {
                     data={data}
                     onClose={() => onClose(CONTACT)}
                     key={CONTACT}
-                    title={"Contact"}
+                    title={<Trans i18nKey={langKeys.contact} />}
                 />
             );
         },
@@ -845,7 +845,7 @@ const TabPanelForm: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
         } as FieldTemplate;
     }));
 
-    const [enable, setEnable] = useState(true);
+    const [enable, setEnable] = useState(false);
     const [fieldTemplate, setFieldTemplate] = useState<string>("");
     const [fields, setFields] = useState<FieldTemplate[]>(defFields.current);
 
@@ -1518,7 +1518,7 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
             }));
         } else if (insertChannel.value) {
             dispatch(showSnackbar({
-                message: "El canal se inserto con éxito",
+                message: t(langKeys.channelcreatesuccess),
                 show: true,
                 success: true,
             }));
@@ -1535,7 +1535,7 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
             }));
         } else if (editChannel.success) {
             dispatch(showSnackbar({
-                message: "El canal se edito con éxito",
+                message: t(langKeys.channeleditsuccess),
                 show: true,
                 success: true,
             }));
@@ -1781,7 +1781,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                 {`<script src="https://zyxmelinux.zyxmeapp.com/zyxme/chat/src/chatwebclient.min.js" integrationid="${integrationId}"></script>`}
                 </code></pre><div style={{ height: 20 }} />
                 <Button variant="contained" color="primary" onClick={() => history.push(paths.CHANNELS)}>
-                    Terminar
+                    {t(langKeys.close)}
                 </Button>
             </div>
         </div>

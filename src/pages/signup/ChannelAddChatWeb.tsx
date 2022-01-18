@@ -781,7 +781,7 @@ const templates: { [x: string]: FieldTemplate } = {
     },
     [SUPPLUNUMBER_FIELD]: {
         text: "Supply Number",
-        node: (onClose, data) => <NameTemplate data={data} onClose={() => onClose(SUPPLUNUMBER_FIELD)} key={SUPPLUNUMBER_FIELD} title={"Supply Number"} />,
+        node: (onClose, data) => <NameTemplate data={data} onClose={() => onClose(SUPPLUNUMBER_FIELD)} key={SUPPLUNUMBER_FIELD} title={<Trans i18nKey={langKeys.supplynumber} />} />,
         data: {
             field: "SUPPLYNUMBER",
             type: "text",
@@ -801,7 +801,7 @@ const templates: { [x: string]: FieldTemplate } = {
                     data={data}
                     onClose={() => onClose(CONTACT)}
                     key={CONTACT}
-                    title={"Contact"}
+                    title={<Trans i18nKey={langKeys.contact} />}
                 />
             );
         },
@@ -820,7 +820,7 @@ const templates: { [x: string]: FieldTemplate } = {
 
 const TabPanelForm: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
     const classes = useTabFormStyles();
-    const [enable, setEnable] = useState(true);
+    const [enable, setEnable] = useState(false);
     const [fieldTemplate, setFieldTemplate] = useState<string>("");
     const [fields, setFields] = useState<FieldTemplate[]>([]);
 
