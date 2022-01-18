@@ -713,10 +713,6 @@ const translation: LangKeys = {
     type_ocupation_998: "NO DECLARA",
     type_ocupation_999: "OTROS",
 
-    type_shippingtype_hsm: 'HSM',
-    type_shippingtype_mail: 'CORREO',
-    type_shippingtype_sms: 'SMS',
-
     typepg_bigint: 'número',
     typepg_boolean: 'booleano',
     "typepg_character varying": 'texto',
@@ -1357,6 +1353,15 @@ const translation: LangKeys = {
     report_userproductivity_filter_status: 'Estado usuario',
     report_userproductivity_filter_includebot: 'Incluir bot',
 
+    type_shippingtype_hsm: 'HSM',
+    type_shippingtype_mail: 'CORREO',
+    type_shippingtype_sms: 'SMS',
+    type_shippingtype_api: 'Envío por API',
+    type_shippingtype_lead: 'Envío desde oportunidades',
+    type_shippingtype_person: 'Envío desde personas',
+    type_shippingtype_inbox: 'Envío desde inbox',
+    type_shippingtype_chatflow: 'Envío desde flujo',
+    
     report_sentmessages_api: 'Envío por API',
     report_sentmessages_lead: 'Envío desde oportunidades',
     report_sentmessages_person: 'Envío desde personas',
