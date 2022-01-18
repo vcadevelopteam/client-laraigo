@@ -110,12 +110,6 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         iconadvisor: row?.iconadvisor|| "",
         iconclient: row?.iconclient|| "",
     });
-    const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataType = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    const dataCorp = multiData[2] && multiData[2].success ? multiData[2].data : [];
-    const dataDocType = multiData[3] && multiData[3].success ? multiData[3].data : [];
-    const typeofcreditList = multiData[4] && multiData[4].success ? multiData[4].data : [];
-
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             corpid: row ? row.corpid : user?.corpid,
@@ -148,6 +142,12 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             credittype: row?.credittype || "typecredit_alcontado",
         }
     });
+    const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
+    const dataType = multiData[1] && multiData[1].success ? multiData[1].data : [];
+    const dataCorp = multiData[2] && multiData[2].success ? multiData[2].data : [];
+    const dataDocType = multiData[3] && multiData[3].success ? multiData[3].data : [];
+    const typeofcreditList = multiData[4] && multiData[4].success ? multiData[4].data : [];
+
     const [chatBtn, setChatBtn] = useState<File | null>(getValues("iconbot") as File);
     const [headerBtn, setHeaderBtn] = useState<File | null>(getValues("iconadvisor") as File);
     const [botBtn, setBotBtn] = useState<File | null>(getValues("iconclient") as File);
@@ -442,15 +442,36 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                         <>
                             <div className="row-zyx">
                                 <FieldSelect
+                                    label={t(langKeys.country)}
+                                    className="col-6"
+                                    valueDefault={getValues("sunatcountry")}
+                                    onChange={(value) => {setValue("sunatcountry", value?.code||"");setdoctype(value?.code==="PE"?"1":"0")}}
+                                    error={errors?.sunatcountry?.message}
+                                    data={countryList.data}
+                                    optionDesc="description"
+                                    optionValue="code"
+                                />
+                                <FieldEdit
+                                    label={t(langKeys.fiscaladdress)}
+                                    className="col-6"
+                                    valueDefault={getValues('fiscaladdress')}
+                                    onChange={(value) => setValue('fiscaladdress', value)}
+                                    error={errors?.fiscaladdress?.message}
+                                />
+                            </div>
+                            <div className="row-zyx">
+                                <FieldSelect
+                                    uset={true}
+                                    prefixTranslation='billingfield_'
                                     label={t(langKeys.docType)}
                                     className="col-6"
                                     valueDefault={doctype}
                                     disabled={doctype==="0"}
-                                    onChange={(value) => {setValue("doctype", value?.code || "");setdoctype(value?.code || "")}}
+                                    onChange={(value) => {setValue("doctype", value?.domainvalue || "");setdoctype(value?.domainvalue || "")}}
                                     error={errors?.doctype?.message}
                                     data={dataDocType}
-                                    optionDesc="description"
-                                    optionValue="code"
+                                    optionDesc="domaindesc"
+                                    optionValue="domainvalue"
                                 />
                                 <FieldEdit
                                     label={t(langKeys.documentnumber)}
@@ -468,63 +489,42 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     onChange={(value) => setValue('businessname', value)}
                                     error={errors?.businessname?.message}
                                 />
-                                <FieldEdit
-                                    label={t(langKeys.fiscaladdress)}
-                                    className="col-6"
-                                    valueDefault={getValues('fiscaladdress')}
-                                    onChange={(value) => setValue('fiscaladdress', value)}
-                                    error={errors?.fiscaladdress?.message}
-                                />
                             </div>
                             <div className="row-zyx">
                                 <FieldEdit
-                                    label={t(langKeys.contact)}
+                                    label={t(langKeys.contactbilling)}
                                     className="col-6"
                                     valueDefault={getValues('contact')}
                                     onChange={(value) => setValue('contact', value)}
                                     error={errors?.contact?.message}
                                 />
                                 <FieldEdit
-                                    label={t(langKeys.contactemail)}
+                                    label={t(langKeys.billingmail)}
                                     className="col-6"
                                     valueDefault={getValues('contactemail')}
                                     onChange={(value) => setValue('contactemail', value)}
                                     error={errors?.contactemail?.message}
                                 />
                             </div>
-                            <div className="row-zyx">
-                                <FieldSelect
-                                    label={t(langKeys.country)}
-                                    className="col-6"
-                                    valueDefault={getValues("sunatcountry")}
-                                    onChange={(value) => {setValue("sunatcountry", value?.code||"");setdoctype(value?.code==="PE"?"1":"0")}}
-                                    error={errors?.sunatcountry?.message}
-                                    data={countryList.data}
-                                    optionDesc="description"
-                                    optionValue="code"
-                                />
+                            {roledesc === "SUPERADMIN" && <div className="row-zyx">
                                 <FieldSelect
                                     label={t(langKeys.typecredit)}
                                     className="col-6"
                                     valueDefault={getValues("credittype")}
                                     onChange={(value) => {setValue("credittype", value?.domainvalue || "");}}
                                     error={errors?.credittype?.message}
-                                    disabled={roledesc !== "SUPERADMIN"}
                                     data={typeofcreditList}
                                     uset={true}
                                     optionDesc="domainvalue"
                                     optionValue="domainvalue"
                                 />
-                            </div>
-                            <div className="row-zyx">
                                 <TemplateSwitch
                                     label={t(langKeys.autosendinvoice)}
-                                    disabled={roledesc !== "SUPERADMIN"}
                                     className="col-6"
                                     valueDefault={getValues('autosendinvoice')}
                                     onChange={(value) => setValue('autosendinvoice', value)}
                                 />
-                            </div>
+                            </div>}
                         </>
                     )}
                 </div>}
@@ -857,7 +857,7 @@ const Organizations: FC = () => {
             getValuesFromDomain("ESTADOGENERICO"),
             getValuesFromDomain("TIPOORG"),
             getCorpSel(0),
-            getBusinessDocType(),
+            getValuesFromDomain("BILLINGDOCUMENTTYPE"),
             getValuesFromDomain("TYPECREDIT"),
         ]));
         return () => {

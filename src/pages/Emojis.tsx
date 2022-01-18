@@ -82,7 +82,17 @@ const Emojis: FC = () => {
                     }
                 }
             } else {
-                return String(emoji?.description).toLowerCase().includes(searchValue.toLowerCase()) && emoji?.categorydesc === category;
+                switch (category) {
+                    case 'FAVORITES': {
+                        return emojiResult.find(x => x.emojidec === emoji?.emojidec && x?.favorite === true && x.description.toLowerCase().includes(searchValue.toLowerCase()))
+                    }
+                    case 'RESTRICTED': {
+                        return emojiResult.find(x => x.emojidec === emoji?.emojidec && x?.restricted === true && x.description.toLowerCase().includes(searchValue.toLowerCase()))
+                    }
+                    default: {
+                        return String(emoji?.description).toLowerCase().includes(searchValue.toLowerCase()) && emoji?.categorydesc === category;
+                    }
+                }
             }
         }), [category, searchValue, emojis, emojiResult]);
 
