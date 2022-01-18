@@ -142,7 +142,7 @@ const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { r
         <div style={{width: '100%'}}>
             <div className={classes.containerDetail}>
                 <TableZyx
-                    titlemodule={row?.campaigname||`${t(langKeys.recordhsmreport)} ${t(langKeys.detail)}`}
+                    titlemodule={`${row?.name_translated} (${row?.shippingdate})` || `${t(langKeys.recordhsmreport)} ${t(langKeys.detail)}`}
                     ButtonsElement={() => (
                         <Button
                             variant="contained"
