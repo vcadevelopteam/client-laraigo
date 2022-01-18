@@ -2202,10 +2202,10 @@ export const getBillingPeriodSel = ({ corpid, orgid, year, month, billingplan, s
     key: "UFN_BILLINGPERIOD_SEL",
     parameters: { corpid, orgid, year, month, billingplan, supportplan }
 })
-export const billingPeriodUpd = ({ corpid, orgid, year, month, billingplan, supportplan, basicfee, userfreequantity, useradditionalfee, channelfreequantity, channelwhatsappfee, channelotherfee, clientfreequantity, clientadditionalfee, supportbasicfee, additionalservicename1, additionalservicefee1, additionalservicename2, additionalservicefee2, additionalservicename3, additionalservicefee3, force }: Dictionary): IRequestBody => ({
+export const billingPeriodUpd = ({ corpid, orgid, year, month, billingplan, supportplan, basicfee, userfreequantity, useradditionalfee, channelfreequantity, channelwhatsappfee, channelotherfee, clientfreequantity, clientadditionalfee, supportbasicfee, unitpricepersms, vcacomissionpersms, unitepricepermail, vcacomissionpermail, additionalservicename1, additionalservicefee1, additionalservicename2, additionalservicefee2, additionalservicename3, additionalservicefee3, force }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGPERIOD_UPD",
     key: "UFN_BILLINGPERIOD_UPD",
-    parameters: { corpid, orgid, year, month, billingplan, supportplan, basicfee, userfreequantity, useradditionalfee, channelfreequantity, channelwhatsappfee, channelotherfee, clientfreequantity, clientadditionalfee, supportbasicfee, additionalservicename1, additionalservicefee1, additionalservicename2, additionalservicefee2, additionalservicename3, additionalservicefee3, force }
+    parameters: { corpid, orgid, year, month, billingplan, supportplan, basicfee, userfreequantity, useradditionalfee, channelfreequantity, channelwhatsappfee, channelotherfee, clientfreequantity, clientadditionalfee, supportbasicfee, unitpricepersms, vcacomissionpersms, unitepricepermail, vcacomissionpermail, additionalservicename1, additionalservicefee1, additionalservicename2, additionalservicefee2, additionalservicename3, additionalservicefee3, force }
 })
 
 export const getBillingPeriodHSMSel = ({ corpid, orgid, year, month }: Dictionary): IRequestBody => ({

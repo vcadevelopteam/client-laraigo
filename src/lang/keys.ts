@@ -2388,6 +2388,15 @@ export const langKeys = {
     supplynumber: "supplynumber",
     channeleditsuccess: "channeleditsuccess",
     channelcreatesuccess: "channelcreatesuccess",
+    contractedsupportplan: "contractedsupportplan",
+    agents_plural: "agents_plural",
+    toreport: "toreport",
+    payment: "payment",
+    paymentdetail: "paymentdetail",
+    payment_information: 'payment_information',
+    validation15char: 'validation15char',
+    validation150char: 'validation150char',
+    culqipaysuccess: 'culqipaysuccess',
 };
 
 export type LangKeys = typeof langKeys;

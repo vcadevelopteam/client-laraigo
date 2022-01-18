@@ -36,6 +36,8 @@ interface CulqiModalProps {
     purchaseorder?: string;
     comments?: string;
     tipocredito?: string;
+    disabled?:boolean;
+    successmessage?:string;
 }
 
 const publickey = apiUrls.CULQIKEY;
@@ -69,7 +71,9 @@ const CulqiModal: FC<CulqiModalProps> = ({
     buttontitle,
     purchaseorder,
     comments,
-    tipocredito
+    tipocredito,
+    disabled = false,
+    successmessage,
 }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -119,7 +123,7 @@ const CulqiModal: FC<CulqiModalProps> = ({
 
     useEffect(() => {
         if (!culqiSelector.loading && culqiSelector.data) {
-            dispatch(showSnackbar({ show: true, success: true, message: '' + culqiSelector.message }))
+            dispatch(showSnackbar({ show: true, success: true, message: '' + (successmessage ? successmessage : culqiSelector.message) }))
             dispatch(showBackdrop(false));
             console.log(culqiSelector.data);
             dispatch(resetCharge());
@@ -162,6 +166,7 @@ const CulqiModal: FC<CulqiModalProps> = ({
                         startIcon={<AttachMoneyIcon color="secondary" />}
                         style={{ backgroundColor: "#55BD84" }}
                         onClick={openCulqi}
+                        disabled={disabled}
                     >{buttontitle ? buttontitle : t(langKeys.pay)}</Button>
                 )
             }}

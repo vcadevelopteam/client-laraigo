@@ -391,7 +391,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                 className={classes.centerbutton}
                                 variant="contained"
                                 color="primary"
-                                disabled={nextbutton}
+                                disabled={disablebutton2}
                                 onClick={() => { setViewSelected("viewfinishreg") }}
                                 >{t(langKeys.registerwhats)}
                             </Button>
