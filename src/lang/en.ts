@@ -2434,6 +2434,7 @@ const translation: LangKeys = {
     function_maximum: 'Maximum',
     function_median: 'Median',
     function_mode: 'Mode',
+    successful_import: 'Successful import',
 };
 
 const enResource: ResourceLanguage = {

@@ -2423,6 +2423,8 @@ const translation: LangKeys = {
     function_maximum: 'Máximo',
     function_median: 'Mediana',
     function_mode: 'Moda',
+
+    successful_import: 'Se importó exitosamente',
 };
 
 const esResource: ResourceLanguage = {

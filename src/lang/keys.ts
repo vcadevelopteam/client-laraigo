@@ -2424,6 +2424,7 @@ export const langKeys = {
     function_maximum: 'function_maximum',
     function_median: 'function_median',
     function_mode: 'function_mode',
+    successful_import: 'successful_import',
 };
 
 export type LangKeys = typeof langKeys;

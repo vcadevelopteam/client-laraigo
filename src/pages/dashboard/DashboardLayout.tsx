@@ -25,7 +25,7 @@ const ReactGridLayout = WidthProvider(RGL);
 interface Item {
     description: string;
     contentType: string;
-    kpi: string;
+    kpi: number;
     reporttemplateid: number;
     grouping: string;
     graph: string;
@@ -355,6 +355,7 @@ const DashboardLayout: FC = () => {
                             <NewLayoutItem
                                 layoutKey={e.i}
                                 templates={reportTemplates.data as ReportTemplate[]}
+                                kpis={[]}
                                 loading={reportTemplates.loading}
                                 register={register}
                                 unregister={unregister}
