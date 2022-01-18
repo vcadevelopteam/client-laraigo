@@ -183,19 +183,6 @@ const RecordHSMRecord: FC = () => {
     const columns = React.useMemo(
         () => [
             {
-                accessor: 'inputvalidationid',
-                NoFilter: true,
-                isComponent: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <TemplateIcons
-                            editFunction={() => handleView(row)}
-                        />
-                    )
-                }
-            },
-            {
                 Header: t(langKeys.shippingreason),
                 accessor: 'name_translated',
                 NoFilter: true,
