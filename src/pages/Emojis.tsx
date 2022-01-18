@@ -90,7 +90,8 @@ const Emojis: FC = () => {
                         return emojiResult.find(x => x.emojidec === emoji?.emojidec && x?.restricted === true && x.description.toLowerCase().includes(searchValue.toLowerCase()))
                     }
                     default: {
-                        return String(emoji?.description).toLowerCase().includes(searchValue.toLowerCase()) && emoji?.categorydesc === category;
+                        //return String(emoji?.description).toLowerCase().includes(searchValue.toLowerCase()) && emoji?.categorydesc === category;
+                        return String(emoji?.description).toLowerCase().includes(searchValue.toLowerCase()) && emoji?.categorydesc === category && !emojiResult.find(x => x.emojidec === emoji?.emojidec && (x?.favorite === true || x?.restricted === true));
                     }
                 }
             }

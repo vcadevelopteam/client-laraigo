@@ -497,13 +497,6 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                             </div>
                             {user?.roledesc === "SUPERADMIN" &&
                                 <div className="row-zyx">
-                                    <TemplateSwitch
-                                        label={t(langKeys.autosendinvoice)}
-                                        className="col-6"
-                                        valueDefault={getValues('autosendinvoice')}
-                                        onChange={(value) => setValue('autosendinvoice', value)}
-                                        disabled={user?.roledesc !== "SUPERADMIN"}
-                                    />
                                     <FieldSelect
                                         label={t(langKeys.typecredit)}
                                         className="col-6"
@@ -515,6 +508,13 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                         uset={true}
                                         optionDesc="domainvalue"
                                         optionValue="domainvalue"
+                                    />
+                                    <TemplateSwitch
+                                        label={t(langKeys.autosendinvoice)}
+                                        className="col-6"
+                                        valueDefault={getValues('autosendinvoice')}
+                                        onChange={(value) => setValue('autosendinvoice', value)}
+                                        disabled={user?.roledesc !== "SUPERADMIN"}
                                     />
                                 </div>
                             }
