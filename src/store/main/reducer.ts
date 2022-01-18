@@ -34,6 +34,8 @@ export interface IState {
     mainAux: IListStatePaginated<Dictionary> & { key?: string };
     mainAux2: IListStatePaginated<Dictionary> & { key?: string };
     mainPaginated: IListStatePaginated<Dictionary>;
+    mainPaginatedAux: IListStatePaginated<Dictionary>;
+    mainGraphic: IListStatePaginated<Dictionary> & { key?: string };
     uploadFile: IUpload;
     exportData: IUpload;
     exportDynamicData: IUpload;
@@ -50,6 +52,8 @@ export const initialState: IState = {
     mainAux: initialListPaginatedState,
     mainAux2: initialListPaginatedState,
     mainPaginated: initialListPaginatedState,
+    mainPaginatedAux: initialListPaginatedState,
+    mainGraphic: initialListPaginatedState,
     uploadFile: { ...initialCommon },
     exportData: { ...initialCommon },
     exportDynamicData: { ...initialCommon },
@@ -101,6 +105,15 @@ export default createReducer<IState>(initialState, {
     [actionTypes.PAGINATED_MAIN_FAILURE]: caseFunctions.mainPaginatedFailure,
     [actionTypes.PAGINATED_MAIN_RESET]: caseFunctions.mainPaginatedReset,
 
+    [actionTypes.AUX_PAGINATED_MAIN]: caseFunctions.mainAuxPaginated,
+    [actionTypes.AUX_PAGINATED_MAIN_SUCCESS]: caseFunctions.mainAuxPaginatedSuccess,
+    [actionTypes.AUX_PAGINATED_MAIN_FAILURE]: caseFunctions.mainAuxPaginatedFailure,
+    [actionTypes.AUX_PAGINATED_MAIN_RESET]: caseFunctions.mainAuxPaginatedReset,
+
+    [actionTypes.GRAPHIC_MAIN]: caseFunctions.mainGraphic,
+    [actionTypes.GRAPHIC_MAIN_SUCCESS]: caseFunctions.mainGraphicSuccess,
+    [actionTypes.GRAPHIC_MAIN_FAILURE]: caseFunctions.mainGraphicFailure,
+    [actionTypes.GRAPHIC_MAIN_RESET]: caseFunctions.mainGraphicReset,
 
     [actionTypes.UPLOAD_FILE]: caseFunctions.uploadFile,
     [actionTypes.UPLOAD_FILE_SUCCESS]: caseFunctions.uploadFileSuccess,
