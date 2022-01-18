@@ -503,7 +503,6 @@ const TableZyx = React.memo(({
 
             switch (type) {
                 case "number": case "number-centered":
-                    console.log(Number(value))
                     switch (operator) {
                         case 'greater':
                             return cellvalue > Number(value);

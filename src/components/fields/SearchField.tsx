@@ -1,4 +1,4 @@
-import React, { FC, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import InputBase, { InputBaseProps } from '@material-ui/core/InputBase';
@@ -11,6 +11,8 @@ interface Props extends InputBaseProps {
     colorPlaceHolder: string,
     handleChangeOther?: (params: any) => void,
     handleSubmitOther?: (params: any) => void,
+    cleanState?:boolean;
+    setCleanState?:(params: any) => void,
     lazy?: boolean;
     timelapse?: number; // available when lazy prop is true
 }
@@ -46,7 +48,7 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-const SearchField: FC<Props> = ({ colorPlaceHolder, handleChangeOther, handleSubmitOther, timelapse = 1000, lazy = false, ...props }: Props) => {
+const SearchField: FC<Props> = ({ colorPlaceHolder, handleChangeOther, handleSubmitOther, timelapse = 1000, lazy = false,cleanState,setCleanState, ...props }: Props) => {
     const { t } = useTranslation();
     const classes = useStyles({ colorPlaceHolder });
     const [value, setvalue] = useState('');
@@ -79,6 +81,12 @@ const SearchField: FC<Props> = ({ colorPlaceHolder, handleChangeOther, handleSub
             }
         }, timelapse);;        
     };
+    useEffect(() => {
+        if(cleanState){
+            setvalue('')
+            setCleanState && setCleanState(false);
+        }
+    }, [cleanState]);
 
     return (
         <Paper component="div" className={classes.root} elevation={0} onSubmit={handleSubmit}>
