@@ -764,6 +764,8 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                             onChange={(value) => setValue(`summary.${i}.function`, value?.function || '')}
                                                             error={errors?.summary?.[i]?.function?.message}
                                                             data={dataSummarization}
+                                                            prefixTranslation="function_"
+                                                            uset={true}
                                                             optionDesc="function"
                                                             optionValue="function"
                                                         />

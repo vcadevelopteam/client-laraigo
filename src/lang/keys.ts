@@ -2416,6 +2416,14 @@ export const langKeys = {
     culqipaysuccess: 'culqipaysuccess',
     xmldocumentopen: 'xmldocumentopen',
     cdrdocumentopen: 'cdrdocumentopen',
+
+    function_total: 'function_total',
+    function_count: 'function_count',
+    function_average: 'function_average',
+    function_minimum: 'function_minimum',
+    function_maximum: 'function_maximum',
+    function_median: 'function_median',
+    function_mode: 'function_mode',
 };
 
 export type LangKeys = typeof langKeys;

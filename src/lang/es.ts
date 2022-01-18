@@ -2416,6 +2416,13 @@ const translation: LangKeys = {
     culqipaysuccess: 'Se realizó el pago exitosamente. Puede verificar los datos de su factura',
     xmldocumentopen: 'Abrir XML',
     cdrdocumentopen: 'Abrir CDR',
+    function_total:  'Total',
+    function_count:  'Cantidad',
+    function_average: 'Promedio',
+    function_minimum: 'Mínimo',
+    function_maximum: 'Máximo',
+    function_median: 'Mediana',
+    function_mode: 'Moda',
 };
 
 const esResource: ResourceLanguage = {
