@@ -1796,7 +1796,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                         <Fragment>
                             <div>
                                 { (urlxml ?
-                                    <a href={urlxml} target="_blank" style={{ display: "block" }} rel="noreferrer">{t(langKeys.xmldocument)}</a>
+                                    <a href={urlxml} target="_blank" style={{ display: "block" }} rel="noreferrer">{t(langKeys.xmldocumentopen)}</a>
                                     :
                                     <b style={{ display: "block" }}>{t(langKeys.pendingpayment)}</b>)
                                 }
@@ -1814,7 +1814,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                         <Fragment>
                             <div>
                                 { (urlcdr ?
-                                    <a href={urlcdr} target="_blank" style={{ display: "block" }} rel="noreferrer">{t(langKeys.cdrdocument)}</a>
+                                    <a href={urlcdr} target="_blank" style={{ display: "block" }} rel="noreferrer">{t(langKeys.cdrdocumentopen)}</a>
                                     :
                                     <b style={{ display: "block" }}>{t(langKeys.pendingpayment)}</b>)
                                 }

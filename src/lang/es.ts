@@ -2397,6 +2397,8 @@ const translation: LangKeys = {
     validation15char: 'El máximo número de caracteres es 15',
     validation150char: 'El máximo número de caracteres es 150',
     culqipaysuccess: 'Se realizó el pago exitosamente. Puede verificar los datos de su factura',
+    xmldocumentopen: 'Abrir XML',
+    cdrdocumentopen: 'Abrir CDR',
 };
 
 const esResource: ResourceLanguage = {

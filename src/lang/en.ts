@@ -2405,6 +2405,8 @@ const translation: LangKeys = {
     validation15char: 'The maximum amount of characters is 15',
     validation150char: 'The maximum amount of characters is 150',
     culqipaysuccess: 'The payment was processed succesfully. You can check the status of your invoice.',
+    xmldocumentopen: 'Open XML',
+    cdrdocumentopen: 'Open CDR',
 };
 
 const enResource: ResourceLanguage = {

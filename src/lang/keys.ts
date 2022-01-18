@@ -2397,6 +2397,8 @@ export const langKeys = {
     validation15char: 'validation15char',
     validation150char: 'validation150char',
     culqipaysuccess: 'culqipaysuccess',
+    xmldocumentopen: 'xmldocumentopen',
+    cdrdocumentopen: 'cdrdocumentopen',
 };
 
 export type LangKeys = typeof langKeys;
