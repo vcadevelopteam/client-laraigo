@@ -48,6 +48,10 @@ export function mainPaginated(requestBody: IRequestBodyPaginated) {
     return APIManager.post(apiUrls.MAIN_PAGINATED, { data: requestBody }, true);
 }
 
+export function mainGraphic(requestBody: IRequestBody) {
+    return APIManager.post(apiUrls.MAIN_GRAPHIC, { data: requestBody }, true);
+}
+
 export function mainDynamic(requestBody: IRequestBodyDynamic) {
     return APIManager.post(apiUrls.MAIN_DYNAMIC, { data: requestBody }, true);
 }
