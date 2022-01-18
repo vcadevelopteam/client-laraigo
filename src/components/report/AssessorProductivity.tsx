@@ -400,8 +400,8 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                         <Grid container spacing={1} >
                             <Grid item xs={12} md={12} lg={12}>
                                 <Card className={clsx({
-                                    [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtme >= detailCustomReport.data[0]?.tmeesperadogeneral),
-                                    [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtme < detailCustomReport.data[0]?.tmeesperadogeneral),
+                                    [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtme <= detailCustomReport.data[0]?.tmeesperadogeneral),
+                                    [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtme > detailCustomReport.data[0]?.tmeesperadogeneral),
                                 })} style={{color: "white"}}>
                                     <CardContent style={{paddingBottom: 10}}>
                                         <Typography variant="h5">
@@ -412,7 +412,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                         </Typography>
                                         <Typography variant="subtitle2" style={{display: "flex",width: "100%", paddingTop: 5, justifyContent: "space-between"}}>
                                             {`${t(langKeys.tmeexpected)} ${detailCustomReport.data[0]?.tmeesperadogeneral||""}`}
-                                            { (detailCustomReport.data[0]?.cardavgavgtme <= detailCustomReport.data[0]?.tmeesperadogeneral) ? (<ThumbDownIcon/>) : (<ThumbUpIcon/>)}
+                                            { (detailCustomReport.data[0]?.cardavgavgtme <= detailCustomReport.data[0]?.tmeesperadogeneral) ? (<ThumbUpIcon/>) : (<ThumbDownIcon/>)}
                                         </Typography>
                                     </CardContent>
                                 </Card>
@@ -453,8 +453,8 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                         <Grid container spacing={1}>
                             <Grid item xs={12} md={12} lg={12}>
                                 <Card className={clsx({
-                                    [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtmo >= detailCustomReport.data[0]?.tmoesperadogeneral),
-                                    [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtmo < detailCustomReport.data[0]?.tmoesperadogeneral),
+                                    [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtmo <= detailCustomReport.data[0]?.tmoesperadogeneral),
+                                    [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtmo > detailCustomReport.data[0]?.tmoesperadogeneral),
                                 })} style={{color: "white"}}>
                                     <CardContent style={{paddingBottom: 10}}>
                                         <Typography variant="h5">
@@ -465,7 +465,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                         </Typography>
                                         <Typography variant="subtitle2" style={{display: "flex",width: "100%", paddingTop: 5, justifyContent: "space-between"}}>
                                             {`${t(langKeys.tmoexpected)} ${detailCustomReport.data[0]?.tmoesperadogeneral||""}`}
-                                            { (detailCustomReport.data[0]?.cardavgavgtmo <= detailCustomReport.data[0]?.tmoesperadogeneral) ? (<ThumbDownIcon/>) : (<ThumbUpIcon/>)}
+                                            { (detailCustomReport.data[0]?.cardavgavgtmo <= detailCustomReport.data[0]?.tmoesperadogeneral) ? (<ThumbUpIcon/>) : (<ThumbDownIcon/>)}
                                         </Typography>
                                     </CardContent>
                                 </Card>
