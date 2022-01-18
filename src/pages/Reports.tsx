@@ -695,7 +695,7 @@ const Reports: FC = () => {
     } else if (viewSelected === "view-5") { //duplicate
         return (
             <DetailReportDesigner
-                data={{ ...rowReportSelected, row: { ...rowReportSelected?.row, reporttemplateid: 0 } }}
+                data={{ ...rowReportSelected, row: { ...rowReportSelected?.row, reporttemplateid: 0, description: rowReportSelected?.row?.description + "-v1" } }}
                 setViewSelected={setViewSelected}
                 fetchData={fetchData}
             />
