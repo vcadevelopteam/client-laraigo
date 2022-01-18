@@ -161,7 +161,7 @@ const VariableConfiguration: FC = () => {
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_import) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);

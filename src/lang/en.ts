@@ -2420,6 +2420,8 @@ const translation: LangKeys = {
     culqipaysuccess: 'The payment was processed succesfully. You can check the status of your invoice.',
     xmldocumentopen: 'Open XML',
     cdrdocumentopen: 'Open CDR',
+
+    successful_import: 'Successful import',
 };
 
 const enResource: ResourceLanguage = {

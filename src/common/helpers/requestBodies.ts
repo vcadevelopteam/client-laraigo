@@ -2490,3 +2490,9 @@ export const getVariablesByOrg = (): IRequestBody => ({
     key: "UFN_REPORT_PERSONALIZED_VARIABLE_SEL",
     parameters: {},
 });
+
+export const getKpiSel = () => ({
+    method: "UFN_KPI_LST",
+    key: "UFN_KPI_LST",
+    parameters: {},
+});

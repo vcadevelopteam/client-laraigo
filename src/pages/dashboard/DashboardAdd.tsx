@@ -9,8 +9,8 @@ import { langKeys } from "lang/keys";
 import { Close as CloseIcon, Clear as ClearIcon, Add as AddIcon } from "@material-ui/icons";
 import { FieldErrors, useForm, UseFormGetValues, UseFormRegister, UseFormSetValue, UseFormUnregister } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import { getCollection, resetMain } from "store/main/actions";
-import { getDashboardTemplateIns, getReportTemplateSel } from "common/helpers";
+import { getMultiCollection, resetMain, resetMultiMain } from "store/main/actions";
+import { getDashboardTemplateIns, getKpiSel, getReportTemplateSel } from "common/helpers";
 import { useSelector } from "hooks";
 import { contentTypes, graphTypes, groupingType } from "./constants";
 import { showSnackbar } from "store/popus/actions";
@@ -24,6 +24,12 @@ export interface ReportTemplate {
     reporttemplateid: number;
     status: string;
     type: string;
+}
+
+export interface KpiTemplate {
+    description: string;
+    id: number;
+    kpiname: string;
 }
 
 interface ColumnTemplate {
@@ -87,7 +93,7 @@ const useDashboardAddStyles = makeStyles(theme => ({
 interface Item {
     description: string;
     contentType: string;
-    kpi: string;
+    kpi: number;
     reporttemplateid: number;
     grouping: string;
     graph: string;
@@ -109,29 +115,33 @@ const DashboardAdd: FC = () => {
         {i: 'add-btn-layout', x: 3, y: 0, w: 3, h: 2, minW: 2, minH: 1, isResizable: false, isDraggable: false, static: false},
         {i: now, x: 0, y: 0, w: 3, h: 2, minW: 2, minH: 1, static: false},
     ]);
-    const reportTemplates = useSelector(state => state.main.mainData);
+    const reportTemplatesAndKpis = useSelector(state => state.main.multiData);
     const dashboardSave = useSelector(state => state.dashboard.dashboardtemplateSave);
 
     useEffect(() => {
-        dispatch(getCollection(getReportTemplateSel()));
+        dispatch(getMultiCollection([
+            getReportTemplateSel(),
+            getKpiSel(),
+        ]));
 
         return () => {
             dispatch(resetMain());
+            dispatch(resetMultiMain());
             dispatch(resetSaveDashboardTemplate());
         };
     }, [dispatch]);
 
     useEffect(() => {
-        if (reportTemplates.loading) return;
-        if (reportTemplates.error) {
-            const error = t(reportTemplates.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
+        if (reportTemplatesAndKpis.loading) return;
+        if (reportTemplatesAndKpis.error) {
+            const error = t(reportTemplatesAndKpis.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 message: error,
                 success: false,
                 show: true,
             }));
         }
-    }, [reportTemplates, t, dispatch]);
+    }, [reportTemplatesAndKpis, t, dispatch]);
 
     useEffect(() => {
         if (dashboardSave.loading) return;
@@ -161,8 +171,8 @@ const DashboardAdd: FC = () => {
                 ...prev,
                 {
                     i: newKey,
-                    x: (prev.length * 3) % 12,
-                    y: Infinity - 1,
+                    x: ((prev.length - 1) * 3) % 12,
+                    y: Infinity,
                     w: 3,
                     h: 2,
                     minW: 2,
@@ -172,7 +182,7 @@ const DashboardAdd: FC = () => {
             ];
             const addbtn = newlayout[0].i === 'add-btn-layout' && newlayout[0];
             if (addbtn) {
-                newlayout[0] = { ...addbtn, x: (prev.length * 3) % 12, y: Infinity };
+                newlayout[0] = { ...addbtn, x: (((prev.length - 1) * 3) % 12) + 3, y: Infinity };
             }
 
             return newlayout;
@@ -192,11 +202,12 @@ const DashboardAdd: FC = () => {
 
     const onSubmit = useCallback((description: string) => {
         const data = getValues();
+        const [, ...cleanLayout] = layout; // quitando el boton en el index 0
         dispatch(saveDashboardTemplate(getDashboardTemplateIns({
             id: 0,
             description,
             detailjson: JSON.stringify(data),
-            layoutjson: JSON.stringify(layout),
+            layoutjson: JSON.stringify(cleanLayout),
             status: 'ACTIVO',
             type: 'NINGUNO',
             operation: 'INSERT',
@@ -241,39 +252,43 @@ const DashboardAdd: FC = () => {
                 </Button>
             </div>
             <div style={{ height: '1em' }} />
-            <ReactGridLayout
-                className={classes.layout}
-                layout={layout}
-                onLayoutChange={setLayout}
-                cols={12}
-                rowHeight={140}
-            >
-                {layout.map(e => {
-                    if (e.i === 'add-btn-layout') {
+            {(reportTemplatesAndKpis.data[0]?.key === "UFN_REPORTTEMPLATE_SEL" &&
+            reportTemplatesAndKpis.data[1]?.key === "UFN_KPI_LST") && (
+                <ReactGridLayout
+                    className={classes.layout}
+                    layout={layout}
+                    onLayoutChange={setLayout}
+                    cols={12}
+                    rowHeight={140}
+                >
+                    {layout.map(e => {
+                        if (e.i === 'add-btn-layout') {
+                            return (
+                                <div key={e.i}>
+                                    <NewBtn onClick={addItemOnClick} />
+                                </div>
+                            );
+                        }
+
                         return (
                             <div key={e.i}>
-                                <NewBtn onClick={addItemOnClick} />
+                                <LayoutItem
+                                    layoutKey={e.i}
+                                    templates={reportTemplatesAndKpis.data[0].data as ReportTemplate[]}
+                                    kpis={reportTemplatesAndKpis.data[1].data as KpiTemplate[]}
+                                    loading={reportTemplatesAndKpis.loading}
+                                    register={register}
+                                    unregister={unregister}
+                                    getValues={getValues}
+                                    setValue={setValue}
+                                    errors={errors}
+                                    onDelete={() => deleteItemOnClick(e.i)}
+                                />
                             </div>
                         );
-                    }
-
-                    return (
-                        <div key={e.i}>
-                            <LayoutItem
-                                layoutKey={e.i}
-                                templates={reportTemplates.data as ReportTemplate[]}
-                                loading={reportTemplates.loading}
-                                register={register}
-                                unregister={unregister}
-                                getValues={getValues}
-                                setValue={setValue}
-                                errors={errors}
-                                onDelete={() => deleteItemOnClick(e.i)}
-                            />
-                        </div>
-                    );
-                })}
-            </ReactGridLayout>
+                    })}
+                </ReactGridLayout>
+            )}
             <SubmitModal
                 open={openModal}
                 loading={dashboardSave.loading}
@@ -353,7 +368,7 @@ interface NewBtnProps {
 
 const useNewBtnStyles = makeStyles(the => ({
     root: {
-        backgroundColor: 'white',
+        // backgroundColor: 'white',
         width: 'inherit',
         height: 'inherit',
         padding: '1em',
@@ -384,6 +399,7 @@ const NewBtn: FC<NewBtnProps> = ({ onClick }) => {
 interface LayoutItemProps {
     layoutKey: string;
     templates: ReportTemplate[];
+    kpis: KpiTemplate[];
     loading?: boolean;
     errors: FieldErrors<Items>;
     getValues: UseFormGetValues<Items>;
@@ -417,6 +433,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
     layoutKey: key,
     loading = false,
     templates = [],
+    kpis = [],
     errors,
     getValues,
     setValue,
@@ -453,7 +470,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
             unregister(`${key}.graph`);
             unregister(`${key}.column`);
 
-            register(`${key}.kpi`, { validate: mandatoryStrField, value: '' });
+            register(`${key}.kpi`, { validate: mandatoryNumField, value: 0 });
         }
     }, [contentType]);
 
@@ -515,11 +532,11 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                 <FieldSelect
                     className={classes.field}
                     label="KPI"
-                    data={groupingType}
-                    optionDesc="key"
-                    optionValue="key"
+                    data={kpis}
+                    optionDesc="kpiname"
+                    optionValue="id"
                     valueDefault={getValues(`${key}.kpi`)}
-                    onChange={(v: typeof groupingType[number]) => setValue(`${key}.kpi`, v?.key || '')}
+                    onChange={(v: KpiTemplate) => setValue(`${key}.kpi`, v?.id || 0)}
                     error={errors[key]?.kpi?.message}
                     disabled={loading}
                 />
@@ -570,7 +587,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                         className={classes.field}
                         label={t(langKeys.column)}
                         data={columns}
-                        optionDesc="columnname"
+                        optionDesc="alias"
                         optionValue="columnname"
                         valueDefault={getValues(`${key}.column`)}
                         onChange={(v: ColumnTemplate) => {

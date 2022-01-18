@@ -2410,6 +2410,8 @@ const translation: LangKeys = {
     culqipaysuccess: 'Se realizó el pago exitosamente. Puede verificar los datos de su factura',
     xmldocumentopen: 'Abrir XML',
     cdrdocumentopen: 'Abrir CDR',
+
+    successful_import: 'Se importó exitosamente',
 };
 
 const esResource: ResourceLanguage = {

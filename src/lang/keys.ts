@@ -2410,6 +2410,8 @@ export const langKeys = {
     culqipaysuccess: 'culqipaysuccess',
     xmldocumentopen: 'xmldocumentopen',
     cdrdocumentopen: 'cdrdocumentopen',
+
+    successful_import: 'successful_import',
 };
 
 export type LangKeys = typeof langKeys;
