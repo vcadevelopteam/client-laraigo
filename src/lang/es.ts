@@ -12,6 +12,7 @@ const translation: LangKeys = {
     organization: "Organización",
     organization_plural: 'Organizaciones',
 
+    report_name: 'Nombre de reporte',
     iaservices: 'Servicio IA',
     iaservices_plural: 'Servicios IA',
 

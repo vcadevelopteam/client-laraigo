@@ -1001,6 +1001,7 @@ export const langKeys = {
     result: 'result',
     closing_reason: 'closing_reason',
     reassign: 'reassign',
+    report_name: 'report_name',
     reassign_ticket: 'reassign_ticket',
     typify: 'typify',
     typify_ticket: 'typify_ticket',

@@ -30,6 +30,7 @@ const translation: LangKeys = {
     analysis_type: 'Analysis Type',
     analysis_type_plural: 'Analysis Types',
     resume: "Resume",
+    report_name: 'Report name',
     quickresponse: "Quick response",
     advance_search: 'Advance search',
     search_inbox: 'Search inbox',
