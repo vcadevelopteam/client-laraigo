@@ -10,9 +10,8 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SaveIcon from '@material-ui/icons/Save';
 import TableZyx from '../components/fields/table-simple';
 import Typography from '@material-ui/core/Typography';
-import VisibilityIcon from '@material-ui/icons/Visibility';
-
-import { Box, IconButton } from '@material-ui/core';
+import { cleanMemoryTable } from 'store/main/actions';
+import { Box } from '@material-ui/core';
 import { Dictionary, MultiData } from '@types';
 import { FieldEdit, FieldEditArray, FieldSelect, FieldView, TemplateBreadcrumbs, TemplateSwitchArray, TitleDetail } from 'components';
 
@@ -128,6 +127,7 @@ const Properties: FC = () => {
             getOrgSel(0),
         ]));
         return () => {
+            dispatch(cleanMemoryTable());
             dispatch(resetMain());
         };
     }, []);
@@ -148,7 +148,6 @@ const Properties: FC = () => {
         }
     }, [executeResult, waitSave])
 
-    console.log(memoryTable.filters)
 
     if (viewSelected === 'view-1') {
         if (mainResult.error) {

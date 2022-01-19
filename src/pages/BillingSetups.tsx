@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateSwitch, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, IOSSwitch } from 'components';
 import { billingSupportIns, getBillingConfigurationSel, getBillingSupportSel, getPlanSel, getPaymentPlanSel, billingConfigurationIns, getBillingConversationSel, billingConversationIns, getBillingNotificationSel, billingNotificationIns, getOrgSelList, getCorpSel, getLocaleDateString, getAppsettingInvoiceSel, updateAppsettingInvoice, getValuesFromDomainCorp, getBillingMessagingSel, billingMessagingIns } from 'common/helpers';
+import { cleanMemoryTable } from 'store/main/actions';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { buildQueryFilters, useQueryParams } from 'components/fields/table-paginated';
@@ -48,16 +49,16 @@ const arrayBreadCostPerHSMPeriod = [
 
 const StyledTableCell = withStyles((theme) => ({
     head: {
-      backgroundColor: "#7721ad",
-      color: theme.palette.common.white,
+        backgroundColor: "#7721ad",
+        color: theme.palette.common.white,
     },
     body: {
-      fontSize: 14,
+        fontSize: 14,
     },
-  }))(TableCell);
+}))(TableCell);
 
-const years = [{desc:"2010"},{desc:"2011"},{desc:"2012"},{desc:"2013"},{desc:"2014"},{desc:"2015"},{desc:"2016"},{desc:"2017"},{desc:"2018"},{desc:"2019"},{desc:"2020"},{desc:"2021"},{desc:"2022"},{desc:"2023"},{desc:"2024"},{desc:"2025"}]
-const months =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" },]
+const years = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2019" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }]
+const months = [{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" },]
 
 export const DateOptionsMenuComponent = (value: any, handleClickItemMenu: (key: any) => void) => {
     return (
@@ -100,13 +101,13 @@ const useStyles = makeStyles((theme) => ({
         width: 220,
     },
     transparent: {
-        color:"transparent",
+        color: "transparent",
     },
     commentary: {
-        fontStyle:"italic"
+        fontStyle: "italic"
     },
     section: {
-        fontWeight:"bold"
+        fontWeight: "bold"
     }
 }));
 
@@ -521,7 +522,7 @@ const DetailCostPerHSMPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row,
     );
 }*/
 
-const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
+const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -530,7 +531,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const executeResult = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main);
     const multiResult = useSelector(state => state.main.multiDataAux);
-    
+
     const [blockUbigee, setBlockUbigee] = useState(false);
     const [domainCurrency, setDomainCurrency] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
     const [domainDocument, setDomainDocument] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
@@ -601,7 +602,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     }, [])
 
     useEffect(() => {
-        if (!mainResult.mainData.loading){
+        if (!mainResult.mainData.loading) {
             dispatch(showBackdrop(false));
             if (mainResult.mainData.data) {
                 if (mainResult.mainData.data[0]) {
@@ -775,44 +776,44 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             culqiurl: fields.culqiurl,
         }
     });
-    React.useEffect(() => {       
-        register('ruc', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('businessname', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('tradename', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('fiscaladdress', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('ubigeo', { validate: (value) => getValues('country') === 'PE'?(((value && value.length > 0)) || "" + t(langKeys.field_required)): true })
-        register('country', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('emittertype', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('currency', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('invoiceserie', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
+    React.useEffect(() => {
+        register('ruc', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('businessname', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('tradename', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('fiscaladdress', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('ubigeo', { validate: (value) => getValues('country') === 'PE' ? (((value && value.length > 0)) || "" + t(langKeys.field_required)) : true })
+        register('country', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('emittertype', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('currency', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('invoiceserie', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('invoicecorrelative');
-        register('annexcode', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
+        register('annexcode', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('igv');
         register('returnpdf');
         register('returnxmlsunat');
         register('returnxml');
-        register('printingformat', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('xmlversion', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('ublversion', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('invoiceprovider', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('sunaturl', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('token', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('sunatusername', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('paymentprovider', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('publickey', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('privatekey', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('ticketserie', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
+        register('printingformat', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('xmlversion', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('ublversion', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('invoiceprovider', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('sunaturl', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('token', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('sunatusername', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('paymentprovider', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('publickey', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('privatekey', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('ticketserie', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('ticketcorrelative');
-        register('invoicecreditserie', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
+        register('invoicecreditserie', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('invoicecreditcorrelative');
-        register('ticketcreditserie', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
+        register('ticketcreditserie', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('ticketcreditcorrelative');
         register('detraction');
-        register('detractioncode', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('detractionaccount', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('operationcodeperu', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('operationcodeother', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('culqiurl', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
+        register('detractioncode', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('detractionaccount', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('operationcodeperu', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('operationcodeother', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('culqiurl', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
     }, [register]);
 
     const onSubmit = handleSubmit((data) => {
@@ -860,7 +861,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             valueDefault={getValues('businessname')}
                             onChange={(value) => setValue('businessname', value)}
                             error={errors?.businessname?.message}
-                        /> 
+                        />
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
@@ -876,7 +877,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             valueDefault={getValues('fiscaladdress')}
                             onChange={(value) => setValue('fiscaladdress', value)}
                             error={errors?.fiscaladdress?.message}
-                        /> 
+                        />
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
@@ -886,7 +887,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             onChange={(value) => setValue('ubigeo', value)}
                             error={errors?.ubigeo?.message}
                             disabled={blockUbigee}
-                        /> 
+                        />
                         <FieldSelect
                             label={t(langKeys.billingcountry)}
                             className="col-6"
@@ -896,7 +897,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             data={dataPlan}
                             optionDesc="description"
                             optionValue="code"
-                        /> 
+                        />
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
@@ -928,7 +929,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             optionValue="domainvalue"
                             uset={true}
                             prefixTranslation='billingfield_'
-                        /> 
+                        />
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
@@ -937,7 +938,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             valueDefault={getValues('invoiceserie')}
                             onChange={(value) => setValue('invoiceserie', value)}
                             error={errors?.invoiceserie?.message}
-                        /> 
+                        />
                         <FieldEdit
                             label={t(langKeys.billingcorrelative)}
                             className="col-6"
@@ -954,7 +955,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             valueDefault={getValues('ticketserie')}
                             onChange={(value) => setValue('ticketserie', value)}
                             error={errors?.ticketserie?.message}
-                        /> 
+                        />
                         <FieldEdit
                             label={t(langKeys.ticketcorrelative)}
                             className="col-6"
@@ -971,7 +972,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             valueDefault={getValues('invoicecreditserie')}
                             onChange={(value) => setValue('invoicecreditserie', value)}
                             error={errors?.invoicecreditserie?.message}
-                        /> 
+                        />
                         <FieldEdit
                             label={t(langKeys.invoicecreditcorrelative)}
                             className="col-6"
@@ -988,7 +989,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             valueDefault={getValues('ticketcreditserie')}
                             onChange={(value) => setValue('ticketcreditserie', value)}
                             error={errors?.ticketcreditserie?.message}
-                        /> 
+                        />
                         <FieldEdit
                             label={t(langKeys.ticketcreditcorrelative)}
                             className="col-6"
@@ -1106,7 +1107,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             className="col-6"
                             valueDefault={getValues('returnxml')}
                             onChange={(value) => setValue('returnxml', value)}
-                        /> 
+                        />
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
@@ -1156,7 +1157,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
 
                     <div className="row-zyx">
                         <FieldSelect
-                        label={t(langKeys.billingpaymentprovider)}
+                            label={t(langKeys.billingpaymentprovider)}
                             loading={domainPaymentProvider.loading}
                             className="col-6"
                             valueDefault={getValues('paymentprovider')}
@@ -1198,7 +1199,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     );
 }
 
-const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
+const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -1211,7 +1212,7 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
 
     const query = useMemo(() => new URLSearchParams(location.search), [location]);
     const params = useQueryParams(query);
-    
+
     const [dataMain, setdataMain] = useState({
         plan: "",
         year: String(new Date().getFullYear()),
@@ -1223,7 +1224,7 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitSave, setWaitSave] = useState(false);
 
-    function search(){
+    function search() {
         dispatch(showBackdrop(true))
         dispatch(getCollection(getBillingConfigurationSel(dataMain)))
     }
@@ -1233,11 +1234,11 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     }, [])
 
     useEffect(() => {
-        setdisableSearch(dataMain.year === "" ) 
+        setdisableSearch(dataMain.year === "")
     }, [dataMain])
 
     useEffect(() => {
-        if (!mainResult.mainData.loading){
+        if (!mainResult.mainData.loading) {
             dispatch(showBackdrop(false))
         }
     }, [mainResult])
@@ -1255,8 +1256,8 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         <TemplateIcons
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
-                            //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
-                            //extraOption={t(langKeys.duplicate)}
+                        //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
+                        //extraOption={t(langKeys.duplicate)}
                         />
                     )
                 }
@@ -1337,7 +1338,7 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 NoFilter: false,
                 Cell: (props: any) => {
                     const { allowhsm } = props.cell.row.original;
-                    return allowhsm?t(langKeys.yes):"No"
+                    return allowhsm ? t(langKeys.yes) : "No"
                 }
             },
             {
@@ -1359,10 +1360,10 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                if(duplicateop){
+                if (duplicateop) {
                     setduplicateop(false)
                     dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_duplicate) }))
-                }else{
+                } else {
 
                     dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
                 }
@@ -1423,24 +1424,24 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 <TableZyx
                     onClickRow={handleEdit}
                     columns={columns}
-                    ButtonsElement={() =>(
-                        <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
+                    ButtonsElement={() => (
+                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                             <FieldSelect
                                 label={t(langKeys.year)}
-                                style={{width: 150}}
+                                style={{ width: 150 }}
                                 valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||0}))}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, year: value?.desc || 0 }))}
                                 data={years}
                                 optionDesc="desc"
                                 optionValue="desc"
                             />
                             <FieldMultiSelect
                                 label={t(langKeys.month)}
-                                style={{width: 300}}
+                                style={{ width: 300 }}
                                 valueDefault={dataMain.month}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, month: value.map((o: Dictionary) => o.val).join() }))}
                                 data={months}
                                 uset={true}
                                 prefixTranslation="month_"
@@ -1452,7 +1453,7 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.plan}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,plan:value?.plan||""}))}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, plan: value?.plan || "" }))}
                                 data={dataPlan}
                                 optionDesc="plan"
                                 optionValue="plan"
@@ -1489,14 +1490,14 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 data={rowSelected}
                 setViewSelected={setViewSelected}
                 fetchData={fetchData}
-                dataPlan = {dataPlan}
+                dataPlan={dataPlan}
             />
         )
     } else
         return null;
 }
 
-const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, setViewSelected, fetchData,dataPlan }) => {
+const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, setViewSelected, fetchData, dataPlan }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -1505,9 +1506,9 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
     const executeRes = useSelector(state => state.main.execute);
 
     const [datetoshow, setdatetoshow] = useState(
-        row? `${row.year}-${String(row.month).padStart(2, '0')}` : `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`
+        row ? `${row.year}-${String(row.month).padStart(2, '0')}` : `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth() + 1).padStart(2, '0')}`
     )
-    const [checkedaux, setCheckedaux] = useState(row?.allowhsm||false);
+    const [checkedaux, setCheckedaux] = useState(row?.allowhsm || false);
     const [waitSave, setWaitSave] = useState(false);
 
     const arrayBreadContractedPlan = [
@@ -1518,34 +1519,34 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             id: row?.billingconfigurationid || 0,
-            year: row?.year ||new Date().getFullYear(),
-            month: row?.month ||new Date().getMonth() + 1,
-            plan: row?.plan||"",
-            basicfee: row?.basicfee||0,
-            userfreequantity: row?.userfreequantity||0,
-            channelfreequantity: row?.channelfreequantity||0,
-            clientfreequantity: row?.clientfreequantity||0,
-            useradditionalfee: row?.useradditionalfee||0,
-            channelwhatsappfee: row?.channelwhatsappfee||0,
-            clientadditionalfee: row?.clientadditionalfee||0,
-            channelotherfee: row?.channelotherfee||0,
-            hsmfee: row?.hsmfee||0,
-            allowhsm: row?.allowhsm||false,
-            status: row? row.status : 'ACTIVO',
-            type: row? row.type : '',
-            description: row? row.description : '',
-            operation: row? "UPDATE" : "INSERT",
+            year: row?.year || new Date().getFullYear(),
+            month: row?.month || new Date().getMonth() + 1,
+            plan: row?.plan || "",
+            basicfee: row?.basicfee || 0,
+            userfreequantity: row?.userfreequantity || 0,
+            channelfreequantity: row?.channelfreequantity || 0,
+            clientfreequantity: row?.clientfreequantity || 0,
+            useradditionalfee: row?.useradditionalfee || 0,
+            channelwhatsappfee: row?.channelwhatsappfee || 0,
+            clientadditionalfee: row?.clientadditionalfee || 0,
+            channelotherfee: row?.channelotherfee || 0,
+            hsmfee: row?.hsmfee || 0,
+            allowhsm: row?.allowhsm || false,
+            status: row ? row.status : 'ACTIVO',
+            type: row ? row.type : '',
+            description: row ? row.description : '',
+            operation: row ? "UPDATE" : "INSERT",
         }
     });
 
-    function handleDateChange(e: any){
-        if(e!==""){
-            let datetochange = new Date(e+"-02")
-            let mes = datetochange?.getMonth()+1
+    function handleDateChange(e: any) {
+        if (e !== "") {
+            let datetochange = new Date(e + "-02")
+            let mes = datetochange?.getMonth() + 1
             let year = datetochange?.getFullYear()
             setdatetoshow(`${year}-${String(mes).padStart(2, '0')}`)
-            setValue('year',year)
-            setValue('month',mes)
+            setValue('year', year)
+            setValue('month', mes)
         }
     }
 
@@ -1560,20 +1561,20 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
         register('channelotherfee');
         register('description');
         register('plan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('basicfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
-        register('userfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
-        register('channelfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
-        register('clientfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
-        register('useradditionalfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
-        register('channelwhatsappfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
-        register('clientadditionalfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
-        register('hsmfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('basicfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('userfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('channelfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('clientfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('useradditionalfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('channelwhatsappfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('clientadditionalfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('hsmfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
     }, [edit, register]);
 
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row? langKeys.successful_edit : langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
@@ -1610,7 +1611,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
-                            title={row? `${row.description}` : t(langKeys.newcontractedplanbyperiod)}
+                            title={row ? `${row.description}` : t(langKeys.newcontractedplanbyperiod)}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -1642,7 +1643,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             className="col-12"
                             type="month"
                             variant="outlined"
-                            onChange={(e)=>handleDateChange(e.target.value)}
+                            onChange={(e) => handleDateChange(e.target.value)}
                             value={datetoshow}
                             size="small"
                         />
@@ -1652,7 +1653,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             label="Plan"
                             className="col-6"
                             valueDefault={getValues("plan")}
-                            onChange={(value) => setValue('plan',value.plan)}
+                            onChange={(value) => setValue('plan', value.plan)}
                             data={dataPlan}
                             optionDesc="plan"
                             optionValue="plan"
@@ -1725,10 +1726,10 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                         <div className={"col-6"} style={{ paddingBottom: '3px' }}>
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.allowhsm)}</Box>
                             <FormControlLabel
-                                style={{paddingLeft:10}}
-                                control={<IOSSwitch checked={checkedaux}  onChange={(e) => {setCheckedaux(e.target.checked) ;setValue('allowhsm', e.target.checked)}} />}
+                                style={{ paddingLeft: 10 }}
+                                control={<IOSSwitch checked={checkedaux} onChange={(e) => { setCheckedaux(e.target.checked); setValue('allowhsm', e.target.checked) }} />}
                                 label={""}
-                            />                        
+                            />
                         </div>
                         <FieldEdit
                             label={t(langKeys.hsmfee)}
@@ -1745,7 +1746,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
     );
 }
 
-const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
+const ConversationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -1753,7 +1754,7 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const classes = useStyles();
     const executeResult = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main);
-
+    const memoryTable = useSelector(state => state.main.memoryTable);
     const [dataMain, setdataMain] = useState({
         countrycode: "",
         year: String(new Date().getFullYear()),
@@ -1765,21 +1766,25 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitSave, setWaitSave] = useState(false);
 
-    function search(){
+    function search() {
         dispatch(showBackdrop(true))
         dispatch(getCollection(getBillingConversationSel(dataMain)))
     }
 
     useEffect(() => {
-        setdisableSearch(dataMain.year === "" ) 
+        setdisableSearch(dataMain.year === "")
     }, [dataMain])
 
     useEffect(() => {
         search()
+
+        return () => {
+            dispatch(cleanMemoryTable());
+        }
     }, [])
 
     useEffect(() => {
-        if (!mainResult.mainData.loading){
+        if (!mainResult.mainData.loading) {
             dispatch(showBackdrop(false))
         }
     }, [mainResult])
@@ -1797,8 +1802,8 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         <TemplateIcons
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
-                            //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
-                            //extraOption={t(langKeys.duplicate)}
+                        //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
+                        //extraOption={t(langKeys.duplicate)}
                         />
                     )
                 }
@@ -1868,10 +1873,10 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                if(duplicateop){
+                if (duplicateop) {
                     setduplicateop(false)
                     dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_duplicate) }))
-                }else{
+                } else {
 
                     dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
                 }
@@ -1890,21 +1895,6 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const handleRegister = () => {
         setViewSelected("view-2");
         setRowSelected({ row: null, edit: true });
-    }
-
-    const handleView = (row: Dictionary) => {
-        setduplicateop(true)
-        const callback = () => {
-            dispatch(execute(billingConversationIns({ ...row, operation: 'DUPLICATE', id: 0 })));
-            dispatch(showBackdrop(true));
-            setWaitSave(true);
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_duplicate),
-            callback
-        }))
     }
 
     const handleEdit = (row: Dictionary) => {
@@ -1931,25 +1921,25 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             <Fragment>
                 <TableZyx
                     onClickRow={handleEdit}
-                    columns={columns}                    
+                    columns={columns}
                     ButtonsElement={() => (
-                        <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
+                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                             <FieldSelect
                                 label={t(langKeys.year)}
-                                style={{width: 150}}
+                                style={{ width: 150 }}
                                 valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||0}))}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, year: value?.desc || 0 }))}
                                 data={years}
                                 optionDesc="desc"
                                 optionValue="desc"
                             />
                             <FieldMultiSelect
                                 label={t(langKeys.month)}
-                                style={{width: 300}}
+                                style={{ width: 300 }}
                                 valueDefault={dataMain.month}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, month: value.map((o: Dictionary) => o.val).join() }))}
                                 data={months}
                                 uset={true}
                                 prefixTranslation="month_"
@@ -1961,7 +1951,7 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.countrycode}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,countrycode:value.map((o: Dictionary) => o.code).join()}))}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, countrycode: value.map((o: Dictionary) => o.code).join() }))}
                                 data={dataPlan}
                                 optionDesc="description"
                                 optionValue="code"
@@ -1983,6 +1973,15 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                     loading={mainResult.mainData.loading}
                     register={true}
                     handleRegister={handleRegister}
+                    pageSizeDefault={memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize}
+                    initialPageIndex={memoryTable.page === -1 ? 0 : memoryTable.page}
+                    initialStateFilter={Object.entries(memoryTable.filters).map(([key, value]) => ({
+                        id: key, value: {
+                            value: value.value,
+                            operator: value.operator,
+                            type: 'string'
+                        }
+                    }))}
                 />
             </Fragment>
         )
@@ -1993,23 +1992,21 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 data={rowSelected}
                 setViewSelected={setViewSelected}
                 fetchData={fetchData}
-                dataPlan = {dataPlan}
+                dataPlan={dataPlan}
             />
         )
     } else
         return null;
 }
 
-const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, setViewSelected, fetchData,dataPlan }) => {
+const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, setViewSelected, fetchData, dataPlan }) => {
     const dispatch = useDispatch();
-
     const { t } = useTranslation();
 
     const classes = useStyles();
     const executeRes = useSelector(state => state.main.execute);
-
     const [datetoshow, setdatetoshow] = useState(
-        row? `${row.year}-${String(row.month).padStart(2, '0')}` : `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`
+        row ? `${row.year}-${String(row.month).padStart(2, '0')}` : `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth() + 1).padStart(2, '0')}`
     )
     const [waitSave, setWaitSave] = useState(false);
 
@@ -2020,29 +2017,29 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            id: row? row.billingconversationid : 0,
-            year: row?.year ||new Date().getFullYear(),
-            month: row?.month ||new Date().getMonth() + 1,
+            id: row ? row.billingconversationid : 0,
+            year: row?.year || new Date().getFullYear(),
+            month: row?.month || new Date().getMonth() + 1,
             countrycode: row?.countrycode || 'PE',
             companystartfee: row?.companystartfee || 0.0,
             clientstartfee: row?.clientstartfee || 0.0,
             vcacomission: row?.vcacomission || 0.0,
             freeconversations: row?.freeconversations || 0,
             description: row?.description || "",
-            status: row? row.status : 'ACTIVO',
-            type: row? row.type : '',
-            operation: row? "UPDATE" : "INSERT",
+            status: row ? row.status : 'ACTIVO',
+            type: row ? row.type : '',
+            operation: row ? "UPDATE" : "INSERT",
         }
     });
 
-    function handleDateChange(e: any){
-        if(e!==""){
-            let datetochange = new Date(e+"-02")
-            let mes = datetochange?.getMonth()+1
+    function handleDateChange(e: any) {
+        if (e !== "") {
+            let datetochange = new Date(e + "-02")
+            let mes = datetochange?.getMonth() + 1
             let year = datetochange?.getFullYear()
             setdatetoshow(`${year}-${String(mes).padStart(2, '0')}`)
-            setValue('year',year)
-            setValue('month',mes)
+            setValue('year', year)
+            setValue('month', mes)
         }
     }
 
@@ -2055,18 +2052,18 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
         register('operation');
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('countrycode', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('companystartfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
-        register('clientstartfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
-        register('freeconversations', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
-        register('vcacomission', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('companystartfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('clientstartfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('freeconversations', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('vcacomission', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
 
-        
+
     }, [edit, register]);
 
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row? langKeys.successful_edit : langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
@@ -2103,7 +2100,7 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
-                            title={row? `${row.description}` : t(langKeys.newconversationplan)}
+                            title={row ? `${row.description}` : t(langKeys.newconversationplan)}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -2135,7 +2132,7 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                             className="col-12"
                             type="month"
                             variant="outlined"
-                            onChange={(e)=>handleDateChange(e.target.value)}
+                            onChange={(e) => handleDateChange(e.target.value)}
                             value={datetoshow}
                             size="small"
                         />
@@ -2146,7 +2143,7 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                             className="col-12"
                             valueDefault={getValues("countrycode")}
                             variant="outlined"
-                            onChange={(value) => setValue("countrycode",value.code)}
+                            onChange={(value) => setValue("countrycode", value.code)}
                             error={errors?.countrycode?.message}
                             data={dataPlan}
                             optionDesc="description"
@@ -2212,7 +2209,7 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
     );
 }
 
-const NotificationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
+const NotificationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -2231,22 +2228,26 @@ const NotificationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitSave, setWaitSave] = useState(false);
+    const memoryTable = useSelector(state => state.main.memoryTable);
 
-    function search(){
+    function search() {
         dispatch(showBackdrop(true))
         dispatch(getCollection(getBillingNotificationSel(dataMain)))
     }
 
     useEffect(() => {
-        setdisableSearch(dataMain.year === "" ) 
+        setdisableSearch(dataMain.year === "")
     }, [dataMain])
 
     useEffect(() => {
         search()
+        return () => {
+            dispatch(cleanMemoryTable());
+        }
     }, [])
 
     useEffect(() => {
-        if (!mainResult.mainData.loading){
+        if (!mainResult.mainData.loading) {
             dispatch(showBackdrop(false))
         }
     }, [mainResult])
@@ -2264,8 +2265,8 @@ const NotificationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         <TemplateIcons
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
-                            //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
-                            //extraOption={t(langKeys.duplicate)}
+                        //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
+                        //extraOption={t(langKeys.duplicate)}
                         />
                     )
                 }
@@ -2385,10 +2386,10 @@ const NotificationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                if(duplicateop){
+                if (duplicateop) {
                     setduplicateop(false)
                     dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_duplicate) }))
-                }else{
+                } else {
 
                     dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
                 }
@@ -2409,20 +2410,20 @@ const NotificationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         setRowSelected({ row: null, edit: true });
     }
 
-    const handleView = (row: Dictionary) => {
-        setduplicateop(true)
-        const callback = () => {
-            dispatch(execute(billingNotificationIns({ ...row, operation: 'DUPLICATE', id: 0 })));
-            dispatch(showBackdrop(true));
-            setWaitSave(true);
-        }
+    // const handleView = (row: Dictionary) => {
+    //     setduplicateop(true)
+    //     const callback = () => {
+    //         dispatch(execute(billingNotificationIns({ ...row, operation: 'DUPLICATE', id: 0 })));
+    //         dispatch(showBackdrop(true));
+    //         setWaitSave(true);
+    //     }
 
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_duplicate),
-            callback
-        }))
-    }
+    //     dispatch(manageConfirmation({
+    //         visible: true,
+    //         question: t(langKeys.confirmation_duplicate),
+    //         callback
+    //     }))
+    // }
 
     const handleEdit = (row: Dictionary) => {
         setViewSelected("view-2");
@@ -2448,25 +2449,25 @@ const NotificationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             <Fragment>
                 <TableZyx
                     onClickRow={handleEdit}
-                    columns={columns}                    
+                    columns={columns}
                     ButtonsElement={() => (
-                        <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
+                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                             <FieldSelect
                                 label={t(langKeys.year)}
-                                style={{width: 150}}
+                                style={{ width: 150 }}
                                 valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||0}))}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, year: value?.desc || 0 }))}
                                 data={years}
                                 optionDesc="desc"
                                 optionValue="desc"
                             />
                             <FieldMultiSelect
                                 label={t(langKeys.month)}
-                                style={{width: 300}}
+                                style={{ width: 300 }}
                                 valueDefault={dataMain.month}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, month: value.map((o: Dictionary) => o.val).join() }))}
                                 data={months}
                                 uset={true}
                                 prefixTranslation="month_"
@@ -2478,7 +2479,7 @@ const NotificationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.countrycode}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,countrycode:value.map((o: Dictionary) => o.code).join()}))}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, countrycode: value.map((o: Dictionary) => o.code).join() }))}
                                 data={dataPlan}
                                 optionDesc="description"
                                 optionValue="code"
@@ -2500,6 +2501,13 @@ const NotificationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                     loading={mainResult.mainData.loading}
                     register={true}
                     handleRegister={handleRegister}
+                     pageSizeDefault={memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize}
+                    initialPageIndex={memoryTable.page === -1 ? 0 : memoryTable.page}
+                    initialStateFilter={Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value: {
+                        value: value.value,
+                        operator: value.operator,
+                        type: 'string'
+                    } }))}
                 />
             </Fragment>
         )
@@ -2510,14 +2518,14 @@ const NotificationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 data={rowSelected}
                 setViewSelected={setViewSelected}
                 fetchData={fetchData}
-                dataPlan = {dataPlan}
+                dataPlan={dataPlan}
             />
         )
     } else
         return null;
 }
 
-const DetailNotificationCost: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, setViewSelected, fetchData,dataPlan }) => {
+const DetailNotificationCost: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, setViewSelected, fetchData, dataPlan }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -2526,7 +2534,7 @@ const DetailNotificationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
     const executeRes = useSelector(state => state.main.execute);
 
     const [datetoshow, setdatetoshow] = useState(
-        row? `${row.year}-${String(row.month).padStart(2, '0')}` : `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`
+        row ? `${row.year}-${String(row.month).padStart(2, '0')}` : `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth() + 1).padStart(2, '0')}`
     )
     const [waitSave, setWaitSave] = useState(false);
 
@@ -2537,9 +2545,9 @@ const DetailNotificationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            id: row? row.billingnotificationid : 0,
-            year: row?.year ||new Date().getFullYear(),
-            month: row?.month ||new Date().getMonth() + 1,
+            id: row ? row.billingnotificationid : 0,
+            year: row?.year || new Date().getFullYear(),
+            month: row?.month || new Date().getMonth() + 1,
             countrycode: row?.countrycode || 'PE',
             vcacomission: row?.vcacomission || 0.0,
             c250000: row?.c250000 || 0.0,
@@ -2551,20 +2559,20 @@ const DetailNotificationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
             c10000000: row?.c10000000 || 0.0,
             c25000000: row?.c25000000 || 0.0,
             description: row?.description || "",
-            status: row? row.status : 'ACTIVO',
-            type: row? row.type : '',
-            operation: row? "UPDATE" : "INSERT",
+            status: row ? row.status : 'ACTIVO',
+            type: row ? row.type : '',
+            operation: row ? "UPDATE" : "INSERT",
         }
     });
 
-    function handleDateChange(e: any){
-        if(e!==""){
-            let datetochange = new Date(e+"-02")
-            let mes = datetochange?.getMonth()+1
+    function handleDateChange(e: any) {
+        if (e !== "") {
+            let datetochange = new Date(e + "-02")
+            let mes = datetochange?.getMonth() + 1
             let year = datetochange?.getFullYear()
             setdatetoshow(`${year}-${String(mes).padStart(2, '0')}`)
-            setValue('year',year)
-            setValue('month',mes)
+            setValue('year', year)
+            setValue('month', mes)
         }
     }
 
@@ -2577,21 +2585,21 @@ const DetailNotificationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
         register('operation');
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('countrycode', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('vcacomission', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
-        register('c250000', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
-        register('c750000', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
-        register('c2000000', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
-        register('c3000000', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
-        register('c4000000', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
-        register('c5000000', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
-        register('c10000000', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
-        register('c25000000', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('vcacomission', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('c250000', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('c750000', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('c2000000', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('c3000000', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('c4000000', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('c5000000', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('c10000000', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('c25000000', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
     }, [edit, register]);
 
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row? langKeys.successful_edit : langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
@@ -2628,7 +2636,7 @@ const DetailNotificationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
-                            title={row? `${row.description}` : t(langKeys.newnotificationcost)}
+                            title={row ? `${row.description}` : t(langKeys.newnotificationcost)}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -2660,7 +2668,7 @@ const DetailNotificationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                             className="col-12"
                             type="month"
                             variant="outlined"
-                            onChange={(e)=>handleDateChange(e.target.value)}
+                            onChange={(e) => handleDateChange(e.target.value)}
                             value={datetoshow}
                             size="small"
                         />
@@ -2671,7 +2679,7 @@ const DetailNotificationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                             className="col-12"
                             valueDefault={getValues("countrycode")}
                             variant="outlined"
-                            onChange={(value) => setValue("countrycode",value.code)}
+                            onChange={(value) => setValue("countrycode", value.code)}
                             error={errors?.countrycode?.message}
                             data={dataPlan}
                             optionDesc="description"
@@ -2781,7 +2789,7 @@ const DetailNotificationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
     );
 }
 
-const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
+const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -2801,7 +2809,7 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitSave, setWaitSave] = useState(false);
 
-    function search(){
+    function search() {
         dispatch(showBackdrop(true))
         dispatch(getCollection(getBillingSupportSel(dataMain)))
     }
@@ -2811,7 +2819,7 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     }, [])
 
     useEffect(() => {
-        if (!mainResult.mainData.loading){
+        if (!mainResult.mainData.loading) {
             dispatch(showBackdrop(false))
         }
     }, [mainResult])
@@ -2829,8 +2837,8 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         <TemplateIcons
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
-                            //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
-                            //extraOption={t(langKeys.duplicate)}
+                        //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
+                        //extraOption={t(langKeys.duplicate)}
                         />
                     )
                 }
@@ -2874,10 +2882,10 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                if(duplicateop){
+                if (duplicateop) {
                     setduplicateop(false)
                     dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_duplicate) }))
-                }else{
+                } else {
 
                     dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
                 }
@@ -2894,7 +2902,7 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     }, [executeResult, waitSave])
 
     useEffect(() => {
-        setdisableSearch(dataMain.year === "" ) 
+        setdisableSearch(dataMain.year === "")
     }, [dataMain])
 
     const handleRegister = () => {
@@ -2949,23 +2957,23 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                     onClickRow={handleEdit}
                     columns={columns}
                     ButtonsElement={() => (
-                        <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
+                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                             <FieldSelect
                                 label={t(langKeys.year)}
-                                style={{width: 150}}
+                                style={{ width: 150 }}
                                 valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||0}))}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, year: value?.desc || 0 }))}
                                 data={years}
                                 optionDesc="desc"
                                 optionValue="desc"
                             />
                             <FieldMultiSelect
                                 label={t(langKeys.month)}
-                                style={{width: 300}}
+                                style={{ width: 300 }}
                                 valueDefault={dataMain.month}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, month: value.map((o: Dictionary) => o.val).join() }))}
                                 data={months}
                                 uset={true}
                                 prefixTranslation="month_"
@@ -2977,12 +2985,12 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.plan}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,plan:value?.description||""}))}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, plan: value?.description || "" }))}
                                 data={dataPlan}
                                 optionDesc="description"
                                 optionValue="description"
                             />
-                        
+
                             <Button
                                 disabled={mainResult.mainData.loading || disableSearch}
                                 variant="contained"
@@ -3011,26 +3019,26 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 data={rowSelected}
                 setViewSelected={setViewSelected}
                 fetchData={fetchData}
-                dataPlan = {dataPlan}
+                dataPlan={dataPlan}
             />
         )
     } else
         return null;
 }
 
-const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, setViewSelected, fetchData,dataPlan }) => {
+const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, setViewSelected, fetchData, dataPlan }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
-    
+
     const classes = useStyles();
     const executeRes = useSelector(state => state.main.execute);
 
     const [datetoshow, setdatetoshow] = useState(
-        row? `${row.year}-${String(row.month).padStart(2, '0')}` : `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`
+        row ? `${row.year}-${String(row.month).padStart(2, '0')}` : `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth() + 1).padStart(2, '0')}`
     )
     const [waitSave, setWaitSave] = useState(false);
-    
+
     const arrayBread = [
         { id: "view-1", name: t(langKeys.supportplan) },
         { id: "view-2", name: t(langKeys.supportplandetail) }
@@ -3038,34 +3046,34 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({ data: { row, edit
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            id: row? row.billingsupportid : 0,
+            id: row ? row.billingsupportid : 0,
             startdate: row?.startdate || new Date(new Date().setDate(1)),
             enddate: row?.enddate || new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
-            year: row?.year ||new Date().getFullYear(),
-            month: row?.month ||new Date().getMonth() + 1,
-            plan: row?.plan||"",
-            basicfee: row?.basicfee||0,
+            year: row?.year || new Date().getFullYear(),
+            month: row?.month || new Date().getMonth() + 1,
+            plan: row?.plan || "",
+            basicfee: row?.basicfee || 0,
             starttime: row?.starttime || new Date().getTime(),
             finishtime: row?.finishtime || new Date().getTime(),
-            status: row? row.status : 'ACTIVO',
-            type: row? row.type : '',
-            description: row? row.description : '',
-            operation: row? "UPDATE" : "INSERT",
+            status: row ? row.status : 'ACTIVO',
+            type: row ? row.type : '',
+            description: row ? row.description : '',
+            operation: row ? "UPDATE" : "INSERT",
         }
     });
 
-    function handleDateChange(e: any){
-        if(e!==""){
-            let datetochange = new Date(e+"-02")
-            let mes = datetochange?.getMonth()+1
+    function handleDateChange(e: any) {
+        if (e !== "") {
+            let datetochange = new Date(e + "-02")
+            let mes = datetochange?.getMonth() + 1
             let year = datetochange?.getFullYear()
-            let startdate = new Date(year, mes-1, 1)
+            let startdate = new Date(year, mes - 1, 1)
             let enddate = new Date(year, mes, 0)
-            setValue('startdate',startdate)
-            setValue('enddate',enddate)
+            setValue('startdate', startdate)
+            setValue('enddate', enddate)
             setdatetoshow(`${year}-${String(mes).padStart(2, '0')}`)
-            setValue('year',year)
-            setValue('month',mes)
+            setValue('year', year)
+            setValue('month', mes)
         }
     }
 
@@ -3078,7 +3086,7 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({ data: { row, edit
         register('operation');
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('plan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('basicfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('basicfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
         register('starttime', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('finishtime', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
@@ -3086,7 +3094,7 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({ data: { row, edit
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row? langKeys.successful_edit : langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
@@ -3123,7 +3131,7 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({ data: { row, edit
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
-                            title={row? `${row.description}` : t(langKeys.newsupportplan)}
+                            title={row ? `${row.description}` : t(langKeys.newsupportplan)}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -3150,60 +3158,60 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({ data: { row, edit
                 </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                            <FieldEdit
-                                label={t(langKeys.description)}
-                                onChange={(value) => setValue('description', value)}
-                                valueDefault={getValues('description')}
-                                error={errors?.description?.message}
-                                className="col-6"
-                            />
-                            <TextField
-                                id="date"
-                                className="col-6"
-                                type="month"
-                                variant="outlined"
-                                onChange={(e)=>handleDateChange(e.target.value)}
-                                value={datetoshow}
-                                size="small"
-                            />
+                        <FieldEdit
+                            label={t(langKeys.description)}
+                            onChange={(value) => setValue('description', value)}
+                            valueDefault={getValues('description')}
+                            error={errors?.description?.message}
+                            className="col-6"
+                        />
+                        <TextField
+                            id="date"
+                            className="col-6"
+                            type="month"
+                            variant="outlined"
+                            onChange={(e) => handleDateChange(e.target.value)}
+                            value={datetoshow}
+                            size="small"
+                        />
                     </div>
                     <div className="row-zyx">
-                            <FieldSelect
-                                label="Plan"
-                                className="col-6"
-                                valueDefault={getValues("plan")}
-                                onChange={(value) => setValue('plan',value.description)}
-                                data={dataPlan}
-                                optionDesc="description"
-                                optionValue="description"
-                                error={errors?.plan?.message}
-                            />
-                            <FieldEdit
-                                label={t(langKeys.supportprice)}
-                                onChange={(value) => setValue('basicfee', value)}
-                                valueDefault={getValues('basicfee')}
-                                error={errors?.basicfee?.message}
-                                type="number"
-                                className="col-6"
-                            />
+                        <FieldSelect
+                            label="Plan"
+                            className="col-6"
+                            valueDefault={getValues("plan")}
+                            onChange={(value) => setValue('plan', value.description)}
+                            data={dataPlan}
+                            optionDesc="description"
+                            optionValue="description"
+                            error={errors?.plan?.message}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.supportprice)}
+                            onChange={(value) => setValue('basicfee', value)}
+                            valueDefault={getValues('basicfee')}
+                            error={errors?.basicfee?.message}
+                            type="number"
+                            className="col-6"
+                        />
                     </div>
                     <div className="row-zyx">
-                            <FieldEdit
-                                type="time"
-                                label={t(langKeys.starttime)}
-                                error={errors?.starttime?.message}
-                                className="col-6"
-                                onChange={(value) => setValue('starttime', value)}
-                                valueDefault={getValues("starttime")}
-                            />
-                            <FieldEdit
-                                type="time"
-                                label={t(langKeys.finishtime)}
-                                error={errors?.finishtime?.message}
-                                className="col-6"
-                                onChange={(value) => setValue('finishtime', value)}
-                                valueDefault={getValues("finishtime")}
-                            />
+                        <FieldEdit
+                            type="time"
+                            label={t(langKeys.starttime)}
+                            error={errors?.starttime?.message}
+                            className="col-6"
+                            onChange={(value) => setValue('starttime', value)}
+                            valueDefault={getValues("starttime")}
+                        />
+                        <FieldEdit
+                            type="time"
+                            label={t(langKeys.finishtime)}
+                            error={errors?.finishtime?.message}
+                            className="col-6"
+                            onChange={(value) => setValue('finishtime', value)}
+                            valueDefault={getValues("finishtime")}
+                        />
                     </div>
                 </div>
             </form>
@@ -3211,7 +3219,7 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({ data: { row, edit
     );
 }
 
-const MessagingCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
+const MessagingCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -3231,13 +3239,13 @@ const MessagingCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitSave, setWaitSave] = useState(false);
 
-    function search(){
+    function search() {
         dispatch(showBackdrop(true))
         dispatch(getCollection(getBillingMessagingSel(dataMain)))
     }
 
     useEffect(() => {
-        setdisableSearch(dataMain.year === "" ) 
+        setdisableSearch(dataMain.year === "")
     }, [dataMain])
 
     useEffect(() => {
@@ -3245,7 +3253,7 @@ const MessagingCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     }, [])
 
     useEffect(() => {
-        if (!mainResult.mainData.loading){
+        if (!mainResult.mainData.loading) {
             dispatch(showBackdrop(false))
         }
     }, [mainResult])
@@ -3263,8 +3271,8 @@ const MessagingCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         <TemplateIcons
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
-                            //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
-                            //extraOption={t(langKeys.duplicate)}
+                        //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
+                        //extraOption={t(langKeys.duplicate)}
                         />
                     )
                 }
@@ -3326,10 +3334,10 @@ const MessagingCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                if(duplicateop){
+                if (duplicateop) {
                     setduplicateop(false)
                     dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_duplicate) }))
-                }else{
+                } else {
 
                     dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
                 }
@@ -3389,25 +3397,25 @@ const MessagingCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             <Fragment>
                 <TableZyx
                     onClickRow={handleEdit}
-                    columns={columns}                    
+                    columns={columns}
                     ButtonsElement={() => (
-                        <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
+                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                             <FieldSelect
                                 label={t(langKeys.year)}
-                                style={{width: 150}}
+                                style={{ width: 150 }}
                                 valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||0}))}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, year: value?.desc || 0 }))}
                                 data={years}
                                 optionDesc="desc"
                                 optionValue="desc"
                             />
                             <FieldMultiSelect
                                 label={t(langKeys.month)}
-                                style={{width: 300}}
+                                style={{ width: 300 }}
                                 valueDefault={dataMain.month}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, month: value.map((o: Dictionary) => o.val).join() }))}
                                 data={months}
                                 uset={true}
                                 prefixTranslation="month_"
@@ -3441,14 +3449,14 @@ const MessagingCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 data={rowSelected}
                 setViewSelected={setViewSelected}
                 fetchData={fetchData}
-                dataPlan = {dataPlan}
+                dataPlan={dataPlan}
             />
         )
     } else
         return null;
 }
 
-const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, setViewSelected, fetchData,dataPlan }) => {
+const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, setViewSelected, fetchData, dataPlan }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -3457,7 +3465,7 @@ const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
     const executeRes = useSelector(state => state.main.execute);
 
     const [datetoshow, setdatetoshow] = useState(
-        row? `${row.year}-${String(row.month).padStart(2, '0')}` : `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`
+        row ? `${row.year}-${String(row.month).padStart(2, '0')}` : `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth() + 1).padStart(2, '0')}`
     )
     const [waitSave, setWaitSave] = useState(false);
 
@@ -3468,28 +3476,28 @@ const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            id: row? row.billingmessagingid : 0,
-            year: row?.year ||new Date().getFullYear(),
-            month: row?.month ||new Date().getMonth() + 1,
+            id: row ? row.billingmessagingid : 0,
+            year: row?.year || new Date().getFullYear(),
+            month: row?.month || new Date().getMonth() + 1,
             pricepersms: row?.pricepersms || 0.0,
             vcacomissionpersms: row?.vcacomissionpersms || 0.0,
             pricepermail: row?.pricepermail || 0.0,
             vcacomissionpermail: row?.vcacomissionpermail || 0.0,
             description: row?.description || "",
-            status: row? row.status : 'ACTIVO',
-            type: row? row.type : '',
-            operation: row? "UPDATE" : "INSERT",
+            status: row ? row.status : 'ACTIVO',
+            type: row ? row.type : '',
+            operation: row ? "UPDATE" : "INSERT",
         }
     });
 
-    function handleDateChange(e: any){
-        if(e!==""){
-            let datetochange = new Date(e+"-02")
-            let mes = datetochange?.getMonth()+1
+    function handleDateChange(e: any) {
+        if (e !== "") {
+            let datetochange = new Date(e + "-02")
+            let mes = datetochange?.getMonth() + 1
             let year = datetochange?.getFullYear()
             setdatetoshow(`${year}-${String(mes).padStart(2, '0')}`)
-            setValue('year',year)
-            setValue('month',mes)
+            setValue('year', year)
+            setValue('month', mes)
         }
     }
 
@@ -3497,10 +3505,10 @@ const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
         register('id');
         register('year');
         register('month');
-        register('pricepersms', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
-        register('vcacomissionpersms', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
-        register('pricepermail', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
-        register('vcacomissionpermail', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('pricepersms', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('vcacomissionpersms', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('pricepermail', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('vcacomissionpermail', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('status');
         register('type');
@@ -3510,7 +3518,7 @@ const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row? langKeys.successful_edit : langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
@@ -3547,7 +3555,7 @@ const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
-                            title={row? `${row.description}` : t(langKeys.newmessagingplan)}
+                            title={row ? `${row.description}` : t(langKeys.newmessagingplan)}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -3579,7 +3587,7 @@ const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                             className="col-6"
                             type="month"
                             variant="outlined"
-                            onChange={(e)=>handleDateChange(e.target.value)}
+                            onChange={(e) => handleDateChange(e.target.value)}
                             value={datetoshow}
                             size="small"
                         />
@@ -3619,7 +3627,7 @@ const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                     <div className="row-zyx">
                         <FieldView
                             label=''
-                            value={'*'+t(langKeys.messagingcostsmsnote)}
+                            value={'*' + t(langKeys.messagingcostsmsnote)}
                             className={classes.commentary}
                         />
                     </div>
@@ -3666,24 +3674,24 @@ const BillingSetup: FC = () => {
     const [countryList, setcountryList] = useState<any>([]);
     const [dataPaymentPlan, setdataPaymentPlan] = useState<any>([]);
     const [dataPlan, setdataPlan] = useState<any>([]);
-    const [pageSelected, setPageSelected] = useState(user?.roledesc === "SUPERADMIN"?0:6);
+    const [pageSelected, setPageSelected] = useState(user?.roledesc === "SUPERADMIN" ? 0 : 6);
     const [sentfirstinfo, setsentfirstinfo] = useState(false);
 
     useEffect(() => {
-        if(!multiData.loading && sentfirstinfo){
+        if (!multiData.loading && sentfirstinfo) {
             setsentfirstinfo(false)
-            setdataPlan(multiData.data[0] && multiData.data[0].success? multiData.data[0].data : [])
-            setdataPaymentPlan(multiData.data[3] && multiData.data[3].success? multiData.data[3].data : [])
+            setdataPlan(multiData.data[0] && multiData.data[0].success ? multiData.data[0].data : [])
+            setdataPaymentPlan(multiData.data[3] && multiData.data[3].success ? multiData.data[3].data : [])
         }
     }, [multiData])
 
     useEffect(() => {
-        if(!countryListreq.loading && countryListreq.data.length){
+        if (!countryListreq.loading && countryListreq.data.length) {
             setcountryList(countryListreq.data)
         }
     }, [countryListreq])
 
-    useEffect(()=>{
+    useEffect(() => {
         setsentfirstinfo(true)
         dispatch(getCountryList())
         dispatch(getMultiCollection([
@@ -3692,7 +3700,7 @@ const BillingSetup: FC = () => {
             getCorpSel(0),
             getPaymentPlanSel(),
         ]));
-    },[])
+    }, [])
 
     return (
         <div style={{ width: '100%' }}>
@@ -3704,22 +3712,22 @@ const BillingSetup: FC = () => {
                 textColor="primary"
                 onChange={(_, value) => setPageSelected(value)}
             >
-                {user?.roledesc === "SUPERADMIN" && 
+                {user?.roledesc === "SUPERADMIN" &&
                     <AntTab label={t(langKeys.billingsetupgeneralconfiguration)} />
                 }
-                {user?.roledesc === "SUPERADMIN" && 
+                {user?.roledesc === "SUPERADMIN" &&
                     <AntTab label={t(langKeys.contractedplanbyperiod)} />
                 }
-                {user?.roledesc === "SUPERADMIN" && 
+                {user?.roledesc === "SUPERADMIN" &&
                     <AntTab label={t(langKeys.conversationcost)} />
                 }
-                {user?.roledesc === "SUPERADMIN" && 
+                {user?.roledesc === "SUPERADMIN" &&
                     <AntTab label={t(langKeys.notificationcost)} />
                 }
-                {user?.roledesc === "SUPERADMIN" && 
+                {user?.roledesc === "SUPERADMIN" &&
                     <AntTab label={t(langKeys.messagingcost)} />
                 }
-                {user?.roledesc === "SUPERADMIN" && 
+                {user?.roledesc === "SUPERADMIN" &&
                     <AntTab label={t(langKeys.supportplan)} />
                 }
                 {/*user?.roledesc === "SUPERADMIN" && 
@@ -3728,32 +3736,32 @@ const BillingSetup: FC = () => {
             </Tabs>
             {pageSelected === 0 &&
                 <div style={{ marginTop: 16 }}>
-                    <GeneralConfiguration dataPlan={countryList}/>
+                    <GeneralConfiguration dataPlan={countryList} />
                 </div>
             }
             {pageSelected === 1 &&
                 <div style={{ marginTop: 16 }}>
-                    <ContractedPlanByPeriod dataPlan={dataPaymentPlan}/>
+                    <ContractedPlanByPeriod dataPlan={dataPaymentPlan} />
                 </div>
             }
             {pageSelected === 2 &&
                 <div style={{ marginTop: 16 }}>
-                    <ConversationCost dataPlan={countryList}/>
+                    <ConversationCost dataPlan={countryList} />
                 </div>
             }
             {pageSelected === 3 &&
                 <div style={{ marginTop: 16 }}>
-                    <NotificationCost dataPlan={countryList}/>
+                    <NotificationCost dataPlan={countryList} />
                 </div>
             }
             {pageSelected === 4 &&
                 <div style={{ marginTop: 16 }}>
-                    <MessagingCost dataPlan={countryList}/>
+                    <MessagingCost dataPlan={countryList} />
                 </div>
             }
             {pageSelected === 5 &&
                 <div style={{ marginTop: 16 }}>
-                    <SupportPlan dataPlan={dataPlan}/>
+                    <SupportPlan dataPlan={dataPlan} />
                 </div>
             }
             {/*pageSelected === 6 &&

@@ -342,10 +342,6 @@ const TableZyx = React.memo(({
         filters: initialFilters,
     });
 
-    console.log("initialPageIndex", initialPageIndex);
-    console.log("pageSizeDefault", pageSizeDefault);
-
-
     useEffect(() => {
         onFilterChange?.(tFilters);
     }, [tFilters]);
