@@ -93,7 +93,7 @@ const useDashboardAddStyles = makeStyles(theme => ({
 interface Item {
     description: string;
     contentType: string;
-    kpi: number;
+    kpiid : number;
     reporttemplateid: number;
     grouping: string;
     graph: string;
@@ -236,13 +236,13 @@ const DashboardAdd: FC = () => {
                 >
                     <Trans i18nKey={langKeys.back} />
                 </Button>
-                <Button
+                {/* <Button
                     variant="contained"
                     color="primary"
                     onClick={addItemOnClick}
                 >
                     <Trans i18nKey={langKeys.add} />
-                </Button>
+                </Button> */}
                 <Button
                     variant="contained"
                     color="primary"
@@ -458,7 +458,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
 
     useEffect(() => {
         if (contentType === "report") {
-            unregister(`${key}.kpi`);
+            unregister(`${key}.kpiid`);
 
             register(`${key}.reporttemplateid`, { validate: mandatoryNumField, value: 0 });
             register(`${key}.grouping`, { validate: mandatoryStrField, value: '' });
@@ -470,7 +470,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
             unregister(`${key}.graph`);
             unregister(`${key}.column`);
 
-            register(`${key}.kpi`, { validate: mandatoryNumField, value: 0 });
+            register(`${key}.kpiid`, { validate: mandatoryNumField, value: 0 });
         }
     }, [contentType]);
 
@@ -535,9 +535,9 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                     data={kpis}
                     optionDesc="kpiname"
                     optionValue="id"
-                    valueDefault={getValues(`${key}.kpi`)}
-                    onChange={(v: KpiTemplate) => setValue(`${key}.kpi`, v?.id || 0)}
-                    error={errors[key]?.kpi?.message}
+                    valueDefault={getValues(`${key}.kpiid`)}
+                    onChange={(v: KpiTemplate) => setValue(`${key}.kpiid`, v?.id || 0)}
+                    error={errors[key]?.kpiid?.message}
                     disabled={loading}
                 />
             )}

@@ -499,6 +499,13 @@ const translation: LangKeys = {
     status_sent: 'enviado',
     'status_not sent': 'no enviado',
 
+    graphic_view: 'Vista gráfica',
+    graphic_configuration: 'Configuratión de gráfico',
+    graphic_type: 'Tipo de gráfica',
+    graphic_pie: 'Torta',
+    graphic_bar: 'Barras',
+    graphic_view_by: 'Visualizar por',
+
     status_activo: 'activo',
     no_reply_use_hsm: 'La conversación está cerrada o bloqueada por estar fuera de la venta de 24 horas.\nEnvíe un HSM para contactar al cliente.',
     status_inactivo: 'inactivo',

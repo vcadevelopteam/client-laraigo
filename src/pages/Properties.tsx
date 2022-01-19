@@ -10,9 +10,8 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SaveIcon from '@material-ui/icons/Save';
 import TableZyx from '../components/fields/table-simple';
 import Typography from '@material-ui/core/Typography';
-import VisibilityIcon from '@material-ui/icons/Visibility';
-
-import { Box, IconButton } from '@material-ui/core';
+import { cleanMemoryTable } from 'store/main/actions';
+import { Box } from '@material-ui/core';
 import { Dictionary, MultiData } from '@types';
 import { FieldEdit, FieldEditArray, FieldSelect, FieldView, TemplateBreadcrumbs, TemplateSwitchArray, TitleDetail } from 'components';
 
@@ -65,9 +64,11 @@ const Properties: FC = () => {
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [viewSelected, setViewSelected] = useState('view-1');
     const [waitSave, setWaitSave] = useState(false);
+    const memoryTable = useSelector(state => state.main.memoryTable);
 
     const executeResult = useSelector(state => state.main.execute);
-    const mainResult = useSelector(state => state.main);
+    const mainResult = useSelector(state => state.main.mainData);
+    const multiResult = useSelector(state => state.main.multiData);
     const user = useSelector(state => state.login.validateToken.user);
 
     const classes = useStyles();
@@ -137,6 +138,7 @@ const Properties: FC = () => {
             getOrgSel(0),
         ]));
         return () => {
+            dispatch(cleanMemoryTable());
             dispatch(resetMain());
         };
     }, []);
@@ -157,8 +159,9 @@ const Properties: FC = () => {
         }
     }, [executeResult, waitSave])
 
+
     if (viewSelected === 'view-1') {
-        if (mainResult.mainData.error) {
+        if (mainResult.error) {
             return <h1>ERROR</h1>;
         }
         return (
@@ -203,14 +206,21 @@ const Properties: FC = () => {
                     </div>
                 </div>
                 <TableZyx
-                    data={mainResult.mainData.data}
+                    data={mainResult.data}
                     download={true}
                     columns={columns}
                     filterGeneral={false}
                     onClickRow={handleEdit}
-                    loading={mainResult.mainData.loading}
+                    loading={mainResult.loading}
                     register={['SUPERADMIN'].includes(user?.roledesc || "")}
                     handleRegister={handleRegister}
+                    pageSizeDefault={memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize}
+                    initialPageIndex={memoryTable.page === -1 ? 0 : memoryTable.page}
+                    initialStateFilter={Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value: {
+                        value: value.value,
+                        operator: value.operator,
+                        type: 'string'
+                    } }))}
                 />
             </div>
         )
@@ -220,7 +230,7 @@ const Properties: FC = () => {
             <DetailProperty
                 data={rowSelected}
                 fetchData={fetchData}
-                multiData={mainResult.multiData.data}
+                multiData={multiResult.data}
                 setViewSelected={setViewSelected}
             />
         )
@@ -243,7 +253,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
     const [mainaux2loading, setmainaux2loading] = useState(false);
     const [multi2loading, setmulti2loading] = useState(false);
     const [level, setlevel] = useState(row?.level || "");
-    const corpList = multiData[1] && multiData[1].success? multiData[1].data : [];
+    const corpList = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const [orgList, setorgList] = useState<any>([]);
     const [channelList, setchannelList] = useState<any>([]);
     const [groupList, setgroupList] = useState<any>([]);
@@ -262,7 +272,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
 
     const dispatch = useDispatch();
 
-    const { control, register, handleSubmit, trigger, setValue,getValues, formState: { errors } } = useForm<any>({
+    const { control, register, handleSubmit, trigger, setValue, getValues, formState: { errors } } = useForm<any>({
         defaultValues: {
             level: row?.level || "",
             corpid: row?.corpid || user?.corpid,
@@ -315,8 +325,8 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
 
     useEffect(() => {
         setmainaux2loading(true);
-        dispatch(getCollectionAux2(getOrgSel(0,row?.corpid || user?.corpid)))
-        if(row?.corpid){
+        dispatch(getCollectionAux2(getOrgSel(0, row?.corpid || user?.corpid)))
+        if (row?.corpid) {
             fetchDetailData(row?.corpid, row?.propertyname, row?.description, row?.category, row?.level);
         }
         return () => {
@@ -325,18 +335,18 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
         };
     }, []);
     useEffect(() => {
-        if(mainaux2loading){
-            if(!detailResult2.loading){
+        if (mainaux2loading) {
+            if (!detailResult2.loading) {
                 setmainaux2loading(false)
                 setorgList(detailResult2.data)
             }
         }
     }, [detailResult2]);
     useEffect(() => {
-        if(multi2loading){
-            if(!responseFromSelect2.loading){
-                setchannelList(responseFromSelect2.data[0] && responseFromSelect2.data[0].success? responseFromSelect2.data[0].data : [])
-                setgroupList(responseFromSelect2.data[1] && responseFromSelect2.data[1].success? responseFromSelect2.data[1].data : [])
+        if (multi2loading) {
+            if (!responseFromSelect2.loading) {
+                setchannelList(responseFromSelect2.data[0] && responseFromSelect2.data[0].success ? responseFromSelect2.data[0].data : [])
+                setgroupList(responseFromSelect2.data[1] && responseFromSelect2.data[1].success ? responseFromSelect2.data[1].data : [])
                 setmulti2loading(false)
             }
         }
@@ -390,19 +400,19 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
         { id: 'view-2', name: `${t(langKeys.property)} ${t(langKeys.detail)}` }
     ];
 
-    function corpChange(corpid:any){
+    function corpChange(corpid: any) {
         //setorgList(unfilteredOrgs.filter(x=>x.corpid===corpid)); 
         setmainaux2loading(true);
-        dispatch(getCollectionAux2(getOrgSel(0,corpid)))
-        setValue("corpid",corpid)
+        dispatch(getCollectionAux2(getOrgSel(0, corpid)))
+        setValue("corpid", corpid)
     }
-    function changeOrg(value:any){
+    function changeOrg(value: any) {
         setmulti2loading(true)
         dispatch(getMultiCollectionAux2([
-            getChannelSel(0,value?.orgid,value?.corpid),
-            getValuesFromDomain('GRUPOS',"tst",value?.orgid,value?.corpid),
+            getChannelSel(0, value?.orgid, value?.corpid),
+            getValuesFromDomain('GRUPOS', "tst", value?.orgid, value?.corpid),
         ]))
-        setValue('orgid',value?.orgid||0)
+        setValue('orgid', value?.orgid || 0)
     }
 
     return (
@@ -445,7 +455,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
                             label={t(langKeys.corporation)}
                             className="col-6"
                             valueDefault={getValues("corpid")}
-                            onChange={(value) =>corpChange(value?.corpid||0)}
+                            onChange={(value) => corpChange(value?.corpid || 0)}
                             error={errors?.corpid?.message}
                             data={corpList}
                             disabled={isView}
@@ -485,13 +495,13 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
                             optionValue="categoryvalue"
                         />
                     </div>
-                    <div className='row-zyx'>                        
+                    <div className='row-zyx'>
                         <FieldSelect
                             label={t(langKeys.level)}
                             className="col-6"
                             valueDefault={getValues('level')}
                             onChange={(value) => {
-                                setlevel(value?.levelvalue||"");
+                                setlevel(value?.levelvalue || "");
                                 setValue('level', value?.levelvalue)
                             }}
                             error={errors?.level?.message}

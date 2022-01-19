@@ -2039,6 +2039,13 @@ const translation: LangKeys = {
     advisoricon: "Advisor icon",
     clienticon: "Client icon",
 
+    graphic_view: 'Graphic view',
+    graphic_configuration: 'Graphic configuration',
+    graphic_type: 'Graphic type',
+    graphic_pie: 'Pie',
+    graphic_bar: 'Bar',
+    graphic_view_by: 'view by',
+
     manageAgreement: 'Manage agreements',
     manageAgreement_plural: 'Manage agreements',
     activeOrganization: 'Active organization',

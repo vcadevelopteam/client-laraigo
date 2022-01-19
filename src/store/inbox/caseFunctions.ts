@@ -418,8 +418,8 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
         if (data.newConversation) {
             newAgentList = newAgentList.map(x => x.userid === data.userid ? {
                 ...x,
-                countAnwsered: x.countAnwsered + (data.userid === 2 ? 1 : 0),
-                countNotAnwsered: (x.countNotAnwsered || 0) + (data.userid === 2 ? 0 : 1),
+                countAnwsered: x.countAnwsered + (data.userid === 2 ? 1 : (data.isAnswered ? 1 : 0)),
+                countNotAnwsered: (x.countNotAnwsered || 0) + (data.userid === 2 ? 0 : (data.isAnswered ? 0 : 1)),
             } : x)
         } else if (data.usertype === "agent" && data.ticketWasAnswered) {
             newAgentList = newAgentList.map(x => x.userid === data.userid ? {
@@ -601,35 +601,38 @@ export const getDataTicket = (state: IState): IState => ({
     person: { ...state.person, loading: true, error: false },
 });
 
-export const getDataTicketSuccess = (state: IState, action: IAction): IState => ({
-    ...state,
-    ticketSelected: { ...state.ticketSelected!!, isAnswered: action.payload.data[0].data.some((x: IInteraction) => x.userid === state.agentSelected?.userid && x.interactiontype !== "LOG") },
-    interactionBaseList: action.payload.data?.[0]?.data || [],
-    interactionList: {
-        data: getGroupInteractions(cleanLogsReassignedTask(action.payload.data[0].data)),
-        count: action.payload.count,
-        loading: false,
-        error: false,
-    },
-    isOnBottom: null,
-    configurationVariables: {
-        data: action.payload.data[2].data.filter((x: any) => !!x.visible).sort((a: any, b: any) => (a.priority < b.priority) ? 1 : ((b.priority < a.priority) ? -1 : 0)) || [],
-        count: action.payload.count,
-        loading: false,
-        error: false,
-    },
-    richResponseList: {
-        data: action.payload.data[3].data.map((x: any) => JSON.parse(x.block)) || [],
-        count: action.payload.count,
-        loading: false,
-        error: false,
-    },
-    person: {
-        data: action.payload.data[1].data && action.payload.data[1].data.length > 0 ? action.payload.data[1].data[0] : null,
-        loading: false,
-        error: false,
-    },
-});
+export const getDataTicketSuccess = (state: IState, action: IAction): IState => {
+    console.log("aaa", state.ticketSelected)
+    return {
+        ...state,
+        ticketSelected: { ...state.ticketSelected!!, isAnswered: action.payload.data[0].data.some((x: IInteraction) => x.userid === state.agentSelected?.userid && x.interactiontype !== "LOG") },
+        interactionBaseList: action.payload.data?.[0]?.data || [],
+        interactionList: {
+            data: getGroupInteractions(cleanLogsReassignedTask(action.payload.data[0].data)),
+            count: action.payload.count,
+            loading: false,
+            error: false,
+        },
+        isOnBottom: null,
+        configurationVariables: {
+            data: action.payload.data[2].data.filter((x: any) => !!x.visible).sort((a: any, b: any) => (a.priority < b.priority) ? 1 : ((b.priority < a.priority) ? -1 : 0)) || [],
+            count: action.payload.count,
+            loading: false,
+            error: false,
+        },
+        richResponseList: {
+            data: action.payload.data[3].data.map((x: any) => JSON.parse(x.block)) || [],
+            count: action.payload.count,
+            loading: false,
+            error: false,
+        },
+        person: {
+            data: action.payload.data[1].data && action.payload.data[1].data.length > 0 ? action.payload.data[1].data[0] : null,
+            loading: false,
+            error: false,
+        },
+    }
+};
 
 
 export const getDataTicketFailure = (state: IState, action: IAction): IState => ({

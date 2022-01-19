@@ -690,6 +690,13 @@ export const langKeys = {
     status_sent: 'status_sent',
     'status_not sent': 'status_not sent',
 
+    graphic_view: 'graphic_view',
+    graphic_configuration: 'graphic_configuration',
+    graphic_type: 'graphic_type',
+    graphic_pie: 'graphic_pie',
+    graphic_bar: 'graphic_bar',
+    graphic_view_by: 'graphic_view_by',
+
     status_activo: 'status_activo',
     status_inactivo: 'status_inactivo',
     status_bloqueado: 'status_bloqueado',

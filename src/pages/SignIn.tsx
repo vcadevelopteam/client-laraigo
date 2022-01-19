@@ -29,6 +29,7 @@ import { showSnackbar } from 'store/popus/actions';
 import { useLocation } from "react-router-dom";
 import { apiUrls } from 'common/constants';
 import paths from 'common/constants/paths';
+import { LaraigoLogo } from 'icons';
 
 export const useStyles = makeStyles((theme) => ({
     paper: {
@@ -178,7 +179,8 @@ const SignIn = () => {
             <script src="https://apis.google.com/js/platform.js" async defer></script>
             <Container component="main" maxWidth="xs" className={classes.containerLogin}>
                 <div className={classes.childContainer}>
-                    <img src="./Laraigo-vertical-logo-name.svg" style={{ height: 200 }} alt="logo" />
+                    {/* <img src="./Laraigo-vertical-logo-name.svg" style={{ height: 200 }} alt="logo" /> */}
+                    <LaraigoLogo style={{ height: 200 }} />
                     <div className={classes.paper}>
                         {resLogin.error && (
                             <Alert className={classes.alertheader} variant="filled" severity="error">
