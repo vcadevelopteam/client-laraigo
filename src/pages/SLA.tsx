@@ -31,10 +31,6 @@ interface DetailSLAProps {
     multiData: MultiData[];
     fetchData: () => void
 }
-const arrayBread = [
-    { id: "view-1", name: "Service level agreement" },
-    { id: "view-2", name: "Service level agreement detail" }
-];
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -75,7 +71,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
         defaultValues: {
             type: 'NINGUNO',
             id: edit? row?.slaid : 0,
-            description: row?.description || '',
+            description: edit? row?.description : '',
             company: row?.company || '',
             communicationchannelid:  row?.communicationchannelid || '',
             usergroup: row?.usergroup || '',
@@ -145,6 +141,10 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
             callback
         }))
     });
+    const arrayBread = [
+        { id: "view-1", name: t(langKeys.sla) },
+        { id: "view-2", name: `${t(langKeys.sla)} ${t(langKeys.detail)}` }
+    ];
 
     return (
         <div style={{width: '100%'}}>
@@ -320,8 +320,9 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                                 <FieldEdit
                                     label={t(langKeys.productivitybyhour)} 
                                     className="col-4"
+                                    type='number'
                                     onChange={(value) => setValue('productivitybyhour', value)}
-                                    valueDefault={row ? (row.productivitybyhour || "") : ""}
+                                    valueDefault={row ? (parseInt(row.productivitybyhour) || "") : ""}
                                     error={errors?.productivitybyhour?.message}
                                 />
                         </div>

@@ -427,6 +427,73 @@ export const mainPaginatedReset = (state: IState): IState => ({
     mainPaginated: initialState.mainPaginated,
 });
 
+export const mainAuxPaginated = (state: IState): IState => ({
+    ...state,
+    mainPaginatedAux: { ...state.mainPaginatedAux, loading: true, error: false }
+});
+
+export const mainAuxPaginatedSuccess = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        mainPaginatedAux: {
+            data: action.payload.data || [],
+            count: action.payload.count || 0,
+            loading: false,
+            error: false
+        }
+    }
+};
+
+export const mainAuxPaginatedFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    mainPaginatedAux: {
+        ...state.mainPaginatedAux,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    }
+});
+
+export const mainAuxPaginatedReset = (state: IState): IState => ({
+    ...state,
+    mainPaginatedAux: initialState.mainPaginatedAux,
+});
+
+export const mainGraphic = (state: IState): IState => ({
+    ...state,
+    mainGraphic: { ...state.mainGraphic, loading: true, error: false }
+});
+
+export const mainGraphicSuccess = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        mainGraphic: {
+            key: action.payload.key,
+            data: action.payload.data || [],
+            count: 0,
+            loading: false,
+            error: false
+        }
+    }
+};
+
+export const mainGraphicFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    mainGraphic: {
+        ...state.mainGraphic,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    }
+});
+
+export const mainGraphicReset = (state: IState): IState => ({
+    ...state,
+    mainGraphic: initialState.mainGraphic,
+});
+
 export const resetAll = (state: IState): IState => ({
     ...initialState,
 });
