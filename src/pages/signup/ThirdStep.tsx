@@ -369,7 +369,7 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
                 <div className={classes.title}>{t(langKeys.channeladdtitle)}</div>
                 <Typography className={classes.subtitle}>{t(langKeys.socialmediachannel)}</Typography>
                 <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px" }}>{t(langKeys.socialmediachannel2)}</div>
-                <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center' }}>
                     {socialMediaOptions.map((e, i) =>
                         <Option
                             key={`social_media_option_${i}`}
@@ -379,7 +379,7 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
                     )}
                 </div>
                 <Typography className={classes.subtitle}>{t(langKeys.businesschannel)}</Typography>
-                <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center' }}>
                     {businessChannelOptions.map((e, i) => <Option key={`business_channel_option_${i}`} option={e} selected={listchannels[e.key]} />)}
                 </div>
                 <Button

@@ -24,6 +24,8 @@ export const langKeys = {
     advisoricon: "advisoricon",
     typecredit: "typecredit",
     typecredit_alcontado: "typecredit_alcontado",
+    contactbilling: "contactbilling",
+    billingmail: "billingmail",
     typecredit_15: "typecredit_15",
     typecredit_30: "typecredit_30",
     typecredit_45: "typecredit_45",
@@ -2417,7 +2419,15 @@ export const langKeys = {
     xmldocumentopen: 'xmldocumentopen',
     cdrdocumentopen: 'cdrdocumentopen',
 
+    function_total: 'function_total',
+    function_count: 'function_count',
+    function_average: 'function_average',
+    function_minimum: 'function_minimum',
+    function_maximum: 'function_maximum',
+    function_median: 'function_median',
+    function_mode: 'function_mode',
     successful_import: 'successful_import',
+    detractionminimum: 'detractionminimum',
 };
 
 export type LangKeys = typeof langKeys;

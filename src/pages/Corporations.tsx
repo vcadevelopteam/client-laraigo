@@ -113,7 +113,7 @@ const Corporations: FC = () => {
             getValuesFromDomain("ESTADOGENERICO"),
             getValuesFromDomain("TIPOCORP"),
             getPaymentPlanSel(),
-            getBusinessDocType(),
+            getValuesFromDomain("BILLINGDOCUMENTTYPE"),
             getValuesFromDomain("TYPECREDIT"),
         ]));
         return () => {
@@ -431,15 +431,36 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                         <>
                             <div className="row-zyx">
                                 <FieldSelect
+                                    label={t(langKeys.country)}
+                                    className="col-6"
+                                    valueDefault={getValues("sunatcountry")}
+                                    onChange={(value) => {setValue("sunatcountry", value?.code||"");setdoctype(value?.code==="PE"?"1":"0")}}
+                                    error={errors?.sunatcountry?.message}
+                                    data={countryList.data}
+                                    optionDesc="description"
+                                    optionValue="code"
+                                />
+                                <FieldEdit
+                                    label={t(langKeys.fiscaladdress)}
+                                    className="col-6"
+                                    valueDefault={getValues('fiscaladdress')}
+                                    onChange={(value) => setValue('fiscaladdress', value)}
+                                    error={errors?.fiscaladdress?.message}
+                                />
+                            </div>
+                            <div className="row-zyx">
+                                <FieldSelect
+                                    uset={true}
+                                    prefixTranslation='billingfield_'
                                     label={t(langKeys.docType)}
                                     className="col-6"
                                     valueDefault={doctype}
                                     disabled={doctype==="0"}
-                                    onChange={(value) => {setValue("doctype", value?.code || "");setdoctype(value?.code || "")}}
+                                    onChange={(value) => {setValue("doctype", value?.domainvalue || "");setdoctype(value?.domainvalue || "")}}
                                     error={errors?.doctype?.message}
                                     data={dataDocType}
-                                    optionDesc="description"
-                                    optionValue="code"
+                                    optionDesc="domaindesc"
+                                    optionValue="domainvalue"
                                 />
                                 <FieldEdit
                                     label={t(langKeys.documentnumber)}
@@ -457,63 +478,46 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                     onChange={(value) => setValue('businessname', value)}
                                     error={errors?.businessname?.message}
                                 />
-                                <FieldEdit
-                                    label={t(langKeys.fiscaladdress)}
-                                    className="col-6"
-                                    valueDefault={getValues('fiscaladdress')}
-                                    onChange={(value) => setValue('fiscaladdress', value)}
-                                    error={errors?.fiscaladdress?.message}
-                                />
                             </div>
                             <div className="row-zyx">
                                 <FieldEdit
-                                    label={t(langKeys.contact)}
+                                    label={t(langKeys.contactbilling)}
                                     className="col-6"
                                     valueDefault={getValues('contact')}
                                     onChange={(value) => setValue('contact', value)}
                                     error={errors?.contact?.message}
                                 />
                                 <FieldEdit
-                                    label={t(langKeys.contactemail)}
+                                    label={t(langKeys.billingmail)}
                                     className="col-6"
                                     valueDefault={getValues('contactemail')}
                                     onChange={(value) => setValue('contactemail', value)}
                                     error={errors?.contactemail?.message}
                                 />
                             </div>
-                            <div className="row-zyx">
-                            <FieldSelect
-                                    label={t(langKeys.country)}
-                                    className="col-6"
-                                    valueDefault={getValues("sunatcountry")}
-                                    onChange={(value) => {setValue("sunatcountry", value?.code||"");setdoctype(value?.code==="PE"?"1":"0")}}
-                                    error={errors?.sunatcountry?.message}
-                                    data={countryList.data}
-                                    optionDesc="description"
-                                    optionValue="code"
-                                />
-                                <FieldSelect
-                                    label={t(langKeys.typecredit)}
-                                    className="col-6"
-                                    valueDefault={getValues("credittype")}
-                                    onChange={(value) => {setValue("credittype", value?.domainvalue || "");}}
-                                    error={errors?.credittype?.message}
-                                    disabled={user?.roledesc !== "SUPERADMIN"}
-                                    data={typeofcreditList}
-                                    uset={true}
-                                    optionDesc="domainvalue"
-                                    optionValue="domainvalue"
-                                />
-                            </div>
-                            <div className="row-zyx">
-                                <TemplateSwitch
-                                    label={t(langKeys.autosendinvoice)}
-                                    className="col-6"
-                                    valueDefault={getValues('autosendinvoice')}
-                                    onChange={(value) => setValue('autosendinvoice', value)}
-                                    disabled={user?.roledesc !== "SUPERADMIN"}
-                                />
-                            </div>
+                            {user?.roledesc === "SUPERADMIN" &&
+                                <div className="row-zyx">
+                                    <FieldSelect
+                                        label={t(langKeys.typecredit)}
+                                        className="col-6"
+                                        valueDefault={getValues("credittype")}
+                                        onChange={(value) => {setValue("credittype", value?.domainvalue || "");}}
+                                        error={errors?.credittype?.message}
+                                        disabled={user?.roledesc !== "SUPERADMIN"}
+                                        data={typeofcreditList}
+                                        uset={true}
+                                        optionDesc="domainvalue"
+                                        optionValue="domainvalue"
+                                    />
+                                    <TemplateSwitch
+                                        label={t(langKeys.autosendinvoice)}
+                                        className="col-6"
+                                        valueDefault={getValues('autosendinvoice')}
+                                        onChange={(value) => setValue('autosendinvoice', value)}
+                                        disabled={user?.roledesc !== "SUPERADMIN"}
+                                    />
+                                </div>
+                            }
                         </>
                     )}
                     {/* <div className="row-zyx">

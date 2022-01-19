@@ -391,9 +391,39 @@ export const getReportExport = (methodExport: string, origin: string, { filters,
     }
 });
 
+export const getReportGraphic = (method: string, origin: string, { filters, sorts, startdate, enddate, ...allParameters }: Dictionary): IRequestBody => ({
+    method: method,
+    key: method,
+    parameters: {
+        startdate,
+        enddate,
+        filters,
+        sorts,
+        origin: origin,
+        ...allParameters,
+        channel: allParameters['channel'] ? allParameters['channel'] : "",
+        hours: allParameters['hours'] ? allParameters['hours'] : "",
+        asesorid: allParameters['asesorid'] ? allParameters['asesorid'] : 0,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+
 export const getUserProductivitySel = ({ ...allParameters }: Dictionary): IRequestBody => ({
     method: "UFN_REPORT_USERPRODUCTIVITY_SEL",
     key: "UFN_REPORT_USERPRODUCTIVITY_SEL",
+    parameters: {
+        ...allParameters,
+        channel: allParameters['channel'] ? allParameters['channel'] : "",
+        userstatus: allParameters['userstatus'] ? allParameters['userstatus'] : "",
+        usergroup: allParameters['usergroup'] ? allParameters['usergroup'] : "",
+        bot: allParameters['bot'] ? allParameters['bot'] : false,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+
+export const getUserProductivityGraphic = ({ ...allParameters }: Dictionary): IRequestBody => ({
+    method: "UFN_REPORT_USERPRODUCTIVITY_GRAPHIC",
+    key: "UFN_REPORT_USERPRODUCTIVITY_GRAPHIC",
     parameters: {
         ...allParameters,
         channel: allParameters['channel'] ? allParameters['channel'] : "",
@@ -2255,22 +2285,29 @@ export const inputValidationins = ({ id, operation, description, inputvalue, typ
     key: "UFN_INPUTVALIDATION_INS",
     parameters: { id, operation, description, inputvalue, type, status }
 })
-export const getRecordHSMList = ({ startdate, enddate,type }: Dictionary): IRequestBody => ({
+export const getRecordHSMList = ({ startdate, enddate }: Dictionary): IRequestBody => ({
     method: "UFN_REPORT_SENTMESSAGES_LST",
     key: "UFN_REPORT_SENTMESSAGES_LST",
     parameters: {
-        startdate, enddate,type,
+        startdate, enddate,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
-export const getRecordHSMReport = ({ name, from, date ,type}: Dictionary): IRequestBody => ({
+export const getRecordHSMReport = ({ name, from, date }: Dictionary): IRequestBody => ({
     method: "UFN_REPORT_SENTMESSAGES_REPORT",
     key: "UFN_REPORT_SENTMESSAGES_REPORT",
     parameters: {
         date,
-        type,
         name,
         from,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
+export const getRecordHSMGraphic = ({ startdate, enddate, column, summarization }: Dictionary): IRequestBody => ({
+    method: "UFN_REPORT_SENTMESSAGES_GRAPHIC",
+    key: "UFN_REPORT_SENTMESSAGES_GRAPHIC",
+    parameters: {
+        startdate, enddate, column, summarization,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
@@ -2400,10 +2437,10 @@ export const getAppsettingInvoiceSel = () => ({
     parameters: {},
 });
 
-export const updateAppsettingInvoice = ({ ruc, businessname, tradename, fiscaladdress, ubigeo, country, emittertype, currency, invoiceserie, invoicecorrelative, annexcode, igv, printingformat, xmlversion, ublversion, returnpdf, returnxmlsunat, returnxml, invoiceprovider, sunaturl, token, sunatusername, paymentprovider, publickey, privatekey, ticketserie, ticketcorrelative, invoicecreditserie, invoicecreditcorrelative, ticketcreditserie, ticketcreditcorrelative, detraction, detractioncode, detractionaccount, operationcodeperu, operationcodeother, culqiurl }: Dictionary): IRequestBody => ({
+export const updateAppsettingInvoice = ({ ruc, businessname, tradename, fiscaladdress, ubigeo, country, emittertype, currency, invoiceserie, invoicecorrelative, annexcode, igv, printingformat, xmlversion, ublversion, returnpdf, returnxmlsunat, returnxml, invoiceprovider, sunaturl, token, sunatusername, paymentprovider, publickey, privatekey, ticketserie, ticketcorrelative, invoicecreditserie, invoicecreditcorrelative, ticketcreditserie, ticketcreditcorrelative, detraction, detractioncode, detractionaccount, operationcodeperu, operationcodeother, culqiurl, detractionminimum }: Dictionary): IRequestBody => ({
     method: "UFN_APPSETTING_INVOICE_UPDATE",
     key: "UFN_APPSETTING_INVOICE_UPDATE",
-    parameters: { ruc, businessname, tradename, fiscaladdress, ubigeo, country, emittertype, currency, invoiceserie, invoicecorrelative, annexcode, igv, printingformat, xmlversion, ublversion, returnpdf, returnxmlsunat, returnxml, invoiceprovider, sunaturl, token, sunatusername, paymentprovider, publickey, privatekey, ticketserie, ticketcorrelative, invoicecreditserie, invoicecreditcorrelative, ticketcreditserie, ticketcreditcorrelative, detraction, detractioncode, detractionaccount, operationcodeperu, operationcodeother, culqiurl }
+    parameters: { ruc, businessname, tradename, fiscaladdress, ubigeo, country, emittertype, currency, invoiceserie, invoicecorrelative, annexcode, igv, printingformat, xmlversion, ublversion, returnpdf, returnxmlsunat, returnxml, invoiceprovider, sunaturl, token, sunatusername, paymentprovider, publickey, privatekey, ticketserie, ticketcorrelative, invoicecreditserie, invoicecreditcorrelative, ticketcreditserie, ticketcreditcorrelative, detraction, detractioncode, detractionaccount, operationcodeperu, operationcodeother, culqiurl, detractionminimum }
 });
 
 export const getBillingNotificationSel = ({ year, month, countrycode = "" }: Dictionary): IRequestBody => ({

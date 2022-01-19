@@ -56,6 +56,7 @@ const Emojis: FC = () => {
     const mainResult = useSelector(state => state.main);
     const emojiResult = useSelector(state => state.main.mainData.data);
     const [groups, setGroups] = useState<Dictionary>([]);
+    const [cleanfilter, setcleanfilter] = useState(false);
     const [getEmojiList, setGetEmojiList] = useState(false);
     const [category, setCategory] = useState('FAVORITES');
     const [searchValue, setSearchValue] = useState('');
@@ -82,7 +83,18 @@ const Emojis: FC = () => {
                     }
                 }
             } else {
-                return String(emoji?.description).toLowerCase().includes(searchValue.toLowerCase()) && emoji?.categorydesc === category;
+                switch (category) {
+                    case 'FAVORITES': {
+                        return emojiResult.find(x => x.emojidec === emoji?.emojidec && x?.favorite === true && x.description.toLowerCase().includes(searchValue.toLowerCase()))
+                    }
+                    case 'RESTRICTED': {
+                        return emojiResult.find(x => x.emojidec === emoji?.emojidec && x?.restricted === true && x.description.toLowerCase().includes(searchValue.toLowerCase()))
+                    }
+                    default: {
+                        //return String(emoji?.description).toLowerCase().includes(searchValue.toLowerCase()) && emoji?.categorydesc === category;
+                        return String(emoji?.description).toLowerCase().includes(searchValue.toLowerCase()) && emoji?.categorydesc === category && !emojiResult.find(x => x.emojidec === emoji?.emojidec && (x?.favorite === true || x?.restricted === true));
+                    }
+                }
             }
         }), [category, searchValue, emojis, emojiResult]);
 
@@ -123,12 +135,15 @@ const Emojis: FC = () => {
                     groups={groups}
                     setCategory={setCategory}
                     setSearchValue={setSearchValue}
+                    setcleanfilter={setcleanfilter}
                 />
 
                 <SearchField
                     colorPlaceHolder='#EAE9E9'
                     handleChangeOther={handleFiend}
                     lazy
+                    cleanState={cleanfilter}
+                    setCleanState={setcleanfilter}
                 />
 
                 <div
@@ -151,7 +166,7 @@ const Emojis: FC = () => {
     )
 }
 
-const TabEmoji: FC<{ groups: Dictionary, setCategory: (categorydesc: any) => void, setSearchValue: (searchValue: any) => any }> = React.memo(({ groups, setCategory, setSearchValue }) => {
+const TabEmoji: FC<{ groups: Dictionary, setCategory: (categorydesc: any) => void, setSearchValue: (searchValue: any) => any, setcleanfilter: (cleanfilter: any) => any }> = React.memo(({ groups, setCategory, setSearchValue,setcleanfilter }) => {
     const { t } = useTranslation();
     const [value, setValue] = useState(0);
 
@@ -162,6 +177,7 @@ const TabEmoji: FC<{ groups: Dictionary, setCategory: (categorydesc: any) => voi
     const handleTabClick = (categorydesc: string) => {
         setCategory(categorydesc);
         setSearchValue('');
+        setcleanfilter(true)
     };
 
     return (

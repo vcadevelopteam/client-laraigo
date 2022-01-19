@@ -74,8 +74,7 @@ const DetailInputValidation: React.FC<DetailInputValidationProps> = ({ data: { r
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.inputvalidation).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, success: false, message: `23505: ${t(langKeys.inputvalidationerror)}` }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
@@ -223,8 +222,7 @@ const InputValidation: FC = () => {
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.inputvalidation).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, success: false, message: `23505: ${t(langKeys.inputvalidationerror)}` }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }

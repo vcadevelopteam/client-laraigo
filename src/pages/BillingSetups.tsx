@@ -1,12 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, Fragment, useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { FC, Fragment, useEffect, useState, useMemo } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateSwitch, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, IOSSwitch } from 'components';
-import { billingSupportIns, getBillingConfigurationSel, getBillingSupportSel, getPlanSel, getPaymentPlanSel, billingConfigurationIns, getBillingConversationSel, billingConversationIns, getBillingNotificationSel, billingNotificationIns, getOrgSelList, getCorpSel, getBillingPeriodHSMSel, billingPeriodHSMUpd, getLocaleDateString, getAppsettingInvoiceSel, updateAppsettingInvoice, getValuesFromDomainCorp, getBillingMessagingSel, billingMessagingIns } from 'common/helpers';
+import { billingSupportIns, getBillingConfigurationSel, getBillingSupportSel, getPlanSel, getPaymentPlanSel, billingConfigurationIns, getBillingConversationSel, billingConversationIns, getBillingNotificationSel, billingNotificationIns, getOrgSelList, getCorpSel, getLocaleDateString, getAppsettingInvoiceSel, updateAppsettingInvoice, getValuesFromDomainCorp, getBillingMessagingSel, billingMessagingIns } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
+import { buildQueryFilters, useQueryParams } from 'components/fields/table-paginated';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
@@ -20,11 +21,13 @@ import { getCountryList } from 'store/signup/actions';
 import TableCell from '@material-ui/core/TableCell';
 import * as locale from "date-fns/locale";
 import {
+    PanoramaSharp,
     Search as SearchIcon,
 } from '@material-ui/icons';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import Typography from '@material-ui/core/Typography';
+import { useHistory, useLocation } from 'react-router';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -106,6 +109,239 @@ const useStyles = makeStyles((theme) => ({
         fontWeight:"bold"
     }
 }));
+
+/*const CostPerHSMPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
+    const dispatch = useDispatch();
+    const { t } = useTranslation();
+    const mainResult = useSelector(state => state.main);
+    const executeResult = useSelector(state => state.main.execute);
+    const classes = useStyles();
+    const [viewSelected, setViewSelected] = useState("view-1");
+    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
+    const [disableSearch, setdisableSearch] = useState(false);
+    const [waitSave, setWaitSave] = useState(false);
+    const [dataMain, setdataMain] = useState({
+        year: String(new Date().getFullYear()),
+        month: (new Date().getMonth() + 1).toString().padStart(2, "0"),
+        corpid: 0,
+        orgid: 0,
+    });
+    const dataPlanList = dataPlan.data[0] && dataPlan.data[0].success? dataPlan.data[0].data : []
+    const dataOrgList = dataPlan.data[1] && dataPlan.data[1].success? dataPlan.data[1].data : []
+    const dataCorpList = dataPlan.data[2] && dataPlan.data[2].success? dataPlan.data[2].data : []
+    useEffect(() => {
+        setdisableSearch(dataMain.year === "" ) 
+    }, [dataMain])
+
+    function search(){
+        dispatch(showBackdrop(true))
+        dispatch(getCollection(getBillingPeriodHSMSel(dataMain)))
+    }
+    useEffect(() => {
+        search()
+    }, [])
+    useEffect(() => {
+        if (!mainResult.mainData.loading){
+            dispatch(showBackdrop(false))
+        }
+    }, [mainResult])
+    const columns = React.useMemo(
+        () => [
+            {
+                accessor: 'billingsupportid',
+                isComponent: true,
+                minWidth: 60,
+                width: '1%',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <TemplateIcons
+                            editFunction={() => handleEdit(row)}
+                        />
+                    )
+                }
+            },
+            {
+                Header: t(langKeys.corporation),
+                accessor: 'corpdesc',
+            },
+            {
+                Header: t(langKeys.organization),
+                accessor: 'orgdesc',
+            },
+            {
+                Header: t(langKeys.month),
+                accessor: 'month',
+            },
+            {
+                Header: t(langKeys.year),
+                accessor: 'year',
+            },
+            {
+                Header: t(langKeys.billingplan),
+                accessor: 'billingplan',
+            },
+            {
+                Header: t(langKeys.country),
+                accessor: 'country',
+            },
+            {
+                Header: t(langKeys.hsmquantity),
+                accessor: 'hsmquantity',
+                type: 'number',
+                sortType: 'number',
+            },
+            {
+                Header: t(langKeys.wacost),
+                accessor: 'hsmcost',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { hsmcost } = props.cell.row.original;
+                    return (hsmcost || 0).toFixed(4);
+                }
+            },
+            {
+                Header: t(langKeys.pucommissionVCA),
+                accessor: 'hsmutilityfee',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { hsmutilityfee } = props.cell.row.original;
+                    return (hsmutilityfee || 0).toFixed(4);
+                }
+            },
+            {
+                Header: t(langKeys.vcacommissioncost),
+                accessor: 'hsmutility',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { hsmutility } = props.cell.row.original;
+                    return (hsmutility || 0).toFixed(4);
+                }
+            },
+            {
+                Header: t(langKeys.hsmshippingcost),
+                accessor: 'hsmcharge',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { hsmcharge } = props.cell.row.original;
+                    return (hsmcharge || 0).toFixed(4);
+                }
+            },
+        ],
+        []
+    );
+
+    const fetchData = () => dispatch(getCollection(getBillingPeriodHSMSel(dataMain)));
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                fetchData();
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [executeResult, waitSave])
+
+    const handleEdit = (row: Dictionary) => {
+        setViewSelected("view-2");
+        setRowSelected({ row, edit: true });
+    }
+
+    if (viewSelected === "view-1") {
+
+        return (
+            <Fragment>
+
+                <TableZyx
+                    onClickRow={handleEdit}
+                    columns={columns}                    
+                    ButtonsElement={() => (
+                        <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
+                            <FieldSelect
+                                label={t(langKeys.year)}
+                                style={{width: 150}}
+                                valueDefault={dataMain.year}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||0}))}
+                                data={years}
+                                optionDesc="desc"
+                                optionValue="desc"
+                            />
+                            <FieldMultiSelect
+                                label={t(langKeys.month)}
+                                style={{width: 300}}
+                                valueDefault={dataMain.month}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
+                                data={months}
+                                uset={true}
+                                prefixTranslation="month_"
+                                optionDesc="val"
+                                optionValue="val"
+                            />
+                            <FieldSelect
+                                label={t(langKeys.corporation)}
+                                className={classes.fieldsfilter}
+                                valueDefault={dataMain.corpid}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev=>({...prev,corpid:value?.corpid||0,orgid:0}))}
+                                data={dataCorpList}
+                                optionDesc="description"
+                                optionValue="corpid"
+                            />
+                            <FieldSelect
+                                label={t(langKeys.organization)}
+                                className={classes.fieldsfilter}
+                                valueDefault={dataMain.orgid}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev=>({...prev,orgid:value?.orgid||0}))}
+                                data={dataOrgList.filter((e:any)=>{return e.corpid===dataMain.corpid})}
+                                optionDesc="orgdesc"
+                                optionValue="orgid"
+                            />
+                            <Button
+                                disabled={mainResult.mainData.loading || disableSearch}
+                                variant="contained"
+                                color="primary"
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                onClick={() => search()}
+                            >{t(langKeys.search)}
+                            </Button>
+                        </div>
+                    )}
+                    data={mainResult.mainData.data}
+                    filterGeneral={false}
+                    download={true}
+                    loading={mainResult.mainData.loading}
+                    register={false}
+                />
+            </Fragment>
+        )
+    }
+    else if (viewSelected === "view-2") {
+        return (
+            <DetailCostPerHSMPeriod
+                data={rowSelected}
+                setViewSelected={setViewSelected}
+                fetchData={fetchData}
+                dataPlan = {dataPlanList}
+            />
+        )
+    } else
+        return null;
+}
 
 const DetailCostPerHSMPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, setViewSelected, fetchData,dataPlan }) => {
     const classes = useStyles();
@@ -283,241 +519,7 @@ const DetailCostPerHSMPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row,
             </form>
         </div>
     );
-}
-
-const CostPerHSMPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
-    const dispatch = useDispatch();
-    const { t } = useTranslation();
-    const mainResult = useSelector(state => state.main);
-    const executeResult = useSelector(state => state.main.execute);
-    const classes = useStyles();
-    const [viewSelected, setViewSelected] = useState("view-1");
-    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
-    const [disableSearch, setdisableSearch] = useState(false);
-    const [waitSave, setWaitSave] = useState(false);
-    const [dataMain, setdataMain] = useState({
-        year: String(new Date().getFullYear()),
-        month: (new Date().getMonth() + 1).toString().padStart(2, "0"),
-        corpid: 0,
-        orgid: 0,
-    });
-    const dataPlanList = dataPlan.data[0] && dataPlan.data[0].success? dataPlan.data[0].data : []
-    const dataOrgList = dataPlan.data[1] && dataPlan.data[1].success? dataPlan.data[1].data : []
-    const dataCorpList = dataPlan.data[2] && dataPlan.data[2].success? dataPlan.data[2].data : []
-    useEffect(() => {
-        setdisableSearch(dataMain.year === "" ) 
-    }, [dataMain])
-
-    function search(){
-        dispatch(showBackdrop(true))
-        dispatch(getCollection(getBillingPeriodHSMSel(dataMain)))
-    }
-    useEffect(() => {
-        search()
-    }, [])
-    useEffect(() => {
-        if (!mainResult.mainData.loading){
-            dispatch(showBackdrop(false))
-        }
-    }, [mainResult])
-    const columns = React.useMemo(
-        () => [
-            {
-                accessor: 'billingsupportid',
-                isComponent: true,
-                minWidth: 60,
-                width: '1%',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <TemplateIcons
-                            editFunction={() => handleEdit(row)}
-                        />
-                    )
-                }
-            },
-            {
-                Header: t(langKeys.corporation),
-                accessor: 'corpdesc',
-            },
-            {
-                Header: t(langKeys.organization),
-                accessor: 'orgdesc',
-            },
-            {
-                Header: t(langKeys.month),
-                accessor: 'month',
-            },
-            {
-                Header: t(langKeys.year),
-                accessor: 'year',
-            },
-            {
-                Header: t(langKeys.billingplan),
-                accessor: 'billingplan',
-            },
-            {
-                Header: t(langKeys.country),
-                accessor: 'country',
-            },
-            {
-                Header: t(langKeys.hsmquantity),
-                accessor: 'hsmquantity',
-                type: 'number',
-                sortType: 'number',
-            },
-            {
-                Header: t(langKeys.wacost),
-                accessor: 'hsmcost',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { hsmcost } = props.cell.row.original;
-                    return (hsmcost || 0).toFixed(4);
-                }
-            },
-            {
-                Header: t(langKeys.pucommissionVCA),
-                accessor: 'hsmutilityfee',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { hsmutilityfee } = props.cell.row.original;
-                    return (hsmutilityfee || 0).toFixed(4);
-                }
-            },
-            {
-                Header: t(langKeys.vcacommissioncost),
-                accessor: 'hsmutility',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { hsmutility } = props.cell.row.original;
-                    return (hsmutility || 0).toFixed(4);
-                }
-            },
-            {
-                Header: t(langKeys.hsmshippingcost),
-                accessor: 'hsmcharge',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { hsmcharge } = props.cell.row.original;
-                    return (hsmcharge || 0).toFixed(4);
-                }
-            },
-        ],
-        []
-    );
-
-    const fetchData = () => dispatch(getCollection(getBillingPeriodHSMSel(dataMain)));
-
-
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
-                fetchData();
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            }
-        }
-    }, [executeResult, waitSave])
-
-    const handleEdit = (row: Dictionary) => {
-        setViewSelected("view-2");
-        setRowSelected({ row, edit: true });
-    }
-
-    if (viewSelected === "view-1") {
-
-        return (
-            <Fragment>
-
-                <TableZyx
-                    onClickRow={handleEdit}
-                    columns={columns}                    
-                    ButtonsElement={() => (
-                        <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
-                            <FieldSelect
-                                label={t(langKeys.year)}
-                                style={{width: 150}}
-                                valueDefault={dataMain.year}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||0}))}
-                                data={years}
-                                optionDesc="desc"
-                                optionValue="desc"
-                            />
-                            <FieldMultiSelect
-                                label={t(langKeys.month)}
-                                style={{width: 300}}
-                                valueDefault={dataMain.month}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
-                                data={months}
-                                uset={true}
-                                prefixTranslation="month_"
-                                optionDesc="val"
-                                optionValue="val"
-                            />
-                            <FieldSelect
-                                label={t(langKeys.corporation)}
-                                className={classes.fieldsfilter}
-                                valueDefault={dataMain.corpid}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,corpid:value?.corpid||0,orgid:0}))}
-                                data={dataCorpList}
-                                optionDesc="description"
-                                optionValue="corpid"
-                            />
-                            <FieldSelect
-                                label={t(langKeys.organization)}
-                                className={classes.fieldsfilter}
-                                valueDefault={dataMain.orgid}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,orgid:value?.orgid||0}))}
-                                data={dataOrgList.filter((e:any)=>{return e.corpid===dataMain.corpid})}
-                                optionDesc="orgdesc"
-                                optionValue="orgid"
-                            />
-                            <Button
-                                disabled={mainResult.mainData.loading || disableSearch}
-                                variant="contained"
-                                color="primary"
-                                style={{ width: 120, backgroundColor: "#55BD84" }}
-                                startIcon={<SearchIcon style={{ color: 'white' }} />}
-                                onClick={() => search()}
-                            >{t(langKeys.search)}
-                            </Button>
-                        </div>
-                    )}
-                    data={mainResult.mainData.data}
-                    filterGeneral={false}
-                    download={true}
-                    loading={mainResult.mainData.loading}
-                    register={false}
-                />
-            </Fragment>
-        )
-    }
-    else if (viewSelected === "view-2") {
-        return (
-            <DetailCostPerHSMPeriod
-                data={rowSelected}
-                setViewSelected={setViewSelected}
-                fetchData={fetchData}
-                dataPlan = {dataPlanList}
-            />
-        )
-    } else
-        return null;
-}
+}*/
 
 const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const dispatch = useDispatch();
@@ -575,6 +577,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         "detraction": 0.00,
         "detractioncode": "",
         "detractionaccount": "",
+        "detractionminimum": 0.00,
         "operationcodeperu": "",
         "operationcodeother": "",
         "culqiurl": "",
@@ -637,6 +640,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                     setValue("detraction", mainResult.mainData.data[0].detraction);
                     setValue("detractioncode", mainResult.mainData.data[0].detractioncode);
                     setValue("detractionaccount", mainResult.mainData.data[0].detractionaccount);
+                    setValue("detractionminimum", mainResult.mainData.data[0].detractionminimum);
                     setValue("operationcodeperu", mainResult.mainData.data[0].operationcodeperu);
                     setValue("operationcodeother", mainResult.mainData.data[0].operationcodeother);
                     setValue("culqiurl", mainResult.mainData.data[0].culqiurl);
@@ -676,6 +680,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         "detraction": mainResult.mainData.data[0].detraction,
                         "detractioncode": mainResult.mainData.data[0].detractioncode,
                         "detractionaccount": mainResult.mainData.data[0].detractionaccount,
+                        "detractionminimum": mainResult.mainData.data[0].detractionminimum,
                         "operationcodeperu": mainResult.mainData.data[0].operationcodeperu,
                         "operationcodeother": mainResult.mainData.data[0].operationcodeother,
                         "culqiurl": mainResult.mainData.data[0].culqiurl,
@@ -768,6 +773,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             detraction: fields.detraction,
             detractioncode: fields.detractioncode,
             detractionaccount: fields.detractionaccount,
+            detractionminimum: fields.detractionminimum,
             operationcodeperu: fields.operationcodeperu,
             operationcodeother: fields.operationcodeother,
             culqiurl: fields.culqiurl,
@@ -808,6 +814,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         register('detraction');
         register('detractioncode', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
         register('detractionaccount', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
+        register('detractionminimum');
         register('operationcodeperu', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
         register('operationcodeother', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
         register('culqiurl', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
@@ -1039,14 +1046,22 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             error={errors?.detractionaccount?.message}
                         />
                         <FieldEdit
+                            label={t(langKeys.detractionminimum)}
+                            className="col-6"
+                            valueDefault={getValues('detractionminimum')}
+                            onChange={(value) => setValue('detractionminimum', value)}
+                            error={errors?.detractionminimum?.message}
+                            type='number'
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
                             label={t(langKeys.operationcodeperu)}
                             className="col-6"
                             valueDefault={getValues('operationcodeperu')}
                             onChange={(value) => setValue('operationcodeperu', value)}
                             error={errors?.operationcodeperu?.message}
                         />
-                    </div>
-                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.operationcodeother)}
                             className="col-6"
@@ -1054,6 +1069,8 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             onChange={(value) => setValue('operationcodeother', value)}
                             error={errors?.operationcodeother?.message}
                         />
+                    </div>
+                    <div className="row-zyx">
                         <FieldSelect
                             label={t(langKeys.billingprintingformat)}
                             loading={domainPrinting.loading}
@@ -1067,8 +1084,6 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             uset={true}
                             prefixTranslation='billingfield_'
                         />
-                    </div>
-                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.billingxmlversion)}
                             className="col-6"
@@ -1076,6 +1091,8 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             onChange={(value) => setValue('xmlversion', value)}
                             error={errors?.xmlversion?.message}
                         />
+                    </div>
+                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.billingublversion)}
                             className="col-6"
@@ -1083,22 +1100,20 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             onChange={(value) => setValue('ublversion', value)}
                             error={errors?.ublversion?.message}
                         />
-                    </div>
-                    <div className="row-zyx">
                         <TemplateSwitch
                             label={t(langKeys.billingreturnpdf)}
                             className="col-6"
                             valueDefault={getValues('returnpdf')}
                             onChange={(value) => setValue('returnpdf', value)}
                         />
+                    </div>
+                    <div className="row-zyx">
                         <TemplateSwitch
                             label={t(langKeys.billingreturncsv)}
                             className="col-6"
                             valueDefault={getValues('returnxmlsunat')}
                             onChange={(value) => setValue('returnxmlsunat', value)}
                         />
-                    </div>
-                    <div className="row-zyx">
                         <TemplateSwitch
                             label={t(langKeys.billingreturnxml)}
                             className="col-6"
@@ -1203,8 +1218,13 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
 
     const classes = useStyles();
     const executeResult = useSelector(state => state.main.execute);
+    const history = useHistory();
+    const location = useLocation();
     const mainResult = useSelector(state => state.main);
 
+    const query = useMemo(() => new URLSearchParams(location.search), [location]);
+    const params = useQueryParams(query);
+    
     const [dataMain, setdataMain] = useState({
         plan: "",
         year: String(new Date().getFullYear()),
@@ -1328,6 +1348,11 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 Header: t(langKeys.allowhsm),
                 accessor: 'allowhsm',
                 NoFilter: false,
+                type: 'boolean',
+                sortType: 'basic',
+                editable: true,
+                width: 180,
+                maxWidth: 180,
                 Cell: (props: any) => {
                     const { allowhsm } = props.cell.row.original;
                     return allowhsm?t(langKeys.yes):"No"
@@ -1467,6 +1492,11 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                     loading={mainResult.mainData.loading}
                     register={true}
                     handleRegister={handleRegister}
+                    onFilterChange={f => {
+                        const params = buildQueryFilters(f);
+                        history.push({ search: params.toString() });
+                    }}
+                    initialFilters={params.filters}
                 />
             </Fragment>
         )

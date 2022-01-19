@@ -217,4 +217,28 @@ export const getCollectionPaginated = (requestBody: IRequestBodyPaginated): IAct
 
 export const resetCollectionPaginated = (): IActionCall => ({ type: actionTypes.PAGINATED_MAIN_RESET });
 
+export const getCollectionPaginatedAux = (requestBody: IRequestBodyPaginated): IActionCall => ({
+    callAPI: () => CommonService.mainPaginated(requestBody),
+    types: {
+        loading: actionTypes.AUX_PAGINATED_MAIN,
+        success: actionTypes.AUX_PAGINATED_MAIN_SUCCESS,
+        failure: actionTypes.AUX_PAGINATED_MAIN_FAILURE,
+    },
+    type: null,
+});
+
+export const resetCollectionPaginatedAux = (): IActionCall => ({ type: actionTypes.AUX_PAGINATED_MAIN_RESET });
+
+export const getMainGraphic = (requestBody: IRequestBody): IActionCall => ({
+    callAPI: () => CommonService.mainGraphic(requestBody),
+    types: {
+        loading: actionTypes.GRAPHIC_MAIN,
+        success: actionTypes.GRAPHIC_MAIN_SUCCESS,
+        failure: actionTypes.GRAPHIC_MAIN_FAILURE,
+    },
+    type: null,
+});
+
+export const resetMainGraphic = (): IActionCall => ({ type: actionTypes.GRAPHIC_MAIN_RESET });
+
 export const resetAllMain = (): IActionCall => ({ type: actionTypes.RESET_ALL });
