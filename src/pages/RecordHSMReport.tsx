@@ -3,14 +3,14 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, DateRangePicker, FieldSelect } from 'components';
-import { getDateCleaned, getRecordHSMList, getRecordHSMReport, getValuesFromDomain } from 'common/helpers';
+import { DateRangePicker } from 'components';
+import { getDateCleaned, getRecordHSMList, getRecordHSMReport } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { getMultiCollection, getMultiCollectionAux, getMultiCollectionAux2, resetMultiMain, resetMultiMainAux } from 'store/main/actions';
+import { getMultiCollection, getMultiCollectionAux2, resetMultiMain } from 'store/main/actions';
 import { showBackdrop } from 'store/popus/actions';
 import { CalendarIcon } from 'icons';
 import { Range } from 'react-date-range';
@@ -27,8 +27,6 @@ interface DetailRecordHSMRecordProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
 }
-
-const format = (date: Date) => date.toISOString().split('T')[0];
 
 const initialRange = {
     startDate: new Date(new Date().setDate(1)),

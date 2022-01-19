@@ -9,7 +9,7 @@ import { DateRangePicker, FieldMultiSelect, FieldSelect, IOSSwitch } from "compo
 import { makeStyles } from '@material-ui/core/styles';
 import FormControlLabel from "@material-ui/core/FormControlLabel/FormControlLabel";
 import { Box, Button, Card, CardContent, Grid, Tooltip, Typography } from "@material-ui/core";
-import { CalendarIcon, DownloadIcon, SearchIcon } from "icons";
+import { CalendarIcon, DownloadIcon } from "icons";
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import { Range } from 'react-date-range';
 import IndicatorPanel from "./IndicatorPanel";
@@ -17,7 +17,7 @@ import clsx from 'clsx';
 import ThumbDownIcon from '@material-ui/icons/ThumbDown';
 import ThumbUpIcon from '@material-ui/icons/ThumbUp';
 import TableZyx from "components/fields/table-simple";
-import { exportExcel, isJson } from 'common/helpers';
+import { exportExcel } from 'common/helpers';
 import { langKeys } from "lang/keys";
 import { Dictionary, MultiData } from "@types";
 

@@ -1173,7 +1173,6 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
     const [listadvisers, setlistadvisers] = useState<any>([]);
     const dataAdvisor = [{domaindesc: t(langKeys.agent), domainvalue: "ASESOR"},{domaindesc: "Bot", domainvalue: "BOT"}]
     const dispatch = useDispatch();
-    const multiDataAux2 = useSelector(state => state.main.multiDataAux2);
     const [modalRow, setModalRow] = useState<Dictionary | null>(null);
     const [modalTitle, setModalTitle] = useState('');
     const [modalColumns, setModalColumns] = useState<any>([]);
@@ -2305,7 +2304,6 @@ const HeatMapTicket: React.FC = () => {
 
 const Heatmap: FC = () => {
     const [pageSelected, setPageSelected] = useState(0);    
-    const [listadvisers, setlistadvisers] = useState<any>([]);
     const [companydomain, setcompanydomain] = useState<any>([]);
     const [groupsdomain, setgroupsdomain] = useState<any>([]);
     const multiDataAux = useSelector(state => state.main.multiDataAux);
