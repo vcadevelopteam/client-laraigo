@@ -1,6 +1,10 @@
 const paths = {
     DASHBOARD: '/dashboard',
     DASHBOARD_ADD: '/dashboard/add',
+    DASHBOARD_EDIT: {
+        path: '/dashboard/edit/:id',
+        resolve: (id: string | number) => `/dashboard/edit/${id}`,
+    },
     DASHBOARD_LAYOUT: {
         path: '/dashboard/layout/:id',
         resolve: (dashboardtemplateid: string | number) => `/dashboard/layout/${dashboardtemplateid}`,

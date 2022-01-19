@@ -1,8 +1,8 @@
-import { Box, Button, IconButton, makeStyles, Modal, Typography, TextField } from "@material-ui/core";
+import { Box, Button, IconButton, makeStyles, Modal, Typography, TextField, CircularProgress } from "@material-ui/core";
 import paths from "common/constants/paths";
 import { FieldEdit, FieldSelect, TemplateBreadcrumbs, TitleDetail } from "components";
 import { FC, useCallback, useEffect, useState } from "react";
-import { useHistory } from "react-router";
+import { useHistory, useRouteMatch } from "react-router";
 import RGL, { WidthProvider } from 'react-grid-layout';
 import { Trans, useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
@@ -10,11 +10,11 @@ import { Close as CloseIcon, Clear as ClearIcon, Add as AddIcon } from "@materia
 import { FieldErrors, useForm, UseFormGetValues, UseFormRegister, UseFormSetValue, UseFormUnregister } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { getMultiCollection, resetMain, resetMultiMain } from "store/main/actions";
-import { getDashboardTemplateIns, getKpiSel, getReportTemplateSel } from "common/helpers";
+import { getDashboardTemplateIns, getDashboardTemplateSel, getKpiSel, getReportTemplateSel } from "common/helpers";
 import { useSelector } from "hooks";
 import { contentTypes, graphTypes, groupingType } from "./constants";
 import { showSnackbar } from "store/popus/actions";
-import { resetSaveDashboardTemplate, saveDashboardTemplate } from "store/dashboard/actions";
+import { getDashboardTemplate, resetSaveDashboardTemplate, saveDashboardTemplate } from "store/dashboard/actions";
 
 export interface ReportTemplate {
     columnjson: string; // array json
@@ -104,8 +104,9 @@ interface Items {
     [key: string]: Item;
 }
 
-const DashboardAdd: FC = () => {
+const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const { t } = useTranslation();
+    const match = useRouteMatch<{ id: string }>();
     const classes = useDashboardAddStyles();
     const dispatch = useDispatch();
     const history = useHistory();
@@ -117,8 +118,14 @@ const DashboardAdd: FC = () => {
     ]);
     const reportTemplatesAndKpis = useSelector(state => state.main.multiData);
     const dashboardSave = useSelector(state => state.dashboard.dashboardtemplateSave);
+    const dashboardtemplate = useSelector(state => state.dashboard.dashboardtemplate);
 
     useEffect(() => {
+        if (edit === true) {
+            const dashboardId = match.params.id;
+            dispatch(getDashboardTemplate(getDashboardTemplateSel(dashboardId)));
+        }
+
         dispatch(getMultiCollection([
             getReportTemplateSel(),
             getKpiSel(),
@@ -129,7 +136,7 @@ const DashboardAdd: FC = () => {
             dispatch(resetMultiMain());
             dispatch(resetSaveDashboardTemplate());
         };
-    }, [dispatch]);
+    }, [match.params.id, dispatch]);
 
     useEffect(() => {
         if (reportTemplatesAndKpis.loading) return;
@@ -162,7 +169,42 @@ const DashboardAdd: FC = () => {
         }
     }, [dashboardSave, history, t, dispatch]);
 
-    const { register, unregister, formState: { errors }, getValues, setValue, handleSubmit } = useForm<Items>();
+    useEffect(() => {
+        if (dashboardtemplate.loading) return;
+        if (dashboardtemplate.error) {
+            const error = t(dashboardtemplate.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
+            dispatch(showSnackbar({
+                message: error,
+                success: false,
+                show: true,
+            }));
+        } else if (dashboardtemplate.value) {
+            setLayout(prev => {
+
+                return [
+                    {
+                        ...prev[0], // 'add-btn-layout'
+                        x: (((prev.length - 1) * 3) % 12) + 3,
+                        y: Infinity,
+                    },
+                    ...(JSON.parse(dashboardtemplate.value!.layoutjson) as RGL.Layout[]),
+                ];
+            });
+            reset(JSON.parse(dashboardtemplate.value!.detailjson) as Items);
+        }
+    }, [dashboardtemplate, t, dispatch]);
+
+
+
+    const {
+        register,
+        unregister,
+        formState: { errors },
+        getValues,
+        setValue,
+        handleSubmit,
+        reset,
+    } = useForm<Items>();
 
     const addItemOnClick = () => {
         const newKey = Date.now().toString();
@@ -201,18 +243,24 @@ const DashboardAdd: FC = () => {
     }, [handleSubmit]);
 
     const onSubmit = useCallback((description: string) => {
+        if (edit === true && !dashboardtemplate.value) return;
+
         const data = getValues();
         const [, ...cleanLayout] = layout; // quitando el boton en el index 0
         dispatch(saveDashboardTemplate(getDashboardTemplateIns({
-            id: 0,
+            id: edit ? dashboardtemplate.value!.dashboardtemplateid : 0,
             description,
             detailjson: JSON.stringify(data),
             layoutjson: JSON.stringify(cleanLayout),
             status: 'ACTIVO',
             type: 'NINGUNO',
-            operation: 'INSERT',
+            operation: edit ? 'UPDATE' : 'INSERT',
         })));
-    }, [layout, getValues, dispatch]);
+    }, [edit, dashboardtemplate, layout, getValues, dispatch]);
+
+    if (edit === true && (dashboardtemplate.loading || !dashboardtemplate.value)) {
+        return <CenterLoading />;
+    }
 
     return (
         <Box className={classes.root}>
@@ -224,7 +272,7 @@ const DashboardAdd: FC = () => {
                 handleClick={id => id === "view-1" && history.push(paths.DASHBOARD)}
             />
             <div className={classes.header}>
-                <TitleDetail title="Nuevo dashboard" />
+                <TitleDetail title={edit ? dashboardtemplate.value!.description : "Nuevo dashboard"} />
                 <div style={{ flexGrow: 1 }} />
                 <Button
                     variant="contained"
@@ -247,6 +295,7 @@ const DashboardAdd: FC = () => {
                     variant="contained"
                     color="primary"
                     onClick={onContinue}
+                    disabled={dashboardtemplate.loading}
                 >
                     <Trans i18nKey={langKeys.save} />
                 </Button>
@@ -273,6 +322,7 @@ const DashboardAdd: FC = () => {
                         return (
                             <div key={e.i}>
                                 <LayoutItem
+                                    edit={edit}
                                     layoutKey={e.i}
                                     templates={reportTemplatesAndKpis.data[0].data as ReportTemplate[]}
                                     kpis={reportTemplatesAndKpis.data[1].data as KpiTemplate[]}
@@ -290,6 +340,7 @@ const DashboardAdd: FC = () => {
                 </ReactGridLayout>
             )}
             <SubmitModal
+                defaultDescription={edit === false ? '' : dashboardtemplate.value!.description}
                 open={openModal}
                 loading={dashboardSave.loading}
                 onClose={() => setOpenModal(false)}
@@ -302,6 +353,7 @@ const DashboardAdd: FC = () => {
 interface SubmitModalProps {
     open: boolean;
     loading: boolean;
+    defaultDescription?: string;
     onSubmit: (description: string) => void;
     onClose: () => void;
 }
@@ -324,9 +376,9 @@ const useSubmitModalStyles = makeStyles(theme => ({
     },
 }));
 
-const SubmitModal: FC<SubmitModalProps> = ({ open, loading, onClose, onSubmit }) => {
+const SubmitModal: FC<SubmitModalProps> = ({ open, loading, defaultDescription = '', onClose, onSubmit }) => {
     const classes = useSubmitModalStyles();
-    const [description, setDescription] = useState('');
+    const [description, setDescription] = useState(defaultDescription);
 
     return (
         <Modal
@@ -397,6 +449,7 @@ const NewBtn: FC<NewBtnProps> = ({ onClick }) => {
 }
 
 interface LayoutItemProps {
+    edit: boolean;
     layoutKey: string;
     templates: ReportTemplate[];
     kpis: KpiTemplate[];
@@ -431,6 +484,7 @@ const useLayoutItemStyles = makeStyles(theme => ({
 
 export const LayoutItem: FC<LayoutItemProps> = ({
     layoutKey: key,
+    edit,
     loading = false,
     templates = [],
     kpis = [],
@@ -448,8 +502,22 @@ export const LayoutItem: FC<LayoutItemProps> = ({
     const [columns, setColumns] = useState<ColumnTemplate[]>([]);
 
     useEffect(() => {
-        register(`${key}.description`, { validate: mandatoryStrField, value: '' });
-        register(`${key}.contentType`, { validate: mandatoryContentType, value: '' });
+        if (edit === false) return;
+
+        const reporttemplateid = getValues(`${key}.reporttemplateid`);
+        if (reporttemplateid !== undefined || reporttemplateid !== null) {
+            setSelectedIndex(templates.findIndex(e => e.reporttemplateid === reporttemplateid));
+        }
+
+        const defaultContentType = getValues(`${key}.contentType`);
+        if (defaultContentType !== undefined || defaultContentType !== null) {
+            setContentType(defaultContentType);
+        }
+    }, [edit, getValues]);
+
+    useEffect(() => {
+        register(`${key}.description`, { validate: mandatoryStrField, value: getValues(`${key}.description`) || '' });
+        register(`${key}.contentType`, { validate: mandatoryContentType, value: getValues(`${key}.contentType`) || '' });
 
         return () => {
             unregister(key);
@@ -460,17 +528,17 @@ export const LayoutItem: FC<LayoutItemProps> = ({
         if (contentType === "report") {
             unregister(`${key}.kpiid`);
 
-            register(`${key}.reporttemplateid`, { validate: mandatoryNumField, value: 0 });
-            register(`${key}.grouping`, { validate: mandatoryStrField, value: '' });
-            register(`${key}.graph`, { validate: mandatoryStrField, value: '' });
-            register(`${key}.column`, { validate: mandatoryStrField, value: '' });
+            register(`${key}.reporttemplateid`, { validate: mandatoryNumField, value: getValues(`${key}.reporttemplateid`) || 0 });
+            register(`${key}.grouping`, { validate: mandatoryStrField, value: getValues(`${key}.grouping`) || '' });
+            register(`${key}.graph`, { validate: mandatoryStrField, value: getValues(`${key}.graph`) || '' });
+            register(`${key}.column`, { validate: mandatoryStrField, value: getValues(`${key}.column`) || '' });
         } else if (contentType === "kpi") {
             unregister(`${key}.reporttemplateid`);
             unregister(`${key}.grouping`);
             unregister(`${key}.graph`);
             unregister(`${key}.column`);
 
-            register(`${key}.kpiid`, { validate: mandatoryNumField, value: 0 });
+            register(`${key}.kpiid`, { validate: mandatoryNumField, value: getValues(`${key}.kpiid`) || 0 });
         }
     }, [contentType]);
 
@@ -599,6 +667,14 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                     />
                 </>
             )}
+        </div>
+    );
+}
+
+const CenterLoading: FC = () => {
+    return (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+            <CircularProgress />
         </div>
     );
 }

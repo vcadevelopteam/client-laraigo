@@ -261,7 +261,16 @@ const DashboardLayout: FC = () => {
 
     if (dashboardtemplate.error || dashboard.error || !dashboardtemplate.value || !dashboard.value) {
         return (
-            <div>ERROR</div>
+            <Box className={classes.root}>
+                <TemplateBreadcrumbs
+                    breadcrumbs={[
+                        { id: "view-1", name: "Dashboards" },
+                        { id: "view-2", name: "Detalle de dashboard" }
+                    ]}
+                    handleClick={id => id === "view-1" && history.push(paths.DASHBOARD)}
+                />
+                <div>ERROR</div>
+            </Box>
         );
     }
 
@@ -314,6 +323,19 @@ const DashboardLayout: FC = () => {
                 <Button
                     variant="contained"
                     color="primary"
+                    onClick={() => {
+                        if (!dashboardtemplate.value) return;
+
+                        const id = dashboardtemplate.value!.dashboardtemplateid;
+                        history.push(paths.DASHBOARD_EDIT.resolve(id));
+                    }}
+                    disabled={dashboardSave.loading || dashboardtemplate.loading || !dashboardtemplate.value}
+                >
+                    <Trans i18nKey={langKeys.edit} />
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
                     onClick={onDelete}
                     disabled={dashboardSave.loading ||dashboardtemplate.loading || !dashboardtemplate.value}
                 >
@@ -357,6 +379,7 @@ const DashboardLayout: FC = () => {
                         ) : (
                             <NewLayoutItem
                                 layoutKey={e.i}
+                                edit={false}
                                 templates={reportTemplates.data as ReportTemplate[]}
                                 kpis={[]}
                                 loading={reportTemplates.loading}
