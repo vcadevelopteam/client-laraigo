@@ -372,10 +372,10 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                     //             className={classes.button}
                                     //             variant="contained"
                                     //             color="primary"
-                                    //             disabled={mainPaginated.loading}
+                                    //             disabled={mainPaginated.loading || !(mainPaginated.data.length > 0)}
                                     //             onClick={() => setOpenModal(true)}
                                     //         >
-                                    //             {t(langKeys.graphic_detail)}
+                                    //             {t(langKeys.graphic_view)}
                                     //         </Button>
                                     //     </>
                                     // )}
@@ -451,7 +451,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
     return (
         <DialogZyx
             open={openModal}
-            title={t(langKeys.graphic_detail)} // Falta Lang
+            title={t(langKeys.graphic_configuration)}
             button1Type="button"
             buttonText1={t(langKeys.cancel)}
             handleClickButton1={handleCancelModal}
@@ -461,18 +461,20 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
         >
             <div className="row-zyx">
                 <FieldSelect
-                    label={t(langKeys.type)}
+                    label={t(langKeys.graphic_type)}
                     className="col-12"
                     valueDefault={graphicType}
                     onChange={(value) => setGraphicType(value.value)}
                     data={[{key: 'BAR', value: 'BAR'}, { key: 'PIE', value: 'PIE' }]}
+                    uset={true}
+                    prefixTranslation="graphic_"
                     optionDesc="value"
                     optionValue="key"
                 />
             </div>
             <div className="row-zyx">
                 <FieldSelect
-                    label={t(langKeys.type)}
+                    label={t(langKeys.graphic_view_by)}
                     className="col-12"
                     valueDefault={column}
                     onChange={(value) => setColumn(value.value)}
