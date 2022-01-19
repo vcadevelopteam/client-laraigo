@@ -228,6 +228,7 @@ const DashboardManagerial: FC = () => {
     const [downloaddatafile,setdownloaddatafile]=useState(false)
     const [data, setData] = useState({
         dataTMO: "0s",
+        obj_min: "",
         obj_max: "< 0m",
         variaciontxt: "0s",
         variacioncolor: true,
@@ -322,30 +323,30 @@ const DashboardManagerial: FC = () => {
         iconconversationsattendedbot: true
     });
     const [dataTMOgraph, setDataTMOgraph] = useState([
-        { label: t(langKeys.quantitymeets), quantity: 0 },
-        { label: t(langKeys.quantitymeetsnot), quantity: 0 }
+        { label: t(langKeys.meets), quantity: 0 },
+        { label: t(langKeys.meetsnot), quantity: 0 }
     ]);
     const [dataTMEgraph, setDataTMEgraph] = useState([
-        { label: t(langKeys.quantitymeets), quantity: 0 },
-        { label: t(langKeys.quantitymeetsnot), quantity: 0 }
+        { label: t(langKeys.meets), quantity: 0 },
+        { label: t(langKeys.meetsnot), quantity: 0 }
     ]);
     const [dataNPSgraph, setDataNPSgraph] = useState([
-        { label: t(langKeys.totalpromoters), quantity: 0 },
-        { label: t(langKeys.totaldetractors), quantity: 0 },
-        { label: t(langKeys.totalneutral), quantity: 0 }
+        { label: t(langKeys.promoters), quantity: 0 },
+        { label: t(langKeys.detractors), quantity: 0 },
+        { label: t(langKeys.neutral), quantity: 0 }
     ]);
     const [dataCSATgraph, setDataCSATgraph] = useState([
-        { label: t(langKeys.totalpromoters), quantity: 0 },
-        { label: t(langKeys.totaldetractors), quantity: 0 },
-        { label: t(langKeys.totalneutral), quantity: 0 }
+        { label: t(langKeys.satisfied), quantity: 0 },
+        { label: t(langKeys.dissatisfied), quantity: 0 },
+        { label: t(langKeys.neutral), quantity: 0 }
     ]);
     const [dataFCRgraph, setDataFCRgraph] = useState([
-        { label: t(langKeys.totalresolved), quantity: 0 },
-        { label: t(langKeys.totalnotresolved), quantity: 0 },
+        { label: t(langKeys.resolvedfirstcontact), quantity: 0 },
+        { label: t(langKeys.notresolvedfirstcontact), quantity: 0 },
     ]);
     const [dataFIXgraph, setDataFIXgraph] = useState([
-        { label: t(langKeys.totalresolved), quantity: 0 },
-        { label: t(langKeys.totalnotresolved), quantity: 0 },
+        { label: t(langKeys.resolved), quantity: 0 },
+        { label: t(langKeys.notresolved), quantity: 0 },
     ]);
     const [dataInteraction, setDataInteraction] = useState({
         avginteractionsxconversations: "0",
@@ -424,10 +425,11 @@ const DashboardManagerial: FC = () => {
                 let hh = (Math.floor(seconds / 3600)) === 0 ? "" : (Math.floor(seconds / 3600) + "h ")
                 let mm = Math.floor((seconds % 3600) / 60) === 0 ? "" : (Math.floor((seconds % 3600) / 60) + "m ")
                 let ss = seconds % 60 + "s"
+                let objetivo_min = timetomin(target_min)
                 let objetivo_max = timetomin(target_max)
                 let dataTMO = `${hh}${mm}${ss}`
                 setData(p => ({ ...p, dataTMO: dataTMO }))
-                setData(p => ({ ...p, obj_max: `< ${objetivo_max}m ` }))
+                setData(p => ({ ...p, obj_max: `< ${objetivo_max}m `, obj_min: objetivo_min > 0 ? ` y > ${objetivo_min}m ` : '' }))
 
                 let vartmo = timetoseconds(target_max) - seconds
                 vartmo = seconds < timetoseconds(target_min) ? Math.abs(vartmo) * -1 : vartmo
@@ -466,12 +468,13 @@ const DashboardManagerial: FC = () => {
                 setData(p => ({ ...p, tickets_total: tickets_total }))
 
                 setDataTMOgraph([
-                    { label: t(langKeys.quantitymeets), quantity: tickets_comply },
-                    { label: t(langKeys.quantitymeetsnot), quantity: tickets_analyzed - tickets_comply }
+                    { label: t(langKeys.meets), quantity: tickets_comply },
+                    { label: t(langKeys.meetsnot), quantity: tickets_analyzed - tickets_comply }
                 ]);
             }else{
                 setData({
                     dataTMO: "0s",
+                    obj_min: "",
                     obj_max: "< 0m",
                     variaciontxt: "0s",
                     variacioncolor: true,
@@ -485,8 +488,8 @@ const DashboardManagerial: FC = () => {
                     tickets_total: 0,
                 })
                 setDataTMOgraph([
-                    { label: t(langKeys.quantitymeets), quantity: 0 },
-                    { label: t(langKeys.quantitymeetsnot), quantity: 0 }
+                    { label: t(langKeys.meets), quantity: 0 },
+                    { label: t(langKeys.meetsnot), quantity: 0 }
                 ]);
             }
         }
@@ -544,8 +547,8 @@ const DashboardManagerial: FC = () => {
                 setDataTME(p => ({ ...p, tickets_analyzed: tickets_analyzed }))
                 setDataTME(p => ({ ...p, tickets_total: tickets_total }))
                 setDataTMEgraph([
-                    { label: t(langKeys.quantitymeets), quantity: tickets_comply },
-                    { label: t(langKeys.quantitymeetsnot), quantity: tickets_analyzed - tickets_comply }
+                    { label: t(langKeys.meets), quantity: tickets_comply },
+                    { label: t(langKeys.meetsnot), quantity: tickets_analyzed - tickets_comply }
                 ]);
 
 
@@ -565,8 +568,8 @@ const DashboardManagerial: FC = () => {
                     tickets_total: 0,
                 })
                 setDataTMEgraph([
-                    { label: t(langKeys.quantitymeets), quantity: 0 },
-                    { label: t(langKeys.quantitymeetsnot), quantity: 0 }
+                    { label: t(langKeys.meets), quantity: 0 },
+                    { label: t(langKeys.meetsnot), quantity: 0 }
                 ]);
             }
         }
@@ -641,9 +644,9 @@ const DashboardManagerial: FC = () => {
             npstotalconversations: 0,
         }))
         setDataNPSgraph([
-            { label: t(langKeys.totalpromoters), quantity: 0 },
-            { label: t(langKeys.totaldetractors), quantity: 0 },
-            { label: t(langKeys.totalneutral), quantity: 0 }
+            { label: t(langKeys.promoters), quantity: 0 },
+            { label: t(langKeys.detractors), quantity: 0 },
+            { label: t(langKeys.neutral), quantity: 0 }
         ]);
         if(data.length){
 
@@ -663,9 +666,9 @@ const DashboardManagerial: FC = () => {
                 npstotalconversations: tickets,
             }))
             setDataNPSgraph([
-                { label: t(langKeys.totalpromoters), quantity: high },
-                { label: t(langKeys.totaldetractors), quantity: low },
-                { label: t(langKeys.totalneutral), quantity: medium }
+                { label: t(langKeys.promoters), quantity: high },
+                { label: t(langKeys.detractors), quantity: low },
+                { label: t(langKeys.neutral), quantity: medium }
             ]);
         }
     }
@@ -683,9 +686,9 @@ const DashboardManagerial: FC = () => {
             csattotalconversations: 0,
         }))
         setDataCSATgraph([
-            { label: t(langKeys.totalpromoters), quantity: 0 },
-            { label: t(langKeys.totaldetractors), quantity: 0 },
-            { label: t(langKeys.totalneutral), quantity: 0 }
+            { label: t(langKeys.satisfied), quantity: 0 },
+            { label: t(langKeys.dissatisfied), quantity: 0 },
+            { label: t(langKeys.neutral), quantity: 0 }
         ]);
         if(data.length){
 
@@ -705,9 +708,9 @@ const DashboardManagerial: FC = () => {
                 csattotalconversations: tickets,
             }))
             setDataCSATgraph([
-                { label: t(langKeys.totalpromoters), quantity: high },
-                { label: t(langKeys.totaldetractors), quantity: low },
-                { label: t(langKeys.totalneutral), quantity: medium }
+                { label: t(langKeys.satisfied), quantity: high },
+                { label: t(langKeys.dissatisfied), quantity: low },
+                { label: t(langKeys.neutral), quantity: medium }
             ]);
         }
     }
@@ -724,8 +727,8 @@ const DashboardManagerial: FC = () => {
             fcrtotalconversations: 0,
         }))
         setDataFCRgraph([
-            { label: t(langKeys.totalresolved), quantity: 0 },
-            { label: t(langKeys.totalnotresolved), quantity: 0 },
+            { label: t(langKeys.resolvedfirstcontact), quantity: 0 },
+            { label: t(langKeys.notresolvedfirstcontact), quantity: 0 },
         ]);
         if(data.length){
 
@@ -744,8 +747,8 @@ const DashboardManagerial: FC = () => {
                 fcrtotalconversations: tickets,
             }))
             setDataFCRgraph([
-                { label: t(langKeys.totalresolved), quantity: high },
-                { label: t(langKeys.totalnotresolved), quantity: low },
+                { label: t(langKeys.resolvedfirstcontact), quantity: high },
+                { label: t(langKeys.notresolvedfirstcontact), quantity: low },
             ]);
         }
     }
@@ -766,7 +769,7 @@ const DashboardManagerial: FC = () => {
             const mm1 = data[0].minavgtickethourdesc ? data[0].minavgtickethourdesc.split(" ") : null;
             setDataSummary((prev)=>({...prev,
                 avgtickethour: data[0].avgtickethour,
-                maxavgtickethour: `${data[0].maxavgtickethour}(${txtmaxavgticketusername})`,
+                maxavgtickethour: `${data[0].maxavgtickethour} (${txtmaxavgticketusername})`,
                 maxavgtickethourdescdate: mm ? mm[0] + " " + arraymonth[parseInt(mm[1]) - 1] : "",
                 maxavgtickethourdeschour: mm ? mm[2] + " " + mm[3].toLowerCase() : "",
                 minvgtickethour: `${data[0].minavgtickethour} (${txtminavgticketusername})`,
@@ -814,8 +817,8 @@ const DashboardManagerial: FC = () => {
             fixtotalconversations: 0,
         }))
         setDataFIXgraph([
-            { label: t(langKeys.totalresolved), quantity: 0 },
-            { label: t(langKeys.totalnotresolved), quantity: 0 },
+            { label: t(langKeys.resolved), quantity: 0 },
+            { label: t(langKeys.notresolved), quantity: 0 },
         ]);
         if(data.length){
 
@@ -834,8 +837,8 @@ const DashboardManagerial: FC = () => {
                 fixtotalconversations: tickets,
             }))
             setDataFIXgraph([
-                { label: t(langKeys.totalresolved), quantity: high },
-                { label: t(langKeys.totalnotresolved), quantity: low },
+                { label: t(langKeys.resolved), quantity: high },
+                { label: t(langKeys.notresolved), quantity: low },
             ]);
         }
     }
@@ -931,22 +934,22 @@ const DashboardManagerial: FC = () => {
                 fixtotalconversations: total,
             })
             setDataNPSgraph([
-                { label: t(langKeys.totalpromoters), quantity: nps_high },
-                { label: t(langKeys.totaldetractors), quantity: nps_low },
-                { label: t(langKeys.totalneutral), quantity: nps_medium }
+                { label: t(langKeys.promoters), quantity: nps_high },
+                { label: t(langKeys.detractors), quantity: nps_low },
+                { label: t(langKeys.neutral), quantity: nps_medium }
             ]);
             setDataCSATgraph([
-                { label: t(langKeys.totalpromoters), quantity: csat_high },
-                { label: t(langKeys.totaldetractors), quantity: csat_low },
-                { label: t(langKeys.totalneutral), quantity: csat_medium }
+                { label: t(langKeys.satisfied), quantity: csat_high },
+                { label: t(langKeys.dissatisfied), quantity: csat_low },
+                { label: t(langKeys.neutral), quantity: csat_medium }
             ]);
             setDataFCRgraph([
-                { label: t(langKeys.totalresolved), quantity: fcr_yes },
-                { label: t(langKeys.totalnotresolved), quantity: fcr_no },
+                { label: t(langKeys.resolvedfirstcontact), quantity: fcr_yes },
+                { label: t(langKeys.notresolvedfirstcontact), quantity: fcr_no },
             ]);
             setDataFIXgraph([
-                { label: t(langKeys.totalresolved), quantity: fix_yes },
-                { label: t(langKeys.totalnotresolved), quantity: fix_no },
+                { label: t(langKeys.resolved), quantity: fix_yes },
+                { label: t(langKeys.notresolved), quantity: fix_no },
             ]);
 
         }
@@ -1337,7 +1340,7 @@ const DashboardManagerial: FC = () => {
                                 </div>
                                 <div className={classes.containerFields}>
                                     <div className={classes.label}>{t(langKeys.objective)}</div>
-                                    <div className={classes.datafield}>{data.obj_max}</div>
+                                    <div className={classes.datafield}>{data.obj_max}{data.obj_min}</div>
                                 </div>
                                 <div className={clsx(classes.containerFields, data.variacioncolor ? classes.colorgreen : classes.colorred)}>
                                     <div className={classes.label}>{t(langKeys.variation)}</div>
@@ -1385,7 +1388,7 @@ const DashboardManagerial: FC = () => {
                                     </div>
                                 }
                                 <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.sla)}</div>
+                                    <div className={classes.label}>{t(langKeys.slaoptimum)}</div>
                                     <div className={classes.datafield}>{data.sla}</div>
                                 </div>
                                 <div className={clsx(classes.containerFields, data.variacionperccolor ? classes.colorgreen : classes.colorred)}>
@@ -1399,6 +1402,10 @@ const DashboardManagerial: FC = () => {
                                 <div className={classes.containerFields}>
                                     <div className={classes.label}>{t(langKeys.quantitymeetsnot)}</div>
                                     <div className={classes.datafield}>{data.tickets_analyzed - data.tickets_comply}</div>
+                                </div>
+                                <div className={classes.containerFields}>
+                                    <div className={classes.label}>{t(langKeys.conversationsanalyzed)}</div>
+                                    <div className={classes.datafield}>{data.tickets_analyzed}</div>
                                 </div>
                                 <div className={classes.containerFields}>
                                     <div className={classes.label}>{t(langKeys.totalconversation)}</div>
@@ -1471,7 +1478,7 @@ const DashboardManagerial: FC = () => {
                                     </div>
                                 }
                                 <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.sla)}</div>
+                                    <div className={classes.label}>{t(langKeys.slaoptimum)}</div>
                                     <div className={classes.datafield}>{dataTME.sla}</div>
                                 </div>
                                 <div className={clsx(classes.containerFields, dataTME.variacionperccolor ? classes.colorgreen : classes.colorred)}>
@@ -1485,6 +1492,10 @@ const DashboardManagerial: FC = () => {
                                 <div className={classes.containerFields}>
                                     <div className={classes.label}>{t(langKeys.quantitymeetsnot)}</div>
                                     <div className={classes.datafield}>{dataTME.tickets_analyzed - dataTME.tickets_comply}</div>
+                                </div>
+                                <div className={classes.containerFields}>
+                                    <div className={classes.label}>{t(langKeys.conversationsanalyzed)}</div>
+                                    <div className={classes.datafield}>{dataTME.tickets_analyzed}</div>
                                 </div>
                                 <div className={classes.containerFields}>
                                     <div className={classes.label}>{t(langKeys.totalconversation)}</div>
@@ -1560,11 +1571,11 @@ const DashboardManagerial: FC = () => {
                                 <div className={classes.datafield}>{dataEncuesta.npsvariation}</div>
                             </div>
                             <div className={classes.containerFields}>
-                                <div className={classes.label}>{t(langKeys.pollssent)}</div>
+                                <div className={classes.label}>{t(langKeys.pollssent, { survey: 'NPS' })}</div>
                                 <div className={classes.datafield}>{dataEncuesta.npspollssent}</div>
                             </div>
                             <div className={classes.containerFields}>
-                                <div className={classes.label}>{t(langKeys.pollsanswered)}</div>
+                                <div className={classes.label}>{t(langKeys.pollsanswered, { survey: 'NPS' })}</div>
                                 <div className={classes.datafield}>{dataEncuesta.npspollsanswered}</div>
                             </div>
                         </div>
@@ -1640,11 +1651,11 @@ const DashboardManagerial: FC = () => {
                                 <div className={classes.datafield}>{dataEncuesta.csatvariation}</div>
                             </div>
                             <div className={classes.containerFields}>
-                                <div className={classes.label}>{t(langKeys.pollssent)}</div>
+                                <div className={classes.label}>{t(langKeys.pollssent, { survey: 'CSAT' })}</div>
                                 <div className={classes.datafield}>{dataEncuesta.csatpollssent}</div>
                             </div>
                             <div className={classes.containerFields}>
-                                <div className={classes.label}>{t(langKeys.pollsanswered)}</div>
+                                <div className={classes.label}>{t(langKeys.pollsanswered, { survey: 'CSAT' })}</div>
                                 <div className={classes.datafield}>{dataEncuesta.csatpollsanswered}</div>
                             </div>
                         </div>
@@ -1681,11 +1692,11 @@ const DashboardManagerial: FC = () => {
                                 </div>
                             }
                             <div className={classes.containerFields}>
-                                <div className={classes.label}>{t(langKeys.totalpromoters)}</div>
+                                <div className={classes.label}>{t(langKeys.totalsatisfied)}</div>
                                 <div className={classes.datafield}>{dataEncuesta.csattotalpromoters}</div>
                             </div>
                             <div className={classes.containerFields}>
-                                <div className={classes.label}>{t(langKeys.totaldetractors)}</div>
+                                <div className={classes.label}>{t(langKeys.totaldissatisfied)}</div>
                                 <div className={classes.datafield}>{dataEncuesta.csattotaldetractors}</div>
                             </div>
                             <div className={classes.containerFields}>
@@ -1722,11 +1733,11 @@ const DashboardManagerial: FC = () => {
                                 <div className={classes.datafield}>{dataEncuesta.fcrvariation}</div>
                             </div>
                             <div className={classes.containerFields}>
-                                <div className={classes.label}>{t(langKeys.pollssent)}</div>
+                                <div className={classes.label}>{t(langKeys.pollssent, { survey: 'FCR' })}</div>
                                 <div className={classes.datafield}>{dataEncuesta.fcrpollssent}</div>
                             </div>
                             <div className={classes.containerFields}>
-                                <div className={classes.label}>{t(langKeys.pollsanswered)}</div>
+                                <div className={classes.label}>{t(langKeys.pollsanswered, { survey: 'FCR' })}</div>
                                 <div className={classes.datafield}>{dataEncuesta.fcrpollsanswered}</div>
                             </div>
                         </div>
@@ -1763,11 +1774,11 @@ const DashboardManagerial: FC = () => {
                                 </div>
                             }
                             <div className={classes.containerFields}>
-                                <div className={classes.label}>{t(langKeys.totalresolved)}</div>
+                                <div className={classes.label}>{t(langKeys.totalresolvedfirstcontact)}</div>
                                 <div className={classes.datafield}>{dataEncuesta.fcrtotalpromoters}</div>
                             </div>
                             <div className={classes.containerFields}>
-                                <div className={classes.label}>{t(langKeys.totalnotresolved)}</div>
+                                <div className={classes.label}>{t(langKeys.totalnotresolvedfirstcontact)}</div>
                                 <div className={classes.datafield}>{dataEncuesta.fcrtotaldetractors}</div>
                             </div>
                             <div className={classes.containerFields}>
@@ -1798,11 +1809,11 @@ const DashboardManagerial: FC = () => {
                                 <div className={classes.datafield}>{dataEncuesta.fixvariation}</div>
                             </div>
                             <div className={classes.containerFields}>
-                                <div className={classes.label}>{t(langKeys.pollssent)}</div>
+                                <div className={classes.label}>{t(langKeys.pollssent, { survey: 'FIX' })}</div>
                                 <div className={classes.datafield}>{dataEncuesta.fixpollssent}</div>
                             </div>
                             <div className={classes.containerFields}>
-                                <div className={classes.label}>{t(langKeys.pollsanswered)}</div>
+                                <div className={classes.label}>{t(langKeys.pollsanswered, { survey: 'FIX' })}</div>
                                 <div className={classes.datafield}>{dataEncuesta.fixpollsanswered}</div>
                             </div>
                         </div>
