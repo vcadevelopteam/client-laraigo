@@ -307,6 +307,11 @@ const RouterApp: FC = () => {
 						<DashboardAdd edit />
 					</Layout>
 				</ProtectRoute>
+				<ProtectRoute exact path={paths.DASHBOARD_COPY}>
+					<Layout mainClasses={classes.main}>
+						<DashboardAdd edit />
+					</Layout>
+				</ProtectRoute>
 				<ProtectRoute exact path={paths.DASHBOARD_LAYOUT.path}>
 					<Layout mainClasses={classes.main}>
 						<DashboardLayout />

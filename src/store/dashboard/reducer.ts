@@ -57,6 +57,8 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_DASHBOARDTEMPLATE_FAILURE]: caseFUnctions.getDashboardTemplateFailure,
     [actionTypes.GET_DASHBOARDTEMPLATE_RESET]: caseFUnctions.getDashboardTemplateReset,
 
+    [actionTypes.SET_DASHBOARDTEMPLATE]: caseFUnctions.setDashboardTemplate,
+
     [actionTypes.SAVE_DASHBOARDTEMPLATE]: caseFUnctions.saveDashboardTemplate,
     [actionTypes.SAVE_DASHBOARDTEMPLATE_SUCCESS]: caseFUnctions.saveDashboardTemplateSuccess,
     [actionTypes.SAVE_DASHBOARDTEMPLATE_FAILURE]: caseFUnctions.saveDashboardTemplateFailure,

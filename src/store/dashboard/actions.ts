@@ -1,4 +1,4 @@
-import { IActionCall, IRequestBody } from "@types";
+import { DashboardTemplate, IActionCall, IRequestBody } from "@types";
 import { DashboardService, CommonService } from "network";
 import actionTypes from "./actionTypes";
 
@@ -29,6 +29,11 @@ export const getDashboardTemplate = (body: IRequestBody): IActionCall => ({
         failure: actionTypes.GET_DASHBOARDTEMPLATE_FAILURE,
     },
     type: null,
+});
+
+export const setDashboardTemplate = (payload: DashboardTemplate): IActionCall => ({
+    payload,
+    type: actionTypes.SET_DASHBOARDTEMPLATE,
 });
 
 export const resetGetDashboardTemplate = (): IActionCall => ({type: actionTypes.GET_DASHBOARDTEMPLATE_RESET});

@@ -270,6 +270,12 @@ const Dashboard: FC = () => {
                                     onEdit={() => {
                                         history.push(paths.DASHBOARD_EDIT.resolve(e.dashboardtemplateid));
                                     }}
+                                    onDuplicate={() => {
+                                        history.push({
+                                            pathname: paths.DASHBOARD_COPY,
+                                            state: e,
+                                        });
+                                    }}
                                     onDelete={() => onDelete(e)}
                                 />
                             </Grid>
@@ -332,6 +338,7 @@ interface DashboardCardProps {
     onClick: (e: React.MouseEvent<HTMLAnchorElement>) => void;
     onEdit: (e: React.MouseEvent<HTMLLIElement>) => void;
     onDelete: (e: React.MouseEvent<HTMLLIElement>) => void;
+    onDuplicate: (e: React.MouseEvent<HTMLLIElement>) => void;
 }
 
 const useDashboardCardStyles = makeStyles(theme => ({
@@ -346,6 +353,7 @@ const DashboardCard: FC<DashboardCardProps> = ({
     onClick,
     onEdit,
     onDelete,
+    onDuplicate,
 }) => {
     const classes = useDashboardCardStyles();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -402,7 +410,8 @@ const DashboardCard: FC<DashboardCardProps> = ({
                     <Trans i18nKey={langKeys.edit} />
                 </MenuItem>
                 <MenuItem
-                    onClick={() => {
+                    onClick={e => {
+                        onDuplicate(e);
                         setAnchorEl(null);
                     }}
                     disabled={disabled}

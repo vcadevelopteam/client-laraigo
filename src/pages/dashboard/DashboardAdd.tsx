@@ -2,7 +2,7 @@ import { Box, Button, IconButton, makeStyles, Modal, Typography, TextField, Circ
 import paths from "common/constants/paths";
 import { FieldEdit, FieldSelect, TemplateBreadcrumbs, TitleDetail } from "components";
 import { FC, useCallback, useEffect, useState } from "react";
-import { useHistory, useRouteMatch } from "react-router";
+import { useHistory, useRouteMatch, useLocation } from "react-router";
 import RGL, { WidthProvider } from 'react-grid-layout';
 import { Trans, useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
@@ -14,7 +14,8 @@ import { getDashboardTemplateIns, getDashboardTemplateSel, getKpiSel, getReportT
 import { useSelector } from "hooks";
 import { contentTypes, graphTypes, groupingType } from "./constants";
 import { showSnackbar } from "store/popus/actions";
-import { getDashboardTemplate, resetSaveDashboardTemplate, saveDashboardTemplate } from "store/dashboard/actions";
+import { getDashboardTemplate, resetSaveDashboardTemplate, saveDashboardTemplate, setDashboardTemplate } from "store/dashboard/actions";
+import { DashboardTemplate } from "@types";
 
 export interface ReportTemplate {
     columnjson: string; // array json
@@ -107,6 +108,7 @@ interface Items {
 const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const { t } = useTranslation();
     const match = useRouteMatch<{ id: string }>();
+    const location = useLocation<DashboardTemplate | null>();
     const classes = useDashboardAddStyles();
     const dispatch = useDispatch();
     const history = useHistory();
@@ -121,9 +123,13 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const dashboardtemplate = useSelector(state => state.dashboard.dashboardtemplate);
 
     useEffect(() => {
-        if (edit === true) {
+        if (edit === true && !location.state) {
             const dashboardId = match.params.id;
             dispatch(getDashboardTemplate(getDashboardTemplateSel(dashboardId)));
+        } else if (edit === true && location.state) {
+            dispatch(setDashboardTemplate({ ...location.state, dashboardtemplateid: 0 }));
+        } else if (edit === true && !location.state && !Number(match.params.id)) {
+            history.push(paths.DASHBOARD);
         }
 
         dispatch(getMultiCollection([
@@ -136,7 +142,7 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
             dispatch(resetMultiMain());
             dispatch(resetSaveDashboardTemplate());
         };
-    }, [match.params.id, dispatch]);
+    }, [edit, location.state, match.params.id, dispatch]);
 
     useEffect(() => {
         if (reportTemplatesAndKpis.loading) return;
@@ -170,7 +176,7 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
     }, [dashboardSave, history, t, dispatch]);
 
     useEffect(() => {
-        if (dashboardtemplate.loading) return;
+        if (edit === false || dashboardtemplate.loading) return;
         if (dashboardtemplate.error) {
             const error = t(dashboardtemplate.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
@@ -179,21 +185,17 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 show: true,
             }));
         } else if (dashboardtemplate.value) {
-            setLayout(prev => {
-
-                return [
-                    {
-                        ...prev[0], // 'add-btn-layout'
-                        x: (((prev.length - 1) * 3) % 12) + 3,
-                        y: Infinity,
-                    },
-                    ...(JSON.parse(dashboardtemplate.value!.layoutjson) as RGL.Layout[]),
-                ];
-            });
+            setLayout(prev => ([
+                {
+                    ...prev[0], // 'add-btn-layout'
+                    x: (((prev.length - 1) * 3) % 12) + 3,
+                    y: Infinity,
+                },
+                ...(JSON.parse(dashboardtemplate.value!.layoutjson) as RGL.Layout[]),
+            ]));
             reset(JSON.parse(dashboardtemplate.value!.detailjson) as Items);
         }
-    }, [dashboardtemplate, t, dispatch]);
-
+    }, [dashboardtemplate, edit, t, dispatch]);
 
 
     const {
@@ -254,7 +256,7 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
             layoutjson: JSON.stringify(cleanLayout),
             status: 'ACTIVO',
             type: 'NINGUNO',
-            operation: edit ? 'UPDATE' : 'INSERT',
+            operation: edit && dashboardtemplate.value!.dashboardtemplateid !== 0 ? 'UPDATE' : 'INSERT',
         })));
     }, [edit, dashboardtemplate, layout, getValues, dispatch]);
 
