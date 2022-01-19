@@ -54,6 +54,14 @@ export interface TableConfig {
     /**cualquier filtro */
     onFilterChange?: (filter: ITablePaginatedFilter) => void;
     helperText?:string;
+    initialStateFilter?: {
+        id: string,
+        value: {
+            value: any,
+            type: string,
+            operator: string
+        }
+    }[];
     initialPageIndex?: number;
     initialStartDate?: number | null;
     initialEndDate?: number | null;

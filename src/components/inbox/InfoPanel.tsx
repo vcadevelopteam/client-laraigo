@@ -617,8 +617,9 @@ const Attachments: React.FC = () => {
             ...acc,
             ...(item.interactions?.filter((x) => ["file", "video"].includes(x.interactiontype)) || []).map(x => ({
                 url: x.interactiontext,
-                filename: x.interactiontext.split("/").pop(),
-                extension: (x.interactiontext.split("/").pop() || "").split(".").pop(),
+                // filename: x.interactiontext.split("/").pop(),
+                filename: (x.interactiontext.split("/").pop() || '').substring(0, 5) === "78064" ? (x.interactiontext.split("/").pop() || '')?.replace((x.interactiontext.split("/").pop() || '').substring(0, 18), "") : (x.interactiontext.split("/").pop() || ''),
+                extension: ((x.interactiontext.split("/").pop() || '') || "").split(".").pop(),
                 date: convertLocalDate(x.createdate).toLocaleString(),
             }))
         ], []));
@@ -635,10 +636,14 @@ const Attachments: React.FC = () => {
     return (
         <div className={`scroll-style-go`} style={{ overflowY: 'auto', flex: 1, backgroundColor: 'transparent' }}>
             {listFiles.map(({filename, date, url, extension}, index) => (
-                <div
+                <a
                     key={index}
                     className={classes.containerAttachment}
-                    onClick={() => window.open(url, "_blank")}
+                    href={url}
+                    download
+                    style={{ textDecoration: 'none', color: 'inherit' }}
+                    rel="noreferrer" target="_blank"
+                    // onClick={() => window.open(url, "_blank")}
                 >
                     {extension === "pdf" ? (
                         <PdfIcon width="30" height="30" />
@@ -656,7 +661,7 @@ const Attachments: React.FC = () => {
                         <div>{filename}</div>
                         <div className={classes.label}>{date}</div>
                     </div>
-                </div>
+                </a>
             ))}
         </div>
     )

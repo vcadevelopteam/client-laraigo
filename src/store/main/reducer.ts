@@ -58,8 +58,8 @@ export const initialState: IState = {
     exportData: { ...initialCommon },
     exportDynamicData: { ...initialCommon },
     memoryTable: {
-        page: 0,
-        pageSize: 0,
+        page: -1,
+        pageSize: -1,
         filters: {}
     }
 };
@@ -135,4 +135,6 @@ export default createReducer<IState>(initialState, {
     [actionTypes.DATA_EXPORT_DYNAMIC_FAILURE]: caseFunctions.exportDataDynamicFailure,
     [actionTypes.DATA_EXPORT_DYNAMIC_RESET]: caseFunctions.exportDataDynamicReset,
     [actionTypes.RESET_ALL]: caseFunctions.resetAll,
+    [actionTypes.SET_MEMORY_TABLE]: caseFunctions.setMemoryTable,
+    [actionTypes.CLEAN_MEMORY_TABLE]: caseFunctions.cleanMemoryTable,
 });
