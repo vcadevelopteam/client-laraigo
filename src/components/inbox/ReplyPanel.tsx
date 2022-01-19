@@ -541,7 +541,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                 // })
                 if (textCleaned) {
                     if (!errormessage) {
-
+                        console.log("ticketSelected!!.isAnswered", ticketSelected!!.isAnswered)
                         wasSend = true
                         const newInteractionSocket = {
                             ...ticketSelected!!,
@@ -565,6 +565,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                             ...ticketSelected!!,
                             interactiontype: "text",
                             interactiontext: textCleaned,
+                            isAnswered: !ticketSelected!!.isAnswered,
                         }));
                         setText("");
                     } else {

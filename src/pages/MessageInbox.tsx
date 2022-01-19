@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'hooks';
-import { setUserType, emitEvent, cleanAlerts, setAgentsToReassign } from 'store/inbox/actions';
+import { setUserType, emitEvent, cleanAlerts, setAgentsToReassign, selectAgent } from 'store/inbox/actions';
 import { useDispatch } from 'react-redux';
 import InboxPanel from 'components/inbox/InboxPanel'
 import { getMultiCollection, resetAllMain } from 'store/main/actions';
@@ -58,6 +58,19 @@ const MessageInbox: React.FC = () => {
 
     useEffect(() => {
         dispatch(setUserType("AGENT"));
+        dispatch(selectAgent({
+            userid: user?.userid!!,
+            name: '',
+            countActive: 0,
+            countPaused: 0,
+            countClosed: 0,
+            countAnwsered: 0,
+            countPending: 0,
+            status: '',
+            groups: '',
+            image: '',
+            channels: [],
+        }))
         dispatch(getMultiCollection([
             getValuesFromDomainLight("MOTIVOCIERRE"),
             getListUsers(),
