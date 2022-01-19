@@ -7,10 +7,9 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Menu from '@material-ui/core/Menu';
+import { exportExcel, getLocaleDateString } from 'common/helpers';
 import { setMemoryTable } from 'store/main/actions';
 import { useDispatch } from 'react-redux';
-import { exportExcel, getLocaleDateString } from 'common/helpers';
-import { useSelector } from 'hooks';
 import {
     FirstPage,
     LastPage,
@@ -332,42 +331,33 @@ const TableZyx = React.memo(({
     initialPageIndex = 0,
     initialFilters = {},
     helperText = "",
+    initialStateFilter
 }: TableConfig) => {
     const classes = useStyles();
     const dispatch = useDispatch();
-
-    const memoryTable = useSelector(state => state.main.memoryTable);
-
     const [tFilters, setTFilters] = useState<ITablePaginatedFilter>({
         startDate: null,
         endDate: null,
         page: initialPageIndex,
-        filters: memoryTable.filters,
+        filters: initialFilters,
     });
+
+    console.log("initialPageIndex", initialPageIndex);
+    console.log("pageSizeDefault", pageSizeDefault);
+
 
     useEffect(() => {
         onFilterChange?.(tFilters);
     }, [tFilters]);
 
-    // console.log("filtersXX-----", loading)
-    const DefaultColumnFilter = ({ column: { id: header, setFilter: $setFilter, listSelectFilter = [], type = "string" } }: any) => {
-
-        const [value, setValue] = useState('');
+    const DefaultColumnFilter = ({
+        column: { id: header, setFilter: $setFilter, listSelectFilter = [], type = "string" },
+    }: any) => {
+        const iSF = initialStateFilter?.filter(x => x.id === header)[0];
+        const [value, setValue] = useState(iSF?.value.value || '');
         const [anchorEl, setAnchorEl] = useState(null);
         const open = Boolean(anchorEl);
-        const [operator, setoperator] = useState("contains");
-
-        useEffect(() => {
-            console.log("filtersXX-", "useeffe")
-            if (tFilters.filters[header]) {
-                // console.log("filtersXX", loading)
-                setValue(tFilters.filters[header].value);
-                setoperator(tFilters.filters[header].operator);
-                const memoFilter = tFilters.filters[header]
-                $setFilter({ value: memoFilter.value, operator: memoFilter.operator, type });
-                setTFilters(prev => ({ ...prev, filters: { ...prev.filters, [header]: { value: memoFilter.value, operator: memoFilter.operator, type } } }));
-            }
-        }, [])
+        const [operator, setoperator] = useState(iSF?.value.operator || "contains");
 
         const setFilter = (filter: any) => {
             $setFilter(filter);
@@ -433,21 +423,23 @@ const TableZyx = React.memo(({
         }
 
         useEffect(() => {
-            switch (type) {
-                case "number": case "number-centered":
-                case "date":
-                case "datetime-local":
-                case "time":
-                case "select":
-                    setoperator("equals");
-                    break;
-                case "boolean":
-                    setoperator("all");
-                    break;
-                case "string": case "color":
-                default:
-                    setoperator("contains");
-                    break;
+            if (!initialStateFilter?.filter(x => x.id === header)[0]) {
+                switch (type) {
+                    case "number": case "number-centered":
+                    case "date":
+                    case "datetime-local":
+                    case "time":
+                    case "select":
+                        setoperator("equals");
+                        break;
+                    case "boolean":
+                        setoperator("all");
+                        break;
+                    case "string": case "color":
+                    default:
+                        setoperator("contains");
+                        break;
+                }
             }
         }, [type]);
 
@@ -517,7 +509,6 @@ const TableZyx = React.memo(({
 
     const filterCellValue = React.useCallback((rows, id, filterValue) => {
         const { value, operator, type } = filterValue;
-
         return rows.filter((row: any) => {
             const cellvalue = row.values[id];
             if (cellvalue === null || cellvalue === undefined)
@@ -613,16 +604,15 @@ const TableZyx = React.memo(({
             }
         });
     }, []);
-    console.log("data.length", data.length)
 
     const defaultColumn = React.useMemo(
         () => ({
             // Let's set up our default Filter UI
-            Filter: (props: any) => data.length === 0 ? null : DefaultColumnFilter({ ...props }),
+            Filter: (props: any) => DefaultColumnFilter({ ...props, data }),
             filter: filterCellValue,
         }),
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [data]
+        []
     );
 
     const {
@@ -643,12 +633,11 @@ const TableZyx = React.memo(({
         globalFilteredRows,
         setGlobalFilter,
         state: { pageIndex, pageSize, selectedRowIds },
-        toggleAllRowsSelected,
-        
+        toggleAllRowsSelected
     } = useTable({
         columns,
         data,
-        initialState: { pageIndex: initialPageIndex, pageSize: pageSizeDefault, selectedRowIds: initialSelectedRows || {} },
+        initialState: { pageIndex: initialPageIndex, pageSize: pageSizeDefault, selectedRowIds: initialSelectedRows || {}, filters: initialStateFilter || [] },
         defaultColumn,
         getRowId: (row, relativeIndex: any, parent: any) => selectionKey
             ? (parent ? [row[selectionKey], parent].join('.') : row[selectionKey])
@@ -689,7 +678,6 @@ const TableZyx = React.memo(({
             ])
         }
     )
-
     useEffect(() => {
         let next = true;
         if (fetchData && next) {
@@ -740,7 +728,7 @@ const TableZyx = React.memo(({
                 </TableRow>
             )
         },
-        [prepareRow, page]
+        [headerGroups, prepareRow, page]
     )
 
     return (
@@ -967,6 +955,9 @@ const TableZyx = React.memo(({
                             <IconButton
                                 onClick={() => {
                                     gotoPage(0);
+                                    dispatch(setMemoryTable({
+                                        page: 0
+                                    }));
                                     setTFilters(prev => ({ ...prev, page: 0 }));
                                 }}
                                 disabled={!canPreviousPage || loading}
@@ -976,6 +967,9 @@ const TableZyx = React.memo(({
                             <IconButton
                                 onClick={() => {
                                     previousPage();
+                                    dispatch(setMemoryTable({
+                                        page: pageIndex - 1
+                                    }));
                                     setTFilters(prev => ({ ...prev, page: pageIndex - 1 }));
                                 }}
                                 disabled={!canPreviousPage || loading}
@@ -985,6 +979,9 @@ const TableZyx = React.memo(({
                             <IconButton
                                 onClick={() => {
                                     nextPage();
+                                    dispatch(setMemoryTable({
+                                        page: pageIndex + 1
+                                    }));
                                     setTFilters(prev => ({ ...prev, page: pageIndex + 1 }));
                                 }}
                                 disabled={!canNextPage || loading}
@@ -994,6 +991,9 @@ const TableZyx = React.memo(({
                             <IconButton
                                 onClick={() => {
                                     gotoPage(pageCount - 1);
+                                    dispatch(setMemoryTable({
+                                        page: pageCount - 1
+                                    }));
                                     setTFilters(prev => ({ ...prev, page: pageCount - 1 }));
                                 }}
                                 disabled={!canNextPage || loading}
@@ -1021,7 +1021,10 @@ const TableZyx = React.memo(({
                                 value={pageSize}
                                 disabled={loading}
                                 onChange={e => {
-                                    setPageSize(Number(e.target.value))
+                                    setPageSize(Number(e.target.value));
+                                    dispatch(setMemoryTable({
+                                        pageSize: Number(e.target.value)
+                                    }));
                                 }}
                             >
                                 {[10, 20, 50, 100].map(pageSize => (

@@ -501,8 +501,8 @@ export const resetAll = (state: IState): IState => ({
 export const setMemoryTable = (state: IState, action: IAction): IState => ({
     ...state,
     memoryTable: {
-        page: action.payload.page || state.memoryTable.page,
-        pageSize: action.payload.pageSize || state.memoryTable.pageSize,
+        page: (action.payload.page === undefined || action.payload.page === null) ? state.memoryTable.page : action.payload.page,
+        pageSize: (action.payload.pageSize === undefined || action.payload.pageSize === null) ? state.memoryTable.pageSize : action.payload.pageSize,
         filters: {
             ...state.memoryTable.filters,
             ...(action.payload.filter || {})

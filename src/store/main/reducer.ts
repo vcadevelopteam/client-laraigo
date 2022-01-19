@@ -58,8 +58,8 @@ export const initialState: IState = {
     exportData: { ...initialCommon },
     exportDynamicData: { ...initialCommon },
     memoryTable: {
-        page: 0,
-        pageSize: 0,
+        page: -1,
+        pageSize: -1,
         filters: {}
     }
 };
