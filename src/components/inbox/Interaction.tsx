@@ -355,7 +355,9 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             </div>
         )
     } else if (interactiontype === "file") {
-        const extension = (interactiontext.split("/").pop() || "").split(".").pop();
+        const tmptext = interactiontext.split("/").pop() || "";
+        const extension = (tmptext || "").split(".").pop();
+        const filename = tmptext.substring(0, 5) === "78064" ? tmptext?.replace(tmptext.substring(0, 18), "") : tmptext;
         return (
             <div style={{ width: 200, backgroundColor: 'white', padding: '12px 13px', borderRadius: 4, position: 'relative' }}>
                 <a download rel="noreferrer" target="_blank" href={interactiontext} style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 4 }}>
@@ -371,7 +373,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                         <TxtIcon width="30" height="30" />
                     ) : <FileIcon width="30" height="30" />
                     }
-                    <div style={{ color: '#171717', textOverflow: 'ellipsis', overflowX: 'hidden', flex: 1, whiteSpace: 'nowrap' }}>{interactiontext.split("/").pop()}</div>
+                    <div style={{ color: '#171717', textOverflow: 'ellipsis', overflowX: 'hidden', flex: 1, whiteSpace: 'nowrap' }}>{filename}</div>
                     <DownloadIcon2 width="20" height="20" color="primary" />
                 </a>
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} background={true} time={onlyTime || ""} />
