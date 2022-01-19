@@ -115,6 +115,9 @@ const VariableConfiguration: FC = () => {
                 accessor: 'chatblockid',
                 NoFilter: true,
                 isComponent: true,
+                minWidth: 20,
+                maxWidth: 20,
+                width: 20,
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     const id = props.cell.row.id;

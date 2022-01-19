@@ -19,13 +19,14 @@ import { getCollection, getCollectionDynamic, resetMain, resetMainDynamic } from
 import { Range } from "react-date-range";
 import { CalendarIcon } from "icons";
 import TableZyx from "components/fields/table-simple";
+import GaugeChart from "react-gauge-chart";
 
 const ReactGridLayout = WidthProvider(RGL);
 
 interface Item {
     description: string;
     contentType: string;
-    kpi: number;
+    kpiid : number;
     reporttemplateid: number;
     grouping: string;
     graph: string;
@@ -302,14 +303,14 @@ const DashboardLayout: FC = () => {
                 >
                     <Trans i18nKey={langKeys.back} />
                 </Button>
-                <Button
+                {/* <Button
                     variant="contained"
                     color="primary"
                     onClick={addItemOnClick}
                     disabled={dashboardSave.loading || dashboardtemplate.loading || !dashboardtemplate.value}
                 >
                     <Trans i18nKey={langKeys.add} />
-                </Button>
+                </Button> */}
                 <Button
                     variant="contained"
                     color="primary"
@@ -318,14 +319,14 @@ const DashboardLayout: FC = () => {
                 >
                     <Trans i18nKey={langKeys.delete} />
                 </Button>
-                <Button
+                {/* <Button
                     variant="contained"
                     color="primary"
                     onClick={onSave}
                     disabled={dashboardSave.loading ||dashboardtemplate.loading || !dashboardtemplate.value}
                 >
                     <Trans i18nKey={langKeys.save} />
-                </Button>
+                </Button> */}
             </div>
             <div style={{ height: '1em' }} />
             <ReactGridLayout
@@ -334,8 +335,10 @@ const DashboardLayout: FC = () => {
                 onLayoutChange={(l) => setLayout(prev => ({ ...prev, layout: l }))}
                 cols={12}
                 rowHeight={140}
-                isDraggable={canLayoutChange && !dashboardtemplate.loading && !dashboard.loading}
-                isResizable={canLayoutChange && !dashboardtemplate.loading && !dashboard.loading}
+                isDraggable={false}
+                isResizable={false}
+                // isDraggable={canLayoutChange && !dashboardtemplate.loading && !dashboard.loading}
+                // isResizable={canLayoutChange && !dashboardtemplate.loading && !dashboard.loading}
             >
                 {layout.layout.map(e => (
                     <div key={e.i}>
@@ -345,7 +348,7 @@ const DashboardLayout: FC = () => {
                                 reportname={dashboard.value?.[e.i]?.reportname || '-'}
                                 data={dashboard.value?.[e.i]?.data}
                                 columnjson={dashboard.value?.[e.i]?.columnjson}
-                                type={layout.detail[e.i]!.graph}
+                                type={dashboard.value?.[e.i]?.contentType === 'report' ? layout.detail[e.i]!.graph : 'kpi'}
                                 detail={layout.detail}
                                 onDetailChange={(d, t) => onDetailChange(d, t, e.i)}
                                 dateRange={dateRange}
@@ -376,11 +379,23 @@ interface ItemsData {
     [label: string]: number;
 }
 
+interface KpiData {
+    target: number;
+    cautionat: number;
+    alertat: number;
+    currentvalue: number;
+}
+
+interface ChartData {
+    label: string;
+    quantity: number;
+}
+
 type ChangeType = "DELETE" | "UPDATE" | "INSERT";
 
 interface LayoutItemProps {
     reportname: string;
-    data?: ItemsData;
+    data?: ItemsData | KpiData;
     type: string;
     layoutKey: string;
     detail?: Items;
@@ -447,10 +462,17 @@ const LayoutItem: FC<LayoutItemProps> = ({
 }) => {
     const classes = useLayoutItemStyles();
     const canChange = detail !== undefined && onDetailChange !== undefined;
-    const dataGraph = useMemo(() => {
+    const dataGraph = useMemo<ChartData[] | KpiData>(() => {
         if (!data) return [];
-        return Object.keys(data).map(e => ({ label: e, quantity: data[e] }));
-    }, [data]);
+        if (type !== 'kpi') {
+            return Object.keys(data as ItemsData).map(e => ({
+                label: e,
+                quantity: (data as ItemsData)[e],
+            }));
+        } else {
+            return data as KpiData;
+        }
+    }, [data, type]);
     const [graph, setGraph] = useState(type);
     const [openTableModal, setOpenTableModal] = useState(false);
     const rawColumns = useMemo<Column[]>(() => {
@@ -491,8 +513,9 @@ const LayoutItem: FC<LayoutItemProps> = ({
 
     const renderGraph = useCallback(() => {
         switch(graph) {
-            case 'bar': return <LayoutBar data={dataGraph} />;
-            case 'pie': return <LayoutPie data={dataGraph} />;
+            case 'bar': return <LayoutBar data={dataGraph as ChartData[]} />;
+            case 'pie': return <LayoutPie data={dataGraph as ChartData[]} />;
+            case 'kpi': return <LayoutKpi data={dataGraph as KpiData} />;
             default: return null;
         }
     }, [dataGraph, graph]);
@@ -510,11 +533,11 @@ const LayoutItem: FC<LayoutItemProps> = ({
             <div className={classes.header}>
                 <span className={classes.label}>{reportname}</span>
                 <div style={{ flexGrow: 1 }} />
-                <Tooltip title="Intercambiar">
+                {/* <Tooltip title="Intercambiar">
                     <IconButton onClick={onChange} size="small">
                         <SwapHorizIcon />
                     </IconButton>
-                </Tooltip>
+                </Tooltip> */}
                 <Tooltip title="Más opciones">
                     <IconButton
                         id={`more-btn-${key}`}
@@ -543,9 +566,9 @@ const LayoutItem: FC<LayoutItemProps> = ({
                     >
                         <Trans i18nKey={langKeys.seeMore} />
                     </MenuItem>
-                    <MenuItem onClick={onDelete}>
+                    {/* <MenuItem onClick={onDelete}>
                         <Trans i18nKey={langKeys.delete} />
-                    </MenuItem>
+                    </MenuItem> */}
                 </Menu>
             </div>
             <div className={classes.reponsiveContainer}>
@@ -616,6 +639,54 @@ const LayoutPie: FC<LayoutPieProps> = ({ data, ...props }) => {
                 </Pie>
                 <Legend verticalAlign="bottom" />
             </PieChart>
+        </ResponsiveContainer>
+    );
+}
+
+interface LayoutKpiProps {
+    data: KpiData;
+}
+
+const LayoutKpi: FC<LayoutKpiProps> = ({ data }) => {
+    const gaugeArcs = useMemo(() => {
+        if (data.target <= data.alertat) {
+            return [
+                data.cautionat / (Math.max(data?.currentvalue, Math.ceil(data.alertat * 1.2 / 10) * 10)),
+                (data.alertat - data.cautionat) / (Math.max(data?.currentvalue, Math.ceil(data.alertat * 1.2 / 10) * 10)),
+                ((Math.max(data?.currentvalue, Math.ceil(data.alertat * 1.2 / 10) * 10)) - data.alertat) / (Math.max(data?.currentvalue, Math.ceil(data.alertat * 1.2 / 10) * 10)) 
+            ]
+        } else {
+            return [
+                data.alertat / (Math.max(data?.currentvalue, Math.ceil(data.target * 1.2 / 10) * 10)),
+                (data.cautionat - data.alertat) / (Math.max(data?.currentvalue, Math.ceil(data.target * 1.2 / 10) * 10)),
+                ((Math.max(data?.currentvalue, Math.ceil(data.target * 1.2 / 10) * 10)) - data.cautionat) / (Math.max(data?.currentvalue, Math.ceil(data.target * 1.2 / 10) * 10))
+            ];
+        }
+    }, [data]);
+
+    const percent = useMemo(() => {
+        return data.target < data.alertat
+            ? data?.currentvalue / (Math.max(data?.currentvalue, Math.ceil(data.alertat * 1.2 / 10) * 10))
+            : data?.currentvalue / (Math.max(data?.currentvalue, Math.ceil(data.target * 1.2 / 10) * 10));
+    }, [data]);
+
+    const colors = useMemo(() => {
+        return data.target < data.alertat
+            ? ['#5BE12C', '#F5CD19', '#EA4228']
+            : ['#EA4228', '#F5CD19', '#5BE12C'];
+    }, [data]);
+
+    return (
+        <ResponsiveContainer>
+            <GaugeChart
+                arcsLength={gaugeArcs}
+                colors={colors}
+                textColor="black"
+                animate={false}
+                percent={percent}
+                needleColor="grey"
+                // formatTextValue={() => ``}
+            />
         </ResponsiveContainer>
     );
 }
