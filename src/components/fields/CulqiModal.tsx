@@ -36,6 +36,7 @@ interface CulqiModalProps {
     purchaseorder?: string;
     comments?: string;
     disabled?:boolean;
+    orgid?:number;
     successmessage?:string;
 }
 
@@ -71,6 +72,7 @@ const CulqiModal: FC<CulqiModalProps> = ({
     purchaseorder,
     comments,
     disabled = false,
+    orgid = 0,
     successmessage,
 }) => {
     const { t } = useTranslation();
@@ -86,6 +88,7 @@ const CulqiModal: FC<CulqiModalProps> = ({
             metadata,
             purchaseorder,
             comments,
+            orgid,
         }));
     }
 
