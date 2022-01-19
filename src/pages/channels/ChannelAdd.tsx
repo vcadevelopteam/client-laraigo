@@ -205,7 +205,7 @@ export const ChannelAdd: FC = () => {
             <h2 className={classes.title}>{t(langKeys.channeladdtitle)}</h2>
             <div style={{ height: 29 }} />
             <Typography className={classes.subtitle}>{t(langKeys.socialmediachannel)}</Typography>
-            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center' }}>
                 {socialMediaOptions.map((e, i) =>
                     <Option
                         key={`social_media_option_${i}`}
@@ -214,7 +214,7 @@ export const ChannelAdd: FC = () => {
                 )}
             </div>
             <Typography className={classes.subtitle}>{t(langKeys.businesschannel)}</Typography>
-            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center' }}>
                 {businessChannelOptions.map((e, i) => <Option key={`business_channel_option_${i}`} option={e} />)}
             </div>
         </div>

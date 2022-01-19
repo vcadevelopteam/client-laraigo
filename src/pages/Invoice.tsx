@@ -2011,7 +2011,6 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                                 buttontitle={t(langKeys.proceedpayment)}
                                 purchaseorder={purchaseOrder}
                                 comments={comments}
-                                tipocredito={creditType}
                                 disabled={paymentDisabled}
                                 successmessage={t(langKeys.culqipaysuccess)}
                             ></CulqiModal>

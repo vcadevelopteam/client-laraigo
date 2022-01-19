@@ -35,7 +35,6 @@ interface CulqiModalProps {
     buttontitle?: string;
     purchaseorder?: string;
     comments?: string;
-    tipocredito?: string;
     disabled?:boolean;
     successmessage?:string;
 }
@@ -71,7 +70,6 @@ const CulqiModal: FC<CulqiModalProps> = ({
     buttontitle,
     purchaseorder,
     comments,
-    tipocredito,
     disabled = false,
     successmessage,
 }) => {
@@ -88,7 +86,6 @@ const CulqiModal: FC<CulqiModalProps> = ({
             metadata,
             purchaseorder,
             comments,
-            tipocredito
         }));
     }
 
