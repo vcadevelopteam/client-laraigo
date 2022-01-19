@@ -60,6 +60,9 @@ const actionType = {
     DATA_EXPORT_DYNAMIC_RESET: 'main/DATA_EXPORT_DYNAMIC_RESET',
     
     RESET_ALL: 'main/RESET_ALL',
+    
+    SET_MEMORY_TABLE: 'main/SET_MEMORY_TABLE',
+    CLEAN_MEMORY_TABLE: 'main/CLEAN_MEMORY_TABLE',
 };
 
 export default actionType;

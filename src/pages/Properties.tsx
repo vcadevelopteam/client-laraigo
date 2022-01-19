@@ -67,7 +67,8 @@ const Properties: FC = () => {
     const [waitSave, setWaitSave] = useState(false);
 
     const executeResult = useSelector(state => state.main.execute);
-    const mainResult = useSelector(state => state.main);
+    const mainResult = useSelector(state => state.main.mainData);
+    const multiResult = useSelector(state => state.main.multiData);
     const user = useSelector(state => state.login.validateToken.user);
 
     const classes = useStyles();
@@ -147,7 +148,7 @@ const Properties: FC = () => {
     }, [executeResult, waitSave])
 
     if (viewSelected === 'view-1') {
-        if (mainResult.mainData.error) {
+        if (mainResult.error) {
             return <h1>ERROR</h1>;
         }
         return (
@@ -192,12 +193,12 @@ const Properties: FC = () => {
                     </div>
                 </div>
                 <TableZyx
-                    data={mainResult.mainData.data}
+                    data={mainResult.data}
                     download={true}
                     columns={columns}
                     filterGeneral={false}
                     onClickRow={handleEdit}
-                    loading={mainResult.mainData.loading}
+                    loading={mainResult.loading}
                     register={['SUPERADMIN'].includes(user?.roledesc || "")}
                     handleRegister={handleRegister}
                 />
@@ -209,7 +210,7 @@ const Properties: FC = () => {
             <DetailProperty
                 data={rowSelected}
                 fetchData={fetchData}
-                multiData={mainResult.multiData.data}
+                multiData={multiResult.data}
                 setViewSelected={setViewSelected}
             />
         )

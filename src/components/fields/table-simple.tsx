@@ -7,7 +7,10 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Menu from '@material-ui/core/Menu';
+import { setMemoryTable } from 'store/main/actions';
+import { useDispatch } from 'react-redux';
 import { exportExcel, getLocaleDateString } from 'common/helpers';
+import { useSelector } from 'hooks';
 import {
     FirstPage,
     LastPage,
@@ -331,29 +334,53 @@ const TableZyx = React.memo(({
     helperText = "",
 }: TableConfig) => {
     const classes = useStyles();
+    const dispatch = useDispatch();
+
+    const memoryTable = useSelector(state => state.main.memoryTable);
+
     const [tFilters, setTFilters] = useState<ITablePaginatedFilter>({
         startDate: null,
         endDate: null,
         page: initialPageIndex,
-        filters: initialFilters,
+        filters: memoryTable.filters,
     });
 
     useEffect(() => {
         onFilterChange?.(tFilters);
     }, [tFilters]);
 
-    const DefaultColumnFilter = ({
-        column: { id: header, setFilter: $setFilter, listSelectFilter = [], type = "string" },
-    }: any) => {
+    // console.log("filtersXX-----", loading)
+    const DefaultColumnFilter = ({ column: { id: header, setFilter: $setFilter, listSelectFilter = [], type = "string" } }: any) => {
 
         const [value, setValue] = useState('');
         const [anchorEl, setAnchorEl] = useState(null);
         const open = Boolean(anchorEl);
         const [operator, setoperator] = useState("contains");
 
+        useEffect(() => {
+            console.log("filtersXX-", "useeffe")
+            if (tFilters.filters[header]) {
+                // console.log("filtersXX", loading)
+                setValue(tFilters.filters[header].value);
+                setoperator(tFilters.filters[header].operator);
+                const memoFilter = tFilters.filters[header]
+                $setFilter({ value: memoFilter.value, operator: memoFilter.operator, type });
+                setTFilters(prev => ({ ...prev, filters: { ...prev.filters, [header]: { value: memoFilter.value, operator: memoFilter.operator, type } } }));
+            }
+        }, [])
+
         const setFilter = (filter: any) => {
             $setFilter(filter);
             setTFilters(prev => ({ ...prev, filters: { ...prev.filters, [header]: filter } }));
+
+            dispatch(setMemoryTable({
+                filter: {
+                    [header]: {
+                        value: filter.value,
+                        operator: filter.operator
+                    }
+                }
+            }));
         }
 
         const handleCloseMenu = () => {
@@ -490,14 +517,15 @@ const TableZyx = React.memo(({
 
     const filterCellValue = React.useCallback((rows, id, filterValue) => {
         const { value, operator, type } = filterValue;
+
         return rows.filter((row: any) => {
             const cellvalue = row.values[id];
             if (cellvalue === null || cellvalue === undefined)
                 return false;
-            
+
             // if (!(['isempty', 'isnotempty', 'isnull', 'isnotnull'].includes(operator) || type === 'boolean') && (value || '') === '')
             //     return true;
-            
+
             if (value === '' && !['isempty', 'isnotempty', 'isnull', 'isnotnull'].includes(operator))
                 return true;
 
@@ -585,15 +613,16 @@ const TableZyx = React.memo(({
             }
         });
     }, []);
+    console.log("data.length", data.length)
 
     const defaultColumn = React.useMemo(
         () => ({
             // Let's set up our default Filter UI
-            Filter: (props: any) => DefaultColumnFilter({ ...props, data }),
+            Filter: (props: any) => data.length === 0 ? null : DefaultColumnFilter({ ...props }),
             filter: filterCellValue,
         }),
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        []
+        [data]
     );
 
     const {
@@ -614,7 +643,8 @@ const TableZyx = React.memo(({
         globalFilteredRows,
         setGlobalFilter,
         state: { pageIndex, pageSize, selectedRowIds },
-        toggleAllRowsSelected
+        toggleAllRowsSelected,
+        
     } = useTable({
         columns,
         data,
@@ -659,6 +689,7 @@ const TableZyx = React.memo(({
             ])
         }
     )
+
     useEffect(() => {
         let next = true;
         if (fetchData && next) {
@@ -709,7 +740,7 @@ const TableZyx = React.memo(({
                 </TableRow>
             )
         },
-        [headerGroups, prepareRow, page]
+        [prepareRow, page]
     )
 
     return (
@@ -717,10 +748,10 @@ const TableZyx = React.memo(({
             <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
                 {titlemodule ? <span className={classes.title}>
                     {titlemodule}
-                    {helperText!==""?<Tooltip title={<div style={{ fontSize: 12 }}>{helperText}</div>} arrow placement="top" >
+                    {helperText !== "" ? <Tooltip title={<div style={{ fontSize: 12 }}>{helperText}</div>} arrow placement="top" >
                         <InfoRoundedIcon color="action" className={classes.iconHelpText} />
-                    </Tooltip>:""}
-                    </span> : (<div>
+                    </Tooltip> : ""}
+                </span> : (<div>
                     {ButtonsElement && <ButtonsElement />}
                 </div>)}
                 <span className={classes.containerButtons}>

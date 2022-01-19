@@ -3,7 +3,7 @@ import { initialState, IState } from "./reducer";
 
 export const main = (state: IState): IState => ({
     ...state,
-    mainData: { ...state.mainData, loading: true, error: false }
+    mainData: { ...state.mainData, data: [], loading: true, error: false }
 });
 
 export const mainSuccess = (state: IState, action: IAction): IState => {
@@ -429,4 +429,21 @@ export const mainPaginatedReset = (state: IState): IState => ({
 
 export const resetAll = (state: IState): IState => ({
     ...initialState,
+});
+
+export const setMemoryTable = (state: IState, action: IAction): IState => ({
+    ...state,
+    memoryTable: {
+        page: action.payload.page || state.memoryTable.page,
+        pageSize: action.payload.pageSize || state.memoryTable.pageSize,
+        filters: {
+            ...state.memoryTable.filters,
+            ...(action.payload.filter || {})
+        }
+    },
+});
+
+export const cleanMemoryTable = (state: IState): IState => ({
+    ...state,
+    memoryTable: initialState.memoryTable,
 });
