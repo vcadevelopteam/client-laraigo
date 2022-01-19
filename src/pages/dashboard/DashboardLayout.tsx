@@ -9,7 +9,7 @@ import { useHistory, useRouteMatch } from "react-router";
 import paths from "common/constants/paths";
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
-import { showSnackbar } from "store/popus/actions";
+import { manageConfirmation, showSnackbar } from "store/popus/actions";
 import { getDashboardTemplateIns, getDashboardTemplateSel, getReportTemplateSel } from "common/helpers";
 import RGL, { WidthProvider } from 'react-grid-layout';
 import { XAxis, YAxis, ResponsiveContainer, Tooltip as  ChartTooltip, BarChart, Legend, Bar, PieChart, Pie, Cell, ResponsiveContainerProps } from 'recharts';
@@ -190,12 +190,18 @@ const DashboardLayout: FC = () => {
     const onDelete = useCallback(() => {
         if (!dashboardtemplate.value) return;
 
-        dispatch(deleteDashboardTemplate(getDashboardTemplateIns({
-            ...dashboardtemplate.value!,
-            id: match.params.id,
-            status: 'ELIMINADO',
-            operation: 'DELETE',
-        })));
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_delete),
+            callback: () => {
+                dispatch(deleteDashboardTemplate(getDashboardTemplateIns({
+                    ...dashboardtemplate.value!,
+                    id: match.params.id,
+                    status: 'ELIMINADO',
+                    operation: 'DELETE',
+                })));
+            },
+        }))
     }, [dashboardtemplate, match.params.id, dispatch]);
 
     const onSave = useCallback(() => {
@@ -261,7 +267,16 @@ const DashboardLayout: FC = () => {
 
     if (dashboardtemplate.error || dashboard.error || !dashboardtemplate.value || !dashboard.value) {
         return (
-            <div>ERROR</div>
+            <Box className={classes.root}>
+                <TemplateBreadcrumbs
+                    breadcrumbs={[
+                        { id: "view-1", name: "Dashboards" },
+                        { id: "view-2", name: "Detalle de dashboard" }
+                    ]}
+                    handleClick={id => id === "view-1" && history.push(paths.DASHBOARD)}
+                />
+                <div>ERROR</div>
+            </Box>
         );
     }
 
@@ -314,6 +329,19 @@ const DashboardLayout: FC = () => {
                 <Button
                     variant="contained"
                     color="primary"
+                    onClick={() => {
+                        if (!dashboardtemplate.value) return;
+
+                        const id = dashboardtemplate.value!.dashboardtemplateid;
+                        history.push(paths.DASHBOARD_EDIT.resolve(id));
+                    }}
+                    disabled={dashboardSave.loading || dashboardtemplate.loading || !dashboardtemplate.value}
+                >
+                    <Trans i18nKey={langKeys.edit} />
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
                     onClick={onDelete}
                     disabled={dashboardSave.loading ||dashboardtemplate.loading || !dashboardtemplate.value}
                 >
@@ -357,6 +385,7 @@ const DashboardLayout: FC = () => {
                         ) : (
                             <NewLayoutItem
                                 layoutKey={e.i}
+                                edit={false}
                                 templates={reportTemplates.data as ReportTemplate[]}
                                 kpis={[]}
                                 loading={reportTemplates.loading}

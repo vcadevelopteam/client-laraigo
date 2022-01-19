@@ -1879,7 +1879,7 @@ const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
     const getFileName = useCallback(() => {
         if (isUrl()) {
             const m = (src as string).match(/.*\/(.+?)\./);
-            return m && m.length > 1 ? m[1].substring(13) : "";
+            return m && m.length > 1 ? m[1].substring(18) : ""; // antes era de 13
         };
         return (src as File).name;
     }, [isUrl, src]);

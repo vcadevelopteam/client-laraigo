@@ -267,6 +267,15 @@ const Dashboard: FC = () => {
                                         event.preventDefault();
                                         goToDashboardLayout(e.dashboardtemplateid);
                                     }}
+                                    onEdit={() => {
+                                        history.push(paths.DASHBOARD_EDIT.resolve(e.dashboardtemplateid));
+                                    }}
+                                    onDuplicate={() => {
+                                        history.push({
+                                            pathname: paths.DASHBOARD_COPY,
+                                            state: e,
+                                        });
+                                    }}
                                     onDelete={() => onDelete(e)}
                                 />
                             </Grid>
@@ -327,7 +336,9 @@ interface DashboardCardProps {
     disabled: boolean;
     dashboardtemplate: DashboardTemplate;
     onClick: (e: React.MouseEvent<HTMLAnchorElement>) => void;
-    onDelete: () => void;
+    onEdit: (e: React.MouseEvent<HTMLLIElement>) => void;
+    onDelete: (e: React.MouseEvent<HTMLLIElement>) => void;
+    onDuplicate: (e: React.MouseEvent<HTMLLIElement>) => void;
 }
 
 const useDashboardCardStyles = makeStyles(theme => ({
@@ -336,7 +347,14 @@ const useDashboardCardStyles = makeStyles(theme => ({
     },
 }));
 
-const DashboardCard: FC<DashboardCardProps> = ({ dashboardtemplate, disabled, onClick, onDelete }) => {
+const DashboardCard: FC<DashboardCardProps> = ({
+    dashboardtemplate,
+    disabled,
+    onClick,
+    onEdit,
+    onDelete,
+    onDuplicate,
+}) => {
     const classes = useDashboardCardStyles();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -383,7 +401,8 @@ const DashboardCard: FC<DashboardCardProps> = ({ dashboardtemplate, disabled, on
                 onClose={() => setAnchorEl(null)}
             >
                 <MenuItem
-                    onClick={() => {
+                    onClick={e => {
+                        onEdit(e);
                         setAnchorEl(null);
                     }}
                     disabled={disabled}
@@ -391,7 +410,8 @@ const DashboardCard: FC<DashboardCardProps> = ({ dashboardtemplate, disabled, on
                     <Trans i18nKey={langKeys.edit} />
                 </MenuItem>
                 <MenuItem
-                    onClick={() => {
+                    onClick={e => {
+                        onDuplicate(e);
                         setAnchorEl(null);
                     }}
                     disabled={disabled}
@@ -399,8 +419,8 @@ const DashboardCard: FC<DashboardCardProps> = ({ dashboardtemplate, disabled, on
                     <Trans i18nKey={langKeys.duplicate} />
                 </MenuItem>
                 <MenuItem
-                    onClick={() => {
-                        onDelete();
+                    onClick={e => {
+                        onDelete(e);
                         setAnchorEl(null);
                     }}
                     disabled={disabled}
