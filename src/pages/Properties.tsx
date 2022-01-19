@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState, Fragment } from 'react';
 
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
@@ -84,7 +84,18 @@ const Properties: FC = () => {
             },
             {
                 Header: t(langKeys.description),
-                accessor: 'description'
+                accessor: 'description',
+                Cell: (props: any) => {
+                    return (
+                        <Fragment>
+                            <div>
+                                <span>
+                                    {t(props.cell.row.original.description)}
+                                </span>
+                            </div>
+                        </Fragment>
+                    );
+                }
             },
             {
                 Header: t(langKeys.category),
@@ -237,13 +248,13 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
     const [channelList, setchannelList] = useState<any>([]);
     const [groupList, setgroupList] = useState<any>([]);
     const allowEdition = !(['SUPERADMIN'].includes(user?.roledesc || ""))
-
+    const isView = (!allowEdition && row !== null);
+    
     const detailResult = useSelector(state => state.main.mainAux);
     const detailResult2 = useSelector(state => state.main.mainAux2);
     const executeRes = useSelector(state => state.main.execute);
     const responseFromSelect = useSelector(state => state.main.multiDataAux);
     const responseFromSelect2 = useSelector(state => state.main.multiDataAux2);
-    
 
     const classes = useStyles();
 
@@ -437,7 +448,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
                             onChange={(value) =>corpChange(value?.corpid||0)}
                             error={errors?.corpid?.message}
                             data={corpList}
-                            disabled={allowEdition}
+                            disabled={isView}
                             optionDesc="description"
                             optionValue="corpid"
                         />
@@ -445,15 +456,15 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
                             label={t(langKeys.name)}
                             className='col-6'
                             valueDefault={row?.propertyname || ''}
-                            disabled={allowEdition}
+                            disabled={isView}
                         />
                     </div>
                     <div className='row-zyx'>
                         <FieldEdit
                             label={t(langKeys.description)}
                             className='col-6'
-                            valueDefault={row?.description || ''}
-                            disabled={allowEdition}
+                            valueDefault={t(row?.description || '')}
+                            disabled={isView}
                         />
                         <FieldSelect
                             label={t(langKeys.category)}
@@ -469,7 +480,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
                                 { categorydesc: t(langKeys.quiz), categoryvalue: 'QUIZ' },
                                 { categorydesc: t(langKeys.labels), categoryvalue: 'LABELS' }
                             ]}
-                            disabled={allowEdition}
+                            disabled={isView}
                             optionDesc="categorydesc"
                             optionValue="categoryvalue"
                         />
@@ -490,53 +501,60 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
                                 { leveldesc: t(langKeys.channel), levelvalue: 'CHANNEL' },
                                 { leveldesc: t(langKeys.group), levelvalue: 'GROUP' }
                             ]}
-                            disabled={allowEdition}
+                            disabled={isView}
                             optionDesc="leveldesc"
                             optionValue="levelvalue"
                         />
-                        <FieldEdit
-                            label={t(langKeys.value)}
-                            className='col-6'
-                            valueDefault={row?.value || ''}
-                            disabled={allowEdition}
-                        />
+                        {
+                            !isView ?
+                                <FieldEdit
+                                label={t(langKeys.value)}
+                                className='col-6'
+                                valueDefault={row?.value || ''}
+                                disabled={allowEdition}
+                            /> : null
+                        }
                     </div>
-                    <div className='row-zyx'>                        
-                        {(level!=="" && level !== "CORPORATION") && <FieldSelect
-                            label={t(langKeys.organization)}
-                            className="col-6"
-                            valueDefault={row?.orgid || ''}
-                            onChange={(value) => changeOrg(value)}
-                            error={errors?.orgid?.message}
-                            data={orgList}
-                            loading={detailResult2.loading}
-                            disabled={allowEdition}
-                            optionDesc="orgdesc"
-                            optionValue="orgid"
-                        />}
-                        {level==="CHANNEL" && <FieldSelect
-                            label={t(langKeys.channel)}
-                            className="col-6"
-                            valueDefault={row?.communicationchannelid || ''}
-                            onChange={(value) => setValue('communicationchannelid', value?.communicationchannelid)}
-                            error={errors?.communicationchannelid?.message}
-                            data={channelList}
-                            disabled={allowEdition}
-                            optionDesc="communicationchanneldesc"
-                            optionValue="communicationchannelid"
-                        />}
-                        {level==="GROUP" && <FieldSelect
-                            label={t(langKeys.group_plural)}
-                            className="col-6"
-                            valueDefault={row?.groupid || ''}
-                            onChange={(value) => setValue('groupid', value?.groupid)}
-                            error={errors?.groupid?.message}
-                            data={groupList}
-                            disabled={allowEdition}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                        />}
-                    </div>
+                    {
+                        !isView ?
+                        <div className='row-zyx'>                        
+                            {(level!=="" && level !== "CORPORATION") && <FieldSelect
+                                label={t(langKeys.organization)}
+                                className="col-6"
+                                valueDefault={row?.orgid || ''}
+                                onChange={(value) => changeOrg(value)}
+                                error={errors?.orgid?.message}
+                                data={orgList}
+                                loading={detailResult2.loading}
+                                disabled={allowEdition}
+                                optionDesc="orgdesc"
+                                optionValue="orgid"
+                            />}
+                            {level==="CHANNEL" && <FieldSelect
+                                label={t(langKeys.channel)}
+                                className="col-6"
+                                valueDefault={row?.communicationchannelid || ''}
+                                onChange={(value) => setValue('communicationchannelid', value?.communicationchannelid)}
+                                error={errors?.communicationchannelid?.message}
+                                data={channelList}
+                                disabled={allowEdition}
+                                optionDesc="communicationchanneldesc"
+                                optionValue="communicationchannelid"
+                            />}
+                            {level==="GROUP" && <FieldSelect
+                                label={t(langKeys.group_plural)}
+                                className="col-6"
+                                valueDefault={row?.groupid || ''}
+                                onChange={(value) => setValue('groupid', value?.groupid)}
+                                error={errors?.groupid?.message}
+                                data={groupList}
+                                disabled={allowEdition}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                            />}
+                        </div>
+                        : null
+                    }
                 </div>
 
                 <div>
