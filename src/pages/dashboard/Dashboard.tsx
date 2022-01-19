@@ -13,7 +13,7 @@ import { SearchField, TemplateBreadcrumbs } from 'components';
 import paths from 'common/constants/paths';
 import { useHistory } from 'react-router';
 import { useSelector } from 'hooks';
-import { showSnackbar } from 'store/popus/actions';
+import { manageConfirmation, showSnackbar } from 'store/popus/actions';
 import { DashboardTemplate, Dictionary, IListStatePaginated } from '@types';
 import { deleteDashboardTemplate, resetDeleteDashboardTemplate } from 'store/dashboard/actions';
 
@@ -140,12 +140,18 @@ const Dashboard: FC = () => {
     }, [dashboardtemplateDelete, history, t, dispatch]);
 
     const onDelete = useCallback((template: DashboardTemplate) => {
-        dispatch(deleteDashboardTemplate(getDashboardTemplateIns({
-            ...template,
-            id: template.dashboardtemplateid,
-            status: 'ELIMINADO',
-            operation: 'DELETE',
-        })));
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_delete),
+            callback: () => {
+                dispatch(deleteDashboardTemplate(getDashboardTemplateIns({
+                    ...template,
+                    id: template.dashboardtemplateid,
+                    status: 'ELIMINADO',
+                    operation: 'DELETE',
+                })));
+            },
+        }))
     }, [dispatch]);
 
     const goToDashboardLayout = useCallback((dashboardtemplateid: number) => {
@@ -332,7 +338,6 @@ const useDashboardCardStyles = makeStyles(theme => ({
 
 const DashboardCard: FC<DashboardCardProps> = ({ dashboardtemplate, disabled, onClick, onDelete }) => {
     const classes = useDashboardCardStyles();
-    const { t } = useTranslation();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
     return (
@@ -379,12 +384,28 @@ const DashboardCard: FC<DashboardCardProps> = ({ dashboardtemplate, disabled, on
             >
                 <MenuItem
                     onClick={() => {
+                        setAnchorEl(null);
+                    }}
+                    disabled={disabled}
+                >
+                    <Trans i18nKey={langKeys.edit} />
+                </MenuItem>
+                <MenuItem
+                    onClick={() => {
+                        setAnchorEl(null);
+                    }}
+                    disabled={disabled}
+                >
+                    <Trans i18nKey={langKeys.duplicate} />
+                </MenuItem>
+                <MenuItem
+                    onClick={() => {
                         onDelete();
                         setAnchorEl(null);
                     }}
                     disabled={disabled}
                 >
-                    {t(langKeys.delete)}
+                    <Trans i18nKey={langKeys.delete} />
                 </MenuItem>
             </Menu>
         </Card>

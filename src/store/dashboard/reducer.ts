@@ -5,10 +5,18 @@ import actionTypes from "./actionTypes";
 
 interface IDashboardData {
     [key: string]: {
+        contentType: string; // kpi | report
         data: {
+            // contentType: report
             [label: string]: number;
+        } | {
+            // contentType: kpi
+            target: number;
+            cautionat: number;
+            alertat: number;
+            currentvalue: number;
         };
-        reportname: string;
+        reportname?: string; // solo en contentType: report
         /**
          * Array Json
          * 
@@ -19,7 +27,8 @@ interface IDashboardData {
          *  hasFilter: boolean;
          * }
          */
-        columnjson: string;
+        columnjson?: string;
+        columns?: { columnname: string, alias: string }[];  // solo en contentType: report
     }
 }
 
