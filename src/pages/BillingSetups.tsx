@@ -1219,13 +1219,8 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
 
     const classes = useStyles();
     const executeResult = useSelector(state => state.main.execute);
-    const history = useHistory();
-    const location = useLocation();
     const mainResult = useSelector(state => state.main);
-
-    const query = useMemo(() => new URLSearchParams(location.search), [location]);
-    const params = useQueryParams(query);
-
+    const memoryTable = useSelector(state => state.main.memoryTable);
     const [dataMain, setdataMain] = useState({
         plan: "",
         year: String(new Date().getFullYear()),
@@ -1243,12 +1238,16 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     }
 
     useEffect(() => {
-        search()
-    }, [])
-
-    useEffect(() => {
         setdisableSearch(dataMain.year === "")
     }, [dataMain])
+
+    useEffect(() => {
+        search()
+
+        return () => {
+            dispatch(cleanMemoryTable());
+        }
+    }, [])
 
     useEffect(() => {
         if (!mainResult.mainData.loading) {
@@ -1493,11 +1492,15 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                     loading={mainResult.mainData.loading}
                     register={true}
                     handleRegister={handleRegister}
-                    onFilterChange={f => {
-                        const params = buildQueryFilters(f);
-                        history.push({ search: params.toString() });
-                    }}
-                    initialFilters={params.filters}
+                    pageSizeDefault={memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize}
+                    initialPageIndex={memoryTable.page === -1 ? 0 : memoryTable.page}
+                    initialStateFilter={Object.entries(memoryTable.filters).map(([key, value]) => ({
+                        id: key, value: {
+                            value: value.value,
+                            operator: value.operator,
+                            type: 'string'
+                        }
+                    }))}
                 />
             </Fragment>
         )
@@ -2519,7 +2522,7 @@ const NotificationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                     loading={mainResult.mainData.loading}
                     register={true}
                     handleRegister={handleRegister}
-                     pageSizeDefault={memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize}
+                    pageSizeDefault={memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize}
                     initialPageIndex={memoryTable.page === -1 ? 0 : memoryTable.page}
                     initialStateFilter={Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value: {
                         value: value.value,
@@ -2815,7 +2818,7 @@ const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const classes = useStyles();
     const executeResult = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main);
-
+    const memoryTable = useSelector(state => state.main.memoryTable);
     const [dataMain, setdataMain] = useState({
         plan: "",
         year: String(new Date().getFullYear()),
@@ -2834,6 +2837,10 @@ const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
 
     useEffect(() => {
         search()
+
+        return () => {
+            dispatch(cleanMemoryTable());
+        }
     }, [])
 
     useEffect(() => {
@@ -3027,6 +3034,13 @@ const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                     loading={mainResult.mainData.loading}
                     register={true}
                     handleRegister={handleRegister}
+                    pageSizeDefault={memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize}
+                    initialPageIndex={memoryTable.page === -1 ? 0 : memoryTable.page}
+                    initialStateFilter={Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value: {
+                        value: value.value,
+                        operator: value.operator,
+                        type: 'string'
+                    } }))}
                 />
             </Fragment>
         )
@@ -3245,7 +3259,7 @@ const MessagingCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const classes = useStyles();
     const executeResult = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main);
-
+    const memoryTable = useSelector(state => state.main.memoryTable);
     const [dataMain, setdataMain] = useState({
         countrycode: "",
         year: String(new Date().getFullYear()),
@@ -3268,6 +3282,10 @@ const MessagingCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
 
     useEffect(() => {
         search()
+
+        return () => {
+            dispatch(cleanMemoryTable());
+        }
     }, [])
 
     useEffect(() => {
@@ -3457,6 +3475,13 @@ const MessagingCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                     loading={mainResult.mainData.loading}
                     register={true}
                     handleRegister={handleRegister}
+                    pageSizeDefault={memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize}
+                    initialPageIndex={memoryTable.page === -1 ? 0 : memoryTable.page}
+                    initialStateFilter={Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value: {
+                        value: value.value,
+                        operator: value.operator,
+                        type: 'string'
+                    } }))}
                 />
             </Fragment>
         )
