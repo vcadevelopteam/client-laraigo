@@ -577,6 +577,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         "detraction": 0.00,
         "detractioncode": "",
         "detractionaccount": "",
+        "detractionminimum": 0.00,
         "operationcodeperu": "",
         "operationcodeother": "",
         "culqiurl": "",
@@ -639,6 +640,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                     setValue("detraction", mainResult.mainData.data[0].detraction);
                     setValue("detractioncode", mainResult.mainData.data[0].detractioncode);
                     setValue("detractionaccount", mainResult.mainData.data[0].detractionaccount);
+                    setValue("detractionminimum", mainResult.mainData.data[0].detractionminimum);
                     setValue("operationcodeperu", mainResult.mainData.data[0].operationcodeperu);
                     setValue("operationcodeother", mainResult.mainData.data[0].operationcodeother);
                     setValue("culqiurl", mainResult.mainData.data[0].culqiurl);
@@ -678,6 +680,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         "detraction": mainResult.mainData.data[0].detraction,
                         "detractioncode": mainResult.mainData.data[0].detractioncode,
                         "detractionaccount": mainResult.mainData.data[0].detractionaccount,
+                        "detractionminimum": mainResult.mainData.data[0].detractionminimum,
                         "operationcodeperu": mainResult.mainData.data[0].operationcodeperu,
                         "operationcodeother": mainResult.mainData.data[0].operationcodeother,
                         "culqiurl": mainResult.mainData.data[0].culqiurl,
@@ -770,6 +773,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             detraction: fields.detraction,
             detractioncode: fields.detractioncode,
             detractionaccount: fields.detractionaccount,
+            detractionminimum: fields.detractionminimum,
             operationcodeperu: fields.operationcodeperu,
             operationcodeother: fields.operationcodeother,
             culqiurl: fields.culqiurl,
@@ -810,6 +814,7 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         register('detraction');
         register('detractioncode', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
         register('detractionaccount', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
+        register('detractionminimum');
         register('operationcodeperu', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
         register('operationcodeother', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
         register('culqiurl', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
@@ -1041,14 +1046,22 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             error={errors?.detractionaccount?.message}
                         />
                         <FieldEdit
+                            label={t(langKeys.detractionminimum)}
+                            className="col-6"
+                            valueDefault={getValues('detractionminimum')}
+                            onChange={(value) => setValue('detractionminimum', value)}
+                            error={errors?.detractionminimum?.message}
+                            type='number'
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
                             label={t(langKeys.operationcodeperu)}
                             className="col-6"
                             valueDefault={getValues('operationcodeperu')}
                             onChange={(value) => setValue('operationcodeperu', value)}
                             error={errors?.operationcodeperu?.message}
                         />
-                    </div>
-                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.operationcodeother)}
                             className="col-6"
@@ -1056,6 +1069,8 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             onChange={(value) => setValue('operationcodeother', value)}
                             error={errors?.operationcodeother?.message}
                         />
+                    </div>
+                    <div className="row-zyx">
                         <FieldSelect
                             label={t(langKeys.billingprintingformat)}
                             loading={domainPrinting.loading}
@@ -1069,8 +1084,6 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             uset={true}
                             prefixTranslation='billingfield_'
                         />
-                    </div>
-                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.billingxmlversion)}
                             className="col-6"
@@ -1078,6 +1091,8 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             onChange={(value) => setValue('xmlversion', value)}
                             error={errors?.xmlversion?.message}
                         />
+                    </div>
+                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.billingublversion)}
                             className="col-6"
@@ -1085,22 +1100,20 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             onChange={(value) => setValue('ublversion', value)}
                             error={errors?.ublversion?.message}
                         />
-                    </div>
-                    <div className="row-zyx">
                         <TemplateSwitch
                             label={t(langKeys.billingreturnpdf)}
                             className="col-6"
                             valueDefault={getValues('returnpdf')}
                             onChange={(value) => setValue('returnpdf', value)}
                         />
+                    </div>
+                    <div className="row-zyx">
                         <TemplateSwitch
                             label={t(langKeys.billingreturncsv)}
                             className="col-6"
                             valueDefault={getValues('returnxmlsunat')}
                             onChange={(value) => setValue('returnxmlsunat', value)}
                         />
-                    </div>
-                    <div className="row-zyx">
                         <TemplateSwitch
                             label={t(langKeys.billingreturnxml)}
                             className="col-6"
@@ -1335,6 +1348,11 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 Header: t(langKeys.allowhsm),
                 accessor: 'allowhsm',
                 NoFilter: false,
+                type: 'boolean',
+                sortType: 'basic',
+                editable: true,
+                width: 180,
+                maxWidth: 180,
                 Cell: (props: any) => {
                     const { allowhsm } = props.cell.row.original;
                     return allowhsm?t(langKeys.yes):"No"

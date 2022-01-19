@@ -2437,6 +2437,7 @@ const translation: LangKeys = {
     function_median: 'Median',
     function_mode: 'Mode',
     successful_import: 'Successful import',
+    detractionminimum: 'Detraction Limit Amount (Peruvian Soles)',
 };
 
 const enResource: ResourceLanguage = {

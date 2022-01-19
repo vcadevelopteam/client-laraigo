@@ -2427,6 +2427,7 @@ const translation: LangKeys = {
     function_mode: 'Moda',
 
     successful_import: 'Se importó exitosamente',
+    detractionminimum: 'Monto Limite de Detracción (Soles)',
 };
 
 const esResource: ResourceLanguage = {

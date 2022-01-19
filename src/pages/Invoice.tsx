@@ -1942,7 +1942,6 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
 
     const [comments, setComments] = useState('');
     const [purchaseOrder, setPurchaseOrder] = useState('');
-    const [creditType, setCreditType] = useState('');
     const [commentsError, setCommentsError] = useState('');
     const [purchaseOrderError, setPurchaseOrderError] = useState('');
     const [paymentDisabled, setPaymentDisabled] = useState(false);
@@ -2074,18 +2073,6 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                             className={classes.commentary}
                             label={''}
                             value={t(langKeys.additionalinformation1)}
-                        />
-                    </div>
-                    <div className='row-zyx'>
-                        <FieldSelect
-                            label={t(langKeys.credittype)}
-                            className="col-12"
-                            valueDefault={''}
-                            variant="outlined"
-                            onChange={(value) => setCreditType(value?.value)}
-                            data={datacredit}
-                            optionDesc="description"
-                            optionValue="value"
                         />
                     </div>
                 </div>
