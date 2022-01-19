@@ -780,7 +780,7 @@ const templates: { [x: string]: FieldTemplate } = {
         },
     },
     [SUPPLUNUMBER_FIELD]: {
-        text: "Supply Number",
+        text: <Trans i18nKey={langKeys.supplynumber} />,
         node: (onClose, data) => <NameTemplate data={data} onClose={() => onClose(SUPPLUNUMBER_FIELD)} key={SUPPLUNUMBER_FIELD} title={<Trans i18nKey={langKeys.supplynumber} />} />,
         data: {
             field: "SUPPLYNUMBER",
@@ -794,7 +794,7 @@ const templates: { [x: string]: FieldTemplate } = {
         },
     },
     [CONTACT]: {
-        text: "Contact",
+        text: <Trans i18nKey={langKeys.contact} />,
         node: (onClose, data) => {
             return (
                 <NameTemplate

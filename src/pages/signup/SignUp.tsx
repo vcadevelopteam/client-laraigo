@@ -226,7 +226,7 @@ export const SignUp: FC = () => {
     const classes = useSignUpStyles();
 
     return (
-        <div style={{ backgroundColor: '#F7F7F7', height: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ backgroundColor: '#F7F7F7', height: '100%', display: 'flex', flexDirection: 'column' }}>
             <Dialog
                 open={openWarning}
                 onClose={handleClose}

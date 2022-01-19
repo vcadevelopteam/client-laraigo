@@ -35,8 +35,8 @@ interface CulqiModalProps {
     buttontitle?: string;
     purchaseorder?: string;
     comments?: string;
-    tipocredito?: string;
     disabled?:boolean;
+    orgid?:number;
     successmessage?:string;
 }
 
@@ -71,8 +71,8 @@ const CulqiModal: FC<CulqiModalProps> = ({
     buttontitle,
     purchaseorder,
     comments,
-    tipocredito,
     disabled = false,
+    orgid = 0,
     successmessage,
 }) => {
     const { t } = useTranslation();
@@ -88,7 +88,7 @@ const CulqiModal: FC<CulqiModalProps> = ({
             metadata,
             purchaseorder,
             comments,
-            tipocredito
+            orgid,
         }));
     }
 

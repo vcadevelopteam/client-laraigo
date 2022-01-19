@@ -2427,6 +2427,7 @@ export const langKeys = {
     function_median: 'function_median',
     function_mode: 'function_mode',
     successful_import: 'successful_import',
+    detractionminimum: 'detractionminimum',
 };
 
 export type LangKeys = typeof langKeys;

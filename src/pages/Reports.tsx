@@ -11,11 +11,11 @@ import TablePaginated from 'components/fields/table-paginated';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { TemplateBreadcrumbs, SearchField, FieldSelect, FieldMultiSelect, SkeletonReportCard } from 'components';
+import { TemplateBreadcrumbs, SearchField, FieldSelect, FieldMultiSelect, SkeletonReportCard, DialogZyx } from 'components';
 import { useSelector } from 'hooks';
 import { Dictionary, IFetchData, MultiData, IRequestBody } from "@types";
-import { getReportSel, getReportTemplateSel, getValuesFromDomain, getReportColumnSel, getReportFilterSel, getPaginatedForReports, getReportExport, insertReportTemplate, convertLocalDate, getTableOrigin } from 'common/helpers';
-import { getCollection, getCollectionAux, execute, resetMain, getCollectionPaginated, resetCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetMainAux, getMultiCollectionAux } from 'store/main/actions';
+import { getReportSel, getReportTemplateSel, getValuesFromDomain, getReportColumnSel, getReportFilterSel, getPaginatedForReports, getReportExport, insertReportTemplate, convertLocalDate, getTableOrigin, getReportGraphic } from 'common/helpers';
+import { getCollection, getCollectionAux, execute, resetMain, getCollectionPaginated, resetCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetMainAux, getMultiCollectionAux, getMainGraphic } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
 import { reportsImage } from '../icons/index';
@@ -103,7 +103,13 @@ const useStyles = makeStyles((theme) => ({
     },
     mb2: {
         marginBottom: theme.spacing(4),
-    }
+    },
+    button: {
+        padding: 12,
+        fontWeight: 500,
+        fontSize: '14px',
+        textTransform: 'initial'
+    },
 }));
 
 const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row, multiData, allFilters, customReport }) => {
@@ -119,6 +125,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
     const columns = React.useMemo(() => [{ Header: 'null', accessor: 'null', type: 'null' }] as any, []);
     const [allParameters, setAllParameters] = useState({});
+    const [openModal, setOpenModal] = useState(false);
 
     if (multiData.length > 0) {
         reportColumns.forEach(x => {
@@ -359,6 +366,19 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                             ))}
                                         </>
                                     )}
+                                    // ButtonsElement={() => (
+                                    //     <>
+                                    //         <Button
+                                    //             className={classes.button}
+                                    //             variant="contained"
+                                    //             color="primary"
+                                    //             disabled={mainPaginated.loading}
+                                    //             onClick={() => setOpenModal(true)}
+                                    //         >
+                                    //             {t(langKeys.graphic_detail)}
+                                    //         </Button>
+                                    //     </>
+                                    // )}
                                     download={true}
                                     fetchData={fetchData}
                                     exportPersonalized={triggerExportData}
@@ -370,8 +390,101 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                 :
                 <SkeletonReport />
             }
+            <SummaryGraphic 
+                openModal={openModal}
+                setOpenModal={setOpenModal}
+                row={row}
+                daterange={fetchDataAux.daterange}
+                filters={fetchDataAux.filters}
+                columns={reportColumns.map(x => x.proargnames)}
+                columnsprefix={'report_' + row?.origin + '_'}
+            />
         </div>
     );
+}
+
+interface SummaryGraphicProps {
+    openModal: boolean;
+    setOpenModal: (value: boolean) => void;
+    row: Dictionary | null;
+    daterange: any;
+    filters: Dictionary;
+    columns: string[];
+    columnsprefix: string;
+}
+
+const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal, row, daterange, filters, columns, columnsprefix }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const mainGraphicRes = useSelector(state => state.main.mainGraphic);
+    const [graphicType, setGraphicType] = useState('BAR');
+    const [column, setColumn] = useState('');
+    
+    const handleCancelModal = () => {
+        setOpenModal(false);
+    }
+
+    const handleAcceptModal = () => {
+        triggerGraphic();
+    };
+
+    const triggerGraphic = () => {
+        dispatch(getMainGraphic(getReportGraphic(
+            row?.methodgraphic || '',
+            row?.origin || '',
+            {
+                filters,
+                sorts: {},
+                startdate: daterange?.startDate!,
+                enddate: daterange?.endDate!,
+                column,
+                summarization: 'COUNT'
+            }
+        )));
+    }
+
+    useEffect(() => {
+        console.log(mainGraphicRes.data)
+        setOpenModal(false);
+    }, [mainGraphicRes])
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.graphic_detail)} // Falta Lang
+            button1Type="button"
+            buttonText1={t(langKeys.cancel)}
+            handleClickButton1={handleCancelModal}
+            button2Type="button"
+            buttonText2={t(langKeys.accept)}
+            handleClickButton2={handleAcceptModal}
+        >
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.type)}
+                    className="col-12"
+                    valueDefault={graphicType}
+                    onChange={(value) => setGraphicType(value.value)}
+                    data={[{key: 'BAR', value: 'BAR'}, { key: 'PIE', value: 'PIE' }]}
+                    optionDesc="value"
+                    optionValue="key"
+                />
+            </div>
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.type)}
+                    className="col-12"
+                    valueDefault={column}
+                    onChange={(value) => setColumn(value.value)}
+                    data={columns.map(x => ({key: x, value: x}))}
+                    optionDesc="value"
+                    optionValue="key"
+                    uset={true}
+                    prefixTranslation={columnsprefix}
+                />
+            </div>
+        </DialogZyx>
+    )
 }
 
 const Reports: FC = () => {

@@ -261,7 +261,6 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
         []
     );
 
-    const format = (date: Date) => date.toISOString().split('T')[0];
     const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
     const [filterRangeDate, ] = useState("month");
     const [dateRange, setdateRange] = useState<Range>({
@@ -956,11 +955,6 @@ const KPIManager: FC = () => {
     const handleRegister = () => {
         setViewSelected("view-2");
         setRowSelected({ row: null, edit: true });
-    }
-
-    const handleView = (row: Dictionary) => {
-        setViewSelected("view-2");
-        setRowSelected({ row, edit: false });
     }
 
     const handleEdit = (row: Dictionary) => {

@@ -31,10 +31,6 @@ interface DetailSLAProps {
     multiData: MultiData[];
     fetchData: () => void
 }
-const arrayBread = [
-    { id: "view-1", name: "Service level agreement" },
-    { id: "view-2", name: "Service level agreement detail" }
-];
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -70,12 +66,12 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
     const dataSupplier = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataGroups = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const datachannels = multiData[3] && multiData[3].success ? multiData[3].data : [];
-
+    console.log(edit)
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
             id: edit? row?.slaid : 0,
-            description: row?.description || '',
+            description: edit? row?.description: '',
             company: row?.company || '',
             communicationchannelid:  row?.communicationchannelid || '',
             usergroup: row?.usergroup || '',
@@ -145,6 +141,10 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
             callback
         }))
     });
+    const arrayBread = [
+        { id: "view-1", name: t(langKeys.sla) },
+        { id: "view-2", name: `${t(langKeys.sla)} ${t(langKeys.detail)}` }
+    ];
 
     return (
         <div style={{width: '100%'}}>
@@ -206,7 +206,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                                 label={t(langKeys.description)} //transformar a multiselect
                                 className="col-12"
                                 onChange={(value) => setValue('description', value)}
-                                valueDefault={row ? (row.description || "") : ""}
+                                valueDefault={edit? row?.description: ''}
                                 error={errors?.description?.message}
                             />
                     </div>
@@ -320,8 +320,9 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                                 <FieldEdit
                                     label={t(langKeys.productivitybyhour)} 
                                     className="col-4"
+                                    type='number'
                                     onChange={(value) => setValue('productivitybyhour', value)}
-                                    valueDefault={row ? (row.productivitybyhour || "") : ""}
+                                    valueDefault={row ? (parseInt(row.productivitybyhour) || "") : ""}
                                     error={errors?.productivitybyhour?.message}
                                 />
                         </div>

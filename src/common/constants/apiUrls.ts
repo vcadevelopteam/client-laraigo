@@ -60,6 +60,7 @@ export const apiUrls = {
     MAIN_MULTI_PUBLIC: `${BASE_URL}/main/public/multi/domainvalues`,
     EXECUTE_TRANSACTION: `${BASE_URL}/main/executetransaction`,
     MAIN_PAGINATED: `${BASE_URL}/main/paginated`,
+    MAIN_GRAPHIC: `${BASE_URL}/main/graphic`,
     MAIN_DYNAMIC: `${BASE_URL}/reportdesigner`,
     MAIN_DYNAMIC_EXPORT: `${BASE_URL}/reportdesigner/export`,
     INTEGRATION: `${BASE_URL}/integration`,

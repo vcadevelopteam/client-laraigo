@@ -33,10 +33,6 @@ interface DetailInappropriateWordsProps {
     multiData: MultiData[];
     fetchData: () => void
 }
-const arrayBread = [
-    { id: "view-1", name: "Inappropriate words" },
-    { id: "view-2", name: "Inappropriate words detail" }
-];
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -111,6 +107,11 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
             callback
         }))
     });
+    
+    const arrayBread = [
+        { id: "view-1", name: t(langKeys.inappropriatewords) },
+        { id: "view-2", name: `${t(langKeys.inappropriatewords)} ${t(langKeys.detail)}` }
+    ];
 
     return (
         <div style={{width: '100%'}}>

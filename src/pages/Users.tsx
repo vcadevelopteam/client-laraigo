@@ -217,7 +217,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                 getApplicationsByRole(row.roleid, index + 1),
             ]))
         }
-    }, [])
+    }, [preData])
 
     const onSubmit = handleSubmit((data) => { //GUARDAR MODAL
         if (!row)
@@ -559,10 +559,8 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
         if (row && row.operation !== "INSERT") {
             setOrgsToDelete(p => [...p, { ...row, operation: "DELETE", status: 'ELIMINADO' }]);
         }
-        if (row)
-            setDataOrganizations(p => p.filter((x) => row.orgid !== x?.orgid));
-        else
-            setDataOrganizations(p => p.filter((x, i) => i !== index));
+        const filterDataOrg = dataOrganizations.filter((x, i) => i !== index)
+        setDataOrganizations(filterDataOrg);
     }
 
 
@@ -939,13 +937,17 @@ const Users: FC = () => {
     const mainResult = useSelector(state => state.main.mainData);
     const mainMultiResult = useSelector(state => state.main.multiData);
     const executeResult = useSelector(state => state.main.execute);
+    const executeRes = useSelector(state => state.activationuser.saveUser);
     const [dataUsers, setdataUsers] = useState<Dictionary[]>([]);
     const [dataOrganizationsTmp, setdataOrganizationsTmp] = useState<Dictionary[]>([]);
+    const [dataChannelsTemp, setdataChannelsTemp] = useState<Dictionary[]>([]);
     const [waitImport, setWaitImport] = useState(false);
     const [waitChanges, setwaitChanges] = useState(false);
     const domains = useSelector(state => state.person.editableDomains);
+    const user = useSelector(state => state.login.validateToken.user);
     useEffect(() => {
         setdataOrganizationsTmp(mainMultiResult.data[8] && mainMultiResult.data[8].success ? mainMultiResult.data[8].data : [])
+        setdataChannelsTemp(mainMultiResult.data[10] && mainMultiResult.data[10].success ? mainMultiResult.data[10].data : [])
     }, [mainMultiResult.data]);
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
@@ -1027,7 +1029,7 @@ const Users: FC = () => {
             {},
             { 'true': 'true', 'false': 'false' },
             domains.value?.roles?.reduce((a, d) => ({ ...a, [d.roleid]: d.roldesc }), {}),
-            dataOrganizationsTmp.reduce((a, d) => ({ ...a, [d.orgid]: d.orgdesc }), {}),
+            dataChannelsTemp.reduce((a, d) => ({ ...a, [d.communicationchannelid]: d.description }), {}),
         ];
         const header = [
             'firstname',
@@ -1044,7 +1046,7 @@ const Users: FC = () => {
             'password',
             'pwdchangefirstlogin',
             'role',
-            'organization',
+            'channels'
         ];
         exportExcel(`${t(langKeys.template)} ${t(langKeys.import)}`, templateMaker(data, header));
     }
@@ -1082,26 +1084,28 @@ const Users: FC = () => {
             getValuesFromDomain("ESTADOORGUSER"), //formulario orguser
             getOrgsByCorp(0), //formulario orguser
             getRolesByOrg(), //formulario orguser
+            getChannelsByOrg(user?.orgid)
         ]));
         return () => {
             dispatch(resetAllMain());
         };
     }, []);
     useEffect(() => {
+        console.log(executeRes)
         if (waitImport) {
-            if (!executeResult.loading && !executeResult.error) {
+            if (!executeRes.loading && !executeRes.error) {
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.organization).toLocaleLowerCase() })
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
             }
         }
-    }, [executeResult, waitImport])
+    }, [executeRes, waitImport])
     useEffect(() => {
         if (waitChanges) {
             if (!executeResult.loading && !executeResult.error) {
@@ -1142,49 +1146,47 @@ const Users: FC = () => {
     const handleUpload = async (files: any) => {
         const file = files?.item(0);
         if (file) {
-            debugger
             let excel: any = await uploadExcel(file, undefined);
             let data = array_trimmer(excel);
-            data = data.filter((f: any) =>
-                (f.company === undefined || Object.keys(domains.value?.company?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.company))
+            data = data.filter((f: any) =>{
+                debugger
+                return (f.company === undefined || Object.keys(domains.value?.company?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.company))
                 && (f.doctype === undefined || Object.keys(domains.value?.docTypes?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.doctype))
                 && (f.billinggroup === undefined || Object.keys(domains.value?.billinggroups?.reduce((a: any, d) => ({ ...a, [d.domainid]: `${d.domainid}` }), {})).includes('' + f.billinggroup))
                 && (f.twofactorauthentication === undefined || Object.keys(domains.value?.genericstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.twofactorauthentication))
                 && (f.status === undefined || Object.keys(domains.value?.userstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.status))
                 && (f.pwdchangefirstlogin === undefined || ["true", "false"].includes('' + f.pwdchangefirstlogin))
                 && (f.role === undefined || Object.keys(domains.value?.roles?.reduce((a: any, d) => ({ ...a, [d.roleid]: `${d.roleid}` }), {})).includes('' + f.role))
-                && (f.organization === undefined || Object.keys(dataOrganizationsTmp.reduce((a: any, d) => ({ ...a, [d.orgid]: `${d.orgid}` }), {})).includes('' + f.organization))
-            );
-            console.log(data)
+            });
             if (data.length > 0) {
                 dispatch(showBackdrop(true));
                 let table: Dictionary = data.reduce((a: any, d) => ({
                     ...a,
                     [`${d.email}_${d.docnum}`]: {
                         id: 0,
-                        usr: d.email,
+                        usr: String(d.email),
                         doctype: d.doctype,
                         docnum: String(d.docnum),
-                        password: d.password,
-                        firstname: d.firstname,
-                        lastname: d.lastname,
-                        email: d.email,
+                        password: String(d.password),
+                        firstname: String(d.firstname),
+                        lastname: String(d.lastname),
+                        email: String(d.email),
                         pwdchangefirstlogin: Boolean(d.pwdchangefirstlogin),
                         type: "NINGUNO",
                         status: d.status,
                         operation: "INSERT",
                         company: d.company,
                         twofactorauthentication: d.twofactorauthentication === "ACTIVO",
-                        registercode: d.registercode,
+                        registercode: String(d.registercode),
                         billinggroupid: d.billinggroup,
                         image: d?.image || "",
                         detail: {
                             roleid: d.role,
-                            orgid: d.organization,
+                            orgid: user?.orgid,
                             bydefault: true,
                             labels: "",
                             groups: "",
-                            channels: "",
+                            channels: String(d.channels),
                             status: d.status,
                             type: "NINGUNO",
                             supervisor: "",
@@ -1194,13 +1196,11 @@ const Users: FC = () => {
                     }
                 }), {});
                 Object.values(table).forEach((p) => {
-                    dispatch(execute({
+                    dispatch(saveUser({
                         header: insUser({ ...p }),
-                        detail: [
-                            insOrgUser({ ...p.detail }),
-                        ]
+                        detail: [insOrgUser({ ...p.detail })]
                     }, true));
-                });
+                })
                 setWaitImport(true)
             }
             else {
@@ -1209,7 +1209,6 @@ const Users: FC = () => {
         }
     }
     const handleDropUsers = async (files: any) => {
-        debugger
         const file = files?.item(0);
         if (file) {
             let excel: any = await uploadExcel(file, undefined);
@@ -1224,7 +1223,7 @@ const Users: FC = () => {
                     ...a,
                     [`${d.username}_${d.status}`]: {
                         ...dataUsers.filter(x => x.usr === d.username)[0],
-                        status: Boolean(d.delete) ? "ELIMINADO" : d.status,
+                        status: d.delete === 0 ? "ELIMINADO" : d.status,
                         operation: d.delete === 0 ? "DELETE" : "UPDATE",
                     }
                 }), {});
