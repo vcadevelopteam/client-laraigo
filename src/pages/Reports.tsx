@@ -32,6 +32,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ReportPersonalized, { IReport } from 'components/personalizedreport/ReportPersonalized'
 import Heatmap from './Heatmap';
 import RecordHSMRecord from './RecordHSMReport';
+import { useForm } from 'react-hook-form';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -469,19 +470,29 @@ interface SummaryGraphicProps {
 const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal, setView, row, daterange, filters, columns, columnsprefix }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-    const [graphicType, setGraphicType] = useState('BAR');
-    const [column, setColumn] = useState('');
+
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm<any>({
+        defaultValues: {
+            graphictype: 'BAR',
+            column: ''
+        }
+    });
+
+    useEffect(() => {
+        register('graphictype', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('column', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+    }, [register]);
 
     const handleCancelModal = () => {
         setOpenModal(false);
     }
 
-    const handleAcceptModal = () => {
-        triggerGraphic();
-    };
+    const handleAcceptModal = handleSubmit((data) => {
+        triggerGraphic(data);
+    });
 
-    const triggerGraphic = () => {
-        setView(`CHART-${graphicType}-${column}`);
+    const triggerGraphic = (data: any) => {
+        setView(`CHART-${data.graphictype}-${data.column}`);
         setOpenModal(false);
         dispatch(getMainGraphic(getReportGraphic(
             row?.methodgraphic || '',
@@ -491,7 +502,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                 sorts: {},
                 startdate: daterange?.startDate!,
                 enddate: daterange?.endDate!,
-                column,
+                column: data.column,
                 summarization: 'COUNT'
             }
         )));
@@ -512,8 +523,9 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                 <FieldSelect
                     label={t(langKeys.graphic_type)}
                     className="col-12"
-                    valueDefault={graphicType}
-                    onChange={(value) => setGraphicType(value.value)}
+                    valueDefault={getValues('graphictype')}
+                    error={errors?.graphictype?.message}
+                    onChange={(value) => setValue('graphictype', value?.value)}
                     data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }]}
                     uset={true}
                     prefixTranslation="graphic_"
@@ -525,8 +537,9 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                 <FieldSelect
                     label={t(langKeys.graphic_view_by)}
                     className="col-12"
-                    valueDefault={column}
-                    onChange={(value) => setColumn(value.value)}
+                    valueDefault={getValues('column')}
+                    error={errors?.column?.message}
+                    onChange={(value) => setValue('column', value?.value)}
                     data={columns.map(x => ({ key: x, value: x }))}
                     optionDesc="value"
                     optionValue="key"
