@@ -713,6 +713,7 @@ export const langKeys = {
     graphic_pie: 'graphic_pie',
     graphic_bar: 'graphic_bar',
     graphic_view_by: 'graphic_view_by',
+    grid_view: 'grid_view',
 
     status_activo: 'status_activo',
     status_inactivo: 'status_inactivo',

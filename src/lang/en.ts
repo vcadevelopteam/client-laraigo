@@ -2057,11 +2057,12 @@ const translation: LangKeys = {
     clienticon: "Client icon",
 
     graphic_view: 'Graphic view',
-    graphic_configuration: 'Graphic configuration',
-    graphic_type: 'Graphic type',
+    graphic_configuration: 'Chart configuration',
+    graphic_type: 'Chart type',
     graphic_pie: 'Pie',
     graphic_bar: 'Bar',
-    graphic_view_by: 'view by',
+    graphic_view_by: 'View by',
+    grid_view: 'List view',
 
     manageAgreement: 'Manage agreements',
     manageAgreement_plural: 'Manage agreements',
