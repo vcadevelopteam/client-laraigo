@@ -994,6 +994,7 @@ const translation: LangKeys = {
     default_organization: 'Organización por defecto',
     password_required: 'La contraseña es requerida',
     field_required: 'El campo es requerido',
+    field_nonnegative: 'El campo no puede ser negativo',
     code_duplicate: 'Código duplicado',
     field_key_required: 'Debe añadir al menos 1 campo "llave"',
     field_duplicate: 'Campo duplicado',

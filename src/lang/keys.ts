@@ -1194,6 +1194,7 @@ export const langKeys = {
     password_required: 'password_required',
     organization_by_default: 'organization_by_default',
     field_required: 'field_required',
+    field_nonnegative: 'field_nonnegative',
     emailverification: 'emailverification',
     code_duplicate: 'code_duplicate',
     field_key_required: 'field_key_required',
