@@ -136,13 +136,13 @@ const TableResume: FC<{ graphicType: string; data: Dictionary[] }> = ({ data, gr
                 }
             },
             {
-                Header: t(langKeys.amount),
+                Header: t(langKeys.quantity),
                 accessor: 'summary',
                 NoFilter: true,
                 type: 'number'
             },
             {
-                Header: "Percentage",
+                Header: t(langKeys.percentage),
                 accessor: 'percentage',
                 NoFilter: true,
                 type: 'number'

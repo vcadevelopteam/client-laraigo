@@ -2307,7 +2307,7 @@ export const getRecordHSMGraphic = ({ startdate, enddate, column, summarization 
     method: "UFN_REPORT_SENTMESSAGES_GRAPHIC",
     key: "UFN_REPORT_SENTMESSAGES_GRAPHIC",
     parameters: {
-        startdate, enddate, column, summarization,
+        filters: {}, sorts: {}, startdate, enddate, column, summarization,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })

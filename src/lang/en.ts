@@ -148,6 +148,7 @@ const translation: LangKeys = {
     period: "Period",
     interval: 'Intervalo',
     odoovariables: 'Odoo',
+    percentage: "Percentage",
 
     supportplan:"Support Plan",
     property: 'Property',
@@ -1479,11 +1480,21 @@ const translation: LangKeys = {
     type_shippingtype_inbox: 'Sent from inbox',
     type_shippingtype_chatflow: 'Sent from flow',
     
+    report_sentmessages: 'Shipment history report',
     report_sentmessages_api: 'Sent by API',
     report_sentmessages_lead: 'Sent from lead',
     report_sentmessages_person: 'Sent from person',
     report_sentmessages_inbox: 'Sent from inbox',
     report_sentmessages_chatflow: 'Sent from flow',
+
+    report_sentmessages_name: 'Shipping reason',
+    report_sentmessages_shippingdate: 'Shipping Date',
+    report_sentmessages_from: 'Sender',
+    report_sentmessages_total: 'Total',
+    report_sentmessages_satisfactory: 'Satisfactory',
+    report_sentmessages_failed: '% Satisfactory',
+    report_sentmessages_satisfactoryp: 'Failed',
+    report_sentmessages_failedp: '% Failed',
 
     "personalizedreport_conversation.userjoy": "conversation user joy",
     "personalizedreport_conversation.userfear": "conversation user fear",

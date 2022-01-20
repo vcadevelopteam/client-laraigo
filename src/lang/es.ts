@@ -175,6 +175,7 @@ const translation: LangKeys = {
     changeplan: "Cambiar de plan",
     property: 'Propiedad',
     property_plural: 'Propiedades',
+    percentage: "Porcentaje",
 
     groupconfig: "Configuración de Grupos",
 
@@ -1411,11 +1412,21 @@ const translation: LangKeys = {
     type_shippingtype_inbox: 'Envío desde inbox',
     type_shippingtype_chatflow: 'Envío desde flujo',
     
+    report_sentmessages: 'Reporte historial de envíos',
     report_sentmessages_api: 'Envío por API',
     report_sentmessages_lead: 'Envío desde oportunidades',
     report_sentmessages_person: 'Envío desde personas',
     report_sentmessages_inbox: 'Envío desde inbox',
     report_sentmessages_chatflow: 'Envío desde flujo',
+
+    report_sentmessages_name: 'Motivo de envío',
+    report_sentmessages_shippingdate: 'Fecha de envío',
+    report_sentmessages_from: 'Remitente',
+    report_sentmessages_total: 'Total',
+    report_sentmessages_satisfactory: 'Satisfactorio',
+    report_sentmessages_failed: 'Fallido',
+    report_sentmessages_satisfactoryp: '% Satisfactorio',
+    report_sentmessages_failedp: '% Fallido',
 
     "personalizedreport_conversation.context": "contexto de la conversación",
     "personalizedreport_conversation.personaveragereplytime": "tiempo promedio de respuesta de la persona de la conversación",
