@@ -2068,8 +2068,6 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
         register('clientstartfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
         register('freeconversations', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
         register('vcacomission', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-
-
     }, [edit, register]);
 
     useEffect(() => {
