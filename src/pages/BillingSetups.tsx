@@ -21,13 +21,11 @@ import { getCountryList } from 'store/signup/actions';
 import TableCell from '@material-ui/core/TableCell';
 import * as locale from "date-fns/locale";
 import {
-    PanoramaSharp,
     Search as SearchIcon,
 } from '@material-ui/icons';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import Typography from '@material-ui/core/Typography';
-import { useHistory, useLocation } from 'react-router';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -1211,6 +1209,7 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     );
 }
 
+const IDCONTRACTEDPLAN = "IDCONTRACTEDPLAN";
 const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const dispatch = useDispatch();
 
@@ -1242,7 +1241,9 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
 
     useEffect(() => {
         search()
-
+        dispatch(setMemoryTable({
+            id: IDCONTRACTEDPLAN
+        }))
         return () => {
             dispatch(cleanMemoryTable());
         }
@@ -1491,15 +1492,9 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                     loading={mainResult.mainData.loading}
                     register={true}
                     handleRegister={handleRegister}
-                    pageSizeDefault={memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize}
-                    initialPageIndex={memoryTable.page === -1 ? 0 : memoryTable.page}
-                    initialStateFilter={Object.entries(memoryTable.filters).map(([key, value]) => ({
-                        id: key, value: {
-                            value: value.value,
-                            operator: value.operator,
-                            type: 'string'
-                        }
-                    }))}
+                    pageSizeDefault={IDCONTRACTEDPLAN === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                    initialPageIndex={IDCONTRACTEDPLAN === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                    initialStateFilter={IDCONTRACTEDPLAN === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
                 />
             </Fragment>
         )
@@ -2805,6 +2800,7 @@ const DetailNotificationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
     );
 }
 
+const IDSUPPORTPLAN = 'IDSUPPORTPLAN';
 const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const dispatch = useDispatch();
 
@@ -2832,7 +2828,9 @@ const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
 
     useEffect(() => {
         search()
-
+        dispatch(setMemoryTable({
+            id: IDSUPPORTPLAN
+        }))
         return () => {
             dispatch(cleanMemoryTable());
         }
@@ -3029,13 +3027,9 @@ const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                     loading={mainResult.mainData.loading}
                     register={true}
                     handleRegister={handleRegister}
-                    pageSizeDefault={memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize}
-                    initialPageIndex={memoryTable.page === -1 ? 0 : memoryTable.page}
-                    initialStateFilter={Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value: {
-                        value: value.value,
-                        operator: value.operator,
-                        type: 'string'
-                    } }))}
+                    pageSizeDefault={IDSUPPORTPLAN === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                    initialPageIndex={IDSUPPORTPLAN === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                    initialStateFilter={IDSUPPORTPLAN === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
                 />
             </Fragment>
         )
@@ -3246,6 +3240,7 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({ data: { row, edit
     );
 }
 
+const IDMESSAGINGCOST = 'IDMESSAGINGCOST';
 const MessagingCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const dispatch = useDispatch();
 
@@ -3277,7 +3272,9 @@ const MessagingCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
 
     useEffect(() => {
         search()
-
+        dispatch(setMemoryTable({
+            id: IDMESSAGINGCOST
+        }))
         return () => {
             dispatch(cleanMemoryTable());
         }
@@ -3470,13 +3467,9 @@ const MessagingCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                     loading={mainResult.mainData.loading}
                     register={true}
                     handleRegister={handleRegister}
-                    pageSizeDefault={memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize}
-                    initialPageIndex={memoryTable.page === -1 ? 0 : memoryTable.page}
-                    initialStateFilter={Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value: {
-                        value: value.value,
-                        operator: value.operator,
-                        type: 'string'
-                    } }))}
+                    pageSizeDefault={IDMESSAGINGCOST === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                    initialPageIndex={IDMESSAGINGCOST === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                    initialStateFilter={IDMESSAGINGCOST === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
                 />
             </Fragment>
         )
