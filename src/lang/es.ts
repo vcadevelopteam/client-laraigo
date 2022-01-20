@@ -2696,6 +2696,10 @@ const translation: LangKeys = {
     dashboard_chartType_line: 'Gráfico de lineas',
     enterDashboardDescription: 'Ingrese la descripción del dashboard',
     moreOptions: 'Más opciones',
+    
+    reportfreeconversations: 'Conversaciones gratis',
+    userinitiatedconversations: 'Conversaciones iniciadas por el usuario',
+    businessinitiatedconversations: 'Conversaciones iniciadas por el negocio',
 };
 
 const esResource: ResourceLanguage = {
