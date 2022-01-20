@@ -170,6 +170,11 @@ const ChangePassword: React.FC<DetailProps> = ({ setViewSelected }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const user = useSelector(state => state.login.validateToken.user);
+    const [waitUploadFile, setWaitUploadFile] = useState(false);
+    const [waitsave, setwaitsave] = useState(false);
+    const resSetting = useSelector(state => state.setting.setting);
+    const uploadResult = useSelector(state => state.main.uploadFile);
+    console.log(user)
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             oldpassword: '',
@@ -468,6 +473,7 @@ const UserSettings: FC = () => {
     const { t } = useTranslation();
     const classes = useStyles();
     const user = useSelector(state => state.login.validateToken.user);
+    debugger
     const [view, setView] = useState('view-1');
 
     function changePlan(){
