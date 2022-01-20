@@ -389,6 +389,8 @@ export const langKeys = {
     pay: 'pay',
     create_custom_report: 'create_custom_report',
     create_custom_dashboard: 'create_custom_dashboard',
+    edit_custom_dashboard: 'edit_custom_dashboard',
+    detail_custom_dashboard: 'detail_custom_dashboard',
     search_ticket: 'search_ticket',
     column_at_least_required: 'column_at_least_required',
     personinformation: 'personinformation',    
@@ -2647,6 +2649,18 @@ export const langKeys = {
     propertyhorafinatencion:'propertyhorafinatencion',
     propertyhorainiatencion:'propertyhorainiatencion',
     propertyhorasuspension:'propertyhorasuspension',
+
+    newDashboard: 'newDashboard',
+    dashboard_groupment_quantity: 'dashboard_groupment_quantity',
+    dashboard_groupment_percentage: 'dashboard_groupment_percentage',
+    dashboard_groupment_both: 'dashboard_groupment_both',
+    dashboard_contentType_kpi: 'dashboard_contentType_kpi',
+    dashboard_contentType_report: 'dashboard_contentType_report',
+    dashboard_chartType_pie: 'dashboard_chartType_pie',
+    dashboard_chartType_bar: 'dashboard_chartType_bar',
+    dashboard_chartType_line: 'dashboard_chartType_line',
+    enterDashboardDescription: 'enterDashboardDescription',
+    moreOptions: 'moreOptions',
 };
 
 export type LangKeys = typeof langKeys;

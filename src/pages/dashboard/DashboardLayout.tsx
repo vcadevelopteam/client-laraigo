@@ -275,7 +275,7 @@ const DashboardLayout: FC = () => {
                 <TemplateBreadcrumbs
                     breadcrumbs={[
                         { id: "view-1", name: "Dashboards" },
-                        { id: "view-2", name: "Detalle de dashboard" }
+                        { id: "view-2", name: t(langKeys.detail_custom_dashboard) }
                     ]}
                     handleClick={id => id === "view-1" && history.push(paths.DASHBOARD)}
                 />
@@ -290,7 +290,7 @@ const DashboardLayout: FC = () => {
             <TemplateBreadcrumbs
                 breadcrumbs={[
                     { id: "view-1", name: "Dashboards" },
-                    { id: "view-2", name: "Detalle de dashboard" }
+                    { id: "view-2", name: t(langKeys.detail_custom_dashboard) }
                 ]}
                 handleClick={id => id === "view-1" && history.push(paths.DASHBOARD)}
             />
@@ -580,7 +580,7 @@ const LayoutItem: FC<LayoutItemProps> = ({
                 </Tooltip> */}
                 {(type !== 'kpi' && columns && dataorigin) && (
                     <>
-                        <Tooltip title="Más opciones">
+                        <Tooltip title={<Trans i18nKey={langKeys.moreOptions} />}>
                             <IconButton
                                 id={`more-btn-${key}`}
                                 onClick={handleClick}
@@ -781,11 +781,6 @@ const TableModal: FC<TableModalProps> = ({ title, open, rawColumns, dateRange, d
         },
         summaries: [],
         filters: [
-            // {
-            //     column: "startdate",
-            //     start: format(dateRange.startDate!),
-            //     end: format(dateRange.endDate!)
-            // },
             {
                 columnname: `${dataorigin}.createdate`,
                 type: "timestamp without time zone",

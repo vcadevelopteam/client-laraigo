@@ -1913,6 +1913,8 @@ const translation: LangKeys = {
     setting_plural: 'Configuraciones',
     create_custom_report: 'Crear reporte personalizado',
     create_custom_dashboard: 'Crear dashboard personalizado',
+    edit_custom_dashboard: 'Editar dashboard personalizado',
+    detail_custom_dashboard: 'Detalle de dashboard personalizado',
     restrictedEmoji: 'Emoji restringido',
     errorneedvalues: "La lista de valores debe tener al menos un elemento",
     restrictedEmoji_plural: 'Emojis restringidos',
@@ -2647,6 +2649,18 @@ const translation: LangKeys = {
     propertyhorafinatencion:'Hora fin de atención',
     propertyhorainiatencion:'Hora inicio de atención',
     propertyhorasuspension:'Hora de suspensión',
+    
+    newDashboard: 'Nuevo dashboard',
+    dashboard_groupment_quantity: 'Cantidad',
+    dashboard_groupment_percentage: 'Porcentaje',
+    dashboard_groupment_both: 'Ambos',
+    dashboard_contentType_kpi: 'KPI',
+    dashboard_contentType_report: 'Reporte',
+    dashboard_chartType_pie: 'Gráfico circular',
+    dashboard_chartType_bar: 'Gráfico de barras',
+    dashboard_chartType_line: 'Gráfico de lineas',
+    enterDashboardDescription: 'Ingrese la descripción del dashboard',
+    moreOptions: 'Más opciones',
 };
 
 const esResource: ResourceLanguage = {

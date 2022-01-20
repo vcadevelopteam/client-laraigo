@@ -1917,6 +1917,8 @@ const translation: LangKeys = {
     freecontacts: "Free contacts",
     create_custom_report: 'Create custom report',
     create_custom_dashboard: 'Create custom dashboard',
+    edit_custom_dashboard: 'Edit custom dashboard',
+    detail_custom_dashboard: 'Custom dashboard detail',
     column_at_least_required: 'You must register at least one column.',
     periodamount: "Period amount",
     servicedata: "Service data",
@@ -2657,6 +2659,18 @@ const translation: LangKeys = {
     propertyhorafinatencion:'End time of attention',
     propertyhorainiatencion:'Start time of attention',
     propertyhorasuspension:'Time for automatic suspension',
+
+    newDashboard: 'New dashboard',
+    dashboard_groupment_quantity: 'Quantity',
+    dashboard_groupment_percentage: 'Percentage',
+    dashboard_groupment_both: 'Both',
+    dashboard_contentType_kpi: 'KPI',
+    dashboard_contentType_report: 'Report',
+    dashboard_chartType_pie: 'Pie chart',
+    dashboard_chartType_bar: 'Bar chart',
+    dashboard_chartType_line: 'Line chart',
+    enterDashboardDescription: 'Enter dashboard description',
+    moreOptions: 'More options',
 };
 
 const enResource: ResourceLanguage = {
