@@ -177,7 +177,6 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
         endDate: new Date(`${daterange.endDate} 10:00:00`),
         key: 'selection'
     });
-    console.log(dataGraphic)
     const mainGraphicRes = useSelector(state => state.main.mainGraphic);
     useEffect(() => {
         if (!mainGraphicRes.loading && !mainGraphicRes.error) {
