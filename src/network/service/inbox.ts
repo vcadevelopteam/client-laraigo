@@ -4,9 +4,9 @@ import { APIManager } from '../manager';
 // import {  } from "common/helpers";
 
 
-export function updateUserSettings({ oldpassword,password,confirmpassword,lastname,firstname,image, operation }: Dictionary) {
+export function updateUserSettings({ oldpassword,password,confirmpassword,lastname,firstname,image }: Dictionary) {
     const data = {
-        oldpassword,password,confirmpassword,lastname,firstname,image, operation
+        oldpassword,password,confirmpassword,lastname,firstname,image
     }
     return APIManager.post(apiUrls.UPDATE_USER, { data: { data } }, true);
 }

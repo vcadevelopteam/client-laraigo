@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TemplateSwitch, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldUploadImage } from 'components';
-import { getBusinessDocType, getCorpSel, getPaymentPlanSel, getValuesFromDomain, insCorp } from 'common/helpers';
+import { getBusinessDocType, getCorpSel, getPaymentPlanSel, getValuesFromDomain, getValuesFromDomainCorp, insCorp } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -113,7 +113,7 @@ const Corporations: FC = () => {
             getValuesFromDomain("ESTADOGENERICO"),
             getValuesFromDomain("TIPOCORP"),
             getPaymentPlanSel(),
-            getValuesFromDomain("BILLINGDOCUMENTTYPE"),
+            getValuesFromDomainCorp('BILLINGDOCUMENTTYPE', '_DOCUMENT', 1, 0),
             getValuesFromDomain("TYPECREDIT"),
         ]));
         return () => {

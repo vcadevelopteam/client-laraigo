@@ -972,6 +972,7 @@ const translation: LangKeys = {
     
     successful_suspend_ticket: 'El ticket fue suspendido satisfactoriamente',
     successful_reactivate_ticket: 'El ticket fue reactivado satisfactoriamente',
+    confirmation_changepassword: "¿Desea cambiar la constraseña?",
 
     successful_tipify_ticket: 'El ticket se clasificó satisfactoriamente',
     successful_reasign_ticket: 'El ticket se reasignó satisfactoriamente',
@@ -984,6 +985,7 @@ const translation: LangKeys = {
     successful_register: 'Se registró satisfactoriamente',
     successful_delete: 'Se eliminó satisfactoriamente',
     successful_duplicate: 'Se duplico satisfactoriamente',
+    successful_update: "Se actualizo satisfactoriamente",
     countrycode: "Código de país",
     quickreplies: 'Repuestas rapidas',
     twofactorauthentication: 'Doble factor autentificación',
@@ -994,6 +996,7 @@ const translation: LangKeys = {
     default_organization: 'Organización por defecto',
     password_required: 'La contraseña es requerida',
     field_required: 'El campo es requerido',
+    field_nonnegative: 'El campo no puede ser negativo',
     code_duplicate: 'Código duplicado',
     field_key_required: 'Debe añadir al menos 1 campo "llave"',
     field_duplicate: 'Campo duplicado',

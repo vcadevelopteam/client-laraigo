@@ -76,7 +76,9 @@ const PersonalInformation: React.FC<DetailProps> = ({ setViewSelected }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const user = useSelector(state => state.login.validateToken.user);
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm({
+    const [waitsave, setwaitsave] = useState(false);
+    const resSetting = useSelector(state => state.setting.setting);
+    const { register, handleSubmit,getValues, setValue, formState: { errors } } = useForm({
         defaultValues: {
             oldpassword: '',
             password: '',
@@ -91,8 +93,23 @@ const PersonalInformation: React.FC<DetailProps> = ({ setViewSelected }) => {
         register('firstname', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('lastname', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
     }, [])
+    useEffect(() => {
+        if (waitsave) {
+            if (!resSetting.loading && !resSetting.error) {
+                setwaitsave(false)
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_update) }));
+                dispatch(updateUserInformation(getValues('firstname') + "", getValues('lastname') + "", getValues('image') + ""));
+                setViewSelected("view-1")
+            } else if (resSetting.error) {
+                const errormessage = t(resSetting.code || "error_unexpected_error")
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                setwaitsave(false);
+            }
+        }
+    }, [resSetting])
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
+            setwaitsave(true)
             dispatch(updateUserSettings(data))
         }
         dispatch(manageConfirmation({
@@ -170,7 +187,6 @@ const ChangePassword: React.FC<DetailProps> = ({ setViewSelected }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const user = useSelector(state => state.login.validateToken.user);
-    const [waitUploadFile, setWaitUploadFile] = useState(false);
     const [waitsave, setwaitsave] = useState(false);
     const resSetting = useSelector(state => state.setting.setting);
     const uploadResult = useSelector(state => state.main.uploadFile);
@@ -188,16 +204,41 @@ const ChangePassword: React.FC<DetailProps> = ({ setViewSelected }) => {
     });
     useEffect(() => {
         register('oldpassword', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
-        register('password', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('password', { validate: (value: any) => validatepassword(value) });
         register('confirmpassword', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
     }, [])
+    function validatepassword(value:any){
+        if(!(value && value.length)){
+            return t(langKeys.field_required)
+        }else if(value.length<10){
+            return t(langKeys.field_required)
+        }
+        else{
+            return undefined
+        }
+    }
+    useEffect(() => {
+        if (waitsave) {
+            if (!resSetting.loading && !resSetting.error) {
+                setwaitsave(false)
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_update) }));
+                dispatch(updateUserInformation(getValues('firstname') + "", getValues('lastname') + "", getValues('image') + ""));
+                setViewSelected("view-1")
+            } else if (resSetting.error) {
+                const errormessage = t(resSetting.code || "error_unexpected_error")
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                setwaitsave(false);
+            }
+        }
+    }, [resSetting])
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
+            setwaitsave(true)
             dispatch(updateUserSettings(data))
         }
         dispatch(manageConfirmation({
             visible: true,
-            question: t(langKeys.confirmation_save),
+            question: t(langKeys.confirmation_changepassword),
             callback
         }))
     });
@@ -473,7 +514,6 @@ const UserSettings: FC = () => {
     const { t } = useTranslation();
     const classes = useStyles();
     const user = useSelector(state => state.login.validateToken.user);
-    debugger
     const [view, setView] = useState('view-1');
 
     function changePlan(){
