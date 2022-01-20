@@ -345,6 +345,7 @@ export const langKeys = {
     premiumdesc2: "premiumdesc2",
     confirmchangeplan: "confirmchangeplan",
     cancelsuscriptionconfirmation: "cancelsuscriptionconfirmation",
+    detailchangeplan1: "detailchangeplan1",
     totalsatisfied: "totalsatisfied",
     totaldissatisfied: "totaldissatisfied",
     categoriaHSM: "categoriaHSM",

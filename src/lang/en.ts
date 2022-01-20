@@ -758,6 +758,7 @@ const translation: LangKeys = {
     invalidjson: 'Invalid json',
     invalid_date_format: 'Invalid date format',
     cancelsuscriptionconfirmation: "Do you want to cancel your subscription?",
+    detailchangeplan1: "For more details about the plans, visit https://laraigo.com/ and click on Pricing",
     invalid_time_format: 'Invalid time format',
     noteabandonedasesors: "Tickets that after the first interaction of the advisor no longer have a response from the client will be considered an abandonment.",
     test: 'Test',

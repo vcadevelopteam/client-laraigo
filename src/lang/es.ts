@@ -164,6 +164,7 @@ const translation: LangKeys = {
     basicdesc1: "Diseñado para pequeños negocios",
     cancelsuscriptionconfirmation: "¿Desea cancelar su suscripción?",
     confirmchangeplan: "¿Desea cambiar de plan?",
+    detailchangeplan1: "Para mayor detalle de los planes, visita https://laraigo.com/ y haz clic en Pricing.",
     basicdesc2: "Incluye un agente, un canal y hasta 100 contactos",
     prodesc1: "Herramientas profesionales para conversaciones omnicanal",
     prodesc2: "Incluye 3 agentes, 3 canales y hasta 300 contactos",

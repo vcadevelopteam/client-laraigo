@@ -456,7 +456,7 @@ const ChangePlan: React.FC<DetailProps> = ({ setViewSelected }) => {
                             </TableBody>
                         </Table>
                     </TableContainer>
-                    <div className={classes.seccionTitle}>{t(langKeys.changeplan)}</div>
+                    <div style={{ textAlign: "center", fontWeight: 500, fontSize: 12, color: "grey",marginLeft: "15px",marginTop: "15px"}}>{t(langKeys.detailchangeplan1)}</div>
                 </div>
             </div>
         </form>
@@ -538,7 +538,7 @@ const UserSettings: FC = () => {
                         <div className="col-6" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                             <FieldView
                                 label={"Plan"}
-                                value={"BASICO"}
+                                value={user?.plan}
                             />
                         </div>
                         <div className="col-6" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
