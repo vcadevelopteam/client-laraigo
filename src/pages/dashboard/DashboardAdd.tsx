@@ -269,12 +269,15 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
             <TemplateBreadcrumbs
                 breadcrumbs={[
                     { id: "view-1", name: "Dashboards" },
-                    { id: "view-2", name: "Crear dashboard" }
+                    {
+                        id: "view-2",
+                        name: t(edit ? langKeys.edit_custom_dashboard : langKeys.create_custom_dashboard),
+                    }
                 ]}
                 handleClick={id => id === "view-1" && history.push(paths.DASHBOARD)}
             />
             <div className={classes.header}>
-                <TitleDetail title={edit ? dashboardtemplate.value!.description : "Nuevo dashboard"} />
+                <TitleDetail title={edit ? dashboardtemplate.value!.description : t(langKeys.newDashboard)} />
                 <div style={{ flexGrow: 1 }} />
                 <Button
                     variant="contained"
@@ -380,6 +383,7 @@ const useSubmitModalStyles = makeStyles(theme => ({
 
 const SubmitModal: FC<SubmitModalProps> = ({ open, loading, defaultDescription = '', onClose, onSubmit }) => {
     const classes = useSubmitModalStyles();
+    const { t } = useTranslation();
     const [description, setDescription] = useState(defaultDescription);
 
     return (
@@ -398,7 +402,7 @@ const SubmitModal: FC<SubmitModalProps> = ({ open, loading, defaultDescription =
                 </Typography>
                 <TextField
                     id="dashboard-submit-modal-description"
-                    placeholder="Ingrese la descripción"
+                    placeholder={t(langKeys.enterDashboardDescription)}
                     value={description}
                     onChange={e => setDescription(e.target.value)}
                     InputProps={{ readOnly: loading }}
@@ -422,7 +426,6 @@ interface NewBtnProps {
 
 const useNewBtnStyles = makeStyles(the => ({
     root: {
-        // backgroundColor: 'white',
         width: 'inherit',
         height: 'inherit',
         padding: '1em',
@@ -597,6 +600,8 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                 }}
                 error={errors[key]?.contentType?.message}
                 disabled={loading}
+                uset
+                prefixTranslation="dashboard_contentType_"
             />
             {contentType === "kpi" && (
                 <FieldSelect
@@ -641,6 +646,8 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                         onChange={(v: typeof groupingType[number]) => setValue(`${key}.grouping`, v?.key || '')}
                         error={errors[key]?.grouping?.message}
                         disabled={loading}
+                        uset
+                        prefixTranslation="dashboard_groupment_"
                     />
                     <FieldSelect
                         className={classes.field}
@@ -652,6 +659,8 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                         onChange={(v: typeof graphTypes[number]) => setValue(`${key}.graph`, v?.key || '')}
                         error={errors[key]?.graph?.message}
                         disabled={loading}
+                        uset
+                        prefixTranslation="dashboard_chartType_"
                     />
                     <FieldSelect
                         className={classes.field}

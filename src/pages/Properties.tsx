@@ -277,8 +277,35 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
             level: row?.level || "",
             corpid: row?.corpid || user?.corpid,
             table: [],
+            newcorpid: 0,
+            neworgid: 0,
+            newcommunicationchannelid: 0,
+            id: 0,
+            propertyname: '',
+            propertyvalue: '',
+            description: '',
+            status: 'ACTIVO',
+            type: 'NINGUNO',
+            category: '',
+            domainname: '',
+            group: '',
+            newlevel: '',
+            operation: 'INSERT'
         }
     });
+
+    React.useEffect(() => {
+        register('newcorpid', { validate: (value) => (isView || (value && value>0)) || t(langKeys.field_required) });
+        register('neworgid', { validate: (value) => (isView || (getValues('newlevel') !== 'ORGANIZATION' || (value && value>0))) || t(langKeys.field_required) });
+        register('newcommunicationchannelid', { validate: (value) => (isView || (getValues('newlevel') !== 'CHANNEL' || (value && value>0))) || t(langKeys.field_required) });
+        register('propertyname', { validate: (value) => (isView || (value && value.length)) || t(langKeys.field_required) });
+        register('propertyvalue');
+        register('description', { validate: (value) => (isView || (value && value.length)) || t(langKeys.field_required) });
+        register('category', { validate: (value) => (isView || (value && value.length)) || t(langKeys.field_required) });
+        register('domainname');
+        register('group', { validate: (value) => (isView || (getValues('newlevel') !== 'GROUP' || (value && value.length))) || t(langKeys.field_required) });
+        register('newlevel', { validate: (value) => (isView || (value && value.length)) || t(langKeys.field_required) });
+    }, [edit, register]);
 
     const { fields, append: fieldsAppend, update: fieldsUpdate } = useFieldArray({
         control,
@@ -288,17 +315,47 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
     const fetchDetailData = (corpid: number, propertyname: string, description: string, category: string, level: string) => dispatch(getCollectionAux(getPropertySel(corpid, propertyname, description, category, level, 0)))
 
     const onSubmit = handleSubmit((data) => {
-        if (data.table) {
+        if (isView) {
+            if (data.table) {
+                const callback = () => {
+                    dispatch(execute({
+                        header: null,
+                        detail: data.table.map((x: any) => insProperty({
+                            ...x,
+                            operation: 'UPDATE',
+                            id: x.propertyid,
+                            orgid: x.orgid
+                        }))
+                    }, true));
+                    dispatch(showBackdrop(true));
+                    setWaitSave(true);
+                }
+    
+                dispatch(manageConfirmation({
+                    visible: true,
+                    question: t(langKeys.confirmation_save),
+                    callback
+                }))
+            }
+        }
+        else {
             const callback = () => {
-                dispatch(execute({
-                    header: null,
-                    detail: data.table.map((x: any) => insProperty({
-                        ...x,
-                        operation: 'UPDATE',
-                        id: x.propertyid,
-                        orgid: x.orgid
-                    }))
-                }, true));
+                dispatch(execute(insProperty({
+                    orgid: data.neworgid,
+                    communicationchannelid: data.newcommunicationchannelid,
+                    id: data.id,
+                    propertyname: data.propertyname,
+                    propertyvalue: data.propertyvalue,
+                    description: data.description,
+                    status: data.status,
+                    type: data.type,
+                    category: data.category,
+                    domainname: data.domainname,
+                    group: data.group,
+                    level: data.newlevel,
+                    operation: data.operation,
+                    corpid: data.newcorpid,
+                })));
                 dispatch(showBackdrop(true));
                 setWaitSave(true);
             }
@@ -454,9 +511,9 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
                         <FieldSelect
                             label={t(langKeys.corporation)}
                             className="col-6"
-                            valueDefault={getValues("corpid")}
-                            onChange={(value) => corpChange(value?.corpid || 0)}
-                            error={errors?.corpid?.message}
+                            valueDefault={isView ? getValues("corpid") : getValues("newcorpid")}
+                            onChange={(value) => { corpChange(value?.corpid || 0); setValue('newcorpid', value?.corpid || 0)}}
+                            error={errors?.newcorpid?.message}
                             data={corpList}
                             disabled={isView}
                             optionDesc="description"
@@ -465,7 +522,9 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
                         <FieldEdit
                             label={t(langKeys.name)}
                             className='col-6'
-                            valueDefault={row?.propertyname || ''}
+                            valueDefault={isView ? (row?.propertyname || '') : getValues("propertyname")}
+                            error={errors?.propertyname?.message}
+                            onChange={(value) => setValue('propertyname', value)}
                             disabled={isView}
                         />
                     </div>
@@ -473,13 +532,15 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
                         <FieldEdit
                             label={t(langKeys.description)}
                             className='col-6'
-                            valueDefault={t(row?.description || '')}
+                            valueDefault={isView ? (row?.description || '') : getValues("description")}
+                            error={errors?.description?.message}
+                            onChange={(value) => setValue('description', value)}
                             disabled={isView}
                         />
                         <FieldSelect
                             label={t(langKeys.category)}
                             className="col-6"
-                            valueDefault={row?.category || ''}
+                            valueDefault={isView ? (row?.category || '') : getValues("category")}
                             onChange={(value) => setValue('category', value?.categoryvalue)}
                             error={errors?.category?.message}
                             data={[
@@ -499,12 +560,13 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
                         <FieldSelect
                             label={t(langKeys.level)}
                             className="col-6"
-                            valueDefault={getValues('level')}
+                            valueDefault={isView ? getValues('level') : getValues('newlevel')}
                             onChange={(value) => {
                                 setlevel(value?.levelvalue || "");
-                                setValue('level', value?.levelvalue)
+                                setValue('level', value?.levelvalue);
+                                setValue('newlevel', value?.levelvalue);
                             }}
-                            error={errors?.level?.message}
+                            error={errors?.newlevel?.message}
                             data={[
                                 { leveldesc: t(langKeys.corporation), levelvalue: 'CORPORATION' },
                                 { leveldesc: t(langKeys.organization), levelvalue: 'ORGANIZATION' },
@@ -520,7 +582,9 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
                                 <FieldEdit
                                 label={t(langKeys.value)}
                                 className='col-6'
-                                valueDefault={row?.value || ''}
+                                valueDefault={getValues("propertyvalue")}
+                                error={errors?.propertyvalue?.message}
+                                onChange={(value) => setValue('propertyvalue', value)}
                                 disabled={allowEdition}
                             /> : null
                         }
@@ -531,9 +595,9 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
                             {(level!=="" && level !== "CORPORATION") && <FieldSelect
                                 label={t(langKeys.organization)}
                                 className="col-6"
-                                valueDefault={row?.orgid || ''}
-                                onChange={(value) => changeOrg(value)}
-                                error={errors?.orgid?.message}
+                                valueDefault={getValues("neworgid")}
+                                onChange={(value) => { changeOrg(value); setValue("neworgid", value?.orgid || 0) }}
+                                error={errors?.neworgid?.message}
                                 data={orgList}
                                 loading={detailResult2.loading}
                                 disabled={allowEdition}
@@ -543,9 +607,9 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
                             {level==="CHANNEL" && <FieldSelect
                                 label={t(langKeys.channel)}
                                 className="col-6"
-                                valueDefault={row?.communicationchannelid || ''}
-                                onChange={(value) => setValue('communicationchannelid', value?.communicationchannelid)}
-                                error={errors?.communicationchannelid?.message}
+                                valueDefault={getValues("newcommunicationchannelid")}
+                                onChange={(value) => setValue('newcommunicationchannelid', value?.communicationchannelid)}
+                                error={errors?.newcommunicationchannelid?.message}
                                 data={channelList}
                                 disabled={allowEdition}
                                 optionDesc="communicationchanneldesc"
@@ -554,9 +618,9 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
                             {level==="GROUP" && <FieldSelect
                                 label={t(langKeys.group_plural)}
                                 className="col-6"
-                                valueDefault={row?.groupid || ''}
-                                onChange={(value) => setValue('groupid', value?.groupid)}
-                                error={errors?.groupid?.message}
+                                valueDefault={getValues("group")}
+                                onChange={(value) => setValue('group', value?.domainvalue)}
+                                error={errors?.group?.message}
                                 data={groupList}
                                 disabled={allowEdition}
                                 optionDesc="domaindesc"

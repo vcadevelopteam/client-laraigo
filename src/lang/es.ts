@@ -537,11 +537,12 @@ const translation: LangKeys = {
     'status_not sent': 'no enviado',
 
     graphic_view: 'Vista gráfica',
-    graphic_configuration: 'Configuratión de gráfico',
+    graphic_configuration: 'Configuración de gráfico',
     graphic_type: 'Tipo de gráfica',
     graphic_pie: 'Torta',
     graphic_bar: 'Barras',
     graphic_view_by: 'Visualizar por',
+    grid_view: 'Vista lista',
 
     status_activo: 'activo',
     no_reply_use_hsm: 'La conversación está cerrada o bloqueada por estar fuera de la venta de 24 horas.\nEnvíe un HSM para contactar al cliente.',
@@ -995,6 +996,7 @@ const translation: LangKeys = {
     default_organization: 'Organización por defecto',
     password_required: 'La contraseña es requerida',
     field_required: 'El campo es requerido',
+    field_nonnegative: 'El campo no puede ser negativo',
     code_duplicate: 'Código duplicado',
     field_key_required: 'Debe añadir al menos 1 campo "llave"',
     field_duplicate: 'Campo duplicado',
@@ -1935,6 +1937,8 @@ const translation: LangKeys = {
     setting_plural: 'Configuraciones',
     create_custom_report: 'Crear reporte personalizado',
     create_custom_dashboard: 'Crear dashboard personalizado',
+    edit_custom_dashboard: 'Editar dashboard personalizado',
+    detail_custom_dashboard: 'Detalle de dashboard personalizado',
     restrictedEmoji: 'Emoji restringido',
     errorneedvalues: "La lista de valores debe tener al menos un elemento",
     restrictedEmoji_plural: 'Emojis restringidos',
@@ -2669,6 +2673,18 @@ const translation: LangKeys = {
     propertyhorafinatencion:'Hora fin de atención',
     propertyhorainiatencion:'Hora inicio de atención',
     propertyhorasuspension:'Hora de suspensión',
+    
+    newDashboard: 'Nuevo dashboard',
+    dashboard_groupment_quantity: 'Cantidad',
+    dashboard_groupment_percentage: 'Porcentaje',
+    dashboard_groupment_both: 'Ambos',
+    dashboard_contentType_kpi: 'KPI',
+    dashboard_contentType_report: 'Reporte',
+    dashboard_chartType_pie: 'Gráfico circular',
+    dashboard_chartType_bar: 'Gráfico de barras',
+    dashboard_chartType_line: 'Gráfico de lineas',
+    enterDashboardDescription: 'Ingrese la descripción del dashboard',
+    moreOptions: 'Más opciones',
 };
 
 const esResource: ResourceLanguage = {

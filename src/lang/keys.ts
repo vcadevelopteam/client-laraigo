@@ -411,6 +411,8 @@ export const langKeys = {
     pay: 'pay',
     create_custom_report: 'create_custom_report',
     create_custom_dashboard: 'create_custom_dashboard',
+    edit_custom_dashboard: 'edit_custom_dashboard',
+    detail_custom_dashboard: 'detail_custom_dashboard',
     search_ticket: 'search_ticket',
     column_at_least_required: 'column_at_least_required',
     personinformation: 'personinformation',    
@@ -735,6 +737,7 @@ export const langKeys = {
     graphic_pie: 'graphic_pie',
     graphic_bar: 'graphic_bar',
     graphic_view_by: 'graphic_view_by',
+    grid_view: 'grid_view',
 
     status_activo: 'status_activo',
     status_inactivo: 'status_inactivo',
@@ -1193,6 +1196,7 @@ export const langKeys = {
     password_required: 'password_required',
     organization_by_default: 'organization_by_default',
     field_required: 'field_required',
+    field_nonnegative: 'field_nonnegative',
     emailverification: 'emailverification',
     code_duplicate: 'code_duplicate',
     field_key_required: 'field_key_required',
@@ -2669,6 +2673,18 @@ export const langKeys = {
     propertyhorafinatencion:'propertyhorafinatencion',
     propertyhorainiatencion:'propertyhorainiatencion',
     propertyhorasuspension:'propertyhorasuspension',
+
+    newDashboard: 'newDashboard',
+    dashboard_groupment_quantity: 'dashboard_groupment_quantity',
+    dashboard_groupment_percentage: 'dashboard_groupment_percentage',
+    dashboard_groupment_both: 'dashboard_groupment_both',
+    dashboard_contentType_kpi: 'dashboard_contentType_kpi',
+    dashboard_contentType_report: 'dashboard_contentType_report',
+    dashboard_chartType_pie: 'dashboard_chartType_pie',
+    dashboard_chartType_bar: 'dashboard_chartType_bar',
+    dashboard_chartType_line: 'dashboard_chartType_line',
+    enterDashboardDescription: 'enterDashboardDescription',
+    moreOptions: 'moreOptions',
 };
 
 export type LangKeys = typeof langKeys;

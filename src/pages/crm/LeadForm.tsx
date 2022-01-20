@@ -176,7 +176,15 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
 
     const registerFormFieldOptions = useCallback(() => {
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('expected_revenue', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('expected_revenue', { validate: (value): any => {
+            if (!value || value.length === 0) {
+                return t(langKeys.field_required);
+            } else if (Number(value) < 0) {
+                return t(langKeys.field_nonnegative);
+            }
+            
+            return undefined;
+        }});
         register('date_deadline', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('tags', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('personcommunicationchannel', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
