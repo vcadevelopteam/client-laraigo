@@ -251,7 +251,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                         <div className="row-zyx">
                                 <FieldEdit
                                 type="time"
-                                label={"TMO total min"} 
+                                label={"TMO total min (HH:MM)"} 
                                 className="col-4"
                                 onChange={(value) => setValue('totaltmomin', value)}
                                 valueDefault={row ? (row.totaltmomin || "") : ""}
@@ -259,7 +259,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                                 />
                                 <FieldEdit
                                     type="time"
-                                    label={"TMO total max"} 
+                                    label={"TMO total max (HH:MM)"} 
                                     className="col-4"
                                     onChange={(value) => setValue('totaltmo', value)}
                                     valueDefault={row ? (row.totaltmo || "") : ""}
@@ -267,7 +267,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                                 />
                                 <FieldEdit
                                     type="number"
-                                    label={t(langKeys.tmopercentobj)} 
+                                    label={`${t(langKeys.tmopercentobj)}%`} 
                                     className="col-4"
                                     onChange={(value) => setValue('totaltmopercentmax', value)}
                                     valueDefault={row ? (row.totaltmopercentmax || "") : ""}
@@ -277,7 +277,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                         <div className="row-zyx">
                                 <FieldEdit
                                 type="time"
-                                label={"TMO user min"} 
+                                label={"TMO user min (HH:MM)"} 
                                 className="col-4"
                                 onChange={(value) => setValue('usertmomin', value)}
                                 valueDefault={row ? (row.usertmomin || "") : ""}
@@ -285,7 +285,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                                 />
                                 <FieldEdit
                                     type="time"
-                                    label={"TMO user max"} 
+                                    label={"TMO user max (HH:MM)"} 
                                     className="col-4"
                                     onChange={(value) => setValue('usertmo', value)}
                                     valueDefault={row ? (row.usertmo || "") : ""}
@@ -293,7 +293,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                                 />
                                 <FieldEdit
                                     type="number"
-                                    label={t(langKeys.usertmopercentmax)} 
+                                    label={`${t(langKeys.usertmopercentmax)}%`} 
                                     className="col-4"
                                     onChange={(value) => setValue('usertmopercentmax', value)}
                                     valueDefault={row ? (row.usertmopercentmax || "") : ""}
@@ -303,7 +303,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                         <div className="row-zyx">
                                 <FieldEdit
                                     type="time"
-                                    label={"TME user max"} 
+                                    label={"TME user max (HH:MM)"} 
                                     className="col-4"
                                     onChange={(value) => setValue('usertme', value)}
                                     valueDefault={row ? (row.usertme || "") : ""}
@@ -311,7 +311,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                                 />
                                 <FieldEdit
                                     type="number"
-                                    label={t(langKeys.usertmepercentmax)} 
+                                    label={`${t(langKeys.usertmepercentmax)}%`} 
                                     className="col-4"
                                     onChange={(value) => setValue('usertmepercentmax', value)}
                                     valueDefault={row ? (row.usertmepercentmax || "") : ""}

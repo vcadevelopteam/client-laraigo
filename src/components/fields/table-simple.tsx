@@ -376,7 +376,7 @@ const TableZyx = React.memo(({
             setAnchorEl(null);
             if (type === 'boolean') {
                 setoperator(op)
-                setValue(operator);
+                setValue(op);
                 setFilter({ value, operator: op, type });
             } else if (type === "select") {
                 setValue(op);
