@@ -3,7 +3,8 @@ import React, { FC, Fragment, useEffect, useState } from 'react'; // we need thi
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx } from 'components';
+import { cleanMemoryTable, setMemoryTable } from 'store/main/actions';
+import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx } from 'components';
 import { selInvoice, insInvoice, cancelInvoice, getLocaleDateString, selInvoiceClient, selInvoiceChangePaymentStatus, regenerateInvoice, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, exportExcel, invoiceRefreshTest } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -39,6 +40,8 @@ import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import TableBody from '@material-ui/core/TableBody';
 import clsx from 'clsx';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -211,6 +214,7 @@ const MONTHS = [{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { va
 
 const statusToEdit = ["DRAFT", "INVOICED", "ERROR", "CANCELED"];
 
+const IDCOSTPERPERIOD = "IDCOSTPERPERIOD";
 const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const dispatch = useDispatch();
 
@@ -225,6 +229,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const dataPlanList = dataPlan.data[0] && dataPlan.data[0].success? dataPlan.data[0].data : []
     const executeResult = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main);
+    const memoryTable = useSelector(state => state.main.memoryTable);
 
     const [dataMain, setdataMain] = useState({
         billingplan: "",
@@ -247,6 +252,12 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
 
     useEffect(() => {
         search()
+        dispatch(setMemoryTable({
+            id: IDCOSTPERPERIOD
+        }))
+        return () => {
+            dispatch(cleanMemoryTable());
+        }
     }, [])
 
     useEffect(() => {
@@ -432,6 +443,9 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                     register={false}
                     calculate={true}
                     handleCalculate={handleCalculate}
+                    pageSizeDefault={IDCOSTPERPERIOD === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                    initialPageIndex={IDCOSTPERPERIOD === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                    initialStateFilter={IDCOSTPERPERIOD === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
                 />
             </Fragment>
         )
@@ -1271,6 +1285,16 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
         }))
     }
 
+    const exportReport = () => {
+        html2canvas(document.querySelector("#periodreportcanvas")!).then(canvas => {
+            document.body.appendChild(canvas);
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('p', 'pt', 'a4', false);
+            pdf.addImage(imgData, 'PNG', 0, 0, 600, 0, undefined, undefined, undefined);
+            pdf.save("periodreport.pdf"); 
+        });
+    }
+
     useEffect(() => {
         if (waitExport) {
             if (!resExportData.loading && !resExportData.error) {
@@ -1355,7 +1379,7 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                                 variant="contained"
                                 color="primary"
                                 disabled={resExportData.loading}
-                                onClick={() => exportExcel(String(t(langKeys.periodreport) || '') + "Report", mainResult.mainData.data)}
+                                onClick={exportReport}
                                 startIcon={<DownloadIcon />}
                             >{`${t(langKeys.download)}`}
                             </Button>
@@ -1384,7 +1408,7 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
             </div>
             {
                 !mainResult.mainData.loading && (
-                <div style={{width:"100%"}}>
+                <div style={{width:"100%"}} id='periodreportcanvas'>
                     <div className={classes.containerDetail}>
                         <div className="row-zyx" >
                             <FieldView
@@ -1476,6 +1500,32 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                                             <div style={{color:"transparent"}}>.</div>
                                             <div>$ {datareport.channelwhatsappcharge?formatNumber(datareport.channelwhatsappcharge):"0.00"}</div>
                                             <div>$ {datareport.channelothercharge?formatNumber(datareport.channelothercharge):"0.00"}</div>
+                                        </StyledTableCell>
+                                    </StyledTableRow>
+                                    <StyledTableRow>
+                                        <StyledTableCell >
+                                            <div><b>{t(langKeys.conversation_plural)}</b></div>
+                                            <div>{t(langKeys.reportfreeconversations)}</div>
+                                            <div>{t(langKeys.userinitiatedconversations)}</div>
+                                            <div>{t(langKeys.businessinitiatedconversations)}</div>
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div>{formatNumberNoDecimals(0)}</div>
+                                            <div>{formatNumberNoDecimals(0)}</div>
+                                            <div>{formatNumberNoDecimals(0)}</div>
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div>$ {datareport.channelwhatsappfee?formatNumber(0):"0.00"}</div>
+                                            <div>$ {datareport.channelotherfee?formatNumber(0):"0.00"}</div>
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div>$ {datareport.channelwhatsappcharge?formatNumber(0):"0.00"}</div>
+                                            <div>$ {datareport.channelothercharge?formatNumber(0):"0.00"}</div>
                                         </StyledTableCell>
                                     </StyledTableRow>
                                     <StyledTableRow>
@@ -1591,6 +1641,7 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
     )
 }
 
+const IDPAYMENTS = "IDPAYMENTS";
 const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStateAction<{ year: number; month: number; corpid: number; orgid: number; totalize: number; }>): void }> = ({ dataPlan, setCustomSearch }) => {
     const dispatch = useDispatch();
 
@@ -1601,6 +1652,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
     const dataOrgList = dataPlan.data[1] && dataPlan.data[1].success? dataPlan.data[1].data : [];
     const executeRes = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main);
+    const memoryTable = useSelector(state => state.main.memoryTable);
     const user = useSelector(state => state.login.validateToken.user);
 
     const [dataMain, setdataMain] = useState({
@@ -1629,6 +1681,12 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
 
     useEffect(() => {
         fetchData()
+        dispatch(setMemoryTable({
+            id: IDPAYMENTS
+        }))
+        return () => {
+            dispatch(cleanMemoryTable());
+        }
     }, [])
 
     useEffect(() => {
@@ -1921,6 +1979,9 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                     loading={mainResult.mainData.loading}
                     download={true}
                     register={false}
+                    pageSizeDefault={IDPAYMENTS === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                    initialPageIndex={IDPAYMENTS === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                    initialStateFilter={IDPAYMENTS === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
                 />
             </div>
         )

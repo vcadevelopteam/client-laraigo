@@ -2685,6 +2685,10 @@ export const langKeys = {
     dashboard_chartType_line: 'dashboard_chartType_line',
     enterDashboardDescription: 'enterDashboardDescription',
     moreOptions: 'moreOptions',
+
+    reportfreeconversations: 'reportfreeconversations',
+    userinitiatedconversations: 'userinitiatedconversations',
+    businessinitiatedconversations: 'businessinitiatedconversations',
 };
 
 export type LangKeys = typeof langKeys;
