@@ -61,6 +61,17 @@ export const getDashboardTemplateReset = (state: IState): IState => ({
     dashboardtemplate: initialState.dashboardtemplate,
 });
 
+export const setDashboardTemplate = (state: IState, action: IAction): IState => ({
+    ...state,
+    dashboardtemplate: {
+        value: action.payload,
+        code: undefined,
+        message: undefined,
+        loading: false,
+        error: false,
+    },
+});
+
 export const saveDashboardTemplate = (state: IState): IState => ({
     ...state,
     dashboardtemplateSave: { ...state.dashboardtemplateSave, loading: true, error: false },
