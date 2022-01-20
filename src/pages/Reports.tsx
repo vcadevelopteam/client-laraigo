@@ -33,6 +33,7 @@ import ReportPersonalized, { IReport } from 'components/personalizedreport/Repor
 import Heatmap from './Heatmap';
 import RecordHSMRecord from './RecordHSMReport';
 import { useForm } from 'react-hook-form';
+import AssessmentIcon from '@material-ui/icons/Assessment';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -385,6 +386,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                                 color="primary"
                                                 disabled={mainPaginated.loading || !(mainPaginated.data.length > 0)}
                                                 onClick={() => setOpenModal(true)}
+                                                startIcon={<AssessmentIcon />}
                                             >
                                                 {t(langKeys.graphic_view)}
                                             </Button>

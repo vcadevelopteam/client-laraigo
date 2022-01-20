@@ -15,7 +15,8 @@ import { CalendarIcon } from 'icons';
 import { DateRangePicker } from 'components';
 import { CircularProgress } from '@material-ui/core';
 import { XAxis, YAxis, ResponsiveContainer, Tooltip as ChartTooltip, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, LabelList } from 'recharts';
-
+import ListIcon from '@material-ui/icons/List';
+import SettingsIcon from '@material-ui/icons/Settings';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -227,6 +228,7 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                         variant="contained"
                         color="primary"
                         onClick={() => setOpenModal(true)}
+                        startIcon={<SettingsIcon />}
                     >
                         {t(langKeys.configuration)}
                     </Button>
@@ -235,6 +237,7 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                         variant="contained"
                         color="primary"
                         onClick={() => setView('GRID')}
+                        startIcon={<ListIcon />}
                     >
                         {t(langKeys.grid_view)}
                     </Button>
