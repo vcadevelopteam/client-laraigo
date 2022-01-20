@@ -151,7 +151,7 @@ const AccountMenu: FC = () => {
                         fullWidth
                         style={{ fontWeight: "normal", textTransform: "uppercase" }}
                     >
-                        <Trans i18nKey={langKeys.personalsettings} />
+                        <Trans i18nKey={langKeys.accountsettings} />
                     </Button>
                     <Button
                         onClick={openprivacypolicies}

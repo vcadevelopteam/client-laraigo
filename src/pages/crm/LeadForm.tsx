@@ -528,7 +528,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 historyleadid: 0,
             });
         } else if (action === "NEWTAG" && !previousTagsIncludeDesc && tagsAlreadyHasChange) {
-            const historyBody = leadTagsChanges.current.find(x => x.description !== desc);
+            const historyBody = leadTagsChanges.current.find(x => x.description === desc);
             if (historyBody) {
                 historyBody.type = action;
             }
@@ -560,7 +560,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 historyleadid: 0,
             });
         } else if (action === "NEWPRODUCT" && !previousProductsIncludeDesc && productAlreadyHasChange) {
-            const historyBody = leadProductsChanges.current.find(x => x.description !== desc);
+            const historyBody = leadProductsChanges.current.find(x => x.description === desc);
             if (historyBody) {
                 historyBody.type = action;
             }
