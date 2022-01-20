@@ -8,13 +8,14 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import TablePaginated from 'components/fields/table-paginated';
+import Graphic from 'components/fields/Graphic';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { TemplateBreadcrumbs, SearchField, FieldSelect, FieldMultiSelect, SkeletonReportCard, DialogZyx } from 'components';
 import { useSelector } from 'hooks';
 import { Dictionary, IFetchData, MultiData, IRequestBody } from "@types";
-import { getReportSel, getReportTemplateSel, getValuesFromDomain, getReportColumnSel, getReportFilterSel, getPaginatedForReports, getReportExport, insertReportTemplate, convertLocalDate, getTableOrigin, getReportGraphic } from 'common/helpers';
+import { getReportSel, getReportTemplateSel, getValuesFromDomain, getReportColumnSel, getReportFilterSel, getPaginatedForReports, getReportExport, insertReportTemplate, convertLocalDate, getTableOrigin, getReportGraphic, getDateCleaned, getDateToday, getFirstDayMonth, getLastDayMonth, } from 'common/helpers';
 import { getCollection, getCollectionAux, execute, resetMain, getCollectionPaginated, resetCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetMainAux, getMultiCollectionAux, getMainGraphic } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
@@ -31,12 +32,13 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ReportPersonalized, { IReport } from 'components/personalizedreport/ReportPersonalized'
 import Heatmap from './Heatmap';
 import RecordHSMRecord from './RecordHSMReport';
+import { useForm } from 'react-hook-form';
+import AssessmentIcon from '@material-ui/icons/Assessment';
 
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
 }
-
 
 interface ItemProps {
     setViewSelected: (view: string) => void;
@@ -112,6 +114,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+
 const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row, multiData, allFilters, customReport }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -123,124 +126,113 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
     const [waitSave, setWaitSave] = useState(false);
     const [totalrow, settotalrow] = useState(0);
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
-    const columns = React.useMemo(() => [{ Header: 'null', accessor: 'null', type: 'null' }] as any, []);
     const [allParameters, setAllParameters] = useState({});
     const [openModal, setOpenModal] = useState(false);
     const [view, setView] = useState('GRID');
 
-    if (multiData.length > 0) {
-        reportColumns.forEach(x => {
-            switch (x.proargtype) {
-                case "bigint":
-                    if (x.proargnames.includes('year') || x.proargnames.includes('month') || x.proargnames.includes('week') || x.proargnames.includes('day') || x.proargnames.includes('hour')) {
-                        columns.push({
-                            Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
-                            accessor: x.proargnames,
-                            type: "number-centered"
-                        });
+    // const columns = React.useMemo(() => [{ Header: 'null', accessor: 'null', type: 'null' }] as any, []);
+    const columns = React.useMemo(() => reportColumns.map(x => {
+        switch (x.proargtype) {
+            case "bigint":
+                if (x.proargnames.includes('year') || x.proargnames.includes('month') || x.proargnames.includes('week') || x.proargnames.includes('day') || x.proargnames.includes('hour')) {
+                    return {
+                        Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                        accessor: x.proargnames,
+                        type: "number-centered"
                     }
-                    else {
-                        columns.push({
-                            Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
-                            accessor: x.proargnames,
-                            type: "number"
-                        });
+                }
+                else {
+                    return {
+                        Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                        accessor: x.proargnames,
+                        type: "number"
+                    }
 
+                }
+            case "boolean":
+                return {
+                    Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                    accessor: x.proargnames,
+                    type: "boolean",
+                    Cell: (props: any) => {
+                        const column = props.cell.column;
+                        const row = props.cell.row.original;
+                        return (t(`${row[column.id]}`.toLowerCase()) || "").toUpperCase()
                     }
-                    break;
-                case "boolean":
-                    columns.push({
-                        Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
-                        accessor: x.proargnames,
-                        type: "boolean",
-                        Cell: (props: any) => {
-                            const column = props.cell.column;
-                            const row = props.cell.row.original;
-                            return (t(`${row[column.id]}`.toLowerCase()) || "").toUpperCase()
-                        }
-                    });
-                    break;
-                case "timestamp without time zone":
-                    columns.push({
-                        Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
-                        accessor: x.proargnames,
-                        type: "date",
-                        Cell: (props: any) => {
-                            const column = props.cell.column;
-                            const row = props.cell.row.original;
-                            return (<div>
-                                {convertLocalDate(row[column.id]).toLocaleString(undefined, {
-                                    year: "numeric",
-                                    month: "2-digit",
-                                    day: "2-digit",
-                                    hour: "numeric",
-                                    minute: "numeric",
-                                    second: "numeric",
-                                    hour12: false
-                                })}
-                            </div>)
-                        }
-                    });
-                    break;
-                case "date":
-                    columns.push({
-                        Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
-                        accessor: x.proargnames,
-                        type: "date",
-                        Cell: (props: any) => {
-                            const column = props.cell.column;
-                            const row = props.cell.row.original;
-                            return (<div>
-                                {new Date(
-                                    row[column.id].split('-')[0],
-                                    row[column.id].split('-')[1] - 1,
-                                    row[column.id].split('-')[2]
-                                ).toLocaleString(undefined, {
-                                    year: "numeric",
-                                    month: "2-digit",
-                                    day: "2-digit"
-                                })}
-                            </div>)
-                        }
-                    });
-                    break;
-                default:
-                    switch (row?.origin) {
-                        case "loginhistory":
-                            switch (x.proargnames) {
-                                case "status":
-                                    columns.push({
-                                        Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
-                                        accessor: x.proargnames,
-                                        type: "string",
-                                        Cell: (props: any) => {
-                                            const { status } = props.cell.row.original;
-                                            return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
-                                        }
-                                    });
-                                    break;
-                                default:
-                                    columns.push({
-                                        Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
-                                        accessor: x.proargnames,
-                                        type: "string"
-                                    });
-                                    break;
-                            }
-                            break;
-                        default:
-                            columns.push({
-                                Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
-                                accessor: x.proargnames,
-                                type: "string"
-                            });
-                            break;
+                }
+            case "timestamp without time zone":
+                return {
+                    Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                    accessor: x.proargnames,
+                    type: "date",
+                    Cell: (props: any) => {
+                        const column = props.cell.column;
+                        const row = props.cell.row.original;
+                        return (<div>
+                            {convertLocalDate(row[column.id]).toLocaleString(undefined, {
+                                year: "numeric",
+                                month: "2-digit",
+                                day: "2-digit",
+                                hour: "numeric",
+                                minute: "numeric",
+                                second: "numeric",
+                                hour12: false
+                            })}
+                        </div>)
                     }
-                    break;
-            }
-        });
-        columns.shift();
-    }
+                }
+            case "date":
+                return {
+                    Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                    accessor: x.proargnames,
+                    type: "date",
+                    Cell: (props: any) => {
+                        const column = props.cell.column;
+                        const row = props.cell.row.original;
+                        return (<div>
+                            {new Date(
+                                row[column.id].split('-')[0],
+                                row[column.id].split('-')[1] - 1,
+                                row[column.id].split('-')[2]
+                            ).toLocaleString(undefined, {
+                                year: "numeric",
+                                month: "2-digit",
+                                day: "2-digit"
+                            })}
+                        </div>)
+                    }
+                }
+            default:
+                switch (row?.origin) {
+                    case "loginhistory":
+                        switch (x.proargnames) {
+                            case "status":
+                                return {
+                                    Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                                    accessor: x.proargnames,
+                                    type: "string",
+                                    Cell: (props: any) => {
+                                        const { status } = props.cell.row.original;
+                                        return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
+                                    }
+                                }
+                            default:
+                                return {
+                                    Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                                    accessor: x.proargnames,
+                                    type: "string"
+                                }
+                        }
+                    default:
+                        return {
+                            Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                            accessor: x.proargnames,
+                            type: "string"
+                        }
+                }
+        }
+    }), [reportColumns]);
+
 
     useEffect(() => {
         if (!mainPaginated.loading && !mainPaginated.error) {
@@ -301,6 +293,25 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
         )));
     };
 
+
+    const handlerSearchGraphic = (daterange: any, column: string) => {
+        setfetchDataAux(prev => ({ ...prev, daterange }));
+        dispatch(getMainGraphic(getReportGraphic(
+            row?.methodgraphic || '',
+            row?.origin || '',
+            {
+                filters: {},
+                sorts: {},
+                startdate: daterange?.startDate!,
+                enddate: daterange?.endDate!,
+                column,
+                summarization: 'COUNT',
+                ...allParameters
+            }
+        )));
+    }
+
+
     const handleSelected = () => {
         dispatch(resetCollectionPaginated());
         dispatch(resetMultiMain());
@@ -330,82 +341,102 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                         :
                         <>
                             <div className={classes.container}>
-                                <TablePaginated
-                                    columns={columns}
-                                    data={mainPaginated.data}
-                                    totalrow={totalrow}
-                                    loading={mainPaginated.loading}
-                                    pageCount={pageCount}
-                                    filterrange={true}
-                                    FiltersElement={(
-                                        <>
-                                            {!allFilters ? null : allFilters.map(filtro => (
-                                                (filtro.values[0].multiselect ?
-                                                    <FieldMultiSelect
-                                                        limitTags={1}
-                                                        label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
-                                                        className={classes.filterComponent}
-                                                        key={filtro.values[0].filter}
-                                                        onChange={(value) => setValue(filtro.values[0].parameterName, value ? value.map((o: Dictionary) => o[filtro.values[0].optionValue]).join() : '')}
-                                                        variant="outlined"
-                                                        data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
-                                                        optionDesc={filtro.values[0].optionDesc}
-                                                        optionValue={filtro.values[0].optionValue}
-                                                    />
-                                                    :
-                                                    <FieldSelect
-                                                        label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
-                                                        className={classes.filterComponent}
-                                                        key={filtro.values[0].filter}
-                                                        variant="outlined"
-                                                        onChange={(value) => setValue(filtro.values[0].parameterName, value ? value[filtro.values[0].optionValue] : '')}
-                                                        data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
-                                                        optionDesc={filtro.values[0].optionDesc}
-                                                        optionValue={filtro.values[0].optionValue}
-                                                    />
-                                                )
-                                            ))}
-                                        </>
-                                    )}
-                                    ButtonsElement={() => (
-                                        <>
-                                            {view === 'GRID' &&
-                                                <Button
-                                                    className={classes.button}
-                                                    variant="contained"
-                                                    color="primary"
-                                                    disabled={mainPaginated.loading || !(mainPaginated.data.length > 0)}
-                                                    onClick={() => setOpenModal(true)}
-                                                >
-                                                    {t(langKeys.graphic_view)}
-                                                </Button>
-                                            }
-                                            {view === 'CHART' &&
-                                                <React.Fragment>
-                                                    <Button
-                                                        className={classes.button}
-                                                        variant="contained"
-                                                        color="primary"
-                                                        onClick={() => setOpenModal(true)}
-                                                    >
-                                                        {t(langKeys.configuration)}
-                                                    </Button>
-                                                    <Button
-                                                        className={classes.button}
-                                                        variant="contained"
-                                                        color="primary"
-                                                        onClick={() => setView('GRID')}
-                                                    >
-                                                        {t(langKeys.grid_view)}
-                                                    </Button>
-                                                </React.Fragment>
-                                            }
-                                        </>
-                                    )}
-                                    download={true}
-                                    fetchData={fetchData}
-                                    exportPersonalized={triggerExportData}
-                                />
+                                {view === "GRID" ? (
+                                    <TablePaginated
+                                        columns={columns}
+                                        data={mainPaginated.data}
+                                        totalrow={totalrow}
+                                        loading={mainPaginated.loading}
+                                        pageCount={pageCount}
+                                        filterrange={true}
+                                        FiltersElement={(
+                                            <>
+                                                {!allFilters ? null : allFilters.map(filtro => (
+                                                    (filtro.values[0].multiselect ?
+                                                        <FieldMultiSelect
+                                                            limitTags={1}
+                                                            label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
+                                                            className={classes.filterComponent}
+                                                            key={filtro.values[0].filter}
+                                                            onChange={(value) => setValue(filtro.values[0].parameterName, value ? value.map((o: Dictionary) => o[filtro.values[0].optionValue]).join() : '')}
+                                                            variant="outlined"
+                                                            data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
+                                                            optionDesc={filtro.values[0].optionDesc}
+                                                            optionValue={filtro.values[0].optionValue}
+                                                        />
+                                                        :
+                                                        <FieldSelect
+                                                            label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
+                                                            className={classes.filterComponent}
+                                                            key={filtro.values[0].filter}
+                                                            variant="outlined"
+                                                            onChange={(value) => setValue(filtro.values[0].parameterName, value ? value[filtro.values[0].optionValue] : '')}
+                                                            data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
+                                                            optionDesc={filtro.values[0].optionDesc}
+                                                            optionValue={filtro.values[0].optionValue}
+                                                        />
+                                                    )
+                                                ))}
+                                            </>
+                                        )}
+                                        ButtonsElement={() => (
+                                            <Button
+                                                className={classes.button}
+                                                variant="contained"
+                                                color="primary"
+                                                disabled={mainPaginated.loading || !(mainPaginated.data.length > 0)}
+                                                onClick={() => setOpenModal(true)}
+                                                startIcon={<AssessmentIcon />}
+                                            >
+                                                {t(langKeys.graphic_view)}
+                                            </Button>
+                                        )}
+                                        download={true}
+                                        fetchData={fetchData}
+                                        exportPersonalized={triggerExportData}
+                                    />
+                                ) : (
+                                    <Graphic
+                                        graphicType={view.split("-")?.[1] || "BAR"}
+                                        column={view.split("-")?.[2] || "summary"}
+                                        openModal={openModal}
+                                        setOpenModal={setOpenModal}
+                                        daterange={fetchDataAux.daterange}
+                                        setView={setView}
+                                        row={row!!}
+                                        handlerSearchGraphic={handlerSearchGraphic}
+                                        FiltersElement={(
+                                            <>
+                                                {!allFilters ? null : allFilters.map(filtro => (
+                                                    (filtro.values[0].multiselect ?
+                                                        <FieldMultiSelect
+                                                            limitTags={1}
+                                                            label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
+                                                            className={classes.filterComponent}
+                                                            key={filtro.values[0].filter}
+                                                            onChange={(value) => setValue(filtro.values[0].parameterName, value ? value.map((o: Dictionary) => o[filtro.values[0].optionValue]).join() : '')}
+                                                            variant="outlined"
+                                                            data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
+                                                            optionDesc={filtro.values[0].optionDesc}
+                                                            optionValue={filtro.values[0].optionValue}
+                                                        />
+                                                        :
+                                                        <FieldSelect
+                                                            label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
+                                                            className={classes.filterComponent}
+                                                            key={filtro.values[0].filter}
+                                                            variant="outlined"
+                                                            onChange={(value) => setValue(filtro.values[0].parameterName, value ? value[filtro.values[0].optionValue] : '')}
+                                                            data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
+                                                            optionDesc={filtro.values[0].optionDesc}
+                                                            optionValue={filtro.values[0].optionValue}
+                                                        />
+                                                    )
+                                                ))}
+                                            </>
+                                        )}
+                                    />
+                                )}
                             </div>
                         </>
                     }
@@ -413,7 +444,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                 :
                 <SkeletonReport />
             }
-            <SummaryGraphic 
+            <SummaryGraphic
                 openModal={openModal}
                 setOpenModal={setOpenModal}
                 setView={setView}
@@ -441,19 +472,30 @@ interface SummaryGraphicProps {
 const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal, setView, row, daterange, filters, columns, columnsprefix }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-    const mainGraphicRes = useSelector(state => state.main.mainGraphic);
-    const [graphicType, setGraphicType] = useState('BAR');
-    const [column, setColumn] = useState('');
-    
+
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm<any>({
+        defaultValues: {
+            graphictype: 'BAR',
+            column: ''
+        }
+    });
+
+    useEffect(() => {
+        register('graphictype', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('column', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+    }, [register]);
+
     const handleCancelModal = () => {
         setOpenModal(false);
     }
 
-    const handleAcceptModal = () => {
-        triggerGraphic();
-    };
+    const handleAcceptModal = handleSubmit((data) => {
+        triggerGraphic(data);
+    });
 
-    const triggerGraphic = () => {
+    const triggerGraphic = (data: any) => {
+        setView(`CHART-${data.graphictype}-${data.column}`);
+        setOpenModal(false);
         dispatch(getMainGraphic(getReportGraphic(
             row?.methodgraphic || '',
             row?.origin || '',
@@ -462,21 +504,11 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                 sorts: {},
                 startdate: daterange?.startDate!,
                 enddate: daterange?.endDate!,
-                column,
+                column: data.column,
                 summarization: 'COUNT'
             }
         )));
     }
-
-    useEffect(() => {
-        if (openModal) {
-            if (!mainGraphicRes.loading && !mainGraphicRes.error) {
-                console.log(mainGraphicRes.data)
-                setOpenModal(false);
-                setView('CHART');
-            }
-        }
-    }, [mainGraphicRes])
 
     return (
         <DialogZyx
@@ -493,9 +525,10 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                 <FieldSelect
                     label={t(langKeys.graphic_type)}
                     className="col-12"
-                    valueDefault={graphicType}
-                    onChange={(value) => setGraphicType(value.value)}
-                    data={[{key: 'BAR', value: 'BAR'}, { key: 'PIE', value: 'PIE' }]}
+                    valueDefault={getValues('graphictype')}
+                    error={errors?.graphictype?.message}
+                    onChange={(value) => setValue('graphictype', value?.value)}
+                    data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }]}
                     uset={true}
                     prefixTranslation="graphic_"
                     optionDesc="value"
@@ -506,9 +539,10 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                 <FieldSelect
                     label={t(langKeys.graphic_view_by)}
                     className="col-12"
-                    valueDefault={column}
-                    onChange={(value) => setColumn(value.value)}
-                    data={columns.map(x => ({key: x, value: x}))}
+                    valueDefault={getValues('column')}
+                    error={errors?.column?.message}
+                    onChange={(value) => setValue('column', value?.value)}
+                    data={columns.map(x => ({ key: x, value: x }))}
                     optionDesc="value"
                     optionValue="key"
                     uset={true}

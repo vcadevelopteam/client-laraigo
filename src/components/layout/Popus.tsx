@@ -80,7 +80,7 @@ const Popus: React.FC = () => {
                             popus.question.callbackcancel && popus.question.callbackcancel()
                             manageConfirmationTmp()
                         }}>
-                        {t(langKeys.cancel)}
+                        {popus.question.textCancel || t(langKeys.cancel)}
                     </Button>
                     <Button
                         variant="contained"
@@ -90,7 +90,7 @@ const Popus: React.FC = () => {
                             manageConfirmationTmp()
                         }}
                         color="primary">
-                        {t(langKeys.continue)}
+                        {popus.question.textConfirm || t(langKeys.continue)}
                     </Button>
                 </DialogActions>
             </Dialog>
