@@ -10,6 +10,8 @@ export interface ISnackBar {
 export interface IQuestion {
     visible: boolean;
     question: string;
+    textConfirm?: string;
+    textCancel?: string;
     callback?: (() => void) | null;
     callbackcancel?: (() => void) | null;
 }
