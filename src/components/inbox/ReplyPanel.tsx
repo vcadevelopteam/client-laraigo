@@ -516,6 +516,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                         userid: 0,
                         usertype: "agent",
                         ticketWasAnswered: !(ticketSelected!!.isAnswered || i > 0), //solo enviar el cambio en el primer mensaje
+                        isAnswered: !(ticketSelected!!.isAnswered || i > 0), //solo enviar el cambio en el primer mensaje
                     }
                     if (userType === "AGENT") {
                         dispatch(emitEvent({
