@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, ReactElement, Fragment, useEffect, useState } from 'react';
+import React, { FC, Fragment, useEffect, useState } from 'react';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
@@ -8,6 +8,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import TablePaginated from 'components/fields/table-paginated';
+import Graphic from 'components/fields/Graphic';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -23,7 +24,6 @@ import AssessorProductivity from 'components/report/AssessorProductivity';
 import DetailReportDesigner from 'pages/ReportTemplate';
 import { SkeletonReport } from 'components';
 import AddIcon from '@material-ui/icons/Add';
-import SearchIcon from '@material-ui/icons/Search';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -33,17 +33,10 @@ import ReportPersonalized, { IReport } from 'components/personalizedreport/Repor
 import Heatmap from './Heatmap';
 import RecordHSMRecord from './RecordHSMReport';
 
-import { Range } from 'react-date-range';
-import { CalendarIcon } from 'icons';
-import { DateRangePicker } from 'components';
-
-import { XAxis, YAxis, ResponsiveContainer, Tooltip as ChartTooltip, BarChart, Legend, Bar, PieChart, Pie, Cell, ResponsiveContainerProps, LineChart, Line, CartesianGrid } from 'recharts';
-
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
 }
-
 
 interface ItemProps {
     setViewSelected: (view: string) => void;
@@ -117,179 +110,8 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '14px',
         textTransform: 'initial'
     },
-    containerHeaderItem: {
-        backgroundColor: '#FFF',
-        padding: 8,
-        display: 'block',
-        flexWrap: 'wrap',
-        gap: 8,
-        [theme.breakpoints.up('sm')]: {
-            display: 'flex',
-        }
-    },
 }));
-const PIE_COLORS = ['#22b66e', '#b41a1a', '#ffcd56'];
-const Graphic: React.FC<{
-    graphicType: string;
-    column: string;
-    FiltersElement?: ReactElement;
-    openModal: boolean;
-    setOpenModal: (value: boolean) => void;
-    setView: (value: string) => void;
-    daterange: any;
-    handlerSearchGraphic: (value: any, value1: any) => void;
-    row: Dictionary;
-}> = ({ graphicType, column, openModal, setOpenModal, setView, FiltersElement, row, daterange, handlerSearchGraphic }) => {
-    const classes = useStyles();
-    const { t } = useTranslation();
-    const dispatch = useDispatch();
-    const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
-    console.log(daterange)
-    const [dateRange, setdateRange] = useState<Range>({
-        startDate: new Date(`${daterange.startDate} 10:00:00`),
-        endDate: new Date(`${daterange.endDate} 10:00:00`),
-        key: 'selection'
-    });
 
-    const mainGraphicRes = useSelector(state => state.main.mainGraphic);
-    useEffect(() => {
-        if (!mainGraphicRes.loading && !mainGraphicRes.error) {
-
-        }
-    }, [mainGraphicRes])
-
-    console.log(graphicType)
-
-    const handlerSearch = () => {
-        console.log(daterange)
-        handlerSearchGraphic(daterange, column)
-        // dispatch(getMainGraphic(getReportGraphic(
-        //     row?.methodgraphic || '',
-        //     row?.origin || '',
-        //     {
-        //         // filters,
-        //         sorts: {},
-        //         startdate: daterange?.startDate!,
-        //         enddate: daterange?.endDate!,
-        //         column,
-        //         summarization: 'COUNT'
-        //     }
-        // )));
-    }
-
-    return (
-        <>
-            <Box className={classes.containerHeaderItem} justifyContent="space-between" alignItems="center" mb={1}>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                    <DateRangePicker
-                        open={openDateRangeModal}
-                        setOpen={setOpenDateRangeModal}
-                        range={dateRange}
-                        onSelect={setdateRange}
-                    >
-                        <Button
-                            disabled={mainGraphicRes.loading}
-                            style={{ border: '1px solid #bfbfc0', borderRadius: 4, color: 'rgb(143, 146, 161)' }}
-                            startIcon={<CalendarIcon />}
-                            onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
-                        >
-                            {getDateCleaned(dateRange.startDate!) + " - " + getDateCleaned(dateRange.endDate!)}
-                        </Button>
-                    </DateRangePicker>
-                    {FiltersElement && FiltersElement}
-                    <Button
-                        disabled={mainGraphicRes.loading}
-                        variant="contained"
-                        color="primary"
-                        startIcon={<SearchIcon style={{ color: 'white' }} />}
-                        style={{ backgroundColor: '#55BD84', width: 120 }}
-                        onClick={() => handlerSearchGraphic(dateRange, column)}
-                    >
-                        {t(langKeys.search)}
-                    </Button>
-                </div>
-                <div style={{ display: 'flex', gap: 8 }}>
-                    <Button
-                        className={classes.button}
-                        variant="contained"
-                        color="primary"
-                        onClick={() => setOpenModal(true)}
-                    >
-                        {t(langKeys.configuration)}
-                    </Button>
-                    <Button
-                        className={classes.button}
-                        variant="contained"
-                        color="primary"
-                        onClick={() => setView('GRID')}
-                    >
-                        {t(langKeys.grid_view)}
-                    </Button>
-                </div>
-            </Box>
-            <div style={{ fontWeight: 500 }}>
-                Reporte gráfico de {t('report_' + row?.origin)} por {column}
-            </div>
-            {mainGraphicRes.loading ? (
-                <div>
-                    CARGANDO
-                </div>
-            ) : (graphicType === "BAR" ? (
-                <div style={{ width: '100%', height: 500 }}>
-                    <ResponsiveContainer width="100%" height="100%">
-                        <BarChart
-                            width={500}
-                            height={300}
-                            data={mainGraphicRes.data}
-                            margin={{
-                                top: 5,
-                                right: 30,
-                                left: 20,
-                                bottom: 5,
-                            }}
-                        >
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="columnname" />
-                            <YAxis />
-                            <ChartTooltip />
-                            <Bar dataKey="summary" fill="#8884d8" />
-                        </BarChart>
-                    </ResponsiveContainer>
-                </div>
-            ) : (
-                <div style={{ width: '100%', height: 500 }}>
-                    <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                            <ChartTooltip />
-                            <Pie
-                                data={mainGraphicRes.data.map(x => ({
-                                    ...x,
-                                    summary: parseInt(x.summary)
-                                }))}
-                                dataKey="summary"
-                                nameKey="label"
-                                cx="50%"
-                                cy="50%"
-                                innerRadius={40}
-                                fill="#8884d8"
-                            >
-                                {mainGraphicRes.data.map((_, i) => (
-                                    <Cell
-                                        key={`cell-${i}`}
-                                        fill={PIE_COLORS[i % PIE_COLORS.length]}
-                                    />
-                                ))}
-                            </Pie>
-                            <Legend verticalAlign="bottom" />
-                            {/* <Pie data={mainGraphicRes.data} dataKey="summary" cx="50%" cy="50%" outerRadius={60} fill="#8884d8" /> */}
-                        </PieChart>
-                    </ResponsiveContainer>
-                </div>
-            ))}
-        </>
-
-    )
-}
 
 const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row, multiData, allFilters, customReport }) => {
     const { t } = useTranslation();
@@ -399,7 +221,6 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                     type: "string"
                                 }
                         }
-                        break;
                     default:
                         return {
                             Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
