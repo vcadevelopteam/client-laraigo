@@ -12,7 +12,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { manageConfirmation, showSnackbar } from "store/popus/actions";
 import { getDashboardTemplateIns, getDashboardTemplateSel, getReportTemplateSel } from "common/helpers";
 import RGL, { WidthProvider } from 'react-grid-layout';
-import { XAxis, YAxis, ResponsiveContainer, Tooltip as  ChartTooltip, BarChart, Legend, Bar, PieChart, Pie, Cell, ResponsiveContainerProps } from 'recharts';
+import { XAxis, YAxis, ResponsiveContainer, Tooltip as ChartTooltip, BarChart, Legend, Bar, PieChart, Pie, Cell, ResponsiveContainerProps, LineChart, Line, CartesianGrid } from 'recharts';
 import { LayoutItem as NewLayoutItem, ReportTemplate } from './DashboardAdd';
 import { useForm } from "react-hook-form";
 import { getCollection, getCollectionDynamic, resetMain, resetMainDynamic } from "store/main/actions";
@@ -261,6 +261,10 @@ const DashboardLayout: FC = () => {
         });
     }, []);
 
+    const getChartTitle = (key: string) => {
+        return layout.detail?.[key]?.description || dashboard.value?.[key]?.reportname || '-';
+    }
+
     if (dashboardtemplate.loading || dashboard.loading) {
         return <CenterLoading />;
     }
@@ -373,9 +377,10 @@ const DashboardLayout: FC = () => {
                         {e.i in layout.detail ? (
                             <LayoutItem
                                 layoutKey={e.i}
-                                reportname={dashboard.value?.[e.i]?.reportname || '-'}
+                                title={getChartTitle(e.i)}
                                 data={dashboard.value?.[e.i]?.data}
-                                columnjson={dashboard.value?.[e.i]?.columnjson}
+                                columns={dashboard.value?.[e.i]?.columns}
+                                dataorigin={dashboard.value?.[e.i]?.dataorigin}
                                 type={dashboard.value?.[e.i]?.contentType === 'report' ? layout.detail[e.i]!.graph : 'kpi'}
                                 detail={layout.detail}
                                 onDetailChange={(d, t) => onDetailChange(d, t, e.i)}
@@ -423,22 +428,30 @@ interface ChartData {
 type ChangeType = "DELETE" | "UPDATE" | "INSERT";
 
 interface LayoutItemProps {
-    reportname: string;
+    title: string;
     data?: ItemsData | KpiData;
     type: string;
     layoutKey: string;
     detail?: Items;
-    columnjson?: string;
+    columns?: Column[];
     dateRange: Range;
+    dataorigin?: string;
     onDetailChange?: (detail: Items, type: ChangeType) => void;
     onModalOpenhasChanged: (open: boolean) => void;
 }
 
 interface Column {
-    key: string;
-    value: string;
-    filter: string;
-    hasFilter: boolean;
+    tablename: string;
+    /**accessor */
+    columnname: string;
+    description: string;
+    type: string;
+    join_table: any;
+    join_alias: any;
+    join_on: any;
+    disabled: boolean;
+    /**Header */
+    alias: string;
 }
 
 const useLayoutItemStyles = makeStyles(theme => ({
@@ -479,13 +492,14 @@ const useLayoutItemStyles = makeStyles(theme => ({
 }));
 
 const LayoutItem: FC<LayoutItemProps> = ({
-    reportname,
+    title,
     data,
     type,
     layoutKey: key,
     detail,
-    columnjson,
+    columns,
     dateRange,
+    dataorigin,
     onDetailChange,
     onModalOpenhasChanged,
 }) => {
@@ -502,12 +516,8 @@ const LayoutItem: FC<LayoutItemProps> = ({
             return data as KpiData;
         }
     }, [data, type]);
-    const [graph, setGraph] = useState(type);
+    // const [graph, setGraph] = useState(type);
     const [openTableModal, setOpenTableModal] = useState(false);
-    const rawColumns = useMemo<Column[]>(() => {
-        if (!columnjson) return [];
-        return JSON.parse(columnjson);
-    }, [columnjson]);
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
@@ -518,19 +528,19 @@ const LayoutItem: FC<LayoutItemProps> = ({
         setAnchorEl(null);
     };
 
-    const onChange = useCallback(() => {
-        if (!canChange) return;
+    // const onChange = useCallback(() => {
+    //     if (!canChange) return;
 
-        const newType = graph === 'bar' ? 'pie' : 'bar';
-        setGraph(newType);
-        onDetailChange!({
-            ...detail,
-            [key]: {
-                ...detail![key],
-                graph: newType,
-            },
-        }, "UPDATE");
-    }, [graph, canChange, key, detail, onDetailChange]);
+    //     const newType = graph === 'bar' ? 'pie' : 'bar';
+    //     setGraph(newType);
+    //     onDetailChange!({
+    //         ...detail,
+    //         [key]: {
+    //             ...detail![key],
+    //             graph: newType,
+    //         },
+    //     }, "UPDATE");
+    // }, [graph, canChange, key, detail, onDetailChange]);
 
     const onDelete = useCallback(() => {
         if (!canChange) return;
@@ -541,13 +551,14 @@ const LayoutItem: FC<LayoutItemProps> = ({
     }, [canChange, key, detail, onDetailChange]);
 
     const renderGraph = useCallback(() => {
-        switch(graph) {
+        switch(type) {
             case 'bar': return <LayoutBar data={dataGraph as ChartData[]} />;
             case 'pie': return <LayoutPie data={dataGraph as ChartData[]} />;
+            case 'line': return <LayoutLine data={dataGraph as ChartData[]} />;
             case 'kpi': return <LayoutKpi data={dataGraph as KpiData} />;
             default: return null;
         }
-    }, [dataGraph, graph]);
+    }, [dataGraph, type]);
 
     if (!data) {
         return (
@@ -560,59 +571,66 @@ const LayoutItem: FC<LayoutItemProps> = ({
     return (
         <div className={classes.root}>
             <div className={classes.header}>
-                <span className={classes.label}>{reportname}</span>
+                <span className={classes.label}>{title}</span>
                 <div style={{ flexGrow: 1 }} />
                 {/* <Tooltip title="Intercambiar">
                     <IconButton onClick={onChange} size="small">
                         <SwapHorizIcon />
                     </IconButton>
                 </Tooltip> */}
-                <Tooltip title="Más opciones">
-                    <IconButton
-                        id={`more-btn-${key}`}
-                        onClick={handleClick}
-                        size="small"
-                        aria-controls={`more-menu-${key}`}
-                    >
-                        <MoreVertIcon />
-                    </IconButton>
-                </Tooltip>
-                <Menu
-                    id={`more-menu-${key}`}
-                    anchorEl={anchorEl}
-                    open={open}
-                    onClose={handleClose}
-                    MenuListProps={{
-                        'aria-labelledby': `more-btn-${key}`,
-                    }}
-                >
-                    <MenuItem
-                        onClick={() => {
-                            setOpenTableModal(true);
-                            onModalOpenhasChanged(true);
-                            handleClose();
-                        }}
-                    >
-                        <Trans i18nKey={langKeys.seeMore} />
-                    </MenuItem>
-                    {/* <MenuItem onClick={onDelete}>
-                        <Trans i18nKey={langKeys.delete} />
-                    </MenuItem> */}
-                </Menu>
+                {(type !== 'kpi' && columns && dataorigin) && (
+                    <>
+                        <Tooltip title="Más opciones">
+                            <IconButton
+                                id={`more-btn-${key}`}
+                                onClick={handleClick}
+                                size="small"
+                                aria-controls={`more-menu-${key}`}
+                            >
+                                <MoreVertIcon />
+                            </IconButton>
+                        </Tooltip>
+                        <Menu
+                            id={`more-menu-${key}`}
+                            anchorEl={anchorEl}
+                            open={open}
+                            onClose={handleClose}
+                            MenuListProps={{
+                                'aria-labelledby': `more-btn-${key}`,
+                            }}
+                        >
+                            <MenuItem
+                                onClick={() => {
+                                    setOpenTableModal(true);
+                                    onModalOpenhasChanged(true);
+                                    handleClose();
+                                }}
+                            >
+                                <Trans i18nKey={langKeys.seeMore} />
+                            </MenuItem>
+                            {/* <MenuItem onClick={onDelete}>
+                                <Trans i18nKey={langKeys.delete} />
+                            </MenuItem> */}
+                        </Menu>
+                    </>
+                )}
             </div>
             <div className={classes.reponsiveContainer}>
                 {renderGraph()}
             </div>
-            <TableModal
-                title={reportname}
-                open={openTableModal}
-                onClose={() => {
-                    setOpenTableModal(false);
-                    onModalOpenhasChanged(false);
-                }}
-                rawColumns={rawColumns}
-                dateRange={dateRange}
-            />
+            {type !== 'kpi' && (
+                <TableModal
+                    title={title}
+                    open={openTableModal}
+                    onClose={() => {
+                        setOpenTableModal(false);
+                        onModalOpenhasChanged(false);
+                    }}
+                    rawColumns={columns!}
+                    dataorigin={dataorigin!}
+                    dateRange={dateRange}
+                />
+            )}
         </div>
     );
 }
@@ -635,6 +653,24 @@ const LayoutBar: FC<LayoutBarProps> = ({ data, ...props }) => {
                 <ChartTooltip />
                 <Bar dataKey="quantity" fill="#8884d8" />
             </BarChart>
+        </ResponsiveContainer>
+    );
+}
+
+interface LayoutLineProps extends Omit<ResponsiveContainerProps, 'children'> {
+    data: IData[];
+}
+
+const LayoutLine: FC<LayoutLineProps> = ({ data, ...props }) => {
+    return (
+        <ResponsiveContainer {...props}>
+            <LineChart data={data}>
+                <Line type="monotone" dataKey="quantity" stroke="#8884d8" />
+                <CartesianGrid stroke="#ccc" />
+                <XAxis dataKey="label" />
+                <YAxis />
+                <ChartTooltip />
+            </LineChart>
         </ResponsiveContainer>
     );
 }
@@ -725,14 +761,18 @@ interface TableModalProps {
     open: boolean;
     rawColumns: Column[];
     dateRange: Range;
+    dataorigin: string;
     onClose: () => void;
 }
 
-const TableModal: FC<TableModalProps> = ({ title, open, rawColumns, dateRange, onClose }) => {
+const TableModal: FC<TableModalProps> = ({ title, open, rawColumns, dateRange, dataorigin, onClose }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainDynamic = useSelector(state => state.main.mainDynamic);
-    const columns = useMemo(() => rawColumns.map(x => ({ Header: x.value, accessor: x.key })), [rawColumns]);
+    const columns = useMemo(() => rawColumns.map(x => ({
+        Header: x.alias,
+        accessor: x.columnname.replace(".", ""),
+    })), [rawColumns]);
 
     const getBody = useCallback(() => ({
         columns: rawColumns,
@@ -741,11 +781,22 @@ const TableModal: FC<TableModalProps> = ({ title, open, rawColumns, dateRange, o
         },
         summaries: [],
         filters: [
+            // {
+            //     column: "startdate",
+            //     start: format(dateRange.startDate!),
+            //     end: format(dateRange.endDate!)
+            // },
             {
-                column: "startdate",
+                columnname: `${dataorigin}.createdate`,
+                type: "timestamp without time zone",
+                description: "",
+                join_alias: "",
+                join_on: "",
+                join_table: "",
                 start: format(dateRange.startDate!),
-                end: format(dateRange.endDate!)
+                end: format(dateRange.endDate!),
             },
+            
         ],
     }), [dateRange, rawColumns]);
 
