@@ -347,6 +347,8 @@ export const langKeys = {
     cancelsuscriptionconfirmation: "cancelsuscriptionconfirmation",
     detailchangeplan1: "detailchangeplan1",
     totalsatisfied: "totalsatisfied",
+    successful_update: "successful_update",
+    confirmation_changepassword: "confirmation_changepassword",
     totaldissatisfied: "totaldissatisfied",
     categoriaHSM: "categoriaHSM",
     totalconversations: "totalconversations",
