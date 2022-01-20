@@ -178,6 +178,7 @@ const RecordHSMRecord: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     // const [shippingtype, setshippingtype] = useState("");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
+    const [gridData, setGridData] = useState<any[]>([]);
     const columns = React.useMemo(
         () => [
             {
@@ -266,7 +267,11 @@ const RecordHSMRecord: FC = () => {
     }, [])
     useEffect(() => {
         if (!multiData.loading){
-            dispatch(showBackdrop(false))
+            setGridData(multiData.data[0]?.data.map(x => ({
+                ...x,
+                name_translated: x.name !== x.translationname?(t(`report_sentmessages_${x.name}`.toLowerCase()) || "").toUpperCase():x.name.toUpperCase(),
+            }))||[]);
+            dispatch(showBackdrop(false));
         }
     }, [multiData])
     // useEffect(() => {
@@ -288,10 +293,7 @@ const RecordHSMRecord: FC = () => {
                 <TableZyx
                     onClickRow={handleView}    
                     columns={columns}
-                    data={multiData.data[0]?.data.map(x => ({
-                        ...x,
-                        name_translated: x.name !== x.translationname?(t(`report_sentmessages_${x.name}`.toLowerCase()) || "").toUpperCase():x.name.toUpperCase(),
-                    }))||[]}
+                    data={gridData}
                     ButtonsElement={() => (
                         <div className={classes.containerHeader} style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
                             <DateRangePicker
