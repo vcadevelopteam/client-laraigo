@@ -10,7 +10,7 @@ import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { getCollectionAux2, getMainGraphic, getMultiCollection, getMultiCollectionAux2, resetMultiMain } from 'store/main/actions';
+import { getMainGraphic, getMultiCollection, getMultiCollectionAux2, resetMultiMain } from 'store/main/actions';
 import { showBackdrop } from 'store/popus/actions';
 import { CalendarIcon } from 'icons';
 import { Range } from 'react-date-range';
@@ -20,6 +20,7 @@ import {
 } from '@material-ui/icons';
 import { useForm } from 'react-hook-form';
 import Graphic from 'components/fields/Graphic';
+import AssessmentIcon from '@material-ui/icons/Assessment';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -359,6 +360,7 @@ const RecordHSMRecord: FC = () => {
                                     color="primary"
                                     disabled={multiData.loading || !(multiData.data.length > 0)}
                                     onClick={() => setOpenModal(true)}
+                                    startIcon={<AssessmentIcon />}
                                 >
                                     {t(langKeys.graphic_view)}
                                 </Button>
