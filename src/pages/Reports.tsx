@@ -126,6 +126,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
     const columns = React.useMemo(() => [{ Header: 'null', accessor: 'null', type: 'null' }] as any, []);
     const [allParameters, setAllParameters] = useState({});
     const [openModal, setOpenModal] = useState(false);
+    const [view, setView] = useState('GRID');
 
     if (multiData.length > 0) {
         reportColumns.forEach(x => {
@@ -366,19 +367,41 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                             ))}
                                         </>
                                     )}
-                                    // ButtonsElement={() => (
-                                    //     <>
-                                    //         <Button
-                                    //             className={classes.button}
-                                    //             variant="contained"
-                                    //             color="primary"
-                                    //             disabled={mainPaginated.loading || !(mainPaginated.data.length > 0)}
-                                    //             onClick={() => setOpenModal(true)}
-                                    //         >
-                                    //             {t(langKeys.graphic_view)}
-                                    //         </Button>
-                                    //     </>
-                                    // )}
+                                    ButtonsElement={() => (
+                                        <>
+                                            {view === 'GRID' &&
+                                                <Button
+                                                    className={classes.button}
+                                                    variant="contained"
+                                                    color="primary"
+                                                    disabled={mainPaginated.loading || !(mainPaginated.data.length > 0)}
+                                                    onClick={() => setOpenModal(true)}
+                                                >
+                                                    {t(langKeys.graphic_view)}
+                                                </Button>
+                                            }
+                                            {view === 'CHART' &&
+                                                <React.Fragment>
+                                                    <Button
+                                                        className={classes.button}
+                                                        variant="contained"
+                                                        color="primary"
+                                                        onClick={() => setOpenModal(true)}
+                                                    >
+                                                        {t(langKeys.configuration)}
+                                                    </Button>
+                                                    <Button
+                                                        className={classes.button}
+                                                        variant="contained"
+                                                        color="primary"
+                                                        onClick={() => setView('GRID')}
+                                                    >
+                                                        {t(langKeys.grid_view)}
+                                                    </Button>
+                                                </React.Fragment>
+                                            }
+                                        </>
+                                    )}
                                     download={true}
                                     fetchData={fetchData}
                                     exportPersonalized={triggerExportData}
@@ -393,6 +416,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
             <SummaryGraphic 
                 openModal={openModal}
                 setOpenModal={setOpenModal}
+                setView={setView}
                 row={row}
                 daterange={fetchDataAux.daterange}
                 filters={fetchDataAux.filters}
@@ -406,6 +430,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
 interface SummaryGraphicProps {
     openModal: boolean;
     setOpenModal: (value: boolean) => void;
+    setView: (value: string) => void;
     row: Dictionary | null;
     daterange: any;
     filters: Dictionary;
@@ -413,7 +438,7 @@ interface SummaryGraphicProps {
     columnsprefix: string;
 }
 
-const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal, row, daterange, filters, columns, columnsprefix }) => {
+const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal, setView, row, daterange, filters, columns, columnsprefix }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const mainGraphicRes = useSelector(state => state.main.mainGraphic);
@@ -444,8 +469,13 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
     }
 
     useEffect(() => {
-        console.log(mainGraphicRes.data)
-        setOpenModal(false);
+        if (openModal) {
+            if (!mainGraphicRes.loading && !mainGraphicRes.error) {
+                console.log(mainGraphicRes.data)
+                setOpenModal(false);
+                setView('CHART');
+            }
+        }
     }, [mainGraphicRes])
 
     return (
