@@ -1,14 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, Fragment, useEffect, useState, useMemo } from 'react'; // we need this to make JSX compile
+import React, { FC, Fragment, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateSwitch, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, IOSSwitch } from 'components';
 import { billingSupportIns, getBillingConfigurationSel, getBillingSupportSel, getPlanSel, getPaymentPlanSel, billingConfigurationIns, getBillingConversationSel, billingConversationIns, getBillingNotificationSel, billingNotificationIns, getOrgSelList, getCorpSel, getLocaleDateString, getAppsettingInvoiceSel, updateAppsettingInvoice, getValuesFromDomainCorp, getBillingMessagingSel, billingMessagingIns } from 'common/helpers';
-import { cleanMemoryTable } from 'store/main/actions';
+import { cleanMemoryTable, setMemoryTable } from 'store/main/actions';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
-import { buildQueryFilters, useQueryParams } from 'components/fields/table-paginated';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
@@ -1767,6 +1766,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
     );
 }
 
+const IDCONVERSATIONCOST = 'IDCONVERSATIONCOST';
 const ConversationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const dispatch = useDispatch();
 
@@ -1798,7 +1798,9 @@ const ConversationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
 
     useEffect(() => {
         search()
-
+        dispatch(setMemoryTable({
+            id: IDCONVERSATIONCOST
+        }))
         return () => {
             dispatch(cleanMemoryTable());
         }
@@ -1994,15 +1996,9 @@ const ConversationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                     loading={mainResult.mainData.loading}
                     register={true}
                     handleRegister={handleRegister}
-                    pageSizeDefault={memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize}
-                    initialPageIndex={memoryTable.page === -1 ? 0 : memoryTable.page}
-                    initialStateFilter={Object.entries(memoryTable.filters).map(([key, value]) => ({
-                        id: key, value: {
-                            value: value.value,
-                            operator: value.operator,
-                            type: 'string'
-                        }
-                    }))}
+                    pageSizeDefault={IDCONVERSATIONCOST === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                    initialPageIndex={IDCONVERSATIONCOST === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                    initialStateFilter={IDCONVERSATIONCOST === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
                 />
             </Fragment>
         )
@@ -2229,7 +2225,7 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
         </div>
     );
 }
-
+const IDNOTIFICATIONCOST = "IDNOTIFICATIONCOST";
 const NotificationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const dispatch = useDispatch();
 
@@ -2262,6 +2258,9 @@ const NotificationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
 
     useEffect(() => {
         search()
+        dispatch(setMemoryTable({
+            id: IDNOTIFICATIONCOST
+        }))
         return () => {
             dispatch(cleanMemoryTable());
         }
@@ -2522,13 +2521,9 @@ const NotificationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                     loading={mainResult.mainData.loading}
                     register={true}
                     handleRegister={handleRegister}
-                    pageSizeDefault={memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize}
-                    initialPageIndex={memoryTable.page === -1 ? 0 : memoryTable.page}
-                    initialStateFilter={Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value: {
-                        value: value.value,
-                        operator: value.operator,
-                        type: 'string'
-                    } }))}
+                    pageSizeDefault={IDNOTIFICATIONCOST === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                    initialPageIndex={IDNOTIFICATIONCOST === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                    initialStateFilter={IDNOTIFICATIONCOST === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
                 />
             </Fragment>
         )

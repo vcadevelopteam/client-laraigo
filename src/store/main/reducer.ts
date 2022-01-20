@@ -12,11 +12,13 @@ export interface itemMulti {
 export interface IFilter {
     value: string;
     operator: string;
+    type: string;
 }
 
 export interface IMemoryTable {
     page: number;
     pageSize: number;
+    id: string;
     filters: { [key: string]: IFilter }
 }
 
@@ -58,6 +60,7 @@ export const initialState: IState = {
     exportData: { ...initialCommon },
     exportDynamicData: { ...initialCommon },
     memoryTable: {
+        id: "",
         page: -1,
         pageSize: -1,
         filters: {}
