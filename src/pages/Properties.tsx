@@ -10,7 +10,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SaveIcon from '@material-ui/icons/Save';
 import TableZyx from '../components/fields/table-simple';
 import Typography from '@material-ui/core/Typography';
-import { cleanMemoryTable } from 'store/main/actions';
+import { cleanMemoryTable, setMemoryTable } from 'store/main/actions';
 import { Box } from '@material-ui/core';
 import { Dictionary, MultiData } from '@types';
 import { FieldEdit, FieldEditArray, FieldSelect, FieldView, TemplateBreadcrumbs, TemplateSwitchArray, TitleDetail } from 'components';
@@ -58,6 +58,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+const IDPROPERTIES = 'IDPROPERTIES';
 const Properties: FC = () => {
     const [categoryFilter, setCategoryFilter] = useState('');
     const [levelFilter, setLevelFilter] = useState('');
@@ -137,6 +138,9 @@ const Properties: FC = () => {
             getCorpSel(0),
             getOrgSel(0),
         ]));
+        dispatch(setMemoryTable({
+            id: IDPROPERTIES
+        }))
         return () => {
             dispatch(cleanMemoryTable());
             dispatch(resetMain());
@@ -214,13 +218,9 @@ const Properties: FC = () => {
                     loading={mainResult.loading}
                     register={['SUPERADMIN'].includes(user?.roledesc || "")}
                     handleRegister={handleRegister}
-                    pageSizeDefault={memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize}
-                    initialPageIndex={memoryTable.page === -1 ? 0 : memoryTable.page}
-                    initialStateFilter={Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value: {
-                        value: value.value,
-                        operator: value.operator,
-                        type: 'string'
-                    } }))}
+                    pageSizeDefault={IDPROPERTIES === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                    initialPageIndex={IDPROPERTIES === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                    initialStateFilter={IDPROPERTIES === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
                 />
             </div>
         )
