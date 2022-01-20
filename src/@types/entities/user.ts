@@ -41,6 +41,7 @@ export interface IUser {
     /**SUPERADMIN | ASESOR | ... */
     roledesc: string;
     corpdesc: string;
+    plan: string;
     orgdesc: string;
     redirect: string;
     userid: number;
