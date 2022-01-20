@@ -5,7 +5,8 @@ import actionTypes from "./actionTypes";
 
 interface IDashboardData {
     [key: string]: {
-        contentType: string; // kpi | report
+        /**kpi | report */
+        contentType: string;
         data: {
             // contentType: report
             [label: string]: number;
@@ -16,7 +17,8 @@ interface IDashboardData {
             alertat: number;
             currentvalue: number;
         };
-        reportname?: string; // solo en contentType: report
+        /**solo en contentType: report */
+        reportname?: string;
         /**
          * Array Json
          * 
@@ -27,8 +29,23 @@ interface IDashboardData {
          *  hasFilter: boolean;
          * }
          */
-        columnjson?: string;
-        columns?: { columnname: string, alias: string }[];  // solo en contentType: report
+        // columnjson?: string;
+        /**solo en contentType: report */
+        dataorigin?: string;
+        /**solo en contentType: report */
+        columns?: {
+            tablename: string;
+            /**accessor */
+            columnname: string;
+            description: string;
+            type: string;
+            join_table: any;
+            join_alias: any;
+            join_on: any;
+            disabled: boolean;
+            /**Header */
+            alias: string;
+        }[];
     }
 }
 
