@@ -1065,7 +1065,7 @@ const translation: LangKeys = {
     heatmapaverageagentTME: "Average first advisor reply heat map",
     averageheatmapTMOdata: "Average TMO heat map",
     conversationheatmap: "Conversation heat map",
-    heatmapasesor: "Heat map by agent",
+    heatmapasesor: "Advisor heat map",
     heatmapticket: "Advisor who have answered at least one ticket heat map",
     currency: "Currency",
     givechannelname: "Give your channel a name",

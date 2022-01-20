@@ -260,13 +260,11 @@ const MainHeatMap: React.FC = () => {
             setdataMainHeatMap(prev=>({...prev, datetoshow: e}))
         }
         else {
-            let datetochange = new Date(e+"-02")
-            let mes = datetochange?.getMonth()+1
-            let year = datetochange?.getFullYear()
+            let year = +e.split('-')[0]
+            let mes = +e.split('-')[1]
             let startdate = new Date(year, mes-1, 1)
             let enddate = new Date(year, mes, 0)
-            let datetoshow = `${startdate.getFullYear()}-${String(startdate.getMonth()+1).padStart(2, '0')}`
-            setdataMainHeatMap(prev=>({...prev,startdate,enddate,datetoshow}))
+            setdataMainHeatMap(prev=>({...prev,startdate,enddate, datetoshow: e}))
         }
     }
 
@@ -1191,10 +1189,11 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
         || (typeof(row[column.id]) === 'string' && row[column.id] !== '00:00:00'))) {
             setModalRow(row);
             const day = column.id.replace('day','');
-            const user = listadvisers.filter((x:any)=>x.userid === row.userid)[0]?.userdesc
+            //const user = listadvisers.filter((x:any)=>x.userid === row.userid)[0]?.userdesc;
+            const user = (multiData.data[1]?.data||[]).filter((x:any)=>x.userid === row.userid)[0]?.userdesc
             switch (grid) {
                 case 'COMPLETED':
-                    setModalTitle(`Tickets ${user} ${t(langKeys.day)} ${day}`)
+                    setModalTitle(`Tickets ${capitalize(user || '')} ${t(langKeys.day)} ${day}`)
                     setModalColumns([
                         { Header: t(langKeys.ticket), accessor: 'ticketnum',
                             Cell: (props: any) => {
@@ -1211,7 +1210,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                     ])
                     break;
                 case 'ABANDONED':
-                    setModalTitle(`Tickets ${user} ${t(langKeys.day)} ${day}`)
+                    setModalTitle(`Tickets ${capitalize(user || '')} ${t(langKeys.day)} ${day}`)
                     setModalColumns([
                         { Header: t(langKeys.ticket), accessor: 'ticketnum',
                             Cell: (props: any) => {
@@ -1227,7 +1226,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                     ])
                     break;
                 case 'OPPORTUNITY':
-                    setModalTitle(`${t(langKeys.opportunity_plural)} ${user} ${t(langKeys.day)} ${day}`)
+                    setModalTitle(`${t(langKeys.opportunity_plural)} ${capitalize(user || '')} ${t(langKeys.day)} ${day}`)
                     setModalColumns([
                         { Header: t(langKeys.ticket), accessor: 'ticketnum',
                             Cell: (props: any) => {
@@ -1244,7 +1243,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                     ])
                     break;
                 case 'OPPORTUNITYWON':
-                    setModalTitle(`${t(langKeys.opportunity_plural)} ${user} ${t(langKeys.day)} ${day}`)
+                    setModalTitle(`${t(langKeys.opportunity_plural)} ${capitalize(user || '')} ${t(langKeys.day)} ${day}`)
                     setModalColumns([
                         { Header: t(langKeys.ticket), accessor: 'ticketnum',
                             Cell: (props: any) => {
@@ -1873,13 +1872,11 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
             setdataMainHeatMap(prev=>({...prev, datetoshow: e}))
         }
         else {
-            let datetochange = new Date(e+"-02")
-            let mes = datetochange?.getMonth()+1
-            let year = datetochange?.getFullYear()
+            let year = +e.split('-')[0]
+            let mes = +e.split('-')[1]
             let startdate = new Date(year, mes-1, 1)
             let enddate = new Date(year, mes, 0)
-            let datetoshow = `${startdate.getFullYear()}-${String(startdate.getMonth()+1).padStart(2, '0')}`
-            setdataMainHeatMap(prev=>({...prev,startdate,enddate,datetoshow}))
+            setdataMainHeatMap(prev=>({...prev,startdate,enddate, datetoshow: e}))
         }
     }
     return (
@@ -2170,13 +2167,11 @@ const HeatMapTicket: React.FC = () => {
             setdataMainHeatMap(prev=>({...prev, datetoshow: e}))
         }
         else {
-            let datetochange = new Date(e+"-02")
-            let mes = datetochange?.getMonth()+1
-            let year = datetochange?.getFullYear()
+            let year = +e.split('-')[0]
+            let mes = +e.split('-')[1]
             let startdate = new Date(year, mes-1, 1)
             let enddate = new Date(year, mes, 0)
-            let datetoshow = `${startdate.getFullYear()}-${String(startdate.getMonth()+1).padStart(2, '0')}`
-            setdataMainHeatMap(prev=>({...prev,startdate,enddate,datetoshow}))
+            setdataMainHeatMap(prev=>({...prev,startdate,enddate, datetoshow: e}))
         }
     }
 
