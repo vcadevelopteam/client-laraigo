@@ -102,7 +102,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const [showCredential, setShowCredential] = useState(row?.private_mail || false);    
     const uploadResult = useSelector(state => state.main.uploadFile);
     const [valuefile, setvaluefile] = useState('')
-    const [doctype, setdoctype] = useState(row?.doctype || '')
+    const [doctype, setdoctype] = useState((row?.sunatcountry) ==="PE" ? "1" : "0")
     const [idUpload, setIdUpload] = useState('');
     const [iconupload, seticonupload] = useState('');
     const [iconsurl, seticonsurl] = useState({
@@ -469,7 +469,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     disabled={doctype==="0"}
                                     onChange={(value) => {setValue("doctype", value?.domainvalue || "");setdoctype(value?.domainvalue || "")}}
                                     error={errors?.doctype?.message}
-                                    data={dataDocType}
+                                    data={doctype === "1" ? dataDocType.filter(x=>x.domainvalue!=="0"):dataDocType}
                                     optionDesc="domaindesc"
                                     optionValue="domainvalue"
                                 />
