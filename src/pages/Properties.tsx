@@ -720,10 +720,9 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                 }
                 break;
 
-            case 'TEXT':
-            case 'TIME':
-            case '':
             case null:
+            case '':
+            case 'TEXT':
                 if (edit) {
                     valueInput =
                         <FieldEdit
@@ -737,6 +736,28 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                                 })
                             }}*/
                             label={t(langKeys.value)}
+                            onChange={(value) => setValue(`table.${index}.propertyvalue`, value)}
+                            valueDefault={row ? (row.propertyvalue || '') : ''}
+                        />
+                }
+                else {
+                    valueInput =
+                        <FieldView
+                            className={classes.mb2}
+                            label={t(langKeys.value)}
+                            value={row?.propertyvalue || ''}
+                        />
+                }
+                break;
+
+            case 'TIME':
+                if (edit) {
+                    valueInput =
+                        <FieldEdit
+                            type='time'
+                            label={t(langKeys.value)}
+                            error={errors?.table?.[index]?.propertyvalue?.message}
+                            className={classes.mb2}
                             onChange={(value) => setValue(`table.${index}.propertyvalue`, value)}
                             valueDefault={row ? (row.propertyvalue || '') : ''}
                         />
