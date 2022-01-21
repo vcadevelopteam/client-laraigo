@@ -86,6 +86,7 @@ const SearchField: FC<Props> = ({ colorPlaceHolder, handleChangeOther, handleSub
             setvalue('')
             setCleanState && setCleanState(false);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [cleanState]);
 
     return (

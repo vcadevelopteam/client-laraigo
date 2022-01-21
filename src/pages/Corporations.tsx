@@ -3,8 +3,8 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TemplateSwitch, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldUploadImage } from 'components';
-import { getBusinessDocType, getCorpSel, getPaymentPlanSel, getValuesFromDomain, getValuesFromDomainCorp, insCorp } from 'common/helpers';
+import { TemplateIcons, TemplateBreadcrumbs, TemplateSwitch, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
+import {  getCorpSel, getPaymentPlanSel, getValuesFromDomain, getValuesFromDomainCorp, insCorp } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';

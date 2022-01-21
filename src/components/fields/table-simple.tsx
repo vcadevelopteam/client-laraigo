@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import Table from '@material-ui/core/Table';
 import Button from '@material-ui/core/Button';
@@ -168,6 +169,8 @@ export const numberOptionsMenu = [
     { key: 'greaterorequals', value: 'greaterorequals' },
     { key: 'less', value: 'less' },
     { key: 'lessorequals', value: 'lessorequals' },
+    { key: 'isempty', value: 'isempty' },
+    { key: 'isnotempty', value: 'isnotempty' },
     // { key: 'isnull', value: 'isnull' },
     // { key: 'isnotnull', value: 'isnotnull' },
 ];
@@ -528,9 +531,9 @@ const TableZyx = React.memo(({
                         case 'lessorequals':
                             return cellvalue <= Number(value);
                         case 'isnull':
-                            return cellvalue == null;
+                            return cellvalue === "";
                         case 'isnotnull':
-                            return cellvalue != null;
+                            return cellvalue !== "";
                         case 'notequals':
                             return cellvalue !== Number(value);
                         case 'equals':
@@ -548,9 +551,9 @@ const TableZyx = React.memo(({
                         case 'beforeequals':
                             return cellvalue <= value;
                         case 'isnull':
-                            return cellvalue == null;
+                            return cellvalue === "";
                         case 'isnotnull':
-                            return cellvalue != null;
+                            return cellvalue !== "";
                         case 'notequals':
                             return cellvalue !== value;
                         case 'equals':

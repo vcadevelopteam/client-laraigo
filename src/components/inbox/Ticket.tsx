@@ -107,6 +107,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
         } else {
             setDateToClose(null)
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dictAutoClose, dictAutoCloseHolding, countnewmessages, userType, agentSelected?.userid, communicationchannelid, lastreplyuser])
 
 

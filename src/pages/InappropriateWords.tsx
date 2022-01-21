@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect } from 'components';
-import { dictToArrayKV, exportExcel, getInappropriateWordsSel, getValuesFromDomain, insarrayInappropriateWords, insInappropriateWords, templateMaker, uploadExcel } from 'common/helpers';
+import { exportExcel, getInappropriateWordsSel, getValuesFromDomain, insarrayInappropriateWords, insInappropriateWords, templateMaker, uploadExcel } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';

@@ -513,7 +513,7 @@ const TableZyx = React.memo(({
 
     const setFilters = (filters: any, page: number) => {
         setPagination(prev => {
-            const pageIndex = !page ? prev.pageIndex : page;
+            // const pageIndex = !page ? prev.pageIndex : page;
             return { ...prev, filters, pageIndex: 0, trigger: true }
         });
     };
@@ -925,7 +925,7 @@ export function useQueryParams(query: URLSearchParams, options: IOptions = { ign
         });
 
         return map;
-    }, [query]);
+    }, [options, query]);
 }
 
 export function buildQueryFilters(
