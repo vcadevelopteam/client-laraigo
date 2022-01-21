@@ -33,6 +33,7 @@ import ReportPersonalized, { IReport } from 'components/personalizedreport/Repor
 import Heatmap from './Heatmap';
 import RecordHSMRecord from './RecordHSMReport';
 import { useForm } from 'react-hook-form';
+import AssessmentIcon from '@material-ui/icons/Assessment';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -385,6 +386,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                                 color="primary"
                                                 disabled={mainPaginated.loading || !(mainPaginated.data.length > 0)}
                                                 onClick={() => setOpenModal(true)}
+                                                startIcon={<AssessmentIcon />}
                                             >
                                                 {t(langKeys.graphic_view)}
                                             </Button>
@@ -525,7 +527,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                     className="col-12"
                     valueDefault={getValues('graphictype')}
                     error={errors?.graphictype?.message}
-                    onChange={(value) => setValue('graphictype', value?.value)}
+                    onChange={(value) => setValue('graphictype', value?.key)}
                     data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }]}
                     uset={true}
                     prefixTranslation="graphic_"
@@ -539,7 +541,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                     className="col-12"
                     valueDefault={getValues('column')}
                     error={errors?.column?.message}
-                    onChange={(value) => setValue('column', value?.value)}
+                    onChange={(value) => setValue('column', value?.key)}
                     data={columns.map(x => ({ key: x, value: x }))}
                     optionDesc="value"
                     optionValue="key"

@@ -7,7 +7,7 @@ import { langKeys } from 'lang/keys';
 import { useSelector } from 'hooks';
 import { Dictionary } from "@types";
 import { getDateCleaned } from 'common/helpers';
-
+import TableZyx from 'components/fields/table-simple';
 import SearchIcon from '@material-ui/icons/Search';
 import Button from '@material-ui/core/Button';
 import { Range } from 'react-date-range';
@@ -15,7 +15,8 @@ import { CalendarIcon } from 'icons';
 import { DateRangePicker } from 'components';
 import { CircularProgress } from '@material-ui/core';
 import { XAxis, YAxis, ResponsiveContainer, Tooltip as ChartTooltip, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, LabelList } from 'recharts';
-
+import ListIcon from '@material-ui/icons/List';
+import SettingsIcon from '@material-ui/icons/Settings';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -102,7 +103,6 @@ interface IGraphic {
 
 const RADIAN = Math.PI / 180;
 const RenderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, summary, ...rest }: Dictionary) => {
-    console.log(rest)
     const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
@@ -114,7 +114,60 @@ const RenderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
     );
 };
 
-const Graphic: FC<IGraphic> = ({ graphicType, column, openModal, setOpenModal, setView, FiltersElement, row, daterange, handlerSearchGraphic }) => {
+const TableResume: FC<{ graphicType: string; data: Dictionary[] }> = ({ data, graphicType }) => {
+    const { t } = useTranslation();
+
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.field),
+                accessor: 'columnname',
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+
+                    if (graphicType === "BAR")
+                        return row.columnname;
+                    return (
+                        <div style={{ display: 'flex', gap: 4 }}>
+                            <div style={{ width: 15, height: 15, backgroundColor: row.color }}></div>
+                            {row.columnname}
+                        </div>
+                    )
+                }
+            },
+            {
+                Header: t(langKeys.quantity),
+                accessor: 'summary',
+                NoFilter: true,
+                type: 'number'
+            },
+            {
+                Header: t(langKeys.percentage),
+                accessor: 'percentage',
+                NoFilter: true,
+                type: 'number'
+            },
+        ],
+        []
+    );
+
+    return (
+        <div>
+            <TableZyx
+                columns={columns}
+                // titlemodule={t(langKeys.personAverageReplyTimexFecha)}
+                data={data}
+                download={false}
+                pageSizeDefault={10}
+                filterGeneral={false}
+                toolsFooter={false}
+            />
+        </div>
+    )
+}
+
+const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, FiltersElement, row, daterange, handlerSearchGraphic }) => {
     const classes = useStyles();
     const { t } = useTranslation();
     const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
@@ -125,13 +178,14 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, openModal, setOpenModal, s
         endDate: new Date(`${daterange.endDate} 10:00:00`),
         key: 'selection'
     });
-
     const mainGraphicRes = useSelector(state => state.main.mainGraphic);
     useEffect(() => {
         if (!mainGraphicRes.loading && !mainGraphicRes.error) {
+            const total = mainGraphicRes.data.reduce((acc, item) => acc + parseInt(item.summary), 0)
             setDataGraphic(mainGraphicRes.data.map(x => ({
                 ...x,
                 summary: parseInt(x.summary),
+                percentage: parseFloat(((parseInt(x.summary) / total) * 100).toFixed(2)),
                 color: `#${randomColor()}`
             })));
         }
@@ -139,7 +193,7 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, openModal, setOpenModal, s
 
     return (
         <>
-            <Box className={classes.containerHeaderItem} justifyContent="space-between" alignItems="center" mb={1}>
+            <Box className={classes.containerHeaderItem} justifyContent="space-between" alignItems="center" >
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                     <DateRangePicker
                         open={openDateRangeModal}
@@ -174,6 +228,7 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, openModal, setOpenModal, s
                         variant="contained"
                         color="primary"
                         onClick={() => setOpenModal(true)}
+                        startIcon={<SettingsIcon />}
                     >
                         {t(langKeys.configuration)}
                     </Button>
@@ -182,13 +237,14 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, openModal, setOpenModal, s
                         variant="contained"
                         color="primary"
                         onClick={() => setView('GRID')}
+                        startIcon={<ListIcon />}
                     >
                         {t(langKeys.grid_view)}
                     </Button>
                 </div>
             </Box>
-            <div style={{ fontWeight: 500 }}>
-                Reporte gráfico de {t('report_' + row?.origin)} por {column}
+            <div style={{ fontWeight: 500, padding: 16 }}>
+                Reporte gráfico de {t('report_' + row?.origin)} por {t('report_' + row?.origin + '_' + column)}
             </div>
             {mainGraphicRes.loading ? (
                 <div style={{ flex: 1, height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -220,7 +276,10 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, openModal, setOpenModal, s
                         </ResponsiveContainer>
                     </div>
                     <div>
-                        tablita
+                        <TableResume
+                            graphicType={graphicType}
+                            data={dataGraphic}
+                        />
                     </div>
                 </div>
             ) : (
@@ -251,7 +310,10 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, openModal, setOpenModal, s
                         </ResponsiveContainer>
                     </div>
                     <div>
-                        tablita
+                        <TableResume
+                            graphicType={graphicType}
+                            data={dataGraphic}
+                        />
                     </div>
                 </div>
             ))}

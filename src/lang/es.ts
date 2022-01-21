@@ -175,6 +175,7 @@ const translation: LangKeys = {
     changeplan: "Cambiar de plan",
     property: 'Propiedad',
     property_plural: 'Propiedades',
+    percentage: "Porcentaje",
 
     groupconfig: "Configuración de Grupos",
 
@@ -1346,6 +1347,7 @@ const translation: LangKeys = {
     report_userproductivity_usersconnected: 'Asesores conectados',
 
     report_userproductivity_userid: 'Id',
+    report_userproductivity_usr: 'Usuario del asesor',
     report_userproductivity_user: 'Usuario del asesor',
     report_userproductivity_fullname: 'Asesor',
     report_userproductivity_hourfirstlogin: 'Hora de primer logueo',
@@ -1411,11 +1413,21 @@ const translation: LangKeys = {
     type_shippingtype_inbox: 'Envío desde inbox',
     type_shippingtype_chatflow: 'Envío desde flujo',
     
+    report_sentmessages: 'Reporte historial de envíos',
     report_sentmessages_api: 'Envío por API',
     report_sentmessages_lead: 'Envío desde oportunidades',
     report_sentmessages_person: 'Envío desde personas',
     report_sentmessages_inbox: 'Envío desde inbox',
     report_sentmessages_chatflow: 'Envío desde flujo',
+
+    report_sentmessages_name: 'Motivo de envío',
+    report_sentmessages_shippingdate: 'Fecha de envío',
+    report_sentmessages_from: 'Remitente',
+    report_sentmessages_total: 'Total',
+    report_sentmessages_satisfactory: 'Satisfactorio',
+    report_sentmessages_failed: 'Fallido',
+    report_sentmessages_satisfactoryp: '% Satisfactorio',
+    report_sentmessages_failedp: '% Fallido',
 
     "personalizedreport_conversation.context": "contexto de la conversación",
     "personalizedreport_conversation.personaveragereplytime": "tiempo promedio de respuesta de la persona de la conversación",
@@ -2685,6 +2697,10 @@ const translation: LangKeys = {
     dashboard_chartType_line: 'Gráfico de lineas',
     enterDashboardDescription: 'Ingrese la descripción del dashboard',
     moreOptions: 'Más opciones',
+    
+    reportfreeconversations: 'Conversaciones gratis',
+    userinitiatedconversations: 'Conversaciones iniciadas por el usuario',
+    businessinitiatedconversations: 'Conversaciones iniciadas por el negocio',
 };
 
 const esResource: ResourceLanguage = {
