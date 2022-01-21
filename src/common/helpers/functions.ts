@@ -105,6 +105,7 @@ export function downloadCSV(filename: string, data: Dictionary[], options: Downl
             // Se coloca el header en el mismo orden y cantidad
             headers = options.headers.join(';');
         } else {
+            // eslint-disable-next-line no-throw-literal
             throw 'El tipo de options.header no es valido';
         }
         

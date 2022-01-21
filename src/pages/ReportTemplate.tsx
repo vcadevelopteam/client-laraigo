@@ -529,7 +529,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                     </div>
                     <div className={`row-zyx ${classes.containerDetail}`} style={{ marginBottom: 0 }}>
                         <FieldEdit
-                            label={t(langKeys.title)} //transformar a multiselect
+                            label={t(langKeys.title)}
                             className="col-4"
                             onChange={(value) => setValue('description', value)}
                             valueDefault={row ? (row.description || "") : ""}
@@ -541,6 +541,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                             valueDefault={row?.dataorigin || 'ACTIVO'}
                             onChange={(value) => selectDataOrigin(value ? value.tablename : '')}
                             error={errors?.dataorigin?.message}
+                            disabled={!!row?.reporttemplateid}
                             data={dataTables}
                             triggerOnChangeOnFirst={true}
                             optionDesc="tablename"

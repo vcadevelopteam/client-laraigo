@@ -1168,7 +1168,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
     const [ventasxAsesorData, setventasxAsesorData] = useState<any>([]);
     const [ventasxAsesorTitle, setventasxAsesorTitle] = useState<any>([]);
     const [typeEfectiveness, settypeEfectiveness] = useState(true);
-    const [listadvisers, setlistadvisers] = useState<any>([]);
+    // const [listadvisers, setlistadvisers] = useState<any>([]);
     const dataAdvisor = [{domaindesc: t(langKeys.agent), domainvalue: "ASESOR"},{domaindesc: "Bot", domainvalue: "BOT"}]
     const dispatch = useDispatch();
     const [modalRow, setModalRow] = useState<Dictionary | null>(null);
@@ -1309,7 +1309,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
             let year = dataMainHeatMap.startdate?.getFullYear()
             let dateend = new Date(year, mes, 0).getDate()
             let arrayfree:any = []
-            setlistadvisers(multiData.data[1]?.data||[])
+            // setlistadvisers(multiData.data[1]?.data||[])
             let tempadviserlist = multiData.data[1]?.data||[]
             tempadviserlist.forEach((row:any) => {
                 
@@ -1850,7 +1850,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
             dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.date_format_error) }))
         }
         else {
-            setlistadvisers([])
+            // setlistadvisers([])
             setCompletadosxAsesorData([])
             setabandonosxAsesorData([])
             settasaAbandonosxAsesorData([])

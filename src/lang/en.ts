@@ -299,10 +299,12 @@ const translation: LangKeys = {
     role: 'Role',
     role_plural: 'Roles',
     next_activity: 'Next activity',
+    incorrent_password: "Password is incorrect",
     nextprogramedactivity: 'Next programed activity',
 
     no_reply_use_hsm: 'Conversation is closed or blocked for being out of the 24 hour sale.\nUse an HSM to contact the customer.',
-
+    password_different: "Passwords do not match",
+    password_not_allowed: "The password must contain at least 10 characters, a letter and a number",
     status: 'Status',
     status_plural: 'States',
 

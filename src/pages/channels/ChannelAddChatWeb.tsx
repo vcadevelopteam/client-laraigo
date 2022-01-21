@@ -1523,7 +1523,7 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
                 success: true,
             }));
         }
-    }, [dispatch, insertChannel]);
+    }, [dispatch, insertChannel, t]);
 
     useEffect(() => {
         if (editChannel.loading) return;

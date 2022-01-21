@@ -4,10 +4,10 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { FieldEditMulti, FieldSelect, GetIcon, Title } from 'components';
 import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, getPersonExport, exportExcel, templateMaker, uploadExcel, insPersonBody, insPersonCommunicationChannel, array_trimmer, convertLocalDate, getColumnsSel, personcommunicationchannelUpdateLockedArrayIns } from 'common/helpers';
-import { Dictionary, IDomain, IObjectState, IPerson, IPersonChannel, IPersonCommunicationChannel, IPersonConversation, IPersonDomains, IPersonImport, IPersonReferrer, IFetchData } from "@types";
+import { Dictionary, IObjectState, IPerson, IPersonChannel, IPersonCommunicationChannel, IPersonConversation, IPersonDomains, IPersonImport, IFetchData } from "@types";
 import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, TextField, MenuItem, Paper, InputBase } from '@material-ui/core';
 import clsx from 'clsx';
-import { BuildingIcon, DocNumberIcon, DocTypeIcon, EMailInboxIcon, GenderIcon, TelephoneIcon, WhatsappIcon, SearchIcon, FacebookMessengerIcon, FacebookWallIcon, WebMessengerIcon, TelegramIcon, InstagramIcon, AndroidIcon, AppleIcon, EmailIcon, YoutubeIcon, LineIcon, TwitterIcon } from 'icons';
+import { BuildingIcon, DocNumberIcon, DocTypeIcon, EMailInboxIcon, GenderIcon, TelephoneIcon, WhatsappIcon, SearchIcon } from 'icons';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -36,34 +36,34 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import { getLeadPhases, resetGetLeadPhases } from 'store/lead/actions';
 const urgencyLevels = [null, 'LOW', 'MEDIUM', 'HIGH']
 
-interface SelectFieldProps {
-    defaultValue?: string;
-    onChange: (value: string, desc: string) => void;
-    data: IDomain[];
-    loading: boolean;
-}
+// interface SelectFieldProps {
+//     defaultValue?: string;
+//     onChange: (value: string, desc: string) => void;
+//     data: IDomain[];
+//     loading: boolean;
+// }
 
-const DomainSelectField: FC<SelectFieldProps> = ({ defaultValue, onChange, data, loading }) => {
-    return (
-        <TextField
-            select
-            defaultValue={defaultValue}
-            fullWidth
-            variant="standard"
-            disabled={loading}
-        >
-            {data.map((option) => (
-                <MenuItem
-                    key={option.domainid}
-                    value={option.domainvalue}
-                    onClick={() => onChange(option.domainvalue, option.domaindesc)}
-                >
-                    {option.domaindesc}
-                </MenuItem>
-            ))}
-        </TextField>
-    );
-}
+// const DomainSelectField: FC<SelectFieldProps> = ({ defaultValue, onChange, data, loading }) => {
+//     return (
+//         <TextField
+//             select
+//             defaultValue={defaultValue}
+//             fullWidth
+//             variant="standard"
+//             disabled={loading}
+//         >
+//             {data.map((option) => (
+//                 <MenuItem
+//                     key={option.domainid}
+//                     value={option.domainvalue}
+//                     onClick={() => onChange(option.domainvalue, option.domaindesc)}
+//                 >
+//                     {option.domaindesc}
+//                 </MenuItem>
+//             ))}
+//         </TextField>
+//     );
+// }
 
 const usePhotoClasses = makeStyles(theme => ({
     accountPhoto: {
@@ -418,12 +418,10 @@ export const Person: FC = () => {
     const executeResult = useSelector(state => state.main.execute);
     const [waitExport, setWaitExport] = useState(false);
     const [waitImport, setWaitImport] = useState(false);
-    const [filterAgents, setFilterAgents] = useState('');
     const [openDialogTemplate, setOpenDialogTemplate] = useState(false)
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [personsSelected, setPersonsSelected] = useState<IPerson[]>([]);
     const [typeTemplate, setTypeTemplate] = useState<"HSM" | "SMS" | "MAIL">('MAIL');
-    const phases = useSelector(state => state.lead.leadPhases);
 
     const query = useMemo(() => new URLSearchParams(location.search), [location]);
     const params = useQueryParams(query, { ignore: ['channelTypes'] });
@@ -583,7 +581,7 @@ export const Person: FC = () => {
             take: pageSize,
             sorts,
             filters: filters,
-            userids: filterAgents,
+            userids: '',
             channeltypes: filterChannelsType
         })));
     }
@@ -1469,67 +1467,67 @@ export const PersonDetail: FC = () => {
     );
 }
 
-const useReferrerItemStyles = makeStyles(theme => ({
-    root: {
-        border: '#EBEAED solid 1px',
-        borderRadius: 5,
-        padding: theme.spacing(2),
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(1),
-    },
-    item: {
-        display: 'flex',
-        flexDirection: 'column',
-    },
-    itemLabel: {
-        color: '#8F92A1',
-        fontSize: 14,
-        fontWeight: 400,
-        margin: 0,
-    },
-    itemText: {
-        color: theme.palette.text.primary,
-        fontSize: 15,
-        fontWeight: 400,
-        margin: '6px 0',
-    },
-}));
+// const useReferrerItemStyles = makeStyles(theme => ({
+//     root: {
+//         border: '#EBEAED solid 1px',
+//         borderRadius: 5,
+//         padding: theme.spacing(2),
+//         marginTop: theme.spacing(1),
+//         marginBottom: theme.spacing(1),
+//     },
+//     item: {
+//         display: 'flex',
+//         flexDirection: 'column',
+//     },
+//     itemLabel: {
+//         color: '#8F92A1',
+//         fontSize: 14,
+//         fontWeight: 400,
+//         margin: 0,
+//     },
+//     itemText: {
+//         color: theme.palette.text.primary,
+//         fontSize: 15,
+//         fontWeight: 400,
+//         margin: '6px 0',
+//     },
+// }));
 
-interface ReferrerItemProps {
-    referrer: IPersonReferrer;
-}
+// interface ReferrerItemProps {
+//     referrer: IPersonReferrer;
+// }
 
-const ReferrerItem: FC<ReferrerItemProps> = ({ referrer }) => {
-    const classes = useReferrerItemStyles();
+// const ReferrerItem: FC<ReferrerItemProps> = ({ referrer }) => {
+//     const classes = useReferrerItemStyles();
 
-    return (
-        <div className={classes.root}>
-            <Grid container direction="row">
-                <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
-                    <Property
-                        title={<Trans i18nKey={langKeys.name} />}
-                        subtitle={referrer.name}
-                        m={1}
-                    />
-                </Grid>
-                <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
-                    <Property
-                        title={<Trans i18nKey={langKeys.docType} />}
-                        subtitle={referrer.documenttype}
-                        m={1}
-                    />
-                </Grid>
-                <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
-                    <Property
-                        title={<Trans i18nKey={langKeys.docNumber} />}
-                        subtitle={referrer.documentnumber}
-                        m={1}
-                    />
-                </Grid>
-            </Grid>
-        </div>
-    );
-}
+//     return (
+//         <div className={classes.root}>
+//             <Grid container direction="row">
+//                 <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+//                     <Property
+//                         title={<Trans i18nKey={langKeys.name} />}
+//                         subtitle={referrer.name}
+//                         m={1}
+//                     />
+//                 </Grid>
+//                 <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+//                     <Property
+//                         title={<Trans i18nKey={langKeys.docType} />}
+//                         subtitle={referrer.documenttype}
+//                         m={1}
+//                     />
+//                 </Grid>
+//                 <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+//                     <Property
+//                         title={<Trans i18nKey={langKeys.docNumber} />}
+//                         subtitle={referrer.documentnumber}
+//                         m={1}
+//                     />
+//                 </Grid>
+//             </Grid>
+//         </div>
+//     );
+// }
 
 interface GeneralInformationTabProps {
     person: IPerson;
@@ -1542,7 +1540,7 @@ interface GeneralInformationTabProps {
 const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValues, setValue, domains, errors }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const referrerList = useSelector(state => state.person.personReferrerList);
+    // const referrerList = useSelector(state => state.person.personReferrerList);
 
     useEffect(() => {
         if (person.referringpersonid) {

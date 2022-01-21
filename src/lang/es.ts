@@ -971,8 +971,10 @@ const translation: LangKeys = {
     selected_plural: 'Seleccionados',
     select_a_field_then_add_it: 'Seleccione un campo y luego añadelo',
 
+    incorrent_password: "La contraseña es incorrecta",
     successful_close_ticket: 'El ticket fue cerrado satisfactoriamente',
-    
+    password_different: "Las contraseñas no coinciden",
+    password_not_allowed: "La contraseña debe contaner al menos 10 caracteres, una letra y un número",
     successful_suspend_ticket: 'El ticket fue suspendido satisfactoriamente',
     successful_reactivate_ticket: 'El ticket fue reactivado satisfactoriamente',
     confirmation_changepassword: "¿Desea cambiar la constraseña?",
