@@ -403,16 +403,14 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
         setValue('change_password_on_login', data?.pwdchangefirstlogin);
     }, [data]);
 
-    const validateSamePassword = (value: string): any => {
-        return getValues('password') === value;
-    }
+    const validateSamePassword = (value: string): any => getValues('password') === value;
 
     useEffect(() => {
         register('password', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('confirmpassword', {
             validate: {
                 validate: (value: any) => (value && value.length) || t(langKeys.field_required),
-                same: (value: any) => validateSamePassword(value) || "Contraseñas no coinciden"
+                same: (value: any) => validateSamePassword(value) || t(langKeys.password_different)
             }
         });
     }, [])
@@ -939,14 +937,14 @@ const Users: FC = () => {
     const executeResult = useSelector(state => state.main.execute);
     const executeRes = useSelector(state => state.activationuser.saveUser);
     const [dataUsers, setdataUsers] = useState<Dictionary[]>([]);
-    const [dataOrganizationsTmp, setdataOrganizationsTmp] = useState<Dictionary[]>([]);
+    // const [dataOrganizationsTmp, setdataOrganizationsTmp] = useState<Dictionary[]>([]);
     const [dataChannelsTemp, setdataChannelsTemp] = useState<Dictionary[]>([]);
     const [waitImport, setWaitImport] = useState(false);
     const [waitChanges, setwaitChanges] = useState(false);
     const domains = useSelector(state => state.person.editableDomains);
     const user = useSelector(state => state.login.validateToken.user);
     useEffect(() => {
-        setdataOrganizationsTmp(mainMultiResult.data[8] && mainMultiResult.data[8].success ? mainMultiResult.data[8].data : [])
+        // setdataOrganizationsTmp(mainMultiResult.data[8] && mainMultiResult.data[8].success ? mainMultiResult.data[8].data : [])
         setdataChannelsTemp(mainMultiResult.data[10] && mainMultiResult.data[10].success ? mainMultiResult.data[10].data : [])
     }, [mainMultiResult.data]);
     const [viewSelected, setViewSelected] = useState("view-1");

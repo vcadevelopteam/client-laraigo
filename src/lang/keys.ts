@@ -68,6 +68,7 @@ export const langKeys = {
     timemax: "timemax",
     targetvalue: "targetvalue",
     numberoflabels: "numberoflabels",
+    percentage: "percentage",
     new: 'new',
     qualified: 'qualified',
     chatimages: "chatimages",
@@ -364,6 +365,9 @@ export const langKeys = {
     changeplan: "changeplan",
     lowestTME: "lowestTME",
     objective: "objective",
+    password_different: "password_different",
+    password_not_allowed: "password_not_allowed",
+    incorrent_password: "incorrent_password",
     informationTMO: "informationTMO",
     informationTME: "informationTME",
     productivity: "productivity",
@@ -507,6 +511,7 @@ export const langKeys = {
     newcorporation: "newcorporation",
     corporationdetail: "corporationdetail",
     organizationdetail: "organizationdetail",
+    messagetemplatedetail: "messagetemplatedetail",
     neworganization: "neworganization",
     newiaservice: "newiaservice",
     newwhitelist: "newwhitelist",
@@ -737,6 +742,7 @@ export const langKeys = {
     graphic_pie: 'graphic_pie',
     graphic_bar: 'graphic_bar',
     graphic_view_by: 'graphic_view_by',
+    graphic_report_of: 'graphic_report_of',
     grid_view: 'grid_view',
 
     status_activo: 'status_activo',
@@ -1476,6 +1482,7 @@ export const langKeys = {
     report_userproductivity_usersconnected: 'report_userproductivity_usersconnected',
 
     report_userproductivity_userid: 'report_userproductivity_userid',
+    report_userproductivity_usr: 'report_userproductivity_usr',
     report_userproductivity_user: 'report_userproductivity_user',
     report_userproductivity_fullname: 'report_userproductivity_fullname',
     report_userproductivity_hourfirstlogin: 'report_userproductivity_hourfirstlogin',
@@ -1529,6 +1536,7 @@ export const langKeys = {
     report_userproductivity_filter_group: 'report_userproductivity_filter_group',
     report_userproductivity_filter_status: 'report_userproductivity_filter_status',
     report_userproductivity_filter_includebot: 'report_userproductivity_filter_includebot',
+    report_userproductivity_desconectedtimejson: 'report_userproductivity_desconectedtimejson',
 
     type_shippingtype_hsm: 'type_shippingtype_hsm',
     type_shippingtype_mail: 'type_shippingtype_mail',
@@ -1539,11 +1547,27 @@ export const langKeys = {
     type_shippingtype_inbox: 'type_shippingtype_inbox',
     type_shippingtype_chatflow: 'type_shippingtype_chatflow',
     
+    report_sentmessages: 'report_sentmessages',
     report_sentmessages_api: 'report_sentmessages_api',
     report_sentmessages_lead: 'report_sentmessages_lead',
     report_sentmessages_person: 'report_sentmessages_person',
     report_sentmessages_inbox: 'report_sentmessages_inbox',
     report_sentmessages_chatflow: 'report_sentmessages_chatflow',
+
+    report_sentmessages_API: 'report_sentmessages_API',
+    report_sentmessages_LEAD: 'report_sentmessages_LEAD',
+    report_sentmessages_PERSON: 'report_sentmessages_PERSON',
+    report_sentmessages_INBOX: 'report_sentmessages_INBOX',
+    report_sentmessages_CHATFLOW: 'report_sentmessages_CHATFLOW',
+
+    report_sentmessages_name: 'report_sentmessages_name',
+    report_sentmessages_shippingdate: 'report_sentmessages_shippingdate',
+    report_sentmessages_from: 'report_sentmessages_from',
+    report_sentmessages_total: 'report_sentmessages_total',
+    report_sentmessages_satisfactory: 'report_sentmessages_satisfactory',
+    report_sentmessages_failed: 'report_sentmessages_failed',
+    report_sentmessages_satisfactoryp: 'report_sentmessages_satisfactoryp',
+    report_sentmessages_failedp: 'report_sentmessages_failedp',
 
     "personalizedreport_conversation.userjoy": "personalizedreport_conversation.userjoy",
     "personalizedreport_conversation.userfear": "personalizedreport_conversation.userfear",
@@ -2702,6 +2726,12 @@ export const langKeys = {
     billingtypevalidation: 'billingtypevalidation',
     billingaddproduct: 'billingaddproduct',
     billingsubtotal: 'billingsubtotal',
+
+    copy: 'copy',
+    empty_dashboard_form_error: 'empty_dashboard_form_error',
+    chart_dashboard_report_error: 'chart_dashboard_report_error',
+    chart_dashboard_column_error: 'chart_dashboard_column_error',
+    chart_dashboard_unexpected_error: 'chart_dashboard_unexpected_error',
 };
 
 export type LangKeys = typeof langKeys;

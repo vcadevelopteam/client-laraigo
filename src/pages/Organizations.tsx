@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch } from 'components';
-import { getBusinessDocType, getCorpSel, getOrgSel, getValuesFromDomain, getValuesFromDomainCorp, insOrg } from 'common/helpers';
+import { getCorpSel, getOrgSel, getValuesFromDomain, getValuesFromDomainCorp, insOrg } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -101,8 +101,8 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const [showPassword, setShowPassword] = useState(false);
     const [showCredential, setShowCredential] = useState(row?.private_mail || false);    
     const uploadResult = useSelector(state => state.main.uploadFile);
-    const [valuefile, setvaluefile] = useState('')
-    const [doctype, setdoctype] = useState(row?.doctype || '')
+    // const [valuefile, setvaluefile] = useState('')
+    const [doctype, setdoctype] = useState((row?.sunatcountry) ==="PE" ? "1" : "0")
     const [idUpload, setIdUpload] = useState('');
     const [iconupload, seticonupload] = useState('');
     const [iconsurl, seticonsurl] = useState({
@@ -219,7 +219,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         const idd = new Date().toISOString()
         var fd = new FormData();
         fd.append('file', files, files.name);
-        setvaluefile('')
+        // setvaluefile('')
         setIdUpload(idd);
         dispatch(uploadFile(fd));
         setWaitSaveUpload(true)
@@ -469,7 +469,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     disabled={doctype==="0"}
                                     onChange={(value) => {setValue("doctype", value?.domainvalue || "");setdoctype(value?.domainvalue || "")}}
                                     error={errors?.doctype?.message}
-                                    data={dataDocType}
+                                    data={doctype === "1" ? dataDocType.filter(x=>x.domainvalue!=="0"):dataDocType}
                                     optionDesc="domaindesc"
                                     optionValue="domainvalue"
                                 />

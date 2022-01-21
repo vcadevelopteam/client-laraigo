@@ -173,12 +173,27 @@ const Dashboard: FC = () => {
         setSearchValue(valor);
     }
 
+    const dashboardCounter = () => {
+        let counter = 0;
+        if (t(langKeys.managerial).toLowerCase().includes(searchValue.toLowerCase())) {
+            counter++;
+        }
+        if (t(langKeys.productivity).toLowerCase().includes(searchValue.toLowerCase())) {
+            counter++;
+        }
+        if (t(langKeys.operationalpush).toLowerCase().includes(searchValue.toLowerCase())) {
+            counter++;
+        }
+
+        return counter += allDashboardsToShow.length;
+    }
+
     if (viewSelected === "view-1") {
         return (
             <div className={classes.container}>
                 <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
                     <span className={classes.title}>
-                        {t(langKeys.dashboard_plural)} ({allDashboardsToShow.length + 3})
+                        {t(langKeys.dashboard_plural)} ({dashboardCounter()})
                     </span>
                 </Box>
                 <Box className={classes.containerFilterGeneral}>

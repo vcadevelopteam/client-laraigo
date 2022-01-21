@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import Table from '@material-ui/core/Table';
 import Button from '@material-ui/core/Button';
@@ -157,8 +158,8 @@ export const stringOptionsMenu = [
     { key: 'notcontains', value: 'notcontains' },
     { key: 'isempty', value: 'isempty' },
     { key: 'isnotempty', value: 'isnotempty' },
-    { key: 'isnull', value: 'isnull' },
-    { key: 'isnotnull', value: 'isnotnull' },
+    // { key: 'isnull', value: 'isnull' },
+    // { key: 'isnotnull', value: 'isnotnull' },
 ];
 
 export const numberOptionsMenu = [
@@ -168,8 +169,10 @@ export const numberOptionsMenu = [
     { key: 'greaterorequals', value: 'greaterorequals' },
     { key: 'less', value: 'less' },
     { key: 'lessorequals', value: 'lessorequals' },
-    { key: 'isnull', value: 'isnull' },
-    { key: 'isnotnull', value: 'isnotnull' },
+    { key: 'isempty', value: 'isempty' },
+    { key: 'isnotempty', value: 'isnotempty' },
+    // { key: 'isnull', value: 'isnull' },
+    // { key: 'isnotnull', value: 'isnotnull' },
 ];
 
 export const dateOptionsMenu = [
@@ -179,8 +182,8 @@ export const dateOptionsMenu = [
     { key: 'afterequals', value: 'afterequals' },
     { key: 'before', value: 'before' },
     { key: 'beforeequals', value: 'beforeequals' },
-    { key: 'isnull', value: 'isnull' },
-    { key: 'isnotnull', value: 'isnotnull' },
+    // { key: 'isnull', value: 'isnull' },
+    // { key: 'isnotnull', value: 'isnotnull' },
 ];
 
 export const booleanOptionsMenu = [
@@ -358,7 +361,7 @@ const TableZyx = React.memo(({
 
         const setFilter = (filter: any) => {
             $setFilter(filter);
-            setTFilters(prev => ({ ...prev, filters: { ...prev.filters, [header]: filter } }));
+            setTFilters(prev => ({ ...prev, filters: { ...prev.filters, [header]: filter }, page: 0 }));
 
             dispatch(setMemoryTable({
                 filter: {
@@ -378,7 +381,7 @@ const TableZyx = React.memo(({
             if (type === 'boolean') {
                 setoperator(op)
                 setValue(op);
-                setFilter({ value, operator: op, type });
+                setFilter({ value: op, operator: op, type });
             } else if (type === "select") {
                 setValue(op);
                 setFilter({ value: op, operator: op, type });
@@ -507,9 +510,9 @@ const TableZyx = React.memo(({
     const filterCellValue = React.useCallback((rows, id, filterValue) => {
         const { value, operator, type } = filterValue;
         return rows.filter((row: any) => {
-            const cellvalue = row.values[id];
-            if (cellvalue === null || cellvalue === undefined)
-                return false;
+            const cellvalue = row.values[id] || "";
+            // if (cellvalue === undefined)
+            //     return false;
 
             // if (!(['isempty', 'isnotempty', 'isnull', 'isnotnull'].includes(operator) || type === 'boolean') && (value || '') === '')
             //     return true;
@@ -529,9 +532,9 @@ const TableZyx = React.memo(({
                         case 'lessorequals':
                             return cellvalue <= Number(value);
                         case 'isnull':
-                            return cellvalue == null;
+                            return cellvalue === "";
                         case 'isnotnull':
-                            return cellvalue != null;
+                            return cellvalue !== "";
                         case 'notequals':
                             return cellvalue !== Number(value);
                         case 'equals':
@@ -549,9 +552,9 @@ const TableZyx = React.memo(({
                         case 'beforeequals':
                             return cellvalue <= value;
                         case 'isnull':
-                            return cellvalue == null;
+                            return cellvalue === "";
                         case 'isnotnull':
-                            return cellvalue != null;
+                            return cellvalue !== "";
                         case 'notequals':
                             return cellvalue !== value;
                         case 'equals':
@@ -565,9 +568,9 @@ const TableZyx = React.memo(({
                         case 'isfalse':
                             return typeof (cellvalue) === 'string' ? cellvalue === 'false' : cellvalue === false;
                         case 'isnull':
-                            return cellvalue == null;
+                            return cellvalue === "";
                         case 'isnotnull':
-                            return cellvalue != null;
+                            return cellvalue !== "";
                         case 'all':
                         default:
                             return true;
@@ -593,7 +596,7 @@ const TableZyx = React.memo(({
                         case 'isnotnull':
                             return cellvalue != null;
                         case 'notcontains':
-                            return !cellvalue.toLowerCase().includes(value.toLowerCase());
+                            return !(cellvalue + "").toLowerCase().includes(value.toLowerCase());
                         case 'contains':
                         default:
                             return (cellvalue + "").toLowerCase().includes(value.toLowerCase());
@@ -634,7 +637,7 @@ const TableZyx = React.memo(({
     } = useTable({
         columns,
         data,
-        initialState: { pageIndex: initialPageIndex, pageSize: pageSizeDefault, selectedRowIds: initialSelectedRows || {}, filters: initialStateFilter || [] },
+        initialState: { pageIndex: tFilters.page, pageSize: pageSizeDefault, selectedRowIds: initialSelectedRows || {}, filters: initialStateFilter || [] },
         defaultColumn,
         getRowId: (row, relativeIndex: any, parent: any) => selectionKey
             ? (parent ? [row[selectionKey], parent].join('.') : row[selectionKey])
@@ -736,7 +739,7 @@ const TableZyx = React.memo(({
                     {helperText !== "" ? <Tooltip title={<div style={{ fontSize: 12 }}>{helperText}</div>} arrow placement="top" >
                         <InfoRoundedIcon color="action" className={classes.iconHelpText} />
                     </Tooltip> : ""}
-                </span> : (<div>
+                </span> : (<div style={{flexGrow: 1}}>
                     {ButtonsElement && <ButtonsElement />}
                 </div>)}
                 <span className={classes.containerButtons}>

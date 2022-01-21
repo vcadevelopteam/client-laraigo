@@ -5,9 +5,19 @@ import actionTypes from "./actionTypes";
 
 interface IDashboardData {
     [key: string]: {
+        /**
+         * True si no se pudo encontrar el reporte o la columna
+         */
+        error: boolean;
+        /**REPORT_NOT_FOUND | COLUMN_NOT_FOUND */
+        errorcode: string;
         /**kpi | report */
         contentType: string;
-        data: {
+        /**
+         * - Si el errorcode es REPORT_NOT_FOUND su valor es undefined
+         * - Si el errorcode es COLUMN_NOT_FOUND su valor es {} (objeto vacío)
+         * */
+        data?: {
             // contentType: report
             [label: string]: number;
         } | {
@@ -17,22 +27,23 @@ interface IDashboardData {
             alertat: number;
             currentvalue: number;
         };
-        /**solo en contentType: report */
+        /**
+         * Solo tiene valor en contentType: report, asi mismo,
+         * tiene posibilidad de undefined si hay un error a nivel de reporte
+         * y el errorcode sea REPORT_NOT_FOUND
+         * */
         reportname?: string;
         /**
-         * Array Json
-         * 
-         * type {
-         *  key: string;
-         *  value: string;
-         *  filter: string;
-         *  hasFilter: boolean;
-         * }
-         */
-        // columnjson?: string;
-        /**solo en contentType: report */
+         * Solo tiene valor en contentType: report, asi mismo,
+         * tiene posibilidad de undefined si hay un error a nivel de reporte
+         * y el errorcode sea REPORT_NOT_FOUND
+         * */
         dataorigin?: string;
-        /**solo en contentType: report */
+        /**
+         * Solo tiene valor en contentType: report, asi mismo,
+         * tiene posibilidad de undefined si hay un error a nivel de reporte
+         * y el errorcode sea REPORT_NOT_FOUND
+         * */
         columns?: {
             tablename: string;
             /**accessor */

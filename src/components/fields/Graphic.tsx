@@ -137,13 +137,13 @@ const TableResume: FC<{ graphicType: string; data: Dictionary[] }> = ({ data, gr
                 }
             },
             {
-                Header: t(langKeys.amount),
+                Header: t(langKeys.quantity),
                 accessor: 'summary',
                 NoFilter: true,
                 type: 'number'
             },
             {
-                Header: "Percentage",
+                Header: t(langKeys.percentage),
                 accessor: 'percentage',
                 NoFilter: true,
                 type: 'number'
@@ -184,6 +184,7 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
             const total = mainGraphicRes.data.reduce((acc, item) => acc + parseInt(item.summary), 0)
             setDataGraphic(mainGraphicRes.data.map(x => ({
                 ...x,
+                columnname: x.columnname?.startsWith('report_') ? t((langKeys as any)[x.columnname]) : x.columnname,
                 summary: parseInt(x.summary),
                 percentage: parseFloat(((parseInt(x.summary) / total) * 100).toFixed(2)),
                 color: `#${randomColor()}`
@@ -244,7 +245,7 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                 </div>
             </Box>
             <div style={{ fontWeight: 500, padding: 16 }}>
-                Reporte gráfico de {t('report_' + row?.origin)} por {t('report_' + row?.origin + '_' + column)}
+                {t(langKeys.graphic_report_of, {report: t('report_' + row?.origin), column: t('report_' + row?.origin + '_' + column)})}
             </div>
             {mainGraphicRes.loading ? (
                 <div style={{ flex: 1, height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -257,7 +258,7 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                             <BarChart
                                 width={500}
                                 height={300}
-                                data={mainGraphicRes.data}
+                                data={dataGraphic}
                                 margin={{
                                     top: 5,
                                     right: 30,

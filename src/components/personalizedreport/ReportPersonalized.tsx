@@ -2,7 +2,7 @@
 import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { TemplateBreadcrumbs, DateRangePicker, FieldEdit, FieldSelect } from 'components';
+import { TemplateBreadcrumbs, DateRangePicker, FieldEdit } from 'components';
 import { Dictionary } from "@types";
 import TableZyx from 'components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';

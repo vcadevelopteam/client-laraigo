@@ -3,8 +3,8 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TemplateSwitch, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldUploadImage } from 'components';
-import { getBusinessDocType, getCorpSel, getPaymentPlanSel, getValuesFromDomain, getValuesFromDomainCorp, insCorp } from 'common/helpers';
+import { TemplateIcons, TemplateBreadcrumbs, TemplateSwitch, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
+import {  getCorpSel, getPaymentPlanSel, getValuesFromDomain, getValuesFromDomainCorp, insCorp } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -209,7 +209,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [billbyorg, setbillbyorg] = useState(row?.billbyorg || false);    
-    const [doctype, setdoctype] = useState(row?.doctype || '')
+    const [doctype, setdoctype] = useState((row?.sunatcountry) ==="PE" ? "1" : "0")
     const dataDocType = multiData[3] && multiData[3].success ? multiData[3].data : [];
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
@@ -458,7 +458,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                     disabled={doctype==="0"}
                                     onChange={(value) => {setValue("doctype", value?.domainvalue || "");setdoctype(value?.domainvalue || "")}}
                                     error={errors?.doctype?.message}
-                                    data={dataDocType}
+                                    data={doctype === "1" ? dataDocType.filter(x=>x.domainvalue!=="0"):dataDocType}
                                     optionDesc="domaindesc"
                                     optionValue="domainvalue"
                                 />

@@ -428,6 +428,7 @@ export const getUserProductivityGraphic = ({ ...allParameters }: Dictionary): IR
     method: "UFN_REPORT_USERPRODUCTIVITY_GRAPHIC",
     key: "UFN_REPORT_USERPRODUCTIVITY_GRAPHIC",
     parameters: {
+        filters: {}, sorts: {},
         ...allParameters,
         channel: allParameters['channel'] ? allParameters['channel'] : "",
         userstatus: allParameters['userstatus'] ? allParameters['userstatus'] : "",
@@ -2310,7 +2311,7 @@ export const getRecordHSMGraphic = ({ startdate, enddate, column, summarization 
     method: "UFN_REPORT_SENTMESSAGES_GRAPHIC",
     key: "UFN_REPORT_SENTMESSAGES_GRAPHIC",
     parameters: {
-        startdate, enddate, column, summarization,
+        filters: {}, sorts: {}, startdate, enddate, column, summarization,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })

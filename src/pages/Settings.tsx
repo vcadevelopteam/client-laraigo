@@ -1,9 +1,9 @@
 import React, { FC, useEffect } from 'react';
-import { BoxProps, makeStyles, Box, Grid, IconButton } from '@material-ui/core';
+import { BoxProps, makeStyles, Box, Grid } from '@material-ui/core';
 import { Title } from 'components';
 import { langKeys } from 'lang/keys';
 import { Trans } from 'react-i18next';
-import { ChannelsIcon, ClassificationIcon, ConfigPropertiesIcon, DomainsIcon, EditPencilIcon, EmojiSadFaceIcon, ForbiddenWordsIcon, WhitelistIcon, IntegrationIcon, SLAIcon, InfoRoundedIcon, Corporation2Icon, OrganizationsIcon, QuickReplyIcon, UserGroupIcon } from 'icons';
+import { ChannelsIcon, ClassificationIcon, ConfigPropertiesIcon, DomainsIcon, EmojiSadFaceIcon, ForbiddenWordsIcon, IntegrationIcon, SLAIcon, Corporation2Icon, OrganizationsIcon, QuickReplyIcon, UserGroupIcon } from 'icons';
 import { useDispatch } from 'react-redux';
 import { getPropertySettings, getSetting, resetGetPropertySettings, resetGetSetting } from 'store/setting/actions';
 import { getCountConfigurationsBody, getPropertyConfigurationsBody } from 'common/helpers';
@@ -102,185 +102,185 @@ const ItemTile: FC<ItemTileProps> = ({ title, subtitle, icon, helpText, ...boxPr
     );
 }
 
-interface PropertyItemProps extends Omit<BoxProps, 'title'> {
-    title: React.ReactNode;
-    subtitle: React.ReactNode;
-}
+// interface PropertyItemProps extends Omit<BoxProps, 'title'> {
+//     title: React.ReactNode;
+//     subtitle: React.ReactNode;
+// }
 
-const usePropertyItemStyles = makeStyles(theme => ({
-    root: {
-        display: 'flex',
-        flexDirection: 'column',
-        width: 'inherit',
-        fontSize: 16,
-        fontWeight: 400,
-    },
-    title: {
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    subtitle: {
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        margin: '4px 0',
-    },
-    divider: {
-        height: 1,
-        backgroundColor: '#A59F9F',
-        width: 'inherit',
-    },
-    editIcon: {
-        width: 18,
-        height: 18,
-        fill: '#7721AD',
-    },
-    infoIcon: {
-        width: 17,
-        height: 17,
-        fill: '#381052',
-    },
-}));
+// const usePropertyItemStyles = makeStyles(theme => ({
+//     root: {
+//         display: 'flex',
+//         flexDirection: 'column',
+//         width: 'inherit',
+//         fontSize: 16,
+//         fontWeight: 400,
+//     },
+//     title: {
+//         display: 'flex',
+//         flexDirection: 'row',
+//         alignItems: 'center',
+//     },
+//     subtitle: {
+//         display: 'flex',
+//         flexDirection: 'row',
+//         justifyContent: 'space-between',
+//         alignItems: 'center',
+//         margin: '4px 0',
+//     },
+//     divider: {
+//         height: 1,
+//         backgroundColor: '#A59F9F',
+//         width: 'inherit',
+//     },
+//     editIcon: {
+//         width: 18,
+//         height: 18,
+//         fill: '#7721AD',
+//     },
+//     infoIcon: {
+//         width: 17,
+//         height: 17,
+//         fill: '#381052',
+//     },
+// }));
 
-const PropertyItem: FC<PropertyItemProps> = ({ title, subtitle, ...boxProps }) => {
-    const classes = usePropertyItemStyles();
+// const PropertyItem: FC<PropertyItemProps> = ({ title, subtitle, ...boxProps }) => {
+//     const classes = usePropertyItemStyles();
 
-    return (
-        <Box className={classes.root} {...boxProps}>
-            <span className={classes.title}>
-                {title}
-                <div style={{ width: 4 }} />
-                <InfoRoundedIcon className={classes.infoIcon} />
-            </span>
-            <div className={classes.subtitle}>
-                <span>{subtitle}</span>
-                <IconButton color="primary" size="small">
-                    <EditPencilIcon className={classes.editIcon} />
-                </IconButton>
-            </div>
-            <div className={classes.divider} />
-        </Box>
-    );
-}
+//     return (
+//         <Box className={classes.root} {...boxProps}>
+//             <span className={classes.title}>
+//                 {title}
+//                 <div style={{ width: 4 }} />
+//                 <InfoRoundedIcon className={classes.infoIcon} />
+//             </span>
+//             <div className={classes.subtitle}>
+//                 <span>{subtitle}</span>
+//                 <IconButton color="primary" size="small">
+//                     <EditPencilIcon className={classes.editIcon} />
+//                 </IconButton>
+//             </div>
+//             <div className={classes.divider} />
+//         </Box>
+//     );
+// }
 
-const PropertiesTileBody: FC = () => {
-    return (
-        <Grid container direction="row">
-            <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
-                <Grid container direction="column">
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                        <PropertyItem
-                            title={<Trans i18nKey={langKeys.maxNumOfTicketsperAdvisor} count={2} />}
-                            subtitle="10"
-                            m={1}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                        <PropertyItem
-                            title={(
-                                <>
-                                    <Trans i18nKey={langKeys.holdOnHolding} />
-                                    {' ('}
-                                    <Trans i18nKey={langKeys.message} />
-                                    {')'}
-                                </>
-                            )}
-                            subtitle="10"
-                            m={1}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                        <PropertyItem
-                            title={(
-                                <>
-                                    <Trans i18nKey={langKeys.sessionExpirationTIme} />
-                                    {' ('}
-                                    <Trans i18nKey={langKeys.agent} />
-                                    {')'}
-                                </>
-                            )}
-                            subtitle="10"
-                            m={1}
-                        />
-                    </Grid>
-                </Grid>
-            </Grid>
-            <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
-                <Grid container direction="column">
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                        <PropertyItem
-                            title={<Trans i18nKey={langKeys.automaticClosingTime} />}
-                            subtitle="10"
-                            m={1}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                        <PropertyItem
-                            title={(
-                                <>
-                                    <Trans i18nKey={langKeys.holdOnHolding} />
-                                    {' ('}
-                                    <Trans i18nKey={langKeys.sendingFrequency} />
-                                    {')'}
-                                </>
-                            )}
-                            subtitle="10"
-                            m={1}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                        <PropertyItem
-                            title={(
-                                <>
-                                    <Trans i18nKey={langKeys.sessionExpirationTIme} />
-                                    {' ('}
-                                    <Trans i18nKey={langKeys.supervisor} />
-                                    {')'}
-                                </>
-                            )}
-                            subtitle="10"
-                            m={1}
-                        />
-                    </Grid>
-                </Grid>
-            </Grid>
-            <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
-                <Grid container direction="column">
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                        <PropertyItem
-                            title={<Trans i18nKey={langKeys.outOfHoursAction} />}
-                            subtitle="10"
-                            m={1}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                        <PropertyItem
-                            title={<Trans i18nKey={langKeys.surveyExpirationTime} />}
-                            subtitle="10"
-                            m={1}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                        <PropertyItem
-                            title={(
-                                <>
-                                    <Trans i18nKey={langKeys.sessionExpirationTIme} />
-                                    {' ('}
-                                    <Trans i18nKey={langKeys.administrator} />
-                                    {')'}
-                                </>
-                            )}
-                            subtitle="10"
-                            m={1}
-                        />
-                    </Grid>
-                </Grid>
-            </Grid>
-        </Grid>
-    );
-}
+// const PropertiesTileBody: FC = () => {
+//     return (
+//         <Grid container direction="row">
+//             <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+//                 <Grid container direction="column">
+//                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+//                         <PropertyItem
+//                             title={<Trans i18nKey={langKeys.maxNumOfTicketsperAdvisor} count={2} />}
+//                             subtitle="10"
+//                             m={1}
+//                         />
+//                     </Grid>
+//                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+//                         <PropertyItem
+//                             title={(
+//                                 <>
+//                                     <Trans i18nKey={langKeys.holdOnHolding} />
+//                                     {' ('}
+//                                     <Trans i18nKey={langKeys.message} />
+//                                     {')'}
+//                                 </>
+//                             )}
+//                             subtitle="10"
+//                             m={1}
+//                         />
+//                     </Grid>
+//                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+//                         <PropertyItem
+//                             title={(
+//                                 <>
+//                                     <Trans i18nKey={langKeys.sessionExpirationTIme} />
+//                                     {' ('}
+//                                     <Trans i18nKey={langKeys.agent} />
+//                                     {')'}
+//                                 </>
+//                             )}
+//                             subtitle="10"
+//                             m={1}
+//                         />
+//                     </Grid>
+//                 </Grid>
+//             </Grid>
+//             <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+//                 <Grid container direction="column">
+//                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+//                         <PropertyItem
+//                             title={<Trans i18nKey={langKeys.automaticClosingTime} />}
+//                             subtitle="10"
+//                             m={1}
+//                         />
+//                     </Grid>
+//                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+//                         <PropertyItem
+//                             title={(
+//                                 <>
+//                                     <Trans i18nKey={langKeys.holdOnHolding} />
+//                                     {' ('}
+//                                     <Trans i18nKey={langKeys.sendingFrequency} />
+//                                     {')'}
+//                                 </>
+//                             )}
+//                             subtitle="10"
+//                             m={1}
+//                         />
+//                     </Grid>
+//                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+//                         <PropertyItem
+//                             title={(
+//                                 <>
+//                                     <Trans i18nKey={langKeys.sessionExpirationTIme} />
+//                                     {' ('}
+//                                     <Trans i18nKey={langKeys.supervisor} />
+//                                     {')'}
+//                                 </>
+//                             )}
+//                             subtitle="10"
+//                             m={1}
+//                         />
+//                     </Grid>
+//                 </Grid>
+//             </Grid>
+//             <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+//                 <Grid container direction="column">
+//                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+//                         <PropertyItem
+//                             title={<Trans i18nKey={langKeys.outOfHoursAction} />}
+//                             subtitle="10"
+//                             m={1}
+//                         />
+//                     </Grid>
+//                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+//                         <PropertyItem
+//                             title={<Trans i18nKey={langKeys.surveyExpirationTime} />}
+//                             subtitle="10"
+//                             m={1}
+//                         />
+//                     </Grid>
+//                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+//                         <PropertyItem
+//                             title={(
+//                                 <>
+//                                     <Trans i18nKey={langKeys.sessionExpirationTIme} />
+//                                     {' ('}
+//                                     <Trans i18nKey={langKeys.administrator} />
+//                                     {')'}
+//                                 </>
+//                             )}
+//                             subtitle="10"
+//                             m={1}
+//                         />
+//                     </Grid>
+//                 </Grid>
+//             </Grid>
+//         </Grid>
+//     );
+// }
 
 const useSettingsStyles = makeStyles(theme => ({
     root: {

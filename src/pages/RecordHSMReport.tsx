@@ -3,14 +3,14 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { DateRangePicker } from 'components';
-import { getDateCleaned, getRecordHSMList, getRecordHSMReport } from 'common/helpers';
+import { DateRangePicker, DialogZyx, FieldSelect } from 'components';
+import { getDateCleaned, getRecordHSMGraphic, getRecordHSMList, getRecordHSMReport } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { getMultiCollection, getMultiCollectionAux2, resetMultiMain } from 'store/main/actions';
+import { getMainGraphic, getMultiCollection, getMultiCollectionAux2, resetMultiMain } from 'store/main/actions';
 import { showBackdrop } from 'store/popus/actions';
 import { CalendarIcon } from 'icons';
 import { Range } from 'react-date-range';
@@ -18,6 +18,9 @@ import ClearIcon from '@material-ui/icons/Clear';
 import {
     Search as SearchIcon,
 } from '@material-ui/icons';
+import { useForm } from 'react-hook-form';
+import Graphic from 'components/fields/Graphic';
+import AssessmentIcon from '@material-ui/icons/Assessment';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -56,6 +59,17 @@ const useStyles = makeStyles((theme) => ({
         color: 'rgb(143, 146, 161)'
     },
 }));
+
+const columnsTemp = [
+    'name',
+    'shippingdate',
+    'from',
+    'total',
+    'satisfactory',
+    'failed',
+    'satisfactoryp',
+    'failedp'
+]
 
 const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { row }, setViewSelected }) => {
     const classes = useStyles();
@@ -179,6 +193,9 @@ const RecordHSMRecord: FC = () => {
     // const [shippingtype, setshippingtype] = useState("");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [gridData, setGridData] = useState<any[]>([]);
+    const [openModal, setOpenModal] = useState(false);
+    const [view, setView] = useState('GRID');
+    
     const columns = React.useMemo(
         () => [
             {
@@ -269,7 +286,7 @@ const RecordHSMRecord: FC = () => {
         if (!multiData.loading){
             setGridData(multiData.data[0]?.data.map(x => ({
                 ...x,
-                name_translated: x.name !== x.translationname?(t(`report_sentmessages_${x.name}`.toLowerCase()) || "").toUpperCase():x.name.toUpperCase(),
+                name_translated: x.name !== x.translationname?(t(`report_sentmessages_${x.name}`.toLowerCase()) || "").toUpperCase():x.name?.toUpperCase(),
             }))||[]);
             dispatch(showBackdrop(false));
         }
@@ -285,60 +302,111 @@ const RecordHSMRecord: FC = () => {
         setRowSelected({ row, edit: false });
     }
 
+    const handlerSearchGraphic = (daterange: any, column: string) => {
+        dispatch(getMainGraphic(getRecordHSMGraphic(
+            {
+                startdate: daterange?.startDate!,
+                enddate: daterange?.endDate!,
+                column,
+                summarization: 'COUNT'
+            }
+        )));
+    }
+
     if (viewSelected === "view-1") {
 
         return (
             <React.Fragment>
                 <div style={{ height: 10 }}></div>
-                <TableZyx
-                    onClickRow={handleView}    
-                    columns={columns}
-                    data={gridData}
-                    ButtonsElement={() => (
-                        <div className={classes.containerHeader} style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
-                            <DateRangePicker
-                                open={openDateRangeCreateDateModal}
-                                setOpen={setOpenDateRangeCreateDateModal}
-                                range={dateRangeCreateDate}
-                                onSelect={setDateRangeCreateDate}
-                            >
+                {view === "GRID" ? (
+                    <TableZyx
+                        onClickRow={handleView}    
+                        columns={columns}
+                        data={gridData}
+                        ButtonsElement={() => (
+                            <div className={classes.containerHeader} style={{display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'space-between'}}>
+                                <div style={{display: 'flex', gap: 8}}>
+                                    <DateRangePicker
+                                        open={openDateRangeCreateDateModal}
+                                        setOpen={setOpenDateRangeCreateDateModal}
+                                        range={dateRangeCreateDate}
+                                        onSelect={setDateRangeCreateDate}
+                                    >
+                                        <Button
+                                            className={classes.itemDate}
+                                            startIcon={<CalendarIcon />}
+                                            onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
+                                        >
+                                            {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
+                                        </Button>
+                                    </DateRangePicker>
+                                    {/* <FieldSelect
+                                        onChange={(value) => setshippingtype(value?.domainvalue||"")}
+                                        label={t(langKeys.shippingtype)}
+                                        loading={multiDataAux.loading}
+                                        variant="outlined"
+                                        valueDefault={shippingtype}
+                                        style={{width: "170px"}}
+                                        data={shippingTypesData}
+                                        optionValue="domainvalue"
+                                        optionDesc="domainvalue"
+                                        uset={true}
+                                        prefixTranslation='type_shippingtype_'
+                                    /> */}
+                                    <div>
+                                        <Button
+                                            disabled={multiData.loading}
+                                            variant="contained"
+                                            color="primary"
+                                            startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                            style={{ width: 120, backgroundColor: "#55BD84" }}
+                                            onClick={() => search()}
+                                        >{t(langKeys.search)}
+                                        </Button>
+                                    </div>
+                                </div>
                                 <Button
-                                    className={classes.itemDate}
-                                    startIcon={<CalendarIcon />}
-                                    onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
+                                    className={classes.button}
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={multiData.loading || !(multiData.data.length > 0)}
+                                    onClick={() => setOpenModal(true)}
+                                    startIcon={<AssessmentIcon />}
                                 >
-                                    {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
+                                    {t(langKeys.graphic_view)}
                                 </Button>
-                            </DateRangePicker>
-                            {/* <FieldSelect
-                                onChange={(value) => setshippingtype(value?.domainvalue||"")}
-                                label={t(langKeys.shippingtype)}
-                                loading={multiDataAux.loading}
-                                variant="outlined"
-                                valueDefault={shippingtype}
-                                style={{width: "170px"}}
-                                data={shippingTypesData}
-                                optionValue="domainvalue"
-                                optionDesc="domainvalue"
-                                uset={true}
-                                prefixTranslation='type_shippingtype_'
-                            /> */}
-                            <Button
-                                disabled={multiData.loading}
-                                variant="contained"
-                                color="primary"
-                                startIcon={<SearchIcon style={{ color: 'white' }} />}
-                                style={{ width: 120, backgroundColor: "#55BD84" }}
-                                onClick={() => search()}
-                            >{t(langKeys.search)}
-                            </Button>
-                        </div>
-                    )}
-                    download={true}
-                    filterGeneral={false}
-                    loading={multiData.loading}
-                    register={false}
-                // fetchData={fetchData}
+                            </div>
+                        )}
+                        download={true}
+                        filterGeneral={false}
+                        loading={multiData.loading}
+                        register={false}
+                    // fetchData={fetchData}
+                    />
+                ) : (
+                    <Graphic
+                        graphicType={view.split("-")?.[1] || "BAR"}
+                        column={view.split("-")?.[2] || "summary"}
+                        openModal={openModal}
+                        setOpenModal={setOpenModal}
+                        daterange={{
+                            startDate: dateRangeCreateDate.startDate?.toISOString().substring(0,10),
+                            endDate: dateRangeCreateDate.endDate?.toISOString().substring(0,10),
+                        }}
+                        setView={setView}
+                        row={{origin: 'sentmessages'}}
+                        handlerSearchGraphic={handlerSearchGraphic}
+                    />
+                )}
+                <SummaryGraphic
+                    openModal={openModal}
+                    setOpenModal={setOpenModal}
+                    setView={setView}
+                    daterange={dateRangeCreateDate}
+                    columns={columnsTemp.map(c => ({
+                        key: c, value: `report_sentmessages_${c}`
+                    }))}
+                    columnsprefix='report_sentmessages_'
                 />
             </React.Fragment>
         )
@@ -354,6 +422,97 @@ const RecordHSMRecord: FC = () => {
     else
         return null;
 
+}
+
+interface SummaryGraphicProps {
+    openModal: boolean;
+    setOpenModal: (value: boolean) => void;
+    setView: (value: string) => void;
+    row?: Dictionary | null;
+    daterange: any;
+    filters?: Dictionary;
+    columns: any[];
+    columnsprefix: string;
+}
+
+const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal, setView, row, daterange, filters, columns, columnsprefix }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm<any>({
+        defaultValues: {
+            graphictype: 'BAR',
+            column: ''
+        }
+    });
+
+    useEffect(() => {
+        register('graphictype', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('column', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+    }, [register]);
+
+    const handleCancelModal = () => {
+        setOpenModal(false);
+    }
+
+    const handleAcceptModal = handleSubmit((data) => {
+        triggerGraphic(data);
+    });
+
+    const triggerGraphic = (data: any) => {
+        setView(`CHART-${data.graphictype}-${data.column}`);
+        setOpenModal(false);
+        dispatch(getMainGraphic(getRecordHSMGraphic(
+            {
+                startdate: daterange?.startDate!,
+                enddate: daterange?.endDate!,
+                column: data.column,
+                summarization: 'COUNT'
+            }
+        )));
+    }
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.graphic_configuration)}
+            button1Type="button"
+            buttonText1={t(langKeys.cancel)}
+            handleClickButton1={handleCancelModal}
+            button2Type="button"
+            buttonText2={t(langKeys.accept)}
+            handleClickButton2={handleAcceptModal}
+        >
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.graphic_type)}
+                    className="col-12"
+                    valueDefault={getValues('graphictype')}
+                    error={errors?.graphictype?.message}
+                    onChange={(value) => setValue('graphictype', value?.key)}
+                    data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }]}
+                    uset={true}
+                    prefixTranslation="graphic_"
+                    optionDesc="value"
+                    optionValue="key"
+                />
+            </div>
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.graphic_view_by)}
+                    className="col-12"
+                    valueDefault={getValues('column')}
+                    error={errors?.column?.message}
+                    onChange={(value) => setValue('column', value?.key)}
+                    data={columns}
+                    optionDesc="value"
+                    optionValue="key"
+                    uset={true}
+                    prefixTranslation=""
+                />
+            </div>
+        </DialogZyx>
+    )
 }
 
 export default RecordHSMRecord;

@@ -41,7 +41,7 @@ const DialogReasonsDisconnection: React.FC<{
             register('motive', { validate: (value) => ((value && value.length) || t(langKeys.field_required)) });
             register('observation');
         }
-    }, [openModal])
+    }, [openModal, register, reset, t])
 
     const onSubmit = handleSubmit((data) => {
         dispatch(connectAgentAPI(!userConnected, data.observation, data.motive));

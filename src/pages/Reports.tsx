@@ -15,7 +15,7 @@ import { langKeys } from 'lang/keys';
 import { TemplateBreadcrumbs, SearchField, FieldSelect, FieldMultiSelect, SkeletonReportCard, DialogZyx } from 'components';
 import { useSelector } from 'hooks';
 import { Dictionary, IFetchData, MultiData, IRequestBody } from "@types";
-import { getReportSel, getReportTemplateSel, getValuesFromDomain, getReportColumnSel, getReportFilterSel, getPaginatedForReports, getReportExport, insertReportTemplate, convertLocalDate, getTableOrigin, getReportGraphic, getDateCleaned, getDateToday, getFirstDayMonth, getLastDayMonth, } from 'common/helpers';
+import { getReportSel, getReportTemplateSel, getValuesFromDomain, getReportColumnSel, getReportFilterSel, getPaginatedForReports, getReportExport, insertReportTemplate, convertLocalDate, getTableOrigin, getReportGraphic } from 'common/helpers';
 import { getCollection, getCollectionAux, execute, resetMain, getCollectionPaginated, resetCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetMainAux, getMultiCollectionAux, getMainGraphic } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
@@ -527,7 +527,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                     className="col-12"
                     valueDefault={getValues('graphictype')}
                     error={errors?.graphictype?.message}
-                    onChange={(value) => setValue('graphictype', value?.value)}
+                    onChange={(value) => setValue('graphictype', value?.key)}
                     data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }]}
                     uset={true}
                     prefixTranslation="graphic_"
@@ -541,7 +541,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                     className="col-12"
                     valueDefault={getValues('column')}
                     error={errors?.column?.message}
-                    onChange={(value) => setValue('column', value?.value)}
+                    onChange={(value) => setValue('column', value?.key)}
                     data={columns.map(x => ({ key: x, value: x }))}
                     optionDesc="value"
                     optionValue="key"

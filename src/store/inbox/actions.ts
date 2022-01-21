@@ -276,3 +276,5 @@ export const wsConnect = (payload: any): IActionCall => ({ type: actionTypes.WS_
 export const emitEvent = (payload: any): IActionCall => ({ type: actionTypes.EMIT_EVENT, payload });
 
 export const resetForcedDisconnection = (): IActionCall => ({ type: actionTypes.FORCEDDISCONECTION_RESET });
+
+export const disconnectSocket = (): IActionCall => ({ type: actionTypes.WS_DISCONNECT });

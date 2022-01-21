@@ -148,6 +148,7 @@ const translation: LangKeys = {
     period: "Period",
     interval: 'Intervalo',
     odoovariables: 'Odoo',
+    percentage: "Percentage",
 
     supportplan:"Support Plan",
     property: 'Property',
@@ -237,10 +238,10 @@ const translation: LangKeys = {
     tmr_client: 'TMR cliente',
     tmr_client_help: 'Average client reply',
     tmepercentobj: 'TME% objetive',
-    tmopercentobj: 'Target TMO advisor',
+    tmopercentobj: 'Target TMO total',
     usertme: 'TME user',
     productivity: "Productivity",
-    usertmepercentmax: 'TME user objective',
+    usertmepercentmax: 'TME adviser objective',
     usertmo: 'TMO user',
     usertmopercentmax: 'TMO user objective',
     person: 'Person',
@@ -298,10 +299,12 @@ const translation: LangKeys = {
     role: 'Role',
     role_plural: 'Roles',
     next_activity: 'Next activity',
+    incorrent_password: "Password is incorrect",
     nextprogramedactivity: 'Next programed activity',
 
     no_reply_use_hsm: 'Conversation is closed or blocked for being out of the 24 hour sale.\nUse an HSM to contact the customer.',
-
+    password_different: "Passwords do not match",
+    password_not_allowed: "The password must contain at least 10 characters, a letter and a number",
     status: 'Status',
     status_plural: 'States',
 
@@ -632,8 +635,8 @@ const translation: LangKeys = {
     supplier: "Supplier",
     id: 'Id',
     newmessagetemplate: 'New Message Template',
-    messagetemplate: 'Message Template',
-    messagetemplate_plural: 'Message Templates',
+    messagetemplate: 'Message template',
+    messagetemplate_plural: 'Message templates',
     communicationtemplate: 'Communication template',
     creationdate: 'Creation Date',
     messagetype: 'Message Type',
@@ -1414,11 +1417,13 @@ const translation: LangKeys = {
     report_userproductivity_usersconnected: 'Agent connected',
     dropusers: "Drop users",
     report_userproductivity_userid: 'Id',
+    report_userproductivity_usr: 'Agent user',
     report_userproductivity_user: 'Agent user',
     report_userproductivity_fullname: 'Name of agent',
     report_userproductivity_hourfirstlogin: 'First login time',
     corporationdetail: "Corporation detail",
     organizationdetail: "Organization detail",
+    messagetemplatedetail: "Message template detail",
     report_userproductivity_totaltickets: 'Ticket quantity',
     report_userproductivity_closedtickets: 'Closed',
     report_userproductivity_asignedtickets: 'In atention',
@@ -1469,6 +1474,7 @@ const translation: LangKeys = {
     report_userproductivity_filter_group: 'Group',
     report_userproductivity_filter_status: 'User Status',
     report_userproductivity_filter_includebot: 'Include bot',
+    report_userproductivity_desconectedtimejson: 'Time reasons for disconnection',
 
     type_shippingtype_hsm: 'HSM',
     type_shippingtype_mail: 'MAIL',
@@ -1479,11 +1485,27 @@ const translation: LangKeys = {
     type_shippingtype_inbox: 'Sent from inbox',
     type_shippingtype_chatflow: 'Sent from flow',
     
+    report_sentmessages: 'Shipment history report',
     report_sentmessages_api: 'Sent by API',
     report_sentmessages_lead: 'Sent from lead',
     report_sentmessages_person: 'Sent from person',
     report_sentmessages_inbox: 'Sent from inbox',
     report_sentmessages_chatflow: 'Sent from flow',
+
+    report_sentmessages_API: 'Sent by API',
+    report_sentmessages_LEAD: 'Sent from lead',
+    report_sentmessages_PERSON: 'Sent from person',
+    report_sentmessages_INBOX: 'Sent from inbox',
+    report_sentmessages_CHATFLOW: 'Sent from flow',
+
+    report_sentmessages_name: 'Shipping reason',
+    report_sentmessages_shippingdate: 'Shipping Date',
+    report_sentmessages_from: 'Sender',
+    report_sentmessages_total: 'Total',
+    report_sentmessages_satisfactory: 'Satisfactory',
+    report_sentmessages_failed: '% Satisfactory',
+    report_sentmessages_satisfactoryp: 'Failed',
+    report_sentmessages_failedp: '% Failed',
 
     "personalizedreport_conversation.userjoy": "conversation user joy",
     "personalizedreport_conversation.userfear": "conversation user fear",
@@ -2087,6 +2109,7 @@ const translation: LangKeys = {
     graphic_pie: 'Pie',
     graphic_bar: 'Bar',
     graphic_view_by: 'View by',
+    graphic_report_of: 'Graphic report of {{report}} by {{column}}',
     grid_view: 'List view',
 
     manageAgreement: 'Manage agreements',
@@ -2712,6 +2735,12 @@ const translation: LangKeys = {
     billingtypevalidation: 'The generated document will take the information from: ',
     billingaddproduct: 'Add product detail',
     billingsubtotal: 'Subtotal',
+
+    copy: 'Copia',
+    empty_dashboard_form_error: 'Must have at least one chart assigned',
+    chart_dashboard_report_error: 'An error occurred while loading the report',
+    chart_dashboard_column_error: 'An error occurred while loading the column',
+    chart_dashboard_unexpected_error: 'An unexpected error occurred',
 };
 
 const enResource: ResourceLanguage = {

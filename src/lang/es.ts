@@ -175,6 +175,7 @@ const translation: LangKeys = {
     changeplan: "Cambiar de plan",
     property: 'Propiedad',
     property_plural: 'Propiedades',
+    percentage: "Porcentaje",
 
     groupconfig: "Configuración de Grupos",
 
@@ -253,11 +254,11 @@ const translation: LangKeys = {
     lowestvalue: "Valor más bajo",
     tmepercentobj: 'TME% objetivo',
     highestvalue: "Valor más alto",
-    tmopercentobj: 'Objetivo asesor TMO',
+    tmopercentobj: 'Objetivo total TMO',
     usertme: 'TME usuario',
-    usertmepercentmax: 'Objetivo usuario TME',
+    usertmepercentmax: 'Objetivo asesor TME',
     usertmo: 'TMO usuario',
-    usertmopercentmax: 'Objetivo usuario TMO',
+    usertmopercentmax: 'Objetivo asesor TMO',
     person: 'Persona',
     person_plural: 'Personas',
     detail: 'Detalle',
@@ -542,6 +543,7 @@ const translation: LangKeys = {
     graphic_pie: 'Torta',
     graphic_bar: 'Barras',
     graphic_view_by: 'Visualizar por',
+    graphic_report_of: 'Reporte gráfico de {{report}} por {{column}}',
     grid_view: 'Vista lista',
 
     status_activo: 'activo',
@@ -782,6 +784,7 @@ const translation: LangKeys = {
     changeDate: 'Fecha de cambio',
     corporationdetail: "Detalle corporación",
     organizationdetail: "Detalle organización",
+    messagetemplatedetail: "Detalle plantilla de comunicación",
     select: "Seleccionar",
     edit: 'Editar',
     delete: 'Eliminar',
@@ -847,7 +850,7 @@ const translation: LangKeys = {
     mail: 'Correo',
     status_SENT: 'Enviado',
     "status_NOT SENT": 'No enviado',
-    namespace: 'Espacio de nombres',
+    namespace: 'Espacio de nombre',
     category: 'Categoría',
     language: 'Idioma',
     templatetype: 'Tipo de Plantilla',
@@ -968,8 +971,10 @@ const translation: LangKeys = {
     selected_plural: 'Seleccionados',
     select_a_field_then_add_it: 'Seleccione un campo y luego añadelo',
 
+    incorrent_password: "La contraseña es incorrecta",
     successful_close_ticket: 'El ticket fue cerrado satisfactoriamente',
-    
+    password_different: "Las contraseñas no coinciden",
+    password_not_allowed: "La contraseña debe contaner al menos 10 caracteres, una letra y un número",
     successful_suspend_ticket: 'El ticket fue suspendido satisfactoriamente',
     successful_reactivate_ticket: 'El ticket fue reactivado satisfactoriamente',
     confirmation_changepassword: "¿Desea cambiar la constraseña?",
@@ -1346,6 +1351,7 @@ const translation: LangKeys = {
     report_userproductivity_usersconnected: 'Asesores conectados',
 
     report_userproductivity_userid: 'Id',
+    report_userproductivity_usr: 'Usuario del asesor',
     report_userproductivity_user: 'Usuario del asesor',
     report_userproductivity_fullname: 'Asesor',
     report_userproductivity_hourfirstlogin: 'Hora de primer logueo',
@@ -1401,6 +1407,7 @@ const translation: LangKeys = {
     report_userproductivity_filter_group: 'Grupo',
     report_userproductivity_filter_status: 'Estado usuario',
     report_userproductivity_filter_includebot: 'Incluir bot',
+    report_userproductivity_desconectedtimejson: 'Tiempos para motivos de desconexión',
 
     type_shippingtype_hsm: 'HSM',
     type_shippingtype_mail: 'CORREO',
@@ -1411,11 +1418,27 @@ const translation: LangKeys = {
     type_shippingtype_inbox: 'Envío desde inbox',
     type_shippingtype_chatflow: 'Envío desde flujo',
     
+    report_sentmessages: 'Reporte historial de envíos',
     report_sentmessages_api: 'Envío por API',
     report_sentmessages_lead: 'Envío desde oportunidades',
     report_sentmessages_person: 'Envío desde personas',
     report_sentmessages_inbox: 'Envío desde inbox',
     report_sentmessages_chatflow: 'Envío desde flujo',
+
+    report_sentmessages_API: 'Envío por API',
+    report_sentmessages_LEAD: 'Envío desde oportunidades',
+    report_sentmessages_PERSON: 'Envío desde personas',
+    report_sentmessages_INBOX: 'Envío desde inbox',
+    report_sentmessages_CHATFLOW: 'Envío desde flujo',
+
+    report_sentmessages_name: 'Motivo de envío',
+    report_sentmessages_shippingdate: 'Fecha de envío',
+    report_sentmessages_from: 'Remitente',
+    report_sentmessages_total: 'Total',
+    report_sentmessages_satisfactory: 'Satisfactorio',
+    report_sentmessages_failed: 'Fallido',
+    report_sentmessages_satisfactoryp: '% Satisfactorio',
+    report_sentmessages_failedp: '% Fallido',
 
     "personalizedreport_conversation.context": "contexto de la conversación",
     "personalizedreport_conversation.personaveragereplytime": "tiempo promedio de respuesta de la persona de la conversación",
@@ -2702,6 +2725,12 @@ const translation: LangKeys = {
     billingtypevalidation: 'El documento emitido tomara la información de: ',
     billingaddproduct: 'Añadir detalle de producto',
     billingsubtotal: 'Subtotal',
+
+    copy: 'Copia',
+    empty_dashboard_form_error: 'Debe tener al menos un gráfico asignado',
+    chart_dashboard_report_error: 'Ocurrió un error al cargar el reporte',
+    chart_dashboard_column_error: 'Ocurrió un error al cargar la columna',
+    chart_dashboard_unexpected_error: 'Ocurrió un error inesperado',
 };
 
 const esResource: ResourceLanguage = {

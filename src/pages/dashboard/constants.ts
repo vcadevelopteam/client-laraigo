@@ -7,7 +7,7 @@ export const graphTypes = [
 export const groupingType = [
     { key: 'quantity' },
     { key: 'percentage' },
-    { key: 'both' },
+    // { key: 'both' },
 ];
 
 export const contentTypes = [

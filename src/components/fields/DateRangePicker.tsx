@@ -2,7 +2,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, useTheme } f
 import { langKeys } from "lang/keys";
 import { useState } from "react";
 import { FC } from "react";
-import { DateRangePicker as PDateRangePicker, DateRangePickerProps as PDateRangePickerProps, InputRange, Range, RangeWithKey, StaticRange } from 'react-date-range';
+import { DateRangePicker as PDateRangePicker, DateRangePickerProps as PDateRangePickerProps, Range, RangeWithKey, StaticRange } from 'react-date-range';
 import { Trans, useTranslation } from "react-i18next";
 import { dateRangeResourceLanguage } from "common/helpers";
 import {
@@ -15,7 +15,6 @@ import {
     startOfWeek,
     endOfWeek,
     isSameDay,
-    differenceInCalendarDays,
 } from 'date-fns';
 
 interface DateRangePickerProps extends Omit<PDateRangePickerProps, 'ranges'> {
@@ -109,39 +108,39 @@ const DateRangePicker: FC<DateRangePickerProps> = (props) => {
         },
     ];
 
-    const inputRanges: InputRange[] = [
-        {
-            label: t(langKeys.daysUpToToday),
-            range(value) {
-              return {
-                startDate: addDays(defineds.startOfToday, (Math.max(Number(value), 1) - 1) * -1),
-                endDate: defineds.endOfToday,
-              };
-            },
-            getCurrentValue: (range) => {
-              if (!isSameDay(range.endDate!, defineds.endOfToday)) return '-';
-              if (!range.startDate) return '∞';
-              return String(differenceInCalendarDays(defineds.endOfToday, range.startDate) + 1);
-            },
-            isSelected: (_) => false,
-        },
-        {
-            label: t(langKeys.daysStartingToday),
-            range(value) {
-              const today = new Date();
-              return {
-                startDate: today,
-                endDate: addDays(today, Math.max(Number(value), 1) - 1),
-              };
-            },
-            getCurrentValue: (range) => {
-              if (!isSameDay(range.startDate!, defineds.startOfToday)) return '-';
-              if (!range.endDate) return '∞';
-              return String(differenceInCalendarDays(range.endDate, defineds.startOfToday) + 1);
-            },
-            isSelected: (_) => false,
-        },
-    ];
+    // const inputRanges: InputRange[] = [
+    //     {
+    //         label: t(langKeys.daysUpToToday),
+    //         range(value) {
+    //           return {
+    //             startDate: addDays(defineds.startOfToday, (Math.max(Number(value), 1) - 1) * -1),
+    //             endDate: defineds.endOfToday,
+    //           };
+    //         },
+    //         getCurrentValue: (range) => {
+    //           if (!isSameDay(range.endDate!, defineds.endOfToday)) return '-';
+    //           if (!range.startDate) return '∞';
+    //           return String(differenceInCalendarDays(defineds.endOfToday, range.startDate) + 1);
+    //         },
+    //         isSelected: (_) => false,
+    //     },
+    //     {
+    //         label: t(langKeys.daysStartingToday),
+    //         range(value) {
+    //           const today = new Date();
+    //           return {
+    //             startDate: today,
+    //             endDate: addDays(today, Math.max(Number(value), 1) - 1),
+    //           };
+    //         },
+    //         getCurrentValue: (range) => {
+    //           if (!isSameDay(range.startDate!, defineds.startOfToday)) return '-';
+    //           if (!range.endDate) return '∞';
+    //           return String(differenceInCalendarDays(range.endDate, defineds.startOfToday) + 1);
+    //         },
+    //         isSelected: (_) => false,
+    //     },
+    // ];
 
     return (
         <>

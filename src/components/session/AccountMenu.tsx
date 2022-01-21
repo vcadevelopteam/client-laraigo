@@ -11,8 +11,7 @@ import { useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import { ManageOrganization, BadgeGo, StatusConnection } from 'components';
-
-
+import { disconnectSocket } from "store/inbox/actions";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -81,6 +80,7 @@ const AccountMenu: FC = () => {
 
     const signOut = () => {
         dispatch(logout());
+        dispatch(disconnectSocket());
         history.push('/sign-in');
     }
     const gotoSettings = () => {
@@ -149,7 +149,7 @@ const AccountMenu: FC = () => {
                         variant="outlined"
                         color="primary"
                         fullWidth
-                        style={{ fontWeight: "normal", textTransform: "uppercase" }}
+                        style={{ fontWeight: "normal" }}
                     >
                         <Trans i18nKey={langKeys.accountsettings} />
                     </Button>
