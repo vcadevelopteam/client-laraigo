@@ -706,7 +706,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
     });
 
     const triggerGraphic = (data: any) => {
-        setView(`CHART-${data.graphictype}-${data.column}`);
+        setView(`CHART-${data.graphictype}-${data.column?.split('::')[0]}`);
         setOpenModal(false);
         dispatch(getMainGraphic(getUserProductivityGraphic(
             {

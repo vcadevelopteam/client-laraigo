@@ -1405,6 +1405,7 @@ const translation: LangKeys = {
     report_userproductivity_filter_group: 'Grupo',
     report_userproductivity_filter_status: 'Estado usuario',
     report_userproductivity_filter_includebot: 'Incluir bot',
+    report_userproductivity_desconectedtimejson: 'Tiempos para motivos de desconexión',
 
     type_shippingtype_hsm: 'HSM',
     type_shippingtype_mail: 'CORREO',

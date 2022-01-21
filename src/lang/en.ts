@@ -1472,6 +1472,7 @@ const translation: LangKeys = {
     report_userproductivity_filter_group: 'Group',
     report_userproductivity_filter_status: 'User Status',
     report_userproductivity_filter_includebot: 'Include bot',
+    report_userproductivity_desconectedtimejson: 'Time reasons for disconnection',
 
     type_shippingtype_hsm: 'HSM',
     type_shippingtype_mail: 'MAIL',

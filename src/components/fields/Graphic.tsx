@@ -184,7 +184,7 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
             const total = mainGraphicRes.data.reduce((acc, item) => acc + parseInt(item.summary), 0)
             setDataGraphic(mainGraphicRes.data.map(x => ({
                 ...x,
-                columnname: x.columnname.startsWith('report_') ? t((langKeys as any)[x.columnname]) : x.columnname,
+                columnname: x.columnname?.startsWith('report_') ? t((langKeys as any)[x.columnname]) : x.columnname,
                 summary: parseInt(x.summary),
                 percentage: parseFloat(((parseInt(x.summary) / total) * 100).toFixed(2)),
                 color: `#${randomColor()}`
