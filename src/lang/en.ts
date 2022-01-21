@@ -2728,6 +2728,9 @@ const translation: LangKeys = {
     reportfreeconversations: 'Free conversations',
     userinitiatedconversations: 'User-initiated conversations',
     businessinitiatedconversations: 'Business-initiated conversations',
+
+    copy: 'Copia',
+    empty_dashboard_form_error: 'Must have at least one chart assigned',
 };
 
 const enResource: ResourceLanguage = {

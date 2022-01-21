@@ -2716,6 +2716,9 @@ const translation: LangKeys = {
     reportfreeconversations: 'Conversaciones gratis',
     userinitiatedconversations: 'Conversaciones iniciadas por el usuario',
     businessinitiatedconversations: 'Conversaciones iniciadas por el negocio',
+
+    copy: 'Copia',
+    empty_dashboard_form_error: 'Debe tener al menos un gráfico asignado',
 };
 
 const esResource: ResourceLanguage = {
