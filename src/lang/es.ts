@@ -2703,6 +2703,8 @@ const translation: LangKeys = {
     reportfreeconversations: 'Conversaciones gratis',
     userinitiatedconversations: 'Conversaciones iniciadas por el usuario',
     businessinitiatedconversations: 'Conversaciones iniciadas por el negocio',
+
+    copy: 'Copia',
 };
 
 const esResource: ResourceLanguage = {

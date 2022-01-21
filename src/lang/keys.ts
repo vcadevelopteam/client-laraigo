@@ -2703,6 +2703,8 @@ export const langKeys = {
     reportfreeconversations: 'reportfreeconversations',
     userinitiatedconversations: 'userinitiatedconversations',
     businessinitiatedconversations: 'businessinitiatedconversations',
+
+    copy: 'copy',
 };
 
 export type LangKeys = typeof langKeys;

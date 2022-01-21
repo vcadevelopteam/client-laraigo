@@ -2713,6 +2713,8 @@ const translation: LangKeys = {
     reportfreeconversations: 'Free conversations',
     userinitiatedconversations: 'User-initiated conversations',
     businessinitiatedconversations: 'Business-initiated conversations',
+
+    copy: 'Copia',
 };
 
 const enResource: ResourceLanguage = {

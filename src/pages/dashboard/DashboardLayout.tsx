@@ -290,7 +290,7 @@ const DashboardLayout: FC = () => {
             <TemplateBreadcrumbs
                 breadcrumbs={[
                     { id: "view-1", name: "Dashboards" },
-                    { id: "view-2", name: t(langKeys.detail_custom_dashboard) }
+                    { id: "view-2", name: description }
                 ]}
                 handleClick={id => id === "view-1" && history.push(paths.DASHBOARD)}
             />
@@ -772,6 +772,7 @@ const TableModal: FC<TableModalProps> = ({ title, open, rawColumns, dateRange, d
     const columns = useMemo(() => rawColumns.map(x => ({
         Header: x.alias,
         accessor: x.columnname.replace(".", ""),
+        type: "string",
     })), [rawColumns]);
 
     const getBody = useCallback(() => ({
