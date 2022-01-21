@@ -74,6 +74,27 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+const columnsTemp = [
+    "usr",
+    "fullname",
+    "hourfirstlogin",
+    "totaltickets",
+    "closedtickets",
+    "asignedtickets",
+    "suspendedtickets",
+    "avgfirstreplytime",
+    "maxfirstreplytime",
+    "minfirstreplytime",
+    "maxtotalduration",
+    "mintotalduration",
+    "avgtotalasesorduration",
+    "maxtotalasesorduration",
+    "mintotalasesorduration",
+    "userconnectedduration",
+    "userstatus",
+    "groups"
+]
+
 const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -634,84 +655,15 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                 daterange={dateRange}
                 filters={allParameters}
                 columns={[
-                    {
-                        "key": "usr",
-                        "value": "report_userproductivity_usr"
-                    },
-                    {
-                        "key": "fullname",
-                        "value": "report_userproductivity_fullname"
-                    },
-                    {
-                        "key": "hourfirstlogin",
-                        "value": "report_userproductivity_hourfirstlogin"
-                    },
-                    {
-                        "key": "totaltickets",
-                        "value": "report_userproductivity_totaltickets"
-                    },
-                    {
-                        "key": "closedtickets",
-                        "value": "report_userproductivity_closedtickets"
-                    },
-                    {
-                        "key": "asignedtickets",
-                        "value": "report_userproductivity_asignedtickets"
-                    },
-                    {
-                        "key": "suspendedtickets",
-                        "value": "report_userproductivity_suspendedtickets"
-                    },
-                    {
-                        "key": "avgfirstreplytime",
-                        "value": "report_userproductivity_avgfirstreplytime"
-                    },
-                    {
-                        "key": "maxfirstreplytime",
-                        "value": "report_userproductivity_maxfirstreplytime"
-                    },
-                    {
-                        "key": "minfirstreplytime",
-                        "value": "report_userproductivity_minfirstreplytime"
-                    },
-                    {
-                        "key": "maxtotalduration",
-                        "value": "report_userproductivity_maxtotalduration"
-                    },
-                    {
-                        "key": "mintotalduration",
-                        "value": "report_userproductivity_mintotalduration"
-                    },
-                    {
-                        "key": "avgtotalasesorduration",
-                        "value": "report_userproductivity_avgtotalasesorduration"
-                    },
-                    {
-                        "key": "maxtotalasesorduration",
-                        "value": "report_userproductivity_maxtotalasesorduration"
-                    },
-                    {
-                        "key": "mintotalasesorduration",
-                        "value": "report_userproductivity_mintotalasesorduration"
-                    },
-                    {
-                        "key": "userconnectedduration",
-                        "value": "report_userproductivity_userconnectedduration"
-                    },
-                    {
-                        "key": "userstatus",
-                        "value": "report_userproductivity_userstatus"
-                    },
-                    {
-                        "key": "groups",
-                        "value": "report_userproductivity_groups"
-                    },
-                    ...([...desconectedmotives.map((d: any) =>
+                    ...columnsTemp.map(c => ({
+                        key: c, value: `report_userproductivity_${c}`
+                    })),
+                    ...desconectedmotives.map((d: any) =>
                             ({
                                 key: `desconectedtimejson::json->>'${d}'`,
                                 value: d
                             })
-                    )])
+                    )
                 ]}
             />
         </>

@@ -60,6 +60,17 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const columnsTemp = [
+    'name',
+    'shippingdate',
+    'from',
+    'total',
+    'satisfactory',
+    'failed',
+    'satisfactoryp',
+    'failedp'
+]
+
 const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { row }, setViewSelected }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -275,7 +286,7 @@ const RecordHSMRecord: FC = () => {
         if (!multiData.loading){
             setGridData(multiData.data[0]?.data.map(x => ({
                 ...x,
-                name_translated: x.name !== x.translationname?(t(`report_sentmessages_${x.name}`.toLowerCase()) || "").toUpperCase():x.name.toUpperCase(),
+                name_translated: x.name !== x.translationname?(t(`report_sentmessages_${x.name}`.toLowerCase()) || "").toUpperCase():x.name?.toUpperCase(),
             }))||[]);
             dispatch(showBackdrop(false));
         }
@@ -392,10 +403,9 @@ const RecordHSMRecord: FC = () => {
                     setOpenModal={setOpenModal}
                     setView={setView}
                     daterange={dateRangeCreateDate}
-                    columns={[
-                        'name',
-                        ...columns.filter(x => x.accessor !== 'name_translated').map(x => x.accessor)
-                    ]}
+                    columns={columnsTemp.map(c => ({
+                        key: c, value: `report_sentmessages_${c}`
+                    }))}
                     columnsprefix='report_sentmessages_'
                 />
             </React.Fragment>
@@ -421,7 +431,7 @@ interface SummaryGraphicProps {
     row?: Dictionary | null;
     daterange: any;
     filters?: Dictionary;
-    columns: string[];
+    columns: any[];
     columnsprefix: string;
 }
 
@@ -494,11 +504,11 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                     valueDefault={getValues('column')}
                     error={errors?.column?.message}
                     onChange={(value) => setValue('column', value?.key)}
-                    data={columns.map(x => ({ key: x, value: x }))}
+                    data={columns}
                     optionDesc="value"
                     optionValue="key"
                     uset={true}
-                    prefixTranslation={columnsprefix}
+                    prefixTranslation=""
                 />
             </div>
         </DialogZyx>
