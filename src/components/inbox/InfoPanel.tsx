@@ -618,7 +618,7 @@ const Attachments: React.FC = () => {
             ...(item.interactions?.filter((x) => ["file", "video"].includes(x.interactiontype)) || []).map(x => ({
                 url: x.interactiontext,
                 // filename: x.interactiontext.split("/").pop(),
-                filename: (x.interactiontext.split("/").pop() || '').substring(0, 5) === "78064" ? (x.interactiontext.split("/").pop() || '')?.replace((x.interactiontext.split("/").pop() || '').substring(0, 18), "") : (x.interactiontext.split("/").pop() || ''),
+                filename: x.interactiontext.split("/").pop(),
                 extension: ((x.interactiontext.split("/").pop() || '') || "").split(".").pop(),
                 date: convertLocalDate(x.createdate).toLocaleString(),
             }))

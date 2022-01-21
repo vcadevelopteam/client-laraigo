@@ -6,7 +6,7 @@ import { useHistory, useRouteMatch, useLocation } from "react-router";
 import RGL, { WidthProvider } from 'react-grid-layout';
 import { Trans, useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
-import { Close as CloseIcon, Clear as ClearIcon, Add as AddIcon } from "@material-ui/icons";
+import { Close as CloseIcon, Clear as ClearIcon, Add as AddIcon, Save as SaveIcon } from "@material-ui/icons";
 import { FieldErrors, useForm, UseFormGetValues, UseFormRegister, UseFormSetValue, UseFormUnregister } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { getMultiCollection, resetMain, resetMultiMain } from "store/main/actions";
@@ -127,7 +127,11 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
             const dashboardId = match.params.id;
             dispatch(getDashboardTemplate(getDashboardTemplateSel(dashboardId)));
         } else if (edit === true && location.state) {
-            dispatch(setDashboardTemplate({ ...location.state, dashboardtemplateid: 0 }));
+            dispatch(setDashboardTemplate({
+                ...location.state,
+                description: `${location.state.description}-${t(langKeys.copy).toLowerCase()}`,
+                dashboardtemplateid: 0,
+            }));
         } else if (edit === true && !location.state && !Number(match.params.id)) {
             history.push(paths.DASHBOARD);
         }
@@ -233,16 +237,24 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
         });
     };
 
-    const deleteItemOnClick = useCallback((key: string) => {
+    const deleteItemOnClick = (key: string) => {
         setLayout(prev => prev.filter(e => e.i !== key));
-    }, []);
+    }
 
-    const onContinue = useCallback(() => {
-        handleSubmit((data) => {
-            console.log(data);
-            setOpenModal(true);
-        }, e => console.log('errores', e))();
-    }, [handleSubmit]);
+    const onContinue = () => {
+        if (layout.length <= 1) {
+            dispatch(showSnackbar({
+                message: t(langKeys.empty_dashboard_form_error),
+                success: false,
+                show: true,
+            }));
+        } else {
+            handleSubmit((data) => {
+                console.log(data);
+                setOpenModal(true);
+            }, e => console.log('errores', e))();
+        }
+    }
 
     const onSubmit = useCallback((description: string) => {
         if (edit === true && !dashboardtemplate.value) return;
@@ -301,6 +313,8 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
                     color="primary"
                     onClick={onContinue}
                     disabled={dashboardtemplate.loading}
+                    style={{ backgroundColor: "#55BD84" }}
+                    startIcon={<SaveIcon color="secondary" />}
                 >
                     <Trans i18nKey={langKeys.save} />
                 </Button>

@@ -149,7 +149,7 @@ const AccountMenu: FC = () => {
                         variant="outlined"
                         color="primary"
                         fullWidth
-                        style={{ fontWeight: "normal", textTransform: "uppercase" }}
+                        style={{ fontWeight: "normal" }}
                     >
                         <Trans i18nKey={langKeys.accountsettings} />
                     </Button>

@@ -29,18 +29,18 @@ export interface ITransaction {
     detail: (IRequestBody | null)[]
 }
 
-type IColumnTemplate = {
-    key: string;
-    value: string;
-    filter: string;
-}
+// type IColumnTemplate = {
+//     key: string;
+//     value: string;
+//     filter: string;
+// }
 
-type IFilter = {
-    column: string;
-    start?: string | null | undefined;
-    end?: string | null | undefined;
-    value?: string | null | undefined; 
-}
+// type IFilter = {
+//     column: string;
+//     start?: string | null | undefined;
+//     end?: string | null | undefined;
+//     value?: string | null | undefined; 
+// }
 
 export interface IRequestBodyDynamic {
     columns: Dictionary[];

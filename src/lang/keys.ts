@@ -365,6 +365,9 @@ export const langKeys = {
     changeplan: "changeplan",
     lowestTME: "lowestTME",
     objective: "objective",
+    password_different: "password_different",
+    password_not_allowed: "password_not_allowed",
+    incorrent_password: "incorrent_password",
     informationTMO: "informationTMO",
     informationTME: "informationTME",
     productivity: "productivity",
@@ -2710,6 +2713,12 @@ export const langKeys = {
     reportfreeconversations: 'reportfreeconversations',
     userinitiatedconversations: 'userinitiatedconversations',
     businessinitiatedconversations: 'businessinitiatedconversations',
+
+    copy: 'copy',
+    empty_dashboard_form_error: 'empty_dashboard_form_error',
+    chart_dashboard_report_error: 'chart_dashboard_report_error',
+    chart_dashboard_column_error: 'chart_dashboard_column_error',
+    chart_dashboard_unexpected_error: 'chart_dashboard_unexpected_error',
 };
 
 export type LangKeys = typeof langKeys;

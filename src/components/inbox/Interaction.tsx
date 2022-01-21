@@ -355,9 +355,9 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             </div>
         )
     } else if (interactiontype === "file") {
-        const tmptext = interactiontext.split("/").pop() || "";
-        const extension = (tmptext || "").split(".").pop();
-        const filename = tmptext.substring(0, 5) === "78064" ? tmptext?.replace(tmptext.substring(0, 18), "") : tmptext;
+        const filename = interactiontext.split("/").pop() || "";
+        const extension = (filename || "").split(".").pop();
+        
         return (
             <div style={{ width: 200, backgroundColor: 'white', padding: '12px 13px', borderRadius: 4, position: 'relative' }}>
                 <a download rel="noreferrer" target="_blank" href={interactiontext} style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 4 }}>

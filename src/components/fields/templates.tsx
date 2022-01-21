@@ -25,7 +25,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Tab, { TabProps } from '@material-ui/core/Tab';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { FormControlLabel, FormHelperText, OutlinedInputProps, Radio, RadioGroup, RadioGroupProps, useTheme, TypographyVariant, InputBaseComponentProps } from '@material-ui/core';
+import { FormControlLabel, FormHelperText, OutlinedInputProps, Radio, RadioGroup, RadioGroupProps, useTheme, TypographyVariant } from '@material-ui/core';
 import { Divider, Grid, ListItem, ListItemText, styled } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
@@ -362,11 +362,11 @@ export const FieldEdit: React.FC<InputProps> = ({ label, size, className, disabl
     )
 }
 
-interface CurrencyFieldEdit extends Omit<InputProps, 'type'> {
+interface ICurrencyFieldEdit extends Omit<InputProps, 'type'> {
     type?: 'text';
 }
 
-export const CurrencyFieldEdit: FC<CurrencyFieldEdit> = ({
+export const CurrencyFieldEdit: FC<ICurrencyFieldEdit> = ({
     label,
     size,
     className,

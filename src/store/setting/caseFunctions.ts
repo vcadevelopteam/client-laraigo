@@ -56,7 +56,7 @@ export const getUpdateUserFailure = (state: IState, action: IAction): IState => 
         ...state.setting,
         loading: false,
         error: true,
-        code: action.payload.code || 'getSettingFailure:error',
+        code: action.payload.code ? (action.payload.code === "LOGIN_USER_INCORRECT" ? "incorrent_password" : "error_" + action.payload.code.toString().toLowerCase()) : 'error_unexpected_error',
         message: action.payload.message || 'Error al obtener las configuraciones',
     },
 });

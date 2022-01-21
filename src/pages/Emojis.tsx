@@ -13,17 +13,9 @@ import { useDispatch } from "react-redux";
 import { execute, getCollection, getMultiCollection, resetAllMain } from "store/main/actions";
 import { getEmojiAllSel, getOrgsByCorp, insEmoji } from "common/helpers";
 import { useSelector } from 'hooks';
-import { Dictionary, MultiData } from "@types";
-import { Button, Grid, Menu, MenuItem, Tooltip } from "@material-ui/core";
+import { Dictionary } from "@types";
+import { Button, Menu, MenuItem, Tooltip } from "@material-ui/core";
 import { manageConfirmation, showBackdrop } from "store/popus/actions";
-
-interface ModalProps {
-    fetchData: () => void;
-    setOpenModal: (open: boolean) => void;
-    multiData: MultiData[];
-    emoji: Dictionary;
-    openModal: boolean;
-}
 
 const useStyles = makeStyles((theme) => ({
     container: {

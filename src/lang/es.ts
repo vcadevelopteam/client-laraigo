@@ -971,8 +971,10 @@ const translation: LangKeys = {
     selected_plural: 'Seleccionados',
     select_a_field_then_add_it: 'Seleccione un campo y luego añadelo',
 
+    incorrent_password: "La contraseña es incorrecta",
     successful_close_ticket: 'El ticket fue cerrado satisfactoriamente',
-    
+    password_different: "Las contraseñas no coinciden",
+    password_not_allowed: "La contraseña debe contaner al menos 10 caracteres, una letra y un número",
     successful_suspend_ticket: 'El ticket fue suspendido satisfactoriamente',
     successful_reactivate_ticket: 'El ticket fue reactivado satisfactoriamente',
     confirmation_changepassword: "¿Desea cambiar la constraseña?",
@@ -2710,6 +2712,12 @@ const translation: LangKeys = {
     reportfreeconversations: 'Conversaciones gratis',
     userinitiatedconversations: 'Conversaciones iniciadas por el usuario',
     businessinitiatedconversations: 'Conversaciones iniciadas por el negocio',
+
+    copy: 'Copia',
+    empty_dashboard_form_error: 'Debe tener al menos un gráfico asignado',
+    chart_dashboard_report_error: 'Ocurrió un error al cargar el reporte',
+    chart_dashboard_column_error: 'Ocurrió un error al cargar la columna',
+    chart_dashboard_unexpected_error: 'Ocurrió un error inesperado',
 };
 
 const esResource: ResourceLanguage = {
