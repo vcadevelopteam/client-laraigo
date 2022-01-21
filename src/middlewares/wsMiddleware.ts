@@ -31,7 +31,7 @@ const callWSMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async
         socket.auth = loginData;
         socket.connect();
         if (!wasconnected) {
-            
+
             console.log("load eventsListeners")
             eventsListeners.forEach(({ event, type, extra = {} }) => {
                 socket.on(event, (datatmp) => {
@@ -58,6 +58,10 @@ const callWSMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async
         return;
     } else if (type === typesInbox.EMIT_EVENT) {
         socket.emit(payload.event, payload.data);
+        return;
+    } else if (type === typesInbox.WS_DISCONNECT) {
+        console.log("disconnect!")
+        socket.disconnect();
         return;
     }
 

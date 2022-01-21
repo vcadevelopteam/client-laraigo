@@ -508,6 +508,7 @@ export const langKeys = {
     newcorporation: "newcorporation",
     corporationdetail: "corporationdetail",
     organizationdetail: "organizationdetail",
+    messagetemplatedetail: "messagetemplatedetail",
     neworganization: "neworganization",
     newiaservice: "newiaservice",
     newwhitelist: "newwhitelist",
