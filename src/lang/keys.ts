@@ -1539,6 +1539,7 @@ export const langKeys = {
     report_userproductivity_filter_group: 'report_userproductivity_filter_group',
     report_userproductivity_filter_status: 'report_userproductivity_filter_status',
     report_userproductivity_filter_includebot: 'report_userproductivity_filter_includebot',
+    report_userproductivity_desconectedtimejson: 'report_userproductivity_desconectedtimejson',
 
     type_shippingtype_hsm: 'type_shippingtype_hsm',
     type_shippingtype_mail: 'type_shippingtype_mail',
