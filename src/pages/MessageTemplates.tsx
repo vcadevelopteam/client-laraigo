@@ -35,9 +35,9 @@ interface DetailProps {
     multiData: MultiData[];
     fetchData: () => void
 }
-const arrayBread = [
-    { id: "view-1", name: "Message Templates" },
-    { id: "view-2", name: "Message Templates detail" }
+const arrayBread = (view1: string, view2: string) => [
+    { id: "view-1", name: view1 },
+    { id: "view-2", name: view2 }
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -378,11 +378,15 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
             setValue('body', richTextToString(bodyobject))
         }
         setValue('type', data?.value || '');
+        trigger('type');
+        
         switch (data?.value || 'SMS') {
             case 'HSM':
+                register('namespace', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
                 setTemplateTypeDisabled(false);
                 break;
-            case 'SMS': case 'MAIL':
+                case 'SMS': case 'MAIL':
+                register('namespace', { validate: (value) => true });
                 onChangeTemplateType({ value: 'STANDARD' });
                 setTemplateTypeDisabled(true);
                 break;
@@ -476,7 +480,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread}
+                            breadcrumbs={arrayBread(t(langKeys.messagetemplate), t(langKeys.messagetemplatedetail))}
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
@@ -539,13 +543,17 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                                     onChange={(value) => setValue('name', value)}
                                     error={errors?.name?.message}
                                 />
-                                <FieldEdit
-                                    label={t(langKeys.namespace)}
-                                    className="col-6"
-                                    valueDefault={getValues('namespace')}
-                                    onChange={(value) => setValue('namespace', value)}
-                                    error={errors?.namespace?.message}
-                                />
+                                {
+                                    getValues('type') === "HSM" && (
+                                        <FieldEdit
+                                            label={t(langKeys.namespace)}
+                                            className="col-6"
+                                            valueDefault={getValues('namespace')}
+                                            onChange={(value) => setValue('namespace', value)}
+                                            error={errors?.namespace?.message}
+                                        />
+                                    )
+                                }
                             </React.Fragment>
                             :
                             <React.Fragment>
