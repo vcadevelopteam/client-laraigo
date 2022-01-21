@@ -38,7 +38,6 @@ export const unsubscribe = (request: any): IActionCall => ({
 
 export const resetUnsubscribe = (): IActionCall => ({ type: actionTypes.UNSUBSCRIBE_RESET });
 
-
 export const sendInvoice = (invoiceid: number): IActionCall => ({
     callAPI: () => CulqiService.sendInvoice({ parameters: { invoiceid } }),
     types: {
@@ -50,3 +49,13 @@ export const sendInvoice = (invoiceid: number): IActionCall => ({
 });
 
 export const resetSendInvoice = (): IActionCall => ({ type: actionTypes.SEND_INVOICE_RESET });
+
+export const createInvoice = (request: any): IActionCall => ({
+    callAPI: () => CulqiService.createInvoice(request),
+    types: {
+        loading: actionTypes.CREATE_INVOICE,
+        success: actionTypes.CREATE_INVOICE_SUCCESS,
+        failure: actionTypes.CREATE_INVOICE_FAILURE,
+    },
+    type: null,
+});

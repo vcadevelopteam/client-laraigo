@@ -2706,6 +2706,12 @@ const translation: LangKeys = {
     billinggeneration: 'Generate Invoice',
     emitinvoice: 'Generate',
     measureunit: 'Unit of measurement',
+    billingname: 'Business/Trade name',
+    billingsinglemail: 'Billing mail',
+    billingamountvalidation: 'The total amount must be above 0',
+    billingtypevalidation: 'The generated document will take the information from: ',
+    billingaddproduct: 'Add product detail',
+    billingsubtotal: 'Subtotal',
 };
 
 const enResource: ResourceLanguage = {

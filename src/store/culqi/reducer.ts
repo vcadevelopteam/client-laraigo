@@ -16,10 +16,12 @@ export interface IRequest extends ITemplate {
 
 export interface IState {
     request: IRequest;
+    requestCreateInvoice: IRequest;
 }
 
 export const initialState: IState = {
-    request: { ...initialCommon, data: null, loading: false, error: false }
+    request: { ...initialCommon, data: null, loading: false, error: false },
+    requestCreateInvoice: { ...initialCommon, data: null, loading: false, error: false }
 };
 
 export default createReducer<IState>(initialState, {
@@ -42,4 +44,9 @@ export default createReducer<IState>(initialState, {
     [actionTypes.SEND_INVOICE_FAILURE]: caseFUnctions.sendInvoiceFailure,
     [actionTypes.SEND_INVOICE_SUCCESS]: caseFUnctions.sendInvoiceSuccess,
     [actionTypes.SEND_INVOICE_RESET]: caseFUnctions.sendInvoiceReset,
+
+    [actionTypes.CREATE_INVOICE]: caseFUnctions.createInvoice,
+    [actionTypes.CREATE_INVOICE_FAILURE]: caseFUnctions.createInvoiceFailure,
+    [actionTypes.CREATE_INVOICE_SUCCESS]: caseFUnctions.createInvoiceSuccess,
+    [actionTypes.CREATE_INVOICE_RESET]: caseFUnctions.createInvoiceReset,
 });

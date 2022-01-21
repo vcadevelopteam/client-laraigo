@@ -4,20 +4,20 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { cleanMemoryTable, setMemoryTable } from 'store/main/actions';
-import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx } from 'components';
-import { selInvoice, insInvoice, cancelInvoice, getLocaleDateString, selInvoiceClient, selInvoiceChangePaymentStatus, regenerateInvoice, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, exportExcel, invoiceRefreshTest, getAppsettingInvoiceSel, getOrgSel } from 'common/helpers';
+import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx, FieldEditArray } from 'components';
+import { selInvoice, insInvoice, cancelInvoice, getLocaleDateString, selInvoiceClient, selInvoiceChangePaymentStatus, regenerateInvoice, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, exportExcel, invoiceRefreshTest, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import ClearIcon from '@material-ui/icons/Clear';
 import { getCollection, getMultiCollection, execute, exportData, getMultiCollectionAux } from 'store/main/actions';
-import { sendInvoice } from 'store/culqi/actions';
+import { sendInvoice, createInvoice } from 'store/culqi/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { Box, FilledInput, FormHelperText, Grid, IconButton, MenuItem, Tabs, TextField } from '@material-ui/core';
+import { Box, FilledInput, FormHelperText, Grid, Icon, IconButton, MenuItem, Tabs, TextField } from '@material-ui/core';
 import * as locale from "date-fns/locale";
 import { DownloadIcon } from 'icons';
 import {
@@ -25,6 +25,7 @@ import {
     CloudUpload,
     Search as SearchIcon,
     Refresh as RefreshIcon,
+    Add as AddIcon
 } from '@material-ui/icons';
 import PaymentIcon from '@material-ui/icons/Payment';
 import DateFnsUtils from '@date-io/date-fns';
@@ -42,6 +43,7 @@ import TableBody from '@material-ui/core/TableBody';
 import clsx from 'clsx';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -2525,27 +2527,26 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const executeRes = useSelector(state => state.main.execute);
+    const culqiResult = useSelector(state => state.culqi.requestCreateInvoice);
     const multiResult = useSelector(state => state.main.multiDataAux);
     
-    const [openModal, setOpenModal] = useState(false);
-    const [waitSave, setWaitSave] = useState(false);
-    const [savedCorp, setSavedCorp] = useState<any>();
     const [corpList, setCorpList] = useState<any>([]);
     const [orgList, setOrgList] = useState<any>([]);
-    
+    const [measureList, setMeasureList] = useState<any>([]);
+    const [savedCorp, setSavedCorp] = useState<any>();
+    const [waitSave, setWaitSave] = useState(false);
+
     const invocesBread = [
         { id: "view-1", name: t(langKeys.billingtitle) },
-        { id: "view-2", name: t(langKeys.billinggeneration) }
+        { id: "view-3", name: t(langKeys.billinggeneration) }
     ];
 
     useEffect(() => {
         setCorpList({ loading: true, data: [] });
         setOrgList({ loading: false, data: [] });
+        setMeasureList({ loading: false, data: [] });
 
-        dispatch(getMultiCollectionAux([
-            getCorpSel(0),
-        ]));
+        dispatch(getMultiCollectionAux([getCorpSel(0), getMeasureUnit()]));
     }, [])
 
     useEffect(() => {
@@ -2560,53 +2561,114 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
         if (indexOrg > -1) {
             setOrgList({ loading: false, data: multiResult.data[indexOrg] && multiResult.data[indexOrg].success ? multiResult.data[indexOrg].data : [] });
         }
+
+        const indexMeasure = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_MEASUREUNIT_SEL'));
+
+        if (indexMeasure > -1) {
+            setMeasureList({ loading: false, data: multiResult.data[indexMeasure] && multiResult.data[indexMeasure].success ? multiResult.data[indexMeasure].data : [] });
+        }
     }, [multiResult]);
 
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+    const { control, handleSubmit, register, trigger, setValue, getValues, formState: { errors } } = useForm<any>({
         defaultValues: {
-            documenttypelang: '',
-            documenttype: '',
-            documentnumber: '',
-            businessname: '',
-            fiscaladdress: '',
-            country: '',
-            billingmail: '',
             corpid: 0,
             orgid: 0,
-            invoicedate: new Date(),
-            duedate: '',
-            currency: 'USD',
-            totalamount: 0.0,
-            credittype: '',
-            purchaseorder: '',
-            comments: '',
-            productdescription: '',
-            productcode: '',
-            productamount: 0,
-            productunity: '',
-            productcost: 0.00,
+            clientdoctype: '',
+            clientdocnumber: '',
+            clientbusinessname: '',
+            clientfiscaladdress: '',
+            clientcountry: '',
+            clientmail: '',
+            clientcredittype: '',
+            invoicecreatedate: new Date().toISOString().split('T')[0],
+            invoiceduedate: '',
+            invoicecurrency: 'USD',
+            invoicetotalamount: 0.00,
+            invoicepurchaseorder: '',
+            invoicecomments: '',
+            autosendinvoice: null,
+            productdetail: []
         }
     });
 
+    const { fields, append: fieldsAppend, remove: fieldRemove } = useFieldArray({
+        control,
+        name: 'productdetail',
+    });
+
     React.useEffect(() => {
-        register('documenttype', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('documentnumber', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('businessname', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('fiscaladdress', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('country', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('billingmail', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('corpid', { validate: (value) => ((value == 0 || value) && value >0) || "" + t(langKeys.field_required) });
-        register('purchaseorder');
-        register('comments');
-        register('productdescription', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('productcode', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('productamount', { validate: (value) => ((value == 0 || value) && value >=0) || "" + t(langKeys.field_required) });
-        register('productunity', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('productcost', { validate: (value) => ((value == 0 || value) && value >=0) || "" + t(langKeys.field_required) });
+        register('corpid', { validate: (value) => (value && value > 0) || "" + t(langKeys.field_required) });
+        register('orgid');
+        register('clientdoctype', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('clientdocnumber', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('clientbusinessname', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('clientfiscaladdress', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('clientcountry', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('clientmail', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('clientcredittype');
+        register('invoicecreatedate', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('invoiceduedate');
+        register('invoicecurrency');
+        register('invoicetotalamount', { validate: (value) => (value && value > 0) || "" + t(langKeys.billingamountvalidation) });
+        register('invoicepurchaseorder', { validate: (value) => (value.length <= 15) || "" + t(langKeys.validation15char) });
+        register('invoicecomments', { validate: (value) => (value.length <= 150) || "" + t(langKeys.validation150char) });
+        register('autosendinvoice');
     }, [register]);
 
-    function getDocumentTypeLang(doctype: string) {
-        switch (doctype) {
+    const setSubmitData = (data: any) => {
+        setValue('corpid', data?.corpid || 0);
+        setValue('orgid', data?.orgid || 0);
+        setValue('clientdoctype', data?.doctype || '');
+        setValue('clientdocnumber', data?.docnum || '');
+        setValue('clientbusinessname', data?.businessname || '');
+        setValue('clientfiscaladdress', data?.fiscaladdress || '');
+        setValue('clientcountry', data?.sunatcountry || '');
+        setValue('clientmail', data?.contactemail || '');
+        setValue('clientcredittype', data?.credittype || '');
+        setValue('autosendinvoice', data?.autosendinvoice);
+
+        if (data?.credittype) {
+            var dueDate = new Date(getValues('invoicecreatedate'));
+
+            switch (data.credittype) {
+                case 'typecredit_15':
+                    dueDate = new Date(dueDate.setDate(dueDate.getDate() + 15));
+                    break;
+                case 'typecredit_30':
+                    dueDate = new Date(dueDate.setDate(dueDate.getDate() + 30));
+                    break;
+                case 'typecredit_45':
+                    dueDate = new Date(dueDate.setDate(dueDate.getDate() + 45));
+                    break;
+                case 'typecredit_60':
+                    dueDate = new Date(dueDate.setDate(dueDate.getDate() + 60));
+                    break;
+                case 'typecredit_90':
+                    dueDate = new Date(dueDate.setDate(dueDate.getDate() + 90));
+                    break;
+            }
+
+            setValue('invoiceduedate', dueDate.toISOString().split('T')[0]);
+        }
+        else {
+            setValue('invoiceduedate', '');
+        }
+        
+        trigger('corpid');
+        trigger('orgid');
+        trigger('clientdoctype');
+        trigger('clientdocnumber');
+        trigger('clientbusinessname');
+        trigger('clientfiscaladdress');
+        trigger('clientcountry');
+        trigger('clientmail');
+        trigger('clientcredittype');
+        trigger('autosendinvoice');
+        trigger('invoiceduedate');
+    }
+
+    const getDocumentType = (documenttype: string) => {
+        switch (documenttype) {
             case '0':
                 return 'billingfield_billingno';
             case '1':
@@ -2622,152 +2684,76 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
         }
     }
 
-    function setDueDate(credittype: string) {
-        switch (credittype) {
-            case 'typecredit_15':
-                setValue('duedate', (new Date(getValues('invoicedate').setDate(getValues('invoicedate').getDate()+15))).toISOString().split('T')[0]);
-                break;
-
-            case 'typecredit_30':
-                setValue('duedate', (new Date(getValues('invoicedate').setDate(getValues('invoicedate').getDate()+30))).toISOString().split('T')[0]);
-                break;
-
-            case 'typecredit_45':
-                setValue('duedate', (new Date(getValues('invoicedate').setDate(getValues('invoicedate').getDate()+45))).toISOString().split('T')[0]);
-                break;
-
-            case 'typecredit_60':
-                setValue('duedate', (new Date(getValues('invoicedate').setDate(getValues('invoicedate').getDate()+60))).toISOString().split('T')[0]);
-                break;
-
-            case 'typecredit_90':
-                setValue('duedate', (new Date(getValues('invoicedate').setDate(getValues('invoicedate').getDate()+90))).toISOString().split('T')[0]);
-                break;
-
-            default:
-                setValue('duedate', getValues('invoicedate').toISOString().split('T')[0]);
-                break;
-        }
-    }
-
     const onCorpChange = (data: any) => {
+        setSubmitData(data);
+
         if (data) {
-            setValue('documenttypelang', getDocumentTypeLang(data.doctype));
-            setValue('documenttype', data.doctype);
-            setValue('documentnumber', data.docnum);
-            setValue('businessname', data.businessname);
-            setValue('fiscaladdress', data.fiscaladdress);
-            setValue('country', data.sunatcountry);
-            setValue('billingmail', data.contactemail);
-            setValue('credittype', data.credittype);
-            setValue('corpid', data.corpid);
-            setValue('orgid', 0);
             dispatch(getMultiCollectionAux([getOrgSel(0, data.corpid)]));
             setSavedCorp(data);
-
-            if (data.credittype) {
-                setDueDate(data.credittype);
-            }
         }
         else {
             setOrgList({ loading: false, data: [] });
-            setValue('documenttypelang', '');
-            setValue('documenttype', '');
-            setValue('documentnumber', '');
-            setValue('businessname', '');
-            setValue('fiscaladdress', '');
-            setValue('country', '');
-            setValue('billingmail', '');
-            setValue('duedate', '');
-            setValue('credittype', '');
-            setValue('corpid', 0);
-            setValue('orgid', 0);
             setSavedCorp(null);
         }
     }
 
     const onOrgChange = (data: any) => {
         if (data) {
-            setValue('documenttypelang', getDocumentTypeLang(data.doctype));
-            setValue('documenttype', data.doctype);
-            setValue('documentnumber', data.docnum);
-            setValue('businessname', data.businessname);
-            setValue('fiscaladdress', data.fiscaladdress);
-            setValue('country', data.sunatcountry);
-            setValue('billingmail', data.contactemail);
-            setValue('credittype', data.credittype);
-            setValue('orgid', data.orgid);
-
-            if (data.credittype) {
-                setDueDate(data.credittype);
-            }
+            setSubmitData(data);
         }
         else {
-            setValue('documenttypelang', getDocumentTypeLang(savedCorp.doctype));
-            setValue('documenttype', savedCorp.doctype);
-            setValue('documentnumber', savedCorp.docnum);
-            setValue('businessname', savedCorp.businessname);
-            setValue('fiscaladdress', savedCorp.fiscaladdress);
-            setValue('country', savedCorp.sunatcountry);
-            setValue('billingmail', savedCorp.contactemail);
-            setValue('credittype', savedCorp.credittype);
-            setValue('corpid', savedCorp.corpid);
-            setValue('orgid', 0);
-
-            if (savedCorp.credittype) {
-                setDueDate(savedCorp.credittype);
-            }
+            setSubmitData(savedCorp);
         }
     }
 
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
-                fetchData && fetchData();
-                dispatch(showBackdrop(false));
-                setViewSelected("view-1")
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                setWaitSave(false);
-                dispatch(showBackdrop(false));
-            }
-        }
-    }, [executeRes, waitSave])
+    const onProductChange = () => {
+        var productDetail = getValues('productdetail');
+        var totalAmount = 0.0;
 
+        if (productDetail) {
+            productDetail.forEach((element: any) => {
+                if (element.productquantity && element.productsubtotal) {
+                    totalAmount = totalAmount + (element.productquantity * element.productsubtotal);
+                }
+            });
+        }
+
+        setValue('invoicetotalamount', totalAmount);
+        trigger('invoicetotalamount');
+    }
 
     const onSubmit = handleSubmit((data) => {
-        console.log(JSON.stringify(data));
-
-        /*const callback = () => {
-            dispatch(execute(insInvoice({ ...data!!, ...row })));
-            dispatch(showBackdrop(true));
-            setWaitSave(true)
+        const callback = () => {
+            dispatch(createInvoice(data));
+            setWaitSave(true);
         }
 
         dispatch(manageConfirmation({
             visible: true,
             question: t(langKeys.confirmation_save),
             callback
-        }))*/
+        }))
     });
 
-    const onPaid = () => {
-        fetchData();
-        setOpenModal(false);
-        setViewSelected("view-1");
-    }
+    useEffect(() => {
+        if (waitSave) {
+            if (!culqiResult.loading && !culqiResult.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t('Document was created, check invoicing details') }))
+                dispatch(showBackdrop(false));
+                fetchData();
+                setViewSelected('view-1');
+            }
+            else if (culqiResult.error) {
+                dispatch(showSnackbar({ show: true, success: false, message: t(culqiResult.code || "error_unexpected_db_error") }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [culqiResult, waitSave])
 
     return (
         <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
-                <PaymentComp
-                    data={data}
-                    openModal={openModal}
-                    setOpenModal={setOpenModal}
-                    onTrigger={onPaid}
-                />
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
@@ -2796,6 +2782,11 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             className={classes.section}
                             label={''}
                             value={t(langKeys.clientsearch)}
+                        />
+                        <FieldView
+                            className={classes.commentary}
+                            label={''}
+                            value={t(langKeys.billingtypevalidation)+((getValues('corpid') && getValues('orgid')) ? t(langKeys.organization) : ((getValues('corpid')) ? t(langKeys.corporation) : ''))}
                         />
                     </div>
                     <div className='row-zyx'>
@@ -2828,44 +2819,44 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             <div className={classes.titleCard}>{t(langKeys.clientinformation)}</div>
                             <FieldEdit
                                 label={t(langKeys.docType)}
-                                valueDefault={t(getValues('documenttypelang'))}
+                                valueDefault={t(getDocumentType(getValues('clientdoctype')))}
                                 className={classes.fieldView}
-                                error={errors?.documenttype?.message}
+                                error={errors?.clientdoctype?.message}
                                 disabled={true}
                             />
                             <FieldEdit
                                 label={t(langKeys.documentnumber)}
-                                valueDefault={getValues('documentnumber')}
+                                valueDefault={getValues('clientdocnumber')}
                                 className={classes.fieldView}
-                                error={errors?.documentnumber?.message}
+                                error={errors?.clientdocnumber?.message}
                                 disabled={true}
                             />
                             <FieldEdit
-                                label={t(langKeys.businessname)}
-                                valueDefault={getValues('businessname')}
+                                label={t(langKeys.billingname)}
+                                valueDefault={getValues('clientbusinessname')}
                                 className={classes.fieldView}
-                                error={errors?.businessname?.message}
+                                error={errors?.clientbusinessname?.message}
                                 disabled={true}
                             />
                             <FieldEdit
                                 label={t(langKeys.address)}
-                                valueDefault={getValues('fiscaladdress')}
+                                valueDefault={getValues('clientfiscaladdress')}
                                 className={classes.fieldView}
-                                error={errors?.fiscaladdress?.message}
+                                error={errors?.clientfiscaladdress?.message}
                                 disabled={true}
                             />
                             <FieldEdit
                                 label={t(langKeys.countrycode)}
-                                valueDefault={getValues('country')}
+                                valueDefault={getValues('clientcountry')}
                                 className={classes.fieldView}
-                                error={errors?.country?.message}
+                                error={errors?.clientcountry?.message}
                                 disabled={true}
                             />
                             <FieldEdit
-                                label={t(langKeys.billingmail)}
-                                valueDefault={getValues('billingmail')}
+                                label={t(langKeys.billingsinglemail)}
+                                valueDefault={getValues('clientmail')}
                                 className={classes.fieldView}
-                                error={errors?.billingmail?.message}
+                                error={errors?.clientmail?.message}
                                 disabled={true}
                             />
                         </div>
@@ -2883,18 +2874,26 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             />
                             <FieldView
                                 label={t(langKeys.invoicedate)}
-                                value={getValues('invoicedate').toISOString().split('T')[0]}
+                                value={getValues('invoicecreatedate')}
                                 className={classes.fieldView}
                             />
                             <FieldView
                                 label={t(langKeys.dueDate)}
-                                value={getValues('duedate')}
+                                value={getValues('invoiceduedate')}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={t(langKeys.totalamount)}
-                                value={getValues('totalamount').toFixed(2)}
+                                label={t(langKeys.currency)}
+                                value={getValues('invoicecurrency')}
                                 className={classes.fieldView}
+                            />
+                            <FieldEdit
+                                label={t(langKeys.totalamount)}
+                                valueDefault={getValues('invoicetotalamount').toFixed(2)}
+                                className={classes.fieldView}
+                                error={errors?.invoicetotalamount?.message}
+                                disabled={true}
+                                type='number'
                             />
                             <FieldView
                                 label={t(langKeys.invoicestatus)}
@@ -2906,63 +2905,129 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             <div className={classes.titleCard}>{t(langKeys.additional_information)}</div>
                             <FieldView
                                 label={t(langKeys.credittype)}
-                                value={t(getValues('credittype'))}
+                                value={t(getValues('clientcredittype'))}
                                 className={classes.fieldView}
                             />
                             <FieldEdit
                                 label={t(langKeys.purchaseorder)}
                                 className={classes.fieldView}
-                                valueDefault={getValues('purchaseorder')}
-                                onChange={(value) => setValue('purchaseorder', value)}
-                                error={errors?.purchaseorder?.message}
+                                valueDefault={getValues('invoicepurchaseorder')}
+                                onChange={(value) => setValue('invoicepurchaseorder', value)}
+                                error={errors?.invoicepurchaseorder?.message}
                             />
                             <FieldEdit
                                 label={t(langKeys.comments)}
                                 className={classes.fieldView}
-                                valueDefault={getValues('comments')}
-                                onChange={(value) => setValue('comments', value)}
-                                error={errors?.comments?.message}
+                                valueDefault={getValues('invoicecomments')}
+                                onChange={(value) => setValue('invoicecomments', value)}
+                                error={errors?.invoicecomments?.message}
                             />
                         </div>
-                        <div className={classes.containerField}>
-                            <div className={classes.titleCard}>{t(langKeys.detail)}</div>
-                            <FieldEdit
-                                label={t(langKeys.description)}
-                                className={classes.fieldView}
-                                valueDefault={getValues('productdescription')}
-                                onChange={(value) => setValue('productdescription', value)}
-                                error={errors?.productdescription?.message}
-                            />
-                            <FieldEdit
-                                label={t(langKeys.code)}
-                                className={classes.fieldView}
-                                valueDefault={getValues('productcode')}
-                                onChange={(value) => setValue('productcode', value)}
-                                error={errors?.productcode?.message}
-                            />
-                            <FieldEdit
-                                label={t(langKeys.amount)}
-                                className={classes.fieldView}
-                                valueDefault={getValues('productamount')}
-                                onChange={(value) => { setValue('productamount', value); setValue('totalamount', (value * getValues('productcost'))) }}
-                                error={errors?.productamount?.message}
-                                type='number'
-                            />
-                            <FieldEdit
-                                label={t(langKeys.measureunit)}
-                                className={classes.fieldView}
-                                valueDefault={getValues('productunity')}
-                                onChange={(value) => setValue('productunity', value)}
-                                error={errors?.productunity?.message}
-                            />
-                            <FieldEdit
-                                label={t(langKeys.subtotal)}
-                                className={classes.fieldView}
-                                valueDefault={getValues('productcost')}
-                                onChange={(value) => { setValue('productcost', value); setValue('totalamount', (value * getValues('productamount'))) }}
-                                error={errors?.productcost?.message}
-                                type='number'
-                            />
+                    </div>
+                    <div className={classes.containerDetail}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <div>
+                                <FieldView
+                                    className={classes.section}
+                                    label={''}
+                                    value={t(langKeys.billingaddproduct)}
+                                />
+                            </div>
+                            <div style={{ display: 'flex', gap: '10px', alignItems: 'left' }}>
+                                <Fab
+                                    size="small"
+                                    aria-label="add"
+                                    color="primary"
+                                    style={{ marginLeft: '1rem' }}
+                                    onClick={() => fieldsAppend({
+                                        productdescription: '',
+                                        productcode: ''
+                                    })}
+                                > <AddIcon />
+                                </Fab>
+                            </div>
+                        </div>
+                        <div style={{ backgroundColor: 'white', padding: 16 }}>
+                            <div className={classes.container}>
+                            {fields.map((item, i) => (
+                                <div key={item.id} className={classes.containerField}>
+                                    <IconButton
+                                        size="small"
+                                        aria-label="add"
+                                        color="primary"
+                                        style={{ marginLeft: '1rem' }}
+                                        onClick={() => { fieldRemove(i); onProductChange(); }}
+                                    > <DeleteIcon />
+                                    </IconButton>
+                                    <FieldEditArray
+                                        className={classes.fieldView}
+                                        label={t(langKeys.description)}
+                                        fregister={{
+                                            ...register(`productdetail.${i}.productdescription`, {
+                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                            })
+                                        }}
+                                        valueDefault={getValues(`productdetail.${i}.productdescription`)}
+                                        error={errors?.productdetail?.[i]?.productdescription?.message}
+                                        onChange={(value) => setValue(`productdetail.${i}.productdescription`, "" + value)}
+                                    />
+                                    <FieldEditArray
+                                        className={classes.fieldView}
+                                        label={t(langKeys.code)}
+                                        fregister={{
+                                            ...register(`productdetail.${i}.productcode`, {
+                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                            })
+                                        }}
+                                        valueDefault={getValues(`productdetail.${i}.productcode`)}
+                                        error={errors?.productdetail?.[i]?.productcode?.message}
+                                        onChange={(value) => setValue(`productdetail.${i}.productcode`, "" + value)}
+                                    />
+                                    <FieldSelect
+                                        className={classes.fieldView}
+                                        label={t(langKeys.measureunit)}
+                                        fregister={{
+                                            ...register(`productdetail.${i}.productmeasure`, {
+                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                            })
+                                        }}
+                                        loading={measureList.loading}
+                                        onChange={(value) => setValue(`productdetail.${i}.productmeasure`, "" + value?.code)}
+                                        valueDefault={getValues(`productdetail.${i}.productmeasure`)}
+                                        data={measureList.data}
+                                        optionDesc="description"
+                                        optionValue="code"
+                                        error={errors?.productdetail?.[i]?.productmeasure?.message}
+                                    />
+                                    <FieldEditArray
+                                        className={classes.fieldView}
+                                        label={t(langKeys.quantity)}
+                                        fregister={{
+                                            ...register(`productdetail.${i}.productquantity`, {
+                                                validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
+                                            })
+                                        }}
+                                        valueDefault={getValues(`productdetail.${i}.productquantity`)}
+                                        error={errors?.productdetail?.[i]?.productquantity?.message}
+                                        onChange={(value) => { setValue(`productdetail.${i}.productquantity`, "" + value); onProductChange(); }}
+                                        type='number'
+                                    />
+                                    <FieldEditArray
+                                        className={classes.fieldView}
+                                        label={t(langKeys.billingsubtotal)}
+                                        fregister={{
+                                            ...register(`productdetail.${i}.productsubtotal`, {
+                                                validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
+                                            })
+                                        }}
+                                        valueDefault={getValues(`productdetail.${i}.productsubtotal`)}
+                                        error={errors?.productdetail?.[i]?.productsubtotal?.message}
+                                        onChange={(value) => { setValue(`productdetail.${i}.productsubtotal`, "" + value); onProductChange(); }}
+                                        type='number'
+                                    />
+                                </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>

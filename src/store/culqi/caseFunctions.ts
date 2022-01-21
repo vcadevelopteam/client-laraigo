@@ -149,3 +149,40 @@ export const sendInvoiceReset = (state: IState): IState => ({
     ...state,
     request: initialState.request
 })
+
+export const createInvoice = (state: IState, action: IAction): IState => ({
+    ...state,
+    request: {
+        ...state.request,
+        loading: true,
+        error: false
+    }
+})
+
+export const createInvoiceFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    request: {
+        ...state.request,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message
+    }
+})
+
+export const createInvoiceSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    request: {
+        ...state.request,
+        loading: false,
+        error: false,
+        data: action.payload.data,
+        code: action.payload.code,
+        message: action.payload.message
+    }
+})
+
+export const createInvoiceReset = (state: IState): IState => ({
+    ...state,
+    request: initialState.request
+})

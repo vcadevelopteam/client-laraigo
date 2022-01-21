@@ -291,6 +291,7 @@ export const getOrgSel = (id: number, corpid?:number): IRequestBody => ({
         corpid
     }
 });
+
 export const getOrgSelList = (id: number): IRequestBody => ({
     method: "UFN_ORG_LIST",
     parameters: {
@@ -2534,4 +2535,10 @@ export const getKpiSel = () => ({
     method: "UFN_KPI_LST",
     key: "UFN_KPI_LST",
     parameters: {},
+});
+
+export const getMeasureUnit = (): IRequestBody => ({
+    method: "UFN_MEASUREUNIT_SEL",
+    key: "UFN_MEASUREUNIT_SEL",
+    parameters: { },
 });

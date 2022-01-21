@@ -2696,6 +2696,12 @@ export const langKeys = {
     billinggeneration: 'billinggeneration',
     emitinvoice: 'emitinvoice',
     measureunit: 'measureunit',
+    billingname: 'billingname',
+    billingsinglemail: 'billingsinglemail',
+    billingamountvalidation: 'billingamountvalidation',
+    billingtypevalidation: 'billingtypevalidation',
+    billingaddproduct: 'billingaddproduct',
+    billingsubtotal: 'billingsubtotal',
 };
 
 export type LangKeys = typeof langKeys;

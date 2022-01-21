@@ -2696,6 +2696,12 @@ const translation: LangKeys = {
     billinggeneration: 'Generar Factura',
     emitinvoice: 'Emitir',
     measureunit: 'Unidad de medida',
+    billingname: 'Nombre/Razón social',
+    billingsinglemail: 'Correo de facturación',
+    billingamountvalidation: 'El monto debe ser mayor a 0',
+    billingtypevalidation: 'El documento emitido tomara la información de: ',
+    billingaddproduct: 'Añadir detalle de producto',
+    billingsubtotal: 'Subtotal',
 };
 
 const esResource: ResourceLanguage = {
