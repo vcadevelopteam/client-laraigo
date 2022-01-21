@@ -2719,6 +2719,9 @@ const translation: LangKeys = {
 
     copy: 'Copia',
     empty_dashboard_form_error: 'Debe tener al menos un gráfico asignado',
+    chart_dashboard_report_error: 'Ocurrió un error al cargar el reporte',
+    chart_dashboard_column_error: 'Ocurrió un error al cargar la columna',
+    chart_dashboard_unexpected_error: 'Ocurrió un error inesperado',
 };
 
 const esResource: ResourceLanguage = {

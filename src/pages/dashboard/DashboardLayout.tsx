@@ -20,6 +20,7 @@ import { Range } from "react-date-range";
 import { CalendarIcon } from "icons";
 import TableZyx from "components/fields/table-simple";
 import GaugeChart from "react-gauge-chart";
+import clsx from 'clsx';
 
 const ReactGridLayout = WidthProvider(RGL);
 
@@ -387,6 +388,8 @@ const DashboardLayout: FC = () => {
                                 onDetailChange={(d, t) => onDetailChange(d, t, e.i)}
                                 dateRange={dateRange}
                                 onModalOpenhasChanged={v => setCanLayoutChange(!v)}
+                                error={dashboard.value?.[e.i]?.error}
+                                errorcode={dashboard.value?.[e.i]?.errorcode}
                             />
                         ) : (
                             <NewLayoutItem
@@ -438,6 +441,8 @@ interface LayoutItemProps {
     dateRange: Range;
     dataorigin?: string;
     groupment?: string;
+    error?: boolean;
+    errorcode?: string; // REPORT_NOT_FOUND | COLUMN_NOT_FOUND
     onDetailChange?: (detail: Items, type: ChangeType) => void;
     onModalOpenhasChanged: (open: boolean) => void;
 }
@@ -491,6 +496,12 @@ const useLayoutItemStyles = makeStyles(theme => ({
         overflow: 'auto',
         flexGrow: 1,
     },
+    errorText: {
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: 18,
+        padding: '1em',
+    },
 }));
 
 const LayoutItem: FC<LayoutItemProps> = ({
@@ -503,6 +514,8 @@ const LayoutItem: FC<LayoutItemProps> = ({
     dateRange,
     dataorigin,
     groupment,
+    error,
+    errorcode,
     onDetailChange,
     onModalOpenhasChanged,
 }) => {
@@ -510,7 +523,7 @@ const LayoutItem: FC<LayoutItemProps> = ({
     const { t } = useTranslation();
     const canChange = detail !== undefined && onDetailChange !== undefined;
     const dataGraph = useMemo<ChartData[] | KpiData>(() => {
-        if (!data) return [];
+        if (error === true || !data) return [];
         if (type !== 'kpi') {
             return Object.keys(data as ItemsData).map(e => ({
                 label: e,
@@ -519,7 +532,7 @@ const LayoutItem: FC<LayoutItemProps> = ({
         } else {
             return data as KpiData;
         }
-    }, [data, type]);
+    }, [data, type, error]);
     // const [graph, setGraph] = useState(type);
     const [openTableModal, setOpenTableModal] = useState(false);
 
@@ -591,6 +604,26 @@ const LayoutItem: FC<LayoutItemProps> = ({
             default: return null;
         }
     }, [dataGraph, groupment, type]);
+
+    if (error === true && errorcode === "REPORT_NOT_FOUND") {
+        return (
+            <div className={clsx(classes.rootLoading, classes.errorText)}>
+                <Trans i18nKey={langKeys.chart_dashboard_report_error} />
+            </div>
+        );
+    } else if (error === true && errorcode === "COLUMN_NOT_FOUND") {
+        return (
+            <div className={clsx(classes.rootLoading, classes.errorText)}>
+                <Trans i18nKey={langKeys.chart_dashboard_column_error} />
+            </div>
+        );
+    } else if (error === true) {
+        return (
+            <div className={clsx(classes.rootLoading, classes.errorText)}>
+                <Trans i18nKey={langKeys.chart_dashboard_unexpected_error} />
+            </div>
+        );
+    }
 
     if (!data) {
         return (
