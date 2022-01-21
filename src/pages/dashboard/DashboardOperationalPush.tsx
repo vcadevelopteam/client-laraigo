@@ -441,7 +441,7 @@ const DashboardOperationalPush: FC = () => {
                         className={classes.itemCard}
                     >
                         <div className={classes.boxtitle}  style={{ width:"100%"}}>{t(langKeys.distributionbycategoryHSM)}</div>
-                        <div style={{ width: "100%", height: 240 }} >
+                        <div style={{ height: 240 }} >
                             <ResponsiveContainer width="100%" aspect={4.0 / 1.3}>
                                 <PieChart>
                                     <Tooltip />
@@ -459,39 +459,42 @@ const DashboardOperationalPush: FC = () => {
                         className={classes.itemCard}
                     >
                         <div className={classes.boxtitle} style={{ width:"100%"}}> Ranking HSM </div>
-                        <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
-                            <BarChart data={dataHSMRANK}>
-                                <XAxis dataKey="templatename" />
-                                <YAxis />
-                                <Tooltip />
-                                <Bar dataKey="quantity" fill="#8884d8" >
-                                    {dataHSMRANK.map((entry: any, index: number) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                    ))}
-                                </Bar>
-                            </BarChart>
-                        </ResponsiveContainer>
-                        
+                            <div style={{ height: 240 }}>
+                                <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
+                                    <BarChart data={dataHSMRANK}>
+                                        <XAxis dataKey="templatename" />
+                                        <YAxis />
+                                        <Tooltip />
+                                        <Bar dataKey="quantity" fill="#8884d8" >
+                                            {dataHSMRANK.map((entry: any, index: number) => (
+                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                            ))}
+                                        </Bar>
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
                     </Box>
                 </div>
                 <div className={classes.replacerowzyx}>
                     <Box
                         className={classes.itemCard}
                     >
-                        <div className={classes.boxtitle}>{t(langKeys.messagesbyday)}</div>
-                        <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
-                            <ComposedChart
-                                data={dataMENSAJEXDIA}
-                                >
-                                <CartesianGrid stroke="#f5f5f5" />
-                                <XAxis dataKey="fecha" scale="band" />
-                                <YAxis />
-                                <Tooltip />
-                                <Legend />
-                                <Bar dataKey="total" barSize={20} fill="#2499ee" />
-                                <Line type="monotone" dataKey="attended" stroke="#52307c" />
-                                </ComposedChart>
-                        </ResponsiveContainer>
+                        <div className={classes.boxtitle} style={{ width:"100%"}}>{t(langKeys.messagesbyday)}</div>
+                            <div style={{ height: 240 }}>
+                                <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
+                                    <ComposedChart
+                                        data={dataMENSAJEXDIA}
+                                        >
+                                        <CartesianGrid stroke="#f5f5f5" />
+                                        <XAxis dataKey="fecha" scale="band" />
+                                        <YAxis />
+                                        <Tooltip />
+                                        <Legend />
+                                        <Bar dataKey="total" barSize={20} fill="#2499ee" />
+                                        <Line type="monotone" dataKey="attended" stroke="#52307c" />
+                                        </ComposedChart>
+                                </ResponsiveContainer>
+                            </div>
                     </Box>
                 </div>
             </div>
