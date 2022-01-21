@@ -157,8 +157,8 @@ export const stringOptionsMenu = [
     { key: 'notcontains', value: 'notcontains' },
     { key: 'isempty', value: 'isempty' },
     { key: 'isnotempty', value: 'isnotempty' },
-    { key: 'isnull', value: 'isnull' },
-    { key: 'isnotnull', value: 'isnotnull' },
+    // { key: 'isnull', value: 'isnull' },
+    // { key: 'isnotnull', value: 'isnotnull' },
 ];
 
 export const numberOptionsMenu = [
@@ -168,8 +168,8 @@ export const numberOptionsMenu = [
     { key: 'greaterorequals', value: 'greaterorequals' },
     { key: 'less', value: 'less' },
     { key: 'lessorequals', value: 'lessorequals' },
-    { key: 'isnull', value: 'isnull' },
-    { key: 'isnotnull', value: 'isnotnull' },
+    // { key: 'isnull', value: 'isnull' },
+    // { key: 'isnotnull', value: 'isnotnull' },
 ];
 
 export const dateOptionsMenu = [
@@ -179,8 +179,8 @@ export const dateOptionsMenu = [
     { key: 'afterequals', value: 'afterequals' },
     { key: 'before', value: 'before' },
     { key: 'beforeequals', value: 'beforeequals' },
-    { key: 'isnull', value: 'isnull' },
-    { key: 'isnotnull', value: 'isnotnull' },
+    // { key: 'isnull', value: 'isnull' },
+    // { key: 'isnotnull', value: 'isnotnull' },
 ];
 
 export const booleanOptionsMenu = [
@@ -506,9 +506,9 @@ const TableZyx = React.memo(({
     const filterCellValue = React.useCallback((rows, id, filterValue) => {
         const { value, operator, type } = filterValue;
         return rows.filter((row: any) => {
-            const cellvalue = row.values[id];
-            if (cellvalue === null || cellvalue === undefined)
-                return false;
+            const cellvalue = row.values[id] || "";
+            // if (cellvalue === undefined)
+            //     return false;
 
             // if (!(['isempty', 'isnotempty', 'isnull', 'isnotnull'].includes(operator) || type === 'boolean') && (value || '') === '')
             //     return true;
@@ -564,9 +564,9 @@ const TableZyx = React.memo(({
                         case 'isfalse':
                             return typeof (cellvalue) === 'string' ? cellvalue === 'false' : cellvalue === false;
                         case 'isnull':
-                            return cellvalue == null;
+                            return cellvalue === "";
                         case 'isnotnull':
-                            return cellvalue != null;
+                            return cellvalue !== "";
                         case 'all':
                         default:
                             return true;
@@ -592,7 +592,7 @@ const TableZyx = React.memo(({
                         case 'isnotnull':
                             return cellvalue != null;
                         case 'notcontains':
-                            return !cellvalue.toLowerCase().includes(value.toLowerCase());
+                            return !(cellvalue + "").toLowerCase().includes(value.toLowerCase());
                         case 'contains':
                         default:
                             return (cellvalue + "").toLowerCase().includes(value.toLowerCase());
