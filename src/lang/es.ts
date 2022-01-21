@@ -543,6 +543,7 @@ const translation: LangKeys = {
     graphic_pie: 'Torta',
     graphic_bar: 'Barras',
     graphic_view_by: 'Visualizar por',
+    graphic_report_of: 'Reporte gráfico de {{report}} por {{column}}',
     grid_view: 'Vista lista',
 
     status_activo: 'activo',
@@ -1420,6 +1421,12 @@ const translation: LangKeys = {
     report_sentmessages_person: 'Envío desde personas',
     report_sentmessages_inbox: 'Envío desde inbox',
     report_sentmessages_chatflow: 'Envío desde flujo',
+
+    report_sentmessages_API: 'Envío por API',
+    report_sentmessages_LEAD: 'Envío desde oportunidades',
+    report_sentmessages_PERSON: 'Envío desde personas',
+    report_sentmessages_INBOX: 'Envío desde inbox',
+    report_sentmessages_CHATFLOW: 'Envío desde flujo',
 
     report_sentmessages_name: 'Motivo de envío',
     report_sentmessages_shippingdate: 'Fecha de envío',

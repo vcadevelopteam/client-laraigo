@@ -739,6 +739,7 @@ export const langKeys = {
     graphic_pie: 'graphic_pie',
     graphic_bar: 'graphic_bar',
     graphic_view_by: 'graphic_view_by',
+    graphic_report_of: 'graphic_report_of',
     grid_view: 'grid_view',
 
     status_activo: 'status_activo',
@@ -1548,6 +1549,12 @@ export const langKeys = {
     report_sentmessages_person: 'report_sentmessages_person',
     report_sentmessages_inbox: 'report_sentmessages_inbox',
     report_sentmessages_chatflow: 'report_sentmessages_chatflow',
+
+    report_sentmessages_API: 'report_sentmessages_API',
+    report_sentmessages_LEAD: 'report_sentmessages_LEAD',
+    report_sentmessages_PERSON: 'report_sentmessages_PERSON',
+    report_sentmessages_INBOX: 'report_sentmessages_INBOX',
+    report_sentmessages_CHATFLOW: 'report_sentmessages_CHATFLOW',
 
     report_sentmessages_name: 'report_sentmessages_name',
     report_sentmessages_shippingdate: 'report_sentmessages_shippingdate',
