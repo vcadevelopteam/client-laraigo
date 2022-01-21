@@ -1243,6 +1243,9 @@ export const langKeys = {
     error_null_not_allowed: 'error_null_not_allowed',
     error_function_not_exists: 'error_function_not_exists',
     error_kpi_sql: 'error_kpi_sql',
+    error_excess_channels: "error_excess_channels",
+    error_excess_users: "error_excess_users",
+
 
     dateRangeFilterTitle: 'dateRangeFilterTitle',
     apply: 'apply',
@@ -2372,6 +2375,8 @@ export const langKeys = {
     notedescription: 'notedescription',
     activitydescription: 'activitydescription',
     successful_calculate: 'successful_calculate',
+    successful_change_plan: 'successful_change_plan',
+    successful_cancel_suscription: 'successful_cancel_suscription',
     gotopay: 'gotopay',
     payments: 'payments',
     gotoreport: 'gotoreport',

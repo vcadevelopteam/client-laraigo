@@ -2534,3 +2534,19 @@ export const getKpiSel = () => ({
     key: "UFN_KPI_LST",
     parameters: {},
 });
+
+export const changePlan = (paymentplancode: string) => ({
+    method: "UFN_CORP_PAYMENTPLAN_UPD",
+    key: "UFN_CORP_PAYMENTPLAN_UPD",
+    parameters: {
+        paymentplancode
+    },
+});
+
+export const cancelSuscription = () => ({
+    method: "UFN_CORP_PAYMENTPLAN_CANCEL",
+    key: "UFN_CORP_PAYMENTPLAN_CANCEL",
+    parameters: {
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    },
+});

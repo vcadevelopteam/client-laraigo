@@ -1112,8 +1112,13 @@ const translation: LangKeys = {
     error_parameter_is_missing: "5004: Hubo un error, comuniquese con el administrador",
     error_request_services: "50007: Hubo un error, comuniquese con el administrador",
     error_request_bridge: "50008: Hubo un error, comuniquese con el administrador",
+    error_excess_channels: "50009: No se puede realizar el cambio de plan debido a que la cantidad de canales configurados supera a los soportados por el plan seleccionado",
+    error_excess_users: "50010: No se puede realizar el cambio de plan debido a que la cantidad de usuarios configurados supera a los soportados por el plan seleccionado",
     error_kpi_sql: 'Query error: {{error}}',
     dateRangeFilterTitle: 'Filtrar por rango de fechas',
+
+    successful_change_plan: 'El plan fue cambiado satisfactoriamente',
+    successful_cancel_suscription: 'La suscripción se canceló satisfactoriamente',
 
     apply: 'Aplicar',
     close: 'Cerrar',

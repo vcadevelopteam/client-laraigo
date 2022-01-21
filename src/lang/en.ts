@@ -708,6 +708,9 @@ const translation: LangKeys = {
     satisfied: "Satisfied",
     dissatisfied: "Dissatisfied",
     
+    successful_change_plan: 'The plan was successfully changed',
+    successful_cancel_suscription: 'Subscription was successfully canceled',
+    
     ticket_number: "Ticket",
     total_duration: "Total duration",
     waiting_person_time: "Person waiting time",
@@ -1154,6 +1157,10 @@ const translation: LangKeys = {
     error_request_services: '50007: There was an error, contact the administrator',
     error_request_bridge: '50008: There was an error, contact the administrator',
     error_kpi_sql: 'Query error: {{error}}',
+    error_excess_channels: "The plan change cannot be made because the number of configured channels exceeds those supported by the selected plan",
+    error_excess_users: "The plan change cannot be made because the number of configured users exceeds those supported by the selected plan",
+
+
     dateRangeFilterTitle: 'Filter by date range',
     person_who_modified: 'Person who modified',
     tipify_ticket: 'Classify ticket',

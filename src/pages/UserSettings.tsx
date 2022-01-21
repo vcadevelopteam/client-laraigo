@@ -18,6 +18,7 @@ import { updateUserSettings } from 'store/setting/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import clsx from 'clsx';
 import { execute } from 'store/main/actions';
+import { cancelSuscription as cancelSuscriptionFunction, changePlan as changePlanFunction } from 'common/helpers';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -241,6 +242,7 @@ const ChangePassword: React.FC<DetailProps> = ({ setViewSelected }) => {
             }
         }
     }, [resSetting])
+
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
             setwaitsave(true)
@@ -368,7 +370,9 @@ const ChangePlan: React.FC<DetailProps> = ({ setViewSelected }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
+    const [waitSave, setWaitSave] = useState(false);
     const user = useSelector(state => state.login.validateToken.user);
+    const executeResult = useSelector(state => state.main.execute);
 
     const [plan, setPlan] = useState(user?.plan || "");
 
@@ -382,9 +386,32 @@ const ChangePlan: React.FC<DetailProps> = ({ setViewSelected }) => {
             setPlan(nameplan)
     }
 
-    const handlerChange = () => {
-        // dispatch(execute)
+    const handlerSave = () => {
+        const callback = () => {
+            setWaitSave(true)
+            dispatch(execute(changePlanFunction(plan)));
+        }
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmchangeplan),
+            callback
+        }))
     }
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeResult.loading && !executeResult.error) {
+                setWaitSave(false)
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_change_plan) }));
+                setViewSelected("view-1")
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error")
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                setWaitSave(false);
+            }
+        }
+    }, [executeResult])
+
     return (
         <div style={{ width: "100%" }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -397,20 +424,21 @@ const ChangePlan: React.FC<DetailProps> = ({ setViewSelected }) => {
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                     <Button
                         variant="contained"
-                        color="primary"
-                        disabled={plan === user?.plan}
-                        startIcon={<SaveIcon color="secondary" />}
-                        style={{ backgroundColor: "#55BD84" }}>
-                        {t(langKeys.changeplan)}
-                    </Button>
-                    <Button
-                        variant="contained"
                         type="button"
                         color="primary"
                         startIcon={<ClearIcon color="secondary" />}
                         style={{ backgroundColor: "#FB5F5F" }}
                         onClick={() => setViewSelected("view-1")}>
                         {t(langKeys.back)}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={plan === user?.plan || executeResult.loading}
+                        onClick={handlerSave}
+                        startIcon={<SaveIcon color="secondary" />}
+                        style={{ backgroundColor: "#55BD84" }}>
+                        {t(langKeys.changeplan)}
                     </Button>
                 </div>
             </div>
@@ -499,6 +527,8 @@ const UserSettings: FC = () => {
     const { t } = useTranslation();
     const classes = useStyles();
     const user = useSelector(state => state.login.validateToken.user);
+    const [waitSave, setWaitSave] = useState(false);
+    const executeResult = useSelector(state => state.main.execute);
     const [view, setView] = useState('view-1');
 
     function changePlan() {
@@ -508,11 +538,26 @@ const UserSettings: FC = () => {
             dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.notpermisionforaction) }));
         }
     }
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeResult.loading && !executeResult.error) {
+                setWaitSave(false)
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_cancel_suscription) }));
+                // setViewSelected("view-1")
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error")
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                setWaitSave(false);
+            }
+        }
+    }, [executeResult])
+
     function cancelSuscription() {
         if (user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMIN") {
-
             const callback = () => {
-                console.log("desuscrito papu")
+                setWaitSave(true);
+                dispatch(execute(cancelSuscriptionFunction()));
             }
             dispatch(manageConfirmation({
                 visible: true,
