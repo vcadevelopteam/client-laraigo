@@ -2715,6 +2715,9 @@ export const langKeys = {
 
     copy: 'copy',
     empty_dashboard_form_error: 'empty_dashboard_form_error',
+    chart_dashboard_report_error: 'chart_dashboard_report_error',
+    chart_dashboard_column_error: 'chart_dashboard_column_error',
+    chart_dashboard_unexpected_error: 'chart_dashboard_unexpected_error',
 };
 
 export type LangKeys = typeof langKeys;
