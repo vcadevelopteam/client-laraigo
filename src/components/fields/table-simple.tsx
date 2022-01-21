@@ -357,7 +357,7 @@ const TableZyx = React.memo(({
 
         const setFilter = (filter: any) => {
             $setFilter(filter);
-            setTFilters(prev => ({ ...prev, filters: { ...prev.filters, [header]: filter } }));
+            setTFilters(prev => ({ ...prev, filters: { ...prev.filters, [header]: filter }, page: 0 }));
 
             dispatch(setMemoryTable({
                 filter: {
@@ -633,7 +633,7 @@ const TableZyx = React.memo(({
     } = useTable({
         columns,
         data,
-        initialState: { pageIndex: initialPageIndex, pageSize: pageSizeDefault, selectedRowIds: initialSelectedRows || {}, filters: initialStateFilter || [] },
+        initialState: { pageIndex: tFilters.page, pageSize: pageSizeDefault, selectedRowIds: initialSelectedRows || {}, filters: initialStateFilter || [] },
         defaultColumn,
         getRowId: (row, relativeIndex: any, parent: any) => selectionKey
             ? (parent ? [row[selectionKey], parent].join('.') : row[selectionKey])
