@@ -327,6 +327,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
         register('category', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('language', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('templatetype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('body', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
 
     useEffect(() => {
@@ -357,9 +358,16 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
     }, [waitUploadFile, uploadResult])
 
     const onSubmit = handleSubmit((data) => {
+        if (data.type === 'MAIL') {
+            data.body = renderToString(toElement(bodyobject));
+            if (data.body === `<div data-reactroot=""><p><span></span></p></div>`)
+                return
+        }
         const callback = () => {
             if (data.type === 'MAIL') {
                 data.body = renderToString(toElement(bodyobject));
+                if (data.body === '<div data-reactroot=""><p><span></span></p></div>')
+                    return;
             }
             dispatch(execute(insMessageTemplate({ ...data, bodyobject: bodyobject })));
             dispatch(showBackdrop(true));
@@ -372,21 +380,47 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
             callback
         }))
     });
-
+    useEffect(() => {
+        if (row) {
+            const type = row?.type || "HSM"
+            if (type === "HSM") {
+                register('language', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+                register('namespace', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+                register('body', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+            } else if (type === "SMS") {
+                register('language', { validate: (value) => true });
+                register('namespace', { validate: (value) => true });
+                register('body', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+            } else {
+                register('language', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+                register('namespace', { validate: (value) => true });
+                register('body');
+            }
+        }
+    }, [row])
     const onChangeMessageType = (data: Dictionary) => {
         if (getValues('type') === 'MAIL' && (data?.value || '') !== 'MAIL') {
             setValue('body', richTextToString(bodyobject))
         }
         setValue('type', data?.value || '');
         trigger('type');
-        
-        switch (data?.value || 'SMS') {
+
+        switch (data?.value || 'HSM') {
             case 'HSM':
+                register('language', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
                 register('namespace', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+                register('body', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
                 setTemplateTypeDisabled(false);
                 break;
-                case 'SMS': case 'MAIL':
-                register('namespace', { validate: (value) => true });
+            case 'SMS': case 'MAIL':
+                if ((data?.value || 'HSM') === "SMS") {
+                    register('language', { validate: () => true });
+                    register('body', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+                } else {
+                    register('language', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+                    register('body', { validate: () => true });
+                }
+                register('namespace', { validate: () => true });
                 onChangeTemplateType({ value: 'STANDARD' });
                 setTemplateTypeDisabled(true);
                 break;
@@ -583,17 +617,19 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                                     optionDesc="domaindesc"
                                     optionValue="domainvalue"
                                 />
-                                <FieldSelect
-                                    uset={true}
-                                    label={t(langKeys.language)}
-                                    className="col-6"
-                                    valueDefault={getValues('language')}
-                                    onChange={(value) => setValue('language', value?.domainvalue)}
-                                    error={errors?.language?.message}
-                                    data={dataLanguage}
-                                    optionDesc="domaindesc"
-                                    optionValue="domainvalue"
-                                />
+                                {getValues("type") !== 'SMS' && (
+                                    <FieldSelect
+                                        uset={true}
+                                        label={t(langKeys.language)}
+                                        className="col-6"
+                                        valueDefault={getValues('language')}
+                                        onChange={(value) => setValue('language', value?.domainvalue)}
+                                        error={errors?.language?.message}
+                                        data={dataLanguage}
+                                        optionDesc="domaindesc"
+                                        optionValue="domainvalue"
+                                    />
+                                )}
                             </React.Fragment>
                             :
                             <React.Fragment>
