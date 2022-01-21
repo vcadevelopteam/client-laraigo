@@ -527,7 +527,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                     className="col-12"
                     valueDefault={getValues('graphictype')}
                     error={errors?.graphictype?.message}
-                    onChange={(value) => setValue('graphictype', value?.value)}
+                    onChange={(value) => setValue('graphictype', value?.key)}
                     data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }]}
                     uset={true}
                     prefixTranslation="graphic_"
@@ -541,7 +541,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                     className="col-12"
                     valueDefault={getValues('column')}
                     error={errors?.column?.message}
-                    onChange={(value) => setValue('column', value?.value)}
+                    onChange={(value) => setValue('column', value?.key)}
                     data={columns.map(x => ({ key: x, value: x }))}
                     optionDesc="value"
                     optionValue="key"

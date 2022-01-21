@@ -1347,6 +1347,7 @@ const translation: LangKeys = {
     report_userproductivity_usersconnected: 'Asesores conectados',
 
     report_userproductivity_userid: 'Id',
+    report_userproductivity_usr: 'Usuario del asesor',
     report_userproductivity_user: 'Usuario del asesor',
     report_userproductivity_fullname: 'Asesor',
     report_userproductivity_hourfirstlogin: 'Hora de primer logueo',

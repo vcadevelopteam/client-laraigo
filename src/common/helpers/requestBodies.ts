@@ -425,6 +425,7 @@ export const getUserProductivityGraphic = ({ ...allParameters }: Dictionary): IR
     method: "UFN_REPORT_USERPRODUCTIVITY_GRAPHIC",
     key: "UFN_REPORT_USERPRODUCTIVITY_GRAPHIC",
     parameters: {
+        filters: {}, sorts: {},
         ...allParameters,
         channel: allParameters['channel'] ? allParameters['channel'] : "",
         userstatus: allParameters['userstatus'] ? allParameters['userstatus'] : "",

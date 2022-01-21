@@ -1415,6 +1415,7 @@ const translation: LangKeys = {
     report_userproductivity_usersconnected: 'Agent connected',
     dropusers: "Drop users",
     report_userproductivity_userid: 'Id',
+    report_userproductivity_usr: 'Agent user',
     report_userproductivity_user: 'Agent user',
     report_userproductivity_fullname: 'Name of agent',
     report_userproductivity_hourfirstlogin: 'First login time',

@@ -1477,6 +1477,7 @@ export const langKeys = {
     report_userproductivity_usersconnected: 'report_userproductivity_usersconnected',
 
     report_userproductivity_userid: 'report_userproductivity_userid',
+    report_userproductivity_usr: 'report_userproductivity_usr',
     report_userproductivity_user: 'report_userproductivity_user',
     report_userproductivity_fullname: 'report_userproductivity_fullname',
     report_userproductivity_hourfirstlogin: 'report_userproductivity_hourfirstlogin',

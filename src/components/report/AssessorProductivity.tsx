@@ -3,9 +3,9 @@ import React, { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useSelector } from 'hooks';
-import { getCollectionAux, resetMainAux } from "store/main/actions";
-import { getUserProductivitySel } from "common/helpers/requestBodies";
-import { DateRangePicker, FieldMultiSelect, FieldSelect, IOSSwitch } from "components";
+import { getCollectionAux, getMainGraphic, resetMainAux } from "store/main/actions";
+import { getUserProductivityGraphic, getUserProductivitySel } from "common/helpers/requestBodies";
+import { DateRangePicker, DialogZyx, FieldMultiSelect, FieldSelect, IOSSwitch } from "components";
 import { makeStyles } from '@material-ui/core/styles';
 import FormControlLabel from "@material-ui/core/FormControlLabel/FormControlLabel";
 import { Box, Button, Card, CardContent, Grid, Tooltip, Typography } from "@material-ui/core";
@@ -20,6 +20,9 @@ import TableZyx from "components/fields/table-simple";
 import { exportExcel } from 'common/helpers';
 import { langKeys } from "lang/keys";
 import { Dictionary, MultiData } from "@types";
+import { useForm } from "react-hook-form";
+import Graphic from "components/fields/Graphic";
+import AssessmentIcon from '@material-ui/icons/Assessment';
 
 interface Assessor {
     row: Dictionary | null;
@@ -94,6 +97,8 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
     });
     const [desconectedmotives, setDesconectedmotives] = useState<any[]>([]);
 
+    const [openModal, setOpenModal] = useState(false);
+    const [view, setView] = useState('GRID');
     
     const [detailCustomReport, setDetailCustomReport] = useState<{
         loading: boolean;
@@ -304,6 +309,18 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
     };
 
     const format = (date: Date) => date.toISOString().split('T')[0];
+
+    const handlerSearchGraphic = (daterange: any, column: string) => {
+        dispatch(getMainGraphic(getUserProductivityGraphic(
+            {
+                ...allParameters,
+                startdate: daterange?.startDate!,
+                enddate: daterange?.endDate!,
+                column,
+                summarization: 'COUNT'
+            }
+        )));
+    }
 
     return (
         <>
@@ -562,28 +579,233 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                 </Grid>
             </Grid>
 
-            <Box width={1} style={{display: "flex", justifyContent: "flex-end"}}>
-                <Button
-                    className={classes.button}
-                    variant="contained"
-                    color="primary"
-                    disabled={detailCustomReport.loading}
-                    onClick={() => exportExcel("report" + (new Date().toISOString()), detailCustomReport.data.map(x => ({...x, ...JSON.parse(x.desconectedtimejson)})), columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
-                    startIcon={<DownloadIcon />}
-                >{t(langKeys.download)}
-                </Button>
-            </Box>
+            {view === "GRID" ? (
+                <TableZyx
+                    columns={columns}
+                    data={detailCustomReport.data.map(x => ({...x, ...JSON.parse(x.desconectedtimejson)}))}
+                    download={false}
+                    loading={detailCustomReport.loading}
+                    filterGeneral={false}
+                    register={false}
+                    ButtonsElement={() => (
+                        <Box width={1} style={{display: "flex", justifyContent: "flex-end", gap: 8}}>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={detailCustomReport.loading || !(detailCustomReport.data.length > 0)}
+                                onClick={() => setOpenModal(true)}
+                                startIcon={<AssessmentIcon />}
+                            >
+                                {t(langKeys.graphic_view)}
+                            </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={detailCustomReport.loading}
+                                onClick={() => exportExcel("report" + (new Date().toISOString()), detailCustomReport.data.map(x => ({...x, ...JSON.parse(x.desconectedtimejson)})), columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
+                                startIcon={<DownloadIcon />}
+                            >{t(langKeys.download)}
+                            </Button>
+                        </Box>
+                    )}
+                />
+            ) : (
+                <Graphic
+                    graphicType={view.split("-")?.[1] || "BAR"}
+                    column={view.split("-")?.[2] || "summary"}
+                    openModal={openModal}
+                    setOpenModal={setOpenModal}
+                    daterange={{
+                        startDate: dateRange.startDate?.toISOString().substring(0,10),
+                        endDate: dateRange.endDate?.toISOString().substring(0,10),
+                    }}
+                    setView={setView}
+                    row={{origin: 'userproductivity'}}
+                    handlerSearchGraphic={handlerSearchGraphic}
+                />
+            )}
 
-            <TableZyx
-                columns={columns}
-                data={detailCustomReport.data.map(x => ({...x, ...JSON.parse(x.desconectedtimejson)}))}
-                download={false}
-                loading={detailCustomReport.loading}
-                filterGeneral={false}
-                register={false}
+            <SummaryGraphic
+                openModal={openModal}
+                setOpenModal={setOpenModal}
+                setView={setView}
+                daterange={dateRange}
+                filters={allParameters}
+                columns={[
+                    {
+                        "key": "usr",
+                        "value": "report_userproductivity_usr"
+                    },
+                    {
+                        "key": "fullname",
+                        "value": "report_userproductivity_fullname"
+                    },
+                    {
+                        "key": "hourfirstlogin",
+                        "value": "report_userproductivity_hourfirstlogin"
+                    },
+                    {
+                        "key": "totaltickets",
+                        "value": "report_userproductivity_totaltickets"
+                    },
+                    {
+                        "key": "closedtickets",
+                        "value": "report_userproductivity_closedtickets"
+                    },
+                    {
+                        "key": "asignedtickets",
+                        "value": "report_userproductivity_asignedtickets"
+                    },
+                    {
+                        "key": "suspendedtickets",
+                        "value": "report_userproductivity_suspendedtickets"
+                    },
+                    {
+                        "key": "avgfirstreplytime",
+                        "value": "report_userproductivity_avgfirstreplytime"
+                    },
+                    {
+                        "key": "maxfirstreplytime",
+                        "value": "report_userproductivity_maxfirstreplytime"
+                    },
+                    {
+                        "key": "minfirstreplytime",
+                        "value": "report_userproductivity_minfirstreplytime"
+                    },
+                    {
+                        "key": "maxtotalduration",
+                        "value": "report_userproductivity_maxtotalduration"
+                    },
+                    {
+                        "key": "mintotalduration",
+                        "value": "report_userproductivity_mintotalduration"
+                    },
+                    {
+                        "key": "avgtotalasesorduration",
+                        "value": "report_userproductivity_avgtotalasesorduration"
+                    },
+                    {
+                        "key": "maxtotalasesorduration",
+                        "value": "report_userproductivity_maxtotalasesorduration"
+                    },
+                    {
+                        "key": "mintotalasesorduration",
+                        "value": "report_userproductivity_mintotalasesorduration"
+                    },
+                    {
+                        "key": "userconnectedduration",
+                        "value": "report_userproductivity_userconnectedduration"
+                    },
+                    {
+                        "key": "userstatus",
+                        "value": "report_userproductivity_userstatus"
+                    },
+                    {
+                        "key": "groups",
+                        "value": "report_userproductivity_groups"
+                    },
+                    ...([...desconectedmotives.map((d: any) =>
+                            ({
+                                key: `desconectedtimejson::json->>'${d}'`,
+                                value: d
+                            })
+                    )])
+                ]}
             />
         </>
     )
 };
+
+interface SummaryGraphicProps {
+    openModal: boolean;
+    setOpenModal: (value: boolean) => void;
+    setView: (value: string) => void;
+    row?: Dictionary | null;
+    daterange: any;
+    filters?: Dictionary;
+    columns: any[];
+    columnsprefix?: string;
+}
+
+const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal, setView, row, daterange, filters, columns, columnsprefix }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm<any>({
+        defaultValues: {
+            graphictype: 'BAR',
+            column: ''
+        }
+    });
+
+    useEffect(() => {
+        register('graphictype', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('column', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+    }, [register]);
+
+    const handleCancelModal = () => {
+        setOpenModal(false);
+    }
+
+    const handleAcceptModal = handleSubmit((data) => {
+        triggerGraphic(data);
+    });
+
+    const triggerGraphic = (data: any) => {
+        setView(`CHART-${data.graphictype}-${data.column}`);
+        setOpenModal(false);
+        dispatch(getMainGraphic(getUserProductivityGraphic(
+            {
+                ...filters,
+                column: data.column,
+                summarization: 'COUNT'
+            }
+        )));
+    }
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.graphic_configuration)}
+            button1Type="button"
+            buttonText1={t(langKeys.cancel)}
+            handleClickButton1={handleCancelModal}
+            button2Type="button"
+            buttonText2={t(langKeys.accept)}
+            handleClickButton2={handleAcceptModal}
+        >
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.graphic_type)}
+                    className="col-12"
+                    valueDefault={getValues('graphictype')}
+                    error={errors?.graphictype?.message}
+                    onChange={(value) => setValue('graphictype', value?.key)}
+                    data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }]}
+                    uset={true}
+                    prefixTranslation="graphic_"
+                    optionDesc="value"
+                    optionValue="key"
+                />
+            </div>
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.graphic_view_by)}
+                    className="col-12"
+                    valueDefault={getValues('column')}
+                    error={errors?.column?.message}
+                    onChange={(value) => setValue('column', value?.key)}
+                    data={columns}
+                    optionDesc="value"
+                    optionValue="key"
+                    uset={true}
+                    prefixTranslation=""
+                />
+            </div>
+        </DialogZyx>
+    )
+}
 
 export default AssessorProductivity;
