@@ -2711,6 +2711,7 @@ export const langKeys = {
     businessinitiatedconversations: 'businessinitiatedconversations',
 
     copy: 'copy',
+    empty_dashboard_form_error: 'empty_dashboard_form_error',
 };
 
 export type LangKeys = typeof langKeys;

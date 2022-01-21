@@ -237,16 +237,24 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
         });
     };
 
-    const deleteItemOnClick = useCallback((key: string) => {
+    const deleteItemOnClick = (key: string) => {
         setLayout(prev => prev.filter(e => e.i !== key));
-    }, []);
+    }
 
-    const onContinue = useCallback(() => {
-        handleSubmit((data) => {
-            console.log(data);
-            setOpenModal(true);
-        }, e => console.log('errores', e))();
-    }, [handleSubmit]);
+    const onContinue = () => {
+        if (layout.length <= 1) {
+            dispatch(showSnackbar({
+                message: t(langKeys.empty_dashboard_form_error),
+                success: false,
+                show: true,
+            }));
+        } else {
+            handleSubmit((data) => {
+                console.log(data);
+                setOpenModal(true);
+            }, e => console.log('errores', e))();
+        }
+    }
 
     const onSubmit = useCallback((description: string) => {
         if (edit === true && !dashboardtemplate.value) return;

@@ -2721,6 +2721,7 @@ const translation: LangKeys = {
     businessinitiatedconversations: 'Business-initiated conversations',
 
     copy: 'Copia',
+    empty_dashboard_form_error: 'Must have at least one chart assigned',
 };
 
 const enResource: ResourceLanguage = {
