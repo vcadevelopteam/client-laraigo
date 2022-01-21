@@ -1422,6 +1422,12 @@ const translation: LangKeys = {
     report_sentmessages_inbox: 'Envío desde inbox',
     report_sentmessages_chatflow: 'Envío desde flujo',
 
+    report_sentmessages_API: 'Envío por API',
+    report_sentmessages_LEAD: 'Envío desde oportunidades',
+    report_sentmessages_PERSON: 'Envío desde personas',
+    report_sentmessages_INBOX: 'Envío desde inbox',
+    report_sentmessages_CHATFLOW: 'Envío desde flujo',
+
     report_sentmessages_name: 'Motivo de envío',
     report_sentmessages_shippingdate: 'Fecha de envío',
     report_sentmessages_from: 'Remitente',
