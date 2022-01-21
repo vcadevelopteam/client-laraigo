@@ -2167,7 +2167,7 @@ const translation: LangKeys = {
     lost: 'Perdido',
     billbyorg: 'Facturación por organización',
     
-    businessname: 'Razón Social',
+    businessname: 'Razón social',
     fiscaladdress: 'Dirección fiscal',
     sunatcountry: 'Pais',
     contactemail: 'Correo del contacto',
@@ -2207,7 +2207,7 @@ const translation: LangKeys = {
     taxes: "Monto total IGV",
     totalamount: "Monto total",
     exchangerate: "Tipo cambio",
-    invoicestatus: "Estado factura",
+    invoicestatus: "Estado de facturación",
     errordescription: "Error descripción",
     qrcode: "Código QR",
     hashcode: "Código HASH",
@@ -2229,7 +2229,7 @@ const translation: LangKeys = {
     contractnumber: "Número de contrato",
     orderid: "Solicitar ID",
     orderjson: "Order json",
-    paymentstatus: "Estado pago",
+    paymentstatus: "Estado de pago",
     paymentdate: "Fecha pago",
     paidby: "Pagado por",
     tokenid: "Token Id",
@@ -2689,6 +2689,13 @@ const translation: LangKeys = {
     reportfreeconversations: 'Conversaciones gratis',
     userinitiatedconversations: 'Conversaciones iniciadas por el usuario',
     businessinitiatedconversations: 'Conversaciones iniciadas por el negocio',
+    reportstatus: 'Estado de reporte',
+    generateinvoice: 'Generar Factura',
+    clientsearch: 'Busqueda de cliente:',
+    billingtitle: 'Facturación',
+    billinggeneration: 'Generar Factura',
+    emitinvoice: 'Emitir',
+    measureunit: 'Unidad de medida',
 };
 
 const esResource: ResourceLanguage = {

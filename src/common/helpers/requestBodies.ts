@@ -276,6 +276,7 @@ export const getSLASel = (id: number): IRequestBody => ({
 });
 export const getCorpSel = (id: number): IRequestBody => ({
     method: "UFN_CORP_SEL",
+    key: "UFN_CORP_SEL",
     parameters: {
         id: id,
         all: id === 0,
@@ -283,6 +284,7 @@ export const getCorpSel = (id: number): IRequestBody => ({
 });
 export const getOrgSel = (id: number, corpid?:number): IRequestBody => ({
     method: "UFN_ORG_SEL",
+    key: "UFN_ORG_SEL",
     parameters: {
         orgid: id,
         all: id === 0,

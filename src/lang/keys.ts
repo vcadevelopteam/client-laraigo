@@ -2689,6 +2689,13 @@ export const langKeys = {
     reportfreeconversations: 'reportfreeconversations',
     userinitiatedconversations: 'userinitiatedconversations',
     businessinitiatedconversations: 'businessinitiatedconversations',
+    reportstatus: 'reportstatus',
+    generateinvoice: 'generateinvoice',
+    clientsearch: 'clientsearch',
+    billingtitle: 'billingtitle',
+    billinggeneration: 'billinggeneration',
+    emitinvoice: 'emitinvoice',
+    measureunit: 'measureunit',
 };
 
 export type LangKeys = typeof langKeys;

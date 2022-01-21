@@ -956,7 +956,7 @@ const translation: LangKeys = {
     informationrespsunat: "Information resp sunat",
     optionalfields: "Optional fields",
     paymentinformation: "Payment information",
-    invoicestatus: "Invoice Status",
+    invoicestatus: "Billing status",
     errordescription: "Error description",
     qrcode: "Qr Code",
     hashcode: "Hash code",
@@ -2329,7 +2329,7 @@ const translation: LangKeys = {
     billingfield_billingno: 'No Document',
     billingfield_billingdni: 'DNI',
     billingfield_billingextra: 'Immigration Card',
-    billingfield_billingruc: 'RUC',
+    billingfield_billingruc: 'NIT',
     billingfield_billingpass: 'Passport',
     billingfield_billingmifact: 'Mifact',
     billingfield_billingculqi: 'Culqi',
@@ -2699,6 +2699,13 @@ const translation: LangKeys = {
     reportfreeconversations: 'Free conversations',
     userinitiatedconversations: 'User-initiated conversations',
     businessinitiatedconversations: 'Business-initiated conversations',
+    reportstatus: 'Report status',
+    generateinvoice: 'Generate Invoice',
+    clientsearch: 'Client search:',
+    billingtitle: 'Billing',
+    billinggeneration: 'Generate Invoice',
+    emitinvoice: 'Generate',
+    measureunit: 'Unit of measurement',
 };
 
 const enResource: ResourceLanguage = {
