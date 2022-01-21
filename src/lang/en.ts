@@ -2099,6 +2099,7 @@ const translation: LangKeys = {
     graphic_pie: 'Pie',
     graphic_bar: 'Bar',
     graphic_view_by: 'View by',
+    graphic_report_of: 'Graphic report of {{report}} by {{column}}',
     grid_view: 'List view',
 
     manageAgreement: 'Manage agreements',

@@ -738,6 +738,7 @@ export const langKeys = {
     graphic_pie: 'graphic_pie',
     graphic_bar: 'graphic_bar',
     graphic_view_by: 'graphic_view_by',
+    graphic_report_of: 'graphic_report_of',
     grid_view: 'grid_view',
 
     status_activo: 'status_activo',
