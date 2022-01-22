@@ -99,6 +99,8 @@ interface IGraphic {
     daterange: any;
     handlerSearchGraphic: (value: any, value1: any) => void;
     row: Dictionary;
+    withFilters?: boolean;
+    withButtons?: boolean;
 }
 
 const RADIAN = Math.PI / 180;
@@ -159,7 +161,7 @@ const TableResume: FC<{ graphicType: string; data: Dictionary[] }> = ({ data, gr
                 // titlemodule={t(langKeys.personAverageReplyTimexFecha)}
                 data={data}
                 download={false}
-                pageSizeDefault={10}
+                pageSizeDefault={100}
                 filterGeneral={false}
                 toolsFooter={false}
             />
@@ -167,7 +169,7 @@ const TableResume: FC<{ graphicType: string; data: Dictionary[] }> = ({ data, gr
     )
 }
 
-const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, FiltersElement, row, daterange, handlerSearchGraphic }) => {
+const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, FiltersElement, row, daterange, handlerSearchGraphic, withFilters = true, withButtons = true }) => {
     const classes = useStyles();
     const { t } = useTranslation();
     const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
@@ -194,58 +196,70 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
 
     return (
         <>
-            <Box className={classes.containerHeaderItem} justifyContent="space-between" alignItems="center" >
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                    <DateRangePicker
-                        open={openDateRangeModal}
-                        setOpen={setOpenDateRangeModal}
-                        range={dateRange}
-                        onSelect={setdateRange}
-                    >
-                        <Button
-                            disabled={mainGraphicRes.loading}
-                            style={{ border: '1px solid #bfbfc0', borderRadius: 4, color: 'rgb(143, 146, 161)' }}
-                            startIcon={<CalendarIcon />}
-                            onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
-                        >
-                            {getDateCleaned(dateRange.startDate!) + " - " + getDateCleaned(dateRange.endDate!)}
-                        </Button>
-                    </DateRangePicker>
-                    {FiltersElement && FiltersElement}
-                    <Button
-                        disabled={mainGraphicRes.loading}
-                        variant="contained"
-                        color="primary"
-                        startIcon={<SearchIcon style={{ color: 'white' }} />}
-                        style={{ backgroundColor: '#55BD84', width: 120 }}
-                        onClick={() => handlerSearchGraphic(dateRange, column)}
-                    >
-                        {t(langKeys.search)}
-                    </Button>
-                </div>
-                <div style={{ display: 'flex', gap: 8 }}>
-                    <Button
-                        className={classes.button}
-                        variant="contained"
-                        color="primary"
-                        onClick={() => setOpenModal(true)}
-                        startIcon={<SettingsIcon />}
-                    >
-                        {t(langKeys.configuration)}
-                    </Button>
-                    <Button
-                        className={classes.button}
-                        variant="contained"
-                        color="primary"
-                        onClick={() => setView('GRID')}
-                        startIcon={<ListIcon />}
-                    >
-                        {t(langKeys.grid_view)}
-                    </Button>
-                </div>
-            </Box>
+            {(withFilters || withButtons) && (
+                <Box className={classes.containerHeaderItem} justifyContent="space-between" alignItems="center" >
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                        {withFilters &&
+                            (
+                                <>
+                                    <DateRangePicker
+                                        open={openDateRangeModal}
+                                        setOpen={setOpenDateRangeModal}
+                                        range={dateRange}
+                                        onSelect={setdateRange}
+                                    >
+                                        <Button
+                                            disabled={mainGraphicRes.loading}
+                                            style={{ border: '1px solid #bfbfc0', borderRadius: 4, color: 'rgb(143, 146, 161)' }}
+                                            startIcon={<CalendarIcon />}
+                                            onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
+                                        >
+                                            {getDateCleaned(dateRange.startDate!) + " - " + getDateCleaned(dateRange.endDate!)}
+                                        </Button>
+                                    </DateRangePicker>
+                                    {FiltersElement && FiltersElement}
+                                    <Button
+                                        disabled={mainGraphicRes.loading}
+                                        variant="contained"
+                                        color="primary"
+                                        startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                        style={{ backgroundColor: '#55BD84', width: 120 }}
+                                        onClick={() => handlerSearchGraphic(dateRange, column)}
+                                    >
+                                        {t(langKeys.search)}
+                                    </Button>
+                                </>
+
+                            )}
+                    </div>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                        {withButtons && (
+                            <>
+                                <Button
+                                    className={classes.button}
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={() => setOpenModal(true)}
+                                    startIcon={<SettingsIcon />}
+                                >
+                                    {t(langKeys.configuration)}
+                                </Button>
+                                <Button
+                                    className={classes.button}
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={() => setView('GRID')}
+                                    startIcon={<ListIcon />}
+                                >
+                                    {t(langKeys.grid_view)}
+                                </Button>
+                            </>
+                        )}
+                    </div>
+                </Box>
+            )}
             <div style={{ fontWeight: 500, padding: 16 }}>
-                {t(langKeys.graphic_report_of, {report: t('report_' + row?.origin), column: t('report_' + row?.origin + '_' + column)})}
+                {t(langKeys.graphic_report_of, { report: t('report_' + row?.origin), column: t('report_' + row?.origin + '_' + column) })}
             </div>
             {mainGraphicRes.loading ? (
                 <div style={{ flex: 1, height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -254,10 +268,8 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
             ) : (graphicType === "BAR" ? (
                 <div style={{ display: 'flex' }}>
                     <div style={{ flex: '0 0 70%', height: 500 }}>
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer aspect={4.0 / 2}>
                             <BarChart
-                                width={500}
-                                height={300}
                                 data={dataGraphic}
                                 margin={{
                                     top: 5,
@@ -267,16 +279,17 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                                 }}
                             >
                                 <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="columnname" />
+                                <XAxis dataKey="columnname" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end" height={160} dy={5} dx={-5} />
+
                                 <YAxis />
                                 <ChartTooltip />
-                                <Bar dataKey="summary" fill="#8884d8" >
+                                <Bar dataKey="summary" fill="#8884d8" textAnchor="end"  stackId="a"  type="monotone" >
                                     <LabelList dataKey="summary" position="inside" />
                                 </Bar>
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
-                    <div>
+                    <div style={{ overflowX: 'auto' }}>
                         <TableResume
                             graphicType={graphicType}
                             data={dataGraphic}
@@ -285,7 +298,7 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                 </div>
             ) : (
                 <div style={{ display: 'flex' }}>
-                    <div style={{ flex: '0 0 70%', height: 500 }}>
+                    <div style={{ flex: '0 0 65%', height: 500 }}>
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <ChartTooltip />
@@ -310,7 +323,7 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                             </PieChart>
                         </ResponsiveContainer>
                     </div>
-                    <div>
+                    <div style={{ overflowX: 'auto' }}>
                         <TableResume
                             graphicType={graphicType}
                             data={dataGraphic}

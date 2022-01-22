@@ -23,6 +23,8 @@ import { Dictionary, MultiData } from "@types";
 import { useForm } from "react-hook-form";
 import Graphic from "components/fields/Graphic";
 import AssessmentIcon from '@material-ui/icons/Assessment';
+import ListIcon from '@material-ui/icons/List';
+import { Settings } from "@material-ui/icons";
 
 interface Assessor {
     row: Dictionary | null;
@@ -71,7 +73,17 @@ const useStyles = makeStyles((theme) => ({
         width: 15,
         height: 15,
         cursor: 'pointer',
-    }
+    },
+    containerHeaderItem: {
+        backgroundColor: '#FFF',
+        padding: 8,
+        display: 'block',
+        flexWrap: 'wrap',
+        gap: 8,
+        [theme.breakpoints.up('sm')]: {
+            display: 'flex',
+        }
+    },
 }));
 
 const columnsTemp = [
@@ -106,6 +118,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
     const [state, setState] = useState({ checkedA: false, checkedB: false });
     const [checkedA, setcheckedA] = useState(false);
     const [isday, setisday] = useState(false);
+    const [columnGraphic, setColumnGraphic] = useState('');
     const [maxmin, setmaxmin] = useState({
         maxticketsclosed: 0,
         maxticketsclosedasesor: "",
@@ -120,7 +133,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
 
     const [openModal, setOpenModal] = useState(false);
     const [view, setView] = useState('GRID');
-    
+
     const [detailCustomReport, setDetailCustomReport] = useState<{
         loading: boolean;
         data: Dictionary[]
@@ -141,11 +154,11 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                 accessor: 'fullname',
                 NoFilter: false
             },
-            ...(isday?[{
+            ...(isday ? [{
                 Header: t(langKeys.report_userproductivity_hourfirstlogin),
                 accessor: 'hourfirstlogin',
                 NoFilter: false,
-            }]:[]),
+            }] : []),
             {
                 Header: t(langKeys.report_userproductivity_totaltickets),
                 accessor: 'totaltickets',
@@ -238,22 +251,22 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
             },
             ...(mainAux.data.length > 0 ?
                 [...desconectedmotives.map((d: any) =>
-                        ({
-                            Header: d,
-                            accessor: d,
-                            NoFilter: false,
-                        })
-                    )
+                ({
+                    Header: d,
+                    accessor: d,
+                    NoFilter: false,
+                })
+                )
                 ] : []
             )
         ],
-        [isday,mainAux,desconectedmotives]
+        [isday, mainAux, desconectedmotives]
     );
 
     useEffect(() => {
         if (!mainAux.error && !mainAux.loading && mainAux.key === "UFN_REPORT_USERPRODUCTIVITY_SEL") {
             setDetailCustomReport(mainAux);
-            let maxminaux={
+            let maxminaux = {
                 maxticketsclosed: 0,
                 maxticketsclosedasesor: "",
                 minticketsclosed: 0,
@@ -263,13 +276,13 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                 mintimeconnected: "0",
                 mintimeconnectedasesor: "",
             }
-            if(mainAux.data.length >0){
+            if (mainAux.data.length > 0) {
                 const desconedtedmotives = Array.from(new Set((mainAux.data as any).reduce((ac: string[], x: any) => (
                     x.desconectedtimejson ? [...ac, ...Object.keys(JSON.parse(x.desconectedtimejson))] : ac), [])));
                 setDesconectedmotives([...desconedtedmotives]);
-                mainAux.data.filter(x => x.usertype !== 'HOLDING').forEach((x,i)=>{
-                    if (i===0){
-                        maxminaux ={
+                mainAux.data.filter(x => x.usertype !== 'HOLDING').forEach((x, i) => {
+                    if (i === 0) {
+                        maxminaux = {
                             maxticketsclosed: x.closedtickets,
                             maxticketsclosedasesor: x.fullname,
                             minticketsclosed: x.closedtickets,
@@ -279,20 +292,20 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                             mintimeconnected: x.userconnectedduration,
                             mintimeconnectedasesor: x.fullname,
                         }
-                    }else{
-                        if(maxminaux.maxticketsclosed<x.closedtickets){
+                    } else {
+                        if (maxminaux.maxticketsclosed < x.closedtickets) {
                             maxminaux.maxticketsclosed = x.closedtickets
                             maxminaux.maxticketsclosedasesor = x.fullname
                         }
-                        if(maxminaux.minticketsclosed>x.closedtickets){
+                        if (maxminaux.minticketsclosed > x.closedtickets) {
                             maxminaux.minticketsclosed = x.closedtickets
                             maxminaux.minticketsclosedasesor = x.fullname
                         }
-                        if(parseInt(maxminaux.maxtimeconnected)<parseInt(x.userconnectedduration)){
+                        if (parseInt(maxminaux.maxtimeconnected) < parseInt(x.userconnectedduration)) {
                             maxminaux.maxtimeconnected = x.userconnectedduration
                             maxminaux.maxtimeconnectedasesor = x.fullname
                         }
-                        if(parseInt(maxminaux.mintimeconnected)>parseInt(x.userconnectedduration)){
+                        if (parseInt(maxminaux.mintimeconnected) > parseInt(x.userconnectedduration)) {
                             maxminaux.mintimeconnected = x.userconnectedduration
                             maxminaux.mintimeconnectedasesor = x.fullname
                         }
@@ -317,6 +330,18 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
         setisday(stardate === enddate)
         dispatch(resetMainAux());
         dispatch(getCollectionAux(getUserProductivitySel({ ...allParameters })));
+
+        if (view !== "GRID") {
+            dispatch(getMainGraphic(getUserProductivityGraphic(
+                {
+                    ...allParameters,
+                    // startdate: daterange?.startDate!,
+                    // enddate: daterange?.endDate!,
+                    column: columnGraphic,
+                    summarization: 'COUNT'
+                }
+            )));
+        }
     };
 
     const setValue = (parameterName: any, value: any) => {
@@ -346,7 +371,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
     return (
         <>
             <div className={classes.containerFilter}>
-                <div style={{ display: 'flex'}}>
+                <div style={{ display: 'flex' }}>
                     <Box width={1}>
                         <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center">
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
@@ -358,7 +383,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                 >
                                     <Button
                                         disabled={detailCustomReport.loading}
-                                        style={{ border: '1px solid #bfbfc0', borderRadius: 4, color: 'rgb(143, 146, 161)'  }}
+                                        style={{ border: '1px solid #bfbfc0', borderRadius: 4, color: 'rgb(143, 146, 161)' }}
                                         startIcon={<CalendarIcon />}
                                         onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
                                     >
@@ -398,17 +423,17 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                     )
                     )
                 }
-                <div style={{ alignItems: 'center' }}> 
+                <div style={{ alignItems: 'center' }}>
                     <div>
                         <Box fontWeight={500} lineHeight="18px" fontSize={14} color="textPrimary">{t(langKeys.report_userproductivity_filter_includebot)}</Box>
                         <FormControlLabel
-                            style={{paddingLeft:10}}
+                            style={{ paddingLeft: 10 }}
                             control={<IOSSwitch checked={checkedA} onChange={handleChange} />}
-                            label={checkedA?t(langKeys.yes):"No"}
+                            label={checkedA ? t(langKeys.yes) : "No"}
                         />
                     </div>
                 </div>
-                <div style={{ display: 'flex'}}>
+                <div style={{ display: 'flex' }}>
                     <Box width={1}>
                         <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center">
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
@@ -440,17 +465,17 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                 <Card className={clsx({
                                     [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtme <= detailCustomReport.data[0]?.tmeesperadogeneral),
                                     [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtme > detailCustomReport.data[0]?.tmeesperadogeneral),
-                                })} style={{color: "white"}}>
-                                    <CardContent style={{paddingBottom: 10}}>
+                                })} style={{ color: "white" }}>
+                                    <CardContent style={{ paddingBottom: 10 }}>
                                         <Typography variant="h5">
                                             {t(langKeys.report_userproductivity_cardtme)}
                                         </Typography>
                                         <Typography variant="h5" component="div" align="center">
                                             {detailCustomReport.data[0]?.cardavgavgtme}
                                         </Typography>
-                                        <Typography variant="subtitle2" style={{display: "flex",width: "100%", paddingTop: 5, justifyContent: "space-between"}}>
-                                            {`${t(langKeys.tmeexpected)} ${detailCustomReport.data[0]?.tmeesperadogeneral||""}`}
-                                            { (detailCustomReport.data[0]?.cardavgavgtme <= detailCustomReport.data[0]?.tmeesperadogeneral) ? (<ThumbUpIcon/>) : (<ThumbDownIcon/>)}
+                                        <Typography variant="subtitle2" style={{ display: "flex", width: "100%", paddingTop: 5, justifyContent: "space-between" }}>
+                                            {`${t(langKeys.tmeexpected)} ${detailCustomReport.data[0]?.tmeesperadogeneral || ""}`}
+                                            {(detailCustomReport.data[0]?.cardavgavgtme <= detailCustomReport.data[0]?.tmeesperadogeneral) ? (<ThumbUpIcon />) : (<ThumbDownIcon />)}
                                         </Typography>
                                     </CardContent>
                                 </Card>
@@ -466,7 +491,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                 <IndicatorPanel
                                     title={t(langKeys.report_userproductivity_cardmaxmax_tme)}
                                     value={detailCustomReport.data[0]?.cardmaxmaxtme}
-                                    value2={detailCustomReport.data[0]?.cardmaxmaxtmeuser?`#${detailCustomReport.data[0]?.cardmaxmaxtmeticket} (${detailCustomReport.data[0]?.cardmaxmaxtmeuser})`:"-"}
+                                    value2={detailCustomReport.data[0]?.cardmaxmaxtmeuser ? `#${detailCustomReport.data[0]?.cardmaxmaxtmeticket} (${detailCustomReport.data[0]?.cardmaxmaxtmeuser})` : "-"}
                                 />
                             </Grid>
                             <Grid item xs={12} md={12} lg={6}>
@@ -480,7 +505,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                 <IndicatorPanel
                                     title={t(langKeys.report_userproductivity_cardminmin_tme)}
                                     value={detailCustomReport.data[0]?.cardminmintme}
-                                    value2={detailCustomReport.data[0]?.cardminmintmeuser?`#${detailCustomReport.data[0]?.cardminmintmeticket} (${detailCustomReport.data[0]?.cardminmintmeuser})`:"-"}
+                                    value2={detailCustomReport.data[0]?.cardminmintmeuser ? `#${detailCustomReport.data[0]?.cardminmintmeticket} (${detailCustomReport.data[0]?.cardminmintmeuser})` : "-"}
                                 />
                             </Grid>
                         </Grid>
@@ -493,17 +518,17 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                 <Card className={clsx({
                                     [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtmo <= detailCustomReport.data[0]?.tmoesperadogeneral),
                                     [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtmo > detailCustomReport.data[0]?.tmoesperadogeneral),
-                                })} style={{color: "white"}}>
-                                    <CardContent style={{paddingBottom: 10}}>
+                                })} style={{ color: "white" }}>
+                                    <CardContent style={{ paddingBottom: 10 }}>
                                         <Typography variant="h5">
                                             {t(langKeys.report_userproductivity_cardtmo)}
                                         </Typography>
                                         <Typography variant="h5" component="div" align="center">
                                             {detailCustomReport.data[0]?.cardavgavgtmo}
                                         </Typography>
-                                        <Typography variant="subtitle2" style={{display: "flex",width: "100%", paddingTop: 5, justifyContent: "space-between"}}>
-                                            {`${t(langKeys.tmoexpected)} ${detailCustomReport.data[0]?.tmoesperadogeneral||""}`}
-                                            { (detailCustomReport.data[0]?.cardavgavgtmo <= detailCustomReport.data[0]?.tmoesperadogeneral) ? (<ThumbUpIcon/>) : (<ThumbDownIcon/>)}
+                                        <Typography variant="subtitle2" style={{ display: "flex", width: "100%", paddingTop: 5, justifyContent: "space-between" }}>
+                                            {`${t(langKeys.tmoexpected)} ${detailCustomReport.data[0]?.tmoesperadogeneral || ""}`}
+                                            {(detailCustomReport.data[0]?.cardavgavgtmo <= detailCustomReport.data[0]?.tmoesperadogeneral) ? (<ThumbUpIcon />) : (<ThumbDownIcon />)}
                                         </Typography>
                                     </CardContent>
                                 </Card>
@@ -519,7 +544,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                 <IndicatorPanel
                                     title={t(langKeys.report_userproductivity_cardmaxmax_tmo)}
                                     value={detailCustomReport.data[0]?.cardmaxmaxtmo}
-                                    value2={detailCustomReport.data[0]?.cardmaxmaxtmouser?`#${detailCustomReport.data[0]?.cardmaxmaxtmoticket} (${detailCustomReport.data[0]?.cardmaxmaxtmouser})`:"-"}
+                                    value2={detailCustomReport.data[0]?.cardmaxmaxtmouser ? `#${detailCustomReport.data[0]?.cardmaxmaxtmoticket} (${detailCustomReport.data[0]?.cardmaxmaxtmouser})` : "-"}
                                 />
                             </Grid>
                             <Grid item xs={12} md={12} lg={6}>
@@ -533,7 +558,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                 <IndicatorPanel
                                     title={t(langKeys.report_userproductivity_cardminmin_tmo)}
                                     value={detailCustomReport.data[0]?.cardminmintmo}
-                                    value2={detailCustomReport.data[0]?.cardminmintmouser?`#${detailCustomReport.data[0]?.cardminmintmoticket} (${detailCustomReport.data[0]?.cardminmintmouser})`:"-"}
+                                    value2={detailCustomReport.data[0]?.cardminmintmouser ? `#${detailCustomReport.data[0]?.cardminmintmoticket} (${detailCustomReport.data[0]?.cardminmintmouser})` : "-"}
                                 />
                             </Grid>
                         </Grid>
@@ -544,8 +569,8 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
             <Grid container spacing={3} className={classes.containerDetails}>
                 <Grid item xs={12} md={6} lg={6}>
                     <Card>
-                        <CardContent style={{paddingBottom: 10, display: "flex"}}>
-                            <div style={{flex: 1}}>
+                        <CardContent style={{ paddingBottom: 10, display: "flex" }}>
+                            <div style={{ flex: 1 }}>
                                 <Typography variant="body2">
                                     {t(langKeys.report_userproductivity_totalclosedtickets)}
                                 </Typography>
@@ -553,7 +578,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                     {detailCustomReport.data[0]?.totalclosedtickets}
                                 </Typography>
                             </div>
-                            <div style={{flex: 1}}>
+                            <div style={{ flex: 1 }}>
                                 <Typography variant="subtitle1" >
                                     {maxmin.maxticketsclosedasesor} ({maxmin.maxticketsclosed})
                                     <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.report_userproductivity_maxticketsclosedasesorhelptext)}</div>} arrow placement="top" >
@@ -572,8 +597,8 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                 </Grid>
                 <Grid item xs={12} md={6} lg={6}>
                     <Card>
-                        <CardContent style={{paddingBottom: 10, display: "flex"}}>
-                            <div style={{flex: 1}}>
+                        <CardContent style={{ paddingBottom: 10, display: "flex" }}>
+                            <div style={{ flex: 1 }}>
                                 <Typography variant="body2">
                                     N° {t(langKeys.report_userproductivity_usersconnected)}
                                 </Typography>
@@ -581,7 +606,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                     {detailCustomReport.data[0]?.usersconnected}
                                 </Typography>
                             </div>
-                            <div style={{flex: 1}}>
+                            <div style={{ flex: 1 }}>
                                 <Typography variant="subtitle1">
                                     {maxmin.maxtimeconnectedasesor} ({maxmin.maxtimeconnected} m)
                                     <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.report_userproductivity_maxtimeconnectedasesorhelptext)}</div>} arrow placement="top" >
@@ -603,13 +628,13 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
             {view === "GRID" ? (
                 <TableZyx
                     columns={columns}
-                    data={detailCustomReport.data.map(x => ({...x, ...JSON.parse(x.desconectedtimejson)}))}
+                    data={detailCustomReport.data.map(x => ({ ...x, ...JSON.parse(x.desconectedtimejson) }))}
                     download={false}
                     loading={detailCustomReport.loading}
                     filterGeneral={false}
                     register={false}
                     ButtonsElement={() => (
-                        <Box width={1} style={{display: "flex", justifyContent: "flex-end", gap: 8}}>
+                        <Box width={1} style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
                             <Button
                                 className={classes.button}
                                 variant="contained"
@@ -625,7 +650,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                 variant="contained"
                                 color="primary"
                                 disabled={detailCustomReport.loading}
-                                onClick={() => exportExcel("report" + (new Date().toISOString()), detailCustomReport.data.map(x => ({...x, ...JSON.parse(x.desconectedtimejson)})), columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
+                                onClick={() => exportExcel("report" + (new Date().toISOString()), detailCustomReport.data.map(x => ({ ...x, ...JSON.parse(x.desconectedtimejson) })), columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
                                 startIcon={<DownloadIcon />}
                             >{t(langKeys.download)}
                             </Button>
@@ -633,24 +658,50 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                     )}
                 />
             ) : (
-                <Graphic
-                    graphicType={view.split("-")?.[1] || "BAR"}
-                    column={view.split("-")?.[2] || "summary"}
-                    openModal={openModal}
-                    setOpenModal={setOpenModal}
-                    daterange={{
-                        startDate: dateRange.startDate?.toISOString().substring(0,10),
-                        endDate: dateRange.endDate?.toISOString().substring(0,10),
-                    }}
-                    setView={setView}
-                    row={{origin: 'userproductivity'}}
-                    handlerSearchGraphic={handlerSearchGraphic}
-                />
+                <div>
+                    <Box style={{ display: "flex", justifyContent: "flex-end", gap: 8 }} className={classes.containerHeaderItem}>
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            disabled={detailCustomReport.loading || !(detailCustomReport.data.length > 0)}
+                            onClick={() => setOpenModal(true)}
+                            startIcon={<Settings />}
+                        >
+                            {t(langKeys.configuration)}
+                        </Button>
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            onClick={() => setView('GRID')}
+                            startIcon={<ListIcon />}
+                        >
+                            {t(langKeys.grid_view)}
+                        </Button>
+                    </Box>
+                    <Graphic
+                        graphicType={view.split("-")?.[1] || "BAR"}
+                        column={view.split("-")?.[2] || "summary"}
+                        openModal={openModal}
+                        setOpenModal={setOpenModal}
+                        daterange={{
+                            startDate: dateRange.startDate?.toISOString().substring(0, 10),
+                            endDate: dateRange.endDate?.toISOString().substring(0, 10),
+                        }}
+                        withFilters={false}
+                        setView={setView}
+                        withButtons={false}
+                        row={{ origin: 'userproductivity' }}
+                        handlerSearchGraphic={handlerSearchGraphic}
+                    />
+                </div>
             )}
 
             <SummaryGraphic
                 openModal={openModal}
                 setOpenModal={setOpenModal}
+                setColumnGraphic={setColumnGraphic}
                 setView={setView}
                 daterange={dateRange}
                 filters={allParameters}
@@ -659,10 +710,10 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                         key: c, value: `report_userproductivity_${c}`
                     })),
                     ...desconectedmotives.map((d: any) =>
-                            ({
-                                key: `desconectedtimejson::json->>'${d}'`,
-                                value: d
-                            })
+                    ({
+                        key: `desconectedtimejson::json->>'${d}'`,
+                        value: d
+                    })
                     )
                 ]}
             />
@@ -674,6 +725,7 @@ interface SummaryGraphicProps {
     openModal: boolean;
     setOpenModal: (value: boolean) => void;
     setView: (value: string) => void;
+    setColumnGraphic: (value: string) => void;
     row?: Dictionary | null;
     daterange: any;
     filters?: Dictionary;
@@ -681,7 +733,7 @@ interface SummaryGraphicProps {
     columnsprefix?: string;
 }
 
-const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal, setView, row, daterange, filters, columns, columnsprefix }) => {
+const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal, setView, row, daterange, filters, columns, columnsprefix, setColumnGraphic }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
 
@@ -708,6 +760,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
     const triggerGraphic = (data: any) => {
         setView(`CHART-${data.graphictype}-${data.column?.split('::')[0]}`);
         setOpenModal(false);
+        setColumnGraphic(data.column)
         dispatch(getMainGraphic(getUserProductivityGraphic(
             {
                 ...filters,
