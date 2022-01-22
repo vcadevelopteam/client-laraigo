@@ -53,7 +53,7 @@ export const createInvoiceFailure = (state: IState, action: IAction): IState => 
         ...state.requestCreateInvoice,
         loading: false,
         error: true,
-        code: action.payload.code,
+        code: action.payload.code ? action.payload.code : action.payload.message,
         message: action.payload.message
     }
 })
@@ -65,7 +65,7 @@ export const createInvoiceSuccess = (state: IState, action: IAction): IState => 
         loading: false,
         error: false,
         data: action.payload.data,
-        code: action.payload.code,
+        code: action.payload.code ? action.payload.code : action.payload.message,
         message: action.payload.message
     }
 })
