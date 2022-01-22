@@ -38,9 +38,10 @@ interface CulqiModalProps {
     disabled?:boolean;
     orgid?:number;
     successmessage?:string;
+    publickey?:string;
 }
 
-const publickey = apiUrls.CULQIKEY;
+const globalpublickey = apiUrls.CULQIKEY;
 
 const CulqiModal: FC<CulqiModalProps> = ({
     invoiceid,
@@ -61,7 +62,9 @@ const CulqiModal: FC<CulqiModalProps> = ({
     disabled = false,
     orgid = 0,
     successmessage,
+    publickey,
 }) => {
+    console.log(publickey);
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const culqiSelector = useSelector(state => state.culqi.request);
@@ -127,7 +130,7 @@ const CulqiModal: FC<CulqiModalProps> = ({
 
     return (
     <CulqiProvider
-        publicKey={publickey}
+        publicKey={publickey || globalpublickey}
         title={title}
         description={description}
         currency={currency}

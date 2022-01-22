@@ -2,7 +2,7 @@ import { RouteConfig } from "@types";
 import paths from "common/constants/paths";
 import {
     DashboardIcon, TicketIcon, ReportsIcon, MessageInboxIcon, SupervisorIcon, ConfigurationIcon, ExtrasIcon,
-    BotDesignerIcon, BillingSetupIcon,
+    BotDesignerIcon, BillingSetupIcon, InvoiceIcon,
     IAServicesIcon,
     OutboundIcon,
     MessageTemplateIcon,
@@ -101,7 +101,7 @@ export const routes: RouteConfig[] = [
         description: <Trans i18nKey={langKeys.invoice} />,
         tooltip: <Trans i18nKey={langKeys.invoice} />,
         path: paths.INVOICE,
-        icon: (className) => <BillingSetupIcon style={{width: 22, height: 22}} className={className} />,
+        icon: (className) => <InvoiceIcon style={{width: 22, height: 22}} className={className} />,
     },
     {
         key: paths.CONFIGURATION,

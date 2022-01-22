@@ -24,3 +24,7 @@ export function unsubscribe(request: any) {
 export function sendInvoice(request: any) {
     return APIManager.post(apiUrls.SEND_INVOICE, { data: request }, true);
 }
+
+export function createInvoice(request: any) {
+    return APIManager.post(apiUrls.BILLINGCREATEINVOICE, { data: request }, true);
+}

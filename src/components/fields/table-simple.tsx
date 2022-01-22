@@ -334,7 +334,8 @@ const TableZyx = React.memo(({
     initialPageIndex = 0,
     initialFilters = {},
     helperText = "",
-    initialStateFilter
+    initialStateFilter,
+    registertext,
 }: TableConfig) => {
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -804,7 +805,7 @@ const TableZyx = React.memo(({
                             startIcon={<AddIcon color="secondary" />}
                             onClick={handleRegister}
                             style={{ backgroundColor: "#55BD84" }}
-                        ><Trans i18nKey={langKeys.register} />
+                        ><Trans i18nKey={registertext || langKeys.register} />
                         </Button>
                     )}
                     {calculate && (

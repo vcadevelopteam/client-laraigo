@@ -68,6 +68,7 @@ export interface TableConfig {
     initialFilters?: {
         [key: string]: IFilters;
     };
+    registertext?: string;
 }
 
 export interface Pagination {

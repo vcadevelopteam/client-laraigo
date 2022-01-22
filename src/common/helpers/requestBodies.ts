@@ -276,6 +276,7 @@ export const getSLASel = (id: number): IRequestBody => ({
 });
 export const getCorpSel = (id: number): IRequestBody => ({
     method: "UFN_CORP_SEL",
+    key: "UFN_CORP_SEL",
     parameters: {
         id: id,
         all: id === 0,
@@ -283,12 +284,14 @@ export const getCorpSel = (id: number): IRequestBody => ({
 });
 export const getOrgSel = (id: number, corpid?:number): IRequestBody => ({
     method: "UFN_ORG_SEL",
+    key: "UFN_ORG_SEL",
     parameters: {
         orgid: id,
         all: id === 0,
         corpid
     }
 });
+
 export const getOrgSelList = (id: number): IRequestBody => ({
     method: "UFN_ORG_LIST",
     parameters: {
@@ -2549,4 +2552,10 @@ export const cancelSuscription = () => ({
     parameters: {
         offset: (new Date().getTimezoneOffset() / 60) * -1
     },
+});
+
+export const getMeasureUnit = (): IRequestBody => ({
+    method: "UFN_MEASUREUNIT_SEL",
+    key: "UFN_MEASUREUNIT_SEL",
+    parameters: { },
 });
