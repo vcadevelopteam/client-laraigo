@@ -75,7 +75,7 @@ const translation: LangKeys = {
     sentmessages: "Mensajes Enviados",
     failedmessages: "Mensajes fallidos",
     answeredmessages: "Mensajes respondidos",
-    messagessuccesfullydelivered: "Mensajes entregados satisfactoriamente",
+    messagessuccessfullydelivered: "Mensajes entregados satisfactoriamente",
 
     successful_send_hsm: 'HSM enviado satisfactoriamente',
     successful_send_sms: 'SMS enviado satisfactoriamente',
@@ -2736,6 +2736,15 @@ const translation: LangKeys = {
     chart_dashboard_report_error: 'Ocurrió un error al cargar el reporte',
     chart_dashboard_column_error: 'Ocurrió un error al cargar la columna',
     chart_dashboard_unexpected_error: 'Ocurrió un error inesperado',
+
+    successinvoiced: 'Se emitió el documento correctamente',
+    createdbutnotinvoiced: 'Se creo el documento pero hubo un problema al enviarlo a SUNAT',
+    correlativenotfound: 'No se encontro un número correlativo adecuado',
+    errorcreatinginvoice: 'Hubo un problema al crear la plantilla de documento',
+    appsettingnotfound: 'Hubo un problema al obtener los datos del emisor',
+    productdetailnotfound: 'No se encuentran los datos del producto',
+    corporationnotfound: 'Corporación u organización no encontrados',
+    generalproblem: 'Problema gemeral',
 };
 
 const esResource: ResourceLanguage = {

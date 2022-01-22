@@ -307,7 +307,7 @@ export const langKeys = {
     highestTME: "highestTME",
     favorites: "favorites",
     sentmessages: "sentmessages",
-    messagessuccesfullydelivered: "messagessuccesfullydelivered",
+    messagessuccessfullydelivered: "messagessuccessfullydelivered",
     failedmessages: "failedmessages",
     totalresolved: "totalresolved",
     newpassword: "newpassword",
@@ -2737,6 +2737,15 @@ export const langKeys = {
     chart_dashboard_report_error: 'chart_dashboard_report_error',
     chart_dashboard_column_error: 'chart_dashboard_column_error',
     chart_dashboard_unexpected_error: 'chart_dashboard_unexpected_error',
+
+    successinvoiced: 'successinvoiced',
+    createdbutnotinvoiced: 'createdbutnotinvoiced',
+    correlativenotfound: 'correlativenotfound',
+    errorcreatinginvoice: 'errorcreatinginvoice',
+    appsettingnotfound: 'appsettingnotfound',
+    productdetailnotfound: 'productdetailnotfound',
+    corporationnotfound: 'corporationnotfound',
+    generalproblem: 'generalproblem',
 };
 
 export type LangKeys = typeof langKeys;

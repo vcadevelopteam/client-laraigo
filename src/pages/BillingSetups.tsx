@@ -821,6 +821,7 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
             dispatch(execute(updateAppsettingInvoice(data)));
+            dispatch(showBackdrop(true));
             setWaitSave(true);
         }
         dispatch(manageConfirmation({

@@ -398,7 +398,7 @@ const DashboardOperationalPush: FC = () => {
                     <Box
                         className={classes.columnCard}
                     >
-                        <div className={classes.boxtitlequarter}>{t(langKeys.messagessuccesfullydelivered)}</div>
+                        <div className={classes.boxtitlequarter}>{t(langKeys.messagessuccessfullydelivered)}</div>
                         <div className={classes.datafieldquarter}>{dataSummary.successMns}</div>                    
                     </Box>
                     <Box

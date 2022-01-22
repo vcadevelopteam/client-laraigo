@@ -2725,6 +2725,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
             dispatch(createInvoice(data));
+            dispatch(showBackdrop(true));
             setWaitSave(true);
         }
 
@@ -2738,14 +2739,17 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
     useEffect(() => {
         if (waitSave) {
             if (!culqiResult.loading && !culqiResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t('Document was created, check invoicing details') }))
+                dispatch(showSnackbar({ show: true, success: true, message: t(culqiResult.code || "success") }))
                 dispatch(showBackdrop(false));
                 fetchData();
                 setViewSelected('view-1');
+                setWaitSave(false);
             }
             else if (culqiResult.error) {
                 dispatch(showSnackbar({ show: true, success: false, message: t(culqiResult.code || "error_unexpected_db_error") }))
                 dispatch(showBackdrop(false));
+                fetchData();
+                setViewSelected('view-1');
                 setWaitSave(false);
             }
         }
@@ -2765,6 +2769,14 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => setViewSelected("view-1")}
+                        >{t(langKeys.back)}</Button>
                         <Button
                             className={classes.button}
                             variant="contained"

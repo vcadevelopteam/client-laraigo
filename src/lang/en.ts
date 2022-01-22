@@ -66,7 +66,7 @@ const translation: LangKeys = {
     client_message: 'Client Messages',
     bot_message: 'Bot Messages',
     agent_message: 'Agent Messages',
-    messagessuccesfullydelivered: "Successfully Delivered Messages",
+    messagessuccessfullydelivered: "Successfully Delivered Messages",
     failedmessages: "Failed messages",
     answeredmessages: "Responded messages",
     sentmessages: "Sent Messages",
@@ -2505,7 +2505,7 @@ const translation: LangKeys = {
     payment_information: 'Payment Information',
     validation15char: 'The maximum amount of characters is 15',
     validation150char: 'The maximum amount of characters is 150',
-    culqipaysuccess: 'The payment was processed succesfully. You can check the status of your invoice.',
+    culqipaysuccess: 'The payment was processed successfully. You can check the status of your invoice.',
     xmldocumentopen: 'Open XML',
     cdrdocumentopen: 'Open CDR',
 
@@ -2748,6 +2748,15 @@ const translation: LangKeys = {
     chart_dashboard_report_error: 'An error occurred while loading the report',
     chart_dashboard_column_error: 'An error occurred while loading the column',
     chart_dashboard_unexpected_error: 'An unexpected error occurred',
+
+    successinvoiced: 'The document was generated successfully',
+    createdbutnotinvoiced: 'The document was created but there was a problem when it was sent to SUNAT',
+    correlativenotfound: 'Could not find the correct correlative number',
+    errorcreatinginvoice: 'Could not create the document template',
+    appsettingnotfound: 'Could not get emiter information',
+    productdetailnotfound: 'Could not find product detail',
+    corporationnotfound: 'Corporation or organization not found',
+    generalproblem: 'General problema',
 };
 
 const enResource: ResourceLanguage = {
