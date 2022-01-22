@@ -40,7 +40,7 @@ export const chargeReset = (state: IState): IState => ({
 
 export const createInvoice = (state: IState, action: IAction): IState => ({
     ...state,
-    request: {
+    requestCreateInvoice: {
         ...state.requestCreateInvoice,
         loading: true,
         error: false
@@ -49,7 +49,7 @@ export const createInvoice = (state: IState, action: IAction): IState => ({
 
 export const createInvoiceFailure = (state: IState, action: IAction): IState => ({
     ...state,
-    request: {
+    requestCreateInvoice: {
         ...state.requestCreateInvoice,
         loading: false,
         error: true,
@@ -60,7 +60,7 @@ export const createInvoiceFailure = (state: IState, action: IAction): IState => 
 
 export const createInvoiceSuccess = (state: IState, action: IAction): IState => ({
     ...state,
-    request: {
+    requestCreateInvoice: {
         ...state.requestCreateInvoice,
         loading: false,
         error: false,
@@ -72,7 +72,7 @@ export const createInvoiceSuccess = (state: IState, action: IAction): IState => 
 
 export const createInvoiceReset = (state: IState): IState => ({
     ...state,
-    request: initialState.requestCreateInvoice
+    requestCreateInvoice: initialState.requestCreateInvoice
 })
 
 export const subscribe = (state: IState, action: IAction): IState => ({
