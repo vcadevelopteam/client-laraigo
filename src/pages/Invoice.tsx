@@ -15,7 +15,7 @@ import { langKeys } from 'lang/keys';
 import { useForm, useFieldArray } from 'react-hook-form';
 import ClearIcon from '@material-ui/icons/Clear';
 import { getCollection, getMultiCollection, execute, exportData, getMultiCollectionAux } from 'store/main/actions';
-import { sendInvoice, createInvoice } from 'store/culqi/actions';
+import { sendInvoice, createInvoice, regularizeInvoice, createCreditNote } from 'store/culqi/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { Box, FormHelperText, Grid, IconButton, Tabs, TextField } from '@material-ui/core';
 import * as locale from "date-fns/locale";
@@ -2229,7 +2229,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 accessor: 'invoiceid',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    if (row.invoicestatus !== "INVOICED")
+                    if (row.invoicestatus !== "INVOICED" || row.type === 'CREDITNOTE')
                         return null;
                     return (
                         <TemplateIcons
@@ -2344,6 +2344,14 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 }
             },
             {
+                Header: t(langKeys.documenttype),
+                accessor: 'invoicetype',
+                Cell: (props: any) => {
+                    const { invoicetype } = props.cell.row.original;
+                    return <span style={{ display: "block" }}>{t(getInvoiceType(invoicetype))}</span>;
+                }
+            },
+            {
                 Header: t(langKeys.reportstatus),
                 accessor: 'concept',
                 Cell: () => {
@@ -2425,6 +2433,19 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const handleRegister = () => {
         setViewSelected("view-3");
         setRowSelected({ row: null, edit: true });
+    }
+
+    const getInvoiceType = (invoicetype: string) => {
+        switch (invoicetype) {
+            case '01':
+                return 'emissorinvoice';
+            case '03':
+                return 'emissorticket';
+            case '07':
+                return 'emissorcreditnote';
+            default:
+                return '';
+        }
     }
     
     if (viewSelected === "view-1") {
@@ -2546,6 +2567,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
     const { t } = useTranslation();
 
     const classes = useStyles();
+    const culqiResult = useSelector(state => state.culqi.requestCreateCreditNote);
     const multiResult = useSelector(state => state.main.multiDataAux);
     
     const [measureList, setMeasureList] = useState<any>([]);
@@ -2603,7 +2625,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
         register('orgid');
         register('invoiceid', { validate: (value) => (value && value > 0) || "" + t(langKeys.field_required) });
         register('creditnotetype', { validate: (value) => (regularize || (value && value.length > 0)) || "" + t(langKeys.field_required) });
-        register('creditnotemotive', { validate: (value) => (regularize || (value && value.length > 0)) || "" + t(langKeys.field_required) });
+        register('creditnotemotive', { validate: (value) => (regularize || (value && value.length > 10)) || "" + t(langKeys.field_required) });
         register('creditnotediscount', { validate: (value) => (regularize || ((getValues('creditnotetype') !== '04') || (value && value > 0 && value < data?.totalamount))) || "" + t(langKeys.field_required) });
     }, [register]);
 
@@ -2630,6 +2652,8 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                 return 'emissorinvoice';
             case '03':
                 return 'emissorticket';
+            case '07':
+                return 'emissorcreditnote';
             default:
                 return '';
         }
@@ -2638,9 +2662,8 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
     const onSubmit = handleSubmit((data) => {
         if (creditNote) {
             const callback = () => {
-                console.log(JSON.stringify(data));
-                /*dispatch(createInvoice(data));
-                dispatch(showBackdrop(true));*/
+                dispatch(createCreditNote(data));
+                dispatch(showBackdrop(true));
                 setWaitSave(true);
             }
     
@@ -2661,6 +2684,25 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
         fetchData();
         setViewSelected("view-1");
     }
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!culqiResult.loading && !culqiResult.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(culqiResult.code || "success") }))
+                dispatch(showBackdrop(false));
+                fetchData();
+                setViewSelected('view-1');
+                setWaitSave(false);
+            }
+            else if (culqiResult.error) {
+                dispatch(showSnackbar({ show: true, success: false, message: t(culqiResult.code || "error_unexpected_db_error") }))
+                dispatch(showBackdrop(false));
+                fetchData();
+                setViewSelected('view-1');
+                setWaitSave(false);
+            }
+        }
+    }, [culqiResult, waitSave])
 
     return (
         <div style={{ width: '100%' }}>
@@ -2816,6 +2858,15 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                                 value={data?.paymentstatus}
                                 className={classes.fieldView}
                             />
+                            { data?.errordescription ?
+                                <FieldView
+                                    label={t(langKeys.billingerror)}
+                                    value={data?.errordescription}
+                                    className={classes.fieldView}
+                                />
+                                :
+                                null
+                            }
                             { data?.urlpdf ? 
                                 <a href={data?.urlpdf} target="_blank" rel="noreferrer">{t(langKeys.urlpdf)}</a>
                                 :
@@ -2964,6 +3015,7 @@ const RegularizeModal: FC<{ data: any, openModal: boolean, setOpenModal: (param:
     const { t } = useTranslation();
 
     const classes = useStyles();
+    const culqiResult = useSelector(state => state.culqi.requestRegularizeInvoice);
 
     const [chatButton, setChatButton] = useState<File | string | null>(null);
     const [chatImgUrl, setChatImgUrl] = useState<string | undefined | null>(null);
@@ -2991,6 +3043,21 @@ const RegularizeModal: FC<{ data: any, openModal: boolean, setOpenModal: (param:
         setChatImgUrl(getImgUrl(chatButton));
     }, [])
 
+    useEffect(() => {
+        if (waitSave) {
+            if (!culqiResult.loading && !culqiResult.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(culqiResult.code || "success") }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+            else if (culqiResult.error) {
+                dispatch(showSnackbar({ show: true, success: false, message: t(culqiResult.code || "error_unexpected_db_error") }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [culqiResult, waitSave])
+
     const getImgUrl = (file: File | string | null): string | null => {
         try {
             if (!file) {
@@ -3017,8 +3084,8 @@ const RegularizeModal: FC<{ data: any, openModal: boolean, setOpenModal: (param:
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
             console.log(JSON.stringify(data));
-            /*dispatch(createInvoice(data));
-            dispatch(showBackdrop(true));*/
+            dispatch(regularizeInvoice(data));
+            dispatch(showBackdrop(true));
             setWaitSave(true);
         }
 

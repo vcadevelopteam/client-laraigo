@@ -2744,7 +2744,7 @@ const translation: LangKeys = {
     appsettingnotfound: 'Hubo un problema al obtener los datos del emisor',
     productdetailnotfound: 'No se encuentran los datos del producto',
     corporationnotfound: 'Corporación u organización no encontrados',
-    generalproblem: 'Problema gemeral',
+    generalproblem: 'Problema general',
 
     emiteinvoicetitle: 'Generar Factura',
     generatecreditnote: 'Generar nota de crédito',
@@ -2756,6 +2756,10 @@ const translation: LangKeys = {
     billingcreditnote04: 'DESCUENTO GLOBAL',
     creditnotetype: 'Tipo de nota de crédito',
     globaldiscount: 'Descuento global (Sin IGV)',
+    billingerror: 'Error de facturación',
+    emissorcreditnote: 'NOTA DE CREDITO',
+    invoicenotmatch: 'Esta factura no puede generar notas de crédito',
+    invoicenotfound: 'No se pudo encontrar la factura',
 };
 
 const esResource: ResourceLanguage = {

@@ -2756,7 +2756,7 @@ const translation: LangKeys = {
     appsettingnotfound: 'Could not get emiter information',
     productdetailnotfound: 'Could not find product detail',
     corporationnotfound: 'Corporation or organization not found',
-    generalproblem: 'General problema',
+    generalproblem: 'General problem',
     
     emiteinvoicetitle: 'Generate Invoice',
     generatecreditnote: 'Generate credit note',
@@ -2768,6 +2768,10 @@ const translation: LangKeys = {
     billingcreditnote04: 'GLOBAL DISCOUNT',
     creditnotetype: 'Credit note type',
     globaldiscount: 'Global Discount (No Tax)',
+    billingerror: 'Billing error',
+    emissorcreditnote: 'CREDIT NOTE',
+    invoicenotmatch: 'Credit note cannot be generated for this invoice',
+    invoicenotfound: 'Invoice not found',
 };
 
 const enResource: ResourceLanguage = {

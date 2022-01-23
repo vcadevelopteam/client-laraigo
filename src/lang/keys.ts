@@ -2757,6 +2757,10 @@ export const langKeys = {
     billingcreditnote04: 'billingcreditnote04',
     creditnotetype: 'creditnotetype',
     globaldiscount: 'globaldiscount',
+    billingerror: 'billingerror',
+    emissorcreditnote: 'emissorcreditnote',
+    invoicenotmatch: 'invoicenotmatch',
+    invoicenotfound: 'invoicenotfound',
 };
 
 export type LangKeys = typeof langKeys;
