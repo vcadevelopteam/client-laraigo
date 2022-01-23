@@ -284,7 +284,7 @@ const translation: LangKeys = {
     neworganization: "New organization",
     newiaservice: "New IA Service",
     services_plural: "Services",
-    additional_information: 'Additional Information',
+    additional_information: 'Additional information',
     productivitybyhour: 'Tickets served per hour',
     title: 'Title',
     action: 'Action',
@@ -2757,6 +2757,17 @@ const translation: LangKeys = {
     productdetailnotfound: 'Could not find product detail',
     corporationnotfound: 'Corporation or organization not found',
     generalproblem: 'General problema',
+    
+    emiteinvoicetitle: 'Generate Invoice',
+    generatecreditnote: 'Generate credit note',
+    billingproductdetail: 'Product detail',
+    billinginvoicedetail: 'Invoice detail',
+    billinginvoiceview: 'View invoice',
+    creditnoteinformation: 'Credit note information',
+    billingcreditnote01: 'NULL OPERATION',
+    billingcreditnote04: 'GLOBAL DISCOUNT',
+    creditnotetype: 'Credit note type',
+    globaldiscount: 'Global Discount (No Tax)',
 };
 
 const enResource: ResourceLanguage = {

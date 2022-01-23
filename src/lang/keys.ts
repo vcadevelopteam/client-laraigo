@@ -2746,6 +2746,17 @@ export const langKeys = {
     productdetailnotfound: 'productdetailnotfound',
     corporationnotfound: 'corporationnotfound',
     generalproblem: 'generalproblem',
+
+    emiteinvoicetitle: 'emiteinvoicetitle',
+    generatecreditnote: 'generatecreditnote',
+    billingproductdetail: 'billingproductdetail',
+    billinginvoicedetail: 'billinginvoicedetail',
+    billinginvoiceview: 'billinginvoiceview',
+    creditnoteinformation: 'creditnoteinformation',
+    billingcreditnote01: 'billingcreditnote01',
+    billingcreditnote04: 'billingcreditnote04',
+    creditnotetype: 'creditnotetype',
+    globaldiscount: 'globaldiscount',
 };
 
 export type LangKeys = typeof langKeys;

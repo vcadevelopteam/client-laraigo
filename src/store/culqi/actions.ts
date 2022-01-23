@@ -12,16 +12,6 @@ export const charge = (request: any): IActionCall => ({
     type: null,
 });
 
-export const createInvoice = (request: any): IActionCall => ({
-    callAPI: () => CulqiService.createInvoice(request),
-    types: {
-        loading: actionTypes.CREATE_INVOICE,
-        success: actionTypes.CREATE_INVOICE_SUCCESS,
-        failure: actionTypes.CREATE_INVOICE_FAILURE,
-    },
-    type: null,
-});
-
 export const resetCharge = (): IActionCall => ({ type: actionTypes.CHARGE_RESET });
 
 export const subscribe = (request: any): IActionCall => ({
@@ -59,3 +49,39 @@ export const sendInvoice = (invoiceid: number): IActionCall => ({
 });
 
 export const resetSendInvoice = (): IActionCall => ({ type: actionTypes.SEND_INVOICE_RESET });
+
+export const createInvoice = (request: any): IActionCall => ({
+    callAPI: () => CulqiService.createInvoice(request),
+    types: {
+        loading: actionTypes.CREATE_INVOICE,
+        success: actionTypes.CREATE_INVOICE_SUCCESS,
+        failure: actionTypes.CREATE_INVOICE_FAILURE,
+    },
+    type: null,
+});
+
+export const resetcreateInvoice = (): IActionCall => ({ type: actionTypes.CREATE_INVOICE_RESET });
+
+export const createCreditNote = (request: any): IActionCall => ({
+    callAPI: () => CulqiService.createCreditNote(request),
+    types: {
+        loading: actionTypes.CREATE_CREDITNOTE,
+        success: actionTypes.CREATE_CREDITNOTE_SUCCESS,
+        failure: actionTypes.CREATE_CREDITNOTE_FAILURE,
+    },
+    type: null,
+});
+
+export const resetCreateCreditNote = (): IActionCall => ({ type: actionTypes.CREATE_CREDITNOTE_RESET });
+
+export const regularizeInvoice = (request: any): IActionCall => ({
+    callAPI: () => CulqiService.regularizeInvoice(request),
+    types: {
+        loading: actionTypes.REGULARIZE_INVOICE,
+        success: actionTypes.REGULARIZE_INVOICE_SUCCESS,
+        failure: actionTypes.REGULARIZE_INVOICE_FAILURE,
+    },
+    type: null,
+});
+
+export const resetRegularizeInvoice = (): IActionCall => ({ type: actionTypes.REGULARIZE_INVOICE_RESET });

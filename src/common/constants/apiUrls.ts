@@ -100,4 +100,6 @@ export const apiUrls = {
     CHATFLOW: `${CHATFLOW_URL}`,
 
     BILLINGCREATEINVOICE: `${BASE_URL}/payment/createinvoice`,
+    BILLINGCREATECREDITNOTE: `${BASE_URL}/payment/createcreditnote`,
+    BILLINGREGULARIZEINVOICE: `${BASE_URL}/payment/regularizeinvoice`,
 };

@@ -295,7 +295,7 @@ const translation: LangKeys = {
     productivitybyhour: 'Tickets atendidos por hora',
     firstname: 'Nombre',
     socialmediachannel2: "Usted podrá seleccionar más de un canal a la vez si lo considera necesario al momento de autoregistrarse o gestionar los canales adicionales posterior al primer registro.",
-    additional_information: 'Información Adicional',
+    additional_information: 'Información adicional',
     modifysettings: "Modificar campos",
     lastname: 'Apellido',
     fullname: 'Nombre completo',
@@ -2745,6 +2745,17 @@ const translation: LangKeys = {
     productdetailnotfound: 'No se encuentran los datos del producto',
     corporationnotfound: 'Corporación u organización no encontrados',
     generalproblem: 'Problema gemeral',
+
+    emiteinvoicetitle: 'Generar Factura',
+    generatecreditnote: 'Generar nota de crédito',
+    billingproductdetail: 'Detalle del producto',
+    billinginvoicedetail: 'Detalle de factura',
+    billinginvoiceview: 'Ver factura',
+    creditnoteinformation: 'Información de nota de crédito',
+    billingcreditnote01: 'ANULAR OPERACIÓN',
+    billingcreditnote04: 'DESCUENTO GLOBAL',
+    creditnotetype: 'Tipo de nota de crédito',
+    globaldiscount: 'Descuento global (Sin IGV)',
 };
 
 const esResource: ResourceLanguage = {
