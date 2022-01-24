@@ -44,13 +44,13 @@ interface DetailReportDesignerProps {
 }
 
 const dataSummarization = [
-    { function: 'total' },
-    { function: 'count' },
-    { function: 'average' },
-    { function: 'minimum' },
-    { function: 'maximum' },
-    { function: 'median' },
-    { function: 'mode' },
+    { function: 'total', type: ["double precision", "bigint", "integer", "numeric", "interval"] },
+    { function: 'count', type: ["double precision", "boolean", "timestamp without time zone", "character varying", "text", "bigint", "integer", "numeric", "date", "interval", "variable"] },
+    { function: 'average', type: ["double precision", "bigint", "integer", "numeric", "interval"] },
+    { function: 'minimum', type: ["double precision", "bigint", "integer", "numeric", "interval", "timestamp without time zone", "date"] },
+    { function: 'maximum', type: ["double precision", "bigint", "integer", "numeric", "interval", "timestamp without time zone", "date"] },
+    { function: 'median', type: ["double precision", "bigint", "integer", "numeric", "interval"] },
+    { function: 'mode', type: ["double precision", "bigint", "integer", "numeric", "interval", "boolean", "character varying", "text", "variable"] },
 ];
 
 const arrayBread = (view1: string, view2: string) => [
@@ -695,7 +695,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
 
                         <div style={{ flex: 1 }} className={classes.containerDetail}>
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <div className={classes.title}>{"Resumen"}</div>
+                                <div className={classes.title}>{t(langKeys.summarization)}</div>
                             </div>
                             <div>
                                 <TableContainer>
@@ -716,7 +716,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                     </IconButton>
                                                 </TableCell>
                                                 <TableCell>{t(langKeys.column)}</TableCell>
-                                                <TableCell>{t(langKeys.description)}</TableCell>
+                                                <TableCell>{t(langKeys.function)}</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
@@ -744,17 +744,18 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                             variant='outlined'
                                                             onChange={(value) => {
                                                                 setValue(`summary.${i}.type`, value?.type || '');
-                                                                setValue(`summary.${i}.columnname`, value?.columnname || '')
+                                                                setValue(`summary.${i}.columnname`, value?.columnname || '');
+                                                                trigger(`summary.${i}.type`)
                                                             }}
                                                             error={errors?.summary?.[i]?.columnname?.message}
-                                                            data={fieldsColumns.filter(x => ["double precision", "bigint", "integer", "numeric", "interval"].includes(x.type))}
+                                                            data={fieldsColumns}
                                                             optionDesc="descriptionT"
                                                             optionValue="columnname"
                                                         />
                                                     </TableCell>
                                                     <TableCell>
                                                         <FieldSelect
-                                                            label={t(langKeys.column)}
+                                                            label={t(langKeys.function)}
                                                             valueDefault={getValues(`summary.${i}.function`)}
                                                             fregister={{
                                                                 ...register(`summary.${i}.function`, {
@@ -764,7 +765,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                             variant='outlined'
                                                             onChange={(value) => setValue(`summary.${i}.function`, value?.function || '')}
                                                             error={errors?.summary?.[i]?.function?.message}
-                                                            data={dataSummarization}
+                                                            data={dataSummarization.filter(x => x.type.includes(getValues(`summary.${i}.type`)))}
                                                             prefixTranslation="function_"
                                                             uset={true}
                                                             optionDesc="function"
