@@ -173,8 +173,19 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
                                     x[columnclean] = date.toLocaleString();
                                 else
                                     x[columnclean] = date.toLocaleDateString();
+                            } else {
+                                const regex = /[0-9]{4}-[0-9]{2}-[0-9]{2}\s[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{0,6}Z/gi
+                                const resRegex = (x[columnclean] + "").matchAll(regex);
+                                Array.from(resRegex).forEach(z => {
+                                    console.log(z)
+                                    if (z) {
+                                        if (y.type === "timestamp without time zone")
+                                            x[columnclean] = x[columnclean].replace(z, new Date(z[0]).toLocaleString());
+                                        else
+                                            x[columnclean] = x[columnclean].replace(z, new Date(z[0]).toLocaleDateString());
+                                    }
+                                })
                             }
-
                         }
                     })
                     return x;
