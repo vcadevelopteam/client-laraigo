@@ -75,7 +75,7 @@ const FilterDynamic: FC<{ filter: Dictionary, setFiltersDynamic: (param: any) =>
     const [dateRange, setDateRange] = useState<Range>(initialRange);
     const classes = useStyles();
     const { t } = useTranslation();
-    
+
     useEffect(() => {
         setFiltersDynamic((prev: any) => ({
             ...prev,
@@ -112,7 +112,7 @@ const FilterDynamic: FC<{ filter: Dictionary, setFiltersDynamic: (param: any) =>
                 label={filter.type === "variable" ? filter.description : t(`personalizedreport_${filter.description}`)}
                 variant="outlined"
                 size="small"
-                onChange={(value) =>   setFiltersDynamic((prev: any) => ({
+                onChange={(value) => setFiltersDynamic((prev: any) => ({
                     ...prev,
                     [filter.columnname]: {
                         ...prev[filter.columnname],
@@ -128,6 +128,7 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
     const classes = useStyles()
     const dispatch = useDispatch();
     const { t } = useTranslation();
+    const [dataCleaned, setDataCleaned] = useState<Dictionary[]>([])
 
     const [filtersDynamic, setFiltersDynamic] = useState<Dictionary>(filters.reduce((acc: Dictionary, item: Dictionary) => ({
         ...acc,
@@ -156,7 +157,33 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
             const errormessage = t(resExportDynamic.code || "error_unexpected_error")
             dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
         }
-    }, [resExportDynamic])
+    }, [resExportDynamic]);
+
+    useEffect(() => {
+        if (!mainDynamic.loading && !mainDynamic.error) {
+            const columnsDate = columns.filter(x => ["timestamp without time zone", "date"].includes(x.type));
+            if (columnsDate.length > 0) {
+                setDataCleaned(mainDynamic.data.map(x => {
+                    columnsDate.forEach(y => {
+                        const columnclean = y.columnname.replace(".", "");
+                        if (!!x[columnclean]) {
+                            const date = new Date(x[columnclean]);
+                            if (!isNaN(date.getTime())) {
+                                if (y.type === "timestamp without time zone")
+                                    x[columnclean] = date.toLocaleString();
+                                else
+                                    x[columnclean] = date.toLocaleDateString();
+                            }
+
+                        }
+                    })
+                    return x;
+                }));
+            } else {
+                setDataCleaned(mainDynamic.data);
+            }
+        }
+    }, [mainDynamic])
 
     const onSearch = (isExport: Boolean = false) => {
         const body = {
@@ -217,7 +244,7 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
             <TableZyx
                 columns={columnsDynamic}
                 filterGeneral={false}
-                data={mainDynamic.data}
+                data={dataCleaned}
                 download={false}
                 loading={mainDynamic.loading}
             />
