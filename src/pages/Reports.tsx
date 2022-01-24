@@ -8,6 +8,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import TablePaginated from 'components/fields/table-paginated';
+import TableZyx from 'components/fields/table-simple';
 import Graphic from 'components/fields/Graphic';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +16,7 @@ import { langKeys } from 'lang/keys';
 import { TemplateBreadcrumbs, SearchField, FieldSelect, FieldMultiSelect, SkeletonReportCard, DialogZyx } from 'components';
 import { useSelector } from 'hooks';
 import { Dictionary, IFetchData, MultiData, IRequestBody } from "@types";
-import { getReportSel, getReportTemplateSel, getValuesFromDomain, getReportColumnSel, getReportFilterSel, getPaginatedForReports, getReportExport, insertReportTemplate, convertLocalDate, getTableOrigin, getReportGraphic } from 'common/helpers';
+import { getReportSel, getReportTemplateSel, getValuesFromDomain, getReportColumnSel, getReportFilterSel, getPaginatedForReports, getReportExport, insertReportTemplate, convertLocalDate, getTableOrigin, getReportGraphic, getConversationsWhatsapp } from 'common/helpers';
 import { getCollection, getCollectionAux, execute, resetMain, getCollectionPaginated, resetCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetMainAux, getMultiCollectionAux, getMainGraphic } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
@@ -553,6 +554,71 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
     )
 }
 
+const ReportConversationWhatsapp: FC = () => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+
+    const mainResult = useSelector((state) => state.main.mainAux);
+
+    useEffect(() => {
+        dispatch(getCollectionAux(getConversationsWhatsapp()))
+    }, [])
+
+    const columns = React.useMemo(
+        () => [
+
+            {
+                Header: t(langKeys.personIdentifier),
+                accessor: 'personcommunicationchannel',
+            },
+            {
+                Header: t(langKeys.phone),
+                accessor: 'personcommunicationchannelowner',
+            },
+            {
+                Header: t(langKeys.ticket_number),
+                accessor: 'ticketnum',
+            },
+            {
+                Header: "Iniciado por",
+                accessor: 'initiatedby',
+            },
+            {
+                Header: "Fecha de inicio",
+                accessor: 'conversationstart',
+                Cell: (props: any) => {
+                    const { conversationstart } = props.cell.row.original;
+                    return (
+                        <div>{new Date(conversationstart).toLocaleString()}</div>
+                    )
+                }
+            },
+            {
+                Header: "Fecha de fin",
+                accessor: 'conversationend',
+                Cell: (props: any) => {
+                    const { conversationend } = props.cell.row.original;
+                    return (
+                        <div>{new Date(conversationend).toLocaleString()}</div>
+                    )
+                }
+            },
+        ],
+        []
+    );
+
+    return (
+        <TableZyx
+            columns={columns}
+            titlemodule={t(langKeys.conversation_plural) + " Whatsapp"}
+            data={mainResult.data}
+            download={true}
+            loading={mainResult.loading}
+            register={false}
+        />
+    )
+}
+
 const Reports: FC = () => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -690,7 +756,7 @@ const Reports: FC = () => {
             <div className={classes.container}>
                 <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" style={{ marginBottom: 8 }}>
                     <span className={classes.title}>
-                        {t(langKeys.report_plural)} ({allReportsToShow.length})
+                        {t(langKeys.report_plural)} ({allReportsToShow.length + 1})
                     </span>
                 </Box>
                 {(reportsResult.mainData.loading || reportsResult.mainAux.loading) ? (
@@ -784,6 +850,24 @@ const Reports: FC = () => {
                                                 </Card>
                                             </Grid>
                                 ))}
+                                <Grid item key={"heatmap"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                                    <Card >
+                                        <CardActionArea onClick={() => handleSelectedString("reportconversationwhatsapp")}>
+                                            <CardMedia
+                                                component="img"
+                                                height="140"
+                                                className={classes.media}
+                                                image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/whatsapp_PNG95151.png'}
+                                                title={t(langKeys.conversation_plural) + " Whatsapp"}
+                                            />
+                                            <CardContent>
+                                                <Typography gutterBottom variant="h6" component="div">
+                                                    {t(langKeys.conversation_plural) + " Whatsapp"}
+                                                </Typography>
+                                            </CardContent>
+                                        </CardActionArea>
+                                    </Card>
+                                </Grid>
                                 {allReportsToShow.filter(x => !x.image).map((report, index) => (
                                     <Grid item key={"report_" + report.reporttemplateid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
                                         <Card style={{ position: 'relative' }}>
@@ -908,6 +992,18 @@ const Reports: FC = () => {
                         handleClick={handleSelectedString}
                     />
                     <RecordHSMRecord />
+                </div>
+            </>
+        )
+    } else if (viewSelected === "reportconversationwhatsapp") {
+        return (
+            <>
+                <div style={{ width: '100%' }}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={getArrayBread(t(langKeys.conversation_plural) + " Whatsapp", t(langKeys.report_plural))}
+                        handleClick={handleSelectedString}
+                    />
+                    <ReportConversationWhatsapp />
                 </div>
             </>
         )
