@@ -84,6 +84,7 @@ const DashboardLayout: FC = () => {
         endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
         key: 'selection',
     });
+    const tempDaterange = useRef<Range | null>(null);
     const [canLayoutChange, setCanLayoutChange] = useState(true);
     const mustLoadagain = useRef(false);
 
@@ -361,7 +362,7 @@ const DashboardLayout: FC = () => {
                     open={openDatePicker}
                     setOpen={setOpenDatePicker}
                     range={dateRange}
-                    onSelect={setDateRange}
+                    onSelect={v => tempDaterange.current = v}
                     disabled={dashboardSave.loading || dashboardtemplate.loading || !dashboardtemplate.value}
                 >
                     <Button
@@ -378,7 +379,11 @@ const DashboardLayout: FC = () => {
                     color="primary"
                     startIcon={<SearchIcon style={{ color: 'white' }} />}
                     style={{ backgroundColor: '#55BD84', width: 120 }}
-                    onClick={() => {}}
+                    onClick={() => {
+                        if (tempDaterange.current) {
+                            setDateRange({ ...tempDaterange.current });
+                        }
+                    }}
                 >
                     <Trans i18nKey={langKeys.search} />
                 </Button>
@@ -515,7 +520,7 @@ const useLayoutItemStyles = makeStyles(theme => ({
     },
     reponsiveContainer: {
         width: '100%',
-        overflow: 'auto',
+        overflow: 'hidden',
         flexGrow: 1,
     },
     errorText: {
