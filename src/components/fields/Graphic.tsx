@@ -116,13 +116,13 @@ const RenderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
     );
 };
 
-const TableResume: FC<{ graphicType: string; data: Dictionary[] }> = ({ data, graphicType }) => {
+const TableResume: FC<{ row: Dictionary; column: string; graphicType: string; data: Dictionary[]; }> = ({ row, column, data, graphicType }) => {
     const { t } = useTranslation();
 
     const columns = React.useMemo(
         () => [
             {
-                Header: t(langKeys.field),
+                Header: t('report_' + row?.origin + '_' + column),
                 accessor: 'columnname',
                 NoFilter: true,
                 Cell: (props: any) => {
@@ -291,6 +291,8 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                     </div>
                     <div style={{ overflowX: 'auto' }}>
                         <TableResume
+                            row={row}
+                            column={column}
                             graphicType={graphicType}
                             data={dataGraphic}
                         />
@@ -325,6 +327,8 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                     </div>
                     <div style={{ overflowX: 'auto' }}>
                         <TableResume
+                            row={row}
+                            column={column}
                             graphicType={graphicType}
                             data={dataGraphic}
                         />
