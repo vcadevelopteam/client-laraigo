@@ -145,7 +145,11 @@ const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { r
                 accessor: 'body',
                 NoFilter: true
             },
-            
+            {
+                Header: t(langKeys.log),
+                accessor: 'log',
+                NoFilter: true
+            },
         ],
         [t]
     );
