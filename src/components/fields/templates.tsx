@@ -94,7 +94,7 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ extraOption, viewF
                     setAnchorEl(e.currentTarget);
                     e.stopPropagation();
                 }}
-                style={{ display: deleteFunction ? 'block' : 'none' }}
+                style={{ display: (deleteFunction || extraFunction) ? 'block' : 'none' }}
             >
                 <MoreVertIcon style={{ color: '#B6B4BA' }} />
             </IconButton>
@@ -113,16 +113,18 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ extraOption, viewF
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                <MenuItem onClick={(e) => {
-                    e.stopPropagation();
-                    setAnchorEl(null);
-                    deleteFunction && deleteFunction(e)
-                }}>
-                    <ListItemIcon color="inherit">
-                        <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
-                    </ListItemIcon>
-                    <Trans i18nKey={langKeys.delete} />
-                </MenuItem>
+                {deleteFunction &&
+                    <MenuItem onClick={(e) => {
+                        e.stopPropagation();
+                        setAnchorEl(null);
+                        deleteFunction && deleteFunction(e)
+                    }}>
+                        <ListItemIcon color="inherit">
+                            <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                        </ListItemIcon>
+                        <Trans i18nKey={langKeys.delete} />
+                    </MenuItem>
+                }
                 {extraOption &&
                     <MenuItem onClick={(e) => {
                         e.stopPropagation();

@@ -28,3 +28,11 @@ export function sendInvoice(request: any) {
 export function createInvoice(request: any) {
     return APIManager.post(apiUrls.BILLINGCREATEINVOICE, { data: request }, true);
 }
+
+export function createCreditNote(request: any) {
+    return APIManager.post(apiUrls.BILLINGCREATECREDITNOTE, { data: request }, true);
+}
+
+export function regularizeInvoice(request: any) {
+    return APIManager.post(apiUrls.BILLINGREGULARIZEINVOICE, { data: request }, true);
+}

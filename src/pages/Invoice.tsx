@@ -4,8 +4,8 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { cleanMemoryTable, setMemoryTable } from 'store/main/actions';
-import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx, FieldEditArray } from 'components';
-import { selInvoice, insInvoice, cancelInvoice, getLocaleDateString, selInvoiceClient, selInvoiceChangePaymentStatus, regenerateInvoice, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, exportExcel, invoiceRefreshTest, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit } from 'common/helpers';
+import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx, FieldEditArray, TemplateIcons } from 'components';
+import { selInvoice, cancelInvoice, getLocaleDateString, selInvoiceClient, regenerateInvoice, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, invoiceRefreshTest, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -15,9 +15,9 @@ import { langKeys } from 'lang/keys';
 import { useForm, useFieldArray } from 'react-hook-form';
 import ClearIcon from '@material-ui/icons/Clear';
 import { getCollection, getMultiCollection, execute, exportData, getMultiCollectionAux } from 'store/main/actions';
-import { sendInvoice, createInvoice } from 'store/culqi/actions';
+import { sendInvoice, createInvoice, regularizeInvoice, createCreditNote } from 'store/culqi/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { Box, FilledInput, FormHelperText, Grid, Icon, IconButton, MenuItem, Tabs, TextField } from '@material-ui/core';
+import { Box, FormHelperText, Grid, IconButton, Tabs, TextField } from '@material-ui/core';
 import * as locale from "date-fns/locale";
 import { DownloadIcon } from 'icons';
 import {
@@ -51,7 +51,10 @@ interface RowSelected {
 }
 
 interface DetailProps {
-    data: Dictionary | null;
+    data?: Dictionary | null;
+    creditNote?: boolean;
+    regularize?: boolean;
+    operationName?: string;
     setViewSelected: (view: string) => void;
     fetchData: () => void,
 }
@@ -76,17 +79,15 @@ const StyledTableCell = withStyles((theme) => ({
 const StyledTableRow = withStyles((theme) => ({
 }))(TableRow);
 
-const datacredit = [{value:'0',description: "AL CONTADO"}, {value:'15',description: "CREDITO A 15 DIAS"}, {value:'30',description: "CREDITO A 30 DIAS"}, {value:'45',description: "CREDITO A 45 DIAS"}, {value:'60',description: "CREDITO A 60 DIAS"},  {value:'90',description: "CREDITO A 90 DIAS"}]
-
 const datatotalize = [{value:1,description: "CORPORATION"},{value:2,description: "ORGANIZATION"}]
 
 const datacurrency = [{value:"PEN",description: "PEN"},{value:"USD",description: "USD"}]
 
-const datapaymentstatus = [{value:"PENDING",description: "PENDING"},{value:"PAID",description: "PAID"}]
+const datapaymentstatus = [{value:"PENDING",description: "PENDING"},{value:"PAID",description: "PAID"},{value:"NONE",description: "NONE"}]
 
 const years = [{desc:"2010"},{desc:"2011"},{desc:"2012"},{desc:"2013"},{desc:"2014"},{desc:"2015"},{desc:"2016"},{desc:"2017"},{desc:"2018"},{desc:"2020"},{desc:"2021"},{desc:"2022"},{desc:"2023"},{desc:"2024"},{desc:"2025"}]
 
-const months =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" },]
+const months =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }]
 
 function formatNumber(num: number) {
     if (num)
@@ -98,22 +99,6 @@ function formatNumberNoDecimals(num: number) {
     if (num)
         return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
     return "0"
-}
-
-const getImgUrl = (file: File | string | null): string | null => {
-    if (!file) return null;
-
-    try {
-        if (typeof file === "string") {
-            return file;
-        } else if (typeof file === "object") {
-            return URL.createObjectURL(file);
-        }
-        return null;
-    } catch (ex) {
-        console.error(ex);
-        return null;
-    }
 }
 
 export const DateOptionsMenuComponent = (value: any, handleClickItemMenu: (key: any) => void) => {
@@ -2189,6 +2174,9 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const [functiontrigger, setfunctiontrigger] = useState('');
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
     const [viewSelected, setViewSelected] = useState("view-1");
+    const [isCreditNote, setIsCreditNote] = useState(false);
+    const [isRegularize, setIsRegularize] = useState(false);
+    const [operationName, setOperationName] = useState('');
     const [waitSave, setWaitSave] = useState(false);
     const [waitSend, setWaitSend] = useState(false);
 
@@ -2233,6 +2221,24 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
 
     const columns = React.useMemo(
         () => [
+            {
+                NoFilter: true,
+                isComponent: true,
+                minWidth: 60,
+                width: '1%',
+                accessor: 'invoiceid',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    if (row.invoicestatus !== "INVOICED" || row.type === 'CREDITNOTE')
+                        return null;
+                    return (
+                        <TemplateIcons
+                            extraFunction={() => handleCreditNote(row)}
+                            extraOption={t(langKeys.generatecreditnote)}
+                        />
+                    )
+                }
+            },
             {
                 Header: t(langKeys.corporation),
                 accessor: 'corpdesc',
@@ -2338,8 +2344,16 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 }
             },
             {
+                Header: t(langKeys.documenttype),
+                accessor: 'invoicetype',
+                Cell: (props: any) => {
+                    const { invoicetype } = props.cell.row.original;
+                    return <span style={{ display: "block" }}>{t(getInvoiceType(invoicetype))}</span>;
+                }
+            },
+            {
                 Header: t(langKeys.reportstatus),
-                accessor: 'invoiceid',
+                accessor: 'concept',
                 Cell: () => {
                     return <span style={{ display: "block" }}>{'PRELIMINAR'}</span>;
                 }
@@ -2400,14 +2414,38 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         }))
     }
 
+    const handleView = (row: Dictionary) => {
+        setViewSelected("view-2");
+        setIsCreditNote(false);
+        setIsRegularize(true);
+        setOperationName('');
+        setRowSelected(row);
+    }
+
+    const handleCreditNote = (row: Dictionary) => {
+        setViewSelected("view-2");
+        setIsCreditNote(true);
+        setIsRegularize(false);
+        setOperationName('generatecreditnote');
+        setRowSelected(row);
+    }
+
     const handleRegister = () => {
         setViewSelected("view-3");
         setRowSelected({ row: null, edit: true });
     }
 
-    const handleView = (row: Dictionary) => {
-        setViewSelected("view-2");
-        setRowSelected(row);
+    const getInvoiceType = (invoicetype: string) => {
+        switch (invoicetype) {
+            case '01':
+                return 'emissorinvoice';
+            case '03':
+                return 'emissorticket';
+            case '07':
+                return 'emissorcreditnote';
+            default:
+                return '';
+        }
     }
     
     if (viewSelected === "view-1") {
@@ -2492,8 +2530,8 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 )}
                 data={dataInvoice}
                 filterGeneral={false}
-                loading={mainResult.mainData.loading}
                 download={true}
+                loading={mainResult.mainData.loading}
                 register={true}
                 handleRegister={handleRegister}
                 registertext={langKeys.generateinvoice}
@@ -2504,24 +2542,645 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         )
     } else if (viewSelected === "view-2") {
         return (
-            <BillingDetail
-                fetchData={fetchData}
+            <BillingOperation
                 data={rowSelected}
+                fetchData={fetchData}
                 setViewSelected={setViewSelected}
+                creditNote={isCreditNote}
+                regularize={isRegularize}
+                operationName={operationName}
             />
         );
     } else {
         return (
             <BillingRegister
                 fetchData={fetchData}
-                data={rowSelected}
                 setViewSelected={setViewSelected}
             />
         );
     }
 }
 
-const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) => {
+const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, operationName, setViewSelected, fetchData }) => {
+    const dispatch = useDispatch();
+
+    const { t } = useTranslation();
+
+    const classes = useStyles();
+    const culqiResult = useSelector(state => state.culqi.requestCreateCreditNote);
+    const multiResult = useSelector(state => state.main.multiDataAux);
+    
+    const [measureList, setMeasureList] = useState<any>([]);
+    const [openModal, setOpenModal] = useState(false);
+    const [showDiscount, setShowDiscount] = useState(false);
+    const [waitSave, setWaitSave] = useState(false);
+
+    const invocesBread = [
+        { id: "view-1", name: t(langKeys.billingtitle) },
+        { id: "view-2", name: t(langKeys.billinginvoicedetail) }
+    ];
+
+    const datacreditnote = [
+        { value:"01", description: t(langKeys.billingcreditnote01) },
+        { value:"04", description: t(langKeys.billingcreditnote04) }
+    ]
+
+    useEffect(() => {
+        if (!data) {
+            setViewSelected("view-1");
+        }
+
+        setMeasureList({ loading: false, data: [] });
+
+        dispatch(getMultiCollectionAux([getMeasureUnit()]));
+    }, [])
+
+    useEffect(() => {
+        const indexMeasure = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_MEASUREUNIT_SEL'));
+
+        if (indexMeasure > -1) {
+            setMeasureList({ loading: false, data: multiResult.data[indexMeasure] && multiResult.data[indexMeasure].success ? multiResult.data[indexMeasure].data : [] });
+        }
+    }, [multiResult]);
+
+    const { control, handleSubmit, register, trigger, setValue, getValues, formState: { errors } } = useForm<any>({
+        defaultValues: {
+            corpid: data?.corpid,
+            orgid: data?.orgid,
+            invoiceid: data?.invoiceid,
+            creditnotetype: '',
+            creditnotemotive: '',
+            creditnotediscount: 0.0,
+            productdetail: []
+        }
+    });
+
+    const { fields, append: fieldsAppend, remove: fieldRemove } = useFieldArray({
+        control,
+        name: 'productdetail',
+    });
+
+    React.useEffect(() => {
+        register('corpid', { validate: (value) => (value && value > 0) || "" + t(langKeys.field_required) });
+        register('orgid');
+        register('invoiceid', { validate: (value) => (value && value > 0) || "" + t(langKeys.field_required) });
+        register('creditnotetype', { validate: (value) => (regularize || (value && value.length > 0)) || "" + t(langKeys.field_required) });
+        register('creditnotemotive', { validate: (value) => (regularize || (value && value.length > 10)) || "" + t(langKeys.field_required) });
+        register('creditnotediscount', { validate: (value) => (regularize || ((getValues('creditnotetype') !== '04') || (value && value > 0 && value < data?.totalamount))) || "" + t(langKeys.field_required) });
+    }, [register]);
+
+    const getDocumentType = (documenttype: string) => {
+        switch (documenttype) {
+            case '0':
+                return 'billingfield_billingno';
+            case '1':
+                return 'billingfield_billingdni';
+            case '4':
+                return 'billingfield_billingextra';
+            case '6':
+                return 'billingfield_billingruc';
+            case '7':
+                return 'billingfield_billingpass';
+            default:
+                return '';
+        }
+    }
+
+    const getInvoiceType = (invoicetype: string) => {
+        switch (invoicetype) {
+            case '01':
+                return 'emissorinvoice';
+            case '03':
+                return 'emissorticket';
+            case '07':
+                return 'emissorcreditnote';
+            default:
+                return '';
+        }
+    }
+
+    const onSubmit = handleSubmit((data) => {
+        if (creditNote) {
+            const callback = () => {
+                dispatch(createCreditNote(data));
+                dispatch(showBackdrop(true));
+                setWaitSave(true);
+            }
+    
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_save),
+                callback
+            }))
+        }
+
+        if (regularize) {
+            setOpenModal(true);
+        }
+    });
+
+    const onModalSuccess = () => {
+        setOpenModal(false);
+        fetchData();
+        setViewSelected("view-1");
+    }
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!culqiResult.loading && !culqiResult.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(culqiResult.code || "success") }))
+                dispatch(showBackdrop(false));
+                fetchData();
+                setViewSelected('view-1');
+                setWaitSave(false);
+            }
+            else if (culqiResult.error) {
+                dispatch(showSnackbar({ show: true, success: false, message: t(culqiResult.code || "error_unexpected_db_error") }))
+                dispatch(showBackdrop(false));
+                fetchData();
+                setViewSelected('view-1');
+                setWaitSave(false);
+            }
+        }
+    }, [culqiResult, waitSave])
+
+    return (
+        <div style={{ width: '100%' }}>
+            <RegularizeModal
+                data={data}
+                openModal={openModal}
+                setOpenModal={setOpenModal}
+                onTrigger={onModalSuccess}
+            />
+            <form onSubmit={onSubmit}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={invocesBread}
+                            handleClick={setViewSelected}
+                        />
+                        <TitleDetail
+                            title={operationName ? t(operationName) : t(langKeys.billinginvoiceview)}
+                        />
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => setViewSelected("view-1")}
+                        >{t(langKeys.back)}</Button>
+                        { (data?.invoicestatus === 'INVOICED' && creditNote) ? (
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                type='submit'
+                                startIcon={<PaymentIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >{t(langKeys.emitinvoice)}
+                            </Button>
+                            ) : null
+                        }
+                        { (data?.invoicestatus !== 'INVOICED' && data?.paymentstatus === 'PENDING' && regularize) ? (
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                type='submit'
+                                startIcon={<PaymentIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >{t(langKeys.regulatepayment)}
+                            </Button>
+                            ) : null
+                        }
+                    </div>
+                </div>
+                <div style={{ backgroundColor: 'white', padding: 16 }}>
+                    <div className={classes.container}>
+                        <div className={classes.containerField}>
+                            <div className={classes.titleCard}>{t(langKeys.clientinformation)}</div>
+                            <FieldView
+                                label={t(langKeys.docType)}
+                                value={t(getDocumentType(data?.receiverdoctype))}
+                                className={classes.fieldView}
+                            />
+                            <FieldView
+                                label={t(langKeys.documentnumber)}
+                                value={data?.receiverdocnum}
+                                className={classes.fieldView}
+                            />
+                            <FieldView
+                                label={t(langKeys.billingname)}
+                                value={data?.receiverbusinessname}
+                                className={classes.fieldView}
+                            />
+                            <FieldView
+                                label={t(langKeys.address)}
+                                value={data?.receiverfiscaladdress}
+                                className={classes.fieldView}
+                            />
+                            <FieldView
+                                label={t(langKeys.countrycode)}
+                                value={data?.receivercountry}
+                                className={classes.fieldView}
+                            />
+                            <FieldView
+                                label={t(langKeys.billingsinglemail)}
+                                value={data?.receivermail}
+                                className={classes.fieldView}
+                            />
+                        </div>
+                        <div className={classes.containerField}>
+                            <div className={classes.titleCard}>{t(langKeys.invoiceinformation)}</div>
+                            <FieldView
+                                label={t(langKeys.documenttype)}
+                                value={t(getInvoiceType(data?.invoicetype))}
+                                className={classes.fieldView}
+                            />
+                            <FieldView
+                                label={t(langKeys.documentnumber)}
+                                value={(data?.serie ? data.serie : 'X000') + '-' + (data?.correlative ? data?.correlative.toString().padStart(8, '0') : '00000000')}
+                                className={classes.fieldView}
+                            />
+                            <FieldView
+                                label={t(langKeys.invoicedate)}
+                                value={data?.invoicedate}
+                                className={classes.fieldView}
+                            />
+                            <FieldView
+                                label={t(langKeys.dueDate)}
+                                value={data?.expirationdate}
+                                className={classes.fieldView}
+                            />
+                            <FieldView
+                                label={t(langKeys.currency)}
+                                value={data?.currency}
+                                className={classes.fieldView}
+                            />
+                            <FieldView
+                                label={t(langKeys.totalamount)}
+                                value={(data?.totalamount || 0).toFixed(2)}
+                                className={classes.fieldView}
+                            />
+                            <FieldView
+                                label={t(langKeys.reportstatus)}
+                                value={'PRELIMINAR'}
+                                className={classes.fieldView}
+                            />
+                        </div>
+                        <div className={classes.containerField}>
+                            <div className={classes.titleCard}>{t(langKeys.additional_information)}</div>
+                            <FieldView
+                                label={t(langKeys.credittype)}
+                                value={t(data?.credittype)}
+                                className={classes.fieldView}
+                            />
+                            <FieldView
+                                label={t(langKeys.purchaseorder)}
+                                value={data?.purchaseorder}
+                                className={classes.fieldView}
+                            />
+                            <FieldView
+                                label={t(langKeys.comments)}
+                                value={data?.comments}
+                                className={classes.fieldView}
+                            />
+                            <FieldView
+                                label={t(langKeys.invoicestatus)}
+                                value={data?.invoicestatus}
+                                className={classes.fieldView}
+                            />
+                            <FieldView
+                                label={t(langKeys.paymentstatus)}
+                                value={data?.paymentstatus}
+                                className={classes.fieldView}
+                            />
+                            { data?.errordescription ?
+                                <FieldView
+                                    label={t(langKeys.billingerror)}
+                                    value={data?.errordescription}
+                                    className={classes.fieldView}
+                                />
+                                :
+                                null
+                            }
+                            { data?.urlpdf ? 
+                                <a href={data?.urlpdf} target="_blank" rel="noreferrer">{t(langKeys.urlpdf)}</a>
+                                :
+                                null
+                            }
+                            { data?.urlcdr ? 
+                                <a href={data?.urlcdr} target="_blank" rel="noreferrer">{t(langKeys.urlcdr)}</a>
+                                :
+                                null
+                            }
+                            { data?.urlxml ? 
+                                <a href={data?.urlxml} target="_blank" rel="noreferrer">{t(langKeys.urlxml)}</a>
+                                :
+                                null
+                            }
+                        </div >
+                        { creditNote ? (
+                            <div className={classes.containerField}>
+                                <div className={classes.titleCard}>{t(langKeys.creditnoteinformation)}</div>
+                                <FieldSelect
+                                    className={classes.fieldView}
+                                    label={t(langKeys.creditnotetype)}
+                                    onChange={(value) => { setValue('creditnotetype', value?.value); setShowDiscount(value?.value === '04') }}
+                                    valueDefault={getValues('creditnotetype')}
+                                    data={datacreditnote}
+                                    optionDesc="description"
+                                    optionValue="value"
+                                    error={errors?.creditnotetype?.message}
+                                />
+                                <FieldEdit
+                                    label={t(langKeys.ticket_reason)}
+                                    className={classes.fieldView}
+                                    valueDefault={getValues('creditnotemotive')}
+                                    onChange={(value) => setValue('creditnotemotive', value)}
+                                    error={errors?.creditnotemotive?.message}
+                                />
+                                { showDiscount ? (
+                                    <FieldEdit
+                                        label={t(langKeys.globaldiscount)}
+                                        className={classes.fieldView}
+                                        valueDefault={getValues('creditnotediscount')}
+                                        onChange={(value) => setValue('creditnotediscount', value)}
+                                        error={errors?.creditnotediscount?.message}
+                                        type='number'
+                                    />
+                                    ) : null
+                                }
+                            </div>
+                            ) : null
+                        }
+                    </div>
+                    <div className={classes.containerDetail}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <div>
+                                {/*<FieldView
+                                    className={classes.section}
+                                    label={''}
+                                    value={t(langKeys.billingproductdetail)}
+                                />*/}
+                            </div>
+                        </div>
+                        <div style={{ backgroundColor: 'white', padding: 16 }}>
+                            <div className={classes.container}>
+                            {fields.map((item, i) => (
+                                <div key={item.id} className={classes.containerField}>
+                                    <FieldEditArray
+                                        className={classes.fieldView}
+                                        label={t(langKeys.description)}
+                                        fregister={{
+                                            ...register(`productdetail.${i}.productdescription`, {
+                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                            })
+                                        }}
+                                        valueDefault={getValues(`productdetail.${i}.productdescription`)}
+                                        error={errors?.productdetail?.[i]?.productdescription?.message}
+                                        onChange={(value) => setValue(`productdetail.${i}.productdescription`, "" + value)}
+                                    />
+                                    <FieldEditArray
+                                        className={classes.fieldView}
+                                        label={t(langKeys.code)}
+                                        fregister={{
+                                            ...register(`productdetail.${i}.productcode`, {
+                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                            })
+                                        }}
+                                        valueDefault={getValues(`productdetail.${i}.productcode`)}
+                                        error={errors?.productdetail?.[i]?.productcode?.message}
+                                        onChange={(value) => setValue(`productdetail.${i}.productcode`, "" + value)}
+                                    />
+                                    <FieldSelect
+                                        className={classes.fieldView}
+                                        label={t(langKeys.measureunit)}
+                                        fregister={{
+                                            ...register(`productdetail.${i}.productmeasure`, {
+                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                            })
+                                        }}
+                                        loading={measureList.loading}
+                                        onChange={(value) => setValue(`productdetail.${i}.productmeasure`, "" + value?.code)}
+                                        valueDefault={getValues(`productdetail.${i}.productmeasure`)}
+                                        data={measureList.data}
+                                        optionDesc="description"
+                                        optionValue="code"
+                                        error={errors?.productdetail?.[i]?.productmeasure?.message}
+                                    />
+                                    <FieldEditArray
+                                        className={classes.fieldView}
+                                        label={t(langKeys.quantity)}
+                                        fregister={{
+                                            ...register(`productdetail.${i}.productquantity`, {
+                                                validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
+                                            })
+                                        }}
+                                        valueDefault={getValues(`productdetail.${i}.productquantity`)}
+                                        error={errors?.productdetail?.[i]?.productquantity?.message}
+                                        onChange={(value) => { setValue(`productdetail.${i}.productquantity`, "" + value); }}
+                                        type='number'
+                                    />
+                                    <FieldEditArray
+                                        className={classes.fieldView}
+                                        label={t(langKeys.billingsubtotal)}
+                                        fregister={{
+                                            ...register(`productdetail.${i}.productsubtotal`, {
+                                                validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
+                                            })
+                                        }}
+                                        valueDefault={getValues(`productdetail.${i}.productsubtotal`)}
+                                        error={errors?.productdetail?.[i]?.productsubtotal?.message}
+                                        onChange={(value) => { setValue(`productdetail.${i}.productsubtotal`, "" + value); }}
+                                        type='number'
+                                    />
+                                </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div >
+    )
+}
+
+const RegularizeModal: FC<{ data: any, openModal: boolean, setOpenModal: (param: any) => void, onTrigger: () => void }> = ({ data, openModal, setOpenModal, onTrigger }) => {
+    const dispatch = useDispatch();
+    
+    const { t } = useTranslation();
+
+    const classes = useStyles();
+    const culqiResult = useSelector(state => state.culqi.requestRegularizeInvoice);
+
+    const [chatButton, setChatButton] = useState<File | string | null>(null);
+    const [chatImgUrl, setChatImgUrl] = useState<string | undefined | null>(null);
+    const [waitSave, setWaitSave] = useState(false);
+
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+        defaultValues: {
+            corpid: data?.corpid,
+            orgid: data?.orgid,
+            invoiceid: data?.invoiceid,
+            invoicereferencefile: '',
+            invoicepaymentnote: '',
+        }
+    });
+
+    React.useEffect(() => {
+        register('corpid', { validate: (value) => (value && value > 0) || "" + t(langKeys.field_required) });
+        register('orgid');
+        register('invoiceid', { validate: (value) => (value && value > 0) || "" + t(langKeys.field_required) });
+        register('invoicereferencefile', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('invoicepaymentnote', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+    }, [register]);
+
+    useEffect(() => {
+        setChatImgUrl(getImgUrl(chatButton));
+    }, [])
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!culqiResult.loading && !culqiResult.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(culqiResult.code || "success") }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+            else if (culqiResult.error) {
+                dispatch(showSnackbar({ show: true, success: false, message: t(culqiResult.code || "error_unexpected_db_error") }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [culqiResult, waitSave])
+
+    const getImgUrl = (file: File | string | null): string | null => {
+        try {
+            if (!file) {
+                return null;
+            }
+            else {
+                if (typeof file === "string") {
+                    return file;
+                }
+
+                if (typeof file === "object") {
+                    return URL.createObjectURL(file);
+                }
+            }
+
+            return null;
+        } catch (error) {
+            console.error(error);
+
+            return null;
+        }
+    }
+
+    const onSubmit = handleSubmit((data) => {
+        const callback = () => {
+            console.log(JSON.stringify(data));
+            dispatch(regularizeInvoice(data));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
+    });
+
+    const onChangeChatInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+        if (!e.target.files) {
+            return;
+        }
+        else {
+            setValue("invoicereferencefile", String(getImgUrl(e.target.files[0])))
+            setChatButton(e.target.files[0]);
+        }
+    }
+
+    const handleChatButtonClick = () => {
+        const input = document.getElementById('chatBtnInput');
+        input!.click();
+    }
+
+    const handleChatButtonClean = () => {
+        if (!chatButton) {
+            return;
+        }
+        else {
+            const input = document.getElementById('chatBtnInput') as HTMLInputElement;
+            input.value = "";
+            setValue('invoicereferencefile', '');
+            setChatButton(null);
+        }
+    }
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.regulatepayment)}
+            buttonText1={t(langKeys.cancel)}
+            handleClickButton1={() => setOpenModal(false)}
+            buttonText2={t(langKeys.save)}
+            handleClickButton2={onSubmit}
+            button2Type="submit"
+        >
+            <FieldEdit
+                label={t(langKeys.paymentnote)}
+                valueDefault={getValues('invoicepaymentnote')}
+                error={errors?.invoicepaymentnote?.message}
+                onChange={(value) => setValue('invoicepaymentnote', value)}
+                className="col-12"
+            />
+            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                <Box m={1}>
+                    <Grid container direction="row">
+                        <Grid item xs={11} sm={11} md={11} lg={11} xl={11}>
+                            <label className={classes.text}>
+                                {t(langKeys.evidenceofpayment)}
+                            </label>
+                        </Grid>
+                        <Grid item xs={11} sm={11} md={11} lg={11} xl={11}>
+                            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+                                <div className={classes.imgContainer}>
+                                    {chatImgUrl && <img src={(chatImgUrl || '')} alt="icon button" className={classes.img} />}
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
+                                    <input
+                                        accept="image/*"
+                                        style={{ display: 'none' }}
+                                        id="chatBtnInput"
+                                        type="file"
+                                        onChange={onChangeChatInput}
+                                    />
+                                    <IconButton onClick={handleChatButtonClick}>
+                                        <CloudUpload className={classes.icon} />
+                                    </IconButton>
+                                    <IconButton onClick={handleChatButtonClean}>
+                                        <Close className={classes.icon} />
+                                    </IconButton>
+                                </div>
+                            </div>
+                            <FormHelperText error={!isEmpty(errors?.invoicereferencefile?.message)} style={{ marginLeft: 14 }}>
+                                {errors?.invoicereferencefile?.message}
+                            </FormHelperText>
+                        </Grid>
+                    </Grid>
+                </Box>
+            </Grid>
+        </DialogZyx>
+    )
+}
+
+const BillingRegister: FC<DetailProps> = ({ setViewSelected, fetchData }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -2725,6 +3384,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
             dispatch(createInvoice(data));
+            dispatch(showBackdrop(true));
             setWaitSave(true);
         }
 
@@ -2738,14 +3398,17 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
     useEffect(() => {
         if (waitSave) {
             if (!culqiResult.loading && !culqiResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t('Document was created, check invoicing details') }))
+                dispatch(showSnackbar({ show: true, success: true, message: t(culqiResult.code || "success") }))
                 dispatch(showBackdrop(false));
                 fetchData();
                 setViewSelected('view-1');
+                setWaitSave(false);
             }
             else if (culqiResult.error) {
                 dispatch(showSnackbar({ show: true, success: false, message: t(culqiResult.code || "error_unexpected_db_error") }))
                 dispatch(showBackdrop(false));
+                fetchData();
+                setViewSelected('view-1');
                 setWaitSave(false);
             }
         }
@@ -2761,10 +3424,18 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
-                            title={data?.description}
+                            title={t(langKeys.emiteinvoicetitle)}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => setViewSelected("view-1")}
+                        >{t(langKeys.back)}</Button>
                         <Button
                             className={classes.button}
                             variant="contained"
@@ -2896,7 +3567,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                 type='number'
                             />
                             <FieldView
-                                label={t(langKeys.invoicestatus)}
+                                label={t(langKeys.reportstatus)}
                                 value={'PRELIMINAR'}
                                 className={classes.fieldView}
                             />
@@ -2941,7 +3612,10 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                     style={{ marginLeft: '1rem' }}
                                     onClick={() => fieldsAppend({
                                         productdescription: '',
-                                        productcode: ''
+                                        productcode: '',
+                                        productmeasure: '',
+                                        productquantity: 0,
+                                        productsubtotal: 0.0,
                                     })}
                                 > <AddIcon />
                                 </Fab>
@@ -3033,474 +3707,6 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                 </div>
             </form>
         </div >
-    )
-}
-
-const BillingDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) => {
-    const dispatch = useDispatch();
-
-    const { t } = useTranslation();
-
-    const classes = useStyles();
-    const executeRes = useSelector(state => state.main.execute);
-    
-    const [openModal, setOpenModal] = useState(false);
-    const [waitSave, setWaitSave] = useState(false);
-
-    const invocesBread = [
-        { id: "view-1", name: "Invoices" },
-        { id: "view-2", name: "Invoice detail" }
-    ];
-
-    const { handleSubmit, setValue, getValues, formState: { errors } } = useForm({
-        defaultValues: {
-            invoiceid: data?.invoiceid || 0,
-            filenumber: data?.filenumber || '',
-            purchaseorder: data?.purchaseorder || '',
-            executingunitcode: data?.executingunitcode || '',
-            selectionprocessnumber: data?.selectionprocessnumber || '',
-            contractnumber: data?.contractnumber || '',
-            comments: data?.comments || '',
-            paymentnote: data?.paymentnote || "",
-            paymentfile: ""
-        }
-    });
-
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
-                fetchData && fetchData();
-                dispatch(showBackdrop(false));
-                setViewSelected("view-1")
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                setWaitSave(false);
-                dispatch(showBackdrop(false));
-            }
-        }
-    }, [executeRes, waitSave])
-
-
-    const onSubmit = handleSubmit((row) => {
-        const callback = () => {
-            dispatch(execute(insInvoice({ ...data!!, ...row })));
-            dispatch(showBackdrop(true));
-            setWaitSave(true)
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))
-    });
-
-    const onPaid = () => {
-        fetchData();
-        setOpenModal(false);
-        setViewSelected("view-1");
-    }
-
-    return (
-        <div style={{ width: '100%' }}>
-            <div>
-                <PaymentComp
-                    data={data}
-                    openModal={openModal}
-                    setOpenModal={setOpenModal}
-                    onTrigger={onPaid}
-                />
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div>
-                        <TemplateBreadcrumbs
-                            breadcrumbs={invocesBread}
-                            handleClick={setViewSelected}
-                        />
-                        <TitleDetail
-                            title={data?.description}
-                        />
-                    </div>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                        {data?.paymentstatus === "PENDING" &&
-                            <Button
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                                startIcon={<PaymentIcon color="secondary" />}
-                                style={{ backgroundColor: "#55BD84" }}
-                                onClick={() => setOpenModal(true)}
-                            >{t(langKeys.regulatepayment)}
-                            </Button>
-                        }
-                    </div>
-                </div>
-                <div style={{ backgroundColor: 'white', padding: 16 }}>
-                    <div className={classes.container}>
-                        <div className={classes.containerField}>
-                            <div className={classes.titleCard}>{t(langKeys.clientinformation)}</div>
-                            <FieldView
-                                label={t(langKeys.docType)}
-                                value={data?.receiverdoctype}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.documentnumber)}
-                                value={data?.receiverdocnum}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.businessname)}
-                                value={data?.receiverbusinessname}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.address)}
-                                value={data?.receiverfiscaladdress}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.country)}
-                                value={data?.receivercountry}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.email)}
-                                value={data?.receivermail}
-                                className={classes.fieldView}
-                            />
-                        </div>
-                        <div className={classes.containerField}>
-                            <div className={classes.titleCard}>{t(langKeys.invoiceinformation)}</div>
-                            <FieldView
-                                label={t(langKeys.documentnumber)}
-                                value={data?.serie + " - " + (data?.correlative || "")}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.invoicedate)}
-                                value={data?.invoicedate}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.dueDate)}
-                                value={data?.expirationdate}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.totalamount)}
-                                value={data?.totalamount}
-                                className={classes.fieldView}
-                            />
-
-                            <FieldView
-                                label={t(langKeys.currency)}
-                                value={data?.currency}
-                                className={classes.fieldView}
-                            />
-                            <div>
-                                <a href={data?.urlpdf} target="_blank" rel="noreferrer">{t(langKeys.urlpdf)}</a>
-                            </div>
-                            <div>
-                                <a href={data?.urlcdr} target="_blank" rel="noreferrer">{t(langKeys.urlcdr)}</a>
-                            </div>
-                            <div>
-                                <a href={data?.urlxml} target="_blank" rel="noreferrer">{t(langKeys.urlxml)}</a>
-                            </div>
-                        </div>
-                        <div className={classes.containerField} style={{ position: 'relative' }}>
-                            <div className={classes.titleCard}>{t(langKeys.additional_information)}</div>
-                            {statusToEdit.includes(data?.invoicestatus) ? (
-                                <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                                    <Fab
-                                        onClick={onSubmit}
-                                        type="submit"
-                                        size="small"
-                                        style={{ position: 'absolute', top: 8, right: 8, zIndex: 99999, backgroundColor: '#fff' }}
-                                    >
-                                        <SaveIcon color="primary" />
-                                    </Fab>
-                                    <FieldEdit
-                                        label={t(langKeys.filenumber)}
-                                        className="col-6"
-                                        type="number"
-                                        valueDefault={getValues('filenumber')}
-                                        onChange={(value) => setValue('filenumber', parseInt(value || "0"))}
-                                        error={errors?.filenumber?.message}
-                                    />
-                                    <FieldEdit
-                                        label={t(langKeys.purchaseorder)}
-                                        className="col-6"
-                                        valueDefault={getValues('purchaseorder')}
-                                        onChange={(value) => setValue('purchaseorder', value)}
-                                        error={errors?.purchaseorder?.message}
-                                    />
-                                    <FieldEdit
-                                        label={t(langKeys.executingunitcode)}
-                                        className="col-6"
-                                        valueDefault={getValues('executingunitcode')}
-                                        onChange={(value) => setValue('executingunitcode', value)}
-                                        error={errors?.executingunitcode?.message}
-                                    />
-                                    <FieldEdit
-                                        label={t(langKeys.selectionprocessnumber)}
-                                        className="col-6"
-                                        valueDefault={getValues('selectionprocessnumber')}
-                                        onChange={(value) => setValue('selectionprocessnumber', value)}
-                                        error={errors?.selectionprocessnumber?.message}
-                                    />
-                                    <FieldEdit
-                                        label={t(langKeys.contractnumber)}
-                                        className="col-6"
-                                        valueDefault={getValues('contractnumber')}
-                                        onChange={(value) => setValue('contractnumber', value)}
-                                        error={errors?.contractnumber?.message}
-                                    />
-                                    <FieldEdit
-                                        label={t(langKeys.comments)}
-                                        className="col-6"
-                                        valueDefault={getValues('comments')}
-                                        onChange={(value) => setValue('comments', value)}
-                                        error={errors?.comments?.message}
-                                    />
-                                </form>
-                            ) : (
-                                <>
-
-                                    <FieldView
-                                        label={t(langKeys.filenumber)}
-                                        value={data?.filenumber}
-                                        className={classes.fieldView}
-                                    />
-                                    <FieldView
-                                        label={t(langKeys.purchaseorder)}
-                                        value={data?.purchaseorder}
-                                        className={classes.fieldView}
-                                    />
-                                    <FieldView
-                                        label={t(langKeys.executingunitcode)}
-                                        value={data?.executingunitcode}
-                                        className={classes.fieldView}
-                                    />
-                                    <FieldView
-                                        label={t(langKeys.selectionprocessnumber)}
-                                        value={data?.selectionprocessnumber}
-                                        className={classes.fieldView}
-                                    />
-                                    <FieldView
-                                        label={t(langKeys.contractnumber)}
-                                        value={data?.contractnumber}
-                                        className={classes.fieldView}
-                                    />
-                                    <FieldView
-                                        label={t(langKeys.comments)}
-                                        value={data?.comments}
-                                        className={classes.fieldView}
-                                    />
-                                </>
-                            )}
-                        </div>
-                        <div className={classes.containerField}>
-                            <div className={classes.titleCard}>{t(langKeys.paymentinformation)}</div>
-                            <FieldView
-                                label={t(langKeys.paymentstatus)}
-                                value={data?.paymentstatus}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.paymentdate)}
-                                value={data?.paymentdate}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.paidby)}
-                                value={data?.paidby}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.email)}
-                                value={data?.email}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.id_payment)}
-                                value={data?.orderid}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.paymentnote)}
-                                value={data?.paymentnote}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.paymentfile)}
-                                value={data?.paymentfile}
-                                className={classes.fieldView}
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div >
-    )
-}
-
-const PaymentComp: FC<{ data: any, openModal: boolean, setOpenModal: (param: any) => void, onTrigger: () => void }> = ({ data, openModal, setOpenModal, onTrigger }) => {
-    const dispatch = useDispatch();
-    
-    const { t } = useTranslation();
-
-    const classes = useStyles();
-    const executeRes = useSelector(state => state.main.execute);
-    const resInvoice = useSelector(state => state.culqi.request);
-    
-    const [chatBtn, setChatBtn] = useState<File | string | null>(null);
-    const [waitSave, setWaitSave] = useState(false);
-    const [waitSend, setWaitSend] = useState(false);
-
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
-        defaultValues: {
-            invoiceid: data?.invoiceid || 0,
-            paymentnote: '',
-            paymentfile: ""
-        }
-    });
-
-    const chatImgUrl = getImgUrl(chatBtn);
-
-    const mandatoryFileField = (value: string | File | null) => {
-        return !value ? t(langKeys.field_required) : undefined;
-    }
-
-    React.useEffect(() => {
-        register('invoiceid');
-        register('paymentnote', { validate: mandatoryFileField });
-        register('paymentfile', { validate: mandatoryFileField });
-    }, [register]);
-
-    useEffect(() => {
-        if (waitSend) {
-            if (!executeRes.loading && !executeRes.error) {
-                setWaitSave(false);
-                setWaitSave(true);
-                dispatch(sendInvoice(data.invoiceid));
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                setWaitSave(false);
-                setWaitSend(false);
-                dispatch(showBackdrop(false));
-            }
-        }
-    }, [executeRes, waitSend])
-
-    useEffect(() => {
-        if (waitSave) {
-            if (!resInvoice.loading && !resInvoice.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-                setWaitSend(false);
-                onTrigger();
-            }
-            else if (executeRes.error) {
-                const errormessage = t(resInvoice.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                setWaitSave(false);
-                setWaitSend(false);
-                dispatch(showBackdrop(false));
-            }
-        }
-    }, [resInvoice, waitSave])
-
-    const onSubmit = handleSubmit((dataf) => {
-        const callback = () => {
-            dispatch(showBackdrop(true));
-            dispatch(execute(selInvoiceChangePaymentStatus(dataf)));
-            setWaitSend(true);
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))
-    });
-
-    const onChangeChatInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-        if (!e.target.files) return;
-        setChatBtn(e.target.files[0]);
-        setValue("paymentfile", String(getImgUrl(e.target.files[0])))
-    }
-
-    const handleChatBtnClick = () => {
-        const input = document.getElementById('chatBtnInput');
-        input!.click();
-    }
-
-    const handleCleanChatInput = () => {
-        if (!chatBtn) return;
-        const input = document.getElementById('chatBtnInput') as HTMLInputElement;
-        input.value = "";
-        setChatBtn(null);
-        setValue('paymentfile', "");
-    }
-
-    return (
-        <DialogZyx
-            open={openModal}
-            title={t(langKeys.pay)}
-            buttonText1={t(langKeys.cancel)}
-            buttonText2={t(langKeys.save)}
-            handleClickButton1={() => setOpenModal(false)}
-            handleClickButton2={onSubmit}
-            button2Type="submit"
-        >
-            <FieldEdit
-                label={t(langKeys.paymentnote)}
-                valueDefault={getValues('paymentnote')}
-                error={errors?.paymentnote?.message}
-                onChange={(value) => setValue('paymentnote', value)}
-                className="col-12"
-            />
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                <Box m={1}>
-                    <Grid container direction="row">
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <label className={classes.text}>
-                                {t(langKeys.evidenceofpayment)}
-                            </label>
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-                                <div className={classes.imgContainer}>
-                                    {chatImgUrl && <img src={chatImgUrl} alt="icon button" className={classes.img} />}
-                                </div>
-                                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
-                                    <input
-                                        accept="image/*"
-                                        style={{ display: 'none' }}
-                                        id="chatBtnInput"
-                                        type="file"
-                                        onChange={onChangeChatInput}
-                                    />
-                                    <IconButton onClick={handleChatBtnClick}>
-                                        <CloudUpload className={classes.icon} />
-                                    </IconButton>
-                                    <IconButton onClick={handleCleanChatInput}>
-                                        <Close className={classes.icon} />
-                                    </IconButton>
-                                </div>
-                            </div>
-                            <FormHelperText error={!isEmpty(errors?.paymentfile?.message)} style={{ marginLeft: 14 }}>
-                                {errors?.paymentfile?.message}
-                            </FormHelperText>
-                        </Grid>
-                    </Grid>
-                </Box>
-            </Grid>
-        </DialogZyx>
     )
 }
 

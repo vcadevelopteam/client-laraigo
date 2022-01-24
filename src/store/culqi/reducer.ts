@@ -17,11 +17,15 @@ export interface IRequest extends ITemplate {
 export interface IState {
     request: IRequest;
     requestCreateInvoice: IRequest;
+    requestCreateCreditNote: IRequest;
+    requestRegularizeInvoice: IRequest;
 }
 
 export const initialState: IState = {
     request: { ...initialCommon, data: null, loading: false, error: false },
-    requestCreateInvoice: { ...initialCommon, data: null, loading: false, error: false }
+    requestCreateInvoice: { ...initialCommon, data: null, loading: false, error: false },
+    requestCreateCreditNote: { ...initialCommon, data: null, loading: false, error: false },
+    requestRegularizeInvoice: { ...initialCommon, data: null, loading: false, error: false },
 };
 
 export default createReducer<IState>(initialState, {
@@ -49,4 +53,14 @@ export default createReducer<IState>(initialState, {
     [actionTypes.CREATE_INVOICE_FAILURE]: caseFUnctions.createInvoiceFailure,
     [actionTypes.CREATE_INVOICE_SUCCESS]: caseFUnctions.createInvoiceSuccess,
     [actionTypes.CREATE_INVOICE_RESET]: caseFUnctions.createInvoiceReset,
+
+    [actionTypes.CREATE_CREDITNOTE]: caseFUnctions.createCreditNote,
+    [actionTypes.CREATE_CREDITNOTE_FAILURE]: caseFUnctions.createCreditNoteFailure,
+    [actionTypes.CREATE_CREDITNOTE_SUCCESS]: caseFUnctions.createCreditNoteSuccess,
+    [actionTypes.CREATE_CREDITNOTE_RESET]: caseFUnctions.createCreditNoteReset,
+
+    [actionTypes.REGULARIZE_INVOICE]: caseFUnctions.regularizeInvoice,
+    [actionTypes.REGULARIZE_INVOICE_FAILURE]: caseFUnctions.regularizeInvoiceFailure,
+    [actionTypes.REGULARIZE_INVOICE_SUCCESS]: caseFUnctions.regularizeInvoiceSuccess,
+    [actionTypes.REGULARIZE_INVOICE_RESET]: caseFUnctions.regularizeInvoiceReset,
 });

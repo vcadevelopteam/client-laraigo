@@ -38,6 +38,43 @@ export const chargeReset = (state: IState): IState => ({
     request: initialState.request
 })
 
+export const createInvoice = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestCreateInvoice: {
+        ...state.requestCreateInvoice,
+        loading: true,
+        error: false
+    }
+})
+
+export const createInvoiceFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestCreateInvoice: {
+        ...state.requestCreateInvoice,
+        loading: false,
+        error: true,
+        code: action.payload.code ? action.payload.code : action.payload.message,
+        message: action.payload.message
+    }
+})
+
+export const createInvoiceSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestCreateInvoice: {
+        ...state.requestCreateInvoice,
+        loading: false,
+        error: false,
+        data: action.payload.data,
+        code: action.payload.code ? action.payload.code : action.payload.message,
+        message: action.payload.message
+    }
+})
+
+export const createInvoiceReset = (state: IState): IState => ({
+    ...state,
+    requestCreateInvoice: initialState.requestCreateInvoice
+})
+
 export const subscribe = (state: IState, action: IAction): IState => ({
     ...state,
     request: {
@@ -150,39 +187,76 @@ export const sendInvoiceReset = (state: IState): IState => ({
     request: initialState.request
 })
 
-export const createInvoice = (state: IState, action: IAction): IState => ({
+export const createCreditNote = (state: IState, action: IAction): IState => ({
     ...state,
-    request: {
-        ...state.request,
+    requestCreateCreditNote: {
+        ...state.requestCreateCreditNote,
         loading: true,
         error: false
     }
 })
 
-export const createInvoiceFailure = (state: IState, action: IAction): IState => ({
+export const createCreditNoteFailure = (state: IState, action: IAction): IState => ({
     ...state,
-    request: {
-        ...state.request,
+    requestCreateCreditNote: {
+        ...state.requestCreateCreditNote,
         loading: false,
         error: true,
-        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        code: action.payload.code ? action.payload.code : action.payload.message,
         message: action.payload.message
     }
 })
 
-export const createInvoiceSuccess = (state: IState, action: IAction): IState => ({
+export const createCreditNoteSuccess = (state: IState, action: IAction): IState => ({
     ...state,
-    request: {
-        ...state.request,
+    requestCreateCreditNote: {
+        ...state.requestCreateCreditNote,
         loading: false,
         error: false,
         data: action.payload.data,
-        code: action.payload.code,
+        code: action.payload.code ? action.payload.code : action.payload.message,
         message: action.payload.message
     }
 })
 
-export const createInvoiceReset = (state: IState): IState => ({
+export const createCreditNoteReset = (state: IState): IState => ({
     ...state,
-    request: initialState.request
+    requestCreateCreditNote: initialState.requestCreateCreditNote
+})
+
+export const regularizeInvoice = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestRegularizeInvoice: {
+        ...state.requestRegularizeInvoice,
+        loading: true,
+        error: false
+    }
+})
+
+export const regularizeInvoiceFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestRegularizeInvoice: {
+        ...state.requestRegularizeInvoice,
+        loading: false,
+        error: true,
+        code: action.payload.code ? action.payload.code : action.payload.message,
+        message: action.payload.message
+    }
+})
+
+export const regularizeInvoiceSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestRegularizeInvoice: {
+        ...state.requestRegularizeInvoice,
+        loading: false,
+        error: false,
+        data: action.payload.data,
+        code: action.payload.code ? action.payload.code : action.payload.message,
+        message: action.payload.message
+    }
+})
+
+export const regularizeInvoiceReset = (state: IState): IState => ({
+    ...state,
+    requestRegularizeInvoice: initialState.requestRegularizeInvoice
 })
