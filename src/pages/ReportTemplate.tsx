@@ -695,7 +695,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
 
                         <div style={{ flex: 1 }} className={classes.containerDetail}>
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <div className={classes.title}>{"Resumen"}</div>
+                                <div className={classes.title}>{t(langKeys.summarization)}</div>
                             </div>
                             <div>
                                 <TableContainer>
@@ -716,7 +716,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                     </IconButton>
                                                 </TableCell>
                                                 <TableCell>{t(langKeys.column)}</TableCell>
-                                                <TableCell>{t(langKeys.description)}</TableCell>
+                                                <TableCell>{t(langKeys.function)}</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
@@ -754,7 +754,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                     </TableCell>
                                                     <TableCell>
                                                         <FieldSelect
-                                                            label={t(langKeys.column)}
+                                                            label={t(langKeys.function)}
                                                             valueDefault={getValues(`summary.${i}.function`)}
                                                             fregister={{
                                                                 ...register(`summary.${i}.function`, {

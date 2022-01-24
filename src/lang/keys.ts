@@ -1145,6 +1145,8 @@ export const langKeys = {
     hour: 'hour',
     clean: 'clean',
     column: 'column',
+    function: 'function',
+    summarization: 'summarization',
     select_column_plural: 'select_column_plural',
     field: 'field',
     missing_header: 'missing_header',

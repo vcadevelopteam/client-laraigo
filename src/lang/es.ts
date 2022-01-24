@@ -935,6 +935,8 @@ const translation: LangKeys = {
     hour: 'Hora',
     clean: 'Limpiar',
     column: 'Columna',
+    function: 'Función',
+    summarization: 'Sumarización',
     select_column_plural: 'Seleccione columnas',
     field: 'Campo',
     missing_header: 'Falta cabecera',

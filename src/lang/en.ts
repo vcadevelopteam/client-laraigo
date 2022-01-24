@@ -828,6 +828,8 @@ const translation: LangKeys = {
     hour: 'Hour',
     clean: 'Clean',
     column: 'Column',
+    function: 'Function',
+    summarization: 'Summarization',
     select_column_plural: 'Select columns',
     field: 'Field',
     missing_header: 'Missing header',
