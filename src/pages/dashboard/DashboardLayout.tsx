@@ -1,6 +1,6 @@
 import { FC, useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { Box, Button, Card, CircularProgress, IconButton, makeStyles, Menu, MenuItem, Tooltip } from "@material-ui/core";
-import { Clear as ClearIcon, SwapHoriz as SwapHorizIcon, MoreVert as MoreVertIcon } from "@material-ui/icons";
+import { Clear as ClearIcon, SwapHoriz as SwapHorizIcon, MoreVert as MoreVertIcon, Search as SearchIcon } from "@material-ui/icons";
 import { useDispatch } from "react-redux";
 import { deleteDashboardTemplate, getDashboard, getDashboardTemplate, resetDeleteDashboardTemplate, resetGetDashboard, resetGetDashboardTemplate, resetSaveDashboardTemplate, saveDashboardTemplate } from "store/dashboard/actions";
 import { useSelector } from "hooks";
@@ -52,6 +52,15 @@ const useDashboardLayoutStyles = makeStyles(theme => ({
     layout: {
         backgroundColor: 'inherit',
         width: '100%',
+    },
+    filtersContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'left',
+        backgroundColor: 'white',
+        padding: theme.spacing(1),
+        gap: theme.spacing(1),
     },
 }));
 
@@ -298,21 +307,6 @@ const DashboardLayout: FC = () => {
             <div className={classes.header}>
                 <TitleDetail title={description} />
                 <div style={{ flexGrow: 1 }} />
-                <DateRangePicker
-                    open={openDatePicker}
-                    setOpen={setOpenDatePicker}
-                    range={dateRange}
-                    onSelect={setDateRange}
-                    disabled={dashboardSave.loading || dashboardtemplate.loading || !dashboardtemplate.value}
-                >
-                    <Button
-                        style={{ border: '1px solid #bfbfc0', borderRadius: 4, color: 'rgb(143, 146, 161)' }}
-                        startIcon={<CalendarIcon />}
-                        onClick={() => setOpenDatePicker(prev => !prev)}
-                    >
-                        {format(dateRange.startDate!) + " - " + format(dateRange.endDate!)}
-                    </Button>
-                </DateRangePicker>
                 <Button
                     variant="contained"
                     type="button"
@@ -362,6 +356,34 @@ const DashboardLayout: FC = () => {
                 </Button> */}
             </div>
             <div style={{ height: '1em' }} />
+            <div className={classes.filtersContainer}>
+                <DateRangePicker
+                    open={openDatePicker}
+                    setOpen={setOpenDatePicker}
+                    range={dateRange}
+                    onSelect={setDateRange}
+                    disabled={dashboardSave.loading || dashboardtemplate.loading || !dashboardtemplate.value}
+                >
+                    <Button
+                        style={{ border: '1px solid #bfbfc0', borderRadius: 4, color: 'rgb(143, 146, 161)' }}
+                        startIcon={<CalendarIcon />}
+                        onClick={() => setOpenDatePicker(prev => !prev)}
+                    >
+                        {format(dateRange.startDate!) + " - " + format(dateRange.endDate!)}
+                    </Button>
+                </DateRangePicker>
+                <Button
+                    disabled={dashboardSave.loading || dashboardtemplate.loading || !dashboardtemplate.value}
+                    variant="contained"
+                    color="primary"
+                    startIcon={<SearchIcon style={{ color: 'white' }} />}
+                    style={{ backgroundColor: '#55BD84', width: 120 }}
+                    onClick={() => {}}
+                >
+                    <Trans i18nKey={langKeys.search} />
+                </Button>
+            </div>
+            <div style={{ height: '0.5em' }} />
             <ReactGridLayout
                 className={classes.layout}
                 layout={layout.layout}
