@@ -272,6 +272,14 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
         })));
     }, [edit, dashboardtemplate, layout, getValues, dispatch]);
 
+    const validMultiMainData = () => {
+        return (
+            !reportTemplatesAndKpis.loading &&
+            reportTemplatesAndKpis.data[0]?.key === "UFN_REPORTTEMPLATE_SEL" &&
+            reportTemplatesAndKpis.data[1]?.key === "UFN_KPI_LST"
+        );
+    }
+
     if (edit === true && (dashboardtemplate.loading || !dashboardtemplate.value)) {
         return <CenterLoading />;
     }
@@ -320,8 +328,7 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 </Button>
             </div>
             <div style={{ height: '1em' }} />
-            {(reportTemplatesAndKpis.data[0]?.key === "UFN_REPORTTEMPLATE_SEL" &&
-            reportTemplatesAndKpis.data[1]?.key === "UFN_KPI_LST") && (
+            {!validMultiMainData() ? <CenterLoading /> : (
                 <ReactGridLayout
                     className={classes.layout}
                     layout={layout}
@@ -547,10 +554,10 @@ export const LayoutItem: FC<LayoutItemProps> = ({
         if (contentType === "report") {
             unregister(`${key}.kpiid`);
 
-            register(`${key}.reporttemplateid`, { validate: mandatoryNumField, value: getValues(`${key}.reporttemplateid`) || 0 });
+            register(`${key}.reporttemplateid`, { validate: mandatoryReportTemplate, value: getValues(`${key}.reporttemplateid`) || 0 });
             register(`${key}.grouping`, { validate: mandatoryStrField, value: getValues(`${key}.grouping`) || '' });
             register(`${key}.graph`, { validate: mandatoryStrField, value: getValues(`${key}.graph`) || '' });
-            register(`${key}.column`, { validate: mandatoryStrField, value: getValues(`${key}.column`) || '' });
+            register(`${key}.column`, { validate: mandatoryColumn, value: getValues(`${key}.column`) || '' });
         } else if (contentType === "kpi") {
             unregister(`${key}.reporttemplateid`);
             unregister(`${key}.grouping`);
@@ -559,7 +566,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
 
             register(`${key}.kpiid`, { validate: mandatoryNumField, value: getValues(`${key}.kpiid`) || 0 });
         }
-    }, [contentType]);
+    }, [contentType, columns, templates]);
 
     useEffect(() => {
         if (selectedIndex === -1) {
@@ -568,6 +575,26 @@ export const LayoutItem: FC<LayoutItemProps> = ({
         }
         setColumns(JSON.parse(templates[selectedIndex].columnjson) as ColumnTemplate[]);
     }, [selectedIndex, templates]);
+
+    const mandatoryReportTemplate = (value: number) => {
+        if (value === 0 || !templates.some(x => x.reporttemplateid === value)) {
+            return t(langKeys.field_required)
+        }
+
+        return undefined;
+    }
+
+    const mandatoryColumn = (value: string) => {
+        if (
+            !value ||
+            value.length === 0 ||
+            !columns.some(x => x.columnname === value)
+        ) {
+            return t(langKeys.field_required);
+        }
+
+        return  undefined;
+    }
 
     const mandatoryContentType = (value: string) => {
         if (!value || value.length === 0) {
@@ -684,7 +711,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                         optionValue="columnname"
                         valueDefault={getValues(`${key}.column`)}
                         onChange={(v: ColumnTemplate) => {
-                            console.log('column', v);
+                            // console.log('column', v);
                             setValue(`${key}.column`, v?.columnname || '');
                         }}
                         error={errors[key]?.column?.message}

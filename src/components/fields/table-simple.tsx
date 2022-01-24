@@ -367,7 +367,8 @@ const TableZyx = React.memo(({
                 filter: {
                     [header]: {
                         value: filter.value,
-                        operator: filter.operator
+                        operator: filter.operator,
+                        type: filter.type
                     }
                 }
             }));
@@ -510,7 +511,7 @@ const TableZyx = React.memo(({
     const filterCellValue = React.useCallback((rows, id, filterValue) => {
         const { value, operator, type } = filterValue;
         return rows.filter((row: any) => {
-            const cellvalue = row.values[id] || "";
+            const cellvalue = row.values[id] === null || row.values[id] === undefined ? "" : row.values[id];
             // if (cellvalue === undefined)
             //     return false;
 
