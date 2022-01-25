@@ -2397,7 +2397,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const handleView = (row: Dictionary) => {
         if (row.invoicestatus === 'DRAFT' && row.paymentstatus === 'NONE') {
             setViewSelected("view-3");
-            setRowSelected(row);
+            setRowSelected({ row: row, edit: true });
         }
         else {
             setViewSelected("view-2");
@@ -3201,15 +3201,15 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
 
     useEffect(() => {
         if (waitLoad) {
-            if (data) {
-                dispatch(getMultiCollectionAux([getInvoiceDetail(data.corpid, data.orgid, data.invoiceid)]));
+            if (data?.row) {
+                dispatch(getMultiCollectionAux([getInvoiceDetail(data?.row.corpid, data?.row.orgid, data?.row.invoiceid)]));
 
-                setValue('invoicecurrency', data.currency);
-                setValue('invoicepurchaseorder', data.purchaseorder);
-                setValue('invoicecomments', data.comments);
+                setValue('invoicecurrency', data?.row.currency);
+                setValue('invoicepurchaseorder', data?.row.purchaseorder);
+                setValue('invoicecomments', data?.row.comments);
 
-                if (data.orgid) {
-                    var corporationdata = corpList.data.find((x: { corpid: any; }) => x.corpid === data.corpid);
+                if (data?.row.orgid) {
+                    var corporationdata = corpList.data.find((x: { corpid: any; }) => x.corpid === data?.row.corpid);
 
                     dispatch(getMultiCollectionAux([getOrgSel(0, corporationdata.corpid)]));
                     setValue('billbyorg', corporationdata?.billbyorg);
@@ -3219,7 +3219,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                 else {
                     if (corpList) {
                         if (corpList.data) {
-                            var corporationdata = corpList.data.find((x: { corpid: any; }) => x.corpid === data.corpid);
+                            var corporationdata = corpList.data.find((x: { corpid: any; }) => x.corpid === data?.row.corpid);
                             
                             setSubmitData(corporationdata);
                             setValue('billbyorg', corporationdata?.billbyorg);
@@ -3235,8 +3235,8 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
         if (waitLoad && waitOrgLoad) {
             setWaitOrg(false);
 
-            if (data) {
-                var organizationdata = orgList.data.find((x: { orgid: any; }) => x.orgid === data.orgid);
+            if (data?.row) {
+                var organizationdata = orgList.data.find((x: { orgid: any; }) => x.orgid === data?.row.orgid);
 
                 if (organizationdata) {
                     setSubmitData(organizationdata);
@@ -3249,20 +3249,27 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
     }, [waitOrg, waitOrgLoad]);
 
     useEffect(() => {
-        if (productList) {
-            if (productList.data) {
-                productList.data.forEach((element: { description: any; productcode: any; measureunit: any; quantity: any; productprice: any; }) => {
-                    fieldsAppend({
-                        productdescription: element.description,
-                        productcode: element.productcode,
-                        productmeasure: element.measureunit,
-                        productquantity: element.quantity,
-                        productsubtotal: element.productprice,
-                    })
-                });
-
-                onProductChange();
+        if (data?.row) {
+            if (productList) {
+                if (productList.data) {
+                    setValue('productdetail', []);
+                    
+                    productList.data.forEach((element: { description: any; productcode: any; measureunit: any; quantity: any; productprice: any; }) => {
+                        fieldsAppend({
+                            productdescription: element.description,
+                            productcode: element.productcode,
+                            productmeasure: element.measureunit,
+                            productquantity: element.quantity,
+                            productsubtotal: element.productprice,
+                        })
+                    });
+    
+                    onProductChange();
+                }
             }
+        }
+        else {
+            setValue('productdetail', []);
         }
     }, [productList]);
 
@@ -3321,7 +3328,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
             productdetail: [],
             billbyorg: false,
             onlyinsert: false,
-            invoiceid: data ? data.invoiceid : 0,
+            invoiceid: data?.row ? data?.row.invoiceid : 0,
         }
     });
 
