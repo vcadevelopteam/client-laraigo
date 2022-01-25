@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { cleanMemoryTable, setMemoryTable } from 'store/main/actions';
 import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx, FieldEditArray, TemplateIcons } from 'components';
-import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, invoiceRefreshTest, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain } from 'common/helpers';
+import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, invoiceRefreshTest, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -44,6 +44,7 @@ import clsx from 'clsx';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import DeleteIcon from '@material-ui/icons/Delete';
+import { stringify } from 'querystring';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -2396,7 +2397,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const handleView = (row: Dictionary) => {
         if (row.invoicestatus === 'DRAFT' && row.paymentstatus === 'NONE') {
             setViewSelected("view-3");
-            setRowSelected(row);
+            setRowSelected({ row: row, edit: true });
         }
         else {
             setViewSelected("view-2");
@@ -2730,7 +2731,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                             </Button>
                             ) : null
                         }
-                        { (data?.invoicestatus !== 'INVOICED' && data?.paymentstatus === 'PENDING' && regularize) ? (
+                        { (data?.invoicestatus === 'INVOICED' && data?.paymentstatus !== 'PAID' && regularize) ? (
                             <Button
                                 className={classes.button}
                                 variant="contained"
@@ -3035,6 +3036,7 @@ const RegularizeModal: FC<{ data: any, openModal: boolean, setOpenModal: (param:
                 dispatch(showSnackbar({ show: true, success: true, message: t(culqiResult.code || "success") }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
+                onTrigger();
             }
             else if (culqiResult.error) {
                 dispatch(showSnackbar({ show: true, success: false, message: t(culqiResult.code || "error_unexpected_db_error") }))
@@ -3061,15 +3063,12 @@ const RegularizeModal: FC<{ data: any, openModal: boolean, setOpenModal: (param:
 
             return null;
         } catch (error) {
-            console.error(error);
-
             return null;
         }
     }
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
-            console.log(JSON.stringify(data));
             dispatch(regularizeInvoice(data));
             dispatch(showBackdrop(true));
             setWaitSave(true);
@@ -3179,8 +3178,12 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
     const [corpList, setCorpList] = useState<any>([]);
     const [orgList, setOrgList] = useState<any>([]);
     const [measureList, setMeasureList] = useState<any>([]);
+    const [productList, setProductList] = useState<any>([]);
     const [savedCorp, setSavedCorp] = useState<any>();
     const [waitSave, setWaitSave] = useState(false);
+    const [waitLoad, setWaitLoad] = useState(false);
+    const [waitOrgLoad, setWaitOrgLoad] = useState(false);
+    const [waitOrg, setWaitOrg] = useState(false);
 
     const invocesBread = [
         { id: "view-1", name: t(langKeys.billingtitle) },
@@ -3192,21 +3195,99 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
         setCorpList({ loading: true, data: [] });
         setMeasureList({ loading: true, data: [] });
         setOrgList({ loading: false, data: [] });
+        setProductList({ loading: false, data: [] });
 
         dispatch(getMultiCollectionAux([getCorpSel(0), getMeasureUnit(), getValuesFromDomain("TYPECREDIT")]));
     }, [])
+
+    useEffect(() => {
+        if (waitLoad) {
+            if (data?.row) {
+                dispatch(getMultiCollectionAux([getInvoiceDetail(data?.row.corpid, data?.row.orgid, data?.row.invoiceid)]));
+
+                setValue('invoicecurrency', data?.row.currency);
+                setValue('invoicepurchaseorder', data?.row.purchaseorder);
+                setValue('invoicecomments', data?.row.comments);
+
+                if (data?.row.orgid) {
+                    var corporationdata = corpList.data.find((x: { corpid: any; }) => x.corpid === data?.row.corpid);
+
+                    dispatch(getMultiCollectionAux([getOrgSel(0, corporationdata.corpid)]));
+                    setValue('billbyorg', corporationdata?.billbyorg);
+                    setSavedCorp(corporationdata);
+                    setWaitOrg(true);
+                }
+                else {
+                    if (corpList) {
+                        if (corpList.data) {
+                            var corporationdata = corpList.data.find((x: { corpid: any; }) => x.corpid === data?.row.corpid);
+                            
+                            setSubmitData(corporationdata);
+                            setValue('billbyorg', corporationdata?.billbyorg);
+                            setSavedCorp(null);
+                        }
+                    }
+                }
+            }
+        }
+    }, [waitLoad]);
+
+    useEffect(() => {
+        if (waitLoad && waitOrgLoad) {
+            setWaitOrg(false);
+
+            if (data?.row) {
+                var organizationdata = orgList.data.find((x: { orgid: any; }) => x.orgid === data?.row.orgid);
+
+                if (organizationdata) {
+                    setSubmitData(organizationdata);
+                }
+                else {
+                    setSubmitData(savedCorp);
+                }
+            }
+        }
+    }, [waitOrg, waitOrgLoad]);
+
+    useEffect(() => {
+        setValue('productdetail', []);
+
+        if (data?.row) {
+            if (productList) {
+                if (productList.data) {
+                    var productInformationList: Partial<unknown> [] = [];
+
+                    productList.data.forEach((element: { description: any; productcode: any; measureunit: any; quantity: any; productprice: any; }) => {
+                        productInformationList.push({
+                            productdescription: element.description,
+                            productcode: element.productcode,
+                            productmeasure: element.measureunit,
+                            productquantity: element.quantity,
+                            productsubtotal: element.productprice,
+                        })
+                    });
+
+                    fieldsAppend(productInformationList);
+
+                    onProductChange();
+                }
+            }
+        }
+    }, [productList]);
 
     useEffect(() => {
         const indexCorp = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_CORP_SEL'));
 
         if (indexCorp > -1) {
             setCorpList({ loading: false, data: multiResult.data[indexCorp] && multiResult.data[indexCorp].success ? multiResult.data[indexCorp].data : [] });
+            setWaitLoad(true);
         }
 
         const indexOrg = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_ORG_SEL'));
 
         if (indexOrg > -1) {
             setOrgList({ loading: false, data: multiResult.data[indexOrg] && multiResult.data[indexOrg].success ? multiResult.data[indexOrg].data : [] });
+            setWaitOrgLoad(true);
         }
 
         const indexMeasure = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_MEASUREUNIT_SEL'));
@@ -3219,6 +3300,12 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
 
         if (indexCreditType > -1) {
             setCreditTypeList({ loading: false, data: multiResult.data[indexCreditType] && multiResult.data[indexCreditType].success ? multiResult.data[indexCreditType].data : [] });
+        }
+
+        const indexProduct = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_INVOICEDETAIL_SELBYINVOICEID'));
+
+        if (indexProduct > -1) {
+            setProductList({ loading: false, data: multiResult.data[indexProduct] && multiResult.data[indexProduct].success ? multiResult.data[indexProduct].data : [] });
         }
     }, [multiResult]);
 
@@ -3243,6 +3330,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
             productdetail: [],
             billbyorg: false,
             onlyinsert: false,
+            invoiceid: data?.row ? data?.row.invoiceid : 0,
         }
     });
 
@@ -3506,7 +3594,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             loading={corpList.loading}
                             onChange={(value) => { onCorpChange(value); }}
                             className="col-6"
-                            valueDefault={0}
+                            valueDefault={getValues('corpid')}
                             data={corpList.data}
                             optionDesc="description"
                             optionValue="corpid"
@@ -3517,7 +3605,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             loading={orgList.loading}
                             onChange={(value) => { onOrgChange(value); }}
                             className="col-6"
-                            valueDefault={0}
+                            valueDefault={getValues('orgid')}
                             data={orgList.data}
                             optionDesc="orgdesc"
                             optionValue="orgid"
