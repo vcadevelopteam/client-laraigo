@@ -20,7 +20,7 @@ const APIS_URL = {
     },
     PRODUCTION: {
         API: 'https://apiprd.laraigo.com/api',
-        WS: 'https://broker.laraigo.com',
+        WS: 'https://broker.lara<igo.com',
         CHATFLOW: 'https://chatflow.s3-web.us-east.cloud-object-storage.appdomain.cloud',
         FACEBOOKAPP: '1980305408682607',
         INSTAGRAMAPP: '1924971937716955',

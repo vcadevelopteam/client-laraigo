@@ -668,13 +668,15 @@ const TableZyx = React.memo(({
         }
     )
     useEffect(() => {
-        if (initial) {
-            gotoPage(initialPageIndex);
-            setInitial(false)
-        } else {
-            dispatch(setMemoryTable({
-                page: 0
-            }));
+        if (initialStateFilter) {
+            if (initial) {
+                gotoPage(initialPageIndex);
+                setInitial(false)
+            } else {
+                dispatch(setMemoryTable({
+                    page: 0
+                }));
+            }
         }
     }, [data])
 
