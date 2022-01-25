@@ -2731,7 +2731,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                             </Button>
                             ) : null
                         }
-                        { (data?.invoicestatus !== 'INVOICED' && data?.paymentstatus === 'PENDING' && regularize) ? (
+                        { (data?.invoicestatus === 'INVOICED' && data?.paymentstatus !== 'PAID' && regularize) ? (
                             <Button
                                 className={classes.button}
                                 variant="contained"
@@ -3036,6 +3036,7 @@ const RegularizeModal: FC<{ data: any, openModal: boolean, setOpenModal: (param:
                 dispatch(showSnackbar({ show: true, success: true, message: t(culqiResult.code || "success") }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
+                onTrigger();
             }
             else if (culqiResult.error) {
                 dispatch(showSnackbar({ show: true, success: false, message: t(culqiResult.code || "error_unexpected_db_error") }))
@@ -3249,13 +3250,15 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
     }, [waitOrg, waitOrgLoad]);
 
     useEffect(() => {
+        setValue('productdetail', []);
+
         if (data?.row) {
             if (productList) {
                 if (productList.data) {
-                    setValue('productdetail', []);
-                    
+                    var productInformationList: Partial<unknown> [] = [];
+
                     productList.data.forEach((element: { description: any; productcode: any; measureunit: any; quantity: any; productprice: any; }) => {
-                        fieldsAppend({
+                        productInformationList.push({
                             productdescription: element.description,
                             productcode: element.productcode,
                             productmeasure: element.measureunit,
@@ -3263,13 +3266,12 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             productsubtotal: element.productprice,
                         })
                     });
-    
+
+                    fieldsAppend(productInformationList);
+
                     onProductChange();
                 }
             }
-        }
-        else {
-            setValue('productdetail', []);
         }
     }, [productList]);
 
