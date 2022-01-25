@@ -2776,6 +2776,7 @@ const translation: LangKeys = {
     invoicenotfound: 'Invoice not found',
     saveasdraft: 'Save Draft',
     deleteinvoicesuccess: 'Invoice deleted successfully',
+    field_required_shorter: '10 characters minimum',
 };
 
 const enResource: ResourceLanguage = {

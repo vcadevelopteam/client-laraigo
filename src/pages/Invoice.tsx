@@ -2612,7 +2612,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
         register('orgid');
         register('invoiceid', { validate: (value) => (value && value > 0) || "" + t(langKeys.field_required) });
         register('creditnotetype', { validate: (value) => (regularize || (value && value.length > 0)) || "" + t(langKeys.field_required) });
-        register('creditnotemotive', { validate: (value) => (regularize || (value && value.length > 10)) || "" + t(langKeys.field_required) });
+        register('creditnotemotive', { validate: (value) => (regularize || (value && value.length > 10)) || "" + t(langKeys.field_required_shorter) });
         register('creditnotediscount', { validate: (value) => (regularize || ((getValues('creditnotetype') !== '04') || (value && value > 0 && value < data?.totalamount))) || "" + t(langKeys.field_required) });
     }, [register]);
 
@@ -2731,7 +2731,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                             </Button>
                             ) : null
                         }
-                        { (data?.invoicestatus === 'INVOICED' && data?.paymentstatus !== 'PAID' && regularize) ? (
+                        { (data?.invoicestatus === 'INVOICED' && data?.paymentstatus !== 'PAID' && data?.invoicetype !== '07' && regularize) ? (
                             <Button
                                 className={classes.button}
                                 variant="contained"
@@ -3257,13 +3257,13 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                 if (productList.data) {
                     var productInformationList: Partial<unknown> [] = [];
 
-                    productList.data.forEach((element: { description: any; productcode: any; measureunit: any; quantity: any; productprice: any; }) => {
+                    productList.data.forEach((element: { description: any; productcode: any; measureunit: any; quantity: any; netamount: any; }) => {
                         productInformationList.push({
                             productdescription: element.description,
                             productcode: element.productcode,
                             productmeasure: element.measureunit,
                             productquantity: element.quantity,
-                            productsubtotal: element.productprice,
+                            productsubtotal: element.netamount,
                         })
                     });
 
@@ -3353,8 +3353,8 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
         register('invoiceduedate');
         register('invoicecurrency', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('invoicetotalamount', { validate: (value) => (value && value > 0) || "" + t(langKeys.billingamountvalidation) });
-        register('invoicepurchaseorder', { validate: (value) => (value && value.length <= 15) || "" + t(langKeys.validation15char) });
-        register('invoicecomments', { validate: (value) => (value && value.length <= 150) || "" + t(langKeys.validation150char) });
+        register('invoicepurchaseorder', { validate: (value) => (value === '' || value.length <= 15) || "" + t(langKeys.validation15char) });
+        register('invoicecomments', { validate: (value) => (value === '' || value.length <= 150) || "" + t(langKeys.validation150char) });
         register('autosendinvoice');
     }, [register]);
 

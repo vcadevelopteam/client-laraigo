@@ -2764,6 +2764,7 @@ const translation: LangKeys = {
     invoicenotfound: 'No se pudo encontrar la factura',
     saveasdraft: 'Guardar Borrador',
     deleteinvoicesuccess: 'Factura eliminada correctamente',
+    field_required_shorter: 'Minimo 10 caracteres',
 };
 
 const esResource: ResourceLanguage = {
