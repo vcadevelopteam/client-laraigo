@@ -2765,6 +2765,7 @@ export const langKeys = {
     invoicenotfound: 'invoicenotfound',
     saveasdraft: 'saveasdraft',
     deleteinvoicesuccess: 'deleteinvoicesuccess',
+    field_required_shorter: 'field_required_shorter',
 };
 
 export type LangKeys = typeof langKeys;
