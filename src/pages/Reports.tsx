@@ -595,7 +595,7 @@ const ReportConversationWhatsapp: FC = () => {
                 Cell: (props: any) => {
                     const { conversationstart } = props.cell.row.original;
                     return (
-                        <div>{new Date(conversationstart).toLocaleString()}</div>
+                        <div>{conversationstart ? new Date(conversationstart).toLocaleString() : ''}</div>
                     )
                 }
             },
@@ -605,7 +605,7 @@ const ReportConversationWhatsapp: FC = () => {
                 Cell: (props: any) => {
                     const { conversationend } = props.cell.row.original;
                     return (
-                        <div>{new Date(conversationend).toLocaleString()}</div>
+                        <div>{conversationend ? new Date(conversationend).toLocaleString() : ''}</div>
                     )
                 }
             },
