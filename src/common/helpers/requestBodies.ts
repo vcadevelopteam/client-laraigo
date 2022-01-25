@@ -2572,3 +2572,9 @@ export const getConversationsWhatsapp = (): IRequestBody => ({
     key: "QUERY_GET_CONVERSATION_WHATSAPP",
     parameters: { },
 });
+
+export const getInvoiceDetail = (corpid: number, orgid: number, invoiceid: number): IRequestBody => ({
+    method: "UFN_INVOICEDETAIL_SELBYINVOICEID",
+    key: "UFN_INVOICEDETAIL_SELBYINVOICEID",
+    parameters: { corpid, orgid, invoiceid },
+});

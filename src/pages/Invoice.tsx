@@ -44,6 +44,7 @@ import clsx from 'clsx';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import DeleteIcon from '@material-ui/icons/Delete';
+import { stringify } from 'querystring';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -3061,15 +3062,12 @@ const RegularizeModal: FC<{ data: any, openModal: boolean, setOpenModal: (param:
 
             return null;
         } catch (error) {
-            console.error(error);
-
             return null;
         }
     }
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
-            console.log(JSON.stringify(data));
             dispatch(regularizeInvoice(data));
             dispatch(showBackdrop(true));
             setWaitSave(true);
@@ -3181,6 +3179,11 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
     const [measureList, setMeasureList] = useState<any>([]);
     const [savedCorp, setSavedCorp] = useState<any>();
     const [waitSave, setWaitSave] = useState(false);
+    const [waitLoad, setWaitLoad] = useState(false);
+    const [waitOrgLoad, setWaitOrgLoad] = useState(false);
+    const [waitOrg, setWaitOrg] = useState(false);
+
+
 
     const invocesBread = [
         { id: "view-1", name: t(langKeys.billingtitle) },
@@ -3197,16 +3200,61 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
     }, [])
 
     useEffect(() => {
+        if (waitLoad) {
+            if (data) {
+                if (data.orgid) {
+                    var corporationdata = corpList.data.find((x: { corpid: any; }) => x.corpid === data.corpid);
+
+                    dispatch(getMultiCollectionAux([getOrgSel(0, corporationdata.corpid)]));
+                    setValue('billbyorg', corporationdata?.billbyorg);
+                    setSavedCorp(corporationdata);
+                    setWaitOrg(true);
+                }
+                else {
+                    if (corpList) {
+                        if (corpList.data) {
+                            var corporationdata = corpList.data.find((x: { corpid: any; }) => x.corpid === data.corpid);
+                            
+                            setSubmitData(corporationdata);
+                            setValue('billbyorg', corporationdata?.billbyorg);
+                            setSavedCorp(null);
+                        }
+                    }
+                }
+            }
+        }
+    }, [waitLoad]);
+
+    useEffect(() => {
+        if (waitLoad && waitOrgLoad) {
+            setWaitOrg(false);
+
+            if (data) {
+                var organizationdata = orgList.data.find((x: { orgid: any; }) => x.orgid === data.orgid);
+
+                if (organizationdata) {
+                    setSubmitData(organizationdata);
+                }
+                else {
+                    setSubmitData(savedCorp);
+                }
+            }
+        }
+    }, [waitOrg, waitOrgLoad]);
+
+    useEffect(() => {
         const indexCorp = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_CORP_SEL'));
 
         if (indexCorp > -1) {
             setCorpList({ loading: false, data: multiResult.data[indexCorp] && multiResult.data[indexCorp].success ? multiResult.data[indexCorp].data : [] });
+            setWaitLoad(true);
         }
 
         const indexOrg = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_ORG_SEL'));
 
         if (indexOrg > -1) {
             setOrgList({ loading: false, data: multiResult.data[indexOrg] && multiResult.data[indexOrg].success ? multiResult.data[indexOrg].data : [] });
+            setWaitOrgLoad(true);
         }
 
         const indexMeasure = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_MEASUREUNIT_SEL'));
@@ -3243,6 +3291,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
             productdetail: [],
             billbyorg: false,
             onlyinsert: false,
+            invoiceid: 0,
         }
     });
 
@@ -3506,7 +3555,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             loading={corpList.loading}
                             onChange={(value) => { onCorpChange(value); }}
                             className="col-6"
-                            valueDefault={0}
+                            valueDefault={getValues('corpid')}
                             data={corpList.data}
                             optionDesc="description"
                             optionValue="corpid"
@@ -3517,7 +3566,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             loading={orgList.loading}
                             onChange={(value) => { onOrgChange(value); }}
                             className="col-6"
-                            valueDefault={0}
+                            valueDefault={getValues('orgid')}
                             data={orgList.data}
                             optionDesc="orgdesc"
                             optionValue="orgid"
