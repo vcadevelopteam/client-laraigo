@@ -170,7 +170,7 @@ const PersonalInformation: React.FC<DetailProps> = ({ setViewSelected }) => {
                     </div>
                     <div className="col-6" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                         <FieldEdit
-                            label={t(langKeys.lastname)}
+                            label={t(langKeys.ticket_lastname)}
                             className="col-6"
                             onChange={(value) => setValue('lastname', value)}
                             valueDefault={user?.lastname || ""}
@@ -562,6 +562,7 @@ const UserSettings: FC = () => {
             dispatch(manageConfirmation({
                 visible: true,
                 question: t(langKeys.cancelsuscriptionconfirmation),
+                textCancel: t(langKeys.back),
                 callback
             }))
         } else {

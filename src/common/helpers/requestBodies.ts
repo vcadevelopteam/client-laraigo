@@ -2566,3 +2566,9 @@ export const getMeasureUnit = (): IRequestBody => ({
     key: "UFN_MEASUREUNIT_SEL",
     parameters: { },
 });
+
+export const getConversationsWhatsapp = (): IRequestBody => ({
+    method: "QUERY_GET_CONVERSATION_WHATSAPP",
+    key: "QUERY_GET_CONVERSATION_WHATSAPP",
+    parameters: { },
+});
