@@ -11,7 +11,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import TableZyx from '../components/fields/table-simple';
 import Typography from '@material-ui/core/Typography';
 import { cleanMemoryTable, setMemoryTable } from 'store/main/actions';
-import { Box } from '@material-ui/core';
+import { Box, CircularProgress } from '@material-ui/core';
 import { Dictionary, MultiData } from '@types';
 import { FieldEdit, FieldEditArray, FieldSelect, FieldView, TemplateBreadcrumbs, TemplateSwitchArray, TitleDetail } from 'components';
 
@@ -24,6 +24,7 @@ import { useDispatch } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useSelector } from 'hooks';
 import { useTranslation } from 'react-i18next';
+import { CirclePicker } from 'react-color';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -638,8 +639,12 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
                     }
                 </div>
 
-                <div>
-                    {fields.map((item, index) => (
+                <div style={{ marginTop: 12 }}>
+                    {detailResult.loading ? (
+                        <div style={{ width: '100%', height: 500, display: 'grid', placeItems: 'center' }} >
+                            <CircularProgress />
+                        </div>
+                    ) : fields.map((item, index) => (
                         <DetailNivelProperty
                             data={{ row: item, edit }}
                             index={index}
@@ -714,6 +719,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                                     }
                                 })
                             }}*/
+                            style={{ marginBottom: 0 }}
                             label={t(langKeys.value)}
                             onChange={(value) => setValue(`table.${index}.propertyvalue`, (value ? '1' : '0'))}
                             defaultValue={row ? (row.propertyvalue === '1' ? row.propertyvalue : false) : false}
@@ -874,8 +880,8 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
             </AccordionSummary>
             <AccordionDetails>
                 <div style={{ width: '100%' }}>
-                    <div className='row-zyx'>
-                        <div className='col-6'>
+                    <div className='row-zyx mb-0'>
+                        <div className='col-6 mb-0'>
                             {edit ?
                                 <FieldEdit
                                     className={classes.mb2}
@@ -891,7 +897,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                             }
                             {valueInput}
                         </div>
-                        <div className='col-6'>
+                        <div className='col-6 mb-0'>
                             {row?.level !== 'CORPORATION' &&
                                 <FieldEdit
                                     className={classes.mb2}

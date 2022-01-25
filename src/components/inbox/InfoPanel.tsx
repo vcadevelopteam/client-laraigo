@@ -506,7 +506,7 @@ const Variables: React.FC = () => {
     return (
         <div className={`scroll-style-go ${classes.containerInfoClient}`} style={{ overflowY: 'auto', flex: 1, backgroundColor: 'transparent' }}>
 
-            {variablecontext && !(variablecontext instanceof Array) && configurationVariables.map(({ fontbold, fontcolor, variable }, index) => {
+            {variablecontext && !(variablecontext instanceof Array) && configurationVariables.map(({ fontbold, fontcolor, variable, description }, index) => {
                 const variabletmp = variablecontext[variable];
                 if (!variabletmp?.Value) {
                     return null;
@@ -514,7 +514,7 @@ const Variables: React.FC = () => {
                 return (
                     <div key={index} className={classes.containerName}>
                         <div style={{ fontWeight: fontbold ? 'bold' : 'normal' }}>
-                            <div className={classes.label}>{variable}</div>
+                            <div className={classes.label}>{description}</div>
                             <div style={{ color: fontcolor }}>{variabletmp?.Value || '-'}</div>
                         </div>
                     </div>
