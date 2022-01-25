@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { cleanMemoryTable, setMemoryTable } from 'store/main/actions';
 import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx, FieldEditArray, TemplateIcons } from 'components';
-import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, invoiceRefreshTest, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain } from 'common/helpers';
+import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, invoiceRefreshTest, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -3177,13 +3177,12 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
     const [corpList, setCorpList] = useState<any>([]);
     const [orgList, setOrgList] = useState<any>([]);
     const [measureList, setMeasureList] = useState<any>([]);
+    const [productList, setProductList] = useState<any>([]);
     const [savedCorp, setSavedCorp] = useState<any>();
     const [waitSave, setWaitSave] = useState(false);
     const [waitLoad, setWaitLoad] = useState(false);
     const [waitOrgLoad, setWaitOrgLoad] = useState(false);
     const [waitOrg, setWaitOrg] = useState(false);
-
-
 
     const invocesBread = [
         { id: "view-1", name: t(langKeys.billingtitle) },
@@ -3195,6 +3194,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
         setCorpList({ loading: true, data: [] });
         setMeasureList({ loading: true, data: [] });
         setOrgList({ loading: false, data: [] });
+        setProductList({ loading: false, data: [] });
 
         dispatch(getMultiCollectionAux([getCorpSel(0), getMeasureUnit(), getValuesFromDomain("TYPECREDIT")]));
     }, [])
@@ -3202,6 +3202,12 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
     useEffect(() => {
         if (waitLoad) {
             if (data) {
+                dispatch(getMultiCollectionAux([getInvoiceDetail(data.corpid, data.orgid, data.invoiceid)]));
+
+                setValue('invoicecurrency', data.currency);
+                setValue('invoicepurchaseorder', data.purchaseorder);
+                setValue('invoicecomments', data.comments);
+
                 if (data.orgid) {
                     var corporationdata = corpList.data.find((x: { corpid: any; }) => x.corpid === data.corpid);
 
@@ -3243,6 +3249,24 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
     }, [waitOrg, waitOrgLoad]);
 
     useEffect(() => {
+        if (productList) {
+            if (productList.data) {
+                productList.data.forEach((element: { description: any; productcode: any; measureunit: any; quantity: any; productprice: any; }) => {
+                    fieldsAppend({
+                        productdescription: element.description,
+                        productcode: element.productcode,
+                        productmeasure: element.measureunit,
+                        productquantity: element.quantity,
+                        productsubtotal: element.productprice,
+                    })
+                });
+
+                onProductChange();
+            }
+        }
+    }, [productList]);
+
+    useEffect(() => {
         const indexCorp = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_CORP_SEL'));
 
         if (indexCorp > -1) {
@@ -3268,6 +3292,12 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
         if (indexCreditType > -1) {
             setCreditTypeList({ loading: false, data: multiResult.data[indexCreditType] && multiResult.data[indexCreditType].success ? multiResult.data[indexCreditType].data : [] });
         }
+
+        const indexProduct = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_INVOICEDETAIL_SELBYINVOICEID'));
+
+        if (indexProduct > -1) {
+            setProductList({ loading: false, data: multiResult.data[indexProduct] && multiResult.data[indexProduct].success ? multiResult.data[indexProduct].data : [] });
+        }
     }, [multiResult]);
 
     const { control, handleSubmit, register, trigger, setValue, getValues, formState: { errors } } = useForm<any>({
@@ -3291,7 +3321,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
             productdetail: [],
             billbyorg: false,
             onlyinsert: false,
-            invoiceid: 0,
+            invoiceid: data ? data.invoiceid : 0,
         }
     });
 
