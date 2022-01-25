@@ -330,9 +330,7 @@ const TableZyx = React.memo(({
     setAllRowsSelected,
     onClickRow,
     toolsFooter = true,
-    onFilterChange,
     initialPageIndex = 0,
-    initialFilters = {},
     helperText = "",
     initialStateFilter,
     registertext,
@@ -340,16 +338,6 @@ const TableZyx = React.memo(({
     const classes = useStyles();
     const dispatch = useDispatch();
     const [initial, setInitial] = useState(true);
-    const [tFilters, setTFilters] = useState<ITablePaginatedFilter>({
-        startDate: null,
-        endDate: null,
-        page: initialPageIndex,
-        filters: initialFilters,
-    });
-
-    useEffect(() => {
-        onFilterChange?.(tFilters);
-    }, [tFilters]);
 
     const DefaultColumnFilter = ({
         column: { id: header, setFilter: $setFilter, listSelectFilter = [], type = "string" },
@@ -362,7 +350,6 @@ const TableZyx = React.memo(({
 
         const setFilter = (filter: any) => {
             $setFilter(filter);
-            setTFilters(prev => ({ ...prev, filters: { ...prev.filters, [header]: filter }, page: 0 }));
 
             dispatch(setMemoryTable({
                 filter: {
@@ -680,10 +667,9 @@ const TableZyx = React.memo(({
             ])
         }
     )
-
     useEffect(() => {
         if (initial) {
-            gotoPage(tFilters.page);
+            gotoPage(initialPageIndex);
             setInitial(false)
         } else {
             dispatch(setMemoryTable({
@@ -971,7 +957,6 @@ const TableZyx = React.memo(({
                                     dispatch(setMemoryTable({
                                         page: 0
                                     }));
-                                    setTFilters(prev => ({ ...prev, page: 0 }));
                                 }}
                                 disabled={!canPreviousPage || loading}
                             >
@@ -983,7 +968,6 @@ const TableZyx = React.memo(({
                                     dispatch(setMemoryTable({
                                         page: pageIndex - 1
                                     }));
-                                    setTFilters(prev => ({ ...prev, page: pageIndex - 1 }));
                                 }}
                                 disabled={!canPreviousPage || loading}
                             >
@@ -995,7 +979,6 @@ const TableZyx = React.memo(({
                                     dispatch(setMemoryTable({
                                         page: pageIndex + 1
                                     }));
-                                    setTFilters(prev => ({ ...prev, page: pageIndex + 1 }));
                                 }}
                                 disabled={!canNextPage || loading}
                             >
@@ -1007,7 +990,6 @@ const TableZyx = React.memo(({
                                     dispatch(setMemoryTable({
                                         page: pageCount - 1
                                     }));
-                                    setTFilters(prev => ({ ...prev, page: pageCount - 1 }));
                                 }}
                                 disabled={!canNextPage || loading}
                             >

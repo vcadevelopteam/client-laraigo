@@ -127,7 +127,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
     const [waitSave, setWaitSave] = useState(false);
     const [totalrow, settotalrow] = useState(0);
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
-    const [allParameters, setAllParameters] = useState({});
+    const [allParameters, setAllParameters] = useState<any>({});
     const [openModal, setOpenModal] = useState(false);
     const [view, setView] = useState('GRID');
 
@@ -355,6 +355,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                                 {!allFilters ? null : allFilters.map(filtro => (
                                                     (filtro.values[0].multiselect ?
                                                         <FieldMultiSelect
+                                                            valueDefault={allParameters[filtro.values[0].parameterName]}
                                                             limitTags={1}
                                                             label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
                                                             className={classes.filterComponent}
@@ -367,6 +368,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                                         />
                                                         :
                                                         <FieldSelect
+                                                            valueDefault={allParameters[filtro.values[0].parameterName]}    
                                                             label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
                                                             className={classes.filterComponent}
                                                             key={filtro.values[0].filter}
@@ -411,6 +413,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                                 {!allFilters ? null : allFilters.map(filtro => (
                                                     (filtro.values[0].multiselect ?
                                                         <FieldMultiSelect
+                                                            valueDefault={allParameters[filtro.values[0].parameterName]}
                                                             limitTags={1}
                                                             label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
                                                             className={classes.filterComponent}
@@ -423,6 +426,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                                         />
                                                         :
                                                         <FieldSelect
+                                                            valueDefault={allParameters[filtro.values[0].parameterName]}
                                                             label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
                                                             className={classes.filterComponent}
                                                             key={filtro.values[0].filter}
@@ -454,6 +458,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                 filters={fetchDataAux.filters}
                 columns={reportColumns.map(x => x.proargnames)}
                 columnsprefix={'report_' + row?.origin + '_'}
+                allParameters={allParameters}
             />
         </div>
     );
@@ -468,9 +473,10 @@ interface SummaryGraphicProps {
     filters: Dictionary;
     columns: string[];
     columnsprefix: string;
+    allParameters?: any;
 }
 
-const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal, setView, row, daterange, filters, columns, columnsprefix }) => {
+const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal, setView, row, daterange, filters, columns, columnsprefix, allParameters = {} }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
 
@@ -506,7 +512,8 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                 startdate: daterange?.startDate!,
                 enddate: daterange?.endDate!,
                 column: data.column,
-                summarization: 'COUNT'
+                summarization: 'COUNT',
+                ...allParameters
             }
         )));
     }
