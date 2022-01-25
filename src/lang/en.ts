@@ -590,7 +590,7 @@ const translation: LangKeys = {
     messagesbyday: "Messages by day",
     edit: 'Editar',
     invoicesuccessfullyvoided: "Invoice successfully voided",
-    cancelinvoice: "Are you sure to cancel the invoice?",
+    cancelinvoice: "Are you sure to delete the invoice?",
     regenerateinvoice: "Are you sure to regenerate the invoice?",
     sendinvoice: "Are you sure to send the invoice?",
     delete: 'Delete',
@@ -2774,6 +2774,8 @@ const translation: LangKeys = {
     emissorcreditnote: 'CREDIT NOTE',
     invoicenotmatch: 'Credit note cannot be generated for this invoice',
     invoicenotfound: 'Invoice not found',
+    saveasdraft: 'Save Draft',
+    deleteinvoicesuccess: 'Invoice deleted successfully',
 };
 
 const enResource: ResourceLanguage = {
