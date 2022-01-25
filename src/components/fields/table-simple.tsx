@@ -330,7 +330,6 @@ const TableZyx = React.memo(({
     setAllRowsSelected,
     onClickRow,
     toolsFooter = true,
-    onFilterChange,
     initialPageIndex = 0,
     helperText = "",
     initialStateFilter,
