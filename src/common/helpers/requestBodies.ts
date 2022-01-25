@@ -2369,10 +2369,17 @@ export const insInvoice = (parameters: Dictionary) => ({
     key: "UFN_INVOICE_INS",
     parameters
 });
+
 export const cancelInvoice = (invoiceid: number) => ({
     method: "UFN_INVOICE_ANNULLED",
     key: "UFN_INVOICE_ANNULLED",
     parameters: { invoiceid },
+});
+
+export const deleteInvoice = ({ corpid, orgid, invoiceid }: Dictionary) => ({
+    method: "UFN_INVOICE_DELETE",
+    key: "UFN_INVOICE_DELETE",
+    parameters: { corpid, orgid, invoiceid },
 });
 
 export const getLeadTasgsSel = () => ({

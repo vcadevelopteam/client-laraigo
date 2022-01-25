@@ -573,7 +573,6 @@ const ReportConversationWhatsapp: FC = () => {
 
     const columns = React.useMemo(
         () => [
-
             {
                 Header: t(langKeys.personIdentifier),
                 accessor: 'personcommunicationchannel',

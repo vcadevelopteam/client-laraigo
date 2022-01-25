@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { cleanMemoryTable, setMemoryTable } from 'store/main/actions';
 import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx, FieldEditArray, TemplateIcons } from 'components';
-import { selInvoice, cancelInvoice, getLocaleDateString, selInvoiceClient, regenerateInvoice, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, invoiceRefreshTest, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit } from 'common/helpers';
+import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, invoiceRefreshTest, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -15,7 +15,7 @@ import { langKeys } from 'lang/keys';
 import { useForm, useFieldArray } from 'react-hook-form';
 import ClearIcon from '@material-ui/icons/Clear';
 import { getCollection, getMultiCollection, execute, exportData, getMultiCollectionAux } from 'store/main/actions';
-import { sendInvoice, createInvoice, regularizeInvoice, createCreditNote } from 'store/culqi/actions';
+import { createInvoice, regularizeInvoice, createCreditNote } from 'store/culqi/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { Box, FormHelperText, Grid, IconButton, Tabs, TextField } from '@material-ui/core';
 import * as locale from "date-fns/locale";
@@ -2171,7 +2171,6 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     });
     const [dataInvoice, setDataInvoice] = useState<Dictionary[]>([]);
     const [disableSearch, setdisableSearch] = useState(false);
-    const [functiontrigger, setfunctiontrigger] = useState('');
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
     const [viewSelected, setViewSelected] = useState("view-1");
     const [isCreditNote, setIsCreditNote] = useState(false);
@@ -2199,16 +2198,15 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                /*const message = functiontrigger === 'generate' ? "La factura se generó correctamente." : "Factura anulada correctamente";
-                dispatch(showSnackbar({ show: true, success: true, message }))
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.deleteinvoicesuccess) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
-                setViewSelected("view-1")*/
+                setViewSelected("view-1")
             } else if (executeRes.error) {
-                /*const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 setWaitSave(false);
-                dispatch(showBackdrop(false));*/
+                dispatch(showBackdrop(false));
             }
         }
     }, [executeRes, waitSave])
@@ -2229,8 +2227,19 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 accessor: 'invoiceid',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    if (row.invoicestatus !== "INVOICED" || row.type === 'CREDITNOTE')
+
+                    if (row.invoicestatus !== "INVOICED" && (row.paymentstatus !== 'PAID' && row.paymentstatus !== 'PENDING')) {
+                        return (
+                            <TemplateIcons
+                                deleteFunction={() => handleDelete(row)}
+                            />
+                        )
+                    }
+
+                    if (row.invoicestatus !== "INVOICED" || row.type === 'CREDITNOTE') {
                         return null;
+                    }
+
                     return (
                         <TemplateIcons
                             extraFunction={() => handleCreditNote(row)}
@@ -2370,10 +2379,9 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         []
     );
 
-    const handleCancel = (row: Dictionary) => {
-        setfunctiontrigger("cancel")
+    const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(cancelInvoice(row.invoiceid)));
+            dispatch(execute(deleteInvoice(row)));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -2385,41 +2393,18 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         }))
     }
 
-    const handleGenerate = (row: Dictionary) => {
-        setfunctiontrigger("generate")
-        const callback = () => {
-            dispatch(execute(regenerateInvoice({ invoiceid: row.invoiceid })));
-            dispatch(showBackdrop(true));
-            setWaitSave(true)
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.regenerateinvoice),
-            callback
-        }))
-    }
-
-    const handleSend = (row: Dictionary) => {
-        const callback = () => {
-            dispatch(sendInvoice(row.invoiceid));
-            dispatch(showBackdrop(true));
-            setWaitSend(true)
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.sendinvoice),
-            callback
-        }))
-    }
-
     const handleView = (row: Dictionary) => {
-        setViewSelected("view-2");
-        setIsCreditNote(false);
-        setIsRegularize(true);
-        setOperationName('');
-        setRowSelected(row);
+        if (row.invoicestatus === 'DRAFT' && row.paymentstatus === 'NONE') {
+            setViewSelected("view-3");
+            setRowSelected(row);
+        }
+        else {
+            setViewSelected("view-2");
+            setIsCreditNote(false);
+            setIsRegularize(true);
+            setOperationName('');
+            setRowSelected(row);
+        }
     }
 
     const handleCreditNote = (row: Dictionary) => {
@@ -2444,7 +2429,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             case '07':
                 return 'emissorcreditnote';
             default:
-                return '';
+                return 'NONE';
         }
     }
     
@@ -2554,6 +2539,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     } else {
         return (
             <BillingRegister
+                data={rowSelected}
                 fetchData={fetchData}
                 setViewSelected={setViewSelected}
             />
@@ -3180,7 +3166,7 @@ const RegularizeModal: FC<{ data: any, openModal: boolean, setOpenModal: (param:
     )
 }
 
-const BillingRegister: FC<DetailProps> = ({ setViewSelected, fetchData }) => {
+const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -3189,6 +3175,7 @@ const BillingRegister: FC<DetailProps> = ({ setViewSelected, fetchData }) => {
     const culqiResult = useSelector(state => state.culqi.requestCreateInvoice);
     const multiResult = useSelector(state => state.main.multiDataAux);
     
+    const [creditTypeList, setCreditTypeList] = useState<any>([]);
     const [corpList, setCorpList] = useState<any>([]);
     const [orgList, setOrgList] = useState<any>([]);
     const [measureList, setMeasureList] = useState<any>([]);
@@ -3201,11 +3188,12 @@ const BillingRegister: FC<DetailProps> = ({ setViewSelected, fetchData }) => {
     ];
 
     useEffect(() => {
+        setCreditTypeList({ loading: true, data: [] });
         setCorpList({ loading: true, data: [] });
+        setMeasureList({ loading: true, data: [] });
         setOrgList({ loading: false, data: [] });
-        setMeasureList({ loading: false, data: [] });
 
-        dispatch(getMultiCollectionAux([getCorpSel(0), getMeasureUnit()]));
+        dispatch(getMultiCollectionAux([getCorpSel(0), getMeasureUnit(), getValuesFromDomain("TYPECREDIT")]));
     }, [])
 
     useEffect(() => {
@@ -3225,6 +3213,12 @@ const BillingRegister: FC<DetailProps> = ({ setViewSelected, fetchData }) => {
 
         if (indexMeasure > -1) {
             setMeasureList({ loading: false, data: multiResult.data[indexMeasure] && multiResult.data[indexMeasure].success ? multiResult.data[indexMeasure].data : [] });
+        }
+
+        const indexCreditType = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_DOMAIN_LST_VALORES'));
+
+        if (indexCreditType > -1) {
+            setCreditTypeList({ loading: false, data: multiResult.data[indexCreditType] && multiResult.data[indexCreditType].success ? multiResult.data[indexCreditType].data : [] });
         }
     }, [multiResult]);
 
@@ -3246,7 +3240,9 @@ const BillingRegister: FC<DetailProps> = ({ setViewSelected, fetchData }) => {
             invoicepurchaseorder: '',
             invoicecomments: '',
             autosendinvoice: null,
-            productdetail: []
+            productdetail: [],
+            billbyorg: false,
+            onlyinsert: false,
         }
     });
 
@@ -3257,7 +3253,7 @@ const BillingRegister: FC<DetailProps> = ({ setViewSelected, fetchData }) => {
 
     React.useEffect(() => {
         register('corpid', { validate: (value) => (value && value > 0) || "" + t(langKeys.field_required) });
-        register('orgid');
+        register('orgid', { validate: (value) => ((getValues('billbyorg') === false) || (value && value > 0)) || "" + t(langKeys.field_required) });
         register('clientdoctype', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('clientdocnumber', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('clientbusinessname', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
@@ -3267,10 +3263,10 @@ const BillingRegister: FC<DetailProps> = ({ setViewSelected, fetchData }) => {
         register('clientcredittype');
         register('invoicecreatedate', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('invoiceduedate');
-        register('invoicecurrency');
+        register('invoicecurrency', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('invoicetotalamount', { validate: (value) => (value && value > 0) || "" + t(langKeys.billingamountvalidation) });
-        register('invoicepurchaseorder', { validate: (value) => (value.length <= 15) || "" + t(langKeys.validation15char) });
-        register('invoicecomments', { validate: (value) => (value.length <= 150) || "" + t(langKeys.validation150char) });
+        register('invoicepurchaseorder', { validate: (value) => (value && value.length <= 15) || "" + t(langKeys.validation15char) });
+        register('invoicecomments', { validate: (value) => (value && value.length <= 150) || "" + t(langKeys.validation150char) });
         register('autosendinvoice');
     }, [register]);
 
@@ -3343,15 +3339,48 @@ const BillingRegister: FC<DetailProps> = ({ setViewSelected, fetchData }) => {
         }
     }
 
+    const onCreditTypeChange = (data: any) => {
+        if (data) {
+            var dueDate = new Date(getValues('invoicecreatedate'));
+
+            switch (data) {
+                case 'typecredit_15':
+                    dueDate = new Date(dueDate.setDate(dueDate.getDate() + 15));
+                    break;
+                case 'typecredit_30':
+                    dueDate = new Date(dueDate.setDate(dueDate.getDate() + 30));
+                    break;
+                case 'typecredit_45':
+                    dueDate = new Date(dueDate.setDate(dueDate.getDate() + 45));
+                    break;
+                case 'typecredit_60':
+                    dueDate = new Date(dueDate.setDate(dueDate.getDate() + 60));
+                    break;
+                case 'typecredit_90':
+                    dueDate = new Date(dueDate.setDate(dueDate.getDate() + 90));
+                    break;
+            }
+
+            setValue('invoiceduedate', dueDate.toISOString().split('T')[0]);
+        }
+        else {
+            setValue('invoiceduedate', '');
+        }
+
+        trigger('invoiceduedate');
+    }
+
     const onCorpChange = (data: any) => {
         setSubmitData(data);
 
         if (data) {
             dispatch(getMultiCollectionAux([getOrgSel(0, data.corpid)]));
+            setValue('billbyorg', data?.billbyorg);
             setSavedCorp(data);
         }
         else {
             setOrgList({ loading: false, data: [] });
+            setValue('billbyorg', false);
             setSavedCorp(null);
         }
     }
@@ -3441,6 +3470,17 @@ const BillingRegister: FC<DetailProps> = ({ setViewSelected, fetchData }) => {
                             variant="contained"
                             color="primary"
                             type='submit'
+                            onClick={() => setValue('onlyinsert', true)}
+                            startIcon={<SaveIcon color="secondary" />}
+                            style={{ backgroundColor: "#55BD84" }}
+                        >{t(langKeys.saveasdraft)}
+                        </Button>
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            type='submit'
+                            onClick={() => setValue('onlyinsert', false)}
                             startIcon={<PaymentIcon color="secondary" />}
                             style={{ backgroundColor: "#55BD84" }}
                         >{t(langKeys.emitinvoice)}
@@ -3481,6 +3521,8 @@ const BillingRegister: FC<DetailProps> = ({ setViewSelected, fetchData }) => {
                             data={orgList.data}
                             optionDesc="orgdesc"
                             optionValue="orgid"
+                            disabled={(getValues('billbyorg') === false)}
+                            error={errors?.orgid?.message}
                         />
                     </div>
                 </div>
@@ -3553,10 +3595,15 @@ const BillingRegister: FC<DetailProps> = ({ setViewSelected, fetchData }) => {
                                 value={getValues('invoiceduedate')}
                                 className={classes.fieldView}
                             />
-                            <FieldView
-                                label={t(langKeys.currency)}
-                                value={getValues('invoicecurrency')}
+                            <FieldSelect
                                 className={classes.fieldView}
+                                label={t(langKeys.currency)}
+                                onChange={(value) => setValue('invoicecurrency', value?.value)}
+                                valueDefault={getValues('invoicecurrency')}
+                                data={datacurrency}
+                                optionDesc="description"
+                                optionValue="value"
+                                error={errors?.invoicecurrency?.message}
                             />
                             <FieldEdit
                                 label={t(langKeys.totalamount)}
@@ -3574,10 +3621,17 @@ const BillingRegister: FC<DetailProps> = ({ setViewSelected, fetchData }) => {
                         </div>
                         <div className={classes.containerField}>
                             <div className={classes.titleCard}>{t(langKeys.additional_information)}</div>
-                            <FieldView
-                                label={t(langKeys.credittype)}
-                                value={t(getValues('clientcredittype'))}
+                            <FieldSelect
                                 className={classes.fieldView}
+                                label={t(langKeys.credittype)}
+                                loading={creditTypeList.loading}
+                                onChange={(value) => { setValue('clientcredittype', value?.domainvalue); onCreditTypeChange(value?.domainvalue); }}
+                                valueDefault={getValues('clientcredittype')}
+                                data={creditTypeList.data}
+                                optionDesc="domainvalue"
+                                optionValue="domainvalue"
+                                error={errors?.clientcredittype?.message}
+                                uset={true}
                             />
                             <FieldEdit
                                 label={t(langKeys.purchaseorder)}
@@ -3612,8 +3666,8 @@ const BillingRegister: FC<DetailProps> = ({ setViewSelected, fetchData }) => {
                                     style={{ marginLeft: '1rem' }}
                                     onClick={() => fieldsAppend({
                                         productdescription: '',
-                                        productcode: '',
-                                        productmeasure: '',
+                                        productcode: 'S001',
+                                        productmeasure: 'ZZ',
                                         productquantity: 0,
                                         productsubtotal: 0.0,
                                     })}
@@ -3645,7 +3699,7 @@ const BillingRegister: FC<DetailProps> = ({ setViewSelected, fetchData }) => {
                                         error={errors?.productdetail?.[i]?.productdescription?.message}
                                         onChange={(value) => setValue(`productdetail.${i}.productdescription`, "" + value)}
                                     />
-                                    <FieldEditArray
+                                    {/*<FieldEditArray
                                         className={classes.fieldView}
                                         label={t(langKeys.code)}
                                         fregister={{
@@ -3656,7 +3710,7 @@ const BillingRegister: FC<DetailProps> = ({ setViewSelected, fetchData }) => {
                                         valueDefault={getValues(`productdetail.${i}.productcode`)}
                                         error={errors?.productdetail?.[i]?.productcode?.message}
                                         onChange={(value) => setValue(`productdetail.${i}.productcode`, "" + value)}
-                                    />
+                                    />*/}
                                     <FieldSelect
                                         className={classes.fieldView}
                                         label={t(langKeys.measureunit)}
