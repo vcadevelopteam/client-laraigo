@@ -2763,6 +2763,8 @@ export const langKeys = {
     emissorcreditnote: 'emissorcreditnote',
     invoicenotmatch: 'invoicenotmatch',
     invoicenotfound: 'invoicenotfound',
+    saveasdraft: 'saveasdraft',
+    deleteinvoicesuccess: 'deleteinvoicesuccess',
 };
 
 export type LangKeys = typeof langKeys;

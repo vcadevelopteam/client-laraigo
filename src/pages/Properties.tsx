@@ -486,7 +486,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
                     <div>
                         <TemplateBreadcrumbs
                             breadcrumbs={arrayBread}
-                            handleClick={setViewSelected}
+                            handleClick={() => { fetchData(); setViewSelected('view-1'); }}
                         />
                         <TitleDetail
                             title={row ? `${row.propertyname}` : t(langKeys.newproperty)}

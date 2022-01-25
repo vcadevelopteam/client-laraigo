@@ -271,7 +271,7 @@ const translation: LangKeys = {
     averageinteractionbyconversation: "Promedio de interacciones x conversación",
     top5labels: "Ranking top 5 de etiquetas",
     invoicesuccessfullyvoided: "Factura anulada correctamente",
-    cancelinvoice: "¿Está seguro de anular la factura?",
+    cancelinvoice: "¿Está seguro que desea eliminar la factura?",
     regenerateinvoice: "¿Está seguro de regenerar la factura?",
     sendinvoice: "¿Está seguro de enviar la factura?",
     tmeexpected: "TME esperado",
@@ -2762,6 +2762,8 @@ const translation: LangKeys = {
     emissorcreditnote: 'NOTA DE CREDITO',
     invoicenotmatch: 'Esta factura no puede generar notas de crédito',
     invoicenotfound: 'No se pudo encontrar la factura',
+    saveasdraft: 'Guardar Borrador',
+    deleteinvoicesuccess: 'Factura eliminada correctamente',
 };
 
 const esResource: ResourceLanguage = {
