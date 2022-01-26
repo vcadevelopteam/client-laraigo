@@ -2736,8 +2736,8 @@ const translation: LangKeys = {
 
     copy: 'Copia',
     empty_dashboard_form_error: 'Debe tener al menos un gráfico asignado',
-    chart_dashboard_report_error: 'Ocurrió un error al cargar el reporte',
-    chart_dashboard_column_error: 'Ocurrió un error al cargar la columna',
+    chart_dashboard_report_error: 'El reporte enlazado a este gráfico ha sido eliminado. Verificar la configuración del gráfico.',
+    chart_dashboard_column_error: 'No es posible visualizar la gráfica, la columna seleccionada para el reporte ha sido eliminada.',
     chart_dashboard_unexpected_error: 'Ocurrió un error inesperado',
 
     successinvoiced: 'Se emitió el documento correctamente',
