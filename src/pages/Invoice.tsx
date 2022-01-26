@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, Fragment, useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { FC, useCallback, Fragment, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { cleanMemoryTable, setMemoryTable } from 'store/main/actions';
+import { cleanMemoryTable, setMemoryTable, uploadFile } from 'store/main/actions';
 import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx, FieldEditArray, TemplateIcons } from 'components';
 import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, invoiceRefreshTest, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
@@ -17,15 +17,17 @@ import ClearIcon from '@material-ui/icons/Clear';
 import { getCollection, getMultiCollection, execute, exportData, getMultiCollectionAux } from 'store/main/actions';
 import { createInvoice, regularizeInvoice, createCreditNote } from 'store/culqi/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { Box, FormHelperText, Grid, IconButton, Tab, Tabs, TextField } from '@material-ui/core';
+import { Box, CircularProgress, FormHelperText, Grid, IconButton, Tab, Tabs, TextField } from '@material-ui/core';
 import * as locale from "date-fns/locale";
 import { DownloadIcon } from 'icons';
 import {
     Close,
+    FileCopy,
     CloudUpload,
     Search as SearchIcon,
     Refresh as RefreshIcon,
-    Add as AddIcon
+    Add as AddIcon,
+    GetApp
 } from '@material-ui/icons';
 import PaymentIcon from '@material-ui/icons/Payment';
 import DateFnsUtils from '@date-io/date-fns';
@@ -46,6 +48,7 @@ import html2canvas from 'html2canvas';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { stringify } from 'querystring';
 import zhCN from 'date-fns/esm/locale/zh-CN/index.js';
+import AttachFileIcon from '@material-ui/icons/AttachFile';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -3138,12 +3141,15 @@ const RegularizeModal: FC<{ data: any, openModal: boolean, setOpenModal: (param:
 
     const classes = useStyles();
     const culqiResult = useSelector(state => state.culqi.requestRegularizeInvoice);
+    const uploadResult = useSelector(state => state.main.uploadFile);
 
     const [chatButton, setChatButton] = useState<File | string | null>(null);
     const [chatImgUrl, setChatImgUrl] = useState<string | undefined | null>(null);
     const [waitSave, setWaitSave] = useState(false);
+    const [waitUploadFile, setWaitUploadFile] = useState(false);
+    const [fileAttachment, setFileAttachment] = useState<File | null>(null);
 
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+    const { register, trigger, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             corpid: data?.corpid,
             orgid: data?.orgid,
@@ -3243,6 +3249,43 @@ const RegularizeModal: FC<{ data: any, openModal: boolean, setOpenModal: (param:
         }
     }
 
+    const onClickAttachment = useCallback(() => {
+        const input = document.getElementById('attachmentInput');
+        input!.click();
+    }, []);
+
+    const onChangeAttachment = useCallback((files: any) => {
+        const file = files?.item(0);
+        if (file) {
+            setFileAttachment(file);
+            let fd = new FormData();
+            fd.append('file', file, file.name);
+            dispatch(uploadFile(fd));
+            setWaitUploadFile(true);
+        }
+    }, [])
+
+    const handleCleanMediaInput = async (f: string) => {
+        const input = document.getElementById('attachmentInput') as HTMLInputElement;
+        if (input) {
+            input.value = "";
+        }
+        setFileAttachment(null);
+        setValue('invoicereferencefile', getValues('invoicereferencefile').split(',').filter((a: string) => a !== f).join(','));
+        await trigger('invoicereferencefile');
+    }
+
+    useEffect(() => {
+        if (waitUploadFile) {
+            if (!uploadResult.loading && !uploadResult.error) {
+                setValue('invoicereferencefile', [getValues('invoicereferencefile'), uploadResult?.url || ''].join(','))
+                setWaitUploadFile(false);
+            } else if (uploadResult.error) {
+                setWaitUploadFile(false);
+            }
+        }
+    }, [waitUploadFile, uploadResult])
+
     return (
         <DialogZyx
             open={openModal}
@@ -3260,44 +3303,110 @@ const RegularizeModal: FC<{ data: any, openModal: boolean, setOpenModal: (param:
                 onChange={(value) => setValue('invoicepaymentnote', value)}
                 className="col-12"
             />
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                <Box m={1}>
-                    <Grid container direction="row">
-                        <Grid item xs={11} sm={11} md={11} lg={11} xl={11}>
-                            <label className={classes.text}>
-                                {t(langKeys.evidenceofpayment)}
-                            </label>
-                        </Grid>
-                        <Grid item xs={11} sm={11} md={11} lg={11} xl={11}>
-                            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-                                <div className={classes.imgContainer}>
-                                    {chatImgUrl && <img src={(chatImgUrl || '')} alt="icon button" className={classes.img} />}
-                                </div>
-                                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
-                                    <input
-                                        accept="image/*"
-                                        style={{ display: 'none' }}
-                                        id="chatBtnInput"
-                                        type="file"
-                                        onChange={onChangeChatInput}
-                                    />
-                                    <IconButton onClick={handleChatButtonClick}>
-                                        <CloudUpload className={classes.icon} />
-                                    </IconButton>
-                                    <IconButton onClick={handleChatButtonClean}>
-                                        <Close className={classes.icon} />
-                                    </IconButton>
-                                </div>
-                            </div>
-                            <FormHelperText error={!isEmpty(errors?.invoicereferencefile?.message)} style={{ marginLeft: 14 }}>
-                                {errors?.invoicereferencefile?.message}
-                            </FormHelperText>
-                        </Grid>
-                    </Grid>
-                </Box>
-            </Grid>
+            <FieldView label={t(langKeys.evidenceofpayment)} />
+            <React.Fragment>
+                <input
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    id="attachmentInput"
+                    type="file"
+                    onChange={(e) => onChangeAttachment(e.target.files)}
+                />
+                {<IconButton
+                    onClick={onClickAttachment}
+                    disabled={waitUploadFile}
+                >
+                    <AttachFileIcon color="primary" />
+                </IconButton>}
+                {!!getValues("invoicereferencefile") && getValues("invoicereferencefile").split(',').map((f: string, i: number) => (
+                    <FilePreview key={`attachment-${i}`} src={f} onClose={(f) => handleCleanMediaInput(f)} />
+                ))}
+                {waitUploadFile && fileAttachment && <FilePreview key={`attachment-x`} src={fileAttachment} />}
+            </React.Fragment>
         </DialogZyx>
     )
+}
+
+interface FilePreviewProps {
+    src: File | string;
+    onClose?: (f: string) => void;
+}
+
+const useFilePreviewStyles = makeStyles(theme => ({
+    root: {
+        backgroundColor: 'white',
+        margin: theme.spacing(1),
+        padding: theme.spacing(1),
+        borderRadius: 4,
+        display: 'flex',
+        flexDirection: 'row',
+        maxWidth: 300,
+        maxHeight: 80,
+        alignItems: 'center',
+        width: 'fit-content',
+        overflow: 'hidden'
+    },
+    infoContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+    },
+    btnContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        color: 'lightgrey',
+    },
+}));
+
+const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
+    const classes = useFilePreviewStyles();
+
+    const isUrl = useCallback(() => typeof src === "string" && src.includes('http'), [src]);
+
+    const getFileName = useCallback(() => {
+        if (isUrl()) {
+            const m = (src as string).match(/.*\/(.+?)\./);
+            return m && m.length > 1 ? m[1] : "";
+        };
+        return (src as File).name;
+    }, [isUrl, src]);
+
+    const getFileExt = useCallback(() => {
+        if (isUrl()) {
+            return (src as string).split('.').pop()?.toUpperCase() || "-";
+        }
+        return (src as File).name?.split('.').pop()?.toUpperCase() || "-";
+    }, [isUrl, src]);
+
+    return (
+        <Paper className={classes.root} elevation={2}>
+            <FileCopy />
+            <div style={{ width: '0.5em' }} />
+            <div className={classes.infoContainer}>
+                <div>
+                    <div style={{ fontWeight: 'bold', textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: 190, whiteSpace: 'nowrap' }}>{getFileName()}</div>{getFileExt()}
+                </div>
+            </div>
+            <div style={{ width: '0.5em' }} />
+            {!isUrl() && !onClose && <CircularProgress color="primary" />}
+            <div className={classes.btnContainer}>
+                {onClose && (
+                    <IconButton size="small" onClick={() => onClose(src as string)}>
+                        <Close />
+                    </IconButton>
+                )}
+                {isUrl() && <div style={{ height: '10%' }} />}
+                {isUrl() && (
+                    <a href={src as string} target="_blank" rel="noreferrer" download={`${getFileName()}.${getFileExt()}`}>
+                        <IconButton size="small">
+                            <GetApp />
+                        </IconButton>
+                    </a>
+                )}
+            </div>
+        </Paper>
+    );
 }
 
 const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) => {
