@@ -254,23 +254,23 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
 
             let msg = "";
             switch (doctype) {
-                case "0":
-                    msg = "Debe ser hasta 15 dígitos";
+                case "0": // OTROS o NO DOMICILIARIO
+                    msg = t(langKeys.doctype_others_non_home_error);
                     return docnum.length > 15 ? msg : undefined;
                 case "1": // DNI
-                    msg = "Debe ser 8 dígitos";
+                    msg = t(langKeys.doctype_dni_error);
                     return docnum.length !== 8 ? msg : undefined;
                 case "4": // CARNET DE EXTRANJERIA
-                    msg = "Debe ser hasta 12 dígitos";
+                    msg = t(langKeys.doctype_foreigners_card);
                     return docnum.length > 12 ? msg : undefined;
                 case "6": // REG. UNICO DE CONTRIBUYENTES
-                    msg = "Debe ser 11 dígitos";
+                    msg = t(langKeys.doctype_ruc_error);
                     return docnum.length !== 11 ? msg : undefined;
                 case "7": // PASAPORTE
-                    msg = "Debe ser hasta 12 dígitos";
+                    msg = t(langKeys.doctype_passport_error);
                     return docnum.length > 12 ? msg : undefined;
                 case "11": // PART. DE NACIMIENTO-IDENTIDAD
-                default: return "Seleccione un tipo de documento válido";
+                default: return t(langKeys.doctype_unknown_error);
             }
         }
 
