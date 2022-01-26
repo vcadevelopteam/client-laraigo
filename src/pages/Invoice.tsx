@@ -2560,6 +2560,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
     const [measureList, setMeasureList] = useState<any>([]);
     const [openModal, setOpenModal] = useState(false);
     const [pageSelected, setPageSelected] = useState(0);
+    const [productList, setProductList] = useState<any>([]);
     const [showDiscount, setShowDiscount] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
 
@@ -2579,15 +2580,46 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
         }
 
         setMeasureList({ loading: false, data: [] });
+        setProductList({ loading: false, data: [] });
 
-        dispatch(getMultiCollectionAux([getMeasureUnit()]));
+        const trueinvoiceid = (data?.referenceinvoiceid ? data.referenceinvoiceid : data?.invoiceid);
+
+        dispatch(getMultiCollectionAux([getMeasureUnit(), getInvoiceDetail(data?.corpid, data?.orgid, trueinvoiceid)]));
     }, [])
+
+    useEffect(() => {
+        setValue('productdetail', []);
+
+        if (productList) {
+            if (productList.data) {
+                var productInformationList: Partial<unknown> [] = [];
+
+                productList.data.forEach((element: { description: any; productcode: any; measureunit: any; quantity: any; productnetprice: any; }) => {
+                    productInformationList.push({
+                        productdescription: element.description,
+                        productcode: element.productcode,
+                        productmeasure: element.measureunit,
+                        productquantity: element.quantity,
+                        productsubtotal: element.productnetprice,
+                    })
+                });
+
+                fieldsAppend(productInformationList);
+            }
+        }
+    }, [productList]);
 
     useEffect(() => {
         const indexMeasure = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_MEASUREUNIT_SEL'));
 
         if (indexMeasure > -1) {
             setMeasureList({ loading: false, data: multiResult.data[indexMeasure] && multiResult.data[indexMeasure].success ? multiResult.data[indexMeasure].data : [] });
+        }
+
+        const indexProduct = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_INVOICEDETAIL_SELBYINVOICEID'));
+
+        if (indexProduct > -1) {
+            setProductList({ loading: false, data: multiResult.data[indexProduct] && multiResult.data[indexProduct].success ? multiResult.data[indexProduct].data : [] });
         }
     }, [multiResult]);
 
