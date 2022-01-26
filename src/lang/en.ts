@@ -2120,6 +2120,7 @@ const translation: LangKeys = {
     graphic_view_by: 'View by',
     graphic_report_of: 'Graphic report of {{report}} by {{column}}',
     grid_view: 'List view',
+    in_white: 'In white',
 
     manageAgreement: 'Manage agreements',
     manageAgreement_plural: 'Manage agreements',

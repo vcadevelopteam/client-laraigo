@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { FC, useEffect, useMemo, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
@@ -322,6 +322,28 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
         { id: "view-2", name: t(langKeys.corporationdetail) }
     ];
 
+    const countries = useMemo(() => {
+        if (countryList.loading) return [];
+        return countryList.data.sort((a, b) => {
+            return a.description.localeCompare(b.description);
+        });
+    }, [countryList]);
+
+    const docTypes = useMemo(() => {
+        if (!dataDocType || dataDocType.length === 0) return [];
+
+        let val: { domaindesc: string }[];
+        if (doctype === "1") {
+            val = dataDocType.filter(x => x.domainvalue!=="0") as any[];
+        } else {
+            val = dataDocType as any[];
+        }
+
+        return val.sort((a, b) => {
+            return a.domaindesc.localeCompare(b.domaindesc);
+        });
+    }, [dataDocType]);
+
     return (
         <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
@@ -436,7 +458,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                     valueDefault={getValues("sunatcountry")}
                                     onChange={(value) => {setValue("sunatcountry", value?.code||"");setdoctype(value?.code==="PE"?"1":"0")}}
                                     error={errors?.sunatcountry?.message}
-                                    data={countryList.data}
+                                    data={countries}
                                     optionDesc="description"
                                     optionValue="code"
                                 />
@@ -458,7 +480,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                     disabled={doctype==="0"}
                                     onChange={(value) => {setValue("doctype", value?.domainvalue || "");setdoctype(value?.domainvalue || "")}}
                                     error={errors?.doctype?.message}
-                                    data={doctype === "1" ? dataDocType.filter(x=>x.domainvalue!=="0"):dataDocType}
+                                    data={docTypes}
                                     optionDesc="domaindesc"
                                     optionValue="domainvalue"
                                 />
