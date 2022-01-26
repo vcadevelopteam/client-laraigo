@@ -2067,7 +2067,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                        {data?.paymentstatus === "PENDING" &&
+                        {(data?.paymentstatus === "PENDING" && publicKey) &&
                             <CulqiModal
                                 type="CHARGE"
                                 invoiceid={data?.invoiceid}

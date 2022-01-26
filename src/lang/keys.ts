@@ -2781,6 +2781,13 @@ export const langKeys = {
     NONE: 'NONE',
     paymentreferenceview: 'paymentreferenceview',
     discountvalidmessage: 'discountvalidmessage',
+
+    doctype_others_non_home_error: 'doctype_others_non_home_error',
+    doctype_dni_error: 'doctype_dni_error',
+    doctype_foreigners_card: 'doctype_foreigners_card',
+    doctype_ruc_error: 'doctype_ruc_error',
+    doctype_passport_error: 'doctype_passport_error',
+    doctype_unknown_error: 'doctype_unknown_error',
 };
 
 export type LangKeys = typeof langKeys;

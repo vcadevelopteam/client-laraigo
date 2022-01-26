@@ -2780,6 +2780,13 @@ const translation: LangKeys = {
     NONE: 'Libre',
     paymentreferenceview: 'Ver referencia de pago',
     discountvalidmessage: 'El valor debe ser mayor a 0 y menor a la base',
+
+    doctype_others_non_home_error: 'Debe ser hasta 15 dígitos',
+    doctype_dni_error: 'Debe ser 8 dígitos',
+    doctype_foreigners_card: 'Debe ser hasta 12 dígitos',
+    doctype_ruc_error: 'Debe ser 11 dígitos',
+    doctype_passport_error: 'Debe ser hasta 12 dígitos',
+    doctype_unknown_error: 'Seleccione un tipo de documento válido',
 };
 
 const esResource: ResourceLanguage = {

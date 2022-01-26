@@ -2792,6 +2792,13 @@ const translation: LangKeys = {
     NONE: 'None',
     paymentreferenceview: 'View payment reference',
     discountvalidmessage: 'The amount must me higher than 0 and less than the tax base',
+
+    doctype_others_non_home_error: 'Must be up to 15 digits',
+    doctype_dni_error: 'Must be 8 digits',
+    doctype_foreigners_card: 'Must be up to 12 digits',
+    doctype_ruc_error: 'Must be 11 digits',
+    doctype_passport_error: 'Must be up to 12 digits',
+    doctype_unknown_error: 'Please select a valid document type',
 };
 
 const enResource: ResourceLanguage = {
