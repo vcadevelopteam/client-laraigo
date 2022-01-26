@@ -2260,7 +2260,7 @@ const translation: LangKeys = {
     orderid: "Solicitar ID",
     orderjson: "Order json",
     paymentstatus: "Estado de pago",
-    paymentdate: "Fecha pago",
+    paymentdate: "Fecha de pago",
     paidby: "Pagado por",
     tokenid: "Token Id",
     capture: "Capturar",
@@ -2765,6 +2765,19 @@ const translation: LangKeys = {
     saveasdraft: 'Guardar Borrador',
     deleteinvoicesuccess: 'Factura eliminada correctamente',
     field_required_shorter: 'Minimo 10 caracteres',
+    billinginvoicedata: 'Comprobante',
+    billingadditionalinfo: 'Información adicional',
+    INVOICED: 'EMITIDO',
+    DRAFT: 'BORRADOR',
+    invoiceid: 'Invoice ID',
+    pendingsave: 'Pendiente de Guardar',
+    taxbase: 'Base imponible',
+    referenceddocument: 'Documento original',
+    PAID: 'Pagado',
+    PENDING: 'Pendiente',
+    NONE: 'Libre',
+    paymentreferenceview: 'Ver referencia de pago',
+    discountvalidmessage: 'El valor debe ser mayor a 0 y menor a la base',
 };
 
 const esResource: ResourceLanguage = {

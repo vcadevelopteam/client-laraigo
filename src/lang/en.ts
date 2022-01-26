@@ -2777,6 +2777,19 @@ const translation: LangKeys = {
     saveasdraft: 'Save Draft',
     deleteinvoicesuccess: 'Invoice deleted successfully',
     field_required_shorter: '10 characters minimum',
+    billinginvoicedata: 'Invoice',
+    billingadditionalinfo: 'Additional information',
+    INVOICED: 'INVOICED',
+    DRAFT: 'DRAFT',
+    invoiceid: 'Invoice ID',
+    pendingsave: 'Pending Save',
+    taxbase: 'Tax base',
+    referenceddocument: 'Original document',
+    PAID: 'Paid',
+    PENDING: 'Pending',
+    NONE: 'None',
+    paymentreferenceview: 'View payment reference',
+    discountvalidmessage: 'The amount must me higher than 0 and less than the tax base',
 };
 
 const enResource: ResourceLanguage = {

@@ -2766,6 +2766,19 @@ export const langKeys = {
     saveasdraft: 'saveasdraft',
     deleteinvoicesuccess: 'deleteinvoicesuccess',
     field_required_shorter: 'field_required_shorter',
+    billinginvoicedata: 'billinginvoicedata',
+    billingadditionalinfo: 'billingadditionalinfo',
+    INVOICED: 'INVOICED',
+    DRAFT: 'DRAFT',
+    invoiceid: 'invoiceid',
+    pendingsave: 'pendingsave',
+    taxbase: 'taxbase',
+    referenceddocument: 'referenceddocument',
+    PAID: 'PAID',
+    PENDING: 'PENDING',
+    NONE: 'NONE',
+    paymentreferenceview: 'paymentreferenceview',
+    discountvalidmessage: 'discountvalidmessage',
 };
 
 export type LangKeys = typeof langKeys;
