@@ -2121,6 +2121,7 @@ const translation: LangKeys = {
     graphic_report_of: 'Graphic report of {{report}} by {{column}}',
     grid_view: 'List view',
     in_white: 'In white',
+    view_table: 'View table',
 
     manageAgreement: 'Manage agreements',
     manageAgreement_plural: 'Manage agreements',

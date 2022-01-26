@@ -546,6 +546,7 @@ const translation: LangKeys = {
     graphic_report_of: 'Reporte gráfico de {{report}} por {{column}}',
     grid_view: 'Vista lista',
     in_white: 'En blanco',
+    view_table: 'Ver tabla',
 
     status_activo: 'activo',
     no_reply_use_hsm: 'La conversación está cerrada o bloqueada por estar fuera de la venta de 24 horas.\nEnvíe un HSM para contactar al cliente.',
