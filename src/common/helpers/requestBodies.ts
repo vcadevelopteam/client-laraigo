@@ -2349,31 +2349,11 @@ export const selInvoice = ({ corpid, orgid, year, month, invoiceid, currency, pa
     key: "UFN_INVOICE_SEL",
     parameters: { corpid, orgid, year, month, invoiceid: invoiceid ? invoiceid : 0 , currency, paymentstatus},
 });
+
 export const selInvoiceClient = ({ corpid, orgid, year, month, invoiceid, currency, paymentstatus }: Dictionary) => ({
     method: "UFN_INVOICE_SELCLIENT",
     key: "UFN_INVOICE_SELCLIENT",
     parameters: { corpid, orgid, year, month, invoiceid: invoiceid ? invoiceid : 0 , currency, paymentstatus},
-});
-export const selInvoiceChangePaymentStatus = ({ invoiceid, paymentnote, paymentfile }: Dictionary) => ({
-    method: "UFN_INVOICE_CHANGEPAYMENTSTATUS",
-    key: "UFN_INVOICE_CHANGEPAYMENTSTATUS",
-    parameters: { invoiceid, status: "PAID", paymentnote, paymentfile },
-});
-export const regenerateInvoice = ({ invoiceid }: Dictionary) => ({
-    method: "UFN_INVOICE_REGENERATE",
-    key: "UFN_INVOICE_REGENERATE",
-    parameters: { invoiceid },
-});
-export const insInvoice = (parameters: Dictionary) => ({
-    method: "UFN_INVOICE_INS",
-    key: "UFN_INVOICE_INS",
-    parameters
-});
-
-export const cancelInvoice = (invoiceid: number) => ({
-    method: "UFN_INVOICE_ANNULLED",
-    key: "UFN_INVOICE_ANNULLED",
-    parameters: { invoiceid },
 });
 
 export const deleteInvoice = ({ corpid, orgid, invoiceid }: Dictionary) => ({
