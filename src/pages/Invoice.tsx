@@ -3651,6 +3651,23 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
             setValue('invoiceduedate', '');
         }
         
+        console.log('DOCTYPE:' + data?.doctype);
+
+        if (data?.doctype) {
+            if (appsettingData?.data) {
+                var invoiceamount = getValues('invoicetotalamount');
+
+                if (data?.doctype === '0') {
+                    setAmountTax(0);
+                    setAmountTotal(invoiceamount || 0);
+                }
+                else {
+                    setAmountTax((invoiceamount || 0) * appsettingData.data[0].igv);
+                    setAmountTotal((invoiceamount || 0) + ((invoiceamount || 0) * appsettingData.data[0].igv));
+                }
+            }
+        }
+
         trigger('corpid');
         trigger('orgid');
         trigger('clientdoctype');
@@ -3763,8 +3780,14 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
 
         if (appsettingData) {
             if (appsettingData.data) {
-                setAmountTax(totalAmount * appsettingData.data[0].igv);
-                setAmountTotal(totalAmount + (totalAmount * appsettingData.data[0].igv));
+                if (getValues('clientdoctype') === '0') {
+                    setAmountTax(0);
+                    setAmountTotal(totalAmount);
+                }
+                else {
+                    setAmountTax(totalAmount * appsettingData.data[0].igv);
+                    setAmountTotal(totalAmount + (totalAmount * appsettingData.data[0].igv));
+                }
             }
         }
 
