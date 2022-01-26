@@ -2244,6 +2244,7 @@ export const langKeys = {
     scheduleActivity_plural: 'scheduleActivity_plural',
 
     channellimit: 'channellimit',
+    userlimit: 'userlimit',
     type_activitylead_call: 'type_activitylead_call',
     'type_activitylead_call for demo': 'type_activitylead_call for demo',
     'type_activitylead_email: welcome demo': 'type_activitylead_email: welcome demo',

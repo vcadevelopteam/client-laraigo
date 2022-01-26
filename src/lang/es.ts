@@ -2140,6 +2140,7 @@ const translation: LangKeys = {
     scheduleActivity_plural: 'Programa de actividades',
 
     channellimit: 'Se alcanzo el maximo número de canales, mejora tu plan para continuar',
+    userlimit: 'Se alcanzo el maximo número de usuarios, mejora tu plan para continuar',
     type_activitylead_call: 'Llamada',
     'type_activitylead_call for demo': 'Demo de llamada',
     'type_activitylead_email: welcome demo': 'Correo: Demostración de bienvenida',

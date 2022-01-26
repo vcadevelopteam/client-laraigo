@@ -2558,3 +2558,9 @@ export const getInvoiceDetail = (corpid: number, orgid: number, invoiceid: numbe
     key: "UFN_INVOICEDETAIL_SELBYINVOICEID",
     parameters: { corpid, orgid, invoiceid },
 });
+
+export const checkUserPaymentPlan = (): IRequestBody => ({
+    key: "UFN_USER_PAYMENTPLAN_CHECK",
+    method: "UFN_USER_PAYMENTPLAN_CHECK",
+    parameters: { }
+});
