@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
 import { IInteraction, IGroupInteraction, Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
-import { BotIcon, AgentIcon, DownloadIcon2, InteractiveListIcon, SeenIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon } from 'icons';
+import { BotIcon, AgentIcon, DownloadIcon2, InteractiveListIcon, SeenIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, ZipIcon } from 'icons';
 import Fab from '@material-ui/core/Fab';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
@@ -371,6 +371,8 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                         <PptIcon width="30" height="30" />
                     ) : (extension === "text" || extension === "txt") ? (
                         <TxtIcon width="30" height="30" />
+                    ) : (extension === "zip" || extension === "rar") ? (
+                        <ZipIcon width="30" height="30" />
                     ) : <FileIcon width="30" height="30" />
                     }
                     <div style={{ color: '#171717', textOverflow: 'ellipsis', overflowX: 'hidden', flex: 1, whiteSpace: 'nowrap' }}>{filename}</div>
