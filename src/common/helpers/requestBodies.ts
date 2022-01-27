@@ -780,6 +780,13 @@ export const deldataIntegrationManager = (id: number): IRequestBody => ({
     }
 });
 
+export const getdataIntegrationManager = (id: number): IRequestBody => ({
+    method: "UFN_INTEGRATIONMANAGER_EXPORT",
+    parameters: {
+        id: id
+    }
+});
+
 export const getChannelSel = (id: number,orgid?:number,corpid?:number): IRequestBody => ({
     method: "UFN_COMMUNICATIONCHANNEL_SEL",
     parameters: {

@@ -745,6 +745,7 @@ export const langKeys = {
     graphic_report_of: 'graphic_report_of',
     grid_view: 'grid_view',
     in_white: 'in_white',
+    view_table: 'view_table',
 
     status_activo: 'status_activo',
     status_inactivo: 'status_inactivo',

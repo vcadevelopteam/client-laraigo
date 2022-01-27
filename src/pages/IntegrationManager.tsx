@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldEditMulti, FieldCheckbox, DialogZyx } from 'components';
-import { getIntegrationManagerSel, insIntegrationManager, getValuesFromDomain, uuidv4, extractVariablesFromArray, downloadJson, uploadExcel, insarrayIntegrationManager, deldataIntegrationManager } from 'common/helpers';
+import { getIntegrationManagerSel, insIntegrationManager, getValuesFromDomain, uuidv4, extractVariablesFromArray, downloadJson, uploadExcel, insarrayIntegrationManager, deldataIntegrationManager, getdataIntegrationManager } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -16,7 +16,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { getCollection, resetAllMain, getMultiCollection, execute } from 'store/main/actions';
+import { getCollection, resetAllMain, getMultiCollection, execute, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import { apiUrls } from 'common/constants';
@@ -300,6 +300,12 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
 
     const [waitImport, setWaitImport] = useState(false);
     const [waitDelete, setWaitDelete] = useState(false);
+
+    const mainAuxRes = useSelector(state => state.main.mainAux);
+    const [waitView, setWaitView] = useState(false);
+    const [openViewTableModal, setOpenViewTableModal] = useState(false);
+    const [tableData, setTableData] = useState<any[]>([]);
+    const [columnData, setColumnData] = useState<any[]>([]);
 
     // const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     
@@ -656,6 +662,33 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
         { id: "view-2", name: t(langKeys.integrationmanagerdetail) }
     ];
 
+    const handleViewTable = () => {
+        dispatch(getCollectionAux(getdataIntegrationManager(getValues('id'))));
+        setWaitView(true);
+    }
+
+    useEffect(() => {
+        if (waitView) {
+            if (!mainAuxRes.loading && !mainAuxRes.error) {
+                dispatch(showBackdrop(false));
+                setWaitView(false);
+                if (mainAuxRes.data[0]?.data && mainAuxRes.data[0]?.data?.length > 0) {
+                    setTableData(mainAuxRes.data[0]?.data);
+                    setColumnData(Object.keys(mainAuxRes.data[0].data[0]).map(c => ({
+                        Header: c,
+                        accessor: c
+                    })))
+                }
+                setOpenViewTableModal(true);
+            } else if (mainAuxRes.error) {
+                const errormessage = t(mainAuxRes.code || "error_unexpected_error", { module: t(langKeys.integration_plural).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitView(false);
+            }
+        }
+    }, [mainAuxRes, waitView]);
+
     return (
         <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
@@ -685,6 +718,14 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                                     variant="contained"
                                     type="button"
                                     color="primary"
+                                    style={{ backgroundColor: "#7721AD" }}
+                                    onClick={handleViewTable}
+                                >{t(langKeys.view_table)}</Button>
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    color="primary"
+                                    startIcon={<DeleteIcon color="secondary" />}
                                     style={{ backgroundColor: "#FB5F5F" }}
                                     onClick={onDeleteData}
                                 >{t(langKeys.deletedata)}</Button>
@@ -1219,6 +1260,12 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                 cleanModalData={cleanRequestData}
             />
 
+            <ModalViewTable
+                openModal={openViewTableModal}
+                setOpenModal={setOpenViewTableModal}
+                columns={columnData}
+                data={tableData}
+            />
         </div>
     );
 }
@@ -1247,6 +1294,48 @@ const ModalIntegrationManager: React.FC<ModalProps> = ({ data, openModal, setOpe
             <div className="row-zyx">
                 {JSON.stringify(data, null, 4)}
             </div>
+        </DialogZyx>
+    )
+}
+
+interface ViewTableModalProps {
+    openModal: boolean;
+    setOpenModal: (value: boolean) => any;
+    columns: Dictionary[];
+    data: Dictionary[];
+}
+
+const ModalViewTable: React.FC<ViewTableModalProps> = ({ openModal, setOpenModal, columns = [], data = [] }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+
+    const handleCancelModal = () => {
+        setOpenModal(false);
+    }
+
+    useEffect(() => {
+        return () => {
+            dispatch(resetMainAux());
+        }
+
+    }, [])
+
+    return (
+        <DialogZyx
+            title=''    
+            open={openModal}
+            maxWidth="lg"
+            button1Type="button"
+            buttonText1={t(langKeys.close)}
+            handleClickButton1={handleCancelModal}
+        >
+            <TableZyx
+                columns={columns}
+                data={data}
+                download={true}
+                pageSizeDefault={20}
+                filterGeneral={false}
+            />
         </DialogZyx>
     )
 }
