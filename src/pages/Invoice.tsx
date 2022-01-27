@@ -4287,14 +4287,17 @@ const Invoice: FC = () => {
                 {user?.roledesc === "SUPERADMIN" && 
                     <AntTab label={t(langKeys.costperperiod)} />
                 }
-                {(user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMIN") && 
+                {(user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMINISTRADOR") && 
                     <AntTab label={t(langKeys.periodreport)} />
                 }
-                {(user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMIN") && 
+                {(user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMINISTRADOR") && 
                     <AntTab label={t(langKeys.payments)} />
                 }
                 {user?.roledesc === "SUPERADMIN" && 
                     <AntTab label={t(langKeys.invoice)} />
+                }
+                {(user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMINISTRADOR") && 
+                    <AntTab label={t(langKeys.messagingpackages)} />
                 }
             </Tabs>
             {pageSelected === 0 &&
@@ -4315,6 +4318,11 @@ const Invoice: FC = () => {
             {pageSelected === 3 &&
                 <div style={{ marginTop: 16 }}>
                     <Billing dataPlan={multiData}/>
+                </div>
+            }
+            {pageSelected === 4 &&
+                <div style={{ marginTop: 16 }}>
+                    <Payments dataPlan={multiData} setCustomSearch={setCustomSearch}/>
                 </div>
             }
         </div>
