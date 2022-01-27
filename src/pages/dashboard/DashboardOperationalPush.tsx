@@ -1,6 +1,6 @@
 import { Box, Button, createStyles, makeStyles, Theme } from "@material-ui/core";
 import { Dictionary } from "@types";
-import { getCommChannelLst, getdashboardPushHSMCATEGORYRANKSel, getdashboardPushHSMRANKSel, getdashboardPushMENSAJEXDIASel, getdashboardPushSUMMARYSel, getLabelsSel, getSupervisorsSel, getValuesFromDomain } from "common/helpers";
+import { exportExcel, getCommChannelLst, getdashboardPushHSMCATEGORYRANKSel, getdashboardPushHSMCATEGORYRANKSelData, getdashboardPushHSMRANKSel, getdashboardPushHSMRANKSelData, getdashboardPushMENSAJEXDIASel, getdashboardPushMENSAJEXDIASelData, getdashboardPushSUMMARYSel, getdashboardPushSUMMARYSelData, getLabelsSel, getSupervisorsSel, getValuesFromDomain } from "common/helpers";
 import { DateRangePicker, DialogZyx, FieldMultiSelect } from "components";
 import { useSelector } from "hooks";
 import { CalendarIcon } from "icons";
@@ -12,8 +12,9 @@ import AdbIcon from '@material-ui/icons/Adb';
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { Bar, BarChart, CartesianGrid, Cell, ComposedChart, Legend, Line, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { getMultiCollection, getMultiCollectionAux, resetMain } from "store/main/actions";
+import { getCollectionAux, getMultiCollection, getMultiCollectionAux, resetMain, resetMainAux, resetMultiMainAux } from "store/main/actions";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
 const COLORS = ["#0f8fe5", "#067713", "#296680", "#fc3617", "#e8187a", "#7cfa57", "#cfbace", "#4cd45f", "#fd5055", "#7e1be4", "#bf1490", "#66c6cf", "#011c3d", "#1a9595", "#4ae2c7", "#515496", "#a2aa65", "#df909c", "#3aa343", "#e0606e"];
 
@@ -133,7 +134,17 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         dontshow: {
             display: "none"
-        }
+        },
+        downloadiconcontainer:{
+            width:"100%",display: "flex",justifyContent: "end"
+        },
+        styleicon:{
+            width: "18px",
+            height: "18px",
+            '&:hover': {
+                cursor: 'pointer',
+            }
+        },
     })
 );
 
@@ -148,6 +159,9 @@ const DashboardOperationalPush: FC = () => {
     const classes = useStyles();
     const mainResult = useSelector(state => state.main);
     const remultiaux = useSelector(state => state.main.multiDataAux);
+    const resaux = useSelector(state => state.main.mainAux);
+    const [downloaddatafile,setdownloaddatafile]=useState(false);
+    const [titlefile, settitlefile] = useState('');
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
     const { t } = useTranslation();
@@ -274,10 +288,43 @@ const DashboardOperationalPush: FC = () => {
         ]));
         funcsearch()
         return () => {
-            dispatch(resetMain());
+            dispatch(resetMainAux());
+            dispatch(resetMultiMainAux());
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+    useEffect(() => {
+        if(downloaddatafile) {
+            if(!resaux.loading){
+                exportExcel(titlefile,resaux.data)
+                setdownloaddatafile(false)
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [resaux,downloaddatafile])
+    async function downloaddata(tipeoffilter:string){
+        let tosend = { 
+            startdate: dateRangeCreateDate.startDate, 
+            enddate: dateRangeCreateDate.endDate, 
+            channel: searchfields.channels, 
+            group: searchfields.queue, 
+            company: searchfields.provider,
+            label: searchfields.label,
+            category: searchfields.categoriaHSM,
+            supervisor: searchfields.supervisor
+        }
+        setdownloaddatafile(true)
+        settitlefile(`DashboardOperativoPush-${tipeoffilter}`)
+        if(tipeoffilter==="SUMMARY"){
+            dispatch(getCollectionAux(getdashboardPushSUMMARYSelData(tosend)))
+        }else if(tipeoffilter==="CATEGORYRANK"){
+            dispatch(getCollectionAux(getdashboardPushHSMCATEGORYRANKSelData(tosend)))
+        }else if(tipeoffilter==="HSMRANK"){
+            dispatch(getCollectionAux(getdashboardPushHSMRANKSelData(tosend)))
+        }else if(tipeoffilter==="MESSAGEPERDAY"){
+            dispatch(getCollectionAux(getdashboardPushMENSAJEXDIASelData(tosend)))
+        }
+    }
     return (
         <Fragment>
             <DialogZyx
@@ -389,6 +436,9 @@ const DashboardOperationalPush: FC = () => {
             </div>
             <div style={{ display: 'flex', gap: 16, flexDirection: 'column' }}>
                 <div className={classes.replacerowzyx}>
+                    <div className={classes.downloadiconcontainer}>                            
+                        <CloudDownloadIcon onClick={()=>downloaddata("SUMMARY")} className={classes.styleicon}/>
+                    </div>
                     <Box
                         className={classes.columnCard}
                     >
@@ -440,8 +490,11 @@ const DashboardOperationalPush: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
+                        <div className={classes.downloadiconcontainer}>                            
+                            <CloudDownloadIcon onClick={()=>downloaddata("CATEGORYRANK")} className={classes.styleicon}/>
+                        </div>
                         <div className={classes.boxtitle}  style={{ width:"100%"}}>{t(langKeys.distributionbycategoryHSM)}</div>
-                        <div style={{ height: 240 }} >
+                        <div style={{ height: 240, margin: 'auto' }} >
                             <ResponsiveContainer width="100%" aspect={4.0 / 1.3}>
                                 <PieChart>
                                     <Tooltip />
@@ -458,6 +511,9 @@ const DashboardOperationalPush: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
+                        <div className={classes.downloadiconcontainer}>                            
+                            <CloudDownloadIcon onClick={()=>downloaddata("HSMRANK")} className={classes.styleicon}/>
+                        </div>
                         <div className={classes.boxtitle} style={{ width:"100%"}}> Ranking HSM </div>
                             <div style={{ height: 240 }}>
                                 <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
@@ -479,6 +535,9 @@ const DashboardOperationalPush: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
+                        <div className={classes.downloadiconcontainer}>                            
+                            <CloudDownloadIcon onClick={()=>downloaddata("MESSAGEPERDAY")} className={classes.styleicon}/>
+                        </div>
                         <div className={classes.boxtitle} style={{ width:"100%"}}>{t(langKeys.messagesbyday)}</div>
                             <div style={{ height: 240 }}>
                                 <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
