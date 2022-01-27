@@ -780,6 +780,13 @@ export const deldataIntegrationManager = (id: number): IRequestBody => ({
     }
 });
 
+export const getdataIntegrationManager = (id: number): IRequestBody => ({
+    method: "UFN_INTEGRATIONMANAGER_EXPORT",
+    parameters: {
+        id: id
+    }
+});
+
 export const getChannelSel = (id: number,orgid?:number,corpid?:number): IRequestBody => ({
     method: "UFN_COMMUNICATIONCHANNEL_SEL",
     parameters: {
@@ -2557,4 +2564,10 @@ export const getInvoiceDetail = (corpid: number, orgid: number, invoiceid: numbe
     method: "UFN_INVOICEDETAIL_SELBYINVOICEID",
     key: "UFN_INVOICEDETAIL_SELBYINVOICEID",
     parameters: { corpid, orgid, invoiceid },
+});
+
+export const checkUserPaymentPlan = (): IRequestBody => ({
+    key: "UFN_USER_PAYMENTPLAN_CHECK",
+    method: "UFN_USER_PAYMENTPLAN_CHECK",
+    parameters: { }
 });

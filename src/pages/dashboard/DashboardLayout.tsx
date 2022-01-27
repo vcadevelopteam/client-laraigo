@@ -12,7 +12,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { manageConfirmation, showSnackbar } from "store/popus/actions";
 import { getDashboardTemplateIns, getDashboardTemplateSel, getReportTemplateSel } from "common/helpers";
 import RGL, { WidthProvider } from 'react-grid-layout';
-import { XAxis, YAxis, ResponsiveContainer, Tooltip as ChartTooltip, BarChart, Legend, Bar, PieChart, Pie, Cell, ResponsiveContainerProps, LineChart, Line, CartesianGrid } from 'recharts';
+import { XAxis, YAxis, ResponsiveContainer, Tooltip as ChartTooltip, BarChart, Legend, Bar, PieChart, Pie, Cell, ResponsiveContainerProps, LineChart, Line, CartesianGrid, LabelList } from 'recharts';
 import { LayoutItem as NewLayoutItem, ReportTemplate } from './DashboardAdd';
 import { useForm } from "react-hook-form";
 import { getCollection, getCollectionDynamic, resetMain, resetMainDynamic } from "store/main/actions";
@@ -21,6 +21,7 @@ import { CalendarIcon } from "icons";
 import TableZyx from "components/fields/table-simple";
 import GaugeChart from "react-gauge-chart";
 import clsx from 'clsx';
+import { RenderCustomizedLabel } from "components/fields/Graphic";
 
 const ReactGridLayout = WidthProvider(RGL);
 
@@ -306,7 +307,6 @@ const DashboardLayout: FC = () => {
                 handleClick={id => id === "view-1" && history.push(paths.DASHBOARD)}
             />
             <div className={classes.header}>
-                <TitleDetail title={description} />
                 <div style={{ flexGrow: 1 }} />
                 <Button
                     variant="contained"
@@ -742,7 +742,16 @@ const LayoutBar: FC<LayoutBarProps> = ({ data, tickFormatter, tooltipFormatter, 
     return (
         <ResponsiveContainer {...props}>
             <BarChart data={data}>
-                <XAxis dataKey="label" />
+                <XAxis
+                    dataKey="label"
+                    style={{ fontSize: '0.8em' }}
+                    angle={-45}
+                    interval={0}
+                    textAnchor="end"
+                    height={160}
+                    dy={5}
+                    dx={-5}
+                />
                 <YAxis tickFormatter={tickFormatter} />
                 <ChartTooltip
                     content={({ active, payload, label }) => {
@@ -765,7 +774,15 @@ const LayoutBar: FC<LayoutBarProps> = ({ data, tickFormatter, tooltipFormatter, 
                         return null;
                     }}
                 />
-                <Bar dataKey="quantity" fill="#8884d8" />
+                <Bar
+                    dataKey="quantity"
+                    fill="#8884d8"
+                    textAnchor="end"
+                    stackId="a"
+                    type="monotone"
+                >
+                    <LabelList dataKey="quantity" position="inside" fill="#fff" />
+                </Bar>
             </BarChart>
         </ResponsiveContainer>
     );
@@ -783,7 +800,16 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, tickFormatter, tooltipFormatter
             <LineChart data={data}>
                 <Line type="monotone" dataKey="quantity" stroke="#8884d8"  />
                 <CartesianGrid stroke="#ccc" />
-                <XAxis dataKey="label" />
+                <XAxis
+                    dataKey="label"
+                    style={{ fontSize: '0.8em' }}
+                    angle={-45}
+                    interval={0}
+                    textAnchor="end"
+                    height={160}
+                    dy={5}
+                    dx={-5}
+                />
                 <YAxis tickFormatter={tickFormatter} />
                 <ChartTooltip
                     content={({ active, payload, label }) => {
@@ -822,7 +848,7 @@ const LayoutPie: FC<LayoutPieProps> = ({ data, tooltipFormatter, ...props }) => 
     return (
         <ResponsiveContainer {...props}>
             <PieChart>
-            <ChartTooltip
+                <ChartTooltip
                     content={({ active, payload }) => {
                         if (active && payload && payload.length) {
                             const { name: label, value } = payload[0];
@@ -851,6 +877,8 @@ const LayoutPie: FC<LayoutPieProps> = ({ data, tooltipFormatter, ...props }) => 
                     cy="50%"
                     innerRadius={40}
                     fill="#8884d8"
+                    labelLine={false}
+                    label={RenderCustomizedLabel}
                 >
                     {data.map((_, i) => (
                         <Cell

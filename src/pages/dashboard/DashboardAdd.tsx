@@ -129,7 +129,7 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
         } else if (edit === true && location.state) {
             dispatch(setDashboardTemplate({
                 ...location.state,
-                description: `${location.state.description}-${t(langKeys.copy).toLowerCase()}`,
+                description: `${location.state.description}-v1`,
                 dashboardtemplateid: 0,
             }));
         } else if (edit === true && !location.state && !Number(match.params.id)) {

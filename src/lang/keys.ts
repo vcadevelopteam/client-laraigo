@@ -744,6 +744,8 @@ export const langKeys = {
     graphic_view_by: 'graphic_view_by',
     graphic_report_of: 'graphic_report_of',
     grid_view: 'grid_view',
+    in_white: 'in_white',
+    view_table: 'view_table',
 
     status_activo: 'status_activo',
     status_inactivo: 'status_inactivo',
@@ -2243,6 +2245,7 @@ export const langKeys = {
     scheduleActivity_plural: 'scheduleActivity_plural',
 
     channellimit: 'channellimit',
+    userlimit: 'userlimit',
     type_activitylead_call: 'type_activitylead_call',
     'type_activitylead_call for demo': 'type_activitylead_call for demo',
     'type_activitylead_email: welcome demo': 'type_activitylead_email: welcome demo',
@@ -2765,6 +2768,28 @@ export const langKeys = {
     invoicenotfound: 'invoicenotfound',
     saveasdraft: 'saveasdraft',
     deleteinvoicesuccess: 'deleteinvoicesuccess',
+    field_required_shorter: 'field_required_shorter',
+    billinginvoicedata: 'billinginvoicedata',
+    billingadditionalinfo: 'billingadditionalinfo',
+    INVOICED: 'INVOICED',
+    DRAFT: 'DRAFT',
+    invoiceid: 'invoiceid',
+    pendingsave: 'pendingsave',
+    taxbase: 'taxbase',
+    referenceddocument: 'referenceddocument',
+    PAID: 'PAID',
+    PENDING: 'PENDING',
+    NONE: 'NONE',
+    paymentreferenceview: 'paymentreferenceview',
+    discountvalidmessage: 'discountvalidmessage',
+
+    doctype_others_non_home_error: 'doctype_others_non_home_error',
+    doctype_dni_error: 'doctype_dni_error',
+    doctype_foreigners_card: 'doctype_foreigners_card',
+    doctype_ruc_error: 'doctype_ruc_error',
+    doctype_passport_error: 'doctype_passport_error',
+    doctype_unknown_error: 'doctype_unknown_error',
+    totaltopay: 'totaltopay',
 };
 
 export type LangKeys = typeof langKeys;

@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, Fragment, useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { FC, useCallback, Fragment, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { cleanMemoryTable, setMemoryTable } from 'store/main/actions';
+import { cleanMemoryTable, setMemoryTable, uploadFile } from 'store/main/actions';
 import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx, FieldEditArray, TemplateIcons } from 'components';
 import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, invoiceRefreshTest, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
@@ -15,17 +15,19 @@ import { langKeys } from 'lang/keys';
 import { useForm, useFieldArray } from 'react-hook-form';
 import ClearIcon from '@material-ui/icons/Clear';
 import { getCollection, getMultiCollection, execute, exportData, getMultiCollectionAux } from 'store/main/actions';
-import { createInvoice, regularizeInvoice, createCreditNote } from 'store/culqi/actions';
+import { createInvoice, regularizeInvoice, createCreditNote, getExchangeRate } from 'store/culqi/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { Box, FormHelperText, Grid, IconButton, Tabs, TextField } from '@material-ui/core';
+import { Box, CircularProgress, FormHelperText, Grid, IconButton, Tab, Tabs, TextField } from '@material-ui/core';
 import * as locale from "date-fns/locale";
 import { DownloadIcon } from 'icons';
 import {
     Close,
+    FileCopy,
     CloudUpload,
     Search as SearchIcon,
     Refresh as RefreshIcon,
-    Add as AddIcon
+    Add as AddIcon,
+    GetApp
 } from '@material-ui/icons';
 import PaymentIcon from '@material-ui/icons/Payment';
 import DateFnsUtils from '@date-io/date-fns';
@@ -45,6 +47,8 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { stringify } from 'querystring';
+import zhCN from 'date-fns/esm/locale/zh-CN/index.js';
+import AttachFileIcon from '@material-ui/icons/AttachFile';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -1986,6 +1990,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
 
     const classes = useStyles();
     const mainResult = useSelector(state => state.main);
+    const exchangeRequest = useSelector(state => state.culqi.requestGetExchangeRate);
 
     const [comments, setComments] = useState('');
     const [purchaseOrder, setPurchaseOrder] = useState('');
@@ -1993,23 +1998,63 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
     const [purchaseOrderError, setPurchaseOrderError] = useState('');
     const [paymentDisabled, setPaymentDisabled] = useState(false);
     const [publicKey, setPublicKey] = useState('');
-
-    const fetchPublicKey = () => dispatch(getCollection(getAppsettingInvoiceSel()));
+    const [showCulqi, setShowCulqi] = useState(false);
+    const [totalAmount, setTotalAmount] = useState(0);
+    const [totalPay, setTotalPay] = useState(0);
+    const [waitSave, setWaitSave] = useState(false);
+    const [Override, setOverride] = useState(false);
 
     useEffect(() => {
-        fetchPublicKey();
+        dispatch(getCollection(getAppsettingInvoiceSel()));
+        dispatch(getExchangeRate(null));
+        dispatch(showBackdrop(true));
+        setWaitSave(true);
     }, [])
 
     useEffect(() => {
-        if (!mainResult.mainData.loading) {
-            dispatch(showBackdrop(false));
-            if (mainResult.mainData.data) {
-                if (mainResult.mainData.data[0]) {
-                    setPublicKey(mainResult.mainData.data[0].publickey);
+        if (waitSave) {
+            if (!mainResult.mainData.loading && !exchangeRequest.loading) {
+                dispatch(showBackdrop(false));
+    
+                if (mainResult.mainData.data) {
+                    if (mainResult.mainData.data[0]) {
+                        var appsetting = mainResult.mainData.data[0];
+                        var country = (data?.orgcountry || data?.corpcountry);
+                        var doctype = (data?.orgdoctype || data?.corpdoctype);
+    
+                        if (country && doctype) {
+                            if (country === 'PE' && doctype === '6') {
+                                var compareamount = (data?.totalamount || 0);
+    
+                                if (data?.currency === 'USD') {
+                                    compareamount = compareamount * (exchangeRequest?.exchangerate || 0);
+                                }
+    
+                                if (compareamount > appsetting.detractionminimum) {
+                                    setTotalPay(data?.totalamount - (data?.totalamount * appsetting.detraction));
+                                    setTotalAmount(data?.totalamount);
+                                    setOverride(true);
+                                    setShowCulqi(true);
+                                }
+                                else {
+                                    setTotalPay(data?.totalamount);
+                                    setTotalAmount(data?.totalamount);;
+                                    setShowCulqi(true);
+                                }
+                            }
+                            else {
+                                setTotalPay(data?.totalamount);
+                                setTotalAmount(data?.totalamount);
+                                setShowCulqi(true);
+                            }
+                        }
+    
+                        setPublicKey(appsetting.publickey);
+                    }
                 }
             }
         }
-    }, [mainResult])
+    }, [mainResult, exchangeRequest, waitSave])
 
     const handleCulqiSuccess = () => {
         fetchData();
@@ -2063,14 +2108,14 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                        {data?.paymentstatus === "PENDING" &&
+                        {(data?.paymentstatus === "PENDING" && publicKey && showCulqi) &&
                             <CulqiModal
                                 type="CHARGE"
                                 invoiceid={data?.invoiceid}
                                 title={data?.description}
                                 description={data?.productdescription}
                                 currency={data?.currency}
-                                amount={data?.totalamount * 100}
+                                amount={parseFloat(totalPay.toFixed(2)) * 100}
                                 callbackOnSuccess={() => { handleCulqiSuccess() }}
                                 buttontitle={t(langKeys.proceedpayment)}
                                 purchaseorder={purchaseOrder}
@@ -2079,6 +2124,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                                 disabled={paymentDisabled}
                                 successmessage={t(langKeys.culqipaysuccess)}
                                 publickey={publicKey}
+                                override={Override}
                             ></CulqiModal>
                         }
                     </div>
@@ -2093,14 +2139,19 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                     </div>
                     <div className="row-zyx">
                         <FieldView
-                            className="col-6"
+                            className="col-4"
                             label={t(langKeys.servicedescription)}
                             value={data?.productdescription || ''}
                         />
                         <FieldView
-                            className="col-6"
+                            className="col-4"
                             label={t(langKeys.totalamount)}
-                            value={(data?.currency === 'USD' ? '$' : 'S/')+formatNumber((data?.totalamount || 0))}
+                            value={(data?.currency === 'USD' ? '$' : 'S/')+formatNumber((totalAmount || 0))}
+                        />
+                        <FieldView
+                            className="col-4"
+                            label={t(langKeys.totaltopay)}
+                            value={(data?.currency === 'USD' ? '$' : 'S/')+formatNumber((totalPay || 0))}
                         />
                     </div>
                     <div className="row-zyx">
@@ -2178,7 +2229,6 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const [isRegularize, setIsRegularize] = useState(false);
     const [operationName, setOperationName] = useState('');
     const [waitSave, setWaitSave] = useState(false);
-    const [waitSend, setWaitSend] = useState(false);
 
     const fetchData = () => dispatch(getCollection(selInvoice(dataMain)));
 
@@ -2559,6 +2609,8 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
     
     const [measureList, setMeasureList] = useState<any>([]);
     const [openModal, setOpenModal] = useState(false);
+    const [pageSelected, setPageSelected] = useState(0);
+    const [productList, setProductList] = useState<any>([]);
     const [showDiscount, setShowDiscount] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
 
@@ -2578,15 +2630,46 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
         }
 
         setMeasureList({ loading: false, data: [] });
+        setProductList({ loading: false, data: [] });
 
-        dispatch(getMultiCollectionAux([getMeasureUnit()]));
+        const trueinvoiceid = (data?.referenceinvoiceid ? data.referenceinvoiceid : data?.invoiceid);
+
+        dispatch(getMultiCollectionAux([getMeasureUnit(), getInvoiceDetail(data?.corpid, data?.orgid, trueinvoiceid)]));
     }, [])
+
+    useEffect(() => {
+        setValue('productdetail', []);
+
+        if (productList) {
+            if (productList.data) {
+                var productInformationList: Partial<unknown> [] = [];
+
+                productList.data.forEach((element: { description: any; productcode: any; measureunit: any; quantity: any; productnetprice: any; }) => {
+                    productInformationList.push({
+                        productdescription: element.description,
+                        productcode: element.productcode,
+                        productmeasure: element.measureunit,
+                        productquantity: element.quantity,
+                        productsubtotal: element.productnetprice,
+                    })
+                });
+
+                fieldsAppend(productInformationList);
+            }
+        }
+    }, [productList]);
 
     useEffect(() => {
         const indexMeasure = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_MEASUREUNIT_SEL'));
 
         if (indexMeasure > -1) {
             setMeasureList({ loading: false, data: multiResult.data[indexMeasure] && multiResult.data[indexMeasure].success ? multiResult.data[indexMeasure].data : [] });
+        }
+
+        const indexProduct = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_INVOICEDETAIL_SELBYINVOICEID'));
+
+        if (indexProduct > -1) {
+            setProductList({ loading: false, data: multiResult.data[indexProduct] && multiResult.data[indexProduct].success ? multiResult.data[indexProduct].data : [] });
         }
     }, [multiResult]);
 
@@ -2612,8 +2695,8 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
         register('orgid');
         register('invoiceid', { validate: (value) => (value && value > 0) || "" + t(langKeys.field_required) });
         register('creditnotetype', { validate: (value) => (regularize || (value && value.length > 0)) || "" + t(langKeys.field_required) });
-        register('creditnotemotive', { validate: (value) => (regularize || (value && value.length > 10)) || "" + t(langKeys.field_required) });
-        register('creditnotediscount', { validate: (value) => (regularize || ((getValues('creditnotetype') !== '04') || (value && value > 0 && value < data?.totalamount))) || "" + t(langKeys.field_required) });
+        register('creditnotemotive', { validate: (value) => (regularize || (value && value.length > 10)) || "" + t(langKeys.field_required_shorter) });
+        register('creditnotediscount', { validate: (value) => (regularize || ((getValues('creditnotetype') !== '04') || (value && value > 0 && value < data?.subtotal))) || "" + t(langKeys.discountvalidmessage) });
     }, [register]);
 
     const getDocumentType = (documenttype: string) => {
@@ -2641,6 +2724,17 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                 return 'emissorticket';
             case '07':
                 return 'emissorcreditnote';
+            default:
+                return '';
+        }
+    }
+
+    const getCreditNoteType = (creditnotetype: string) => {
+        switch (creditnotetype) {
+            case '01':
+                return 'billingcreditnote01';
+            case '04':
+                return 'billingcreditnote04';
             default:
                 return '';
         }
@@ -2731,7 +2825,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                             </Button>
                             ) : null
                         }
-                        { (data?.invoicestatus === 'INVOICED' && data?.paymentstatus !== 'PAID' && regularize) ? (
+                        { (data?.invoicestatus === 'INVOICED' && data?.paymentstatus !== 'PAID' && data?.invoicetype !== '07' && regularize) ? (
                             <Button
                                 className={classes.button}
                                 variant="contained"
@@ -2746,135 +2840,142 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                     </div>
                 </div>
                 <div style={{ backgroundColor: 'white', padding: 16 }}>
-                    <div className={classes.container}>
-                        <div className={classes.containerField}>
-                            <div className={classes.titleCard}>{t(langKeys.clientinformation)}</div>
+                    <Tabs
+                        value={pageSelected}
+                        indicatorColor="primary"
+                        variant="fullWidth"
+                        style={{ borderBottom: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
+                        textColor="primary"
+                        onChange={(_, value) => setPageSelected(value)}
+                    >
+                        <AntTab label={t(langKeys.billinginvoicedata)}/>
+                        <AntTab label={t(langKeys.billingadditionalinfo)}/>
+                    </Tabs>
+                    {pageSelected === 0  && <div className={classes.containerDetail}>
+                        <div className="row-zyx">
                             <FieldView
                                 label={t(langKeys.docType)}
                                 value={t(getDocumentType(data?.receiverdoctype))}
-                                className={classes.fieldView}
+                                className="col-3"
                             />
                             <FieldView
                                 label={t(langKeys.documentnumber)}
                                 value={data?.receiverdocnum}
-                                className={classes.fieldView}
+                                className="col-3"
                             />
                             <FieldView
                                 label={t(langKeys.billingname)}
                                 value={data?.receiverbusinessname}
-                                className={classes.fieldView}
+                                className="col-3"
                             />
                             <FieldView
-                                label={t(langKeys.address)}
-                                value={data?.receiverfiscaladdress}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.countrycode)}
-                                value={data?.receivercountry}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.billingsinglemail)}
-                                value={data?.receivermail}
-                                className={classes.fieldView}
+                                label={t(langKeys.invoicestatus)}
+                                value={t(data?.invoicestatus)}
+                                className="col-3"
                             />
                         </div>
-                        <div className={classes.containerField}>
-                            <div className={classes.titleCard}>{t(langKeys.invoiceinformation)}</div>
+                        <div className="row-zyx">
+                            <FieldView
+                                label={t(langKeys.invoiceid)}
+                                value={data?.invoiceid}
+                                className="col-3"
+                            />
                             <FieldView
                                 label={t(langKeys.documenttype)}
                                 value={t(getInvoiceType(data?.invoicetype))}
-                                className={classes.fieldView}
+                                className="col-3"
                             />
                             <FieldView
                                 label={t(langKeys.documentnumber)}
                                 value={(data?.serie ? data.serie : 'X000') + '-' + (data?.correlative ? data?.correlative.toString().padStart(8, '0') : '00000000')}
-                                className={classes.fieldView}
+                                className="col-3"
                             />
                             <FieldView
                                 label={t(langKeys.invoicedate)}
                                 value={data?.invoicedate}
-                                className={classes.fieldView}
+                                className="col-3"
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldView
+                                label={t(langKeys.credittype)}
+                                value={t(data?.credittype)}
+                                className="col-3"
                             />
                             <FieldView
                                 label={t(langKeys.dueDate)}
                                 value={data?.expirationdate}
-                                className={classes.fieldView}
+                                className="col-3"
                             />
+                            {(data?.type === 'CREDITNOTE') ? (
+                                <FieldView
+                                    label={t(langKeys.referenceddocument)}
+                                    value={(data?.referenceserie ? data.referenceserie : 'X000') + '-' + (data?.referencecorrelative ? data?.referencecorrelative.toString().padStart(8, '0') : '00000000')}
+                                    className="col-3"
+                                />
+                            ) : (
+                                <FieldView
+                                    label={t(langKeys.purchaseorder)}
+                                    value={data?.purchaseorder}
+                                    className="col-3"
+                                />
+                            )}
+                            {(data?.type === 'CREDITNOTE') ? (
+                                <FieldView
+                                    label={t(langKeys.ticket_reason)}
+                                    value={(data?.creditnotemotive)}
+                                    className="col-3"
+                                />
+                            ) : (
+                                <FieldView
+                                    label={t(langKeys.comments)}
+                                    value={data?.comments}
+                                    className="col-3"
+                                />
+                            )}
+                        </div>
+                        <div className="row-zyx">
                             <FieldView
                                 label={t(langKeys.currency)}
                                 value={data?.currency}
-                                className={classes.fieldView}
+                                className="col-3"
+                            />
+                            <FieldView
+                                label={t(langKeys.taxbase)}
+                                value={(data?.subtotal || 0).toFixed(2)}
+                                className="col-3"
+                            />
+                            <FieldView
+                                label={t(langKeys.billingtax)}
+                                value={(data?.taxes || 0).toFixed(2)}
+                                className="col-3"
                             />
                             <FieldView
                                 label={t(langKeys.totalamount)}
                                 value={(data?.totalamount || 0).toFixed(2)}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.reportstatus)}
-                                value={'PRELIMINAR'}
-                                className={classes.fieldView}
+                                className="col-3"
                             />
                         </div>
-                        <div className={classes.containerField}>
-                            <div className={classes.titleCard}>{t(langKeys.additional_information)}</div>
-                            <FieldView
-                                label={t(langKeys.credittype)}
-                                value={t(data?.credittype)}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.purchaseorder)}
-                                value={data?.purchaseorder}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.comments)}
-                                value={data?.comments}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.invoicestatus)}
-                                value={data?.invoicestatus}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.paymentstatus)}
-                                value={data?.paymentstatus}
-                                className={classes.fieldView}
-                            />
-                            { data?.errordescription ?
+                        {(data?.type === 'CREDITNOTE') ? (
+                            <div className="row-zyx">
                                 <FieldView
-                                    label={t(langKeys.billingerror)}
-                                    value={data?.errordescription}
-                                    className={classes.fieldView}
+                                    label={t(langKeys.creditnotetype)}
+                                    value={t(getCreditNoteType(data?.creditnotetype))}
+                                    className="col-3"
                                 />
-                                :
-                                null
-                            }
-                            { data?.urlpdf ? 
-                                <a href={data?.urlpdf} target="_blank" rel="noreferrer">{t(langKeys.urlpdf)}</a>
-                                :
-                                null
-                            }
-                            { data?.urlcdr ? 
-                                <a href={data?.urlcdr} target="_blank" rel="noreferrer">{t(langKeys.urlcdr)}</a>
-                                :
-                                null
-                            }
-                            { data?.urlxml ? 
-                                <a href={data?.urlxml} target="_blank" rel="noreferrer">{t(langKeys.urlxml)}</a>
-                                :
-                                null
-                            }
-                        </div >
-                        { creditNote ? (
-                            <div className={classes.containerField}>
-                                <div className={classes.titleCard}>{t(langKeys.creditnoteinformation)}</div>
+                                {(data?.creditnotetype === '04') ? (
+                                    <FieldView
+                                        label={t(langKeys.globaldiscount)}
+                                        value={(data?.creditnotediscount || 0).toFixed(2)}
+                                        className="col-3"
+                                    />
+                                ) : null}
+                            </div>
+                        ) : null}
+                        {(creditNote) ? (
+                            <div className="row-zyx">
                                 <FieldSelect
-                                    className={classes.fieldView}
+                                    className="col-3"
                                     label={t(langKeys.creditnotetype)}
                                     onChange={(value) => { setValue('creditnotetype', value?.value); setShowDiscount(value?.value === '04') }}
                                     valueDefault={getValues('creditnotetype')}
@@ -2885,111 +2986,195 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                                 />
                                 <FieldEdit
                                     label={t(langKeys.ticket_reason)}
-                                    className={classes.fieldView}
+                                    className="col-3"
                                     valueDefault={getValues('creditnotemotive')}
                                     onChange={(value) => setValue('creditnotemotive', value)}
                                     error={errors?.creditnotemotive?.message}
                                 />
-                                { showDiscount ? (
+                                {(showDiscount) ? (
                                     <FieldEdit
                                         label={t(langKeys.globaldiscount)}
-                                        className={classes.fieldView}
+                                        className="col-3"
                                         valueDefault={getValues('creditnotediscount')}
                                         onChange={(value) => setValue('creditnotediscount', value)}
                                         error={errors?.creditnotediscount?.message}
                                         type='number'
                                     />
-                                    ) : null
-                                }
+                                ) : null}
                             </div>
-                            ) : null
-                        }
-                    </div>
-                    <div className={classes.containerDetail}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <div>
-                                {/*<FieldView
-                                    className={classes.section}
-                                    label={''}
-                                    value={t(langKeys.billingproductdetail)}
-                                />*/}
-                            </div>
+                        ) : null}
+                        <div className="row-zyx">
+                            <TableContainer>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>
+                                                <FieldView
+                                                    label={''}
+                                                    value={t(langKeys.description)}
+                                                    className={classes.fieldView}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldView
+                                                    label={''}
+                                                    value={t(langKeys.measureunit)}
+                                                    className={classes.fieldView}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldView
+                                                    label={''}
+                                                    value={t(langKeys.quantity)}
+                                                    className={classes.fieldView}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldView
+                                                    label={''}
+                                                    value={t(langKeys.billingsubtotal)}
+                                                    className={classes.fieldView}
+                                                />
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {fields.map((item, i) => (
+                                            <TableRow key={item.id}>
+                                                <TableCell>
+                                                    <FieldView
+                                                        label={''}
+                                                        value={getValues(`productdetail.${i}.productdescription`)}
+                                                        className={classes.fieldView}
+                                                    />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <FieldSelect
+                                                        className={classes.fieldView}
+                                                        loading={measureList.loading}
+                                                        valueDefault={getValues(`productdetail.${i}.productmeasure`)}
+                                                        data={measureList.data}
+                                                        optionDesc="description"
+                                                        optionValue="code"
+                                                        disabled={true}
+                                                    />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <FieldView
+                                                        label={''}
+                                                        value={(getValues(`productdetail.${i}.productquantity`) || 0).toFixed(0)}
+                                                        className={classes.fieldView}
+                                                    />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <FieldView
+                                                        label={''}
+                                                        value={(getValues(`productdetail.${i}.productsubtotal`) || 0).toFixed(2)}
+                                                        className={classes.fieldView}
+                                                    />
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
                         </div>
-                        <div style={{ backgroundColor: 'white', padding: 16 }}>
-                            <div className={classes.container}>
-                            {fields.map((item, i) => (
-                                <div key={item.id} className={classes.containerField}>
-                                    <FieldEditArray
-                                        className={classes.fieldView}
-                                        label={t(langKeys.description)}
-                                        fregister={{
-                                            ...register(`productdetail.${i}.productdescription`, {
-                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                            })
-                                        }}
-                                        valueDefault={getValues(`productdetail.${i}.productdescription`)}
-                                        error={errors?.productdetail?.[i]?.productdescription?.message}
-                                        onChange={(value) => setValue(`productdetail.${i}.productdescription`, "" + value)}
-                                    />
-                                    <FieldEditArray
-                                        className={classes.fieldView}
-                                        label={t(langKeys.code)}
-                                        fregister={{
-                                            ...register(`productdetail.${i}.productcode`, {
-                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                            })
-                                        }}
-                                        valueDefault={getValues(`productdetail.${i}.productcode`)}
-                                        error={errors?.productdetail?.[i]?.productcode?.message}
-                                        onChange={(value) => setValue(`productdetail.${i}.productcode`, "" + value)}
-                                    />
-                                    <FieldSelect
-                                        className={classes.fieldView}
-                                        label={t(langKeys.measureunit)}
-                                        fregister={{
-                                            ...register(`productdetail.${i}.productmeasure`, {
-                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                            })
-                                        }}
-                                        loading={measureList.loading}
-                                        onChange={(value) => setValue(`productdetail.${i}.productmeasure`, "" + value?.code)}
-                                        valueDefault={getValues(`productdetail.${i}.productmeasure`)}
-                                        data={measureList.data}
-                                        optionDesc="description"
-                                        optionValue="code"
-                                        error={errors?.productdetail?.[i]?.productmeasure?.message}
-                                    />
-                                    <FieldEditArray
-                                        className={classes.fieldView}
-                                        label={t(langKeys.quantity)}
-                                        fregister={{
-                                            ...register(`productdetail.${i}.productquantity`, {
-                                                validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
-                                            })
-                                        }}
-                                        valueDefault={getValues(`productdetail.${i}.productquantity`)}
-                                        error={errors?.productdetail?.[i]?.productquantity?.message}
-                                        onChange={(value) => { setValue(`productdetail.${i}.productquantity`, "" + value); }}
-                                        type='number'
-                                    />
-                                    <FieldEditArray
-                                        className={classes.fieldView}
-                                        label={t(langKeys.billingsubtotal)}
-                                        fregister={{
-                                            ...register(`productdetail.${i}.productsubtotal`, {
-                                                validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
-                                            })
-                                        }}
-                                        valueDefault={getValues(`productdetail.${i}.productsubtotal`)}
-                                        error={errors?.productdetail?.[i]?.productsubtotal?.message}
-                                        onChange={(value) => { setValue(`productdetail.${i}.productsubtotal`, "" + value); }}
-                                        type='number'
-                                    />
+                    </div>}
+                    {pageSelected === 1  && <div className={classes.containerDetail}>
+                        <div className="row-zyx">
+                            <FieldView
+                                label={''}
+                                value={t(langKeys.invoiceinformation)}
+                                className={classes.section}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            {(data?.urlpdf) ? (
+                                <div className='col-4'>
+                                    <a href={data?.urlpdf} target="_blank" rel="noreferrer">{t(langKeys.urlpdf)}</a>
                                 </div>
-                                ))}
-                            </div>
+                            ) : (
+                                <FieldView
+                                    label={t(langKeys.urlpdf)}
+                                    value={t(langKeys.pendingpayment)}
+                                    className="col-4"
+                                />
+                            )}
+                            {(data?.urlcdr) ? (
+                                <div className='col-4'>
+                                    <a href={data?.urlcdr} target="_blank" rel="noreferrer">{t(langKeys.urlcdr)}</a>
+                                </div>
+                            ) : (
+                                <FieldView
+                                    label={t(langKeys.urlcdr)}
+                                    value={t(langKeys.pendingpayment)}
+                                    className="col-4"
+                                />
+                            )}
+                            {(data?.urlxml) ? (
+                                <div className='col-4'>
+                                    <a href={data?.urlxml} target="_blank" rel="noreferrer">{t(langKeys.urlxml)}</a>
+                                </div>
+                            ) : (
+                                <FieldView
+                                    label={t(langKeys.urlxml)}
+                                    value={t(langKeys.pendingpayment)}
+                                    className="col-4"
+                                />
+                            )}
                         </div>
-                    </div>
+                        {(data?.errordescription) ? (
+                            <div className="row-zyx">
+                                <FieldView
+                                    label={t(langKeys.billingerror)}
+                                    value={data?.errordescription}
+                                    className="col-12"
+                                />
+                            </div>
+                        ) : null }
+                        <div className="row-zyx">
+                            <FieldView
+                                label={''}
+                                value={t(langKeys.paymentinformation)}
+                                className={classes.section}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldView
+                                label={t(langKeys.paymentstatus)}
+                                value={t(data?.paymentstatus)}
+                                className="col-4"
+                            />
+                            <FieldView
+                                label={t(langKeys.paymentdate)}
+                                value={data?.paymentdate || t(langKeys.none)}
+                                className="col-4"
+                            />
+                            <FieldView
+                                label={t(langKeys.billingusername)}
+                                value={data?.paymentdate ? data?.changeby : t(langKeys.none)}
+                                className="col-4"
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldView
+                                label={t(langKeys.paymentnote)}
+                                value={t(data?.invoicepaymentnote || langKeys.none)}
+                                className="col-4"
+                            />
+                            {(data?.invoicereferencefile) ? (
+                                <div className='col-4'>
+                                    <a href={data?.invoicereferencefile} target="_blank" rel="noreferrer">{t(langKeys.paymentreferenceview)}</a>
+                                 </div>
+                            ) : (
+                                <FieldView
+                                    label={t(langKeys.paymentfile)}
+                                    value={t(langKeys.none)}
+                                    className="col-4"
+                                />
+                            )}
+                        </div>
+                    </div>}
                 </div>
             </form>
         </div >
@@ -3003,12 +3188,15 @@ const RegularizeModal: FC<{ data: any, openModal: boolean, setOpenModal: (param:
 
     const classes = useStyles();
     const culqiResult = useSelector(state => state.culqi.requestRegularizeInvoice);
+    const uploadResult = useSelector(state => state.main.uploadFile);
 
     const [chatButton, setChatButton] = useState<File | string | null>(null);
     const [chatImgUrl, setChatImgUrl] = useState<string | undefined | null>(null);
     const [waitSave, setWaitSave] = useState(false);
+    const [waitUploadFile, setWaitUploadFile] = useState(false);
+    const [fileAttachment, setFileAttachment] = useState<File | null>(null);
 
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+    const { register, trigger, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             corpid: data?.corpid,
             orgid: data?.orgid,
@@ -3108,6 +3296,43 @@ const RegularizeModal: FC<{ data: any, openModal: boolean, setOpenModal: (param:
         }
     }
 
+    const onClickAttachment = useCallback(() => {
+        const input = document.getElementById('attachmentInput');
+        input!.click();
+    }, []);
+
+    const onChangeAttachment = useCallback((files: any) => {
+        const file = files?.item(0);
+        if (file) {
+            setFileAttachment(file);
+            let fd = new FormData();
+            fd.append('file', file, file.name);
+            dispatch(uploadFile(fd));
+            setWaitUploadFile(true);
+        }
+    }, [])
+
+    const handleCleanMediaInput = async (f: string) => {
+        const input = document.getElementById('attachmentInput') as HTMLInputElement;
+        if (input) {
+            input.value = "";
+        }
+        setFileAttachment(null);
+        setValue('invoicereferencefile', getValues('invoicereferencefile').split(',').filter((a: string) => a !== f).join(','));
+        await trigger('invoicereferencefile');
+    }
+
+    useEffect(() => {
+        if (waitUploadFile) {
+            if (!uploadResult.loading && !uploadResult.error) {
+                setValue('invoicereferencefile', [getValues('invoicereferencefile'), uploadResult?.url || ''].join(','))
+                setWaitUploadFile(false);
+            } else if (uploadResult.error) {
+                setWaitUploadFile(false);
+            }
+        }
+    }, [waitUploadFile, uploadResult])
+
     return (
         <DialogZyx
             open={openModal}
@@ -3125,44 +3350,110 @@ const RegularizeModal: FC<{ data: any, openModal: boolean, setOpenModal: (param:
                 onChange={(value) => setValue('invoicepaymentnote', value)}
                 className="col-12"
             />
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                <Box m={1}>
-                    <Grid container direction="row">
-                        <Grid item xs={11} sm={11} md={11} lg={11} xl={11}>
-                            <label className={classes.text}>
-                                {t(langKeys.evidenceofpayment)}
-                            </label>
-                        </Grid>
-                        <Grid item xs={11} sm={11} md={11} lg={11} xl={11}>
-                            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-                                <div className={classes.imgContainer}>
-                                    {chatImgUrl && <img src={(chatImgUrl || '')} alt="icon button" className={classes.img} />}
-                                </div>
-                                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
-                                    <input
-                                        accept="image/*"
-                                        style={{ display: 'none' }}
-                                        id="chatBtnInput"
-                                        type="file"
-                                        onChange={onChangeChatInput}
-                                    />
-                                    <IconButton onClick={handleChatButtonClick}>
-                                        <CloudUpload className={classes.icon} />
-                                    </IconButton>
-                                    <IconButton onClick={handleChatButtonClean}>
-                                        <Close className={classes.icon} />
-                                    </IconButton>
-                                </div>
-                            </div>
-                            <FormHelperText error={!isEmpty(errors?.invoicereferencefile?.message)} style={{ marginLeft: 14 }}>
-                                {errors?.invoicereferencefile?.message}
-                            </FormHelperText>
-                        </Grid>
-                    </Grid>
-                </Box>
-            </Grid>
+            <FieldView label={t(langKeys.evidenceofpayment)} />
+            <React.Fragment>
+                <input
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    id="attachmentInput"
+                    type="file"
+                    onChange={(e) => onChangeAttachment(e.target.files)}
+                />
+                {<IconButton
+                    onClick={onClickAttachment}
+                    disabled={waitUploadFile}
+                >
+                    <AttachFileIcon color="primary" />
+                </IconButton>}
+                {!!getValues("invoicereferencefile") && getValues("invoicereferencefile").split(',').map((f: string, i: number) => (
+                    <FilePreview key={`attachment-${i}`} src={f} onClose={(f) => handleCleanMediaInput(f)} />
+                ))}
+                {waitUploadFile && fileAttachment && <FilePreview key={`attachment-x`} src={fileAttachment} />}
+            </React.Fragment>
         </DialogZyx>
     )
+}
+
+interface FilePreviewProps {
+    src: File | string;
+    onClose?: (f: string) => void;
+}
+
+const useFilePreviewStyles = makeStyles(theme => ({
+    root: {
+        backgroundColor: 'white',
+        margin: theme.spacing(1),
+        padding: theme.spacing(1),
+        borderRadius: 4,
+        display: 'flex',
+        flexDirection: 'row',
+        maxWidth: 300,
+        maxHeight: 80,
+        alignItems: 'center',
+        width: 'fit-content',
+        overflow: 'hidden'
+    },
+    infoContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+    },
+    btnContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        color: 'lightgrey',
+    },
+}));
+
+const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
+    const classes = useFilePreviewStyles();
+
+    const isUrl = useCallback(() => typeof src === "string" && src.includes('http'), [src]);
+
+    const getFileName = useCallback(() => {
+        if (isUrl()) {
+            const m = (src as string).match(/.*\/(.+?)\./);
+            return m && m.length > 1 ? m[1] : "";
+        };
+        return (src as File).name;
+    }, [isUrl, src]);
+
+    const getFileExt = useCallback(() => {
+        if (isUrl()) {
+            return (src as string).split('.').pop()?.toUpperCase() || "-";
+        }
+        return (src as File).name?.split('.').pop()?.toUpperCase() || "-";
+    }, [isUrl, src]);
+
+    return (
+        <Paper className={classes.root} elevation={2}>
+            <FileCopy />
+            <div style={{ width: '0.5em' }} />
+            <div className={classes.infoContainer}>
+                <div>
+                    <div style={{ fontWeight: 'bold', textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: 190, whiteSpace: 'nowrap' }}>{getFileName()}</div>{getFileExt()}
+                </div>
+            </div>
+            <div style={{ width: '0.5em' }} />
+            {!isUrl() && !onClose && <CircularProgress color="primary" />}
+            <div className={classes.btnContainer}>
+                {onClose && (
+                    <IconButton size="small" onClick={() => onClose(src as string)}>
+                        <Close />
+                    </IconButton>
+                )}
+                {isUrl() && <div style={{ height: '10%' }} />}
+                {isUrl() && (
+                    <a href={src as string} target="_blank" rel="noreferrer" download={`${getFileName()}.${getFileExt()}`}>
+                        <IconButton size="small">
+                            <GetApp />
+                        </IconButton>
+                    </a>
+                )}
+            </div>
+        </Paper>
+    );
 }
 
 const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) => {
@@ -3174,6 +3465,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
     const culqiResult = useSelector(state => state.culqi.requestCreateInvoice);
     const multiResult = useSelector(state => state.main.multiDataAux);
     
+    const [appsettingData, setAppsettingData] = useState<any>([]);
     const [creditTypeList, setCreditTypeList] = useState<any>([]);
     const [corpList, setCorpList] = useState<any>([]);
     const [orgList, setOrgList] = useState<any>([]);
@@ -3184,6 +3476,9 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
     const [waitLoad, setWaitLoad] = useState(false);
     const [waitOrgLoad, setWaitOrgLoad] = useState(false);
     const [waitOrg, setWaitOrg] = useState(false);
+    const [pageSelected, setPageSelected] = useState(0);
+    const [amountTax, setAmountTax] = useState(0);
+    const [amountTotal, setAmountTotal] = useState(0);
 
     const invocesBread = [
         { id: "view-1", name: t(langKeys.billingtitle) },
@@ -3197,7 +3492,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
         setOrgList({ loading: false, data: [] });
         setProductList({ loading: false, data: [] });
 
-        dispatch(getMultiCollectionAux([getCorpSel(0), getMeasureUnit(), getValuesFromDomain("TYPECREDIT")]));
+        dispatch(getMultiCollectionAux([getCorpSel(0), getMeasureUnit(), getValuesFromDomain("TYPECREDIT"), getAppsettingInvoiceSel()]));
     }, [])
 
     useEffect(() => {
@@ -3257,13 +3552,13 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                 if (productList.data) {
                     var productInformationList: Partial<unknown> [] = [];
 
-                    productList.data.forEach((element: { description: any; productcode: any; measureunit: any; quantity: any; productprice: any; }) => {
+                    productList.data.forEach((element: { description: any; productcode: any; measureunit: any; quantity: any; netamount: any; }) => {
                         productInformationList.push({
                             productdescription: element.description,
                             productcode: element.productcode,
                             productmeasure: element.measureunit,
                             productquantity: element.quantity,
-                            productsubtotal: element.productprice,
+                            productsubtotal: element.netamount,
                         })
                     });
 
@@ -3307,6 +3602,12 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
         if (indexProduct > -1) {
             setProductList({ loading: false, data: multiResult.data[indexProduct] && multiResult.data[indexProduct].success ? multiResult.data[indexProduct].data : [] });
         }
+
+        const indexAppsetting = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_APPSETTING_INVOICE_SEL'));
+
+        if (indexAppsetting > -1) {
+            setAppsettingData({ loading: false, data: multiResult.data[indexAppsetting] && multiResult.data[indexAppsetting].success ? multiResult.data[indexAppsetting].data : [] });
+        }
     }, [multiResult]);
 
     const { control, handleSubmit, register, trigger, setValue, getValues, formState: { errors } } = useForm<any>({
@@ -3345,16 +3646,16 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
         register('clientdoctype', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('clientdocnumber', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('clientbusinessname', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('clientfiscaladdress', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('clientcountry', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('clientmail', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('clientfiscaladdress');
+        register('clientcountry');
+        register('clientmail');
         register('clientcredittype');
         register('invoicecreatedate', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('invoiceduedate');
         register('invoicecurrency', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('invoicetotalamount', { validate: (value) => (value && value > 0) || "" + t(langKeys.billingamountvalidation) });
-        register('invoicepurchaseorder', { validate: (value) => (value && value.length <= 15) || "" + t(langKeys.validation15char) });
-        register('invoicecomments', { validate: (value) => (value && value.length <= 150) || "" + t(langKeys.validation150char) });
+        register('invoicepurchaseorder', { validate: (value) => (value === '' || value.length <= 15) || "" + t(langKeys.validation15char) });
+        register('invoicecomments', { validate: (value) => (value === '' || value.length <= 150) || "" + t(langKeys.validation150char) });
         register('autosendinvoice');
     }, [register]);
 
@@ -3396,7 +3697,22 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
         else {
             setValue('invoiceduedate', '');
         }
-        
+
+        if (data?.doctype) {
+            if (appsettingData?.data) {
+                var invoiceamount = getValues('invoicetotalamount');
+
+                if (data?.doctype === '0') {
+                    setAmountTax(0);
+                    setAmountTotal(invoiceamount || 0);
+                }
+                else {
+                    setAmountTax((invoiceamount || 0) * appsettingData.data[0].igv);
+                    setAmountTotal((invoiceamount || 0) + ((invoiceamount || 0) * appsettingData.data[0].igv));
+                }
+            }
+        }
+
         trigger('corpid');
         trigger('orgid');
         trigger('clientdoctype');
@@ -3424,6 +3740,19 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                 return 'billingfield_billingpass';
             default:
                 return '';
+        }
+    }
+
+    const getInvoiceType = (invoicetype: string) => {
+        switch (invoicetype) {
+            case '01':
+                return 'emissorinvoice';
+            case '03':
+                return 'emissorticket';
+            case '07':
+                return 'emissorcreditnote';
+            default:
+                return langKeys.pendingpayment;
         }
     }
 
@@ -3492,6 +3821,19 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                     totalAmount = totalAmount + (element.productquantity * element.productsubtotal);
                 }
             });
+        }
+
+        if (appsettingData) {
+            if (appsettingData.data) {
+                if (getValues('clientdoctype') === '0') {
+                    setAmountTax(0);
+                    setAmountTotal(totalAmount);
+                }
+                else {
+                    setAmountTax(totalAmount * appsettingData.data[0].igv);
+                    setAmountTotal(totalAmount + (totalAmount * appsettingData.data[0].igv));
+                }
+            }
         }
 
         setValue('invoicetotalamount', totalAmount);
@@ -3615,102 +3957,70 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                     </div>
                 </div>
                 <div style={{ backgroundColor: 'white', padding: 16 }}>
-                    <div className={classes.container}>
-                        <div className={classes.containerField}>
-                            <div className={classes.titleCard}>{t(langKeys.clientinformation)}</div>
+                    <Tabs
+                        value={pageSelected}
+                        indicatorColor="primary"
+                        variant="fullWidth"
+                        style={{ borderBottom: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
+                        textColor="primary"
+                        onChange={(_, value) => setPageSelected(value)}
+                    >
+                        <AntTab label={t(langKeys.billinginvoicedata)}/>
+                    </Tabs>
+                    {pageSelected === 0  && <div className={classes.containerDetail}>
+                        <div className="row-zyx">
                             <FieldEdit
                                 label={t(langKeys.docType)}
                                 valueDefault={t(getDocumentType(getValues('clientdoctype')))}
-                                className={classes.fieldView}
+                                className="col-3"
                                 error={errors?.clientdoctype?.message}
                                 disabled={true}
                             />
                             <FieldEdit
                                 label={t(langKeys.documentnumber)}
                                 valueDefault={getValues('clientdocnumber')}
-                                className={classes.fieldView}
+                                className="col-3"
                                 error={errors?.clientdocnumber?.message}
                                 disabled={true}
                             />
                             <FieldEdit
                                 label={t(langKeys.billingname)}
                                 valueDefault={getValues('clientbusinessname')}
-                                className={classes.fieldView}
+                                className="col-3"
                                 error={errors?.clientbusinessname?.message}
                                 disabled={true}
                             />
-                            <FieldEdit
-                                label={t(langKeys.address)}
-                                valueDefault={getValues('clientfiscaladdress')}
-                                className={classes.fieldView}
-                                error={errors?.clientfiscaladdress?.message}
-                                disabled={true}
-                            />
-                            <FieldEdit
-                                label={t(langKeys.countrycode)}
-                                valueDefault={getValues('clientcountry')}
-                                className={classes.fieldView}
-                                error={errors?.clientcountry?.message}
-                                disabled={true}
-                            />
-                            <FieldEdit
-                                label={t(langKeys.billingsinglemail)}
-                                valueDefault={getValues('clientmail')}
-                                className={classes.fieldView}
-                                error={errors?.clientmail?.message}
-                                disabled={true}
+                            <FieldView
+                                label={t(langKeys.invoicestatus)}
+                                value={t((data?.invoicestatus || 'DRAFT'))}
+                                className="col-3"
                             />
                         </div>
-                        <div className={classes.containerField}>
-                            <div className={classes.titleCard}>{t(langKeys.invoiceinformation)}</div>
+                        <div className="row-zyx">
+                            <FieldView
+                                label={t(langKeys.invoiceid)}
+                                value={data?.invoiceid || t(langKeys.pendingsave)}
+                                className="col-3"
+                            />
                             <FieldView
                                 label={t(langKeys.documenttype)}
-                                value={t(langKeys.pendingpayment)}
-                                className={classes.fieldView}
+                                value={t(getInvoiceType(data?.invoicetype))}
+                                className="col-3"
                             />
                             <FieldView
                                 label={t(langKeys.documentnumber)}
-                                value={t(langKeys.pendingpayment)}
-                                className={classes.fieldView}
+                                value={(data?.serie ? data.serie : 'X000') + '-' + (data?.correlative ? data?.correlative.toString().padStart(8, '0') : '00000000')}
+                                className="col-3"
                             />
                             <FieldView
                                 label={t(langKeys.invoicedate)}
                                 value={getValues('invoicecreatedate')}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.dueDate)}
-                                value={getValues('invoiceduedate')}
-                                className={classes.fieldView}
-                            />
-                            <FieldSelect
-                                className={classes.fieldView}
-                                label={t(langKeys.currency)}
-                                onChange={(value) => setValue('invoicecurrency', value?.value)}
-                                valueDefault={getValues('invoicecurrency')}
-                                data={datacurrency}
-                                optionDesc="description"
-                                optionValue="value"
-                                error={errors?.invoicecurrency?.message}
-                            />
-                            <FieldEdit
-                                label={t(langKeys.totalamount)}
-                                valueDefault={getValues('invoicetotalamount').toFixed(2)}
-                                className={classes.fieldView}
-                                error={errors?.invoicetotalamount?.message}
-                                disabled={true}
-                                type='number'
-                            />
-                            <FieldView
-                                label={t(langKeys.reportstatus)}
-                                value={'PRELIMINAR'}
-                                className={classes.fieldView}
+                                className="col-3"
                             />
                         </div>
-                        <div className={classes.containerField}>
-                            <div className={classes.titleCard}>{t(langKeys.additional_information)}</div>
+                        <div className="row-zyx">
                             <FieldSelect
-                                className={classes.fieldView}
+                                className="col-3"
                                 label={t(langKeys.credittype)}
                                 loading={creditTypeList.loading}
                                 onChange={(value) => { setValue('clientcredittype', value?.domainvalue); onCreditTypeChange(value?.domainvalue); }}
@@ -3721,131 +4031,189 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                 error={errors?.clientcredittype?.message}
                                 uset={true}
                             />
+                            <FieldView
+                                label={t(langKeys.dueDate)}
+                                value={getValues('invoiceduedate')}
+                                className="col-3"
+                            />
                             <FieldEdit
                                 label={t(langKeys.purchaseorder)}
-                                className={classes.fieldView}
+                                className="col-3"
                                 valueDefault={getValues('invoicepurchaseorder')}
                                 onChange={(value) => setValue('invoicepurchaseorder', value)}
                                 error={errors?.invoicepurchaseorder?.message}
                             />
                             <FieldEdit
                                 label={t(langKeys.comments)}
-                                className={classes.fieldView}
+                                className="col-3"
                                 valueDefault={getValues('invoicecomments')}
                                 onChange={(value) => setValue('invoicecomments', value)}
                                 error={errors?.invoicecomments?.message}
                             />
                         </div>
-                    </div>
-                    <div className={classes.containerDetail}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <div>
-                                <FieldView
-                                    className={classes.section}
-                                    label={''}
-                                    value={t(langKeys.billingaddproduct)}
-                                />
-                            </div>
-                            <div style={{ display: 'flex', gap: '10px', alignItems: 'left' }}>
-                                <Fab
-                                    size="small"
-                                    aria-label="add"
-                                    color="primary"
-                                    style={{ marginLeft: '1rem' }}
-                                    onClick={() => fieldsAppend({
-                                        productdescription: '',
-                                        productcode: 'S001',
-                                        productmeasure: 'ZZ',
-                                        productquantity: 0,
-                                        productsubtotal: 0.0,
-                                    })}
-                                > <AddIcon />
-                                </Fab>
-                            </div>
+                        <div className="row-zyx">
+                            <FieldSelect
+                                className="col-3"
+                                label={t(langKeys.currency)}
+                                onChange={(value) => setValue('invoicecurrency', value?.value)}
+                                valueDefault={getValues('invoicecurrency')}
+                                data={datacurrency}
+                                optionDesc="description"
+                                optionValue="value"
+                                error={errors?.invoicecurrency?.message}
+                            />
+                            <FieldEdit
+                                label={t(langKeys.taxbase)}
+                                valueDefault={getValues('invoicetotalamount').toFixed(2)}
+                                className="col-3"
+                                error={errors?.invoicetotalamount?.message}
+                                disabled={true}
+                                type='number'
+                            />
+                            <FieldView
+                                label={t(langKeys.billingtax)}
+                                value={amountTax.toFixed(2)}
+                                className="col-3"
+                            />
+                            <FieldView
+                                label={t(langKeys.totalamount)}
+                                value={amountTotal.toFixed(2)}
+                                className="col-3"
+                            />
                         </div>
-                        <div style={{ backgroundColor: 'white', padding: 16 }}>
-                            <div className={classes.container}>
-                            {fields.map((item, i) => (
-                                <div key={item.id} className={classes.containerField}>
-                                    <IconButton
-                                        size="small"
-                                        aria-label="add"
-                                        color="primary"
-                                        style={{ marginLeft: '1rem' }}
-                                        onClick={() => { fieldRemove(i); onProductChange(); }}
-                                    > <DeleteIcon />
-                                    </IconButton>
-                                    <FieldEditArray
-                                        className={classes.fieldView}
-                                        label={t(langKeys.description)}
-                                        fregister={{
-                                            ...register(`productdetail.${i}.productdescription`, {
-                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                            })
-                                        }}
-                                        valueDefault={getValues(`productdetail.${i}.productdescription`)}
-                                        error={errors?.productdetail?.[i]?.productdescription?.message}
-                                        onChange={(value) => setValue(`productdetail.${i}.productdescription`, "" + value)}
-                                    />
-                                    {/*<FieldEditArray
-                                        className={classes.fieldView}
-                                        label={t(langKeys.code)}
-                                        fregister={{
-                                            ...register(`productdetail.${i}.productcode`, {
-                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                            })
-                                        }}
-                                        valueDefault={getValues(`productdetail.${i}.productcode`)}
-                                        error={errors?.productdetail?.[i]?.productcode?.message}
-                                        onChange={(value) => setValue(`productdetail.${i}.productcode`, "" + value)}
-                                    />*/}
-                                    <FieldSelect
-                                        className={classes.fieldView}
-                                        label={t(langKeys.measureunit)}
-                                        fregister={{
-                                            ...register(`productdetail.${i}.productmeasure`, {
-                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                            })
-                                        }}
-                                        loading={measureList.loading}
-                                        onChange={(value) => setValue(`productdetail.${i}.productmeasure`, "" + value?.code)}
-                                        valueDefault={getValues(`productdetail.${i}.productmeasure`)}
-                                        data={measureList.data}
-                                        optionDesc="description"
-                                        optionValue="code"
-                                        error={errors?.productdetail?.[i]?.productmeasure?.message}
-                                    />
-                                    <FieldEditArray
-                                        className={classes.fieldView}
-                                        label={t(langKeys.quantity)}
-                                        fregister={{
-                                            ...register(`productdetail.${i}.productquantity`, {
-                                                validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
-                                            })
-                                        }}
-                                        valueDefault={getValues(`productdetail.${i}.productquantity`)}
-                                        error={errors?.productdetail?.[i]?.productquantity?.message}
-                                        onChange={(value) => { setValue(`productdetail.${i}.productquantity`, "" + value); onProductChange(); }}
-                                        type='number'
-                                    />
-                                    <FieldEditArray
-                                        className={classes.fieldView}
-                                        label={t(langKeys.billingsubtotal)}
-                                        fregister={{
-                                            ...register(`productdetail.${i}.productsubtotal`, {
-                                                validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
-                                            })
-                                        }}
-                                        valueDefault={getValues(`productdetail.${i}.productsubtotal`)}
-                                        error={errors?.productdetail?.[i]?.productsubtotal?.message}
-                                        onChange={(value) => { setValue(`productdetail.${i}.productsubtotal`, "" + value); onProductChange(); }}
-                                        type='number'
-                                    />
-                                </div>
-                                ))}
-                            </div>
+                        <div className="row-zyx">
+                            <TableContainer>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>
+                                                <FieldView
+                                                    label={''}
+                                                    value={t(langKeys.description)}
+                                                    className={classes.fieldView}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldView
+                                                    label={''}
+                                                    value={t(langKeys.measureunit)}
+                                                    className={classes.fieldView}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldView
+                                                    label={''}
+                                                    value={t(langKeys.quantity)}
+                                                    className={classes.fieldView}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldView
+                                                    label={''}
+                                                    value={t(langKeys.billingsubtotal)}
+                                                    className={classes.fieldView}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <IconButton
+                                                    size="small"
+                                                    aria-label="add"
+                                                    color="primary"
+                                                    style={{ marginLeft: '1rem' }}
+                                                    onClick={() => fieldsAppend({
+                                                        productdescription: '',
+                                                        productcode: 'S001',
+                                                        productmeasure: 'ZZ',
+                                                        productquantity: 0,
+                                                        productsubtotal: 0.0,
+                                                    })}
+                                                > <AddIcon />
+                                                </IconButton>
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {fields.map((item, i) => (
+                                            <TableRow key={item.id}>
+                                                <TableCell>
+                                                    <FieldEditArray
+                                                        className={classes.fieldView}
+                                                        label={''}
+                                                        fregister={{
+                                                            ...register(`productdetail.${i}.productdescription`, {
+                                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                            })
+                                                        }}
+                                                        valueDefault={getValues(`productdetail.${i}.productdescription`)}
+                                                        error={errors?.productdetail?.[i]?.productdescription?.message}
+                                                        onChange={(value) => setValue(`productdetail.${i}.productdescription`, "" + value)}
+                                                    />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <FieldSelect
+                                                        className={classes.fieldView}
+                                                        label={''}
+                                                        fregister={{
+                                                            ...register(`productdetail.${i}.productmeasure`, {
+                                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                            })
+                                                        }}
+                                                        loading={measureList.loading}
+                                                        onChange={(value) => setValue(`productdetail.${i}.productmeasure`, "" + value?.code)}
+                                                        valueDefault={getValues(`productdetail.${i}.productmeasure`)}
+                                                        data={measureList.data}
+                                                        optionDesc="description"
+                                                        optionValue="code"
+                                                        error={errors?.productdetail?.[i]?.productmeasure?.message}
+                                                    />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <FieldEditArray
+                                                        className={classes.fieldView}
+                                                        label={''}
+                                                        fregister={{
+                                                            ...register(`productdetail.${i}.productquantity`, {
+                                                                validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
+                                                            })
+                                                        }}
+                                                        valueDefault={getValues(`productdetail.${i}.productquantity`)}
+                                                        error={errors?.productdetail?.[i]?.productquantity?.message}
+                                                        onChange={(value) => { setValue(`productdetail.${i}.productquantity`, "" + value); onProductChange(); }}
+                                                        type='number'
+                                                    />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <FieldEditArray
+                                                        className={classes.fieldView}
+                                                        label={''}
+                                                        fregister={{
+                                                            ...register(`productdetail.${i}.productsubtotal`, {
+                                                                validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
+                                                            })
+                                                        }}
+                                                        valueDefault={getValues(`productdetail.${i}.productsubtotal`)}
+                                                        error={errors?.productdetail?.[i]?.productsubtotal?.message}
+                                                        onChange={(value) => { setValue(`productdetail.${i}.productsubtotal`, "" + value); onProductChange(); }}
+                                                        type='number'
+                                                    />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <IconButton
+                                                        size="small"
+                                                        aria-label="add"
+                                                        color="primary"
+                                                        style={{ marginLeft: '1rem' }}
+                                                        onClick={() => { fieldRemove(i); onProductChange(); }}
+                                                    > <DeleteIcon />
+                                                    </IconButton>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
                         </div>
-                    </div>
+                    </div>}
                 </div>
             </form>
         </div >

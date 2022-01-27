@@ -104,7 +104,7 @@ interface IGraphic {
 }
 
 const RADIAN = Math.PI / 180;
-const RenderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, summary, ...rest }: Dictionary) => {
+export const RenderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, summary, ...rest }: Dictionary) => {
     const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
@@ -186,7 +186,7 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
             const total = mainGraphicRes.data.reduce((acc, item) => acc + parseInt(item.summary), 0)
             setDataGraphic(mainGraphicRes.data.map(x => ({
                 ...x,
-                columnname: x.columnname?.startsWith('report_') ? t((langKeys as any)[x.columnname]) : x.columnname,
+                columnname: x.columnname?.startsWith('report_') ? t((langKeys as any)[x.columnname]) : (x.columnname === '' ? `(${t(langKeys.in_white)})` : x.columnname),
                 summary: parseInt(x.summary),
                 percentage: parseFloat(((parseInt(x.summary) / total) * 100).toFixed(2)),
                 color: `#${randomColor()}`

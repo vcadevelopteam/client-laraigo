@@ -2120,6 +2120,8 @@ const translation: LangKeys = {
     graphic_view_by: 'View by',
     graphic_report_of: 'Graphic report of {{report}} by {{column}}',
     grid_view: 'List view',
+    in_white: 'In white',
+    view_table: 'View table',
 
     manageAgreement: 'Manage agreements',
     manageAgreement_plural: 'Manage agreements',
@@ -2235,6 +2237,7 @@ const translation: LangKeys = {
     scheduleActivity_plural: 'Schedule activities',
 
     channellimit: 'Reached maximum number of channels, upgrade your plan to continue',
+    userlimit: 'Reached maximum number of users, upgrade your plan to continue',
     type_activitylead_call: 'Call',
     'type_activitylead_call for demo': 'Call for demo',
     'type_activitylead_email: welcome demo': 'Email: Welcome demo',
@@ -2747,8 +2750,8 @@ const translation: LangKeys = {
 
     copy: 'Copia',
     empty_dashboard_form_error: 'Must have at least one chart assigned',
-    chart_dashboard_report_error: 'An error occurred while loading the report',
-    chart_dashboard_column_error: 'An error occurred while loading the column',
+    chart_dashboard_report_error: 'The report linked to this chart has been removed. Check chart settings.',
+    chart_dashboard_column_error: 'It is not possible to visualize the graph, the column selected for the report has been eliminated.',
     chart_dashboard_unexpected_error: 'An unexpected error occurred',
 
     successinvoiced: 'The document was generated successfully',
@@ -2776,6 +2779,28 @@ const translation: LangKeys = {
     invoicenotfound: 'Invoice not found',
     saveasdraft: 'Save Draft',
     deleteinvoicesuccess: 'Invoice deleted successfully',
+    field_required_shorter: '10 characters minimum',
+    billinginvoicedata: 'Invoice',
+    billingadditionalinfo: 'Additional information',
+    INVOICED: 'INVOICED',
+    DRAFT: 'DRAFT',
+    invoiceid: 'Invoice ID',
+    pendingsave: 'Pending Save',
+    taxbase: 'Tax base',
+    referenceddocument: 'Original document',
+    PAID: 'Paid',
+    PENDING: 'Pending',
+    NONE: 'None',
+    paymentreferenceview: 'View payment reference',
+    discountvalidmessage: 'The amount must me higher than 0 and less than the tax base',
+
+    doctype_others_non_home_error: 'Must be up to 15 digits',
+    doctype_dni_error: 'Must be 8 digits',
+    doctype_foreigners_card: 'Must be up to 12 digits',
+    doctype_ruc_error: 'Must be 11 digits',
+    doctype_passport_error: 'Must be up to 12 digits',
+    doctype_unknown_error: 'Please select a valid document type',
+    totaltopay: 'Payment amount',
 };
 
 const enResource: ResourceLanguage = {

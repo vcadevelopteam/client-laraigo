@@ -545,6 +545,8 @@ const translation: LangKeys = {
     graphic_view_by: 'Visualizar por',
     graphic_report_of: 'Reporte gráfico de {{report}} por {{column}}',
     grid_view: 'Vista lista',
+    in_white: 'En blanco',
+    view_table: 'Ver tabla',
 
     status_activo: 'activo',
     no_reply_use_hsm: 'La conversación está cerrada o bloqueada por estar fuera de la venta de 24 horas.\nEnvíe un HSM para contactar al cliente.',
@@ -2139,6 +2141,7 @@ const translation: LangKeys = {
     scheduleActivity_plural: 'Programa de actividades',
 
     channellimit: 'Se alcanzo el maximo número de canales, mejora tu plan para continuar',
+    userlimit: 'Se alcanzo el maximo número de usuarios, mejora tu plan para continuar',
     type_activitylead_call: 'Llamada',
     'type_activitylead_call for demo': 'Demo de llamada',
     'type_activitylead_email: welcome demo': 'Correo: Demostración de bienvenida',
@@ -2260,7 +2263,7 @@ const translation: LangKeys = {
     orderid: "Solicitar ID",
     orderjson: "Order json",
     paymentstatus: "Estado de pago",
-    paymentdate: "Fecha pago",
+    paymentdate: "Fecha de pago",
     paidby: "Pagado por",
     tokenid: "Token Id",
     capture: "Capturar",
@@ -2735,8 +2738,8 @@ const translation: LangKeys = {
 
     copy: 'Copia',
     empty_dashboard_form_error: 'Debe tener al menos un gráfico asignado',
-    chart_dashboard_report_error: 'Ocurrió un error al cargar el reporte',
-    chart_dashboard_column_error: 'Ocurrió un error al cargar la columna',
+    chart_dashboard_report_error: 'El reporte enlazado a este gráfico ha sido eliminado. Verificar la configuración del gráfico.',
+    chart_dashboard_column_error: 'No es posible visualizar la gráfica, la columna seleccionada para el reporte ha sido eliminada.',
     chart_dashboard_unexpected_error: 'Ocurrió un error inesperado',
 
     successinvoiced: 'Se emitió el documento correctamente',
@@ -2764,6 +2767,28 @@ const translation: LangKeys = {
     invoicenotfound: 'No se pudo encontrar la factura',
     saveasdraft: 'Guardar Borrador',
     deleteinvoicesuccess: 'Factura eliminada correctamente',
+    field_required_shorter: 'Minimo 10 caracteres',
+    billinginvoicedata: 'Comprobante',
+    billingadditionalinfo: 'Información adicional',
+    INVOICED: 'EMITIDO',
+    DRAFT: 'BORRADOR',
+    invoiceid: 'Invoice ID',
+    pendingsave: 'Pendiente de Guardar',
+    taxbase: 'Base imponible',
+    referenceddocument: 'Documento original',
+    PAID: 'Pagado',
+    PENDING: 'Pendiente',
+    NONE: 'Libre',
+    paymentreferenceview: 'Ver referencia de pago',
+    discountvalidmessage: 'El valor debe ser mayor a 0 y menor a la base',
+
+    doctype_others_non_home_error: 'Debe ser hasta 15 dígitos',
+    doctype_dni_error: 'Debe ser 8 dígitos',
+    doctype_foreigners_card: 'Debe ser hasta 12 dígitos',
+    doctype_ruc_error: 'Debe ser 11 dígitos',
+    doctype_passport_error: 'Debe ser hasta 12 dígitos',
+    doctype_unknown_error: 'Seleccione un tipo de documento válido',
+    totaltopay: 'Total a pagar',
 };
 
 const esResource: ResourceLanguage = {

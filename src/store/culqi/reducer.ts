@@ -7,11 +7,13 @@ interface culqiResponse {
     object: string,
     id: string,
     code: string,
-    message: string
+    message: string,
+    exchangerate: number,
 }
 
 export interface IRequest extends ITemplate {
     data: culqiResponse | null;
+    exchangerate?: number | null;
 }
 
 export interface IState {
@@ -19,6 +21,7 @@ export interface IState {
     requestCreateInvoice: IRequest;
     requestCreateCreditNote: IRequest;
     requestRegularizeInvoice: IRequest;
+    requestGetExchangeRate: IRequest;
 }
 
 export const initialState: IState = {
@@ -26,6 +29,7 @@ export const initialState: IState = {
     requestCreateInvoice: { ...initialCommon, data: null, loading: false, error: false },
     requestCreateCreditNote: { ...initialCommon, data: null, loading: false, error: false },
     requestRegularizeInvoice: { ...initialCommon, data: null, loading: false, error: false },
+    requestGetExchangeRate: { ...initialCommon, data: null, loading: false, error: false, exchangerate: 0 },
 };
 
 export default createReducer<IState>(initialState, {
@@ -63,4 +67,9 @@ export default createReducer<IState>(initialState, {
     [actionTypes.REGULARIZE_INVOICE_FAILURE]: caseFUnctions.regularizeInvoiceFailure,
     [actionTypes.REGULARIZE_INVOICE_SUCCESS]: caseFUnctions.regularizeInvoiceSuccess,
     [actionTypes.REGULARIZE_INVOICE_RESET]: caseFUnctions.regularizeInvoiceReset,
+
+    [actionTypes.GET_EXCHANGERATE]: caseFUnctions.getExchangeRate,
+    [actionTypes.GET_EXCHANGERATE_FAILURE]: caseFUnctions.getExchangeRateFailure,
+    [actionTypes.GET_EXCHANGERATE_SUCCESS]: caseFUnctions.getExchangeRateSuccess,
+    [actionTypes.GET_EXCHANGERATE_RESET]: caseFUnctions.getExchangeRateReset,
 });

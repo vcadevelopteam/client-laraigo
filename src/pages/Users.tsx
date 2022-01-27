@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, TemplateSwitchYesNo } from 'components';
-import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser, randomText, templateMaker, exportExcel, uploadExcel, array_trimmer } from 'common/helpers';
+import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser, randomText, templateMaker, exportExcel, uploadExcel, array_trimmer, checkUserPaymentPlan } from 'common/helpers';
 import { getDomainsByTypename } from 'store/person/actions';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -950,6 +950,10 @@ const Users: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const [waitCheck, setWaitCheck] = useState(false);
+    const [operation, setOperation] = useState('REGISTER');
+    const [fileToUpload, setFileToUpload] = useState(null);
+    const mainAuxResult = useSelector(state => state.main.mainAux);
 
     const columns = React.useMemo(
         () => [
@@ -1259,6 +1263,39 @@ const Users: FC = () => {
         }))
     }
 
+    const checkLimit = (operation: string) => {
+        setOperation(operation);
+        dispatch(getCollectionAux(checkUserPaymentPlan()));
+        setWaitCheck(true);
+    }
+
+    useEffect(() => {
+        if (waitCheck) {
+            if (!mainAuxResult.loading && !mainAuxResult.error) {
+                if (mainAuxResult.data.length > 0) {
+                    dispatch(showBackdrop(false));
+                    setWaitCheck(false);
+                    if (!(mainAuxResult.data[0].usernumber < mainAuxResult.data[0].userscontracted)) {
+                        dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.userlimit) }))
+                    }
+                    else {
+                        if (operation === 'REGISTER') {
+                            handleRegister();
+                        }
+                        if (operation === 'UPLOAD') {
+                            handleUpload(fileToUpload);
+                        }
+                    }
+                }
+            } else if (mainAuxResult.error) {
+                const errormessage = t(mainAuxResult.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitCheck(false);
+            }
+        }
+    }, [mainAuxResult, waitCheck]);
+
     if (viewSelected === "view-1") {
 
         if (mainResult.error) {
@@ -1274,8 +1311,11 @@ const Users: FC = () => {
                 loading={mainResult.loading}
                 register={true}
                 hoverShadow={true}
-                handleRegister={handleRegister}
-                importCSV={handleUpload}
+                handleRegister={() => checkLimit('REGISTER')}
+                importCSV={(file) => {
+                    setFileToUpload(file);
+                    checkLimit('UPLOAD');
+                }}
                 onClickRow={handleEdit}
                 ButtonsElement={() => (
                     <>

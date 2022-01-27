@@ -550,7 +550,7 @@ const DashboardProductivity: FC = () => {
         if (resSummary.length) {
             if (resSummary[0] && resSummary[0].ticketstotal !== 0) {
                 const {averagereplytime,botaveragereplytime,useraveragereplytime,personaveragereplytime,tmoasesorrange0, tmoasesorrange1, tmoasesorrange2, tmoasesorrange3, tmoasesorrange4, tmoasesorrange5,
-                    tmeasesorrange0, tmeasesorrange1,  tmeasesorrange2, tmeasesorrange3, tmeasesorrange4, tmeasesorrange5,ticketsabandonados,ticketstotal} = resSummary[0]
+                    tmeasesorrange0, tmeasesorrange1,  tmeasesorrange2, tmeasesorrange3, tmeasesorrange4, tmeasesorrange5,ticketsabandonados,ticketstmeasesor,ticketstmoasesor ,ticketstotal} = resSummary[0]
                 setDataSummary({
                     tmrglobal: formattime(timetoseconds(averagereplytime)),
                     dataTMRBot: formattime(timetoseconds(botaveragereplytime)),
@@ -559,21 +559,21 @@ const DashboardProductivity: FC = () => {
                     tasaabandono: (ticketsabandonados * 100 / ticketstotal).toFixed(0) + "%"
                 })
                 settmoDistribution([
-                    {label:"0 - 5", quantity: tmoasesorrange0},
-                    {label:"5 - 10", quantity: tmoasesorrange1},
-                    {label:"10 - 15", quantity: tmoasesorrange2},
-                    {label:"15 - 20", quantity: tmoasesorrange3},
-                    {label:"20 - 30", quantity: tmoasesorrange4},
-                    {label:"30 +", quantity: tmoasesorrange5}
+                    {label:"0 - 5", percentage: (tmoasesorrange0/ticketstmoasesor*100).toFixed(2)},
+                    {label:"5 - 10", percentage: (tmoasesorrange1/ticketstmoasesor*100).toFixed(2)},
+                    {label:"10 - 15", percentage: (tmoasesorrange2/ticketstmoasesor*100).toFixed(2)},
+                    {label:"15 - 20", percentage: (tmoasesorrange3/ticketstmoasesor*100).toFixed(2)},
+                    {label:"20 - 30", percentage: (tmoasesorrange4/ticketstmoasesor*100).toFixed(2)},
+                    {label:"30 +", percentage: (tmoasesorrange5/ticketstmoasesor*100).toFixed(2)}
 
                 ])
                 settmeDistribution([
-                    {label:"0 - 5", quantity: tmeasesorrange0},
-                    {label:"5 - 10", quantity: tmeasesorrange1},
-                    {label:"10 - 15", quantity: tmeasesorrange2},
-                    {label:"15 - 20", quantity: tmeasesorrange3},
-                    {label:"20 - 30", quantity: tmeasesorrange4},
-                    {label:"30 +", quantity: tmeasesorrange5}
+                    {label:"0 - 5", percentage: (tmeasesorrange0/ticketstmeasesor*100).toFixed(2)},
+                    {label:"5 - 10", percentage: (tmeasesorrange1/ticketstmeasesor*100).toFixed(2)},
+                    {label:"10 - 15", percentage: (tmeasesorrange2/ticketstmeasesor*100).toFixed(2)},
+                    {label:"15 - 20", percentage: (tmeasesorrange3/ticketstmeasesor*100).toFixed(2)},
+                    {label:"20 - 30", percentage: (tmeasesorrange4/ticketstmeasesor*100).toFixed(2)},
+                    {label:"30 +", percentage: (tmeasesorrange5/ticketstmeasesor*100).toFixed(2)}
 
                 ])
             }
@@ -861,13 +861,15 @@ const DashboardProductivity: FC = () => {
                 setResSummary(remultiaux.data[2].data)
                 setprodxHoralvl1(remultiaux.data[3].data)
                 if(remultiaux.data[4].success){
+                    const {horaconectadorange0,horaconectadorange1,horaconectadorange2,horaconectadorange3,horaconectadorange4, horaconectadototal,
+                        horalogueorange0, horalogueorange1,  horalogueorange2, horalogueorange3, horalogueorange4, horalogueototal} = remultiaux.data[4].data[0]
                     setprodxHoraDist(
                         [
-                            {label:"0 - 3",connected:remultiaux.data[4].data[0].horaconectadorange0, notconnected: remultiaux.data[4].data[0].horalogueorange0},
-                            {label:"4 - 7",connected:remultiaux.data[4].data[0].horaconectadorange1, notconnected: remultiaux.data[4].data[0].horalogueorange1},
-                            {label:"8 - 10",connected:remultiaux.data[4].data[0].horaconectadorange2, notconnected: remultiaux.data[4].data[0].horalogueorange2},
-                            {label:"11 - 12",connected:remultiaux.data[4].data[0].horaconectadorange3, notconnected: remultiaux.data[4].data[0].horalogueorange3},
-                            {label:"13 +", connected:remultiaux.data[4].data[0].horaconectadorange4, notconnected: remultiaux.data[4].data[0].horalogueorange4}]
+                            {label:"0 - 3",connected:horaconectadorange0, notconnected: horalogueorange0},
+                            {label:"4 - 7",connected:horaconectadorange1, notconnected: horalogueorange1},
+                            {label:"8 - 10",connected:horaconectadorange2, notconnected: horalogueorange2},
+                            {label:"11 - 12",connected:horaconectadorange3, notconnected: horalogueorange3},
+                            {label:"13 +", connected:horaconectadorange4, notconnected: horalogueorange4}]
                     );
                 }
                 setResEncuesta(remultiaux.data[5].data)
@@ -1463,7 +1465,8 @@ const DashboardProductivity: FC = () => {
                                 <XAxis dataKey="label" />
                                 <YAxis />
                                 <Tooltip />
-                                <Bar dataKey="quantity" fill="#8884d8" >
+                                <Legend />
+                                <Bar dataKey="percentage" fill="#8884d8" name={`% ${t(langKeys.tmo)}`}>
                                 </Bar>
                             </BarChart>
                         </ResponsiveContainer>
@@ -1481,8 +1484,8 @@ const DashboardProductivity: FC = () => {
                                 <XAxis dataKey="label" />
                                 <YAxis />
                                 <Tooltip />
-                                <Bar dataKey="quantity" fill="#8884d8" >
-                                </Bar>
+                                <Legend />
+                                <Bar dataKey="percentage" fill="#8884d8" name={`% ${t(langKeys.tme)}`}/>
                             </BarChart>
                         </ResponsiveContainer>
                         

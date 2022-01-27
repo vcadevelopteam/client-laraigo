@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { FC, useEffect, useMemo, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
@@ -246,11 +246,39 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
     });
 
     React.useEffect(() => {
+        const docTypeValidate = () => {
+            const docnum = getValues('docnum') as string;
+            if (!docnum) {
+                return t(langKeys.field_required);
+            }
+
+            let msg = "";
+            switch (doctype) {
+                case "0": // OTROS o NO DOMICILIARIO
+                    msg = t(langKeys.doctype_others_non_home_error);
+                    return docnum.length > 15 ? msg : undefined;
+                case "1": // DNI
+                    msg = t(langKeys.doctype_dni_error);
+                    return docnum.length !== 8 ? msg : undefined;
+                case "4": // CARNET DE EXTRANJERIA
+                    msg = t(langKeys.doctype_foreigners_card);
+                    return docnum.length > 12 ? msg : undefined;
+                case "6": // REG. UNICO DE CONTRIBUYENTES
+                    msg = t(langKeys.doctype_ruc_error);
+                    return docnum.length !== 11 ? msg : undefined;
+                case "7": // PASAPORTE
+                    msg = t(langKeys.doctype_passport_error);
+                    return docnum.length > 12 ? msg : undefined;
+                case "11": // PART. DE NACIMIENTO-IDENTIDAD
+                default: return t(langKeys.doctype_unknown_error);
+            }
+        }
+
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('doctype', { validate: (value) => !billbyorg?((value && value.length) || t(langKeys.field_required)):null });
-        register('docnum', { validate: (value) => !billbyorg?((value && value.length) || t(langKeys.field_required)):null });
+        register('docnum', { validate: docTypeValidate });
         register('businessname', { validate: (value) => !billbyorg?((value && value.length) || t(langKeys.field_required)):null });
         register('fiscaladdress', { validate: (value) => !billbyorg?((value && value.length) || t(langKeys.field_required)):null });
         register('contact', { validate: (value) => !billbyorg?((value && value.length) || t(langKeys.field_required)):null });
@@ -258,7 +286,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
         register('sunatcountry', { validate: (value) => !billbyorg?((value && value.length) || t(langKeys.field_required)):null });
         register('credittype', { validate: (value) => !billbyorg?((value && value.length) || t(langKeys.field_required)):null });
         register('paymentplanid');
-    }, [register,billbyorg]);
+    }, [register,billbyorg, doctype, getValues, t]);
 
     useEffect(() => {
     }, [executeRes, waitSave])
@@ -321,6 +349,29 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
         { id: "view-1", name: t(langKeys.corporation) },
         { id: "view-2", name: t(langKeys.corporationdetail) }
     ];
+
+    const countries = useMemo(() => {
+        if (countryList.loading) return [];
+        return countryList.data.sort((a, b) => {
+            return a.description.localeCompare(b.description);
+        });
+    }, [countryList]);
+
+    const docTypes = useMemo(() => {
+        if (!dataDocType || dataDocType.length === 0) return [];
+
+        let val: { domaindesc: string }[];
+        if (getValues("sunatcountry") === "PE") {
+            // FILTRAR NO DOMICILIARIO // OTROS
+            val = dataDocType.filter(x => x.domainvalue !== "0") as any[];
+        } else {
+            val = dataDocType as any[];
+        }
+
+        return val.sort((a, b) => {
+            return a.domaindesc.localeCompare(b.domaindesc);
+        });
+    }, [dataDocType, getValues("sunatcountry")]);
 
     return (
         <div style={{ width: '100%' }}>
@@ -434,9 +485,14 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                     label={t(langKeys.country)}
                                     className="col-6"
                                     valueDefault={getValues("sunatcountry")}
-                                    onChange={(value) => {setValue("sunatcountry", value?.code||"");setdoctype(value?.code==="PE"?"1":"0")}}
+                                    onChange={(value) => {
+                                        setValue("sunatcountry", value?.code || "");
+
+                                        setValue("doctype", value?.code === "PE" ? "1" : "0");
+                                        setdoctype(value?.code === "PE" ? "1" : "0");
+                                    }}
                                     error={errors?.sunatcountry?.message}
-                                    data={countryList.data}
+                                    data={countries}
                                     optionDesc="description"
                                     optionValue="code"
                                 />
@@ -455,10 +511,13 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                     label={t(langKeys.docType)}
                                     className="col-6"
                                     valueDefault={doctype}
-                                    disabled={doctype==="0"}
-                                    onChange={(value) => {setValue("doctype", value?.domainvalue || "");setdoctype(value?.domainvalue || "")}}
+                                    disabled={getValues("sunatcountry") !== "PE"}
+                                    onChange={(value) => {
+                                        setValue("doctype", value?.domainvalue || "");
+                                        setdoctype(value?.domainvalue || "");
+                                    }}
                                     error={errors?.doctype?.message}
-                                    data={doctype === "1" ? dataDocType.filter(x=>x.domainvalue!=="0"):dataDocType}
+                                    data={docTypes}
                                     optionDesc="domaindesc"
                                     optionValue="domainvalue"
                                 />

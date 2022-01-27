@@ -260,3 +260,40 @@ export const regularizeInvoiceReset = (state: IState): IState => ({
     ...state,
     requestRegularizeInvoice: initialState.requestRegularizeInvoice
 })
+
+export const getExchangeRate = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestGetExchangeRate: {
+        ...state.requestGetExchangeRate,
+        loading: true,
+        error: false
+    }
+})
+
+export const getExchangeRateFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestGetExchangeRate: {
+        ...state.requestGetExchangeRate,
+        loading: false,
+        error: true,
+        code: action.payload.code ? action.payload.code : action.payload.message,
+        message: action.payload.message
+    }
+})
+
+export const getExchangeRateSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestGetExchangeRate: {
+        ...state.requestGetExchangeRate,
+        loading: false,
+        error: false,
+        exchangerate: action.payload.exchangerate,
+        code: action.payload.code ? action.payload.code : action.payload.message,
+        message: action.payload.message
+    }
+})
+
+export const getExchangeRateReset = (state: IState): IState => ({
+    ...state,
+    requestGetExchangeRate: initialState.requestGetExchangeRate
+})
