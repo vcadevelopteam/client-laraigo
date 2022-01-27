@@ -1324,7 +1324,7 @@ const translation: LangKeys = {
     report_productivity_tmoagent: 'TMO asesor',
     report_productivity_holdingholdtime: 'Tiempo de espera en holding',
 
-    report_tipification: 'Reporte de Clasificaciones',
+    report_tipification: 'Clasificaciones',
     report_tipification_ticket: 'Ticket',
     report_tipification_datehour: 'Fecha ticket - Hora ticket',
     report_tipification_person: 'Persona',
