@@ -292,6 +292,8 @@ export const SignUp: FC = () => {
                     <LeftSide
                         listchannels={listchannels}
                         setlistchannels={setlistchannels}
+                        setrequestchannels={setrequestchannels}
+                        setOpenWarning={setOpenWarning}
                     />
                 ) : (
                     <div className={classes.containerLogo}> 

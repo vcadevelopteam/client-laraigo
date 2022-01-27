@@ -459,18 +459,6 @@ export const ThirdStep: FC<ThirdStepProps> = ({
     };
     return (
         <div className={classes.root}>
-            {/* <Breadcrumbs aria-label="breadcrumb">
-                <Link
-                    color="textSecondary"
-                    key={"mainview"} href="/"
-                    onClick={(e) => {
-                        e.preventDefault();
-                        setOpenWarning(true);
-                    }}
-                >
-                    {t(langKeys.previoustext)}
-                </Link>
-            </Breadcrumbs> */}
             <LaraigoLogo style={{ width: '25%', height: 'auto', marginBottom: '1.58em' }} />
             <div className={classes.title}>
                 Basic
