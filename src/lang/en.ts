@@ -2801,6 +2801,8 @@ const translation: LangKeys = {
     doctype_passport_error: 'Must be up to 12 digits',
     doctype_unknown_error: 'Please select a valid document type',
     totaltopay: 'Payment amount',
+
+    messagingpackages: 'Messaging Packages',
 };
 
 const enResource: ResourceLanguage = {
