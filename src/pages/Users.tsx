@@ -1151,7 +1151,6 @@ const Users: FC = () => {
             let excel: any = await uploadExcel(file, undefined);
             let data = array_trimmer(excel);
             data = data.filter((f: any) =>{
-                debugger
                 return (f.company === undefined || Object.keys(domains.value?.company?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.company))
                 && (f.doctype === undefined || Object.keys(domains.value?.docTypes?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.doctype))
                 && (f.billinggroup === undefined || Object.keys(domains.value?.billinggroups?.reduce((a: any, d) => ({ ...a, [d.domainid]: `${d.domainid}` }), {})).includes('' + f.billinggroup))
