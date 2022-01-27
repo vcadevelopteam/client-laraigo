@@ -23,6 +23,8 @@ import { apiUrls } from 'common/constants';
 import { request_send, resetRequest } from 'store/integrationmanager/actions';
 import { dictToArrayKV, extractVariables, isJson } from 'common/helpers';
 import BackupIcon from '@material-ui/icons/Backup';
+import ListAltIcon from '@material-ui/icons/ListAlt';
+import InfoIcon from '@material-ui/icons/Info';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -718,6 +720,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                                     variant="contained"
                                     type="button"
                                     color="primary"
+                                    startIcon={<ListAltIcon color="secondary" />}
                                     style={{ backgroundColor: "#7721AD" }}
                                     onClick={handleViewTable}
                                 >{t(langKeys.view_table)}</Button>
@@ -753,6 +756,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                             variant="contained"
                             type="button"
                             color="primary"
+                            startIcon={<InfoIcon color="secondary" />}
                             style={{ backgroundColor: "#7721AD" }}
                             onClick={() => onClickInfo()}
                         >{t(langKeys.info)}</Button>
