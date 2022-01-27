@@ -134,6 +134,7 @@ export { ReactComponent as ClientIcon } from './clients.svg';
 export { ReactComponent as DocNumberIcon } from './docnumber.svg';
 export { ReactComponent as DocTypeIcon } from './doctype.svg';
 export { ReactComponent as TelephoneIcon } from './telephone.svg';
+export { ReactComponent as ZipIcon } from './zipicon.svg';
 
 export { ReactComponent as LaraigoAnimalIcon } from './Laraigo-emojis_animal.svg';
 export { ReactComponent as LaraigoBanderaIcon } from './Laraigo-emojis_bandera.svg';
