@@ -4,14 +4,14 @@ import { useSelector } from "hooks";
 import { CalendarIcon } from "icons";
 import { langKeys } from "lang/keys";
 import { FC, Fragment, useEffect, useState } from "react";
-import { resetMain, getMultiCollection, getMultiCollectionAux, getCollectionAux } from 'store/main/actions';
+import { resetMain, getMultiCollection, getMultiCollectionAux, getCollectionAux, resetMainAux, resetMultiMainAux } from 'store/main/actions';
 import { Range } from 'react-date-range';
 import clsx from 'clsx';
 import PersonIcon from '@material-ui/icons/Person';
 import ChatIcon from '@material-ui/icons/Chat';
 import AdbIcon from '@material-ui/icons/Adb';
 import { useTranslation } from "react-i18next";
-import { exportExcel, getCommChannelLst, getdashboardoperativoEncuestaSel,getdashboardoperativoEncuestaSeldata,getdashboardoperativoEncuesta3Sel, getdashboardoperativoProdxHoraDistSel, getdashboardoperativoProdxHoraSel,getdashboardoperativoSummarySeldata, getdashboardoperativoSummarySel,getdashboardoperativoTMEGENERALSeldata, getdashboardoperativoTMEGENERALSel, getdashboardoperativoTMOGENERALSel, getdashboardoperativoTMOGENERALSeldata, getLabelsSel, getSupervisorsSel, getValuesFromDomain } from "common/helpers";
+import { exportExcel, getCommChannelLst, getdashboardoperativoEncuestaSel,getdashboardoperativoEncuesta3Sel, getdashboardoperativoProdxHoraDistSel, getdashboardoperativoProdxHoraSel, getdashboardoperativoSummarySel,getdashboardoperativoTMEGENERALSeldata, getdashboardoperativoTMEGENERALSel, getdashboardoperativoTMOGENERALSel, getdashboardoperativoTMOGENERALSeldata, getLabelsSel, getSupervisorsSel, getValuesFromDomain, getdashboardoperativoTMOdistseldata, getdashboardoperativoTMEdistseldata, getdashboardoperativoProdxHoraDistSeldata, getdashboardoperativoEncuesta3Seldata, getdashboardoperativoEncuesta2Seldata } from "common/helpers";
 import { useDispatch } from "react-redux";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import { Dictionary } from "@types";
@@ -955,7 +955,8 @@ const DashboardProductivity: FC = () => {
         ]));
         funcsearch()
         return () => {
-            dispatch(resetMain());
+            dispatch(resetMainAux());
+            dispatch(resetMultiMainAux());
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -984,12 +985,16 @@ const DashboardProductivity: FC = () => {
             dispatch(getCollectionAux(getdashboardoperativoTMOGENERALSeldata(tosend)))
         }else if(tipeoffilter==="TME"){
             dispatch(getCollectionAux(getdashboardoperativoTMEGENERALSeldata(tosend)))
-        }else if(tipeoffilter==="TMODistribution"||tipeoffilter==="TMEDistribution"){
-            dispatch(getCollectionAux(getdashboardoperativoSummarySeldata(tosend)))
+        }else if(tipeoffilter==="TMODistribution"){
+            dispatch(getCollectionAux(getdashboardoperativoTMOdistseldata(tosend)))
+        }else if(tipeoffilter==="TMEDistribution"){
+            dispatch(getCollectionAux(getdashboardoperativoTMEdistseldata(tosend)))
         }else if(tipeoffilter==="prodxHoraDist"){
-            dispatch(getCollectionAux(getdashboardoperativoProdxHoraDistSel(tosend)))
-        }else if(tipeoffilter==="NPS"||tipeoffilter==="CSAT"||tipeoffilter==="FIX"||tipeoffilter==="FCR"){
-            dispatch(getCollectionAux(getdashboardoperativoEncuestaSeldata(tosend)))
+            dispatch(getCollectionAux(getdashboardoperativoProdxHoraDistSeldata(tosend)))
+        }else if(tipeoffilter==="NPS"||tipeoffilter==="CSAT"){
+            dispatch(getCollectionAux(getdashboardoperativoEncuesta3Seldata({...tosend, question: tipeoffilter})))
+        }else if(tipeoffilter==="FIX"||tipeoffilter==="FCR"){
+            dispatch(getCollectionAux(getdashboardoperativoEncuesta2Seldata({...tosend, question: tipeoffilter})))
         }
     }
     async function funcsearchoneonly() {

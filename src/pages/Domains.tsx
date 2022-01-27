@@ -286,9 +286,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
     }, [register]);
 
     const onSubmit = handleSubmit((data) => {
-        debugger
         const callback = () => {
-            debugger
             dispatch(showBackdrop(true));
             dispatch(execute({
                 header: insDomain({ ...data }),

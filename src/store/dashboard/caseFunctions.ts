@@ -92,7 +92,7 @@ export const saveDashboardTemplateFailure = (state: IState, action: IAction): IS
         success: false,
         loading: false,
         error: true,
-        code: action.payload.code || 'saveDashboardTemplateFailure:error',
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
         message: action.payload.message || 'Error al guardar el dashboardtemplate',
     },
 });

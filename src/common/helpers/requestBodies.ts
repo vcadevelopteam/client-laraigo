@@ -189,10 +189,10 @@ export const getClassificationLevel2 = (type: string, classificationid: number):
 });
 
 
-export const insUser = ({ id, usr, doctype, send_password_by_email, docnum, password = "", firstname, lastname, email, pwdchangefirstlogin, type, status, description = "", operation, company, twofactorauthentication, registercode, billinggroupid, image, language }: Dictionary): IRequestBody => ({
+export const insUser = ({ id, usr, doctype, send_password_by_email, docnum, password = "", firstname, lastname, email, pwdchangefirstlogin, type, status, description = "", operation, company = "", twofactorauthentication, registercode, billinggroupid, image, language }: Dictionary): IRequestBody => ({
     method: "UFN_USER_INS",
     key: "UFN_USER_INS",
-    parameters: { id, usr, doctype, docnum, password: password, firstname, lastname, email, pwdchangefirstlogin, type, status, description, operation, company, twofactorauthentication, sendMailPassword: send_password_by_email , registercode, billinggroup: billinggroupid, image, language }
+    parameters: { id, usr, doctype, docnum, password: password, firstname, lastname, email, pwdchangefirstlogin, type, status, description, operation, company, twofactorauthentication, sendMailPassword: send_password_by_email , registercode, billinggroup: billinggroupid || 0, image, language }
 });
 
 export const insOrgUser = ({ roleid, orgid, bydefault, labels, groups, channels, status, type, supervisor, operation, redirect }: Dictionary): IRequestBody => ({
@@ -1377,8 +1377,8 @@ export const gerencialTMOsel = ({ startdate, enddate, channel, group, company, c
     }
 });
 export const gerencialTMOselData = ({ startdate, enddate, channel, group, company, bd = true }: Dictionary): IRequestBody => ({
-    method: 'UFN_DASHBOARD_GERENCIAL_DATA_TMO_GENERAL_SEL',
-    key: "UFN_DASHBOARD_GERENCIAL_DATA_TMO_GENERAL_SEL",
+    method: 'UFN_DASHBOARD_GERENCIAL_TMO_GENERAL_DATA_SEL',
+    key: "UFN_DASHBOARD_GERENCIAL_TMO_GENERAL_DATA_SEL",
     parameters: {
         startdate, enddate, channel, group, company, level: 0, closedby: "ASESOR,BOT", min: 0, max: 0, target: 0, skipdown: 0, skipup: 0, bd, offset: (new Date().getTimezoneOffset() / 60) * -1,
     }
@@ -1387,20 +1387,14 @@ export const gerencialTMEsel = ({ startdate, enddate, channel, group, company, c
     method: 'UFN_DASHBOARD_GERENCIAL_TME_GENERAL_SEL',
     key: "UFN_DASHBOARD_GERENCIAL_TME_GENERAL_SEL",
     parameters: {
-        startdate,
-        enddate,
-        channel,
-        group,
-        company,
-        level: 0,
-        closedby,
-        min: min === "" ? "00:00:00" : min,
-        max: max === "" ? "99:00:00" : max,
-        target: target / 100,
-        skipdown: skipdown / 100,
-        skipup: skipup / 100,
-        bd,
-        offset: (new Date().getTimezoneOffset() / 60) * -1,
+        startdate, enddate, channel, group, company, level: 0, closedby, min: min === "" ? "00:00:00" : min, max: max === "" ? "99:00:00" : max, target: target / 100, skipdown: skipdown / 100, skipup: skipup / 100, bd, offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+});
+export const gerencialTMEselData = ({ startdate, enddate, channel, group, company, bd = true }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_GERENCIAL_TME_GENERAL_DATA_SEL',
+    key: "UFN_DASHBOARD_GERENCIAL_TME_GENERAL_DATA_SEL",
+    parameters: {
+        startdate, enddate, channel, group, company, level: 0, closedby: "ASESOR,BOT", min: 0, max: 0, target: 0, skipdown: 0, skipup: 0, bd, offset: (new Date().getTimezoneOffset() / 60) * -1,
     }
 });
 export const gerencialEncuestassel = ({ startdate, enddate, channel, group, company, question, closedby = "ASESOR,BOT", target = 0, bd = true }: Dictionary): IRequestBody => ({
@@ -1433,8 +1427,8 @@ export const gerencialsummarysel = ({ startdate, enddate, channel, group, compan
     }
 });
 export const gerencialsummaryseldata = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({
-    method: 'UFN_DATA_DASHBOARD_GERENCIAL_SUMMARY_SEL',
-    key: "UFN_DATA_DASHBOARD_GERENCIAL_SUMMARY_SEL",
+    method: 'UFN_DASHBOARD_GERENCIAL_SUMMARY_DATA_SEL',
+    key: "UFN_DASHBOARD_GERENCIAL_SUMMARY_DATA_SEL",
     parameters: {
         startdate,
         enddate,
@@ -1458,17 +1452,19 @@ export const gerencialencuestasel = ({ startdate, enddate, channel, group, compa
     }
 
 });
-export const gerencialencuestaseldata = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({
-    method: 'UFN_DATA_DASHBOARD_GERENCIAL_ENCUESTA_SEL',
-    key: "UFN_DATA_DASHBOARD_GERENCIAL_ENCUESTA_SEL",
+export const gerencialEncuesta3selData = ({ startdate, enddate, channel, group, company, question }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_GERENCIAL_ENCUESTA3_DATA_SEL',
+    key: "UFN_DASHBOARD_GERENCIAL_ENCUESTA3_DATA_SEL",
     parameters: {
-        startdate,
-        enddate,
-        channel,
-        group,
-        company,
-        closedby: "",
-        offset: (new Date().getTimezoneOffset() / 60) * -1,
+        startdate, enddate, channel, group, company, question, closedby: "ASESOR,BOT", target: 0, offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+
+});
+export const gerencialEncuesta2selData = ({ startdate, enddate, channel, group, company, question }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_GERENCIAL_ENCUESTA2_DATA_SEL',
+    key: "UFN_DASHBOARD_GERENCIAL_ENCUESTA2_DATA_SEL",
+    parameters: {
+        startdate, enddate, channel, group, company, question, closedby: "ASESOR,BOT", target: 0, offset: (new Date().getTimezoneOffset() / 60) * -1,
     }
 
 });
@@ -1485,8 +1481,8 @@ export const gerencialconversationsel = ({ startdate, enddate, channel, group, c
     }
 });
 export const gerencialconversationseldata = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({
-    method: 'UFN_DATA_DASHBOARD_GERENCIAL_CONVERSATION_SEL',
-    key: "UFN_DATA_DASHBOARD_GERENCIAL_CONVERSATION_SEL",
+    method: 'UFN_DASHBOARD_GERENCIAL_CONVERSATION_DATA_SEL',
+    key: "UFN_DASHBOARD_GERENCIAL_CONVERSATION_DATA_SEL",
     parameters: {
         startdate,
         enddate,
@@ -1509,8 +1505,8 @@ export const gerencialinteractionsel = ({ startdate, enddate, channel, group, co
     }
 });
 export const gerencialinteractionseldata = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({
-    method: 'UFN_DATA_DASHBOARD_GERENCIAL_INTERACTION_SEL',
-    key: "UFN_DATA_DASHBOARD_GERENCIAL_INTERACTION_SEL",
+    method: 'UFN_DASHBOARD_GERENCIAL_INTERACTION_DATA_SEL',
+    key: "UFN_DASHBOARD_GERENCIAL_INTERACTION_DATA_SEL",
     parameters: {
         startdate,
         enddate,
@@ -1534,8 +1530,8 @@ export const gerencialetiquetassel = ({ startdate, enddate, channel, group, comp
     }
 });
 export const gerencialetiquetasseldata = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({
-    method: 'UFN_DATA_DASHBOARD_GERENCIAL_ETIQUETAS_SEL',
-    key: "UFN_DATA_DASHBOARD_GERENCIAL_ETIQUETAS_SEL",
+    method: 'UFN_DASHBOARD_GERENCIAL_ETIQUETAS_DATA_SEL',
+    key: "UFN_DASHBOARD_GERENCIAL_ETIQUETAS_DATA_SEL",
     parameters: {
         startdate,
         enddate,
@@ -1559,8 +1555,8 @@ export const gerencialasesoresconectadosbarsel = ({ startdate, enddate, channel,
     }
 });
 export const gerencialasesoresconectadosbarseldata = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({
-    method: 'UFN_DATA_DASHBOARD_GERENCIAL_ASESORESCONECTADOSBAR_SEL',
-    key: "UFN_DATA_DASHBOARD_GERENCIAL_ASESORESCONECTADOSBAR_SEL",
+    method: 'UFN_DASHBOARD_GERENCIAL_ASESORESCONECTADOSBAR_DATA_SEL',
+    key: "UFN_DASHBOARD_GERENCIAL_ASESORESCONECTADOSBAR_DATA_SEL",
     parameters: {
         startdate,
         enddate,
@@ -1591,9 +1587,19 @@ export const getdashboardPushHSMCATEGORYRANKSel = ({ startdate, enddate, channel
     key: "UFN_DASHBOARD_PUSH_HSMCATEGORYRANK_SEL",
     parameters: { startdate, enddate, channel, group, company, label, category, offset: (new Date().getTimezoneOffset() / 60) * -1, userid: supervisor }
 });
+export const getdashboardPushHSMCATEGORYRANKSelData = ({ startdate, enddate, channel, group, company, label, category, supervisor }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_PUSH_HSMCATEGORYRANK_DATA_SEL',
+    key: "UFN_DASHBOARD_PUSH_HSMCATEGORYRANK_DATA_SEL",
+    parameters: { startdate, enddate, channel, group, company, label, category, offset: (new Date().getTimezoneOffset() / 60) * -1, userid: supervisor }
+});
 export const getdashboardPushSUMMARYSel = ({ startdate, enddate, channel, group, company, label, category, supervisor }: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_PUSH_SUMMARY_SEL',
     key: "UFN_DASHBOARD_PUSH_SUMMARY_SEL",
+    parameters: { startdate, enddate, channel, group, company, label, category, offset: (new Date().getTimezoneOffset() / 60) * -1, userid: supervisor }
+});
+export const getdashboardPushSUMMARYSelData = ({ startdate, enddate, channel, group, company, label, category, supervisor }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_PUSH_SUMMARY_DATA_SEL',
+    key: "UFN_DASHBOARD_PUSH_SUMMARY_DATA_SEL",
     parameters: { startdate, enddate, channel, group, company, label, category, offset: (new Date().getTimezoneOffset() / 60) * -1, userid: supervisor }
 });
 export const getdashboardPushHSMRANKSel = ({ startdate, enddate, channel, group, company, label, category, supervisor }: Dictionary): IRequestBody => ({
@@ -1601,9 +1607,19 @@ export const getdashboardPushHSMRANKSel = ({ startdate, enddate, channel, group,
     key: "UFN_DASHBOARD_PUSH_HSMRANK_SEL",
     parameters: { startdate, enddate, channel, group, company, label, category, offset: (new Date().getTimezoneOffset() / 60) * -1, userid: supervisor }
 });
+export const getdashboardPushHSMRANKSelData = ({ startdate, enddate, channel, group, company, label, category, supervisor }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_PUSH_HSMRANK_DATA_SEL',
+    key: "UFN_DASHBOARD_PUSH_HSMRANK_DATA_SEL",
+    parameters: { startdate, enddate, channel, group, company, label, category, offset: (new Date().getTimezoneOffset() / 60) * -1, userid: supervisor }
+});
 export const getdashboardPushMENSAJEXDIASel = ({ startdate, enddate, channel, group, company, label, category, supervisor }: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_PUSH_MENSAJEXDIA_SEL',
     key: "UFN_DASHBOARD_PUSH_MENSAJEXDIA_SEL",
+    parameters: { startdate, enddate, channel, group, company, label, category, offset: (new Date().getTimezoneOffset() / 60) * -1, userid: supervisor }
+});
+export const getdashboardPushMENSAJEXDIASelData = ({ startdate, enddate, channel, group, company, label, category, supervisor }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_PUSH_MENSAJEXDIA_DATA_SEL',
+    key: "UFN_DASHBOARD_PUSH_MENSAJEXDIA_DATA_SEL",
     parameters: { startdate, enddate, channel, group, company, label, category, offset: (new Date().getTimezoneOffset() / 60) * -1, userid: supervisor }
 });
 export const getdashboardoperativoTMOGENERALSel = ({ startdate, enddate, channel, group, company, label, supervisor, closedby = "ASESOR,BOT", bd = true, min = "", max = "", target = 0, skipdown = 0, skipup = 0 }: Dictionary): IRequestBody => ({
@@ -1624,8 +1640,8 @@ export const getdashboardoperativoTMOGENERALSel = ({ startdate, enddate, channel
     }
 });
 export const getdashboardoperativoTMOGENERALSeldata = ({ startdate, enddate, channel, group, company, label, supervisor, bd = true }: Dictionary): IRequestBody => ({
-    method: 'UFN_DATA_DASHBOARD_OPERATIVO_TMO_GENERAL_SEL',
-    key: "UFN_DATA_DASHBOARD_OPERATIVO_TMO_GENERAL_SEL",
+    method: 'UFN_DASHBOARD_OPERATIVO_TMO_GENERAL_DATA_SEL',
+    key: "UFN_DASHBOARD_OPERATIVO_TMO_GENERAL_DATA_SEL",
     parameters: {
         startdate, enddate, channel, group, company, label,
         level: 0,
@@ -1658,8 +1674,8 @@ export const getdashboardoperativoTMEGENERALSel = ({ startdate, enddate, channel
     }
 });
 export const getdashboardoperativoTMEGENERALSeldata = ({ startdate, enddate, channel, group, company, label, supervisor, bd = true }: Dictionary): IRequestBody => ({
-    method: 'UFN_DATA_DASHBOARD_OPERATIVO_TME_GENERAL_SEL',
-    key: "UFN_DATA_DASHBOARD_OPERATIVO_TME_GENERAL_SEL",
+    method: 'UFN_DASHBOARD_OPERATIVO_TME_GENERAL_DATA_SEL',
+    key: "UFN_DASHBOARD_OPERATIVO_TME_GENERAL_DATA_SEL",
     parameters: {
         startdate, enddate, channel, group, company, label,
         level: 0,
@@ -1697,9 +1713,22 @@ export const getdashboardoperativoSummarySel = ({ startdate, enddate, channel, g
         supervisorid: supervisor
     }
 });
-export const getdashboardoperativoSummarySeldata = ({ startdate, enddate, channel, group, company, label, supervisor }: Dictionary): IRequestBody => ({
-    method: 'UFN_DATA_DASHBOARD_OPERATIVO_SUMMARY_SEL',
-    key: "UFN_DATA_DASHBOARD_OPERATIVO_SUMMARY_SEL",
+export const getdashboardoperativoTMOdistseldata = ({ startdate, enddate, channel, group, company, label, supervisor }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_OPERATIVO_TMODIST_DATA_SEL',
+    key: "UFN_DASHBOARD_OPERATIVO_TMODIST_DATA_SEL",
+    parameters: {
+        startdate, enddate, channel, group, company, label,
+        skipdowntmo: 0,
+        skipuptmo: 0,
+        skipdowntme: 0,
+        skipuptme: 0,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+        supervisorid: supervisor
+    }
+});
+export const getdashboardoperativoTMEdistseldata = ({ startdate, enddate, channel, group, company, label, supervisor }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_OPERATIVO_TMEDIST_DATA_SEL',
+    key: "UFN_DASHBOARD_OPERATIVO_TMEDIST_DATA_SEL",
     parameters: {
         startdate, enddate, channel, group, company, label,
         skipdowntmo: 0,
@@ -1730,8 +1759,8 @@ export const getdashboardoperativoProdxHoraDistSel = ({ startdate, enddate, chan
     }
 });
 export const getdashboardoperativoProdxHoraDistSeldata = ({ startdate, enddate, channel, group, company, label, supervisor }: Dictionary): IRequestBody => ({
-    method: 'UFN_DATA_DASHBOARD_OPERATIVO_PRODXHORADIST_SEL',
-    key: "UFN_DATA_DASHBOARD_OPERATIVO_PRODXHORADIST_SEL",
+    method: 'UFN_DASHBOARD_OPERATIVO_PRODXHORADIST_DATA_SEL',
+    key: "UFN_DASHBOARD_OPERATIVO_PRODXHORADIST_DATA_SEL",
     parameters: {
         startdate, enddate, channel, group, company, label,
         offset: (new Date().getTimezoneOffset() / 60) * -1,
@@ -1756,11 +1785,20 @@ export const getdashboardoperativoEncuestaSel = ({ startdate, enddate, channel, 
         supervisorid: supervisor
     }
 });
-export const getdashboardoperativoEncuestaSeldata = ({ startdate, enddate, channel, group, company, label, supervisor }: Dictionary): IRequestBody => ({
-    method: 'UFN_DATA_DASHBOARD_OPERATIVO_ENCUESTA_SEL',
-    key: "UFN_DATA_DASHBOARD_OPERATIVO_ENCUESTA_SEL",
+export const getdashboardoperativoEncuesta3Seldata = ({ startdate, enddate, channel, group, company, label, supervisor, question }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_OPERATIVO_ENCUESTA3_DATA_SEL',
+    key: "UFN_DASHBOARD_OPERATIVO_ENCUESTA3_DATA_SEL",
     parameters: {
-        startdate, enddate, channel, group, company, label, closedby: "",
+        startdate, enddate, channel, group, company, label, question, closedby: "ASESOR,BOT", target: 0,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+        supervisorid: supervisor
+    }
+});
+export const getdashboardoperativoEncuesta2Seldata = ({ startdate, enddate, channel, group, company, label, supervisor, question }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_OPERATIVO_ENCUESTA2_DATA_SEL',
+    key: "UFN_DASHBOARD_OPERATIVO_ENCUESTA2_DATA_SEL",
+    parameters: {
+        startdate, enddate, channel, group, company, label, question, closedby: "ASESOR,BOT", target: 0,
         offset: (new Date().getTimezoneOffset() / 60) * -1,
         supervisorid: supervisor
     }

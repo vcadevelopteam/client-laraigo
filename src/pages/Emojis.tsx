@@ -254,7 +254,6 @@ const Emoji: FC<{ emoji: Dictionary, fetchData: () => void, category:string }> =
         const callback = () => {
             setSendIns(true)
             dispatch(showBackdrop(true));
-            debugger
             dispatch(execute(insEmoji({
                 ...emoji,
                 communicationchannel: "",

@@ -25,7 +25,6 @@ export function exportExcel(filename: string, csvData: Dictionary[], columnsexpo
             return newx;
         });
     }
-    debugger
     const ws = XLSX.utils.json_to_sheet(datafromtable);
     const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
     const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });

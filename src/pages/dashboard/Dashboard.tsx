@@ -14,13 +14,12 @@ import paths from 'common/constants/paths';
 import { useHistory } from 'react-router';
 import { useSelector } from 'hooks';
 import { manageConfirmation, showSnackbar } from 'store/popus/actions';
-import { DashboardTemplate, Dictionary, IListStatePaginated } from '@types';
+import { DashboardTemplate, IListStatePaginated } from '@types';
 import { deleteDashboardTemplate, resetDeleteDashboardTemplate } from 'store/dashboard/actions';
 
 
 const arrayBread = [
-    { id: "view-1", name: "Dashboard" },
-    { id: "dashboardgerencial", name: "Dashboard managerial" },
+    { id: "view-1", name: "Dashboard" }
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -51,7 +50,9 @@ const useStyles = makeStyles((theme) => ({
     },
     containerFilterGeneral: {
         display: 'flex',
-        justifyContent: 'space-between',
+        justifyContent: 'end',
+        alignItems: 'center',
+        gap: 8,
         backgroundColor: '#FFF',
         padding: theme.spacing(2),
     },
@@ -197,7 +198,6 @@ const Dashboard: FC = () => {
                     </span>
                 </Box>
                 <Box className={classes.containerFilterGeneral}>
-                    <span></span>
                     <div className={classes.containerSearch}>
                         <SearchField
                             colorPlaceHolder='#FFF'
@@ -305,7 +305,7 @@ const Dashboard: FC = () => {
             <Fragment>
                 <div style={{ width: '100%' }}>
                     <TemplateBreadcrumbs
-                        breadcrumbs={arrayBread}
+                        breadcrumbs={[...arrayBread, {id: 'dashboardgerencial', name: t(langKeys.managerial) }]}
                         handleClick={handleSelected}
                     />
                     <DashboardManagerial/>
@@ -318,7 +318,7 @@ const Dashboard: FC = () => {
             <Fragment>
                 <div style={{ width: '100%' }}>
                     <TemplateBreadcrumbs
-                        breadcrumbs={arrayBread}
+                        breadcrumbs={[...arrayBread, {id: 'dashboardproductivity', name: t(langKeys.productivity) }]}
                         handleClick={handleSelected}
                     />
                     <DashboardProductivity/>
@@ -332,7 +332,7 @@ const Dashboard: FC = () => {
             <Fragment>
                 <div style={{ width: '100%' }}>
                     <TemplateBreadcrumbs
-                        breadcrumbs={arrayBread}
+                        breadcrumbs={[...arrayBread, {id: 'dashboardoperationalpush', name: t(langKeys.operationalpush) }]}
                         handleClick={handleSelected}
                     />
                     <DashboardOperationalPush/>
