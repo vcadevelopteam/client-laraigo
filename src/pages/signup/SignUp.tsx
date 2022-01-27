@@ -11,10 +11,18 @@ import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { verifyPlan } from 'store/signup/actions';
 import { langKeys } from 'lang/keys';
-import { useTranslation } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { Dictionary } from '@types';
+import { LaraigoLogo } from 'icons';
+import { LeftSide } from './LeftSideMenu';
 
 const useSignUpStyles = makeStyles(theme => ({
+    root: {
+        backgroundColor: '#F7F7F7',
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+    },
     purplecircle: {
         background: "#7721ad",
         borderRadius: "50%",
@@ -34,7 +42,7 @@ const useSignUpStyles = makeStyles(theme => ({
         flex: '0 0 1',
         paddingTop: 16,
         paddingBottom: 16,
-        marginBottom: 4,
+        // marginBottom: 4,
         backgroundColor: '#FFF',
         
     },
@@ -88,7 +96,6 @@ export const SignUp: FC = () => {
     const history = useHistory();
     const [openWarning, setOpenWarning] = useState(false);
     const [waitLoad, setWaitLoad] = useState(true);    
-    const { t } = useTranslation();
     const dispatch = useDispatch();
     const [step, setStep] = useState(1);
     const [snackbar, setSnackbar] = useState({
@@ -99,7 +106,7 @@ export const SignUp: FC = () => {
     const [sendchannels, setsendchannels] = useState(false);
     const [requestchannels, setrequestchannels] = useState([]);
     const [backdrop, setBackdrop] = useState(false);
-    const [listchannels, setlistchannels] = useState<Dictionary>({
+    const [listchannels, setlistchannels] = useState({
         facebook:false,
         instagram: false,
         messenger: false,
@@ -226,20 +233,22 @@ export const SignUp: FC = () => {
     const classes = useSignUpStyles();
 
     return (
-        <div style={{ backgroundColor: '#F7F7F7', height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <div className={classes.root}>
             <Dialog
                 open={openWarning}
                 onClose={handleClose}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
-                <DialogTitle id="alert-dialog-title">{t(langKeys.goback)}</DialogTitle>
+                <DialogTitle id="alert-dialog-title">
+                    <Trans i18nKey={langKeys.goback} />
+                </DialogTitle>
                 <DialogActions>
                 <Button onClick={handleClose} color="primary">
                     No
                 </Button>
                 <Button onClick={handleClose2} color="primary" autoFocus>
-                    {t(langKeys.yes)}
+                    <Trans i18nKey={langKeys.yes} />
                 </Button>
                 </DialogActions>
             </Dialog>
@@ -272,18 +281,28 @@ export const SignUp: FC = () => {
                     <div className={step === 4 ? classes.purplecircle : classes.notthisstep}> 5 </div>
                 </div>
             </div>
-            <div style={{ display: "flex", height: '100%' }}>
-                <div className={classes.containerLogo}> 
-                    {/* //containerlogo tiene flex 1, para q se divida con el texto */}
-                    <img src="../Laraigo-vertical-logo-name.svg" style={{ width: '50%' }} alt="logo" />
-                </div>
+            <div style={{
+                display: "flex",
+                flexDirection: step >= 3 ? 'row-reverse' : 'row',
+                height: '100%',
+                flexGrow: 1,
+                overflow: 'hidden',
+            }}>
+                {step >= 3 ? (
+                    <LeftSide
+                        listchannels={listchannels}
+                        setlistchannels={setlistchannels}
+                    />
+                ) : (
+                    <div className={classes.containerLogo}> 
+                        {/* //containerlogo tiene flex 1, para q se divida con el texto */}
+                        <LaraigoLogo style={{ width: '50%' }} />
+                    </div>
+                )}
                 <div style={{
-                    display: 'flex',
                     flex: 1,
-                    margin: 40,
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    padding: 40,
+                    overflowY: 'auto',
                 }}>
                     {!waitLoad?
                         <RightSideMenu //tiene flex 1, para q se ajuste con la imagen
@@ -302,11 +321,8 @@ export const SignUp: FC = () => {
                         setlistchannels={setlistchannels}
                     />:""
                     }
-                    
                 </div>
             </div>
         </div>
     );
 };
-
-

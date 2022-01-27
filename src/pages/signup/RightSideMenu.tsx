@@ -30,7 +30,7 @@ export const RightSideMenu: FC<{
     setrequestchannels:(param:any)=>void,
     sendchannels:any,
     setsendchannels:(param:any)=>void,
-    listchannels:any,
+    listchannels: { [key: string]: boolean },
     setlistchannels:(param:any)=>void,
 }> = 
     ({setSnackbar,setBackdrop,setStep,step,setMainData,mainData,setOpenWarning,requestchannels,setrequestchannels,sendchannels,setsendchannels,listchannels,setlistchannels}) => {

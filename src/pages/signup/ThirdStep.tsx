@@ -1,15 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Typography, Paper } from '@material-ui/core';
-import Link from '@material-ui/core/Link';
+import { makeStyles, Button, Typography, Paper } from '@material-ui/core';
 import { langKeys } from "lang/keys";
-import { Trans, useTranslation } from "react-i18next";
+import { Trans } from "react-i18next";
 import clsx from "clsx";
 import TelegramIcon from '@material-ui/icons/Telegram';
 import TwitterIcon from '@material-ui/icons/Twitter';
 import EmailIcon from '@material-ui/icons/Email';
 import { Facebook as FacebookIcon, Instagram as InstagramIcon, WhatsApp as WhatsAppIcon, ControlPoint as ControlPointIcon } from "@material-ui/icons";
-import { AndroidIcon, AppleIcon, FacebookMessengerIcon, ZyxmeMessengerIcon } from "icons";
+import { AndroidIcon, AppleIcon, FacebookMessengerIcon, LaraigoLogo, ZyxmeMessengerIcon } from "icons";
 import SmsIcon from '@material-ui/icons/Sms';
 import { useSelector } from "hooks";
 
@@ -45,12 +44,12 @@ const useChannelAddStyles = makeStyles(theme => ({
         margin: "0 40px"
     },
     root: {
-        // maxWidth: 815,
-        width: 'inherit',
-        marginLeft: 'auto',
-        marginRight: 'auto',
+        width: '100%',
         display: 'flex',
         flexDirection: 'column',
+        alignItems: 'center',
+        // justifyContent: 'center', // altera el scroll vertical
+        // transform: 'translateY(-20px)',
     },
     content: {
         flexGrow: 1,
@@ -69,9 +68,11 @@ const useChannelAddStyles = makeStyles(theme => ({
         color: theme.palette.primary.main,
     },
     subtitle: {
-        margin: '20px 0 8px 4px',
+        margin: '1em 0 8px 4px',
         fontSize: 20,
         fontWeight: 500,
+        width: '100%',
+        textAlign: 'start',
     },
     optionsContainer: {
         display: 'flex',
@@ -79,9 +80,10 @@ const useChannelAddStyles = makeStyles(theme => ({
         flexWrap: 'wrap',
         alignItems: 'center',
         justifyContent: 'center',
+        width: '100%'
     },
     optionContainer: {
-        margin: theme.spacing(2),
+        margin: theme.spacing(1),
         padding: '0 8px',
         display: 'flex',
         flexDirection: 'column',
@@ -96,6 +98,13 @@ const useChannelAddStyles = makeStyles(theme => ({
         textAlign: 'center',
         borderRadius: 8,
         position: 'relative',
+
+        '-webkit-touch-callout': 'none', /* iOS Safari */
+        '-webkit-user-select': 'none', /* Safari */
+        '-khtml-user-select': 'none', /* Konqueror HTML */
+        '-moz-user-select': 'none', /* Old versions of Firefox */
+        '-ms-user-select': 'none', /* Internet Explorer/Edge */
+        userSelect: 'none',
     },
     optionContainerHover: {
         '&:hover': {
@@ -112,10 +121,11 @@ const useChannelAddStyles = makeStyles(theme => ({
         // color: 'white',
         // fill: 'white',
     },
+    optionContainerActive: {
+        opacity: 1,
+    },
     optionContainerDisabled: {
         opacity: .5,
-
-        '&:hover': {},
     },
     optionPlusDecorator: {
         fill: theme.palette.primary.main,
@@ -159,7 +169,7 @@ const useChannelAddStyles = makeStyles(theme => ({
 
 interface ThirdStepProps {
     setlistchannels: (param: any) => void;
-    listchannels: any;
+    listchannels: { [key: string]: boolean };
     setStep: (param: any) => void;
     setsendchannels: (param: any) => void;
     setrequestchannels: (param: any) => void;
@@ -175,7 +185,6 @@ export const ThirdStep: FC<ThirdStepProps> = ({
     setOpenWarning,
 }) => {
 
-    const { t } = useTranslation();
     const planData = useSelector(state => state.signup.verifyPlan)
     const limitChannels = planData.data[0].channelscontracted
     const [selectedChannels, setselectedChannels] = useState(0);
@@ -422,11 +431,12 @@ export const ThirdStep: FC<ThirdStepProps> = ({
                     clsx(classes.optionContainer, {
                         [classes.optionContainerHover]: !withOpacity,
                         [classes.optionContainerSelected]: selected,
+                        [classes.optionContainerActive]: !withOpacity,
                         [classes.optionContainerDisabled]: withOpacity,
                     })
                 }
                 elevation={selected ? 4 : 0}
-                onClick={option.onClick}
+                onClick={() => withOpacity || option.onClick()}
             >
                 <div
                     className={clsx(classes.optionPlusDecorator, {
@@ -448,68 +458,67 @@ export const ThirdStep: FC<ThirdStepProps> = ({
         );
     };
     return (
-        <>
-            <div style={{marginTop: "auto",marginBottom: "auto",maxHeight: "100%"}}>
-                    <Breadcrumbs aria-label="breadcrumb">
-                        <Link
-                            color="textSecondary"
-                            key={"mainview"} href="/"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                setOpenWarning(true);
-                            }}
-                        >
-                            {t(langKeys.previoustext)}
-                        </Link>
-                    </Breadcrumbs>
-                <div className={classes.title}>
-                    <Trans i18nKey={langKeys.channeladdtitle} />
-                </div>
-                <Typography className={classes.subtitle}>
-                    <Trans i18nKey={langKeys.socialmediachannel} />
-                </Typography>
-                <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px" }}>
-                    <Trans i18nKey={langKeys.socialmediachannel2} />
-                </div>
-                <div className={classes.optionsContainer}>
-                    {socialMediaOptions.map((e, i) =>
-                        <Option
-                            key={`social_media_option_${i}`}
-                            option={e}
-                            selected={listchannels[e.key]}
-                            index={i}
-                        />
-                    )}
-                </div>
-                <Typography className={classes.subtitle}>
-                    <Trans i18nKey={langKeys.businesschannel} />
-                </Typography>
-                <div className={classes.optionsContainer}>
-                    {businessChannelOptions.map((e, i) => (
-                        <Option
-                            key={`business_channel_option_${i}`}
-                            option={e}
-                            selected={listchannels[e.key]}
-                            index={i}
-                        />
-                    ))}
-                </div>
-                <Button
-                    onClick={() => {
-                        setsendchannels(true);
-                        setrequestchannels([]);
+        <div className={classes.root}>
+            {/* <Breadcrumbs aria-label="breadcrumb">
+                <Link
+                    color="textSecondary"
+                    key={"mainview"} href="/"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        setOpenWarning(true);
                     }}
-                    className={classes.button}
-                    fullWidth
-                    style={{ marginTop: 30 }}
-                    variant="contained"
-                    color="primary"
-                    //disabled={nextbutton}
                 >
-                    <Trans i18nKey={langKeys.next} />
-                </Button>
+                    {t(langKeys.previoustext)}
+                </Link>
+            </Breadcrumbs> */}
+            <LaraigoLogo style={{ width: '25%', height: 'auto', marginBottom: '1.58em' }} />
+            <div className={classes.title}>
+                Basic
             </div>
-        </>
+            <Typography style={{ fontSize: 20, fontWeight: 400 }}>
+                Solo se podrá seleccionar un canal
+            </Typography>
+            <Typography className={classes.subtitle}>
+                <Trans i18nKey={langKeys.socialmediachannel} />
+            </Typography>
+            <div className={classes.optionsContainer}>
+                {socialMediaOptions.map((e, i) =>
+                    <Option
+                        key={`social_media_option_${i}`}
+                        option={e}
+                        selected={listchannels[e.key]}
+                        index={i}
+                    />
+                )}
+            </div>
+            <Typography className={classes.subtitle}>
+                <Trans i18nKey={langKeys.businesschannel} />
+            </Typography>
+            <div className={classes.optionsContainer}>
+                {businessChannelOptions.map((e, i) => (
+                    <Option
+                        key={`business_channel_option_${i}`}
+                        option={e}
+                        selected={listchannels[e.key]}
+                        index={i}
+                    />
+                ))}
+            </div>
+            {/* <Button
+                onClick={() => {
+                    setsendchannels(true);
+                    setrequestchannels([]);
+                }}
+                className={classes.button}
+                fullWidth
+                style={{ marginTop: 30 }}
+                variant="contained"
+                color="primary"
+                //disabled={nextbutton}
+            >
+                <Trans i18nKey={langKeys.next} />
+            </Button> */}
+        </div>
     )
 }
 export default ThirdStep
