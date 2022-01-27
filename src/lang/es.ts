@@ -2788,6 +2788,7 @@ const translation: LangKeys = {
     doctype_ruc_error: 'Debe ser 11 dígitos',
     doctype_passport_error: 'Debe ser hasta 12 dígitos',
     doctype_unknown_error: 'Seleccione un tipo de documento válido',
+    totaltopay: 'Total a pagar',
 };
 
 const esResource: ResourceLanguage = {

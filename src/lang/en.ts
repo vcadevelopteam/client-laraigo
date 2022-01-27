@@ -2800,6 +2800,7 @@ const translation: LangKeys = {
     doctype_ruc_error: 'Must be 11 digits',
     doctype_passport_error: 'Must be up to 12 digits',
     doctype_unknown_error: 'Please select a valid document type',
+    totaltopay: 'Payment amount',
 };
 
 const enResource: ResourceLanguage = {

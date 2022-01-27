@@ -39,6 +39,7 @@ interface CulqiModalProps {
     orgid?:number;
     successmessage?:string;
     publickey?:string;
+    override?:boolean;
 }
 
 const globalpublickey = apiUrls.CULQIKEY;
@@ -63,8 +64,8 @@ const CulqiModal: FC<CulqiModalProps> = ({
     orgid = 0,
     successmessage,
     publickey,
+    override,
 }) => {
-    console.log(publickey);
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const culqiSelector = useSelector(state => state.culqi.request);
@@ -79,6 +80,7 @@ const CulqiModal: FC<CulqiModalProps> = ({
             purchaseorder,
             comments,
             orgid,
+            override,
         }));
     }
 

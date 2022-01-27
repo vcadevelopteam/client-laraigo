@@ -85,3 +85,15 @@ export const regularizeInvoice = (request: any): IActionCall => ({
 });
 
 export const resetRegularizeInvoice = (): IActionCall => ({ type: actionTypes.REGULARIZE_INVOICE_RESET });
+
+export const getExchangeRate = (request: any): IActionCall => ({
+    callAPI: () => CulqiService.getExchangeRate(request),
+    types: {
+        loading: actionTypes.GET_EXCHANGERATE,
+        success: actionTypes.GET_EXCHANGERATE_SUCCESS,
+        failure: actionTypes.GET_EXCHANGERATE_FAILURE,
+    },
+    type: null,
+});
+
+export const resetGetExchangeRate = (): IActionCall => ({ type: actionTypes.GET_EXCHANGERATE_RESET });

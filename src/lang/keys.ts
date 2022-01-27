@@ -2789,6 +2789,7 @@ export const langKeys = {
     doctype_ruc_error: 'doctype_ruc_error',
     doctype_passport_error: 'doctype_passport_error',
     doctype_unknown_error: 'doctype_unknown_error',
+    totaltopay: 'totaltopay',
 };
 
 export type LangKeys = typeof langKeys;

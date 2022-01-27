@@ -36,3 +36,7 @@ export function createCreditNote(request: any) {
 export function regularizeInvoice(request: any) {
     return APIManager.post(apiUrls.BILLINGREGULARIZEINVOICE, { data: request }, true);
 }
+
+export function getExchangeRate(request: any) {
+    return APIManager.post(apiUrls.GETEXCHANGERATE, { data: request }, true);
+}

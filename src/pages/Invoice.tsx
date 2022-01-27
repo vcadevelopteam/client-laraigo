@@ -15,7 +15,7 @@ import { langKeys } from 'lang/keys';
 import { useForm, useFieldArray } from 'react-hook-form';
 import ClearIcon from '@material-ui/icons/Clear';
 import { getCollection, getMultiCollection, execute, exportData, getMultiCollectionAux } from 'store/main/actions';
-import { createInvoice, regularizeInvoice, createCreditNote } from 'store/culqi/actions';
+import { createInvoice, regularizeInvoice, createCreditNote, getExchangeRate } from 'store/culqi/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { Box, CircularProgress, FormHelperText, Grid, IconButton, Tab, Tabs, TextField } from '@material-ui/core';
 import * as locale from "date-fns/locale";
@@ -1990,6 +1990,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
 
     const classes = useStyles();
     const mainResult = useSelector(state => state.main);
+    const exchangeRequest = useSelector(state => state.culqi.requestGetExchangeRate);
 
     const [comments, setComments] = useState('');
     const [purchaseOrder, setPurchaseOrder] = useState('');
@@ -1997,23 +1998,63 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
     const [purchaseOrderError, setPurchaseOrderError] = useState('');
     const [paymentDisabled, setPaymentDisabled] = useState(false);
     const [publicKey, setPublicKey] = useState('');
-
-    const fetchPublicKey = () => dispatch(getCollection(getAppsettingInvoiceSel()));
+    const [showCulqi, setShowCulqi] = useState(false);
+    const [totalAmount, setTotalAmount] = useState(0);
+    const [totalPay, setTotalPay] = useState(0);
+    const [waitSave, setWaitSave] = useState(false);
+    const [Override, setOverride] = useState(false);
 
     useEffect(() => {
-        fetchPublicKey();
+        dispatch(getCollection(getAppsettingInvoiceSel()));
+        dispatch(getExchangeRate(null));
+        dispatch(showBackdrop(true));
+        setWaitSave(true);
     }, [])
 
     useEffect(() => {
-        if (!mainResult.mainData.loading) {
-            dispatch(showBackdrop(false));
-            if (mainResult.mainData.data) {
-                if (mainResult.mainData.data[0]) {
-                    setPublicKey(mainResult.mainData.data[0].publickey);
+        if (waitSave) {
+            if (!mainResult.mainData.loading && !exchangeRequest.loading) {
+                dispatch(showBackdrop(false));
+    
+                if (mainResult.mainData.data) {
+                    if (mainResult.mainData.data[0]) {
+                        var appsetting = mainResult.mainData.data[0];
+                        var country = (data?.orgcountry || data?.corpcountry);
+                        var doctype = (data?.orgdoctype || data?.corpdoctype);
+    
+                        if (country && doctype) {
+                            if (country === 'PE' && doctype === '6') {
+                                var compareamount = (data?.totalamount || 0);
+    
+                                if (data?.currency === 'USD') {
+                                    compareamount = compareamount * (exchangeRequest?.exchangerate || 0);
+                                }
+    
+                                if (compareamount > appsetting.detractionminimum) {
+                                    setTotalPay(data?.totalamount - (data?.totalamount * appsetting.detraction));
+                                    setTotalAmount(data?.totalamount);
+                                    setOverride(true);
+                                    setShowCulqi(true);
+                                }
+                                else {
+                                    setTotalPay(data?.totalamount);
+                                    setTotalAmount(data?.totalamount);;
+                                    setShowCulqi(true);
+                                }
+                            }
+                            else {
+                                setTotalPay(data?.totalamount);
+                                setTotalAmount(data?.totalamount);
+                                setShowCulqi(true);
+                            }
+                        }
+    
+                        setPublicKey(appsetting.publickey);
+                    }
                 }
             }
         }
-    }, [mainResult])
+    }, [mainResult, exchangeRequest, waitSave])
 
     const handleCulqiSuccess = () => {
         fetchData();
@@ -2067,14 +2108,14 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                        {(data?.paymentstatus === "PENDING" && publicKey) &&
+                        {(data?.paymentstatus === "PENDING" && publicKey && showCulqi) &&
                             <CulqiModal
                                 type="CHARGE"
                                 invoiceid={data?.invoiceid}
                                 title={data?.description}
                                 description={data?.productdescription}
                                 currency={data?.currency}
-                                amount={data?.totalamount * 100}
+                                amount={parseFloat(totalPay.toFixed(2)) * 100}
                                 callbackOnSuccess={() => { handleCulqiSuccess() }}
                                 buttontitle={t(langKeys.proceedpayment)}
                                 purchaseorder={purchaseOrder}
@@ -2083,6 +2124,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                                 disabled={paymentDisabled}
                                 successmessage={t(langKeys.culqipaysuccess)}
                                 publickey={publicKey}
+                                override={Override}
                             ></CulqiModal>
                         }
                     </div>
@@ -2097,14 +2139,19 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                     </div>
                     <div className="row-zyx">
                         <FieldView
-                            className="col-6"
+                            className="col-4"
                             label={t(langKeys.servicedescription)}
                             value={data?.productdescription || ''}
                         />
                         <FieldView
-                            className="col-6"
+                            className="col-4"
                             label={t(langKeys.totalamount)}
-                            value={(data?.currency === 'USD' ? '$' : 'S/')+formatNumber((data?.totalamount || 0))}
+                            value={(data?.currency === 'USD' ? '$' : 'S/')+formatNumber((totalAmount || 0))}
+                        />
+                        <FieldView
+                            className="col-4"
+                            label={t(langKeys.totaltopay)}
+                            value={(data?.currency === 'USD' ? '$' : 'S/')+formatNumber((totalPay || 0))}
                         />
                     </div>
                     <div className="row-zyx">

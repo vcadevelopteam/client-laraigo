@@ -20,7 +20,7 @@ const APIS_URL = {
     },
     PRODUCTION: {
         API: 'https://apiprd.laraigo.com/api',
-        WS: 'https://broker.lara<igo.com',
+        WS: 'https://broker.laraigo.com',
         CHATFLOW: 'https://chatflow.s3-web.us-east.cloud-object-storage.appdomain.cloud',
         FACEBOOKAPP: '1980305408682607',
         INSTAGRAMAPP: '1924971937716955',
@@ -102,4 +102,5 @@ export const apiUrls = {
     BILLINGCREATEINVOICE: `${BASE_URL}/payment/createinvoice`,
     BILLINGCREATECREDITNOTE: `${BASE_URL}/payment/createcreditnote`,
     BILLINGREGULARIZEINVOICE: `${BASE_URL}/payment/regularizeinvoice`,
+    GETEXCHANGERATE: `${BASE_URL}/payment/getexchangerate`,
 };
