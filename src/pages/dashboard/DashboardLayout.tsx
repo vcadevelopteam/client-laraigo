@@ -22,13 +22,15 @@ import TableZyx from "components/fields/table-simple";
 import GaugeChart from "react-gauge-chart";
 import clsx from 'clsx';
 import { RenderCustomizedLabel } from "components/fields/Graphic";
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 
 const ReactGridLayout = WidthProvider(RGL);
 
 interface Item {
     description: string;
     contentType: string;
-    kpiid : number;
+    kpiid: number;
     reporttemplateid: number;
     grouping: string;
     graph: string;
@@ -58,7 +60,7 @@ const useDashboardLayoutStyles = makeStyles(theme => ({
         display: 'flex',
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'left',
+        justifyContent: 'space-between',
         backgroundColor: 'white',
         padding: theme.spacing(1),
         gap: theme.spacing(1),
@@ -186,7 +188,7 @@ const DashboardLayout: FC = () => {
             history.push(paths.DASHBOARD);
         }
     }, [dashboardtemplateDelete, history, t, dispatch]);
-    
+
     useEffect(() => {
         if (reportTemplates.loading) return;
         if (reportTemplates.error) {
@@ -216,26 +218,26 @@ const DashboardLayout: FC = () => {
         }))
     }, [dashboardtemplate, match.params.id, dispatch]);
 
-    const onSave = useCallback(() => {
-        if (!dashboardtemplate.value) return;
+    // const onSave = useCallback(() => {
+    //     if (!dashboardtemplate.value) return;
 
-        handleSubmit(data => {
-            const detail = layout.detail;
-            for(const key in data) {
-                detail[key] = data[key];
-            }
+    //     handleSubmit(data => {
+    //         const detail = layout.detail;
+    //         for(const key in data) {
+    //             detail[key] = data[key];
+    //         }
 
-            mustLoadagain.current = Object.keys(data).length > 0;
+    //         mustLoadagain.current = Object.keys(data).length > 0;
 
-            dispatch(saveDashboardTemplate(getDashboardTemplateIns({
-                ...dashboardtemplate.value!,
-                id: match.params.id,
-                operation: 'UPDATE',
-                detailjson: JSON.stringify(detail),
-                layoutjson: JSON.stringify(layout.layout),
-            })));
-        }, e => console.log('errores', e))();
-    }, [dashboardtemplate, layout, handleSubmit, match.params.id, dispatch]);
+    //         dispatch(saveDashboardTemplate(getDashboardTemplateIns({
+    //             ...dashboardtemplate.value!,
+    //             id: match.params.id,
+    //             operation: 'UPDATE',
+    //             detailjson: JSON.stringify(detail),
+    //             layoutjson: JSON.stringify(layout.layout),
+    //         })));
+    //     }, e => console.log('errores', e))();
+    // }, [dashboardtemplate, layout, handleSubmit, match.params.id, dispatch]);
 
     const onDetailChange = useCallback((detail: Items, type: ChangeType, key: string) => {
         setLayout(prev => {
@@ -244,25 +246,25 @@ const DashboardLayout: FC = () => {
         });
     }, []);
 
-    const addItemOnClick = useCallback(() => {
-        const newKey = Date.now().toString();
-        setLayout(prev => ({
-            ...prev,
-            layout: [
-                ...prev.layout,
-                {
-                    i: newKey,
-                    x: (prev.layout.length * 3) % 12,
-                    y: Infinity,
-                    w: 3,
-                    h: 2,
-                    minW: 2,
-                    minH: 1,
-                    static: false,
-                },
-            ],
-        }));
-    }, []);
+    // const addItemOnClick = useCallback(() => {
+    //     const newKey = Date.now().toString();
+    //     setLayout(prev => ({
+    //         ...prev,
+    //         layout: [
+    //             ...prev.layout,
+    //             {
+    //                 i: newKey,
+    //                 x: (prev.layout.length * 3) % 12,
+    //                 y: Infinity,
+    //                 w: 3,
+    //                 h: 2,
+    //                 minW: 2,
+    //                 minH: 1,
+    //                 static: false,
+    //             },
+    //         ],
+    //     }));
+    // }, []);
 
     const deleteItemOnClick = useCallback((key: string) => {
         setLayout(prev => {
@@ -306,87 +308,73 @@ const DashboardLayout: FC = () => {
                 ]}
                 handleClick={id => id === "view-1" && history.push(paths.DASHBOARD)}
             />
-            <div className={classes.header}>
-                <div style={{ flexGrow: 1 }} />
-                <Button
-                    variant="contained"
-                    type="button"
-                    color="primary"
-                    startIcon={<ClearIcon color="secondary" />}
-                    style={{ backgroundColor: "#FB5F5F" }}
-                    onClick={() => history.push(paths.DASHBOARD)}
-                >
-                    <Trans i18nKey={langKeys.back} />
-                </Button>
-                {/* <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={addItemOnClick}
-                    disabled={dashboardSave.loading || dashboardtemplate.loading || !dashboardtemplate.value}
-                >
-                    <Trans i18nKey={langKeys.add} />
-                </Button> */}
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => {
-                        if (!dashboardtemplate.value) return;
-
-                        const id = dashboardtemplate.value!.dashboardtemplateid;
-                        history.push(paths.DASHBOARD_EDIT.resolve(id));
-                    }}
-                    disabled={dashboardSave.loading || dashboardtemplate.loading || !dashboardtemplate.value}
-                >
-                    <Trans i18nKey={langKeys.edit} />
-                </Button>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={onDelete}
-                    disabled={dashboardSave.loading ||dashboardtemplate.loading || !dashboardtemplate.value}
-                >
-                    <Trans i18nKey={langKeys.delete} />
-                </Button>
-                {/* <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={onSave}
-                    disabled={dashboardSave.loading ||dashboardtemplate.loading || !dashboardtemplate.value}
-                >
-                    <Trans i18nKey={langKeys.save} />
-                </Button> */}
-            </div>
             <div style={{ height: '1em' }} />
             <div className={classes.filtersContainer}>
-                <DateRangePicker
-                    open={openDatePicker}
-                    setOpen={setOpenDatePicker}
-                    range={dateRange}
-                    onSelect={v => tempDaterange.current = v}
-                    disabled={dashboardSave.loading || dashboardtemplate.loading || !dashboardtemplate.value}
-                >
-                    <Button
-                        style={{ border: '1px solid #bfbfc0', borderRadius: 4, color: 'rgb(143, 146, 161)' }}
-                        startIcon={<CalendarIcon />}
-                        onClick={() => setOpenDatePicker(prev => !prev)}
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    <DateRangePicker
+                        open={openDatePicker}
+                        setOpen={setOpenDatePicker}
+                        range={dateRange}
+                        onSelect={v => tempDaterange.current = v}
+                        disabled={dashboardSave.loading || dashboardtemplate.loading || !dashboardtemplate.value}
                     >
-                        {format(dateRange.startDate!) + " - " + format(dateRange.endDate!)}
+                        <Button
+                            style={{ border: '1px solid #bfbfc0', borderRadius: 4, color: 'rgb(143, 146, 161)' }}
+                            startIcon={<CalendarIcon />}
+                            onClick={() => setOpenDatePicker(prev => !prev)}
+                        >
+                            {format(dateRange.startDate!) + " - " + format(dateRange.endDate!)}
+                        </Button>
+                    </DateRangePicker>
+                    <Button
+                        disabled={dashboardSave.loading || dashboardtemplate.loading || !dashboardtemplate.value}
+                        variant="contained"
+                        color="primary"
+                        startIcon={<SearchIcon style={{ color: 'white' }} />}
+                        style={{ backgroundColor: '#55BD84', width: 120 }}
+                        onClick={() => {
+                            if (tempDaterange.current) {
+                                setDateRange({ ...tempDaterange.current });
+                            }
+                        }}
+                    >
+                        <Trans i18nKey={langKeys.search} />
                     </Button>
-                </DateRangePicker>
-                <Button
-                    disabled={dashboardSave.loading || dashboardtemplate.loading || !dashboardtemplate.value}
-                    variant="contained"
-                    color="primary"
-                    startIcon={<SearchIcon style={{ color: 'white' }} />}
-                    style={{ backgroundColor: '#55BD84', width: 120 }}
-                    onClick={() => {
-                        if (tempDaterange.current) {
-                            setDateRange({ ...tempDaterange.current });
-                        }
-                    }}
-                >
-                    <Trans i18nKey={langKeys.search} />
-                </Button>
+                </div>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    <Button
+                        variant="contained"
+                        type="button"
+                        color="primary"
+                        startIcon={<ClearIcon color="secondary" />}
+                        style={{ backgroundColor: "#FB5F5F" }}
+                        onClick={() => history.push(paths.DASHBOARD)}
+                    >
+                        <Trans i18nKey={langKeys.back} />
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        startIcon={<EditIcon color="secondary" />}
+                        onClick={() => {
+                            if (!dashboardtemplate.value) return;
+                            const id = dashboardtemplate.value!.dashboardtemplateid;
+                            history.push(paths.DASHBOARD_EDIT.resolve(id));
+                        }}
+                        disabled={dashboardSave.loading || dashboardtemplate.loading || !dashboardtemplate.value}
+                    >
+                        <Trans i18nKey={langKeys.edit} />
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        startIcon={<DeleteIcon color="secondary" />}
+                        onClick={onDelete}
+                        disabled={dashboardSave.loading || dashboardtemplate.loading || !dashboardtemplate.value}
+                    >
+                        <Trans i18nKey={langKeys.delete} />
+                    </Button>
+                </div>
             </div>
             <div style={{ height: '0.5em' }} />
             <ReactGridLayout
@@ -397,8 +385,8 @@ const DashboardLayout: FC = () => {
                 rowHeight={140}
                 isDraggable={false}
                 isResizable={false}
-                // isDraggable={canLayoutChange && !dashboardtemplate.loading && !dashboard.loading}
-                // isResizable={canLayoutChange && !dashboardtemplate.loading && !dashboard.loading}
+            // isDraggable={canLayoutChange && !dashboardtemplate.loading && !dashboard.loading}
+            // isResizable={canLayoutChange && !dashboardtemplate.loading && !dashboard.loading}
             >
                 {layout.layout.map(e => (
                     <div key={e.i}>
@@ -603,7 +591,7 @@ const LayoutItem: FC<LayoutItemProps> = ({
     }
 
     const renderGraph = useCallback(() => {
-        switch(type) {
+        switch (type) {
             case 'bar':
                 return (
                     <LayoutBar
@@ -770,7 +758,7 @@ const LayoutBar: FC<LayoutBarProps> = ({ data, tickFormatter, tooltipFormatter, 
                                 </Card>
                             );
                         }
-                    
+
                         return null;
                     }}
                 />
@@ -798,7 +786,7 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, tickFormatter, tooltipFormatter
     return (
         <ResponsiveContainer {...props}>
             <LineChart data={data}>
-                <Line type="monotone" dataKey="quantity" stroke="#8884d8"  />
+                <Line type="monotone" dataKey="quantity" stroke="#8884d8" />
                 <CartesianGrid stroke="#ccc" />
                 <XAxis
                     dataKey="label"
@@ -828,7 +816,7 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, tickFormatter, tooltipFormatter
                                 </Card>
                             );
                         }
-                    
+
                         return null;
                     }}
                 />
@@ -865,7 +853,7 @@ const LayoutPie: FC<LayoutPieProps> = ({ data, tooltipFormatter, ...props }) => 
                                 </Card>
                             );
                         }
-                    
+
                         return null;
                     }}
                 />
@@ -903,7 +891,7 @@ const LayoutKpi: FC<LayoutKpiProps> = ({ data }) => {
             return [
                 data.cautionat / (Math.max(data?.currentvalue, Math.ceil(data.alertat * 1.2 / 10) * 10)),
                 (data.alertat - data.cautionat) / (Math.max(data?.currentvalue, Math.ceil(data.alertat * 1.2 / 10) * 10)),
-                ((Math.max(data?.currentvalue, Math.ceil(data.alertat * 1.2 / 10) * 10)) - data.alertat) / (Math.max(data?.currentvalue, Math.ceil(data.alertat * 1.2 / 10) * 10)) 
+                ((Math.max(data?.currentvalue, Math.ceil(data.alertat * 1.2 / 10) * 10)) - data.alertat) / (Math.max(data?.currentvalue, Math.ceil(data.alertat * 1.2 / 10) * 10))
             ]
         } else {
             return [
@@ -935,7 +923,7 @@ const LayoutKpi: FC<LayoutKpiProps> = ({ data }) => {
                 animate={false}
                 percent={percent}
                 needleColor="grey"
-                // formatTextValue={() => ``}
+            // formatTextValue={() => ``}
             />
         </ResponsiveContainer>
     );
@@ -977,7 +965,7 @@ const TableModal: FC<TableModalProps> = ({ title, open, rawColumns, dateRange, d
                 start: format(dateRange.startDate!),
                 end: format(dateRange.endDate!),
             },
-            
+
         ],
     }), [dateRange, rawColumns]);
 

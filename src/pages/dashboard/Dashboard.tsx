@@ -14,7 +14,7 @@ import paths from 'common/constants/paths';
 import { useHistory } from 'react-router';
 import { useSelector } from 'hooks';
 import { manageConfirmation, showSnackbar } from 'store/popus/actions';
-import { DashboardTemplate, Dictionary, IListStatePaginated } from '@types';
+import { DashboardTemplate, IListStatePaginated } from '@types';
 import { deleteDashboardTemplate, resetDeleteDashboardTemplate } from 'store/dashboard/actions';
 
 
@@ -50,7 +50,9 @@ const useStyles = makeStyles((theme) => ({
     },
     containerFilterGeneral: {
         display: 'flex',
-        justifyContent: 'space-between',
+        justifyContent: 'end',
+        alignItems: 'center',
+        gap: 8,
         backgroundColor: '#FFF',
         padding: theme.spacing(2),
     },
@@ -196,7 +198,6 @@ const Dashboard: FC = () => {
                     </span>
                 </Box>
                 <Box className={classes.containerFilterGeneral}>
-                    <span></span>
                     <div className={classes.containerSearch}>
                         <SearchField
                             colorPlaceHolder='#FFF'

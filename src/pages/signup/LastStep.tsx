@@ -52,6 +52,7 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
     // const [disablebutton, setDisablebutton] = useState(false);
     const multiResult = useSelector(state => state.main.multiData.data);
     const executeResult = useSelector(state => state.signup.insertChannel);
+    const [isSpecial, setIsSpecial] = useState(false);
     
     useEffect(() => {
         dispatch(getMultiCollectionPublic(["SignUpIndustry","SignUpCompanySize","SignUpRoles"]));
@@ -70,6 +71,7 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
         companyrole: "",
     })
     async function finishreg(){
+        setIsSpecial(mainData.email ? true : false);
         let majorfield = {
             method: "UFN_CREATEZYXMEACCOUNT_INS",
             parameters: {
@@ -104,7 +106,7 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
                     pathname: '/sign-in',
                     state: { 
                         showSnackbar: true,
-                        message: t(langKeys.successful_sign_up)
+                        message: t(isSpecial ? langKeys.successful_sign_up : langKeys.success)
                     }
                 })
                 // setSnackbar({ state: true, success: true, message: t(langKeys.successful_sign_up) })
