@@ -3650,8 +3650,6 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
         else {
             setValue('invoiceduedate', '');
         }
-        
-        console.log('DOCTYPE:' + data?.doctype);
 
         if (data?.doctype) {
             if (appsettingData?.data) {
