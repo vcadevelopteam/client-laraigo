@@ -13,9 +13,9 @@ import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import PersonIcon from '@material-ui/icons/Person';
 import ChatIcon from '@material-ui/icons/Chat';
 import AdbIcon from '@material-ui/icons/Adb';
-import { exportExcel } from 'common/helpers';
+import { exportExcel, gerencialEncuesta2selData, gerencialEncuesta3selData, gerencialTMEselData } from 'common/helpers';
 import { useTranslation } from 'react-i18next';
-import { gerencialasesoresconectadosbarsel, gerencialconversationsel,gerencialEncuestassel,getdashboardgerencialconverstionxhoursel,gerencialasesoresconectadosbarseldata,gerencialencuestaseldata,gerencialinteractionseldata, gerencialconversationseldata,gerencialencuestasel,gerencialetiquetasseldata, gerencialetiquetassel, gerencialinteractionsel,gerencialsummaryseldata, gerencialsummarysel, gerencialTMEsel, gerencialTMOsel,gerencialTMOselData, getCommChannelLst, getValuesFromDomain } from "common/helpers";
+import { gerencialasesoresconectadosbarsel, gerencialconversationsel,gerencialEncuestassel,getdashboardgerencialconverstionxhoursel,gerencialasesoresconectadosbarseldata,gerencialinteractionseldata, gerencialconversationseldata,gerencialencuestasel,gerencialetiquetasseldata, gerencialetiquetassel, gerencialinteractionsel,gerencialsummaryseldata, gerencialsummarysel, gerencialTMEsel, gerencialTMOsel,gerencialTMOselData, getCommChannelLst, getValuesFromDomain } from "common/helpers";
 import { useDispatch } from "react-redux";
 import { Dictionary } from "@types";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
@@ -1120,10 +1120,14 @@ const DashboardManagerial: FC = () => {
     const downloaddata= (tipeoffilter:string) => {
         setdownloaddatafile(true)
         settitlefile(`DashboardManagerial-${tipeoffilter}`)
-        if(tipeoffilter==="TMO" || tipeoffilter==="TME"){
+        if(tipeoffilter==="TMO"){
             dispatch(getCollectionAux(gerencialTMOselData({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
-        }else if(tipeoffilter==="NPS"||tipeoffilter==="CSAT"||tipeoffilter==="FIX"||tipeoffilter==="FCR"){
-            dispatch(getCollectionAux(gerencialencuestaseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+        }else if(tipeoffilter==="TME"){
+            dispatch(getCollectionAux(gerencialTMEselData({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+        }else if(tipeoffilter==="NPS"||tipeoffilter==="CSAT"){
+            dispatch(getCollectionAux(gerencialEncuesta3selData({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider, question: tipeoffilter })))
+        }else if(tipeoffilter==="FIX"||tipeoffilter==="FCR"){
+            dispatch(getCollectionAux(gerencialEncuesta2selData({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider, question: tipeoffilter })))
         }else if(tipeoffilter==="etiqueta"){
             dispatch(getCollectionAux(gerencialetiquetasseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
         }else if(tipeoffilter==="averageconversations"){
