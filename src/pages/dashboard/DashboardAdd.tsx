@@ -163,7 +163,7 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
     useEffect(() => {
         if (dashboardSave.loading) return;
         if (dashboardSave.error) {
-            const error = t(dashboardSave.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
+            const error = t(dashboardSave.code || "error_unexpected_error", { module: t(langKeys.dashboard).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 message: error,
                 success: false,
