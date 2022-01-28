@@ -232,8 +232,17 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
     const onChangeChannel = async (data: Dictionary) => {
         setValue('communicationchannelid', data?.communicationchannelid || 0);
-        setValue('communicationchanneltype', dataChannel.filter(d => d.communicationchannelid === data?.communicationchannelid)[0]?.type);
-        setValue('type', 'TEXTO');
+        const channeltype = dataChannel.filter(d => d.communicationchannelid === data?.communicationchannelid)[0]?.type;
+        setValue('communicationchanneltype', channeltype);
+        if (channeltype?.startsWith('WHA')) {
+            onChangeType({key: 'HSM'});
+        }
+        else if (channeltype?.startsWith('SMS')) {
+            onChangeType({key: 'SMS'});
+        }
+        else {
+            onChangeType({key: 'TEXTO'});
+        }
         await trigger(['communicationchannelid', 'communicationchanneltype', 'type']);
     }
 
@@ -257,10 +266,10 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
     const filterDataCampaignType = () => {
         if (getValues('communicationchanneltype')?.startsWith('WHA')) {
-            return filterIf(dataCampaignType, 'startsWith', 'WHA');
+            return dataCampaignType.filter(t => t.key === 'HSM');
         }
         else if (getValues('communicationchanneltype')?.startsWith('SMS')) {
-            return filterIf(dataCampaignType, 'startsWith', 'SMS');
+            return dataCampaignType.filter(t => t.key === 'SMS');
         }
         else {
             return filterIf(dataCampaignType);
