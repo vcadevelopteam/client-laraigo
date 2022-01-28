@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { cleanMemoryTable, setMemoryTable, uploadFile } from 'store/main/actions';
 import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx, FieldEditArray, TemplateIcons } from 'components';
-import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, invoiceRefreshTest, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail } from 'common/helpers';
+import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, invoiceRefreshTest, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail, selBalanceData } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -17,13 +17,12 @@ import ClearIcon from '@material-ui/icons/Clear';
 import { getCollection, getMultiCollection, execute, exportData, getMultiCollectionAux } from 'store/main/actions';
 import { createInvoice, regularizeInvoice, createCreditNote, getExchangeRate } from 'store/culqi/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { Box, CircularProgress, FormHelperText, Grid, IconButton, Tab, Tabs, TextField } from '@material-ui/core';
+import { CircularProgress, IconButton, Tabs, TextField } from '@material-ui/core';
 import * as locale from "date-fns/locale";
 import { DownloadIcon } from 'icons';
 import {
     Close,
     FileCopy,
-    CloudUpload,
     Search as SearchIcon,
     Refresh as RefreshIcon,
     Add as AddIcon,
@@ -32,7 +31,6 @@ import {
 import PaymentIcon from '@material-ui/icons/Payment';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
-import Fab from '@material-ui/core/Fab';
 import CulqiModal from 'components/fields/CulqiModal';
 import { getCountryList } from 'store/signup/actions';
 import TableContainer from '@material-ui/core/TableContainer';
@@ -46,8 +44,6 @@ import clsx from 'clsx';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { stringify } from 'querystring';
-import zhCN from 'date-fns/esm/locale/zh-CN/index.js';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 
 interface RowSelected {
@@ -93,6 +89,10 @@ const datapaymentstatus = [{value:"PENDING",description: "PENDING"},{value:"PAID
 const years = [{desc:"2010"},{desc:"2011"},{desc:"2012"},{desc:"2013"},{desc:"2014"},{desc:"2015"},{desc:"2016"},{desc:"2017"},{desc:"2018"},{desc:"2020"},{desc:"2021"},{desc:"2022"},{desc:"2023"},{desc:"2024"},{desc:"2025"}]
 
 const months =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }]
+
+const transactiontype = [{value:"HSM", description: "HSM"}, { value:"MAIL", description: "MAIL" }, { value:"SMS", description: "SMS" }]
+
+const operationtype = [{value:"ENVIO", description: "ENVIO"}, { value:"COMPRA", description: "COMPRA" }]
 
 function formatNumber(num: number) {
     if (num)
@@ -605,7 +605,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                     <div>
                         <TemplateBreadcrumbs
                             breadcrumbs={arrayBreadCostPerPeriod}
-                            handleClick={setViewSelected}
+                            handleClick={(id) => {setViewSelected(id); fetchData();}}
                         />
                         <TitleDetail
                             title={row? `${row.corpdesc} - ${row.orgdesc}` : t(langKeys.neworganization)}
@@ -618,7 +618,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             color="primary"
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => setViewSelected("view-1")}
+                            onClick={() => { setViewSelected("view-1"); fetchData(); }}
                         >{t(langKeys.back)}</Button>
                         {edit &&
                             <Button
@@ -1751,7 +1751,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                 accessor: 'orgid',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    if (row.paymentstatus !== "PENDING")
+                    if (row.paymentstatus !== "PENDING" || row.totalamount <= 0)
                         return null;
                     return (
                         <Button
@@ -2108,6 +2108,14 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => { setViewSelected("view-1"); fetchData(); }}
+                        >{t(langKeys.back)}</Button>
                         {(data?.paymentstatus === "PENDING" && publicKey && showCulqi) &&
                             <CulqiModal
                                 type="CHARGE"
@@ -2120,6 +2128,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                                 buttontitle={t(langKeys.proceedpayment)}
                                 purchaseorder={purchaseOrder}
                                 comments={comments}
+                                corpid={data?.corpid}
                                 orgid={data?.orgid}
                                 disabled={paymentDisabled}
                                 successmessage={t(langKeys.culqipaysuccess)}
@@ -2480,7 +2489,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             case '07':
                 return 'emissorcreditnote';
             default:
-                return 'NONE';
+                return 'emissornone';
         }
     }
     
@@ -2798,7 +2807,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                     <div>
                         <TemplateBreadcrumbs
                             breadcrumbs={invocesBread}
-                            handleClick={setViewSelected}
+                            handleClick={(id) => {setViewSelected(id); fetchData();}}
                         />
                         <TitleDetail
                             title={operationName ? t(operationName) : t(langKeys.billinginvoiceview)}
@@ -2811,7 +2820,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                             color="primary"
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => setViewSelected("view-1")}
+                            onClick={() => { setViewSelected("view-1"); fetchData(); }}
                         >{t(langKeys.back)}</Button>
                         { (data?.invoicestatus === 'INVOICED' && creditNote) ? (
                             <Button
@@ -3880,7 +3889,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                     <div>
                         <TemplateBreadcrumbs
                             breadcrumbs={invocesBread}
-                            handleClick={setViewSelected}
+                            handleClick={(id) => {setViewSelected(id); fetchData();}}
                         />
                         <TitleDetail
                             title={t(langKeys.emiteinvoicetitle)}
@@ -3893,7 +3902,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             color="primary"
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => setViewSelected("view-1")}
+                            onClick={() => { setViewSelected("view-1"); fetchData(); }}
                         >{t(langKeys.back)}</Button>
                         <Button
                             className={classes.button}
@@ -4220,6 +4229,656 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
     )
 }
 
+const IDMESSAGINGPACKAGES = "IDMESSAGINGPACKAGES";
+const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
+    const dispatch = useDispatch();
+
+    const { t } = useTranslation();
+
+    const classes = useStyles();
+    const dataCorpList = dataPlan.data[2] && dataPlan.data[2].success? dataPlan.data[2].data : [];
+    const dataOrgList = dataPlan.data[1] && dataPlan.data[1].success? dataPlan.data[1].data : [];
+    const mainResult = useSelector(state => state.main);
+    const memoryTable = useSelector(state => state.main.memoryTable);
+    const user = useSelector(state => state.login.validateToken.user);
+    
+    const [dataBalance, setDataBalance] = useState<Dictionary[]>([]);
+    const [disableSearch, setdisableSearch] = useState(false);
+    const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
+    const [viewSelected, setViewSelected] = useState("view-1");
+
+    const [dataMain, setdataMain] = useState({
+        corpid: user?.corpid || 0,
+        orgid: 0,
+        balanceid: 0,
+        type: "",
+        operationtype: "",
+        all: true,
+    });
+
+    const fetchData = () => dispatch(getCollection(selBalanceData(dataMain)));
+
+    const search = () => dispatch(getCollection(selBalanceData(dataMain)));
+
+    useEffect(() => {
+        fetchData();
+
+        dispatch(setMemoryTable({
+            id: IDMESSAGINGPACKAGES
+        }))
+        return () => {
+            dispatch(cleanMemoryTable());
+        }
+    }, [])
+
+    const handleRegister = () => {
+        setViewSelected("view-2");
+        setRowSelected({ row: null, edit: true });
+    }
+
+    const handleView = (row: Dictionary) => {
+        setViewSelected("view-2");
+        setRowSelected({ row: row, edit: false });
+    }
+
+    useEffect(() => {
+        if (!mainResult.mainData.loading && !mainResult.mainData.error) {
+            setDataBalance(mainResult.mainData.data);
+        }
+    }, [mainResult])
+
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.corporation),
+                accessor: 'corpdesc',
+            },
+            {
+                Header: t(langKeys.organization),
+                accessor: 'orgdesc',
+            },
+            {
+                Header: t(langKeys.transactiondate),
+                accessor: 'transactiondate',
+            },
+            {
+                Header: t(langKeys.user),
+                accessor: 'transactionuser',
+            },
+            {
+                Header: t(langKeys.transactionmessagetype),
+                accessor: 'type',
+            },
+            {
+                Header: t(langKeys.transactionreference),
+                accessor: 'description',
+            },
+            {
+                Header: t(langKeys.quantity),
+                accessor: 'amount',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { amount } = props.cell.row.original;
+                    return (amount || 0).toFixed(4);
+                }
+            },
+            {
+                Header: t(langKeys.transactionbalance),
+                accessor: 'balance',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { balance } = props.cell.row.original;
+                    return (balance || 0).toFixed(4);
+                }
+            },
+            {
+                Header: t(langKeys.transactionoperationtype),
+                accessor: 'operationtype',
+            },
+            {
+                Header: t(langKeys.template),
+                accessor: 'messagetemplatedesc',
+            },
+            {
+                Header: t(langKeys.documenttype),
+                accessor: 'documenttype',
+            },
+            {
+                Header: t(langKeys.documentnumber),
+                accessor: 'documentnumber',
+            },
+        ],
+        []
+    );
+
+    if (viewSelected === "view-1") {
+        return (
+            <div style={{ width: '100%' }}>
+                <TableZyx
+                    onClickRow={handleView}
+                    columns={columns}
+                    ButtonsElement={() => (
+                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                            <FieldSelect
+                                label={t(langKeys.corporation)}
+                                className={classes.fieldsfilter}
+                                valueDefault={dataMain.corpid}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev => ({...prev, corpid: value?.corpid || 0, orgid: 0}))}
+                                data={dataCorpList}
+                                optionDesc="description"
+                                optionValue="corpid"
+                            />
+                            <FieldSelect
+                                label={t(langKeys.organization)}
+                                className={classes.fieldsfilter}
+                                valueDefault={dataMain.orgid}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev => ({...prev, orgid: value?.orgid || 0}))}
+                                data={dataOrgList.filter((e:any)=>{ return e.corpid === dataMain.corpid })}
+                                optionDesc="orgdesc"
+                                optionValue="orgid"
+                            />
+                            <FieldSelect
+                                label={t(langKeys.transactionmessagetype)}
+                                className={classes.fieldsfilter}
+                                valueDefault={dataMain.type}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev => ({...prev, type: value?.value || ''}))}
+                                data={transactiontype}
+                                optionDesc="description"
+                                optionValue="value"
+                            />
+                            <FieldSelect
+                                label={t(langKeys.transactionoperationtype)}
+                                className={classes.fieldsfilter}
+                                valueDefault={dataMain.operationtype}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev => ({...prev, operationtype: value?.value || ''}))}
+                                data={operationtype}
+                                optionDesc="description"
+                                optionValue="value"
+                            />
+                            <Button
+                                disabled={mainResult.mainData.loading || disableSearch}
+                                variant="contained"
+                                color="primary"
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                onClick={search}
+                            >{t(langKeys.search)}
+                            </Button>
+                        </div>
+                    )}
+                    data={dataBalance}
+                    filterGeneral={false}
+                    loading={mainResult.mainData.loading}
+                    download={true}
+                    register={true}
+                    handleRegister={handleRegister}
+                    registertext={t(langKeys.transactionbuy)}
+                    pageSizeDefault={IDMESSAGINGPACKAGES === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                    initialPageIndex={IDMESSAGINGPACKAGES === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                    initialStateFilter={IDMESSAGINGPACKAGES === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
+                    
+                />
+            </div>
+        )
+    } else {
+        return (
+            <MessagingPackagesDetail
+                fetchData={fetchData}
+                data={rowSelected}
+                setViewSelected={setViewSelected}
+            />
+        );
+    }
+}
+
+const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) => {
+    const dispatch = useDispatch();
+
+    const { t } = useTranslation();
+
+    const classes = useStyles();
+    const exchangeRequest = useSelector(state => state.culqi.requestGetExchangeRate);
+    const mainResult = useSelector(state => state.main);
+    const multiResult = useSelector(state => state.main.multiDataAux);
+
+    const [corp, setCorp] = useState(0);
+    const [corpList, setCorpList] = useState<any>([]);
+    const [corpError, setCorpError] = useState('');
+    const [org, setOrg] = useState(0);
+    const [orgList, setOrgList] = useState<any>([]);
+    const [orgError, setOrgError] = useState('');
+    const [reference, setReference] = useState('');
+    const [referenceError, setReferenceError] = useState('');
+    const [beforeAmount, setBeforeAmount] = useState(0);
+    const [afterAmount, setAfterAmount] = useState(0);
+    const [buyAmount, setBuyAmount] = useState(0);
+    const [buyAmountError, setBuyAmountError] = useState('');
+    const [comments, setComments] = useState('');
+    const [commentsError, setCommentsError] = useState('');
+    const [purchaseOrder, setPurchaseOrder] = useState('');
+    const [purchaseOrderError, setPurchaseOrderError] = useState('');
+    const [currentCountry, setCurrentCountry] = useState('');
+    const [currentDoctype, setCurrentDoctype] = useState('');
+    const [currentBillbyorg, setCurrentBillbyorg] = useState(false);
+    const [totalPay, setTotalPay] = useState(0);
+    const [paymentDisabled, setPaymentDisabled] = useState(false);
+    const [publicKey, setPublicKey] = useState('');
+    const [showCulqi, setShowCulqi] = useState(false);
+    const [confirmButton, setConfirmButton] = useState(true);
+    const [disableInput, setDisableInput] = useState(data?.row ? true : false);
+    const [waitSave, setWaitSave] = useState(false);
+
+    const handleCulqiSuccess = () => {
+        fetchData();
+        setViewSelected("view-1");
+    }
+
+    useEffect(() => {
+        setCorpList({ loading: true, data: [] });
+        setOrgList({ loading: false, data: [] });
+
+        dispatch(getMultiCollectionAux([getCorpSel(0)]));
+
+        if (data?.row === null) {
+            dispatch(getCollection(getAppsettingInvoiceSel()));
+            dispatch(getExchangeRate(null));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+    }, [])
+
+    useEffect(() => {
+        const indexCorp = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_CORP_SEL'));
+
+        if (indexCorp > -1) {
+            setCorpList({ loading: false, data: multiResult.data[indexCorp] && multiResult.data[indexCorp].success ? multiResult.data[indexCorp].data : [] });
+        }
+
+        const indexOrg = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_ORG_SEL'));
+
+        if (indexOrg > -1) {
+            setOrgList({ loading: false, data: multiResult.data[indexOrg] && multiResult.data[indexOrg].success ? multiResult.data[indexOrg].data : [] });
+        }
+    }, [multiResult]);
+
+    useEffect(() => {
+        updateTotalPay(buyAmount);
+    }, [currentCountry, currentDoctype, buyAmount]);
+
+    useEffect(() => {
+        if (corp && org && comments.length <= 150 && purchaseOrder.length <= 15 && reference && (buyAmount && buyAmount > 0) && (totalPay && totalPay > 0)) {
+            setPaymentDisabled(false);
+            setConfirmButton(false);
+        }
+        else {
+            setPaymentDisabled(true);
+            setConfirmButton(true);
+        }
+    }, [corp, org, comments, purchaseOrder, reference, buyAmount, totalPay])
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!mainResult.mainData.loading && !exchangeRequest.loading) {
+                dispatch(showBackdrop(false));
+    
+                if (mainResult.mainData.data) {
+                    if (mainResult.mainData.data[0]) {
+                        var appsetting = mainResult.mainData.data[0];
+
+                        setPublicKey(appsetting.publickey);
+                    }
+                }
+            }
+        }
+    }, [mainResult, exchangeRequest, waitSave])
+
+    const updateTotalPay = (buyAmount: number) => {
+        if (currentCountry && currentDoctype) {
+            if (currentCountry === 'PE') {
+                if (currentDoctype === '6') {
+                    var compareamount = (buyAmount || 0) * (exchangeRequest?.exchangerate || 0);
+
+                    if (compareamount > mainResult.mainData.data[0].detractionminimum) {
+                        setTotalPay((buyAmount * (1 + mainResult.mainData.data[0].igv)) - ((buyAmount * (1 + mainResult.mainData.data[0].igv)) * mainResult.mainData.data[0].detraction))
+                    }
+                    else {
+                        setTotalPay(buyAmount * (1 + mainResult.mainData.data[0].igv))
+                    }
+                }
+                else {
+                    setTotalPay(buyAmount * (1 + mainResult.mainData.data[0].igv))
+                }
+            }
+            else {
+                setTotalPay(buyAmount);
+            }
+        }
+        else {
+            setTotalPay(buyAmount);
+        }
+    }
+
+    const handleCorp = (value: any) => {
+        dispatch(getMultiCollectionAux([getOrgSel(0, value)]));
+
+        if (value) {
+            var corporationdata = corpList.data.find((x: { corpid: any; }) => x.corpid === value);
+            if (corporationdata) {
+                setCurrentBillbyorg(corporationdata?.billbyorg);
+                if (corporationdata.billbyorg === false) {
+                    setCurrentCountry(corporationdata?.sunatcountry);
+                    setCurrentDoctype(corporationdata?.doctype);
+                }
+            }
+        }
+
+        setCorp(value);
+        setCorpError(value ? '' : t(langKeys.required));
+    }
+
+    const handleOrg = (value: any) => {
+        if (value) {
+            var organizationdata = orgList.data.find((x: { orgid: any; }) => x.orgid === value);
+            if (organizationdata) {
+                setBeforeAmount((organizationdata?.balance || 0));
+                setAfterAmount((organizationdata?.balance || 0) + buyAmount);
+                if (currentBillbyorg) {
+                    setCurrentCountry(organizationdata?.sunatcountry);
+                    setCurrentDoctype(organizationdata?.doctype);
+                }
+            }
+        }
+        else {
+            setBeforeAmount(0);
+            setAfterAmount(buyAmount);
+        }
+        setOrg(value);
+        setOrgError(value ? '' : t(langKeys.required));
+    }
+
+    const handleReference = (value: any) => {
+        setReference(value);
+        setReferenceError(value ? '' : t(langKeys.required));
+    }
+
+    const handleBuyAmount = (value: any) => {
+        setBuyAmount(parseFloat(value));
+        setBuyAmountError((value && value > 0) ? '' : t(langKeys.required));
+        setAfterAmount(beforeAmount + parseFloat(value));
+    }
+
+    const handlePurchaseOrder = (value: any) => {
+        setPurchaseOrder(value);
+        setPurchaseOrderError(value.length > 15 ? t(langKeys.validation15char) : '')
+    }
+
+    const handleComments = (value: any) => {
+        setComments(value);
+        setCommentsError(value.length > 150 ? t(langKeys.validation150char) : '');
+    }
+
+    const handleShowCulqi = () => {
+        if (showCulqi) {
+            setShowCulqi(false);
+            setDisableInput(false);
+        }
+        else {
+            setShowCulqi(true);
+            setDisableInput(true);
+        }
+    }
+
+    const paymentBread = [
+        { id: "view-1", name: t(langKeys.messagingpackages) },
+        { id: "view-2", name: (data?.edit ? t(langKeys.messagingpackagesnew) : t(langKeys.messagingpackagesdetail)) }
+    ];
+
+    return (
+        <div style={{ width: '100%' }}>
+            <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={paymentBread}
+                            handleClick={(id) => {setViewSelected(id); fetchData();}}
+                        />
+                        <TitleDetail
+                            title={(data?.edit ? t(langKeys.messagingpackagesnew) : t(langKeys.messagingpackagesdetail))}
+                        />
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => { setViewSelected("view-1"); fetchData(); }}
+                        >{t(langKeys.back)}</Button>
+                        {data?.edit && <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={showCulqi ? (<ClearIcon color="secondary" />) : (<SaveIcon color="secondary" />)}
+                            style={{ backgroundColor: "#55BD84" }}
+                            onClick={() => handleShowCulqi()}
+                            disabled={confirmButton}
+                        >{showCulqi ? t(langKeys.cancel) : t(langKeys.transactionconfirm)}</Button>}
+                        {(publicKey && showCulqi) &&
+                            <CulqiModal
+                                type="BALANCE"
+                                invoiceid={0}
+                                title={reference}
+                                description={reference}
+                                currency={'USD'}
+                                amount={parseFloat(totalPay.toFixed(2)) * 100}
+                                callbackOnSuccess={() => { handleCulqiSuccess() }}
+                                buttontitle={t(langKeys.proceedpayment)}
+                                disabled={paymentDisabled}
+                                successmessage={t(langKeys.culqipaysuccess)}
+                                publickey={publicKey}
+                                corpid={corp}
+                                orgid={org}
+                                reference={reference}
+                                buyamount={buyAmount}
+                                comments={comments}
+                                purchaseorder={purchaseOrder}
+                                totalpay={totalPay}
+                            ></CulqiModal>
+                        }
+                    </div>
+                </div>
+                <div style={{ backgroundColor: 'white', padding: 16 }}>
+                    <div className="row-zyx">
+                        <FieldView
+                            className={classes.section}
+                            label={''}
+                            value={t(langKeys.transactioninformation)}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        {data?.edit ? (
+                            <FieldSelect
+                                label={t(langKeys.corporation)}
+                                loading={corpList.loading}
+                                onChange={(value) => { handleCorp(value?.corpid || 0) }}
+                                className="col-6"
+                                valueDefault={corp}
+                                data={corpList.data}
+                                optionDesc="description"
+                                optionValue="corpid"
+                                error={corpError}
+                                disabled={disableInput}
+                            />
+                        ) : (
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.corporation)}
+                                value={data?.row?.corpdesc}
+                            />
+                        )}
+                        {data?.edit ? (
+                            <FieldSelect
+                                label={t(langKeys.organization)}
+                                loading={orgList.loading}
+                                onChange={(value) => { handleOrg(value?.orgid || 0) }}
+                                className="col-6"
+                                valueDefault={org}
+                                data={orgList.data}
+                                optionDesc="orgdesc"
+                                optionValue="orgid"
+                                error={orgError}
+                                disabled={disableInput}
+                            />
+                        ) : (
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.organization)}
+                                value={data?.row?.orgdesc}
+                            />
+                        )}
+                    </div>
+                    <div className="row-zyx">
+                        {data?.edit ? (
+                            <FieldEdit
+                                label={t(langKeys.transactionreference)}
+                                onChange={(value) => handleReference(value)}
+                                valueDefault={reference}
+                                error={referenceError}
+                                className="col-12"
+                                disabled={disableInput}
+                            />
+                        ) : (
+                            <FieldView
+                                className="col-12"
+                                label={t(langKeys.transactionreference)}
+                                value={data?.row?.description}
+                            />
+                        )}
+                        
+                    </div>
+                    <div className="row-zyx">
+                        {data?.edit ? (
+                            <FieldView
+                                className="col-4"
+                                label={t(langKeys.transactionlastbalance)}
+                                value={(beforeAmount || 0).toFixed(2)}
+                            />
+                        ) : (
+                            <FieldView
+                                className="col-4"
+                                label={t(langKeys.transactionlastbalance)}
+                                value={(data?.row?.balance || 0).toFixed(2)}
+                            />
+                        )}
+                        {data?.edit ? (
+                            <FieldEdit
+                                label={t(langKeys.transactionbuyamount)}
+                                onChange={(value) => handleBuyAmount(value || 0)}
+                                valueDefault={buyAmount}
+                                error={buyAmountError}
+                                className="col-4"
+                                type='number'
+                                disabled={disableInput}
+                            />
+                        ) : (
+                            <FieldView
+                                className="col-4"
+                                label={t(langKeys.transactionbuyamount)}
+                                value={(data?.row?.amount || 0).toFixed(2)}
+                            />
+                        )}
+                        {data?.edit ? (
+                            <FieldView
+                                className="col-4"
+                                label={t(langKeys.transactionafterbalance)}
+                                value={(afterAmount || 0).toFixed(2)}
+                            />
+                        ) : (
+                            <FieldView
+                                className="col-4"
+                                label={t(langKeys.transactionafterbalance)}
+                                value={((data?.row?.balance + data?.row?.amount) || 0).toFixed(2)}
+                            />
+                        )}
+                    </div>
+                    {data?.edit && <div className="row-zyx">
+                        <FieldView
+                            className={classes.section}
+                            label={''}
+                            value={t(langKeys.payment_information)}
+                        />
+                    </div>}
+                    {data?.edit && <div className="row-zyx">
+                        <FieldView
+                            className="col-4"
+                            label={t(langKeys.servicedescription)}
+                            value={t(langKeys.transactionrechargetitle) + new Date().toISOString().split('T')[0]}
+                        />
+                        <FieldView
+                            className="col-4"
+                            label={t(langKeys.totalamount)}
+                            value={'$'+formatNumber((buyAmount || 0))}
+                        />
+                        <FieldView
+                            className="col-4"
+                            label={t(langKeys.totaltopay)}
+                            value={'$'+formatNumber((totalPay || 0))}
+                        />
+                    </div>}
+                    {data?.edit && <div className="row-zyx">
+                        <FieldView
+                            className={classes.section}
+                            label={''}
+                            value={t(langKeys.additional_information)}
+                        />
+                    </div>}
+                    {data?.edit && <div className="row-zyx">
+                        <FieldView
+                            className={classes.commentary}
+                            label={''}
+                            value={t(langKeys.additionalinformation2)}
+                        />
+                    </div>}
+                    {data?.edit && <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.purchaseorder)}
+                            onChange={(value) => handlePurchaseOrder(value)}
+                            valueDefault={purchaseOrder}
+                            error={purchaseOrderError}
+                            className="col-12"
+                            disabled={disableInput}
+                        />
+                    </div>}
+                    {data?.edit && <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.comments)}
+                            onChange={(value) => handleComments(value)}
+                            valueDefault={comments}
+                            error={commentsError}
+                            className="col-12"
+                            disabled={disableInput}
+                        />
+                    </div>}
+                    {data?.edit && <div className="row-zyx">
+                        <FieldView
+                            className={classes.commentary}
+                            label={''}
+                            value={t(langKeys.additionalinformation1)}
+                        />
+                    </div>}
+                </div>
+            </div>
+        </div >
+    )
+}
+
 const Invoice: FC = () => {
     const dispatch = useDispatch();
 
@@ -4322,7 +4981,7 @@ const Invoice: FC = () => {
             }
             {pageSelected === 4 &&
                 <div style={{ marginTop: 16 }}>
-                    <Payments dataPlan={multiData} setCustomSearch={setCustomSearch}/>
+                    <MessagingPackages dataPlan={multiData}/>
                 </div>
             }
         </div>

@@ -2803,6 +2803,21 @@ const translation: LangKeys = {
     totaltopay: 'Payment amount',
 
     messagingpackages: 'Messaging Packages',
+    transactiondate: 'Transaction date',
+    transactionmessagetype: 'Message type',
+    transactionreference: 'Reference',
+    transactionbalance: 'Balance',
+    transactionoperationtype: 'Operation type',
+    transactionbuy: 'Buy',
+    transactioninformation: 'Destination information',
+    transactionlastbalance: 'Last balance',
+    transactionbuyamount: 'Amount',
+    transactionafterbalance: 'New balance',
+    transactionrechargetitle: 'Balance charge ',
+    transactionconfirm: 'Confirm Payment',
+    messagingpackagesdetail: 'Messaging Package Detail',
+    messagingpackagesnew: 'New Messaging Package',
+    emissornone: 'NONE',
 };
 
 const enResource: ResourceLanguage = {
