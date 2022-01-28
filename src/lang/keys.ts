@@ -2949,6 +2949,8 @@ export const langKeys = {
     messagingpackagesdetail: 'messagingpackagesdetail',
     messagingpackagesnew: 'messagingpackagesnew',
     emissornone: 'emissornone',
+    detractionnotepay1: 'detractionnotepay1',
+    detractionnotepay2: 'detractionnotepay2',
 };
 
 export type LangKeys = typeof langKeys;

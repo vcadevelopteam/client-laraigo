@@ -2948,6 +2948,8 @@ const translation: LangKeys = {
     messagingpackagesdetail: 'Detalle de Paquete de Mensajeria',
     messagingpackagesnew: 'Nuevo Paquete de Mensajeria',
     emissornone: 'PENDIENTE',
+    detractionnotepay1: 'Operación sujeta a la detracción del ',
+    detractionnotepay2: '%. El monto a pagar incluye el descuento por el concepto de detracción. Se debe realizar el pago de la detracción en la cuenta del Banco de la Nación indicada en la factura.',
 };
 
 const esResource: ResourceLanguage = {

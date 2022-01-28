@@ -2006,6 +2006,8 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
     const [totalPay, setTotalPay] = useState(0);
     const [waitSave, setWaitSave] = useState(false);
     const [Override, setOverride] = useState(false);
+    const [detractionAlert, setDetractionAlert] = useState(false);
+    const [detractionAmount, setDetractionAmount] = useState(0);
 
     useEffect(() => {
         dispatch(getCollection(getAppsettingInvoiceSel()));
@@ -2038,6 +2040,8 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                                     setTotalAmount(data?.totalamount);
                                     setOverride(true);
                                     setShowCulqi(true);
+                                    setDetractionAlert(true);
+                                    setDetractionAmount(appsetting.detractionminimum * 100);
                                 }
                                 else {
                                     setTotalPay(data?.totalamount);
@@ -2166,6 +2170,13 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                             value={(data?.currency === 'USD' ? '$' : 'S/')+formatNumber((totalPay || 0))}
                         />
                     </div>
+                    {detractionAlert && <div className="row-zyx">
+                        <FieldView
+                            className={classes.commentary}
+                            label={''}
+                            value={t(langKeys.detractionnotepay1) + `${detractionAmount}` + t(langKeys.detractionnotepay2)}
+                        />
+                    </div>}
                     <div className="row-zyx">
                         <FieldView
                             className={classes.section}
@@ -4517,6 +4528,8 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
     const [confirmButton, setConfirmButton] = useState(true);
     const [disableInput, setDisableInput] = useState(data?.row ? true : false);
     const [waitSave, setWaitSave] = useState(false);
+    const [detractionAlert, setDetractionAlert] = useState(false);
+    const [detractionAmount, setDetractionAmount] = useState(0);
 
     const handleCulqiSuccess = () => {
         fetchData();
@@ -4589,21 +4602,27 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                     var compareamount = (buyAmount || 0) * (exchangeRequest?.exchangerate || 0);
 
                     if (compareamount > mainResult.mainData.data[0].detractionminimum) {
-                        setTotalPay((buyAmount * (1 + mainResult.mainData.data[0].igv)) - ((buyAmount * (1 + mainResult.mainData.data[0].igv)) * mainResult.mainData.data[0].detraction))
+                        setTotalPay((buyAmount * (1 + mainResult.mainData.data[0].igv)) - ((buyAmount * (1 + mainResult.mainData.data[0].igv)) * mainResult.mainData.data[0].detraction));
+                        setDetractionAlert(true);
+                        setDetractionAmount(mainResult.mainData.data[0].detraction * 100);
                     }
                     else {
+                        setDetractionAlert(false);
                         setTotalPay(buyAmount * (1 + mainResult.mainData.data[0].igv))
                     }
                 }
                 else {
+                    setDetractionAlert(false);
                     setTotalPay(buyAmount * (1 + mainResult.mainData.data[0].igv))
                 }
             }
             else {
+                setDetractionAlert(false);
                 setTotalPay(buyAmount);
             }
         }
         else {
+            setDetractionAlert(false);
             setTotalPay(buyAmount);
         }
     }
@@ -4874,6 +4893,13 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                             className="col-4"
                             label={t(langKeys.totaltopay)}
                             value={'$'+formatNumber((totalPay || 0))}
+                        />
+                    </div>}
+                    {(data?.edit && detractionAlert) && <div className="row-zyx">
+                        <FieldView
+                            className={classes.commentary}
+                            label={''}
+                            value={t(langKeys.detractionnotepay1) + `${detractionAmount}` + t(langKeys.detractionnotepay2)}
                         />
                     </div>}
                     {data?.edit && <div className="row-zyx">

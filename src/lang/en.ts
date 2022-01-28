@@ -2960,6 +2960,8 @@ const translation: LangKeys = {
     messagingpackagesdetail: 'Messaging Package Detail',
     messagingpackagesnew: 'New Messaging Package',
     emissornone: 'NONE',
+    detractionnotepay1: 'Operation subject to the deduction of ',
+    detractionnotepay2: '%. The amount to pay includes the discount for the deduction concept. The deduction payment must be made in the Banco de la Nación account indicated on the invoice.',
 };
 
 const enResource: ResourceLanguage = {
