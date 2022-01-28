@@ -381,6 +381,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 data={dataCorpList}
                                 optionDesc="description"
                                 optionValue="corpid"
+                                disabled={user?.roledesc === "ADMINISTRADOR"}
                             />
                             <FieldSelect
                                 label={t(langKeys.organization)}
@@ -1319,6 +1320,7 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                         data={dataCorpList}
                         optionDesc="description"
                         optionValue="corpid"
+                        disabled={user?.roledesc === "ADMINISTRADOR"}
                     />
                     <FieldSelect
                         label={t(langKeys.organization)}
@@ -1910,6 +1912,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                                 data={dataCorpList}
                                 optionDesc="description"
                                 optionValue="corpid"
+                                disabled={user?.roledesc === "ADMINISTRADOR"}
                             />
                             <FieldSelect
                                 label={t(langKeys.organization)}
@@ -1950,7 +1953,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                                 onClick={search}
                             >{t(langKeys.search)}
                             </Button>
-                            <Button
+                            {user?.roledesc === "SUPERADMIN" && <Button
                                 disabled={mainResult.mainData.loading || disableSearch}
                                 variant="contained"
                                 color="primary"
@@ -1958,7 +1961,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                                 startIcon={<RefreshIcon style={{ color: 'white' }} />}
                                 onClick={refreshAll}
                             >{t(langKeys.refresh)}
-                            </Button>
+                            </Button>}
                         </div>
                     )}
                     data={dataInvoice}
@@ -2531,6 +2534,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             data={dataCorpList}
                             optionDesc="description"
                             optionValue="corpid"
+                            disabled={user?.roledesc === "ADMINISTRADOR"}
                         />
                         <FieldSelect
                             label={t(langKeys.organization)}
@@ -3473,7 +3477,8 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
     const classes = useStyles();
     const culqiResult = useSelector(state => state.culqi.requestCreateInvoice);
     const multiResult = useSelector(state => state.main.multiDataAux);
-    
+    const user = useSelector(state => state.login.validateToken.user);
+
     const [appsettingData, setAppsettingData] = useState<any>([]);
     const [creditTypeList, setCreditTypeList] = useState<any>([]);
     const [corpList, setCorpList] = useState<any>([]);
@@ -4244,6 +4249,7 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     
     const [dataBalance, setDataBalance] = useState<Dictionary[]>([]);
     const [disableSearch, setdisableSearch] = useState(false);
+    const [canRegister, setCanRegister] = useState(false);
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
     const [viewSelected, setViewSelected] = useState("view-1");
 
@@ -4262,6 +4268,13 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
 
     useEffect(() => {
         fetchData();
+
+        if (dataCorpList) {
+            var corporationdata = dataCorpList.find((x: { corpid: any; }) => x.corpid === dataMain.corpid);
+            if (corporationdata?.paymentmethod === 'PREPAGO') {
+                setCanRegister(true);
+            }
+        }
 
         dispatch(setMemoryTable({
             id: IDMESSAGINGPACKAGES
@@ -4399,6 +4412,7 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 data={dataCorpList}
                                 optionDesc="description"
                                 optionValue="corpid"
+                                disabled={user?.roledesc === "ADMINISTRADOR"}
                             />
                             <FieldSelect
                                 label={t(langKeys.organization)}
@@ -4445,7 +4459,7 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                     filterGeneral={false}
                     loading={mainResult.mainData.loading}
                     download={true}
-                    register={true}
+                    register={canRegister}
                     handleRegister={handleRegister}
                     registertext={t(langKeys.transactionbuy)}
                     pageSizeDefault={IDMESSAGINGPACKAGES === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
@@ -4475,6 +4489,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
     const exchangeRequest = useSelector(state => state.culqi.requestGetExchangeRate);
     const mainResult = useSelector(state => state.main);
     const multiResult = useSelector(state => state.main.multiDataAux);
+    const user = useSelector(state => state.login.validateToken.user);
 
     const [corp, setCorp] = useState(0);
     const [corpList, setCorpList] = useState<any>([]);
