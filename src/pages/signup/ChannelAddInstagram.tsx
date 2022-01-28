@@ -26,7 +26,7 @@ const useChannelAddStyles = makeStyles(theme => ({
 }));
 
 export const ChannelAddInstagram: FC<{setrequestchannels:(param:any)=>void,setOpenWarning:(param:any)=>void}> = ({setrequestchannels,setOpenWarning}) => {
-    const { setlistchannels } = useContext(SubscriptionContext);
+    const { deleteChannel } = useContext(SubscriptionContext);
     const [viewSelected, setViewSelected] = useState("view1");
     const [nextbutton, setNextbutton] = useState(true);
     const [channelreg, setChannelreg] = useState(true);
@@ -66,7 +66,7 @@ export const ChannelAddInstagram: FC<{setrequestchannels:(param:any)=>void,setOp
     
     async function finishreg() {
         setrequestchannels((p:any)=>([...p,fields]))
-        setlistchannels((p:any)=>({...p,instagram:false}))
+        deleteChannel('instagram');
     }
 
     const processFacebookCallback = async (r: any) => {

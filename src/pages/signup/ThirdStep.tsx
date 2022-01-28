@@ -178,9 +178,8 @@ export const ThirdStep: FC<ThirdStepProps> = ({
 }) => {
     const {
         selectedChannels,
-        setselectedChannels,
         listchannels,
-        setlistchannels,
+        toggleChannel,
     } = useContext(SubscriptionContext);
     const planData = useSelector(state => state.signup.verifyPlan)
     const limitChannels = planData.data[0].channelscontracted
@@ -190,86 +189,35 @@ export const ThirdStep: FC<ThirdStepProps> = ({
             icon: <FacebookMessengerIcon className={classes.icon} />,
             label: 'Messenger',
             key: 'messenger',
-            onClick: () => {
-                if(listchannels.messenger){
-                    setselectedChannels(selectedChannels-1)
-                    setlistchannels((p: any) => ({ ...p, messenger: !p.messenger }))
-                }
-                else if(limitChannels>selectedChannels){
-                    listchannels.messenger?setselectedChannels(selectedChannels-1):
-                    setselectedChannels(selectedChannels+1);
-                    setlistchannels((p: any) => ({ ...p, messenger: !p.messenger }))
-                }
-            },
+            onClick: () => toggleChannel('messenger'),
             selected: listchannels.messenger
         },
         {
             icon: <WhatsAppIcon className={classes.icon} />,
             label: 'Whatsapp',
             key: 'whatsapp',
-            onClick: () => {
-                if(listchannels.whatsapp){
-                    setselectedChannels(selectedChannels-1)
-                    setlistchannels((p: any) => ({ ...p, whatsapp: !p.whatsapp }))
-                }
-                else if(limitChannels>selectedChannels){
-                    listchannels.whatsapp?setselectedChannels(selectedChannels-1):
-                    setselectedChannels(selectedChannels+1);
-                    setlistchannels((p: any) => ({ ...p, whatsapp: !p.whatsapp }))
-                }
-            },
+            onClick: () => toggleChannel('whatsapp'),
             selected: listchannels.whatsapp
         },
         {
             icon: <FacebookIcon className={classes.icon} />,
             label: 'Facebook',
             key: 'facebook',
-            onClick: () => {
-                
-                if(listchannels.facebook){
-                    setselectedChannels(selectedChannels-1)
-                    setlistchannels((p: any) => ({ ...p, facebook: !p.facebook }))
-                }
-                else if(limitChannels>selectedChannels){
-                    listchannels.facebook?setselectedChannels(selectedChannels-1):
-                    setselectedChannels(selectedChannels+1);
-                    setlistchannels((p: any) => ({ ...p, facebook: !p.facebook }))
-                }
-            },
+            onClick: () => toggleChannel('facebook'),
             selected: listchannels.facebook
         },
         {
             icon: <InstagramIcon className={classes.icon} />,
             label: 'Instagram',
             key: 'instagram',
-            onClick: () => {
-                if(listchannels.instagram){
-                    setselectedChannels(selectedChannels-1)
-                    setlistchannels((p: any) => ({ ...p, instagram: !p.instagram }))
-                }
-                else if(limitChannels>selectedChannels){
-                    listchannels.instagram?setselectedChannels(selectedChannels-1):
-                    setselectedChannels(selectedChannels+1);
-                    setlistchannels((p: any) => ({ ...p, instagram: !p.instagram }))
-                }
-            },
+            onClick: () => toggleChannel('instagram'),
             selected: listchannels.instagram
         },
         {
             icon: <InstagramIcon className={classes.icon} />,
             label: 'Instagram DM',
             key: 'instagramDM',
-            onClick: () => {
-                if(listchannels.instagramDM){
-                    setselectedChannels(selectedChannels-1)
-                    setlistchannels((p: any) => ({ ...p, instagramDM: !p.instagramDM }))
-                }
-                else if(limitChannels>selectedChannels){
-                    listchannels.instagramDM?setselectedChannels(selectedChannels-1):
-                    setselectedChannels(selectedChannels+1);
-                    setlistchannels((p: any) => ({ ...p, instagramDM: !p.instagramDM }))
-                }
-            },
+            onClick: () => toggleChannel('instagramDM'),
             selected: listchannels.instagramDM
         },
     ];
@@ -278,85 +226,35 @@ export const ThirdStep: FC<ThirdStepProps> = ({
             icon: <ZyxmeMessengerIcon className={classes.icon} />,
             label: 'Chat Web',
             key: 'chatWeb',
-            onClick: () => {
-                if(listchannels.chatWeb){
-                    setselectedChannels(selectedChannels-1)
-                    setlistchannels((p: any) => ({ ...p, chatWeb: !p.chatWeb }))
-                }
-                else if(limitChannels>selectedChannels){
-                    listchannels.chatWeb?setselectedChannels(selectedChannels-1):
-                    setselectedChannels(selectedChannels+1);
-                    setlistchannels((p: any) => ({ ...p, chatWeb: !p.chatWeb }))
-                }
-            },
+            onClick: () => toggleChannel('chatWeb'),
             selected: listchannels.chatWeb
         },
         {
             icon: <TelegramIcon className={classes.icon} />,
             label: 'Telegram',
             key: 'telegram',
-            onClick: () => {
-                if(listchannels.telegram){
-                    setselectedChannels(selectedChannels-1)
-                    setlistchannels((p: any) => ({ ...p, telegram: !p.telegram }))
-                }
-                else if(limitChannels>selectedChannels){
-                    listchannels.telegram?setselectedChannels(selectedChannels-1):
-                    setselectedChannels(selectedChannels+1);
-                    setlistchannels((p: any) => ({ ...p, telegram: !p.telegram }))
-                }
-            },
+            onClick: () => toggleChannel('telegram'),
             selected: listchannels.telegram
         },
         {
             icon: <TwitterIcon className={classes.icon} />,
             label: 'Twitter',
             key: 'twitter',
-            onClick: () => {
-                if(listchannels.twitter){
-                    setselectedChannels(selectedChannels-1)
-                    setlistchannels((p: any) => ({ ...p, twitter: !p.twitter }))
-                }
-                else if(limitChannels>selectedChannels){
-                    listchannels.twitter?setselectedChannels(selectedChannels-1):
-                    setselectedChannels(selectedChannels+1);
-                    setlistchannels((p: any) => ({ ...p, twitter: !p.twitter }))
-                }
-            },
+            onClick: () => toggleChannel('twitter'),
             selected: listchannels.twitter
         },
         {
             icon: <TwitterIcon className={classes.icon} />,
             label: 'Twitter DM',
             key: 'twitterDM',
-            onClick: () => {
-                if(listchannels.twitterDM){
-                    setselectedChannels(selectedChannels-1)
-                    setlistchannels((p: any) => ({ ...p, twitterDM: !p.twitterDM }))
-                }
-                else if(limitChannels>selectedChannels){
-                    listchannels.twitterDM?setselectedChannels(selectedChannels-1):
-                    setselectedChannels(selectedChannels+1);
-                    setlistchannels((p: any) => ({ ...p, twitterDM: !p.twitterDM }))
-                }
-            },
+            onClick: () => toggleChannel('twitterDM'),
             selected: listchannels.twitterDM
         },
         {
             icon: <EmailIcon className={classes.icon} />,
             label: 'Email',
             key: 'email',
-            onClick: () => {
-                if(listchannels.email){
-                    setselectedChannels(selectedChannels-1)
-                    setlistchannels((p: any) => ({ ...p, email: !p.email }))
-                }
-                else if(limitChannels>selectedChannels){
-                    listchannels.email?setselectedChannels(selectedChannels-1):
-                    setselectedChannels(selectedChannels+1);
-                    setlistchannels((p: any) => ({ ...p, email: !p.email }))
-                }
-            },
+            onClick: () => toggleChannel('email'),
             selected: listchannels.email
 
         },
@@ -364,51 +262,21 @@ export const ThirdStep: FC<ThirdStepProps> = ({
             icon: <SmsIcon className={classes.icon} />,
             label: 'Sms',
             key: 'sms',
-            onClick: () => {
-                if(listchannels.sms){
-                    setselectedChannels(selectedChannels-1)
-                    setlistchannels((p: any) => ({ ...p, sms: !p.sms }))
-                }
-                else if(limitChannels>selectedChannels){
-                    listchannels.sms?setselectedChannels(selectedChannels-1):
-                    setselectedChannels(selectedChannels+1);
-                    setlistchannels((p: any) => ({ ...p, sms: !p.sms }))
-                }
-            },
+            onClick: () => toggleChannel('sms'),
             selected: listchannels.sms
         },
         {
             icon: <AppleIcon className={classes.icon} />,
             label: 'iOS SDk',
             key: 'apple',
-            onClick: () => {
-                if(listchannels.apple){
-                    setselectedChannels(selectedChannels-1)
-                    setlistchannels((p: any) => ({ ...p, apple: !p.apple }))
-                }
-                else if(limitChannels>selectedChannels){
-                    listchannels.apple?setselectedChannels(selectedChannels-1):
-                    setselectedChannels(selectedChannels+1);
-                    setlistchannels((p: any) => ({ ...p, apple: !p.apple }))
-                }
-            },
+            onClick: () => toggleChannel('apple'),
             selected: listchannels.apple
         },
         {
             icon: <AndroidIcon className={classes.icon} />,
             label: 'Android SDK',
             key: 'android',
-            onClick: () => {
-                if(listchannels.android){
-                    setselectedChannels(selectedChannels-1)
-                    setlistchannels((p: any) => ({ ...p, android: !p.android }))
-                }
-                else if(limitChannels>selectedChannels){
-                    listchannels.android?setselectedChannels(selectedChannels-1):
-                    setselectedChannels(selectedChannels+1);
-                    setlistchannels((p: any) => ({ ...p, android: !p.android }))
-                }
-            },
+            onClick: () => toggleChannel('android'),
             selected: listchannels.android
         },
     ];

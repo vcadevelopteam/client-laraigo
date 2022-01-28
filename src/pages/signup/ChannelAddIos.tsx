@@ -18,7 +18,7 @@ const useChannelAddStyles = makeStyles(theme => ({
 }));
 
 export const ChannelAddIos: FC<{setrequestchannels:(param:any)=>void,setOpenWarning:(param:any)=>void}> = ({setrequestchannels,setOpenWarning}) => {
-    const { setlistchannels } = useContext(SubscriptionContext);
+    const { deleteChannel } = useContext(SubscriptionContext);
     const [channelreg, setChannelreg] = useState(true);
     const { t } = useTranslation();
     const [coloricon, setcoloricon] = useState("#000000");
@@ -45,7 +45,7 @@ export const ChannelAddIos: FC<{setrequestchannels:(param:any)=>void,setOpenWarn
 
     async function finishreg() {
         setrequestchannels((p:any)=>([...p,fields]))
-        setlistchannels((p:any)=>({...p,facebook:false}))
+        deleteChannel('apple');
     }
 
     function setnameField(value: any) {

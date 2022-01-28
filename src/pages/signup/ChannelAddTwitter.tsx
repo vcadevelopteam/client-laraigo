@@ -22,7 +22,7 @@ const useChannelAddStyles = makeStyles(theme => ({
 }));
 
 export const ChannelAddTwitter: FC<{setrequestchannels:(param:any)=>void,setOpenWarning:(param:any)=>void}> = ({setrequestchannels,setOpenWarning}) => {
-    const { setlistchannels } = useContext(SubscriptionContext);
+    const { deleteChannel } = useContext(SubscriptionContext);
     const [viewSelected, setViewSelected] = useState("view1");
     const [waitSave, setWaitSave] = useState(false);
     const [nextbutton, setNextbutton] = useState(true);
@@ -62,7 +62,7 @@ export const ChannelAddTwitter: FC<{setrequestchannels:(param:any)=>void,setOpen
 
     async function finishreg() {
         setrequestchannels((p:any)=>([...p,fields]))
-        setlistchannels((p:any)=>({...p,twitter:false}))
+        deleteChannel('twitter')
     }
 
     useEffect(() => {

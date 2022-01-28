@@ -19,7 +19,7 @@ const useChannelAddStyles = makeStyles(theme => ({
 }));
 
 export const ChannelAddTwitterDM: FC<{setrequestchannels:(param:any)=>void,setOpenWarning:(param:any)=>void}> = ({setrequestchannels,setOpenWarning}) => {
-    const { setlistchannels } = useContext(SubscriptionContext);
+    const { deleteChannel } = useContext(SubscriptionContext);
     const [viewSelected, setViewSelected] = useState("view1");
     const [nextbutton, setNextbutton] = useState(true);
     const [nextbutton2, setNextbutton2] = useState(true);
@@ -56,7 +56,7 @@ export const ChannelAddTwitterDM: FC<{setrequestchannels:(param:any)=>void,setOp
 
     async function finishreg() {
         setrequestchannels((p:any)=>([...p,fields]))
-        setlistchannels((p:any)=>({...p,twitterDM:false}))
+        deleteChannel('twitterDM');
     }
     function setnameField(value: any) {
         setChannelreg(value === "")

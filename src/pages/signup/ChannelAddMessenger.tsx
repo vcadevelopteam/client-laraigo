@@ -73,12 +73,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({
     setrequestchannels,
     setOpenWarning,
 }) => {
-    const {
-        selectedChannels,
-        setselectedChannels,
-        setlistchannels,
-        deleteOption,
-    } = useContext(SubscriptionContext);
+    const { deleteChannel } = useContext(SubscriptionContext);
     const [viewSelected, setViewSelected] = useState("view1");
     const [nextbutton, setNextbutton] = useState(true);
     const [coloricon, setcoloricon] = useState("#0078FF");
@@ -114,7 +109,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({
 
     async function finishreg() {
         setrequestchannels((p:any)=>([...p,fields]))
-        setlistchannels((p:any)=>({...p,messenger:false}))
+        deleteChannel('messenger');
     }
 
     const processFacebookCallback = async (r: any) => {
@@ -152,7 +147,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({
                 <IconButton
                     color="primary"
                     className={classes.trailingIcon}
-                    onClick={() => deleteOption('messenger')}
+                    onClick={() => deleteChannel('messenger')}
                 >
                     <DeleteOutlineIcon />
                 </IconButton>

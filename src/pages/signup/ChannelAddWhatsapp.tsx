@@ -60,7 +60,7 @@ const CssPhonemui = styled(MuiPhoneNumber)({
 });
 
 export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setOpenWarning:(param:any)=>void}> = ({setrequestchannels,setOpenWarning}) => {
-    const { setlistchannels } = useContext(SubscriptionContext);
+    const { deleteChannel } = useContext(SubscriptionContext);
     const [viewSelected, setViewSelected] = useState("view1");
     const planData = useSelector(state => state.signup.verifyPlan)
     const provider = planData.data[0].providerwhatsapp
@@ -120,7 +120,7 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setOpe
 
     async function finishreg() {
         setrequestchannels((p:any)=>([...p,fields]))
-        setlistchannels((p:any)=>({...p,whatsapp:false}))
+        deleteChannel('whatsapp');
     }
 
     function setnameField(value: any) {

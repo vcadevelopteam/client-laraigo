@@ -91,7 +91,7 @@ const useSignUpStyles = makeStyles(theme => ({
 }));
 
 export const SignUp: FC = () => {
-    const { setlistchannels } = useContext(SubscriptionContext);
+    const { resetChannels } = useContext(SubscriptionContext);
     const mainResult = useSelector(state => state.signup.verifyPlan)
     const {token}: any = useParams();
     const history = useHistory();
@@ -170,22 +170,7 @@ export const SignUp: FC = () => {
         if(sendchannels){
             setrequestchannels([])
             setsendchannels(false)
-            setlistchannels({
-                facebook:false,
-                instagram: false,
-                instagramDM: false,
-                messenger: false,
-                whatsapp: false,
-                telegram: false,
-                twitter: false,
-                twitterDM: false,
-                chatWeb: false,
-                email: false,
-                phone: false,
-                sms: false,
-                android: false,
-                apple: false,
-            })
+            resetChannels();
         }else{
             console.log(step)
             if(step===2){

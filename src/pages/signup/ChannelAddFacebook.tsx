@@ -64,7 +64,7 @@ const FBButtonStyles: CSSProperties = {
 };
 
 export const ChannelAddFacebook: FC<{ setrequestchannels: (param: any) => void, setOpenWarning: (param: any) => void }> = ({ setrequestchannels, setOpenWarning }) => {
-    const { setlistchannels, deleteOption } = useContext(SubscriptionContext);
+    const { deleteChannel } = useContext(SubscriptionContext);
     const [viewSelected, setViewSelected] = useState("view1");
     const [waitSave, setWaitSave] = useState(false);
     const [nextbutton, setNextbutton] = useState(true);
@@ -105,7 +105,7 @@ export const ChannelAddFacebook: FC<{ setrequestchannels: (param: any) => void, 
 
     async function finishreg() {
         setrequestchannels((p: any) => ([...p, fields]))
-        setlistchannels((p: any) => ({ ...p, facebook: false }))
+        deleteChannel('facebook');
     }
     useEffect(() => {
         if (waitSave) {
@@ -151,7 +151,7 @@ export const ChannelAddFacebook: FC<{ setrequestchannels: (param: any) => void, 
                 <IconButton
                     color="primary"
                     className={classes.trailingIcon}
-                    onClick={() => deleteOption('facebook')}
+                    onClick={() => deleteChannel('facebook')}
                 >
                     <DeleteOutlineIcon />
                 </IconButton>

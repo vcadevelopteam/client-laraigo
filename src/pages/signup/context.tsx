@@ -1,14 +1,14 @@
-import React, { FC, useState, createContext } from 'react';
+import React, { FC, useState, createContext, useMemo } from 'react';
 
 type StateSetter<T> = React.Dispatch<React.SetStateAction<T>>;
 interface Subscription {
     selectedChannels: number;
-    setselectedChannels: StateSetter<number>;
-
     listchannels: ListChannels;
-    setlistchannels: StateSetter<ListChannels>;
-
-    deleteOption: (option: keyof ListChannels) => void;
+    
+    resetChannels: () => void;
+    addChannel: (option: keyof ListChannels) => void;
+    deleteChannel: (option: keyof ListChannels) => void;
+    toggleChannel: (option: keyof ListChannels) => void;
 }
 
 export interface ListChannels {
@@ -47,32 +47,62 @@ const defaultListChanneñs: ListChannels = {
 
 export const SubscriptionContext = createContext<Subscription>({
     selectedChannels: 0,
-    setselectedChannels: () => {},
     listchannels: defaultListChanneñs,
-    setlistchannels: () => {},
-    deleteOption: () => {},
+    addChannel: () => {},
+    deleteChannel: () => {},
+    resetChannels: () => {},
+    toggleChannel: () => {},
 });
 
 export const SubscriptionProvider: FC = ({ children }) => {
-    const [selectedChannels, setselectedChannels] = useState(0);
     const [listchannels, setlistchannels] = useState<ListChannels>(defaultListChanneñs);
 
-    const deleteOption = (option: keyof ListChannels) => {
-        setlistchannels((p: any) => ({
-            ...p,
-            [option]: false,
-        }));
-        setselectedChannels(prev => --prev);
+    const deleteChannel = (option: keyof ListChannels) => {
+        setlistchannels(prev => {
+            const v = prev[option];
+            if (v === false) return prev;
+            return {
+                ...prev,
+                [option]: false,
+            };
+        });
     }
+
+    const addChannel = (option: keyof ListChannels) => {
+        setlistchannels(prev => {
+            const v = prev[option];
+            if (v === true) return prev;
+            return {
+                ...prev,
+                [option]: true,
+            };
+        });
+    }
+
+    const toggleChannel = (option: keyof ListChannels) => {
+        setlistchannels(prev => ({
+            ...prev,
+            [option]: !prev[option],
+        }));
+    }
+
+    const resetChannels = () => setlistchannels(defaultListChanneñs);
+
+    const selectedChannels = useMemo(() => {
+        return Object.
+            keys(listchannels).
+            filter(key => listchannels[key as keyof ListChannels] === true).
+            length;
+    }, [listchannels]);
 
     return (
         <SubscriptionContext.Provider value={{
             selectedChannels,
-            setselectedChannels,
             listchannels,
-            setlistchannels,
-
-            deleteOption,
+            addChannel,
+            deleteChannel,
+            resetChannels,
+            toggleChannel,
         }}>
             {children}
         </SubscriptionContext.Provider>

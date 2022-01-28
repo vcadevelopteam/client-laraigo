@@ -24,7 +24,7 @@ const useChannelAddStyles = makeStyles(theme => ({
 }));
 
 export const ChannelAddTelegram: FC<{setrequestchannels:(param:any)=>void,setOpenWarning:(param:any)=>void}> = ({setrequestchannels,setOpenWarning}) => {
-    const { setlistchannels } = useContext(SubscriptionContext);
+    const { deleteChannel } = useContext(SubscriptionContext);
     const [viewSelected, setViewSelected] = useState("view1");
     const [nextbutton, setNextbutton] = useState(true);
     const [coloricon, setcoloricon] = useState("#207FDD");
@@ -56,7 +56,7 @@ export const ChannelAddTelegram: FC<{setrequestchannels:(param:any)=>void,setOpe
 
     async function finishreg() {
         setrequestchannels((p:any)=>([...p,fields]))
-        setlistchannels((p:any)=>({...p,telegram:false}))
+        deleteChannel('telegram');
     }
 
     function setnameField(value: any) {

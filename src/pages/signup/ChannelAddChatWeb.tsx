@@ -1471,7 +1471,7 @@ export const ChannelAddChatWeb: FC<{setrequestchannels:(param:any)=>void,setOpen
     
     const { t } = useTranslation();
 
-    const { setlistchannels } = useContext(SubscriptionContext);
+    const { deleteChannel } = useContext(SubscriptionContext);
     const dispatch = useDispatch();
     const [tabIndex, setTabIndes] = useState('0');
     const [showFinalStep, setShowFinalStep] = useState(false);
@@ -1554,7 +1554,7 @@ export const ChannelAddChatWeb: FC<{setrequestchannels:(param:any)=>void,setOpen
     const handleSubmit = (name: string, auto: boolean, hexIconColor: string) => {
         const body = getInsertChatwebChannel(name, auto, hexIconColor, form.getValues());
         setrequestchannels((p:any)=>([...p,body]))
-        setlistchannels((p:any)=>({...p,chatWeb:false}))
+        deleteChannel('chatWeb');
     }
 
     return (
