@@ -1165,6 +1165,7 @@ const Users: FC = () => {
                 }
                 else {
                     dispatch(showBackdrop(true));
+                    console.log(data)
                     let table: Dictionary = data.reduce((a: any, d) => ({
                         ...a,
                         [`${d.email}_${d.docnum}`]: {
@@ -1191,7 +1192,7 @@ const Users: FC = () => {
                                 bydefault: true,
                                 labels: "",
                                 groups: "",
-                                channels: String(d.channels),
+                                channels: d.channels || "",
                                 status: d.status,
                                 type: "NINGUNO",
                                 supervisor: "",
