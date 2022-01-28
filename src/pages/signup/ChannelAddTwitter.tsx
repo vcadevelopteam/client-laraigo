@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { makeStyles, Breadcrumbs, Button, Box } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { showBackdrop } from 'store/popus/actions';
@@ -9,6 +9,7 @@ import { FieldEdit, ColorInput } from "components";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { TwitterIcon } from "icons";
+import { SubscriptionContext } from "./context";
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -20,7 +21,8 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const ChannelAddTwitter: FC<{setrequestchannels:(param:any)=>void,setlistchannels:(param:any)=>void,setOpenWarning:(param:any)=>void}> = ({setrequestchannels,setlistchannels,setOpenWarning}) => {
+export const ChannelAddTwitter: FC<{setrequestchannels:(param:any)=>void,setOpenWarning:(param:any)=>void}> = ({setrequestchannels,setOpenWarning}) => {
+    const { setlistchannels } = useContext(SubscriptionContext);
     const [viewSelected, setViewSelected] = useState("view1");
     const [waitSave, setWaitSave] = useState(false);
     const [nextbutton, setNextbutton] = useState(true);

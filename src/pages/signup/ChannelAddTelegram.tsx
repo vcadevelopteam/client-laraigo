@@ -1,11 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useState } from "react";
+import { FC, useContext, useState } from "react";
 import { makeStyles, Breadcrumbs, Button, Box } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import { FieldEdit, ColorInput } from "components";
 import { TelegramIcon } from "icons";
+import { SubscriptionContext } from "./context";
 
 const useChannelAddStyles = makeStyles(theme => ({
     centerbutton: {
@@ -22,7 +23,8 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const ChannelAddTelegram: FC<{setrequestchannels:(param:any)=>void,setlistchannels:(param:any)=>void,setOpenWarning:(param:any)=>void}> = ({setrequestchannels,setlistchannels,setOpenWarning}) => {
+export const ChannelAddTelegram: FC<{setrequestchannels:(param:any)=>void,setOpenWarning:(param:any)=>void}> = ({setrequestchannels,setOpenWarning}) => {
+    const { setlistchannels } = useContext(SubscriptionContext);
     const [viewSelected, setViewSelected] = useState("view1");
     const [nextbutton, setNextbutton] = useState(true);
     const [coloricon, setcoloricon] = useState("#207FDD");

@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useState } from "react";
+import { FC, useContext, useState } from "react";
 import { makeStyles, Button, Typography, Paper } from '@material-ui/core';
 import { langKeys } from "lang/keys";
 import { Trans } from "react-i18next";
@@ -11,6 +11,7 @@ import { Facebook as FacebookIcon, Instagram as InstagramIcon, WhatsApp as Whats
 import { AndroidIcon, AppleIcon, FacebookMessengerIcon, LaraigoLogo, ZyxmeMessengerIcon } from "icons";
 import SmsIcon from '@material-ui/icons/Sms';
 import { useSelector } from "hooks";
+import { ListChannels, SubscriptionContext } from "./context";
 
 interface ChannelOption {
     icon: React.ReactNode;
@@ -108,18 +109,13 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
     optionContainerHover: {
         '&:hover': {
-            // color: 'white !important',
-            // fill: 'white !important',
             backgroundColor: '#ececec',
             cursor: 'pointer',
             fontWeight: 700,
         },
     },
     optionContainerSelected: {
-        // backgroundColor: '#7721AD',
         fontWeight: 700,
-        // color: 'white',
-        // fill: 'white',
     },
     optionContainerActive: {
         opacity: 1,
@@ -168,8 +164,6 @@ const useChannelAddStyles = makeStyles(theme => ({
 }));
 
 interface ThirdStepProps {
-    setlistchannels: (param: any) => void;
-    listchannels: { [key: string]: boolean };
     setStep: (param: any) => void;
     setsendchannels: (param: any) => void;
     setrequestchannels: (param: any) => void;
@@ -177,19 +171,55 @@ interface ThirdStepProps {
 }
 
 export const ThirdStep: FC<ThirdStepProps> = ({
-    setlistchannels,
-    listchannels,
     setStep,
     setsendchannels,
     setrequestchannels,
     setOpenWarning,
 }) => {
-
+    const {
+        selectedChannels,
+        setselectedChannels,
+        listchannels,
+        setlistchannels,
+    } = useContext(SubscriptionContext);
     const planData = useSelector(state => state.signup.verifyPlan)
     const limitChannels = planData.data[0].channelscontracted
-    const [selectedChannels, setselectedChannels] = useState(0);
     const classes = useChannelAddStyles();
     const socialMediaOptions: ChannelOption[] = [
+        {
+            icon: <FacebookMessengerIcon className={classes.icon} />,
+            label: 'Messenger',
+            key: 'messenger',
+            onClick: () => {
+                if(listchannels.messenger){
+                    setselectedChannels(selectedChannels-1)
+                    setlistchannels((p: any) => ({ ...p, messenger: !p.messenger }))
+                }
+                else if(limitChannels>selectedChannels){
+                    listchannels.messenger?setselectedChannels(selectedChannels-1):
+                    setselectedChannels(selectedChannels+1);
+                    setlistchannels((p: any) => ({ ...p, messenger: !p.messenger }))
+                }
+            },
+            selected: listchannels.messenger
+        },
+        {
+            icon: <WhatsAppIcon className={classes.icon} />,
+            label: 'Whatsapp',
+            key: 'whatsapp',
+            onClick: () => {
+                if(listchannels.whatsapp){
+                    setselectedChannels(selectedChannels-1)
+                    setlistchannels((p: any) => ({ ...p, whatsapp: !p.whatsapp }))
+                }
+                else if(limitChannels>selectedChannels){
+                    listchannels.whatsapp?setselectedChannels(selectedChannels-1):
+                    setselectedChannels(selectedChannels+1);
+                    setlistchannels((p: any) => ({ ...p, whatsapp: !p.whatsapp }))
+                }
+            },
+            selected: listchannels.whatsapp
+        },
         {
             icon: <FacebookIcon className={classes.icon} />,
             label: 'Facebook',
@@ -207,23 +237,6 @@ export const ThirdStep: FC<ThirdStepProps> = ({
                 }
             },
             selected: listchannels.facebook
-        },
-        {
-            icon: <FacebookMessengerIcon className={classes.icon} />,
-            label: 'Messenger',
-            key: 'messenger',
-            onClick: () => {
-                if(listchannels.messenger){
-                    setselectedChannels(selectedChannels-1)
-                    setlistchannels((p: any) => ({ ...p, messenger: !p.messenger }))
-                }
-                else if(limitChannels>selectedChannels){
-                    listchannels.messenger?setselectedChannels(selectedChannels-1):
-                    setselectedChannels(selectedChannels+1);
-                    setlistchannels((p: any) => ({ ...p, messenger: !p.messenger }))
-                }
-            },
-            selected: listchannels.messenger
         },
         {
             icon: <InstagramIcon className={classes.icon} />,
@@ -258,23 +271,6 @@ export const ThirdStep: FC<ThirdStepProps> = ({
                 }
             },
             selected: listchannels.instagramDM
-        },
-        {
-            icon: <WhatsAppIcon className={classes.icon} />,
-            label: 'Whatsapp',
-            key: 'whatsapp',
-            onClick: () => {
-                if(listchannels.whatsapp){
-                    setselectedChannels(selectedChannels-1)
-                    setlistchannels((p: any) => ({ ...p, whatsapp: !p.whatsapp }))
-                }
-                else if(limitChannels>selectedChannels){
-                    listchannels.whatsapp?setselectedChannels(selectedChannels-1):
-                    setselectedChannels(selectedChannels+1);
-                    setlistchannels((p: any) => ({ ...p, whatsapp: !p.whatsapp }))
-                }
-            },
-            selected: listchannels.whatsapp
         },
     ];
     const businessChannelOptions: ChannelOption[] = [
@@ -451,7 +447,7 @@ export const ThirdStep: FC<ThirdStepProps> = ({
                 <div className={classes.optionIconContainer}>
                     {option.icon}
                 </div>
-                <div style={{ height: 40 }}>
+                <div style={{ height: 38 }}>
                     <span>{option.label}</span>
                 </div>
             </Paper>
@@ -474,7 +470,7 @@ export const ThirdStep: FC<ThirdStepProps> = ({
                     <Option
                         key={`social_media_option_${i}`}
                         option={e}
-                        selected={listchannels[e.key]}
+                        selected={listchannels[e.key as keyof ListChannels]}
                         index={i}
                     />
                 )}
@@ -487,7 +483,7 @@ export const ThirdStep: FC<ThirdStepProps> = ({
                     <Option
                         key={`business_channel_option_${i}`}
                         option={e}
-                        selected={listchannels[e.key]}
+                        selected={listchannels[e.key as keyof ListChannels]}
                         index={i}
                     />
                 ))}

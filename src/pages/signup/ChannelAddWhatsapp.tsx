@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useState } from "react";
+import { FC, useContext, useState } from "react";
 import { makeStyles, Breadcrumbs, Button, Box, TextField } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { langKeys } from "lang/keys";
@@ -10,6 +10,7 @@ import { styled } from '@material-ui/core/styles';
 import { WhatsappIcon } from "icons";
 import { useSelector } from "hooks";
 import { Dictionary } from "@types";
+import { SubscriptionContext } from "./context";
 
 const useChannelAddStyles = makeStyles(theme => ({
     centerbutton: {
@@ -58,7 +59,8 @@ const CssPhonemui = styled(MuiPhoneNumber)({
     },
 });
 
-export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlistchannels:(param:any)=>void,setOpenWarning:(param:any)=>void}> = ({setrequestchannels,setlistchannels,setOpenWarning}) => {
+export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setOpenWarning:(param:any)=>void}> = ({setrequestchannels,setOpenWarning}) => {
+    const { setlistchannels } = useContext(SubscriptionContext);
     const [viewSelected, setViewSelected] = useState("view1");
     const planData = useSelector(state => state.signup.verifyPlan)
     const provider = planData.data[0].providerwhatsapp

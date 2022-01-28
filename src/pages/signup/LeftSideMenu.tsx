@@ -1,4 +1,4 @@
-import { FC, useMemo } from "react";
+import { FC, useContext, useMemo } from "react";
 import { Breadcrumbs, Link, makeStyles } from "@material-ui/core";
 import { ChannelAddFacebook } from './ChannelAddFacebook'
 import { ChannelAddInstagram } from './ChannelAddInstagram'
@@ -13,6 +13,7 @@ import { ChannelAddAndroid } from './ChannelAddAndroid'
 import { ChannelAddIos } from './ChannelAddIos'
 import { Trans } from "react-i18next";
 import { langKeys } from "lang/keys";
+import { ListChannels, SubscriptionContext } from "./context";
 
 const useLeftSideStyles = makeStyles(theme => ({
     root: {
@@ -24,27 +25,28 @@ const useLeftSideStyles = makeStyles(theme => ({
         overflowY: 'auto',
         overflowX: 'hidden',
     },
+    title: {
+        color: theme.palette.primary.main,
+        textAlign: 'center',
+    },
 }));
 
 interface LeftSideProps {
-    listchannels: { [key: string]: boolean };
-    setlistchannels: React.Dispatch<React.SetStateAction<any>>;
     setrequestchannels: (param: any) => void;
     setOpenWarning: (param: any) => void;
 }
 
 export const LeftSide: FC<LeftSideProps> = ({
-    listchannels,
-    setlistchannels,
     setrequestchannels,
     setOpenWarning,
 }) => {
     const classes = useLeftSideStyles();
+    const { listchannels } = useContext(SubscriptionContext);
 
     const channels = useMemo(() => {
         return Object
             .keys(listchannels)
-            .filter(x => listchannels[x] === true)
+            .filter(x => listchannels[x as keyof ListChannels] === true)
             .map((key, i) => {
                 switch (key) {
                     case 'facebook':
@@ -52,7 +54,6 @@ export const LeftSide: FC<LeftSideProps> = ({
                             <ChannelAddFacebook
                                 key={i}
                                 setrequestchannels={setrequestchannels}
-                                setlistchannels={setlistchannels}
                                 setOpenWarning={setOpenWarning}
                             />
                         );
@@ -61,7 +62,6 @@ export const LeftSide: FC<LeftSideProps> = ({
                             <ChannelAddInstagram
                                 key={i}
                                 setrequestchannels={setrequestchannels}
-                                setlistchannels={setlistchannels}
                                 setOpenWarning={setOpenWarning}
                             />
                         );
@@ -70,7 +70,6 @@ export const LeftSide: FC<LeftSideProps> = ({
                             <ChannelAddInstagramDM
                                 key={i}
                                 setrequestchannels={setrequestchannels}
-                                setlistchannels={setlistchannels}
                                 setOpenWarning={setOpenWarning}
                             />
                         );
@@ -79,7 +78,6 @@ export const LeftSide: FC<LeftSideProps> = ({
                             <ChannelAddMessenger
                                 key={i}
                                 setrequestchannels={setrequestchannels}
-                                setlistchannels={setlistchannels}
                                 setOpenWarning={setOpenWarning}
                             />
                         );
@@ -88,7 +86,6 @@ export const LeftSide: FC<LeftSideProps> = ({
                             <ChannelAddWhatsapp
                                 key={i}
                                 setrequestchannels={setrequestchannels}
-                                setlistchannels={setlistchannels}
                                 setOpenWarning={setOpenWarning}
                             />
                         );
@@ -97,7 +94,6 @@ export const LeftSide: FC<LeftSideProps> = ({
                             <ChannelAddTelegram
                                 key={i}
                                 setrequestchannels={setrequestchannels}
-                                setlistchannels={setlistchannels}
                                 setOpenWarning={setOpenWarning}
                             />
                         );
@@ -106,7 +102,6 @@ export const LeftSide: FC<LeftSideProps> = ({
                             <ChannelAddTwitter
                                 key={i}
                                 setrequestchannels={setrequestchannels}
-                                setlistchannels={setlistchannels}
                                 setOpenWarning={setOpenWarning}
                             />
                         );
@@ -115,7 +110,6 @@ export const LeftSide: FC<LeftSideProps> = ({
                             <ChannelAddTwitterDM
                                 key={i}
                                 setrequestchannels={setrequestchannels}
-                                setlistchannels={setlistchannels}
                                 setOpenWarning={setOpenWarning}
                             />
                         );
@@ -124,7 +118,6 @@ export const LeftSide: FC<LeftSideProps> = ({
                             <ChannelAddChatWeb
                                 key={i}
                                 setrequestchannels={setrequestchannels}
-                                setlistchannels={setlistchannels}
                                 setOpenWarning={setOpenWarning}
                             />
                         );
@@ -139,7 +132,6 @@ export const LeftSide: FC<LeftSideProps> = ({
                             <ChannelAddAndroid
                                 key={i}
                                 setrequestchannels={setrequestchannels}
-                                setlistchannels={setlistchannels}
                                 setOpenWarning={setOpenWarning}
                             />
                         );
@@ -148,7 +140,6 @@ export const LeftSide: FC<LeftSideProps> = ({
                             <ChannelAddIos
                                 key={i}
                                 setrequestchannels={setrequestchannels}
-                                setlistchannels={setlistchannels}
                                 setOpenWarning={setOpenWarning}
                             />
                         );
@@ -159,19 +150,19 @@ export const LeftSide: FC<LeftSideProps> = ({
 
     return (
         <div className={classes.root}>
-            <Breadcrumbs aria-label="breadcrumb">
+            <Breadcrumbs aria-label="breadcrumb" style={{ marginBottom: '1em' }}>
                 <Link
                     color="textSecondary"
-                    key={"mainview"}
                     href="/"
                     onClick={(e) => {
                         e.preventDefault();
                         setOpenWarning(true);
                     }}
                 >
-                    <Trans i18nKey={langKeys.previoustext} />
+                    {'<< '}<Trans i18nKey={langKeys.previoustext} />
                 </Link>
             </Breadcrumbs>
+            <h1 className={classes.title}>Canal seleccionado</h1>
             {channels}
         </div>
     );

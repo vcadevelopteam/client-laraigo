@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useContext, useEffect, useState } from 'react';
 import { AppBar, Box, Button, makeStyles, Link, Tab, Tabs, Typography, TextField, Grid, Select, IconButton, FormControl, MenuItem, Divider, Breadcrumbs } from '@material-ui/core';
 import { FieldEdit, IOSSwitch } from 'components';
 import { Trans, useTranslation } from 'react-i18next';
@@ -17,6 +17,7 @@ import { showSnackbar } from 'store/popus/actions';
 import { getInsertChatwebChannel } from 'common/helpers';
 import paths from 'common/constants/paths';
 import { ZyxmeMessengerIcon } from 'icons';
+import { SubscriptionContext } from './context';
 
 interface TabPanelProps {
     value: string;
@@ -1465,11 +1466,12 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export const ChannelAddChatWeb: FC<{setrequestchannels:(param:any)=>void,setlistchannels:(param:any)=>void,setOpenWarning:(param:any)=>void}> = ({setrequestchannels,setlistchannels,setOpenWarning}) => {
+export const ChannelAddChatWeb: FC<{setrequestchannels:(param:any)=>void,setOpenWarning:(param:any)=>void}> = ({setrequestchannels,setOpenWarning}) => {
     const classes = useStyles();
     
     const { t } = useTranslation();
 
+    const { setlistchannels } = useContext(SubscriptionContext);
     const dispatch = useDispatch();
     const [tabIndex, setTabIndes] = useState('0');
     const [showFinalStep, setShowFinalStep] = useState(false);

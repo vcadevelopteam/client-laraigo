@@ -1,10 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useState } from "react";
+import { FC, useContext, useState } from "react";
 import { makeStyles, Button, Box, Breadcrumbs, Link } from '@material-ui/core';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import { ColorInput, FieldEdit, } from "components";
 import { AppleIcon } from "icons";
+import { SubscriptionContext } from "./context";
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -16,7 +17,8 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const ChannelAddIos: FC<{setrequestchannels:(param:any)=>void,setlistchannels:(param:any)=>void,setOpenWarning:(param:any)=>void}> = ({setrequestchannels,setlistchannels,setOpenWarning}) => {
+export const ChannelAddIos: FC<{setrequestchannels:(param:any)=>void,setOpenWarning:(param:any)=>void}> = ({setrequestchannels,setOpenWarning}) => {
+    const { setlistchannels } = useContext(SubscriptionContext);
     const [channelreg, setChannelreg] = useState(true);
     const { t } = useTranslation();
     const [coloricon, setcoloricon] = useState("#000000");
