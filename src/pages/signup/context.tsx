@@ -33,7 +33,7 @@ export interface ListChannels {
     apple: boolean;
 }
 
-const defaultListChanneñs: ListChannels = {
+const defaultListChannels: ListChannels = {
     facebook: false,
     instagram: false,
     instagramDM: false,
@@ -55,7 +55,7 @@ export const SubscriptionContext = createContext<Subscription>({
     limitChannels: 0,
     commonClasses: {} as any,
     selectedChannels: 0,
-    listchannels: defaultListChanneñs,
+    listchannels: defaultListChannels,
     addChannel: () => {},
     deleteChannel: () => {},
     resetChannels: () => {},
@@ -113,7 +113,7 @@ const FBButtonStyles: CSSProperties = {
 
 export const SubscriptionProvider: FC = ({ children }) => {
     const classes = useStyles();
-    const [listchannels, setlistchannels] = useState<ListChannels>(defaultListChanneñs);
+    const [listchannels, setlistchannels] = useState<ListChannels>(defaultListChannels);
     const planData = useSelector(state => state.signup.verifyPlan);
 
     const deleteChannel = (option: keyof ListChannels) => {
@@ -145,7 +145,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
         }));
     }
 
-    const resetChannels = () => setlistchannels(defaultListChanneñs);
+    const resetChannels = () => setlistchannels(defaultListChannels);
 
     const selectedChannels = useMemo(() => {
         return Object.
