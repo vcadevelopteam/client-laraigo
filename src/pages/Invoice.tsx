@@ -4344,6 +4344,35 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             {
                 Header: t(langKeys.documenttype),
                 accessor: 'documenttype',
+                Cell: (props: any) => {
+                    const receiverdoctype = props.cell.row.original.documenttype;
+                    var documenttype = '';
+                    switch (receiverdoctype) {
+                        case '0':
+                            documenttype = 'billingfield_billingno';
+                            break;
+                        case '1':
+                            documenttype = 'billingfield_billingdni';
+                            break;
+                        case '4':
+                            documenttype = 'billingfield_billingextra';
+                            break;
+                        case '6':
+                            documenttype = 'billingfield_billingruc';
+                            break;
+                        case '7':
+                            documenttype = 'billingfield_billingpass';
+                            break;
+                        default:
+                            documenttype = '';
+                            break;
+                    }
+                    return (
+                        <Fragment>
+                            <span style={{ display: "block" }}>{t(documenttype)}</span>
+                        </Fragment>
+                    )
+                }
             },
             {
                 Header: t(langKeys.documentnumber),
@@ -4774,7 +4803,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                             <FieldView
                                 className="col-4"
                                 label={t(langKeys.transactionlastbalance)}
-                                value={(data?.row?.balance || 0).toFixed(2)}
+                                value={(data?.row?.balance - data?.row?.amount || 0).toFixed(2)}
                             />
                         )}
                         {data?.edit ? (
@@ -4804,7 +4833,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                             <FieldView
                                 className="col-4"
                                 label={t(langKeys.transactionafterbalance)}
-                                value={((data?.row?.balance + data?.row?.amount) || 0).toFixed(2)}
+                                value={(data?.row?.balance || 0).toFixed(2)}
                             />
                         )}
                     </div>
