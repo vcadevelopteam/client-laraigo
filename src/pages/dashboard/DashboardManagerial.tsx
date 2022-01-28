@@ -225,7 +225,8 @@ const DashboardManagerial: FC = () => {
     const resaux = useSelector(state => state.main.mainAux);
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const [downloaddatafile,setdownloaddatafile]=useState(false)
+    const [downloaddatafile, setdownloaddatafile] = useState(false)
+    const [section, setSection] = useState('')
     const [data, setData] = useState({
         dataTMO: "0s",
         obj_min: "",
@@ -409,7 +410,15 @@ const DashboardManagerial: FC = () => {
     useEffect(() => {
         if(downloaddatafile) {
             if(!resaux.loading){
-                exportExcel(titlefile,resaux.data)
+                if (resaux.data.length > 0) {
+                    exportExcel(titlefile, resaux.data, Object.keys(resaux.data[0]).reduce((ac: any[], c: any) => (
+                        [
+                            ...ac,
+                            { Header: t((langKeys as any)[`dashboard_managerial_${section}_${c}`]), accessor: c }
+                        ]),
+                        []
+                    ))
+                }
                 setdownloaddatafile(false)
             }
         }
@@ -1117,26 +1126,41 @@ const DashboardManagerial: FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const downloaddata= (tipeoffilter:string) => {
-        setdownloaddatafile(true)
-        settitlefile(`DashboardManagerial-${tipeoffilter}`)
-        if(tipeoffilter==="TMO"){
+    const downloaddata = (tipeoffilter:string) => {
+        setdownloaddatafile(true);
+        if (tipeoffilter === "TMO"){
+            settitlefile(tipeoffilter);
+            setSection('tmo')
             dispatch(getCollectionAux(gerencialTMOselData({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
-        }else if(tipeoffilter==="TME"){
+        } else if(tipeoffilter === "TME") {
+            settitlefile(tipeoffilter);
+            setSection('tme')
             dispatch(getCollectionAux(gerencialTMEselData({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
-        }else if(tipeoffilter==="NPS"||tipeoffilter==="CSAT"){
+        } else if (tipeoffilter === "NPS" || tipeoffilter === "CSAT") {
+            settitlefile(tipeoffilter);
+            setSection('survey3')
             dispatch(getCollectionAux(gerencialEncuesta3selData({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider, question: tipeoffilter })))
-        }else if(tipeoffilter==="FIX"||tipeoffilter==="FCR"){
+        } else if (tipeoffilter === "FIX" || tipeoffilter === "FCR") {
+            settitlefile(tipeoffilter);
+            setSection('survey2')
             dispatch(getCollectionAux(gerencialEncuesta2selData({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider, question: tipeoffilter })))
-        }else if(tipeoffilter==="etiqueta"){
-            dispatch(getCollectionAux(gerencialetiquetasseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
-        }else if(tipeoffilter==="averageconversations"){
-            dispatch(getCollectionAux(gerencialconversationseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
-        }else if(tipeoffilter==="interaction"){
-            dispatch(getCollectionAux(gerencialinteractionseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
-        }else if(tipeoffilter==="asesoresconectados"){
+        } else if (tipeoffilter === "asesoresconectados") {
+            settitlefile(t(langKeys.averagenumberofadvisersconnectedbyhour));
+            setSection('asesoresconectados')
             dispatch(getCollectionAux(gerencialasesoresconectadosbarseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
-        }else{
+        } else if (tipeoffilter === "averageconversations") {
+            settitlefile(t(langKeys.conversationsattended));
+            setSection('averageconversations')
+            dispatch(getCollectionAux(gerencialconversationseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+        } else if (tipeoffilter === "interaction") {
+            settitlefile(t(langKeys.averageinteractionbyconversation));
+            setSection('interaction')
+            dispatch(getCollectionAux(gerencialinteractionseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+        } else if (tipeoffilter === "etiqueta") {
+            settitlefile(t(langKeys.top5labels));
+            setSection('etiqueta')
+            dispatch(getCollectionAux(gerencialetiquetasseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+        } else {
             dispatch(getCollectionAux(gerencialsummaryseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
         }
     }

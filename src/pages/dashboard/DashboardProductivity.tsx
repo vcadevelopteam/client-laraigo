@@ -209,6 +209,7 @@ const DashboardProductivity: FC = () => {
     const remultiaux = useSelector(state => state.main.multiDataAux);
     const resaux = useSelector(state => state.main.mainAux);
     const [downloaddatafile,setdownloaddatafile]=useState(false)
+    const [section, setSection] = useState('')
     const [titlefile, settitlefile] = useState('');
     const [openDialogPerRequest, setOpenDialogPerRequest] = useState(false);
     const [fieldToFilter, setFieldToFilter] = useState("");
@@ -963,7 +964,15 @@ const DashboardProductivity: FC = () => {
     useEffect(() => {
         if(downloaddatafile) {
             if(!resaux.loading){
-                exportExcel(titlefile,resaux.data)
+                if (resaux.data.length > 0) {
+                    exportExcel(titlefile, resaux.data, Object.keys(resaux.data[0]).reduce((ac: any[], c: any) => (
+                        [
+                            ...ac,
+                            { Header: t((langKeys as any)[`dashboard_productivity_${section}_${c}`]), accessor: c }
+                        ]),
+                        []
+                    ))
+                }
                 setdownloaddatafile(false)
             }
         }
@@ -980,20 +989,33 @@ const DashboardProductivity: FC = () => {
             supervisor: searchfields.supervisor
         }
         setdownloaddatafile(true)
-        settitlefile(`DashboardManagerial-${tipeoffilter}`)
-        if(tipeoffilter==="TMO"){
+        if (tipeoffilter === "TMO") {
+            settitlefile(tipeoffilter);
+            setSection('tmo')
             dispatch(getCollectionAux(getdashboardoperativoTMOGENERALSeldata(tosend)))
-        }else if(tipeoffilter==="TME"){
+        } else if (tipeoffilter === "TME") {
+            settitlefile(tipeoffilter);
+            setSection('tme')
             dispatch(getCollectionAux(getdashboardoperativoTMEGENERALSeldata(tosend)))
-        }else if(tipeoffilter==="TMODistribution"){
+        } else if (tipeoffilter === "TMODistribution") {
+            settitlefile(t(langKeys.distributionTMO));
+            setSection('tmodistribution')
             dispatch(getCollectionAux(getdashboardoperativoTMOdistseldata(tosend)))
-        }else if(tipeoffilter==="TMEDistribution"){
+        } else if (tipeoffilter === "TMEDistribution") {
+            settitlefile(t(langKeys.distributionTME));
+            setSection('tmedistribution')
             dispatch(getCollectionAux(getdashboardoperativoTMEdistseldata(tosend)))
-        }else if(tipeoffilter==="prodxHoraDist"){
+        } else if (tipeoffilter === "prodxHoraDist") {
+            settitlefile(t(langKeys.distributionProductivity));
+            setSection('prodxhoradist')
             dispatch(getCollectionAux(getdashboardoperativoProdxHoraDistSeldata(tosend)))
-        }else if(tipeoffilter==="NPS"||tipeoffilter==="CSAT"){
+        } else if (tipeoffilter === "NPS" || tipeoffilter === "CSAT") {
+            settitlefile(tipeoffilter);
+            setSection('survey3')
             dispatch(getCollectionAux(getdashboardoperativoEncuesta3Seldata({...tosend, question: tipeoffilter})))
-        }else if(tipeoffilter==="FIX"||tipeoffilter==="FCR"){
+        } else if (tipeoffilter === "FIX" || tipeoffilter === "FCR") {
+            settitlefile(tipeoffilter);
+            setSection('survey2')
             dispatch(getCollectionAux(getdashboardoperativoEncuesta2Seldata({...tosend, question: tipeoffilter})))
         }
     }

@@ -90,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
 const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, dataCurrency }) => {
     const countryList = useSelector(state => state.signup.countryList);
     const user = useSelector(state => state.login.validateToken.user);
-    const roledesc =user?.roledesc || "";
+    const roledesc = user?.roledesc || "";
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [waitSaveUpload, setWaitSaveUpload] = useState(false);
@@ -99,18 +99,18 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const { t } = useTranslation();
     const [pageSelected, setPageSelected] = useState(0);
     const [showPassword, setShowPassword] = useState(false);
-    const [showCredential, setShowCredential] = useState(row?.private_mail || false);    
+    const [showCredential, setShowCredential] = useState(row?.private_mail || false);
     const uploadResult = useSelector(state => state.main.uploadFile);
     // const [valuefile, setvaluefile] = useState('')
-    const [doctype, setdoctype] = useState((row?.sunatcountry) ==="PE" ? "1" : "0")
+    const [doctype, setdoctype] = useState(row?.doctype || ((row?.sunatcountry) === "PE" ? "1" : "0"))
     const [idUpload, setIdUpload] = useState('');
     const [iconupload, seticonupload] = useState('');
     const [iconsurl, seticonsurl] = useState({
-        iconbot: row?.iconbot|| "",
-        iconadvisor: row?.iconadvisor|| "",
-        iconclient: row?.iconclient|| "",
+        iconbot: row?.iconbot || "",
+        iconadvisor: row?.iconadvisor || "",
+        iconclient: row?.iconclient || "",
     });
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm({
         defaultValues: {
             corpid: row ? row.corpid : user?.corpid,
             description: row ? (row.orgdesc || '') : '',
@@ -136,9 +136,9 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             contactemail: row?.contactemail || '',
             contact: row?.contact || '',
             autosendinvoice: row?.autosendinvoice || false,
-            iconbot: row?.iconbot||"",
-            iconadvisor: row?.iconadvisor||"",
-            iconclient: row?.iconclient||"",
+            iconbot: row?.iconbot || "",
+            iconadvisor: row?.iconadvisor || "",
+            iconclient: row?.iconclient || "",
             credittype: row?.credittype || "typecredit_alcontado",
         }
     });
@@ -152,8 +152,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const [headerBtn, setHeaderBtn] = useState<File | null>(getValues("iconadvisor") as File);
     const [botBtn, setBotBtn] = useState<File | null>(getValues("iconclient") as File);
     React.useEffect(() => {
-        const docTypeValidate = () => {
-            const docnum = getValues('docnum') as string;
+        const docTypeValidate = (docnum: string): string | undefined => {
             if (!docnum) {
                 return t(langKeys.field_required);
             }
@@ -185,18 +184,19 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('currency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('doctype', { validate: (value) => getValues('billbyorg')?((value && value.length) || t(langKeys.field_required)):null });
+        register('doctype', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('docnum', { validate: docTypeValidate });
-        register('businessname', { validate: (value) => getValues('billbyorg')?((value && value.length) || t(langKeys.field_required)):null });
-        register('fiscaladdress', { validate: (value) => getValues('billbyorg')?((value && value.length) || t(langKeys.field_required)):null });
-        register('contact', { validate: (value) => getValues('billbyorg')?((value && value.length) || t(langKeys.field_required)):null });
-        register('contactemail', { validate: (value) => getValues('billbyorg')?((value && value.length) || t(langKeys.field_required)):null });
-        register('sunatcountry', { validate: (value) => getValues('billbyorg')?((value && value.length) || t(langKeys.field_required)):null });
-        register('credittype', { validate: (value) => getValues('billbyorg')?((value && value.length) || t(langKeys.field_required)):null });
+        register('businessname', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
+        register('fiscaladdress', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
+        register('contact', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
+        register('contactemail', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
+        register('sunatcountry', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
+        register('credittype', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('host');
         register('ssl');
         register('private_mail');
     }, [edit, register, doctype, getValues, t]);
+
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
@@ -215,9 +215,9 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     useEffect(() => {
         if (waitSaveUpload) {
             if (!uploadResult.loading && !uploadResult.error) {
-                seticonsurl((prev)=>({...prev,[iconupload]:uploadResult.url}))
+                seticonsurl((prev) => ({ ...prev, [iconupload]: uploadResult.url }))
                 dispatch(showBackdrop(false));
-                seticonupload("")              
+                seticonupload("")
                 setWaitSaveUpload(false);
                 dispatch(resetUploadFile());
             } else if (uploadResult.error) {
@@ -228,7 +228,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
-            dispatch(execute(insOrg({...data, iconbot: iconsurl.iconbot, iconadvisor: iconsurl.iconadvisor, iconclient: iconsurl.iconclient})));
+            dispatch(execute(insOrg({ ...data, iconbot: iconsurl.iconbot, iconadvisor: iconsurl.iconadvisor, iconclient: iconsurl.iconclient })));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -240,7 +240,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         }))
     });
     const onSelectImage = (files: any, id: string) => {
-        
+
         dispatch(showBackdrop(true));
         seticonupload(id)
         const idd = new Date().toISOString()
@@ -251,33 +251,33 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         dispatch(uploadFile(fd));
         setWaitSaveUpload(true)
     }
-        
+
     const arrayBread = [
-        { id: "view-1", name: t(langKeys.organization)},
+        { id: "view-1", name: t(langKeys.organization) },
         { id: "view-2", name: t(langKeys.organizationdetail) }
     ];
     const onChangeChatInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         if (!e.target.files) return;
         setChatBtn(e.target.files[0]);
         setValue("iconbot", e.target.files[0]);
-        onSelectImage(e.target.files[0],"iconbot")
+        onSelectImage(e.target.files[0], "iconbot")
     }
 
     const onChangeHeaderInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         if (!e.target.files) return;
         setHeaderBtn(e.target.files[0]);
         setValue('iconadvisor', e.target.files[0]);
-        onSelectImage(e.target.files[0],"iconadvisor")
+        onSelectImage(e.target.files[0], "iconadvisor")
     }
 
     const onChangeBotInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         if (!e.target.files) return;
         setBotBtn(e.target.files[0]);
         setValue('iconclient', e.target.files[0]);
-        onSelectImage(e.target.files[0],"iconclient")
+        onSelectImage(e.target.files[0], "iconclient")
     }
     const handleChatBtnClick = () => {
-        
+
         const input = document.getElementById('chatBtnInput');
         input!.click();
     }
@@ -293,8 +293,8 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     }
     const handleCleanChatInput = () => {
         if (!chatBtn) return;
-        
-        seticonsurl((prev)=>({...prev,iconbot:""}))
+
+        seticonsurl((prev) => ({ ...prev, iconbot: "" }))
         const input = document.getElementById('chatBtnInput') as HTMLInputElement;
         input.value = "";
         setChatBtn(null);
@@ -303,7 +303,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
 
     const handleCleanHeaderInput = () => {
         if (!headerBtn) return;
-        seticonsurl((prev)=>({...prev,iconadvisor:""}))
+        seticonsurl((prev) => ({ ...prev, iconadvisor: "" }))
         const input = document.getElementById('headerBtnInput') as HTMLInputElement;
         input.value = "";
         setHeaderBtn(null);
@@ -312,7 +312,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
 
     const handleCleanBotInput = () => {
         if (!botBtn) return;
-        seticonsurl((prev)=>({...prev,iconclient:""}))
+        seticonsurl((prev) => ({ ...prev, iconclient: "" }))
         const input = document.getElementById('botBtnInput') as HTMLInputElement;
         input.value = "";
         setBotBtn(null);
@@ -402,7 +402,12 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                         label={t(langKeys.corporation)}
                                         className="col-6"
                                         valueDefault={getValues('corpid')}
-                                        onChange={(value) => setValue('corpid', value?.corpid)}
+                                        onChange={(value) => {
+                                            setValue('corpid', value?.corpid);
+                                            setValue('billbyorg', value?.billbyorg || false);
+                                            trigger('billbyorg')
+                                        }}
+                                        triggerOnChangeOnFirst={true}
                                         error={errors?.corpid?.message}
                                         data={dataCorp}
                                         disabled={!['SUPERADMIN'].includes(roledesc || "")}
@@ -496,8 +501,8 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     className="col-6"
                                     valueDefault={getValues("sunatcountry")}
                                     onChange={(value) => {
-                                        setValue("sunatcountry", value?.code||"");
-                                        
+                                        setValue("sunatcountry", value?.code || "");
+
                                         setValue("doctype", value?.code === "PE" ? "1" : "0");
                                         setdoctype(value?.code === "PE" ? "1" : "0");
                                     }}
@@ -569,7 +574,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     label={t(langKeys.typecredit)}
                                     className="col-6"
                                     valueDefault={getValues("credittype")}
-                                    onChange={(value) => {setValue("credittype", value?.domainvalue || "");}}
+                                    onChange={(value) => { setValue("credittype", value?.domainvalue || ""); }}
                                     error={errors?.credittype?.message}
                                     data={typeofcreditList}
                                     uset={true}
@@ -741,7 +746,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                         <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                                             <div className={classes.imgContainer}>
-                                                {(chatImgUrl||iconsurl?.iconbot) && <img alt="chatweb" src={chatImgUrl||iconsurl?.iconbot} className={classes.img} />}
+                                                {(chatImgUrl || iconsurl?.iconbot) && <img alt="chatweb" src={chatImgUrl || iconsurl?.iconbot} className={classes.img} />}
                                             </div>
                                             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
                                                 <input
@@ -774,7 +779,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                         <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                                             <div className={classes.imgContainer}>
-                                                {(headerImgUrl||iconsurl?.iconadvisor) && <img alt="chatweb" src={headerImgUrl||iconsurl?.iconadvisor} className={classes.img} />}
+                                                {(headerImgUrl || iconsurl?.iconadvisor) && <img alt="chatweb" src={headerImgUrl || iconsurl?.iconadvisor} className={classes.img} />}
                                             </div>
                                             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
                                                 <input
@@ -807,7 +812,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                         <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                                             <div className={classes.imgContainer}>
-                                                {(botImgUrl||iconsurl?.iconclient) && <img alt="chatweb" src={botImgUrl||iconsurl.iconclient} className={classes.img} />}
+                                                {(botImgUrl || iconsurl?.iconclient) && <img alt="chatweb" src={botImgUrl || iconsurl.iconclient} className={classes.img} />}
                                             </div>
                                             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
                                                 <input

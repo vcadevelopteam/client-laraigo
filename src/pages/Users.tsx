@@ -1145,7 +1145,7 @@ const Users: FC = () => {
         setRowSelected({ row: null, edit: true });
     }
 
-    const handleUpload = async (files: any) => {
+    const handleUpload = async (files: any, useravailable: number) => {
         const file = files?.item(0);
         if (file) {
             let excel: any = await uploadExcel(file, undefined);
@@ -1160,49 +1160,55 @@ const Users: FC = () => {
                 && (f.role === undefined || Object.keys(domains.value?.roles?.reduce((a: any, d) => ({ ...a, [d.roleid]: `${d.roleid}` }), {})).includes('' + f.role))
             });
             if (data.length > 0) {
-                dispatch(showBackdrop(true));
-                let table: Dictionary = data.reduce((a: any, d) => ({
-                    ...a,
-                    [`${d.email}_${d.docnum}`]: {
-                        id: 0,
-                        usr: String(d.email),
-                        doctype: d.doctype,
-                        docnum: String(d.docnum),
-                        password: String(d.password),
-                        firstname: String(d.firstname),
-                        lastname: String(d.lastname),
-                        email: String(d.email),
-                        pwdchangefirstlogin: Boolean(d.pwdchangefirstlogin),
-                        type: "NINGUNO",
-                        status: d.status,
-                        operation: "INSERT",
-                        company: d.company,
-                        twofactorauthentication: d.twofactorauthentication === "ACTIVO",
-                        registercode: String(d.registercode),
-                        billinggroupid: d.billinggroup,
-                        image: d?.image || "",
-                        detail: {
-                            roleid: d.role,
-                            orgid: user?.orgid,
-                            bydefault: true,
-                            labels: "",
-                            groups: "",
-                            channels: String(d.channels),
-                            status: d.status,
+                if (data.length > useravailable) {
+                    dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.userlimit) }))
+                }
+                else {
+                    dispatch(showBackdrop(true));
+                    console.log(data)
+                    let table: Dictionary = data.reduce((a: any, d) => ({
+                        ...a,
+                        [`${d.email}_${d.docnum}`]: {
+                            id: 0,
+                            usr: String(d.email),
+                            doctype: d.doctype,
+                            docnum: String(d.docnum),
+                            password: String(d.password),
+                            firstname: String(d.firstname),
+                            lastname: String(d.lastname),
+                            email: String(d.email),
+                            pwdchangefirstlogin: Boolean(d.pwdchangefirstlogin),
                             type: "NINGUNO",
-                            supervisor: "",
+                            status: d.status,
                             operation: "INSERT",
-                            redirect: "/usersettings"
+                            company: d.company,
+                            twofactorauthentication: d.twofactorauthentication === "ACTIVO",
+                            registercode: String(d.registercode),
+                            billinggroupid: d.billinggroup,
+                            image: d?.image || "",
+                            detail: {
+                                roleid: d.role,
+                                orgid: user?.orgid,
+                                bydefault: true,
+                                labels: "",
+                                groups: "",
+                                channels: d.channels || "",
+                                status: d.status,
+                                type: "NINGUNO",
+                                supervisor: "",
+                                operation: "INSERT",
+                                redirect: "/usersettings"
+                            }
                         }
-                    }
-                }), {});
-                Object.values(table).forEach((p) => {
-                    dispatch(saveUser({
-                        header: insUser({ ...p }),
-                        detail: [insOrgUser({ ...p.detail })]
-                    }, true));
-                })
-                setWaitImport(true)
+                    }), {});
+                    Object.values(table).forEach((p) => {
+                        dispatch(saveUser({
+                            header: insUser({ ...p }),
+                            detail: [insOrgUser({ ...p.detail })]
+                        }, true));
+                    })
+                    setWaitImport(true)
+                }
             }
             else {
                 dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.no_records_valid) }));
@@ -1282,7 +1288,7 @@ const Users: FC = () => {
                             handleRegister();
                         }
                         if (operation === 'UPLOAD') {
-                            handleUpload(fileToUpload);
+                            handleUpload(fileToUpload, mainAuxResult.data[0].userscontracted - mainAuxResult.data[0].usernumber);
                         }
                     }
                 }
