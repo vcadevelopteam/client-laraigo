@@ -48,7 +48,7 @@ export const LeftSide: FC<LeftSideProps> = ({
             .keys(listchannels)
             .filter(x => listchannels[x as keyof ListChannels] === true)
             .map((key, i) => {
-                switch (key) {
+                switch (key as keyof ListChannels) {
                     case 'facebook':
                         return (
                             <ChannelAddFacebook
