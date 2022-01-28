@@ -6,7 +6,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { langKeys } from 'lang/keys';
 import { ChromePicker, ColorChangeHandler } from 'react-color';
-import { ArrowDropDown, Close, CloudUpload } from '@material-ui/icons';
+import { ArrowDropDown, Close, CloudUpload, DeleteOutline as DeleteOutlineIcon } from '@material-ui/icons';
 import { useHistory } from 'react-router';
 import { useForm, UseFormReturn } from 'react-hook-form';
 import { IChatWebAdd, IChatWebAddFormField } from '@types';
@@ -546,7 +546,7 @@ const NameTemplate: FC<{ onClose: () => void, title: React.ReactNode, data: ICha
     const { t } = useTranslation();
     const [required, setRequired] = useState(true);
 
-    const handleRequired = (checked: boolean) =>{
+    const handleRequired = (checked: boolean) => {
         setRequired(checked);
         data.required = checked;
     }
@@ -1466,13 +1466,14 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export const ChannelAddChatWeb: FC<{setrequestchannels:(param:any)=>void,setOpenWarning:(param:any)=>void}> = ({setrequestchannels,setOpenWarning}) => {
+export const ChannelAddChatWeb: FC<{ setrequestchannels: (param: any) => void, setOpenWarning: (param: any) => void }> = ({ setrequestchannels, setOpenWarning }) => {
     const classes = useStyles();
-    
+
     const { t } = useTranslation();
 
     const { deleteChannel } = useContext(SubscriptionContext);
     const dispatch = useDispatch();
+    const [selectedView, setSelectedView] = useState("view1");
     const [tabIndex, setTabIndes] = useState('0');
     const [showFinalStep, setShowFinalStep] = useState(false);
 
@@ -1553,21 +1554,32 @@ export const ChannelAddChatWeb: FC<{setrequestchannels:(param:any)=>void,setOpen
 
     const handleSubmit = (name: string, auto: boolean, hexIconColor: string) => {
         const body = getInsertChatwebChannel(name, auto, hexIconColor, form.getValues());
-        setrequestchannels((p:any)=>([...p,body]))
+        setrequestchannels((p: any) => ([...p, body]))
         deleteChannel('chatWeb');
     }
 
+    if (selectedView === "view1") {
+        return (
+            <ChannelAddEnd
+                loading={insertChannel.loading}
+                integrationId={insertChannel.value?.integrationid}
+                onSubmit={handleSubmit}
+                onClose={() => setShowFinalStep(false)}
+                onNext={() => setSelectedView("view2")}
+            />
+        );
+    }
+
     return (
-        <div className={clsx({
-            [classes.root] : true,
-            [classes.rootextras] : tabIndex==="4",
+        <div className={clsx(classes.root, {
+            [classes.rootextras]: tabIndex === "4",
         })}>
             <Breadcrumbs aria-label="breadcrumb">
                 <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
                     {t(langKeys.previoustext)}
                 </Link>
             </Breadcrumbs>
-            <div style={{ display: showFinalStep ? 'none' : 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <h2 className={classes.title}>
                     <Trans i18nKey={langKeys.activeLaraigoOnYourWebsite} />
                 </h2>
@@ -1596,14 +1608,14 @@ export const ChannelAddChatWeb: FC<{setrequestchannels:(param:any)=>void,setOpen
                     <Trans i18nKey={langKeys.next} />
                 </Button>
             </div>
-            <div style={{ display: showFinalStep ? 'block' : 'none' }}>
+            {/* <div style={{ display: showFinalStep ? 'block' : 'none' }}>
                 <ChannelAddEnd
                     loading={insertChannel.loading}
                     integrationId={insertChannel.value?.integrationid}
                     onSubmit={handleSubmit}
                     onClose={() => setShowFinalStep(false)}
                 />
-            </div>
+            </div> */}
         </div>
     );
 };
@@ -1632,10 +1644,18 @@ interface ChannelAddEndProps {
     loading: boolean;
     integrationId?: string;
     onSubmit: (name: string, auto: boolean, hexIconCOlor: string) => void;
+    onNext: () => void;
     onClose: () => void;
 }
 
-const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, integrationId }) => {
+const ChannelAddEnd: FC<ChannelAddEndProps> = ({
+    onClose,
+    onSubmit,
+    onNext,
+    loading,
+    integrationId,
+}) => {
+    const { commonClasses, deleteChannel } = useContext(SubscriptionContext);
     const classes = useFinalStepStyles();
     const history = useHistory();
     const [name, setName] = useState("");
@@ -1654,27 +1674,26 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
     }
 
     return (
-        <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
-            <Breadcrumbs aria-label="breadcrumb">
-                <Link color="textSecondary" key="mainview" href="/" onClick={handleGoBack}>
-                    {t(langKeys.previoustext)}
-                </Link>
-            </Breadcrumbs>
-            <div>
-                <div className={classes.title}>
-                    You are one click away from connecting your communication channel
-                </div>
-                <div className="row-zyx">
-                    <div className="col-3"></div>
-                    <FieldEdit
-                        onChange={(value) => setName(value)}
-                        label="Give your channel a name"
-                        className="col-6"
-                        disabled={loading || integrationId != null}
-                    />
-                </div>
-                
-                <div className="row-zyx">
+        <div className={commonClasses.root}>
+            <ZyxmeMessengerIcon
+                    className={commonClasses.leadingIcon}
+                />
+            <IconButton
+                    color="primary"
+                    className={commonClasses.trailingIcon}
+                    onClick={() => deleteChannel('chatWeb')}
+                >
+                    <DeleteOutlineIcon />
+                </IconButton>
+            <FieldEdit
+                onChange={(value) => setName(value)}
+                label="Give your channel a name"
+                variant="outlined"
+                size="small"
+                disabled={loading || integrationId != null}
+            />
+
+            {/* <div className="row-zyx">
                     <div className="col-3"></div>
                     <div className="col-6">
                         <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
@@ -1685,23 +1704,21 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                             <ColorInput hex={hexIconColor} onChange={e => {setHexIconColor(e.hex);setcoloricon(e.hex)}} />
                         </div>
                     </div>
-                </div>
-                <div style={{ paddingLeft: "80%" }}>
-                    <Button
-                        onClick={handleSave}
-                        className={classes.button}
-                        variant="contained"
-                        color="primary"
-                        disabled={loading || integrationId != null}
-                    >
-                        FINISH REGISTRATION
-                    </Button>
-                </div>
-            </div>
+                </div> */}
+            <Button
+                // onClick={handleSave}
+                onClick={onNext}
+                className={commonClasses.button}
+                variant="contained"
+                color="primary"
+                disabled={loading || integrationId != null}
+            >
+                FINISH REGISTRATION
+            </Button>
             <div style={{ height: 20 }} />
-            <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column' }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word'}}><code>
+            <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column' }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word' }}><code>
                 {`<script src="https://zyxmelinux.zyxmeapp.com/zyxme/chat/src/chatwebclient.min.js" integrationid="${integrationId}"></script>`}
-                </code></pre><div style={{ height: 20 }} />
+            </code></pre><div style={{ height: 20 }} />
                 <Button variant="contained" color="primary" onClick={() => history.push(paths.CHANNELS)}>
                     Terminar
                 </Button>

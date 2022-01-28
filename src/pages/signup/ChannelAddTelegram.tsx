@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useContext, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box } from '@material-ui/core';
-import Link from '@material-ui/core/Link';
+import { makeStyles, Breadcrumbs, Button, Box, Link, IconButton, Typography } from '@material-ui/core';
+import { DeleteOutline as DeleteOutlineIcon } from '@material-ui/icons';
 import { langKeys } from "lang/keys";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { FieldEdit, ColorInput } from "components";
 import { TelegramIcon } from "icons";
 import { SubscriptionContext } from "./context";
@@ -23,8 +23,8 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const ChannelAddTelegram: FC<{setrequestchannels:(param:any)=>void,setOpenWarning:(param:any)=>void}> = ({setrequestchannels,setOpenWarning}) => {
-    const { deleteChannel } = useContext(SubscriptionContext);
+export const ChannelAddTelegram: FC<{ setrequestchannels: (param: any) => void, setOpenWarning: (param: any) => void }> = ({ setrequestchannels, setOpenWarning }) => {
+    const { commonClasses, deleteChannel } = useContext(SubscriptionContext);
     const [viewSelected, setViewSelected] = useState("view1");
     const [nextbutton, setNextbutton] = useState(true);
     const [coloricon, setcoloricon] = useState("#207FDD");
@@ -55,113 +55,81 @@ export const ChannelAddTelegram: FC<{setrequestchannels:(param:any)=>void,setOpe
     })
 
     async function finishreg() {
-        setrequestchannels((p:any)=>([...p,fields]))
+        setrequestchannels((p: any) => ([...p, fields]))
         deleteChannel('telegram');
     }
 
     function setnameField(value: any) {
-        setChannelreg(value==="")
+        setChannelreg(value === "")
         let partialf = fields;
         partialf.parameters.description = value
         setFields(partialf)
     }
-    function setBotKey(val:string){
-        setNextbutton(val==="")
+    function setBotKey(val: string) {
+        setNextbutton(val === "")
         let partialf = fields;
-        partialf.service.accesstoken=val;
-        partialf.parameters.communicationchannelowner="";
+        partialf.service.accesstoken = val;
+        partialf.parameters.communicationchannelowner = "";
         setFields(partialf)
     }
-    if(viewSelected==="view1"){
-        return (
-            <div style={{marginTop: "auto",marginBottom: "auto",maxHeight: "100%"}}>
-                <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
-                        {t(langKeys.previoustext)}
-                    </Link>
-                </Breadcrumbs>
-                <div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.connecttelegram)}</div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>{t(langKeys.connecttelegramins)}</div>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldEdit
-                            onChange={(value) => setBotKey(value)}
-                            label={t(langKeys.enterbotapikey)}
-                            className="col-6"
+
+    return (
+        <div className={commonClasses.root}>
+            <TelegramIcon
+                className={commonClasses.leadingIcon}
+            />
+            <IconButton
+                color="primary"
+                className={commonClasses.trailingIcon}
+                onClick={() => deleteChannel('telegram')}
+            >
+                <DeleteOutlineIcon />
+            </IconButton>
+            <Typography>
+                <Trans i18nKey={langKeys.connectface2} />
+            </Typography>
+            <FieldEdit
+                onChange={(value) => setnameField(value)}
+                label={t(langKeys.givechannelname)}
+                variant="outlined"
+                size="small"
+            />
+            <FieldEdit
+                onChange={(value) => setBotKey(value)}
+                label={t(langKeys.enterbotapikey)}
+                variant="outlined"
+                size="small"
+            />
+            {/* <div className="row-zyx">
+                <div className="col-3"></div>
+                <div className="col-6">
+                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                        {t(langKeys.givechannelcolor)}
+                    </Box>
+                    <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
+                        <TelegramIcon style={{ fill: `${coloricon}`, width: "100px" }} />
+                        <ColorInput
+                            hex={fields.parameters.coloricon}
+                            onChange={e => {
+                                setFields(prev => ({
+                                    ...prev,
+                                    parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
+                                }));
+                                setcoloricon(e.hex)
+                            }}
                         />
                     </div>
-
-                    <div style={{ paddingLeft: "80%" }}>
-                        <Button
-                            disabled={nextbutton}
-                            onClick={() => { setViewSelected("viewfinishreg") }}
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                        >{t(langKeys.next)}
-                        </Button>
-
-                    </div>
-
                 </div>
-            </div>
-        )
-    
-    }else{
-        return (
-            <div style={{marginTop: "auto",marginBottom: "auto",maxHeight: "100%"}}>
-                <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view1") }}>
-                        {t(langKeys.previoustext)}
-                    </Link>
-                </Breadcrumbs>
-                <div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.commchannelfinishreg)}</div>
-
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldEdit
-                            onChange={(value) => setnameField(value)}
-                            label={t(langKeys.givechannelname)}
-                            className="col-6"
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <div className="col-6">
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                            {t(langKeys.givechannelcolor)}
-                            </Box>
-                            <div style={{display:"flex",justifyContent:"space-around", alignItems: "center"}}>
-                                <TelegramIcon style={{fill: `${coloricon}`, width: "100px" }}/>
-                                <ColorInput
-                                    hex={fields.parameters.coloricon}
-                                    onChange={e => {
-                                        setFields(prev => ({
-                                            ...prev,
-                                            parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
-                                        }));
-                                        setcoloricon(e.hex)
-                                    }}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                    <div style={{ paddingLeft: "80%" }}>
-                        <Button
-                            onClick={() => { finishreg() }}
-                            className={classes.button}
-                            disabled={channelreg}
-                            variant="contained"
-                            color="primary"
-                        >{t(langKeys.next)}
-                        </Button>
-
-                    </div>
-
-                </div>
-            </div>
-        )
-    }
+            </div> */}
+            <Button
+                onClick={() => { finishreg() }}
+                className={commonClasses.button}
+                disabled={channelreg}
+                variant="contained"
+                color="primary"
+            >
+                <Trans i18nKey={langKeys.next} />
+            </Button>
+        </div>
+    );
 }

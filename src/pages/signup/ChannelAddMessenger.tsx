@@ -15,55 +15,6 @@ import { FacebookMessengerIcon } from "icons";
 import { apiUrls } from 'common/constants';
 import { SubscriptionContext } from "./context";
 
-const useChannelAddStyles = makeStyles(theme => ({
-    root: {
-        padding: '2em 15%',
-        border: '1px solid black',
-        borderRadius: 4,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '1.56em',
-        position: 'relative',
-    },
-    leadingIcon: {
-        position: 'absolute',
-        top: 10,
-        left: 14,
-        width: 32,
-        height: 32,
-        fill: 'red',
-        stroke: 'red',
-    },
-    trailingIcon: {
-        position: 'absolute',
-        top: 0,
-        right: 0,
-    },
-    button: {
-        padding: 12,
-        fontWeight: 500,
-        fontSize: '14px',
-        textTransform: 'initial',
-        width: "180px"
-    },
-}));
-
-const FBButtonStyles: CSSProperties = {
-    fontSize: 14,
-    marginTop: 8,
-    maxHeight: 40,
-    height: 40,
-    backgroundColor: "#7721ad",
-    borderColor: "#7721ad",
-    boxShadow: '0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%)',
-    textTransform: "none",
-    display: "flex",
-    textAlign: "center",
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
-};
-
 interface ChannelAddMessengerProps {
     setrequestchannels:(param:any)=>void;
     setOpenWarning:(param:any)=>void;
@@ -73,7 +24,11 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({
     setrequestchannels,
     setOpenWarning,
 }) => {
-    const { deleteChannel } = useContext(SubscriptionContext);
+    const {
+        commonClasses,
+        FBButtonStyles,
+        deleteChannel,
+    } = useContext(SubscriptionContext);
     const [viewSelected, setViewSelected] = useState("view1");
     const [nextbutton, setNextbutton] = useState(true);
     const [coloricon, setcoloricon] = useState("#0078FF");
@@ -81,7 +36,6 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({
     const mainResult = useSelector(state => state.channel.channelList)
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const classes = useChannelAddStyles();
     const [fields, setFields] = useState({
         "method": "UFN_COMMUNICATIONCHANNEL_INS",
         "parameters": {
@@ -137,16 +91,16 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({
     }
 
     return (
-        <div className={classes.root}>
+        <div className={commonClasses.root}>
             {viewSelected === "view1" && (
                 <FacebookMessengerIcon
-                    className={classes.leadingIcon}
+                    className={commonClasses.leadingIcon}
                 />
             )}
             {viewSelected === "view1" && (
                 <IconButton
                     color="primary"
-                    className={classes.trailingIcon}
+                    className={commonClasses.trailingIcon}
                     onClick={() => deleteChannel('messenger')}
                 >
                     <DeleteOutlineIcon />
@@ -158,14 +112,12 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({
             <FieldEdit
                 onChange={(value) => setnameField(value)}
                 label={t(langKeys.givechannelname)}
-                className="col-6"
                 variant="outlined"
                 size="small"
             />
             <FieldSelect
                 onChange={(value) => setValueField(value)}
                 label={t(langKeys.selectpagelink)}
-                className="col-6"
                 data={mainResult.data}
                 optionDesc="name"
                 optionValue="id"
@@ -217,7 +169,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({
             (
                 <Button
                     onClick={finishreg}
-                    className={classes.button}
+                    className={commonClasses.button}
                     variant="contained"
                     color="primary"
                     disabled={nextbutton}

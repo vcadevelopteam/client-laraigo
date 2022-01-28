@@ -16,7 +16,7 @@ import { ListChannels, SubscriptionContext } from "./context";
 interface ChannelOption {
     icon: React.ReactNode;
     label: React.ReactNode;
-    key: string;
+    key: keyof ListChannels;
     selected: Boolean;
     onClick: () => void;
 }
@@ -179,10 +179,9 @@ export const ThirdStep: FC<ThirdStepProps> = ({
     const {
         selectedChannels,
         listchannels,
+        limitChannels,
         toggleChannel,
     } = useContext(SubscriptionContext);
-    const planData = useSelector(state => state.signup.verifyPlan)
-    const limitChannels = planData.data[0].channelscontracted
     const classes = useChannelAddStyles();
     const socialMediaOptions: ChannelOption[] = [
         {
@@ -285,7 +284,7 @@ export const ThirdStep: FC<ThirdStepProps> = ({
         option,
         selected,
         index,
-    }) => {// limitChannels
+    }) => {
         const reachedLimit = limitChannels <= selectedChannels;
         const withOpacity = reachedLimit && !selected;
 

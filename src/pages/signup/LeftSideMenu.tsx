@@ -135,7 +135,7 @@ export const LeftSide: FC<LeftSideProps> = ({
                                 setOpenWarning={setOpenWarning}
                             />
                         );
-                    case 'ios':
+                    case 'apple':
                         return (
                             <ChannelAddIos
                                 key={i}
