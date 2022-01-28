@@ -161,6 +161,7 @@ const DashboardOperationalPush: FC = () => {
     const remultiaux = useSelector(state => state.main.multiDataAux);
     const resaux = useSelector(state => state.main.mainAux);
     const [downloaddatafile,setdownloaddatafile]=useState(false);
+    const [section, setSection] = useState('')
     const [titlefile, settitlefile] = useState('');
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
@@ -296,7 +297,15 @@ const DashboardOperationalPush: FC = () => {
     useEffect(() => {
         if(downloaddatafile) {
             if(!resaux.loading){
-                exportExcel(titlefile,resaux.data)
+                if (resaux.data.length > 0) {
+                    exportExcel(titlefile, resaux.data, Object.keys(resaux.data[0]).reduce((ac: any[], c: any) => (
+                        [
+                            ...ac,
+                            { Header: t((langKeys as any)[`dashboard_operationalpush_${section}_${c}`]), accessor: c }
+                        ]),
+                        []
+                    ))
+                }
                 setdownloaddatafile(false)
             }
         }
@@ -314,14 +323,21 @@ const DashboardOperationalPush: FC = () => {
             supervisor: searchfields.supervisor
         }
         setdownloaddatafile(true)
-        settitlefile(`DashboardOperativoPush-${tipeoffilter}`)
-        if(tipeoffilter==="SUMMARY"){
+        if (tipeoffilter === "SUMMARY") {
+            settitlefile(t(langKeys.messagesentreceivedfailedanswered));
+            setSection('summary')
             dispatch(getCollectionAux(getdashboardPushSUMMARYSelData(tosend)))
-        }else if(tipeoffilter==="CATEGORYRANK"){
+        } else if (tipeoffilter === "CATEGORYRANK") {
+            settitlefile(t(langKeys.distributionbycategoryHSM));
+            setSection('categoryrank')
             dispatch(getCollectionAux(getdashboardPushHSMCATEGORYRANKSelData(tosend)))
-        }else if(tipeoffilter==="HSMRANK"){
+        } else if (tipeoffilter === "HSMRANK") {
+            settitlefile('Ranking HSM');
+            setSection('hsmrank')
             dispatch(getCollectionAux(getdashboardPushHSMRANKSelData(tosend)))
-        }else if(tipeoffilter==="MESSAGEPERDAY"){
+        } else if (tipeoffilter === "MESSAGEPERDAY") {
+            settitlefile(t(langKeys.messagesbyday));
+            setSection('messageperday')
             dispatch(getCollectionAux(getdashboardPushMENSAJEXDIASelData(tosend)))
         }
     }
