@@ -5,7 +5,7 @@ import { CulqiProvider, Culqi } from 'react-culqi';
 import { useTranslation } from 'react-i18next';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import { apiUrls } from 'common/constants';
-import { charge, resetCharge, subscribe } from 'store/culqi/actions'
+import { charge, resetCharge, subscribe, balance } from 'store/culqi/actions'
 import { useDispatch } from 'react-redux';
 import { Dictionary } from '@types';
 import { useSelector } from 'hooks';
@@ -21,7 +21,7 @@ interface CulqiOptionsProps {
 
 interface CulqiModalProps { 
     invoiceid?: number
-    type?: "CHARGE" | "SUBSCRIPTION",
+    type?: "CHARGE" | "SUBSCRIPTION" | "BALANCE",
     title: string;
     description: string;
     currency: string;
@@ -36,10 +36,14 @@ interface CulqiModalProps {
     purchaseorder?: string;
     comments?: string;
     disabled?:boolean;
+    corpid?:number;
     orgid?:number;
     successmessage?:string;
     publickey?:string;
     override?:boolean;
+    reference?:string;
+    buyamount?:number;
+    totalpay?:number;
 }
 
 const globalpublickey = apiUrls.CULQIKEY;
@@ -61,10 +65,14 @@ const CulqiModal: FC<CulqiModalProps> = ({
     purchaseorder,
     comments,
     disabled = false,
+    corpid = 0,
     orgid = 0,
     successmessage,
     publickey,
     override,
+    reference,
+    buyamount,
+    totalpay,
 }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -79,8 +87,26 @@ const CulqiModal: FC<CulqiModalProps> = ({
             metadata,
             purchaseorder,
             comments,
+            corpid,
             orgid,
             override,
+        }));
+    }
+
+    const createBalance = (token: any) => {
+        dispatch(showBackdrop(true));
+        dispatch(balance({
+            invoiceid,
+            settings: { title, description, currency, amount },
+            token,
+            metadata,
+            corpid,
+            orgid,
+            reference,
+            buyamount,
+            comments,
+            purchaseorder,
+            totalpay,
         }));
     }
 
@@ -101,6 +127,9 @@ const CulqiModal: FC<CulqiModalProps> = ({
                 break;
             case 'SUBSCRIPTION':
                 createSubscription(token);
+                break;
+            case 'BALANCE':
+                createBalance(token);
                 break;
             default:
                 break;

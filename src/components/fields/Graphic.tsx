@@ -184,7 +184,7 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
     useEffect(() => {
         if (!mainGraphicRes.loading && !mainGraphicRes.error) {
             const total = mainGraphicRes.data.reduce((acc, item) => acc + parseInt(item.summary), 0)
-            setDataGraphic(mainGraphicRes.data.map(x => ({
+            setDataGraphic(mainGraphicRes.data.sort((a, b) => parseInt(a.summary) < parseInt(b.summary) ? 1 : -1).map(x => ({
                 ...x,
                 columnname: x.columnname?.startsWith('report_') ? t((langKeys as any)[x.columnname]) : (x.columnname === '' ? `(${t(langKeys.in_white)})` : x.columnname),
                 summary: parseInt(x.summary),

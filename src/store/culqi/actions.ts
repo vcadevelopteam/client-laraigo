@@ -14,6 +14,18 @@ export const charge = (request: any): IActionCall => ({
 
 export const resetCharge = (): IActionCall => ({ type: actionTypes.CHARGE_RESET });
 
+export const balance = (request: any): IActionCall => ({
+    callAPI: () => CulqiService.balance(request),
+    types: {
+        loading: actionTypes.BALANCE,
+        success: actionTypes.BALANCE_SUCCESS,
+        failure: actionTypes.BALANCE_FAILURE,
+    },
+    type: null,
+});
+
+export const resetBalance = (): IActionCall => ({ type: actionTypes.BALANCE_RESET });
+
 export const subscribe = (request: any): IActionCall => ({
     callAPI: () => CulqiService.subscribe(request),
     types: {

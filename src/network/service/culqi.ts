@@ -11,6 +11,12 @@ export function charge(request: any) {
         return APIManager.post(uri, { data: request }, true);
     }
 }
+
+export function balance(request: any) {
+    const uri = `${apiUrls.CULQI}/createbalance`;
+    return APIManager.post(uri, { data: request }, true);
+}
+
 export function subscribe(request: any) {
     const uri = `${apiUrls.CULQI}/subscribe`;
     return APIManager.post(uri, { data: request }, true);

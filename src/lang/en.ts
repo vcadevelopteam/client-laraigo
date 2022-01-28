@@ -2945,6 +2945,23 @@ const translation: LangKeys = {
     totaltopay: 'Payment amount',
 
     messagingpackages: 'Messaging Packages',
+    transactiondate: 'Transaction date',
+    transactionmessagetype: 'Message type',
+    transactionreference: 'Reference',
+    transactionbalance: 'Balance',
+    transactionoperationtype: 'Operation type',
+    transactionbuy: 'Buy',
+    transactioninformation: 'Destination information',
+    transactionlastbalance: 'Last balance',
+    transactionbuyamount: 'Amount',
+    transactionafterbalance: 'New balance',
+    transactionrechargetitle: 'Balance charge ',
+    transactionconfirm: 'Confirm Payment',
+    messagingpackagesdetail: 'Messaging Package Detail',
+    messagingpackagesnew: 'New Messaging Package',
+    emissornone: 'NONE',
+    detractionnotepay1: 'Operation subject to the deduction of ',
+    detractionnotepay2: '%. The amount to pay includes the discount for the deduction concept. The deduction payment must be made in the Banco de la Nación account indicated on the invoice.',
 };
 
 const enResource: ResourceLanguage = {
