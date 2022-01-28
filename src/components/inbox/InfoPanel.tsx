@@ -5,7 +5,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Tabs from '@material-ui/core/Tabs';
 import Avatar from '@material-ui/core/Avatar';
-import { EMailInboxIcon, PhoneIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon } from 'icons';
+import { EMailInboxIcon, PhoneIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, ZipIcon } from 'icons';
 import { getTicketsPerson, showInfoPanel, updatePerson } from 'store/inbox/actions';
 import { GetIcon, FieldEdit, FieldSelect, DialogInteractions, AntTab, FieldEditMulti } from 'components'
 import { langKeys } from 'lang/keys';
@@ -611,7 +611,7 @@ const Attachments: React.FC = () => {
     const interactionList = useSelector(state => state.inbox.interactionList);
     const { t } = useTranslation();
 
-    
+
     useEffect(() => {
         setListFiles(interactionList.data.reduce<Dictionary[]>((acc, item) => [
             ...acc,
@@ -635,7 +635,7 @@ const Attachments: React.FC = () => {
 
     return (
         <div className={`scroll-style-go`} style={{ overflowY: 'auto', flex: 1, backgroundColor: 'transparent' }}>
-            {listFiles.map(({filename, date, url, extension}, index) => (
+            {listFiles.map(({ filename, date, url, extension }, index) => (
                 <a
                     key={index}
                     className={classes.containerAttachment}
@@ -643,16 +643,18 @@ const Attachments: React.FC = () => {
                     download
                     style={{ textDecoration: 'none', color: 'inherit' }}
                     rel="noreferrer" target="_blank"
-                    // onClick={() => window.open(url, "_blank")}
+                // onClick={() => window.open(url, "_blank")}
                 >
                     {extension === "pdf" ? (
                         <PdfIcon width="30" height="30" />
-                    ) :  (extension === "doc" || extension === "docx") ? (
+                    ) : (extension === "doc" || extension === "docx") ? (
                         <DocIcon width="30" height="30" />
                     ) : (extension === "xls" || extension === "xlsx" || extension === "csv") ? (
                         <XlsIcon width="30" height="30" />
                     ) : (extension === "ppt" || extension === "pptx") ? (
                         <PptIcon width="30" height="30" />
+                    ) : (extension === "zip" || extension === "rar") ? (
+                        <ZipIcon width="30" height="30" />
                     ) : (extension === "text" || extension === "txt") ? (
                         <TxtIcon width="30" height="30" />
                     ) : <FileIcon width="30" height="30" />
