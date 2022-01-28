@@ -3517,7 +3517,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
         setOrgList({ loading: false, data: [] });
         setProductList({ loading: false, data: [] });
 
-        dispatch(getMultiCollectionAux([getCorpSel(0), getMeasureUnit(), getValuesFromDomain("TYPECREDIT"), getAppsettingInvoiceSel()]));
+        dispatch(getMultiCollectionAux([getCorpSel(user?.roledesc === "ADMINISTRADOR" ? user?.corpid : 0), getMeasureUnit(), getValuesFromDomain("TYPECREDIT"), getAppsettingInvoiceSel()]));
     }, [])
 
     useEffect(() => {
@@ -4540,7 +4540,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
         setCorpList({ loading: true, data: [] });
         setOrgList({ loading: false, data: [] });
 
-        dispatch(getMultiCollectionAux([getCorpSel(0)]));
+        dispatch(getMultiCollectionAux([getCorpSel(user?.roledesc === "ADMINISTRADOR" ? user?.corpid : 0)]));
 
         if (data?.row === null) {
             dispatch(getCollection(getAppsettingInvoiceSel()));
@@ -4961,7 +4961,7 @@ const Invoice: FC = () => {
     const [countryList, setcountryList] = useState<any>([]);
     const [dataPaymentPlan, setdataPaymentPlan] = useState<any>([]);
     const [dataPlan, setdataPlan] = useState<any>([]);
-    const [pageSelected, setPageSelected] = useState(user?.roledesc === "SUPERADMIN" ? 0 : 1);
+    const [pageSelected, setPageSelected] = useState(0);
     const [sentfirstinfo, setsentfirstinfo] = useState(false);
 
     const [customSearch, setCustomSearch] = useState({
@@ -5005,56 +5005,78 @@ const Invoice: FC = () => {
 
     return (
         <div style={{ width: '100%' }}>
-            <Tabs
-                value={pageSelected}
-                indicatorColor="primary"
-                variant="fullWidth"
-                style={{ borderBottom: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
-                textColor="primary"
-                onChange={(_, value) => setPageSelected(value)}
-            >
-                {user?.roledesc === "SUPERADMIN" && 
+            {user?.roledesc === "SUPERADMIN" && <div>
+                <Tabs
+                    value={pageSelected}
+                    indicatorColor="primary"
+                    variant="fullWidth"
+                    style={{ borderBottom: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
+                    textColor="primary"
+                    onChange={(_, value) => setPageSelected(value)}
+                >
                     <AntTab label={t(langKeys.costperperiod)} />
-                }
-                {(user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMINISTRADOR") && 
                     <AntTab label={t(langKeys.periodreport)} />
-                }
-                {(user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMINISTRADOR") && 
                     <AntTab label={t(langKeys.payments)} />
-                }
-                {user?.roledesc === "SUPERADMIN" && 
                     <AntTab label={t(langKeys.invoice)} />
-                }
-                {(user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMINISTRADOR") && 
                     <AntTab label={t(langKeys.messagingpackages)} />
+                </Tabs>
+                {pageSelected === 0 &&
+                    <div style={{ marginTop: 16 }}>
+                        <CostPerPeriod dataPlan={multiData}/>
+                    </div>
                 }
-            </Tabs>
-            {pageSelected === 0 &&
-                <div style={{ marginTop: 16 }}>
-                    <CostPerPeriod dataPlan={multiData}/>
-                </div>
-            }
-            {pageSelected === 1 &&
-                <div style={{ marginTop: 16 }}>
-                    <PeriodReport dataPlan={multiData} customSearch={customSearch}/>
-                </div>
-            }
-            {pageSelected === 2 &&
-                <div style={{ marginTop: 16 }}>
-                    <Payments dataPlan={multiData} setCustomSearch={setCustomSearch}/>
-                </div>
-            }
-            {pageSelected === 3 &&
-                <div style={{ marginTop: 16 }}>
-                    <Billing dataPlan={multiData}/>
-                </div>
-            }
-            {pageSelected === 4 &&
-                <div style={{ marginTop: 16 }}>
-                    <MessagingPackages dataPlan={multiData}/>
-                </div>
-            }
+                {pageSelected === 1 &&
+                    <div style={{ marginTop: 16 }}>
+                        <PeriodReport dataPlan={multiData} customSearch={customSearch}/>
+                    </div>
+                }
+                {pageSelected === 2 &&
+                    <div style={{ marginTop: 16 }}>
+                        <Payments dataPlan={multiData} setCustomSearch={setCustomSearch}/>
+                    </div>
+                }
+                {pageSelected === 3 &&
+                    <div style={{ marginTop: 16 }}>
+                        <Billing dataPlan={multiData}/>
+                    </div>
+                }
+                {pageSelected === 4 &&
+                    <div style={{ marginTop: 16 }}>
+                        <MessagingPackages dataPlan={multiData}/>
+                    </div>
+                }
+            </div>}
+            {user?.roledesc === "ADMINISTRADOR" && <div>
+                <Tabs
+                    value={pageSelected}
+                    indicatorColor="primary"
+                    variant="fullWidth"
+                    style={{ borderBottom: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
+                    textColor="primary"
+                    onChange={(_, value) => setPageSelected(value)}
+                >
+                    <AntTab label={t(langKeys.periodreport)} />
+                    <AntTab label={t(langKeys.payments)} />
+                    <AntTab label={t(langKeys.messagingpackages)} />
+                </Tabs>
+                {pageSelected === 0 &&
+                    <div style={{ marginTop: 16 }}>
+                        <PeriodReport dataPlan={multiData} customSearch={customSearch}/>
+                    </div>
+                }
+                {pageSelected === 1 &&
+                    <div style={{ marginTop: 16 }}>
+                        <Payments dataPlan={multiData} setCustomSearch={setCustomSearch}/>
+                    </div>
+                }
+                {pageSelected === 2 &&
+                    <div style={{ marginTop: 16 }}>
+                        <MessagingPackages dataPlan={multiData}/>
+                    </div>
+                }
+            </div>}
         </div>
+        
     );
 }
 
