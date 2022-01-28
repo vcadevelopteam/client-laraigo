@@ -2933,6 +2933,21 @@ const translation: LangKeys = {
     totaltopay: 'Total a pagar',
 
     messagingpackages: 'Paquetes de Mensajeria',
+    transactiondate: 'Fecha de transacción',
+    transactionmessagetype: 'Tipo de mensaje',
+    transactionreference: 'Referencia',
+    transactionbalance: 'Saldo',
+    transactionoperationtype: 'Tipo de operación',
+    transactionbuy: 'Comprar',
+    transactioninformation: 'Información del destino',
+    transactionlastbalance: 'Saldo anterior',
+    transactionbuyamount: 'Monto de compra',
+    transactionafterbalance: 'Saldo nuevo',
+    transactionrechargetitle: 'Compra de saldo ',
+    transactionconfirm: 'Confirmar Pago',
+    messagingpackagesdetail: 'Detalle de Paquete de Mensajeria',
+    messagingpackagesnew: 'Nuevo Paquete de Mensajeria',
+    emissornone: 'PENDIENTE',
 };
 
 const esResource: ResourceLanguage = {

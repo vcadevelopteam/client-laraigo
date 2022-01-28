@@ -2934,6 +2934,21 @@ export const langKeys = {
     totaltopay: 'totaltopay',
 
     messagingpackages: 'messagingpackages',
+    transactiondate: 'transactiondate',
+    transactionmessagetype: 'transactionmessagetype',
+    transactionreference: 'transactionreference',
+    transactionbalance: 'transactionbalance',
+    transactionoperationtype: 'transactionoperationtype',
+    transactionbuy: 'transactionbuy',
+    transactioninformation: 'transactioninformation',
+    transactionlastbalance: 'transactionlastbalance',
+    transactionbuyamount: 'transactionbuyamount',
+    transactionafterbalance: 'transactionafterbalance',
+    transactionrechargetitle: 'transactionrechargetitle',
+    transactionconfirm: 'transactionconfirm',
+    messagingpackagesdetail: 'messagingpackagesdetail',
+    messagingpackagesnew: 'messagingpackagesnew',
+    emissornone: 'emissornone',
 };
 
 export type LangKeys = typeof langKeys;

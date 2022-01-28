@@ -38,6 +38,11 @@ export default createReducer<IState>(initialState, {
     [actionTypes.CHARGE_SUCCESS]: caseFUnctions.chargeSuccess,
     [actionTypes.CHARGE_RESET]: caseFUnctions.chargeReset,
     
+    [actionTypes.BALANCE]: caseFUnctions.balance,
+    [actionTypes.BALANCE_FAILURE]: caseFUnctions.balanceFailure,
+    [actionTypes.BALANCE_SUCCESS]: caseFUnctions.balanceSuccess,
+    [actionTypes.BALANCE_RESET]: caseFUnctions.balanceReset,
+
     [actionTypes.SUBSCRIBE]: caseFUnctions.subscribe,
     [actionTypes.SUBSCRIBE_FAILURE]: caseFUnctions.subscribeFailure,
     [actionTypes.SUBSCRIBE_SUCCESS]: caseFUnctions.subscribeSuccess,

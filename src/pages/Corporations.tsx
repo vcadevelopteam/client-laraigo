@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TemplateSwitch, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
-import {  getCorpSel, getPaymentPlanSel, getValuesFromDomain, getValuesFromDomainCorp, insCorp } from 'common/helpers';
+import { getCorpSel, getPaymentPlanSel, getValuesFromDomain, getValuesFromDomainCorp, insCorp } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -208,8 +208,8 @@ interface DetailCorporationProps {
 const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
-    const [billbyorg, setbillbyorg] = useState(row?.billbyorg || false);    
-    const [doctype, setdoctype] = useState((row?.sunatcountry) ==="PE" ? "1" : "0")
+    const [billbyorg, setbillbyorg] = useState(row?.billbyorg || false);
+    const [doctype, setdoctype] = useState( row?.doctype || ((row?.sunatcountry) === "PE" ? "1" : "0"))
     const dataDocType = multiData[3] && multiData[3].success ? multiData[3].data : [];
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
@@ -246,8 +246,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
     });
 
     React.useEffect(() => {
-        const docTypeValidate = () => {
-            const docnum = getValues('docnum') as string;
+        const docTypeValidate = (docnum: string): string | undefined => {
             if (!docnum) {
                 return t(langKeys.field_required);
             }
@@ -273,20 +272,19 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                 default: return t(langKeys.doctype_unknown_error);
             }
         }
-
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('doctype', { validate: (value) => !billbyorg?((value && value.length) || t(langKeys.field_required)):null });
-        register('docnum', { validate: docTypeValidate });
-        register('businessname', { validate: (value) => !billbyorg?((value && value.length) || t(langKeys.field_required)):null });
-        register('fiscaladdress', { validate: (value) => !billbyorg?((value && value.length) || t(langKeys.field_required)):null });
-        register('contact', { validate: (value) => !billbyorg?((value && value.length) || t(langKeys.field_required)):null });
-        register('contactemail', { validate: (value) => !billbyorg?((value && value.length) || t(langKeys.field_required)):null });
-        register('sunatcountry', { validate: (value) => !billbyorg?((value && value.length) || t(langKeys.field_required)):null });
-        register('credittype', { validate: (value) => !billbyorg?((value && value.length) || t(langKeys.field_required)):null });
+        register('doctype', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
+        register('docnum', { validate: (value) => !billbyorg ? docTypeValidate(value) : true });
+        register('businessname', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
+        register('fiscaladdress', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
+        register('contact', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
+        register('contactemail', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
+        register('sunatcountry', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
+        register('credittype', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('paymentplanid');
-    }, [register,billbyorg, doctype, getValues, t]);
+    }, [register, billbyorg, doctype, getValues, t]);
 
     useEffect(() => {
     }, [executeRes, waitSave])
@@ -319,8 +317,8 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                 fd.append('file', data.logotype, data.logotype.name);
                 data.logotype = (await CommonService.uploadFile(fd)).data["url"];
             }
-            if(data.billbyorg){
-                data={
+            if (data.billbyorg) {
+                data = {
                     ...data,
                     doctype: "",
                     docnum: "",
@@ -344,7 +342,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
         }))
     });
 
-    
+
     const arrayBread = [
         { id: "view-1", name: t(langKeys.corporation) },
         { id: "view-2", name: t(langKeys.corporationdetail) }
@@ -560,7 +558,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                         label={t(langKeys.typecredit)}
                                         className="col-6"
                                         valueDefault={getValues("credittype")}
-                                        onChange={(value) => {setValue("credittype", value?.domainvalue || "");}}
+                                        onChange={(value) => { setValue("credittype", value?.domainvalue || ""); }}
                                         error={errors?.credittype?.message}
                                         disabled={user?.roledesc !== "SUPERADMIN"}
                                         data={typeofcreditList}

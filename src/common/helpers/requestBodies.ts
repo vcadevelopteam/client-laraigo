@@ -2609,3 +2609,9 @@ export const checkUserPaymentPlan = (): IRequestBody => ({
     method: "UFN_USER_PAYMENTPLAN_CHECK",
     parameters: { }
 });
+
+export const selBalanceData = ({ corpid, orgid, balanceid, type, operationtype, all }: Dictionary) => ({
+    method: "UFN_BALANCE_SEL",
+    key: "UFN_BALANCE_SEL",
+    parameters: { corpid, orgid, balanceid, type, operationtype, all },
+});
