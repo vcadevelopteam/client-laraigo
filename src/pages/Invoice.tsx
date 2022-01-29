@@ -2006,6 +2006,8 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
     const [totalPay, setTotalPay] = useState(0);
     const [waitSave, setWaitSave] = useState(false);
     const [Override, setOverride] = useState(false);
+    const [detractionAlert, setDetractionAlert] = useState(false);
+    const [detractionAmount, setDetractionAmount] = useState(0);
 
     useEffect(() => {
         dispatch(getCollection(getAppsettingInvoiceSel()));
@@ -2038,6 +2040,8 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                                     setTotalAmount(data?.totalamount);
                                     setOverride(true);
                                     setShowCulqi(true);
+                                    setDetractionAlert(true);
+                                    setDetractionAmount(appsetting.detractionminimum * 100);
                                 }
                                 else {
                                     setTotalPay(data?.totalamount);
@@ -2166,6 +2170,13 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                             value={(data?.currency === 'USD' ? '$' : 'S/')+formatNumber((totalPay || 0))}
                         />
                     </div>
+                    {detractionAlert && <div className="row-zyx">
+                        <FieldView
+                            className={classes.commentary}
+                            label={''}
+                            value={t(langKeys.detractionnotepay1) + `${detractionAmount}` + t(langKeys.detractionnotepay2)}
+                        />
+                    </div>}
                     <div className="row-zyx">
                         <FieldView
                             className={classes.section}
@@ -3506,7 +3517,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
         setOrgList({ loading: false, data: [] });
         setProductList({ loading: false, data: [] });
 
-        dispatch(getMultiCollectionAux([getCorpSel(0), getMeasureUnit(), getValuesFromDomain("TYPECREDIT"), getAppsettingInvoiceSel()]));
+        dispatch(getMultiCollectionAux([getCorpSel(user?.roledesc === "ADMINISTRADOR" ? user?.corpid : 0), getMeasureUnit(), getValuesFromDomain("TYPECREDIT"), getAppsettingInvoiceSel()]));
     }, [])
 
     useEffect(() => {
@@ -4517,6 +4528,8 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
     const [confirmButton, setConfirmButton] = useState(true);
     const [disableInput, setDisableInput] = useState(data?.row ? true : false);
     const [waitSave, setWaitSave] = useState(false);
+    const [detractionAlert, setDetractionAlert] = useState(false);
+    const [detractionAmount, setDetractionAmount] = useState(0);
 
     const handleCulqiSuccess = () => {
         fetchData();
@@ -4527,7 +4540,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
         setCorpList({ loading: true, data: [] });
         setOrgList({ loading: false, data: [] });
 
-        dispatch(getMultiCollectionAux([getCorpSel(0)]));
+        dispatch(getMultiCollectionAux([getCorpSel(user?.roledesc === "ADMINISTRADOR" ? user?.corpid : 0)]));
 
         if (data?.row === null) {
             dispatch(getCollection(getAppsettingInvoiceSel()));
@@ -4589,21 +4602,27 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                     var compareamount = (buyAmount || 0) * (exchangeRequest?.exchangerate || 0);
 
                     if (compareamount > mainResult.mainData.data[0].detractionminimum) {
-                        setTotalPay((buyAmount * (1 + mainResult.mainData.data[0].igv)) - ((buyAmount * (1 + mainResult.mainData.data[0].igv)) * mainResult.mainData.data[0].detraction))
+                        setTotalPay((buyAmount * (1 + mainResult.mainData.data[0].igv)) - ((buyAmount * (1 + mainResult.mainData.data[0].igv)) * mainResult.mainData.data[0].detraction));
+                        setDetractionAlert(true);
+                        setDetractionAmount(mainResult.mainData.data[0].detraction * 100);
                     }
                     else {
+                        setDetractionAlert(false);
                         setTotalPay(buyAmount * (1 + mainResult.mainData.data[0].igv))
                     }
                 }
                 else {
+                    setDetractionAlert(false);
                     setTotalPay(buyAmount * (1 + mainResult.mainData.data[0].igv))
                 }
             }
             else {
+                setDetractionAlert(false);
                 setTotalPay(buyAmount);
             }
         }
         else {
+            setDetractionAlert(false);
             setTotalPay(buyAmount);
         }
     }
@@ -4876,6 +4895,13 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                             value={'$'+formatNumber((totalPay || 0))}
                         />
                     </div>}
+                    {(data?.edit && detractionAlert) && <div className="row-zyx">
+                        <FieldView
+                            className={classes.commentary}
+                            label={''}
+                            value={t(langKeys.detractionnotepay1) + `${detractionAmount}` + t(langKeys.detractionnotepay2)}
+                        />
+                    </div>}
                     {data?.edit && <div className="row-zyx">
                         <FieldView
                             className={classes.section}
@@ -4935,7 +4961,7 @@ const Invoice: FC = () => {
     const [countryList, setcountryList] = useState<any>([]);
     const [dataPaymentPlan, setdataPaymentPlan] = useState<any>([]);
     const [dataPlan, setdataPlan] = useState<any>([]);
-    const [pageSelected, setPageSelected] = useState(user?.roledesc === "SUPERADMIN" ? 0 : 1);
+    const [pageSelected, setPageSelected] = useState(0);
     const [sentfirstinfo, setsentfirstinfo] = useState(false);
 
     const [customSearch, setCustomSearch] = useState({
@@ -4979,56 +5005,78 @@ const Invoice: FC = () => {
 
     return (
         <div style={{ width: '100%' }}>
-            <Tabs
-                value={pageSelected}
-                indicatorColor="primary"
-                variant="fullWidth"
-                style={{ borderBottom: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
-                textColor="primary"
-                onChange={(_, value) => setPageSelected(value)}
-            >
-                {user?.roledesc === "SUPERADMIN" && 
+            {user?.roledesc === "SUPERADMIN" && <div>
+                <Tabs
+                    value={pageSelected}
+                    indicatorColor="primary"
+                    variant="fullWidth"
+                    style={{ borderBottom: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
+                    textColor="primary"
+                    onChange={(_, value) => setPageSelected(value)}
+                >
                     <AntTab label={t(langKeys.costperperiod)} />
-                }
-                {(user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMINISTRADOR") && 
                     <AntTab label={t(langKeys.periodreport)} />
-                }
-                {(user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMINISTRADOR") && 
                     <AntTab label={t(langKeys.payments)} />
-                }
-                {user?.roledesc === "SUPERADMIN" && 
                     <AntTab label={t(langKeys.invoice)} />
-                }
-                {(user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMINISTRADOR") && 
                     <AntTab label={t(langKeys.messagingpackages)} />
+                </Tabs>
+                {pageSelected === 0 &&
+                    <div style={{ marginTop: 16 }}>
+                        <CostPerPeriod dataPlan={multiData}/>
+                    </div>
                 }
-            </Tabs>
-            {pageSelected === 0 &&
-                <div style={{ marginTop: 16 }}>
-                    <CostPerPeriod dataPlan={multiData}/>
-                </div>
-            }
-            {pageSelected === 1 &&
-                <div style={{ marginTop: 16 }}>
-                    <PeriodReport dataPlan={multiData} customSearch={customSearch}/>
-                </div>
-            }
-            {pageSelected === 2 &&
-                <div style={{ marginTop: 16 }}>
-                    <Payments dataPlan={multiData} setCustomSearch={setCustomSearch}/>
-                </div>
-            }
-            {pageSelected === 3 &&
-                <div style={{ marginTop: 16 }}>
-                    <Billing dataPlan={multiData}/>
-                </div>
-            }
-            {pageSelected === 4 &&
-                <div style={{ marginTop: 16 }}>
-                    <MessagingPackages dataPlan={multiData}/>
-                </div>
-            }
+                {pageSelected === 1 &&
+                    <div style={{ marginTop: 16 }}>
+                        <PeriodReport dataPlan={multiData} customSearch={customSearch}/>
+                    </div>
+                }
+                {pageSelected === 2 &&
+                    <div style={{ marginTop: 16 }}>
+                        <Payments dataPlan={multiData} setCustomSearch={setCustomSearch}/>
+                    </div>
+                }
+                {pageSelected === 3 &&
+                    <div style={{ marginTop: 16 }}>
+                        <Billing dataPlan={multiData}/>
+                    </div>
+                }
+                {pageSelected === 4 &&
+                    <div style={{ marginTop: 16 }}>
+                        <MessagingPackages dataPlan={multiData}/>
+                    </div>
+                }
+            </div>}
+            {user?.roledesc === "ADMINISTRADOR" && <div>
+                <Tabs
+                    value={pageSelected}
+                    indicatorColor="primary"
+                    variant="fullWidth"
+                    style={{ borderBottom: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
+                    textColor="primary"
+                    onChange={(_, value) => setPageSelected(value)}
+                >
+                    <AntTab label={t(langKeys.periodreport)} />
+                    <AntTab label={t(langKeys.payments)} />
+                    <AntTab label={t(langKeys.messagingpackages)} />
+                </Tabs>
+                {pageSelected === 0 &&
+                    <div style={{ marginTop: 16 }}>
+                        <PeriodReport dataPlan={multiData} customSearch={customSearch}/>
+                    </div>
+                }
+                {pageSelected === 1 &&
+                    <div style={{ marginTop: 16 }}>
+                        <Payments dataPlan={multiData} setCustomSearch={setCustomSearch}/>
+                    </div>
+                }
+                {pageSelected === 2 &&
+                    <div style={{ marginTop: 16 }}>
+                        <MessagingPackages dataPlan={multiData}/>
+                    </div>
+                }
+            </div>}
         </div>
+        
     );
 }
 
