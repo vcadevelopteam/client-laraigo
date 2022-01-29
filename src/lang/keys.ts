@@ -1424,6 +1424,14 @@ export const langKeys = {
     dashboard_managerial_survey2_answer: 'dashboard_managerial_survey2_answer',
     dashboard_managerial_survey2_comment: 'dashboard_managerial_survey2_comment',
 
+    dashboard_managerial_summary_ticketnum: 'dashboard_managerial_summary_ticketnum',
+    dashboard_managerial_summary_closedby: 'dashboard_managerial_summary_closedby',
+    dashboard_managerial_summary_channel: 'dashboard_managerial_summary_channel',
+    dashboard_managerial_summary_hourrange: 'dashboard_managerial_summary_hourrange',
+    dashboard_managerial_summary_firstreplyagent: 'dashboard_managerial_summary_firstreplyagent',
+    dashboard_managerial_summary_averagereplyagent: 'dashboard_managerial_summary_averagereplyagent',
+    dashboard_managerial_summary_averagereplyclient: 'dashboard_managerial_summary_averagereplyclient',
+
     dashboard_managerial_asesoresconectados_date: 'dashboard_managerial_asesoresconectados_date',
     dashboard_managerial_asesoresconectados_hour: 'dashboard_managerial_asesoresconectados_hour',
     dashboard_managerial_asesoresconectados_agent: 'dashboard_managerial_asesoresconectados_agent',

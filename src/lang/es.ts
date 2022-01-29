@@ -1294,6 +1294,14 @@ const translation: LangKeys = {
     dashboard_managerial_survey2_answer: 'Interpretación',
     dashboard_managerial_survey2_comment: 'Comentario',
 
+    dashboard_managerial_summary_ticketnum: 'Número de ticket',
+    dashboard_managerial_summary_closedby: 'Cerrado por',
+    dashboard_managerial_summary_channel: 'Canal',
+    dashboard_managerial_summary_hourrange: 'Rango de Hora de cierre',
+    dashboard_managerial_summary_firstreplyagent: 'Tiempo primera respuesta asesor',
+    dashboard_managerial_summary_averagereplyagent: 'Tiempo promedio respuesta asesor',
+    dashboard_managerial_summary_averagereplyclient: 'Tiempo promedio respuesta cliente',
+
     dashboard_managerial_asesoresconectados_date: 'Fecha',
     dashboard_managerial_asesoresconectados_hour: 'Hora',
     dashboard_managerial_asesoresconectados_agent: 'Asesor',

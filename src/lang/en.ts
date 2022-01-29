@@ -1357,6 +1357,14 @@ const translation: LangKeys = {
     dashboard_managerial_survey2_answer: 'Answer',
     dashboard_managerial_survey2_comment: 'Comment',
 
+    dashboard_managerial_summary_ticketnum: 'Ticketnum',
+    dashboard_managerial_summary_closedby: 'Closedby',
+    dashboard_managerial_summary_channel: 'Channel',
+    dashboard_managerial_summary_hourrange: 'Hour range',
+    dashboard_managerial_summary_firstreplyagent: 'First reply agent',
+    dashboard_managerial_summary_averagereplyagent: 'Average reply agent',
+    dashboard_managerial_summary_averagereplyclient: 'Average reply client',
+
     dashboard_managerial_asesoresconectados_date: 'Date',
     dashboard_managerial_asesoresconectados_hour: 'Hour',
     dashboard_managerial_asesoresconectados_agent: 'Agent',

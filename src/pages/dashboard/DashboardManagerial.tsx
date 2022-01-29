@@ -1160,7 +1160,17 @@ const DashboardManagerial: FC = () => {
             settitlefile(t(langKeys.top5labels));
             setSection('etiqueta')
             dispatch(getCollectionAux(gerencialetiquetasseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+        } else if (tipeoffilter === "averageconversationsattendedbyhour") {
+            settitlefile(t(langKeys.averageconversationsattendedbyhour));
+            setSection('summary')
+            dispatch(getCollectionAux(gerencialsummaryseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+        } else if (tipeoffilter === "averageconversationsattendedbytheadvisorbyhour") {
+            settitlefile(t(langKeys.averageconversationsattendedbytheadvisorbyhour));
+            setSection('summary')
+            dispatch(getCollectionAux(gerencialsummaryseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
         } else {
+            settitlefile(t(langKeys.summary));
+            setSection('summary')
             dispatch(getCollectionAux(gerencialsummaryseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
         }
     }
