@@ -112,7 +112,7 @@ const dataLevel: Dictionary = {
     ORGANIZATION: 'organization',
 }
 
-const dataLevelKeys = ['corpid','orgid','status'];
+const dataLevelKeys = ['corpid','orgid'];
 
 const IntegrationManager: FC = () => {
     const dispatch = useDispatch();
@@ -332,8 +332,8 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
             variables: row ? (row.variables || []) : [],
             level: row ? (row.level || 'CORPORATION') : 'CORPORATION',
             fields: row
-            ? (row.fields || [{name: 'corpid', key: true}, {name: 'status', key: false}])
-            : [{name: 'corpid', key: true}, {name: 'status', key: false}],
+            ? (row.fields || [{name: 'corpid', key: true}])
+            : [{name: 'corpid', key: true}],
             operation: row ? "EDIT" : "INSERT",
         }
     });
@@ -502,7 +502,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
         if (data?.key === 'CORPORATION') {
             setValue('fields', [
                 { name: 'corpid', key: true },
-                { name: 'status', key: false },
                 ...getValues('fields').filter(f => !dataLevelKeys.includes(f.name))
             ])
         }
@@ -510,7 +509,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
             setValue('fields', [
                 { name: 'corpid', key: true },
                 { name: 'orgid', key: true },
-                { name: 'status', key: false },
                 ...getValues('fields').filter(f => !dataLevelKeys.includes(f.name))
             ])
         }
