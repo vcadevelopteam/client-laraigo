@@ -72,12 +72,17 @@ function timetomin(cc: any) {
     return hour * 60 + minutes + (seconds >= 30 ? 1 : 0);
 }
 function formatname(cc: any) {
-    let newname = cc.toLowerCase();
-    let names = newname.split(" ");
-    for (let i = 0; i < names.length; i++) {
-        names[i] = (names[i] ? names[i][0].toUpperCase() : "") + names[i].substr(1);
+    if (cc) {
+        let newname = cc.toLowerCase();
+        let names = newname.split(" ");
+        for (let i = 0; i < names.length; i++) {
+            names[i] = (names[i] ? names[i][0].toUpperCase() : "") + names[i].substr(1);
+        }
+        return names.join(" ")
     }
-    return names.join(" ")
+    else {
+        return ''
+    }
 }
 
 const useStyles = makeStyles((theme: Theme) =>
