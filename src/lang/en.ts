@@ -1416,14 +1416,14 @@ const translation: LangKeys = {
     dashboard_productivity_tme_targettme: 'Target TME',
 
     dashboard_productivity_tmodistribution_ticketnum: 'Ticketnum',
-    dashboard_productivity_tmodistribution_hourrange: 'Hour range',
+    dashboard_productivity_tmodistribution_hourrange: 'Range',
     dashboard_productivity_tmodistribution_closedby: 'Closedby',
     dashboard_productivity_tmodistribution_channel: 'Channel',
     dashboard_productivity_tmodistribution_agent: 'Agent',
     dashboard_productivity_tmodistribution_duration: 'Total duration',
 
     dashboard_productivity_tmedistribution_ticketnum: 'Ticketnum',
-    dashboard_productivity_tmedistribution_hourrange: 'Hour range',
+    dashboard_productivity_tmedistribution_hourrange: 'Range',
     dashboard_productivity_tmedistribution_closedby: 'Closedby',
     dashboard_productivity_tmedistribution_channel: 'Channel',
     dashboard_productivity_tmedistribution_agent: 'Agent',
