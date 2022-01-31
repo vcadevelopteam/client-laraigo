@@ -539,8 +539,6 @@ const UserSettings: FC = () => {
         }
     }
     
-    console.log(user?.paymentmethod)
-
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
