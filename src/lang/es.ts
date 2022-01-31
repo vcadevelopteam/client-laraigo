@@ -1307,13 +1307,14 @@ const translation: LangKeys = {
     dashboard_managerial_asesoresconectados_agent: 'Asesor',
 
     dashboard_managerial_averageconversations_ticketnum: 'Número de ticket',
-    dashboard_managerial_averageconversations_datehour: 'Fecha y Hora',
+    dashboard_managerial_averageconversations_startdate: 'Fecha y Hora Creación',
+    dashboard_managerial_averageconversations_finishdate: 'Fecha y Hora Cierre',
     dashboard_managerial_averageconversations_channel: 'Canal',
     dashboard_managerial_averageconversations_status: 'Estado',
     dashboard_managerial_averageconversations_closedby: 'Cerrado por',
 
     dashboard_managerial_interaction_ticketnum: 'Número de ticket',
-    dashboard_managerial_interaction_datehour: 'Fecha y Hora',
+    dashboard_managerial_interaction_startdate: 'Fecha y Hora Creación',
     dashboard_managerial_interaction_interactioncode: 'Código de interacción',
     dashboard_managerial_interaction_interactionhour: 'Hora de interacción',
     dashboard_managerial_interaction_agent: 'Asesor',

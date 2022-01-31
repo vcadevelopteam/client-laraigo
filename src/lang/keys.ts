@@ -1437,13 +1437,14 @@ export const langKeys = {
     dashboard_managerial_asesoresconectados_agent: 'dashboard_managerial_asesoresconectados_agent',
 
     dashboard_managerial_averageconversations_ticketnum: 'dashboard_managerial_averageconversations_ticketnum',
-    dashboard_managerial_averageconversations_datehour: 'dashboard_managerial_averageconversations_datehour',
+    dashboard_managerial_averageconversations_startdate: 'dashboard_managerial_averageconversations_startdate',
+    dashboard_managerial_averageconversations_finishdate: 'dashboard_managerial_averageconversations_finishdate',
     dashboard_managerial_averageconversations_channel: 'dashboard_managerial_averageconversations_channel',
     dashboard_managerial_averageconversations_status: 'dashboard_managerial_averageconversations_status',
     dashboard_managerial_averageconversations_closedby: 'dashboard_managerial_averageconversations_closedby',
 
     dashboard_managerial_interaction_ticketnum: 'dashboard_managerial_interaction_ticketnum',
-    dashboard_managerial_interaction_datehour: 'dashboard_managerial_interaction_datehour',
+    dashboard_managerial_interaction_startdate: 'dashboard_managerial_interaction_startdate',
     dashboard_managerial_interaction_interactioncode: 'dashboard_managerial_interaction_interactioncode',
     dashboard_managerial_interaction_interactionhour: 'dashboard_managerial_interaction_interactionhour',
     dashboard_managerial_interaction_agent: 'dashboard_managerial_interaction_agent',
