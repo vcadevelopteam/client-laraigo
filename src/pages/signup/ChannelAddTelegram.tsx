@@ -23,8 +23,12 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const ChannelAddTelegram: FC<{ setrequestchannels: (param: any) => void, setOpenWarning: (param: any) => void }> = ({ setrequestchannels, setOpenWarning }) => {
-    const { commonClasses, deleteChannel } = useContext(SubscriptionContext);
+export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
+    const {
+        commonClasses,
+        deleteChannel,
+        setrequestchannels,
+    } = useContext(SubscriptionContext);
     const [viewSelected, setViewSelected] = useState("view1");
     const [nextbutton, setNextbutton] = useState(true);
     const [coloricon, setcoloricon] = useState("#207FDD");

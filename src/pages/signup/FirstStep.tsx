@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { makeStyles, Button, TextField, InputAdornment, IconButton } from '@material-ui/core';
 import { Visibility, VisibilityOff } from "@material-ui/icons";
 import { langKeys } from "lang/keys";
@@ -13,6 +13,7 @@ import { useSelector } from 'hooks';
 import { apiUrls } from 'common/constants';
 
 import { executeCheckNewUser } from "store/signup/actions";
+import { SubscriptionContext } from "./context";
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
         padding: 12,
@@ -39,7 +40,8 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const FirstStep: FC<{ setMainData: (param: any) => void, mainData: any, setStep: (param: any) => void, setSnackbar: (param: any) => void }> = ({ setMainData, mainData, setStep, setSnackbar }) => {
+export const FirstStep: FC<{ setStep: (param: any) => void, setSnackbar: (param: any) => void }> = ({ setStep, setSnackbar }) => {
+    const { mainData, setMainData } = useContext(SubscriptionContext);
     const [errors, setErrors] = useState<Dictionary>({
         email: "",
         password: "",

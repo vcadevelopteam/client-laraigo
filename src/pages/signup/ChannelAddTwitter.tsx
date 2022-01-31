@@ -21,8 +21,12 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const ChannelAddTwitter: FC<{ setrequestchannels: (param: any) => void, setOpenWarning: (param: any) => void }> = ({ setrequestchannels, setOpenWarning }) => {
-    const { commonClasses, deleteChannel } = useContext(SubscriptionContext);
+export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
+    const {
+        commonClasses,
+        deleteChannel,
+        setrequestchannels,
+    } = useContext(SubscriptionContext);
     const [viewSelected, setViewSelected] = useState("view1");
     const [waitSave, setWaitSave] = useState(false);
     const [nextbutton, setNextbutton] = useState(true);

@@ -60,8 +60,12 @@ const CssPhonemui = styled(MuiPhoneNumber)({
     },
 });
 
-export const ChannelAddWhatsapp: FC<{ setrequestchannels: (param: any) => void, setOpenWarning: (param: any) => void }> = ({ setrequestchannels, setOpenWarning }) => {
-    const { commonClasses, deleteChannel } = useContext(SubscriptionContext);
+export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
+    const {
+        commonClasses,
+        deleteChannel,
+        setrequestchannels,
+    } = useContext(SubscriptionContext);
     const [viewSelected, setViewSelected] = useState("view1");
     const planData = useSelector(state => state.signup.verifyPlan)
     const provider = planData.data[0].providerwhatsapp

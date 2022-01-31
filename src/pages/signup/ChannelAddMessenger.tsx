@@ -16,18 +16,15 @@ import { apiUrls } from 'common/constants';
 import { SubscriptionContext } from "./context";
 
 interface ChannelAddMessengerProps {
-    setrequestchannels:(param:any)=>void;
     setOpenWarning:(param:any)=>void;
 }
 
-export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({
-    setrequestchannels,
-    setOpenWarning,
-}) => {
+export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarning }) => {
     const {
         commonClasses,
         FBButtonStyles,
         deleteChannel,
+        setrequestchannels,
     } = useContext(SubscriptionContext);
     const [viewSelected, setViewSelected] = useState("view1");
     const [nextbutton, setNextbutton] = useState(true);

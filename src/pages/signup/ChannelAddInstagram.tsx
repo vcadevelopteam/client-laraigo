@@ -15,11 +15,16 @@ import { getChannelsListSub } from "store/channel/actions";
 import { apiUrls } from 'common/constants';
 import { SubscriptionContext } from "./context";
 
-export const ChannelAddInstagram: FC<{ setrequestchannels: (param: any) => void, setOpenWarning: (param: any) => void }> = ({ setrequestchannels, setOpenWarning }) => {
+interface ChannelAddInstagramProps {
+    setOpenWarning: (param: any) => void;
+}
+
+export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarning }) => {
     const {
         commonClasses,
         FBButtonStyles,
         deleteChannel,
+        setrequestchannels,
     } = useContext(SubscriptionContext);
     const [viewSelected, setViewSelected] = useState("view1");
     const [nextbutton, setNextbutton] = useState(true);

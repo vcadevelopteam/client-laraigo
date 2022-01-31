@@ -18,8 +18,12 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const ChannelAddTwitterDM: FC<{ setrequestchannels: (param: any) => void, setOpenWarning: (param: any) => void }> = ({ setrequestchannels, setOpenWarning }) => {
-    const { commonClasses, deleteChannel } = useContext(SubscriptionContext);
+export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
+    const {
+        commonClasses,
+        deleteChannel,
+        setrequestchannels,
+    } = useContext(SubscriptionContext);
     const [viewSelected, setViewSelected] = useState("view1");
     const [nextbutton, setNextbutton] = useState(true);
     const [nextbutton2, setNextbutton2] = useState(true);

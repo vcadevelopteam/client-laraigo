@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC ,useEffect,useState} from "react";
+import { FC ,useContext,useEffect,useState} from "react";
 import { makeStyles, Button, Breadcrumbs, Link} from '@material-ui/core';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
@@ -11,6 +11,7 @@ import { executeSubscription } from "store/signup/actions";
 import { useHistory } from "react-router-dom";
 import { getMultiCollectionPublic } from "store/main/actions";
 import {  FieldSelect } from "components";
+import { SubscriptionContext } from "./context";
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -38,8 +39,22 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:any)=>void,setBackdrop:(param:any)=>void,setStep: (param: any) => void,setsendchannels:(param:any)=>void,setOpenWarning:(param:any)=>void }> = 
-                                                                                            ({mainData,requestchannels,setSnackbar,setBackdrop,setStep,setsendchannels,setOpenWarning}) => {
+interface LastStepProps {
+    setSnackbar:(param:any)=>void;
+    setBackdrop:(param:any)=>void;
+    setStep: (param: any) => void;
+    setsendchannels:(param:any)=>void;
+    setOpenWarning:(param:any)=>void;
+}
+
+export const LastStep: FC<LastStepProps> = ({
+    setSnackbar,
+    setBackdrop,
+    setStep,
+    setsendchannels,
+    setOpenWarning,
+}) => {
+    const { mainData, requestchannels } = useContext(SubscriptionContext);
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
     const history = useHistory();

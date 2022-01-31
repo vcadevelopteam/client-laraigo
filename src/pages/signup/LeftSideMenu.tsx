@@ -29,6 +29,11 @@ const useLeftSideStyles = makeStyles(theme => ({
         color: theme.palette.primary.main,
         textAlign: 'center',
     },
+    channelList: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '2em',
+    },
 }));
 
 interface LeftSideProps {
@@ -53,7 +58,6 @@ export const LeftSide: FC<LeftSideProps> = ({
                         return (
                             <ChannelAddFacebook
                                 key={i}
-                                setrequestchannels={setrequestchannels}
                                 setOpenWarning={setOpenWarning}
                             />
                         );
@@ -61,7 +65,6 @@ export const LeftSide: FC<LeftSideProps> = ({
                         return (
                             <ChannelAddInstagram
                                 key={i}
-                                setrequestchannels={setrequestchannels}
                                 setOpenWarning={setOpenWarning}
                             />
                         );
@@ -69,7 +72,6 @@ export const LeftSide: FC<LeftSideProps> = ({
                         return (
                             <ChannelAddInstagramDM
                                 key={i}
-                                setrequestchannels={setrequestchannels}
                                 setOpenWarning={setOpenWarning}
                             />
                         );
@@ -77,7 +79,6 @@ export const LeftSide: FC<LeftSideProps> = ({
                         return (
                             <ChannelAddMessenger
                                 key={i}
-                                setrequestchannels={setrequestchannels}
                                 setOpenWarning={setOpenWarning}
                             />
                         );
@@ -85,7 +86,6 @@ export const LeftSide: FC<LeftSideProps> = ({
                         return (
                             <ChannelAddWhatsapp
                                 key={i}
-                                setrequestchannels={setrequestchannels}
                                 setOpenWarning={setOpenWarning}
                             />
                         );
@@ -93,7 +93,6 @@ export const LeftSide: FC<LeftSideProps> = ({
                         return (
                             <ChannelAddTelegram
                                 key={i}
-                                setrequestchannels={setrequestchannels}
                                 setOpenWarning={setOpenWarning}
                             />
                         );
@@ -101,7 +100,6 @@ export const LeftSide: FC<LeftSideProps> = ({
                         return (
                             <ChannelAddTwitter
                                 key={i}
-                                setrequestchannels={setrequestchannels}
                                 setOpenWarning={setOpenWarning}
                             />
                         );
@@ -109,7 +107,6 @@ export const LeftSide: FC<LeftSideProps> = ({
                         return (
                             <ChannelAddTwitterDM
                                 key={i}
-                                setrequestchannels={setrequestchannels}
                                 setOpenWarning={setOpenWarning}
                             />
                         );
@@ -117,7 +114,6 @@ export const LeftSide: FC<LeftSideProps> = ({
                         return (
                             <ChannelAddChatWeb
                                 key={i}
-                                setrequestchannels={setrequestchannels}
                                 setOpenWarning={setOpenWarning}
                             />
                         );
@@ -131,7 +127,6 @@ export const LeftSide: FC<LeftSideProps> = ({
                         return (
                             <ChannelAddAndroid
                                 key={i}
-                                setrequestchannels={setrequestchannels}
                                 setOpenWarning={setOpenWarning}
                             />
                         );
@@ -139,7 +134,6 @@ export const LeftSide: FC<LeftSideProps> = ({
                         return (
                             <ChannelAddIos
                                 key={i}
-                                setrequestchannels={setrequestchannels}
                                 setOpenWarning={setOpenWarning}
                             />
                         );
@@ -163,7 +157,9 @@ export const LeftSide: FC<LeftSideProps> = ({
                 </Link>
             </Breadcrumbs>
             <h1 className={classes.title}>Canal seleccionado</h1>
-            {channels}
+            <div className={classes.channelList}>
+                {channels}
+            </div>
         </div>
     );
 }

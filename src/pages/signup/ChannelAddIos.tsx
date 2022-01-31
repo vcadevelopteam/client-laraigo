@@ -18,8 +18,12 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const ChannelAddIos: FC<{ setrequestchannels: (param: any) => void, setOpenWarning: (param: any) => void }> = ({ setrequestchannels, setOpenWarning }) => {
-    const { commonClasses, deleteChannel } = useContext(SubscriptionContext);
+export const ChannelAddIos: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
+    const {
+        commonClasses,
+        deleteChannel,
+        setrequestchannels,
+    } = useContext(SubscriptionContext);
     const [channelreg, setChannelreg] = useState(true);
     const { t } = useTranslation();
     const [coloricon, setcoloricon] = useState("#000000");

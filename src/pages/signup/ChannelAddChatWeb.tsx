@@ -1466,12 +1466,12 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export const ChannelAddChatWeb: FC<{ setrequestchannels: (param: any) => void, setOpenWarning: (param: any) => void }> = ({ setrequestchannels, setOpenWarning }) => {
+export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
     const classes = useStyles();
 
     const { t } = useTranslation();
 
-    const { deleteChannel } = useContext(SubscriptionContext);
+    const { deleteChannel, setrequestchannels } = useContext(SubscriptionContext);
     const dispatch = useDispatch();
     const [selectedView, setSelectedView] = useState("view1");
     const [tabIndex, setTabIndes] = useState('0');

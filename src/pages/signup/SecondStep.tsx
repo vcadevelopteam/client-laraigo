@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { makeStyles, Button, TextField, Breadcrumbs} from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { langKeys } from "lang/keys";
@@ -13,6 +13,7 @@ import { styled } from '@material-ui/core/styles';
 import { FieldMultiSelect, FieldSelect } from "components";
 import { getValuesFromDomain } from "common/helpers/requestBodies";
 import { getCountryList } from "store/signup/actions";
+import { SubscriptionContext } from "./context";
 
 
 const useChannelAddStyles = makeStyles(theme => ({
@@ -40,8 +41,8 @@ const CssPhonemui = styled(MuiPhoneNumber)({
 });
 
 
-export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, setStep: (param: any) => void,setOpenWarning: (param: any) => void}> = ({ setMainData, mainData, setStep,setOpenWarning }) => {
-    
+export const SecondStep: FC<{ setStep: (param: any) => void,setOpenWarning: (param: any) => void}> = ({ setStep,setOpenWarning }) => {
+    const { mainData, setMainData } = useContext(SubscriptionContext);
     const dispatch = useDispatch();
     const ressignup = useSelector(state => state.signup.countryList);    
     const URL="https://ipapi.co/json/";

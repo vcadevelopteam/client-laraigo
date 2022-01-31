@@ -2,14 +2,17 @@ import { makeStyles } from '@material-ui/core';
 import { useSelector } from 'hooks';
 import React, { FC, useState, createContext, useMemo, CSSProperties } from 'react';
 
-type StateSetter<T> = React.Dispatch<React.SetStateAction<T>>;
+type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 interface Subscription {
     selectedChannels: number;
     listchannels: ListChannels;
     commonClasses: ReturnType<typeof useStyles>;
     FBButtonStyles: CSSProperties;
     limitChannels: number;
-    
+    mainData: MainData;
+    requestchannels: any[];
+    setrequestchannels: SetState<any[]>;
+    setMainData: SetState<MainData>;
     resetChannels: () => void;
     addChannel: (option: keyof ListChannels) => void;
     deleteChannel: (option: keyof ListChannels) => void;
@@ -31,6 +34,27 @@ export interface ListChannels {
     sms: boolean;
     android: boolean;
     apple: boolean;
+}
+
+interface MainData {
+    email: string;
+    password: string;
+    confirmpassword: string;
+    firstandlastname: string;
+    companybusinessname: string;
+    mobilephone: string;
+    facebookid: string;
+    googleid: string;
+    join_reason: string;
+    country: string;
+    currency: string;
+    doctype: number;
+    docnumber: string;
+    businessname: string;
+    fiscaladdress: string;
+    billingcontact: string;
+    billingcontactmail: string;
+    autosendinvoice: boolean;
 }
 
 const defaultListChannels: ListChannels = {
@@ -56,6 +80,10 @@ export const SubscriptionContext = createContext<Subscription>({
     commonClasses: {} as any,
     selectedChannels: 0,
     listchannels: defaultListChannels,
+    mainData: {} as any,
+    requestchannels: [],
+    setrequestchannels: () => {},
+    setMainData: () => {},
     addChannel: () => {},
     deleteChannel: () => {},
     resetChannels: () => {},
@@ -115,6 +143,27 @@ export const SubscriptionProvider: FC = ({ children }) => {
     const classes = useStyles();
     const [listchannels, setlistchannels] = useState<ListChannels>(defaultListChannels);
     const planData = useSelector(state => state.signup.verifyPlan);
+    const [requestchannels, setrequestchannels] = useState<any[]>([]);
+    const [mainData, setMainData] = useState<MainData>({
+        email: "",
+        password: "",
+        confirmpassword: "",
+        firstandlastname: "",
+        companybusinessname: "",
+        mobilephone: "",
+        facebookid: "",
+        googleid: "",
+        join_reason: "",
+        country: "",
+        currency: "",
+        doctype: 0,
+        docnumber: "",
+        businessname: "",
+        fiscaladdress: "",
+        billingcontact: "",
+        billingcontactmail: "",
+        autosendinvoice: true,
+    });
 
     const deleteChannel = (option: keyof ListChannels) => {
         setlistchannels(prev => {
@@ -157,9 +206,13 @@ export const SubscriptionProvider: FC = ({ children }) => {
     return (
         <SubscriptionContext.Provider value={{
             commonClasses: classes,
-            limitChannels: planData.data[0]?.channelscontracted || 0,
+            limitChannels: 4, // planData.data[0]?.channelscontracted || 0,
             selectedChannels,
             listchannels,
+            mainData,
+            requestchannels,
+            setrequestchannels,
+            setMainData,
             addChannel,
             deleteChannel,
             resetChannels,

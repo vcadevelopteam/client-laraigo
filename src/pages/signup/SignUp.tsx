@@ -91,7 +91,11 @@ const useSignUpStyles = makeStyles(theme => ({
 }));
 
 export const SignUp: FC = () => {
-    const { resetChannels } = useContext(SubscriptionContext);
+    const {
+        setrequestchannels,
+        setMainData,
+        resetChannels,
+    } = useContext(SubscriptionContext);
     const mainResult = useSelector(state => state.signup.verifyPlan)
     const {token}: any = useParams();
     const history = useHistory();
@@ -105,28 +109,8 @@ export const SignUp: FC = () => {
         message: ""
     });
     const [sendchannels, setsendchannels] = useState(false);
-    const [requestchannels, setrequestchannels] = useState([]);
     const [backdrop, setBackdrop] = useState(false);
-    const [mainData, setMainData] = useState<Dictionary>({
-        email: "",
-        password: "",
-        confirmpassword: "",
-        firstandlastname: "",
-        companybusinessname: "",
-        mobilephone: "",
-        facebookid: "",
-        googleid: "",
-        join_reason: "",
-        country: "",
-        currency: "",
-        doctype: 0,
-        docnumber: "",
-        businessname: "",
-        fiscaladdress: "",
-        billingcontact: "",
-        billingcontactmail: "",
-        autosendinvoice: true,
-    });
+    
     function setDefaultMainData(){
         setMainData((prev)=>({
             ...prev,
@@ -282,11 +266,7 @@ export const SignUp: FC = () => {
                             setBackdrop={setBackdrop}
                             setStep={setStep}
                             step={step}
-                            setMainData={setMainData}
-                            mainData={mainData}
                             setOpenWarning={setOpenWarning}
-                            requestchannels={requestchannels}
-                            setrequestchannels={setrequestchannels}
                             sendchannels={sendchannels}
                             setsendchannels={setsendchannels}
                         />:""
