@@ -101,7 +101,7 @@ export const getAgentsSuccess = (state: IState, action: IAction): IState => ({
         data: action.payload.data ? action.payload.data.map((x: any) => ({
             ...x,
             channels: x.channels?.split(",") || [],
-            countNotAnwsered: x.countActive - x.countAnwsered,
+            countNotAnswered: x.countActive - x.countAnswered,
             isConnected: x.status === "ACTIVO"
         })).sort((a: any, b: any) => (a.isConnected === b.isConnected) ? 0 : a.isConnected ? -1 : 1) : [],
         count: action.payload.count,
@@ -418,14 +418,14 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
         if (data.newConversation) {
             newAgentList = newAgentList.map(x => x.userid === data.userid ? {
                 ...x,
-                countAnwsered: x.countAnwsered + (data.userid === 2 ? 1 : (data.isAnswered ? 1 : 0)),
-                countNotAnwsered: (x.countNotAnwsered || 0) + (data.userid === 2 ? 0 : (data.isAnswered ? 0 : 1)),
+                countAnswered: x.countAnswered + (data.userid === 2 ? 1 : (data.isAnswered ? 1 : 0)),
+                countNotAnswered: (x.countNotAnswered || 0) + (data.userid === 2 ? 0 : (data.isAnswered ? 0 : 1)),
             } : x)
         } else if (data.usertype === "agent" && data.ticketWasAnswered) {
             newAgentList = newAgentList.map(x => x.userid === data.userid ? {
                 ...x,
-                countAnwsered: (data.status === "ASIGNADO") ? x.countAnwsered + 1 : x.countAnwsered,
-                countNotAnwsered: (data.status === "ASIGNADO") ? (x.countNotAnwsered || 1) - 1 : x.countNotAnwsered,
+                countAnswered: (data.status === "ASIGNADO") ? x.countAnswered + 1 : x.countAnswered,
+                countNotAnswered: (data.status === "ASIGNADO") ? (x.countNotAnswered || 1) - 1 : x.countNotAnswered,
             } : x)
         }
     }
@@ -501,11 +501,12 @@ export const changeStatusTicketWS = (state: IState, action: IAction): IState => 
     const { agentList: { data }, userType } = state;
 
     if (userType === 'SUPERVISOR') {
+        debugger
         newAgentList = data.map(x => x.userid === userid ? {
             ...x,
             countPaused: status === "SUSPENDIDO" ? x.countPaused + 1 : x.countPaused - 1,
-            countAnswered: isanswered ? x.countAnwsered + (status === "ASIGNADO" ? 1 : -1) : x.countAnwsered,
-            countNotAnwsered: !isanswered ? (x.countNotAnwsered || 0) + (status === "ASIGNADO" ? 1 : -1) : x.countNotAnwsered,
+            countAnswered: isanswered ? x.countAnswered + (status === "ASIGNADO" ? 1 : -1) : x.countAnswered,
+            countNotAnswered: !isanswered ? (x.countNotAnswered || 0) + (status === "ASIGNADO" ? 1 : -1) : x.countNotAnswered,
         } : x)
     }
 
@@ -532,9 +533,9 @@ export const deleteTicket = (state: IState, action: IAction): IState => {
         newAgentList = newAgentList.map(x => x.userid === data.userid ? {
             ...x,
             countClosed: x.countClosed + 1,
-            countAnwsered: ((data.status === "ASIGNADO" && data.isanswered) || data.userid === 2) ? x.countAnwsered - 1 : x.countAnwsered,
-            countNotAnwsered: (data.status === "ASIGNADO" && !data.isanswered && data.userid !== 2) ? (x.countNotAnwsered || 1) - 1 : x.countNotAnwsered,
-            countPaused: (data.status === "PAUSED") ? x.countPaused - 1 : x.countPaused
+            countAnswered: ((data.isanswered || data.userid === 2) && data.status === "ASIGNADO") ? x.countAnswered - 1 : x.countAnswered,
+            countNotAnswered: ((!data.isanswered && data.userid !== 2) && data.status === "ASIGNADO") ? (x.countNotAnswered || 1) - 1 : x.countNotAnswered,
+            countPaused: (data.status === "SUSPENDIDO") ? x.countPaused - 1 : x.countPaused
         } : x)
     }
 
