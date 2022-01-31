@@ -128,7 +128,10 @@ export const Campaign: FC = () => {
                                 className={classes.button}
                                 variant="contained"
                                 color="primary"
-                                onClick={() => handleStatus(id)}
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleStatus(id)
+                                }}
                                 style={{ backgroundColor: "#55bd84" }}
                             ><Trans i18nKey={langKeys.status} />
                             </Button>
@@ -138,7 +141,10 @@ export const Campaign: FC = () => {
                                 className={classes.button}
                                 variant="contained"
                                 color="primary"
-                                onClick={() => handleStart(id)}
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleStart(id)
+                                }}
                                 style={{ backgroundColor: "#55bd84" }}
                             ><Trans i18nKey={langKeys.execute} />
                             </Button>

@@ -72,12 +72,17 @@ function timetomin(cc: any) {
     return hour * 60 + minutes + (seconds >= 30 ? 1 : 0);
 }
 function formatname(cc: any) {
-    let newname = cc.toLowerCase();
-    let names = newname.split(" ");
-    for (let i = 0; i < names.length; i++) {
-        names[i] = (names[i] ? names[i][0].toUpperCase() : "") + names[i].substr(1);
+    if (cc) {
+        let newname = cc.toLowerCase();
+        let names = newname.split(" ");
+        for (let i = 0; i < names.length; i++) {
+            names[i] = (names[i] ? names[i][0].toUpperCase() : "") + names[i].substr(1);
+        }
+        return names.join(" ")
     }
-    return names.join(" ")
+    else {
+        return ''
+    }
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -1160,7 +1165,17 @@ const DashboardManagerial: FC = () => {
             settitlefile(t(langKeys.top5labels));
             setSection('etiqueta')
             dispatch(getCollectionAux(gerencialetiquetasseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+        } else if (tipeoffilter === "averageconversationsattendedbyhour") {
+            settitlefile(t(langKeys.averageconversationsattendedbyhour));
+            setSection('summary')
+            dispatch(getCollectionAux(gerencialsummaryseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+        } else if (tipeoffilter === "averageconversationsattendedbytheadvisorbyhour") {
+            settitlefile(t(langKeys.averageconversationsattendedbytheadvisorbyhour));
+            setSection('summary')
+            dispatch(getCollectionAux(gerencialsummaryseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
         } else {
+            settitlefile(t(langKeys.summary));
+            setSection('summary')
             dispatch(getCollectionAux(gerencialsummaryseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
         }
     }
