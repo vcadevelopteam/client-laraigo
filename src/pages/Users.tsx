@@ -1093,7 +1093,6 @@ const Users: FC = () => {
         };
     }, []);
     useEffect(() => {
-        console.log(executeRes)
         if (waitImport) {
             if (!executeRes.loading && !executeRes.error) {
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
@@ -1101,7 +1100,7 @@ const Users: FC = () => {
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
             } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization).toLocaleLowerCase() })
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: `${t(langKeys.user).toLocaleLowerCase()}(${executeRes.key})` })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
@@ -1116,7 +1115,7 @@ const Users: FC = () => {
                 dispatch(showBackdrop(false));
                 setwaitChanges(false);
             } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.organization).toLocaleLowerCase() })
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 dispatch(showBackdrop(false));
                 setwaitChanges(false);
@@ -1145,7 +1144,7 @@ const Users: FC = () => {
         setRowSelected({ row: null, edit: true });
     }
 
-    const handleUpload = async (files: any, useravailable: number) => {
+    const handleUpload = async (files: any, useravailable: number, limit: number) => {
         const file = files?.item(0);
         if (file) {
             let excel: any = await uploadExcel(file, undefined);
@@ -1161,7 +1160,7 @@ const Users: FC = () => {
             });
             if (data.length > 0) {
                 if (data.length > useravailable) {
-                    dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.userlimit) }))
+                    dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.userlimit, { limit }) }))
                 }
                 else {
                     dispatch(showBackdrop(true));
@@ -1203,7 +1202,7 @@ const Users: FC = () => {
                     }), {});
                     Object.values(table).forEach((p) => {
                         dispatch(saveUser({
-                            header: insUser({ ...p }),
+                            header: insUser({ ...p, key: p.usr }),
                             detail: [insOrgUser({ ...p.detail })]
                         }, true));
                     })
@@ -1281,14 +1280,17 @@ const Users: FC = () => {
                     dispatch(showBackdrop(false));
                     setWaitCheck(false);
                     if (!(mainAuxResult.data[0].usernumber < mainAuxResult.data[0].userscontracted)) {
-                        dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.userlimit) }))
+                        console.log("mainAuxResult.data[0].userscontracted", mainAuxResult.data[0].userscontracted)
+                        dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.userlimit, {
+                            limit: mainAuxResult.data[0].userscontracted
+                        }) }))
                     }
                     else {
                         if (operation === 'REGISTER') {
                             handleRegister();
                         }
                         if (operation === 'UPLOAD') {
-                            handleUpload(fileToUpload, mainAuxResult.data[0].userscontracted - mainAuxResult.data[0].usernumber);
+                            handleUpload(fileToUpload, mainAuxResult.data[0].userscontracted - mainAuxResult.data[0].usernumber, mainAuxResult.data[0].userscontracted);
                         }
                     }
                 }
