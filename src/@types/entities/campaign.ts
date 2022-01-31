@@ -36,6 +36,7 @@ export interface ICampaign {
 	messagetemplatetype?: string,
 	messagetemplateheader?: Dictionary,
 	messagetemplatebuttons?: Dictionary[],
+	// messagetemplatefooter?: string,
 	executiontype?: string,
 	batchjson?: Dictionary[],
 	fields?: Dictionary,

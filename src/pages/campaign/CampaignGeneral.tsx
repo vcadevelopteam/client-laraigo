@@ -86,6 +86,7 @@ type FormFields = {
     messagetemplatetype: string,
 	messagetemplateheader: Dictionary,
 	messagetemplatebuttons: Dictionary[],
+    // messagetemplatefooter: string,
 	executiontype: string,
 	batchjson: Dictionary[],
 	fields: SelectedColumns,
@@ -129,6 +130,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
             messagetemplatetype: 'STANDARD',
             messagetemplateheader: {},
             messagetemplatebuttons: [],
+            // messagetemplatefooter: '',
             executiontype: detaildata?.executiontype || (auxdata?.length > 0 ? auxdata[0].executiontype : 'MANUAL'),
             batchjson: [],
             fields: new SelectedColumns(),
@@ -196,6 +198,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('messagetemplatetype', data.messagetemplatetype);
         setValue('messagetemplateheader', data.messagetemplateheader || {});
         setValue('messagetemplatebuttons', data.messagetemplatebuttons || []);
+        // setValue('messagetemplatefooter', data.messagetemplatefooter || '');
         setValue('executiontype', data.executiontype);
         setValue('batchjson', data.batchjson || []);
         setValue('fields', {...new SelectedColumns(), ...data.fields});
@@ -285,6 +288,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('messagetemplatetype', 'STANDARD');
         setValue('messagetemplateheader', {});
         setValue('messagetemplatebuttons', []);
+        // setValue('messagetemplatefooter', '');
         await trigger('type');
     }
     
@@ -308,6 +312,10 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 setValue('messagetemplatebuttons', messageTemplate?.buttons || []);
             else
                 setValue('messagetemplatebuttons', []);
+            // if (messageTemplate.footerenabled)
+            //     setValue('messagetemplatefooter', messageTemplate?.footer || '');
+            // else
+            //     setValue('messagetemplatefooter', '');
         }
         await trigger(['messagetemplateid', 'messagetemplatename', 'messagetemplatenamespace', 'messagetemplatetype']);
     }
