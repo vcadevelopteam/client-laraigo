@@ -23,6 +23,7 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
     const {
         commonClasses,
         FBButtonStyles,
+        selectedChannels,
         deleteChannel,
         setrequestchannels,
     } = useContext(SubscriptionContext);
@@ -164,7 +165,7 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
                         });
                     }}
                 />
-            ) : (
+            ) : selectedChannels === 1 && (
                 <Button
                     onClick={() => { finishreg() }}
                     className={commonClasses.button}

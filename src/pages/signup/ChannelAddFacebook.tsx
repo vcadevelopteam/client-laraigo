@@ -21,6 +21,7 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
     const {
         commonClasses,
         FBButtonStyles,
+        selectedChannels,
         deleteChannel,
         setrequestchannels,
     } = useContext(SubscriptionContext);
@@ -172,18 +173,18 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
                             version: 'v8.0'
                         });
                     }}
-                />) :
-                (
-                    <Button
-                        onClick={finishreg}
-                        className={commonClasses.button}
-                        variant="contained"
-                        color="primary"
-                        disabled={nextbutton}
-                    >
-                        <Trans i18nKey={langKeys.next} />
-                    </Button>
-                )}
+                />
+            ) : selectedChannels === 1 && (
+                <Button
+                    onClick={finishreg}
+                    className={commonClasses.button}
+                    variant="contained"
+                    color="primary"
+                    disabled={nextbutton}
+                >
+                    <Trans i18nKey={langKeys.next} />
+                </Button>
+            )}
         </div>
     );
 }

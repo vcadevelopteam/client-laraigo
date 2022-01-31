@@ -19,6 +19,7 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
     const {
         commonClasses,
         FBButtonStyles,
+        selectedChannels,
         deleteChannel,
         setrequestchannels,
     } = useContext(SubscriptionContext);
@@ -160,7 +161,7 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
                         });
                     }}
                 />
-            ) : (
+            ) : selectedChannels === 1 && (
                 <Button
                     onClick={() => { finishreg() }}
                     className={commonClasses.button}

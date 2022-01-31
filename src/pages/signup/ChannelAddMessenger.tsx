@@ -21,6 +21,7 @@ interface ChannelAddMessengerProps {
 
 export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarning }) => {
     const {
+        selectedChannels,
         commonClasses,
         FBButtonStyles,
         deleteChannel,
@@ -162,8 +163,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
                         });
                     }}
                 />
-            ) :
-            (
+            ) : selectedChannels === 1 && (
                 <Button
                     onClick={finishreg}
                     className={commonClasses.button}

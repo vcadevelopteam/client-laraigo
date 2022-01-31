@@ -246,7 +246,6 @@ export const SignUp: FC = () => {
                 }}>
                     {step >= 3 ? (
                         <LeftSide
-                            setrequestchannels={setrequestchannels}
                             setOpenWarning={setOpenWarning}
                         />
                     ) : (

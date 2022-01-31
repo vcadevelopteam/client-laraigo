@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useContext, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { makeStyles, Breadcrumbs, Button, Box, TextField, IconButton, Typography } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { DeleteOutline as DeleteOutlineIcon } from '@material-ui/icons';
@@ -63,6 +63,7 @@ const CssPhonemui = styled(MuiPhoneNumber)({
 export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
     const {
         commonClasses,
+        setForeground,
         deleteChannel,
         setrequestchannels,
     } = useContext(SubscriptionContext);
@@ -119,6 +120,17 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
         }
     })
 
+    // useEffect(() => {
+    //     console.log(viewSelected)
+    //     if (viewSelected === "view2") {
+    //         setBackButtonOnClick(() => setViewSelected("view1"));
+    //     } else if (viewSelected === "view3") {
+    //         setBackButtonOnClick(() => setViewSelected("view2"));
+    //     } else if (viewSelected === "view1") {
+    //         setBackButtonOnClick(undefined);
+    //     }
+    // }, [viewSelected]);
+
     function checkissues() {
         setViewSelected("view2")
     }
@@ -151,156 +163,171 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
         partialf.parameters.communicationchannelowner = "";
         setFields(partialf)
     }
+    console.log('chatweb:', viewSelected)
     if (viewSelected === "view2") {
-        return (<div style={{ marginTop: "auto", marginBottom: "auto", maxHeight: "100%" }}>
-            <Breadcrumbs aria-label="breadcrumb">
-                <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
-                    {t(langKeys.previoustext)}
-                </Link>
-            </Breadcrumbs>
-            <div>
-                <div >
-                    <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", marginBottom: 10 }}>{t(langKeys.brandpointcontact)}</div>
-                    <div style={{ textAlign: "center", fontWeight: 500, fontSize: 16, color: "grey" }}>{t(langKeys.brandpointcontact2)}</div>
-                    <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display: "flex" }}>
-                        <TextField
-                            className={classes.fields1}
-                            variant="outlined"
-                            margin="normal"
-                            fullWidth
-                            size="small"
-                            defaultValue={fields.service.firstname}
-                            label={t(langKeys.firstname)}
-                            name="firstname"
-                            error={!!errors.firstname}
-                            helperText={errors.firstname}
-                            onChange={(e) => {
-                                let partialf = fields;
-                                partialf.service.firstname = e.target.value;
-                                setFields(partialf);
-                                disableContinue(e.target.value);
-                            }}
-                        />
-                        <TextField
-                            className={classes.fields2}
-                            variant="outlined"
-                            margin="normal"
-                            fullWidth
-                            size="small"
-                            defaultValue={fields.service.lastname}
-                            label={t(langKeys.lastname)}
-                            name="lastname"
-                            error={!!errors.lastname}
-                            helperText={errors.lastname}
-                            onChange={(e) => {
-                                let partialf = fields;
-                                partialf.service.lastname = e.target.value;
-                                setFields(partialf);
-                                disableContinue(e.target.value);
-                            }}
-                        />
-                    </div>
-                    <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display: "flex" }}>
-                        <TextField
-                            className={classes.fields1}
-                            style={{ marginBottom: 0 }}
-                            variant="outlined"
-                            margin="normal"
-                            fullWidth
-                            size="small"
-                            label={t(langKeys.email)}
-                            name="email"
-                            defaultValue={fields.service.email}
-                            error={!!errors.email}
-                            helperText={errors.email}
-                            onChange={(e) => {
-                                let partialf = fields;
-                                partialf.service.email = e.target.value;
-                                setFields(partialf);
-                                setErrors(p => ({ ...p, email: e.target.value.includes('@') && e.target.value.includes('.') ? "" : t(langKeys.emailverification) }));
-                                disableContinue(e.target.value);
-                            }}
-                        />
-                        <CssPhonemui
-                            className={classes.fields2}
-                            variant="outlined"
-                            margin="normal"
-                            size="small"
-                            disableAreaCodes={true}
-                            value={fields.service.phone}
-                            error={!!errors.phone}
-                            helperText={errors.phone}
-                            label={t(langKeys.phone)}
-                            name="phone"
-                            fullWidth
-                            defaultCountry={'pe'}
-                            onChange={(e) => {
-                                let partialf = fields;
-                                partialf.service.phone = e;
-                                setFields(partialf);
-                                disableContinue(e);
-                            }}
-                        />
-                    </div>
-                    <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginLeft: "15px", marginBottom: "15px" }}>{t(langKeys.emailcondition)}</div>
-                    <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", marginBottom: 10 }}>{t(langKeys.whatsappinformation)}</div>
-                    <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display: "flex" }}>
-                        <TextField
-                            className={classes.fields3}
-                            variant="outlined"
-                            margin="normal"
-                            fullWidth
-                            size="small"
-                            defaultValue={fields.service.phonenumberwhatsappbusiness}
-                            label={t(langKeys.desiredphonenumberwhatsappbusiness)}
-                            name="phonenumberwhatsappbusiness"
-                            error={!!errors.phonenumberwhatsappbusiness}
-                            helperText={errors.phonenumberwhatsappbusiness}
-                            onChange={(e) => {
-                                let partialf = fields;
-                                partialf.service.phonenumberwhatsappbusiness = e.target.value;
-                                setFields(partialf);
-                                disableContinue(e.target.value);
-                            }}
-                        />
-                    </div>
-                    <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginLeft: "15px", marginBottom: "15px" }}>{t(langKeys.whatsappinformation3)}</div>
-                    <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display: "flex" }}>
-                        <TextField
-                            className={classes.fields3}
-                            variant="outlined"
-                            margin="normal"
-                            fullWidth
-                            size="small"
-                            defaultValue={fields.service.nameassociatednumber}
-                            label={t(langKeys.nameassociatednumber)}
-                            name="nameassociatednumber"
-                            error={!!errors.nameassociatednumber}
-                            helperText={errors.nameassociatednumber}
-                            onChange={(e) => {
-                                let partialf = fields;
-                                partialf.service.nameassociatednumber = e.target.value;
-                                setFields(partialf);
-                                disableContinue(e.target.value);
-                            }}
-                        />
-                    </div>
-                    <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginLeft: "15px", marginBottom: "20px" }}>{t(langKeys.whatsappinformation4)}</div>
-                    <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginLeft: "15px", marginBottom: "15px" }}><b>*{t(langKeys.whatsappsubtitle1)}</b></div>
-                    <div style={{ width: "100%", margin: "0px 15px" }}>
-                        <Button
-                            // onClick={() => { checkissues() }}
-                            onClick={() => setViewSelected("view3")}
-                            className={classes.button2}
-                            disabled={disablebutton}
-                            variant="contained"
-                            color="primary"
-                        >{t(langKeys.next)}
-                        </Button>
-                    </div>
+        return (
+            <div style={{ marginTop: "auto", marginBottom: "auto", maxHeight: "100%" }}>
+                <Breadcrumbs aria-label="breadcrumb">
+                    <Link
+                        color="textSecondary"
+                        href="/"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            setViewSelected("view1");
+                            setForeground(undefined);
+                        }}
+                    >
+                        {'<< '}<Trans i18nKey={langKeys.previoustext} />
+                    </Link>
+                </Breadcrumbs>
+                <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", marginBottom: 10 }}>{t(langKeys.brandpointcontact)}</div>
+                <div style={{ textAlign: "center", fontWeight: 500, fontSize: 16, color: "grey" }}>{t(langKeys.brandpointcontact2)}</div>
+                <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display: "flex" }}>
+                    <TextField
+                        className={classes.fields1}
+                        variant="outlined"
+                        margin="normal"
+                        fullWidth
+                        size="small"
+                        defaultValue={fields.service.firstname}
+                        label={t(langKeys.firstname)}
+                        name="firstname"
+                        error={!!errors.firstname}
+                        helperText={errors.firstname}
+                        onChange={(e) => {
+                            let partialf = fields;
+                            partialf.service.firstname = e.target.value;
+                            setFields(partialf);
+                            disableContinue(e.target.value);
+                        }}
+                    />
+                    <TextField
+                        className={classes.fields2}
+                        variant="outlined"
+                        margin="normal"
+                        fullWidth
+                        size="small"
+                        defaultValue={fields.service.lastname}
+                        label={t(langKeys.lastname)}
+                        name="lastname"
+                        error={!!errors.lastname}
+                        helperText={errors.lastname}
+                        onChange={(e) => {
+                            let partialf = fields;
+                            partialf.service.lastname = e.target.value;
+                            setFields(partialf);
+                            disableContinue(e.target.value);
+                        }}
+                    />
+                </div>
+                <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display: "flex" }}>
+                    <TextField
+                        className={classes.fields1}
+                        style={{ marginBottom: 0 }}
+                        variant="outlined"
+                        margin="normal"
+                        fullWidth
+                        size="small"
+                        label={t(langKeys.email)}
+                        name="email"
+                        defaultValue={fields.service.email}
+                        error={!!errors.email}
+                        helperText={errors.email}
+                        onChange={(e) => {
+                            let partialf = fields;
+                            partialf.service.email = e.target.value;
+                            setFields(partialf);
+                            setErrors(p => ({ ...p, email: e.target.value.includes('@') && e.target.value.includes('.') ? "" : t(langKeys.emailverification) }));
+                            disableContinue(e.target.value);
+                        }}
+                    />
+                    <CssPhonemui
+                        className={classes.fields2}
+                        variant="outlined"
+                        margin="normal"
+                        size="small"
+                        disableAreaCodes={true}
+                        value={fields.service.phone}
+                        error={!!errors.phone}
+                        helperText={errors.phone}
+                        label={t(langKeys.phone)}
+                        name="phone"
+                        fullWidth
+                        defaultCountry={'pe'}
+                        onChange={(e) => {
+                            let partialf = fields;
+                            partialf.service.phone = e;
+                            setFields(partialf);
+                            disableContinue(e);
+                        }}
+                    />
+                </div>
+                <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginLeft: "15px", marginBottom: "15px" }}>{t(langKeys.emailcondition)}</div>
+                <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", marginBottom: 10 }}>{t(langKeys.whatsappinformation)}</div>
+                <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display: "flex" }}>
+                    <TextField
+                        className={classes.fields3}
+                        variant="outlined"
+                        margin="normal"
+                        fullWidth
+                        size="small"
+                        defaultValue={fields.service.phonenumberwhatsappbusiness}
+                        label={t(langKeys.desiredphonenumberwhatsappbusiness)}
+                        name="phonenumberwhatsappbusiness"
+                        error={!!errors.phonenumberwhatsappbusiness}
+                        helperText={errors.phonenumberwhatsappbusiness}
+                        onChange={(e) => {
+                            let partialf = fields;
+                            partialf.service.phonenumberwhatsappbusiness = e.target.value;
+                            setFields(partialf);
+                            disableContinue(e.target.value);
+                        }}
+                    />
+                </div>
+                <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginLeft: "15px", marginBottom: "15px" }}>{t(langKeys.whatsappinformation3)}</div>
+                <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display: "flex" }}>
+                    <TextField
+                        className={classes.fields3}
+                        variant="outlined"
+                        margin="normal"
+                        fullWidth
+                        size="small"
+                        defaultValue={fields.service.nameassociatednumber}
+                        label={t(langKeys.nameassociatednumber)}
+                        name="nameassociatednumber"
+                        error={!!errors.nameassociatednumber}
+                        helperText={errors.nameassociatednumber}
+                        onChange={(e) => {
+                            let partialf = fields;
+                            partialf.service.nameassociatednumber = e.target.value;
+                            setFields(partialf);
+                            disableContinue(e.target.value);
+                        }}
+                    />
+                </div>
+                <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginLeft: "15px", marginBottom: "20px" }}>{t(langKeys.whatsappinformation4)}</div>
+                <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginLeft: "15px", marginBottom: "15px" }}><b>*{t(langKeys.whatsappsubtitle1)}</b></div>
+                <div style={{ width: "100%", margin: "0px 15px" }}>
+                    <Button
+                        // onClick={() => { checkissues() }}
+                        onClick={() => {
+                            if (provider === "DIALOG") {
+                                setViewSelected("view3");
+                            } else {
+                                setViewSelected("view1");
+                                setForeground(undefined);
+                            }
+                        }}
+                        className={classes.button2}
+                        disabled={disablebutton}
+                        variant="contained"
+                        color="primary"
+                    >
+                        <Trans i18nKey={langKeys.next} />
+                    </Button>
                 </div>
             </div>
-        </div>)
+        );
     }
     else if (viewSelected === "view3" && provider === "DIALOG") {
         return (<div style={{ marginTop: "auto", marginBottom: "auto", maxHeight: "100%" }}>
@@ -380,7 +407,10 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                 </div>
             </div> */}
             <Button
-                onClick={() => { setViewSelected("view2") }}
+                onClick={() => {
+                    setViewSelected("view2");
+                    setForeground('whatsapp');
+                }}
                 className={commonClasses.button}
                 disabled={channelreg}
                 variant="contained"

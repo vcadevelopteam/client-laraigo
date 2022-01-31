@@ -26,6 +26,7 @@ const useChannelAddStyles = makeStyles(theme => ({
 export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
     const {
         commonClasses,
+        selectedChannels,
         deleteChannel,
         setrequestchannels,
     } = useContext(SubscriptionContext);
@@ -125,15 +126,17 @@ export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = 
                     </div>
                 </div>
             </div> */}
-            <Button
-                onClick={() => { finishreg() }}
-                className={commonClasses.button}
-                disabled={channelreg}
-                variant="contained"
-                color="primary"
-            >
-                <Trans i18nKey={langKeys.next} />
-            </Button>
+            {selectedChannels === 1 && (
+                <Button
+                    onClick={() => { finishreg() }}
+                    className={commonClasses.button}
+                    disabled={channelreg}
+                    variant="contained"
+                    color="primary"
+                >
+                    <Trans i18nKey={langKeys.next} />
+                </Button>
+            )}
         </div>
     );
 }

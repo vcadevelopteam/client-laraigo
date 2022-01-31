@@ -1,6 +1,7 @@
 import { makeStyles } from '@material-ui/core';
+import { IRequestBody } from '@types';
 import { useSelector } from 'hooks';
-import React, { FC, useState, createContext, useMemo, CSSProperties } from 'react';
+import React, { FC, useState, createContext, useMemo, CSSProperties, useEffect } from 'react';
 
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 interface Subscription {
@@ -10,13 +11,16 @@ interface Subscription {
     FBButtonStyles: CSSProperties;
     limitChannels: number;
     mainData: MainData;
-    requestchannels: any[];
-    setrequestchannels: SetState<any[]>;
+    requestchannels: IRequestBody[];
+    foreground: keyof ListChannels | undefined;
+    setForeground: SetState<keyof ListChannels | undefined>;
+    setrequestchannels: SetState<IRequestBody[]>;
     setMainData: SetState<MainData>;
     resetChannels: () => void;
     addChannel: (option: keyof ListChannels) => void;
     deleteChannel: (option: keyof ListChannels) => void;
     toggleChannel: (option: keyof ListChannels) => void;
+    
 }
 
 export interface ListChannels {
@@ -82,6 +86,8 @@ export const SubscriptionContext = createContext<Subscription>({
     listchannels: defaultListChannels,
     mainData: {} as any,
     requestchannels: [],
+    foreground: undefined,
+    setForeground: () => {},
     setrequestchannels: () => {},
     setMainData: () => {},
     addChannel: () => {},
@@ -143,7 +149,8 @@ export const SubscriptionProvider: FC = ({ children }) => {
     const classes = useStyles();
     const [listchannels, setlistchannels] = useState<ListChannels>(defaultListChannels);
     const planData = useSelector(state => state.signup.verifyPlan);
-    const [requestchannels, setrequestchannels] = useState<any[]>([]);
+    const [requestchannels, setrequestchannels] = useState<IRequestBody[]>([]);
+    const [foreground, setForeground] = useState<keyof ListChannels | undefined>(undefined);
     const [mainData, setMainData] = useState<MainData>({
         email: "",
         password: "",
@@ -168,6 +175,8 @@ export const SubscriptionProvider: FC = ({ children }) => {
     const deleteChannel = (option: keyof ListChannels) => {
         setlistchannels(prev => {
             const v = prev[option];
+            if (foreground === option) setForeground(undefined);
+            
             if (v === false) return prev;
             return {
                 ...prev,
@@ -206,11 +215,13 @@ export const SubscriptionProvider: FC = ({ children }) => {
     return (
         <SubscriptionContext.Provider value={{
             commonClasses: classes,
-            limitChannels: 4, // planData.data[0]?.channelscontracted || 0,
+            limitChannels: 2, // planData.data[0]?.channelscontracted || 0,
             selectedChannels,
             listchannels,
             mainData,
             requestchannels,
+            foreground,
+            setForeground,
             setrequestchannels,
             setMainData,
             addChannel,
