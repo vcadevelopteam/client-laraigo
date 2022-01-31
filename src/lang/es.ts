@@ -1353,14 +1353,14 @@ const translation: LangKeys = {
     dashboard_productivity_tme_targettme: 'TME Objetivo',
 
     dashboard_productivity_tmodistribution_ticketnum: 'Número de ticket',
-    dashboard_productivity_tmodistribution_hourrange: 'Rango de Hora',
+    dashboard_productivity_tmodistribution_hourrange: 'Rango de Minutos',
     dashboard_productivity_tmodistribution_closedby: 'Cerrado por',
     dashboard_productivity_tmodistribution_channel: 'Canal',
     dashboard_productivity_tmodistribution_agent: 'Asesor',
     dashboard_productivity_tmodistribution_duration: 'Duración Total',
 
     dashboard_productivity_tmedistribution_ticketnum: 'Número de ticket',
-    dashboard_productivity_tmedistribution_hourrange: 'Rango de Hora',
+    dashboard_productivity_tmedistribution_hourrange: 'Rango de Minutos',
     dashboard_productivity_tmedistribution_closedby: 'Cerrado por',
     dashboard_productivity_tmedistribution_channel: 'Canal',
     dashboard_productivity_tmedistribution_agent: 'Asesor',

@@ -64,7 +64,7 @@ const MessageInbox: React.FC = () => {
             countActive: 0,
             countPaused: 0,
             countClosed: 0,
-            countAnwsered: 0,
+            countAnswered: 0,
             countPending: 0,
             status: '',
             groups: '',

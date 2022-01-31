@@ -538,6 +538,8 @@ const UserSettings: FC = () => {
             dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.notpermisionforaction) }));
         }
     }
+    
+    console.log(user?.paymentmethod)
 
     useEffect(() => {
         if (waitSave) {
