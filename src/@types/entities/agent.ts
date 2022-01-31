@@ -4,8 +4,8 @@ export interface IAgent {
     countActive: number;
     countPaused: number;
     countClosed: number;
-    countAnwsered: number;
-    countNotAnwsered?: number;
+    countAnswered: number;
+    countNotAnswered?: number;
     countPending: number;
     status: string | null;
     groups: string | null;

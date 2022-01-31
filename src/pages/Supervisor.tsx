@@ -114,7 +114,7 @@ const ChannelTicket: FC<{ channelName: string, channelType: string, color: strin
     </div>
 )
 
-const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agent: { name, userid, image, isConnected, countPaused, countClosed, countNotAnwsered, countPending, countAnwsered, channels } }) => {
+const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agent: { name, userid, image, isConnected, countPaused, countClosed, countNotAnswered, countPending, countAnswered, channels } }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -149,7 +149,7 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agen
                 {(userid === 2 || userid === 3) &&
                     <CountTicket
                         label={t(langKeys.active) + "s"}
-                        count={countAnwsered + (countNotAnwsered || 0)}
+                        count={countAnswered + (countNotAnswered || 0)}
                         color="#55BD84"
                     />
                 }
@@ -157,12 +157,12 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agen
                     <>
                         <CountTicket
                             label={t(langKeys.attending)}
-                            count={countAnwsered}
+                            count={countAnswered}
                             color="#55BD84"
                         />
                         <CountTicket
                             label={t(langKeys.pending)}
-                            count={countNotAnwsered || 0}
+                            count={countNotAnswered || 0}
                             color="#FB5F5F"
                         />
                     </>

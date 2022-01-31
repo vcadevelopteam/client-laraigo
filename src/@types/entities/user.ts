@@ -44,6 +44,7 @@ export interface IUser {
     plan: string;
     orgdesc: string;
     redirect: string;
+    paymentmethod: string;
     userid: number;
     corpid: number;
     orgid: number;
