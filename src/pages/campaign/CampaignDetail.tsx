@@ -126,6 +126,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                         messagetemplatetype: data?.messagetemplatetype,
                         messagetemplateheader: data?.messagetemplateheader || {},
                         messagetemplatebuttons: data?.messagetemplatebuttons || [],
+                        // messagetemplatefooter: data?.messagetemplatefooter || '',
                         executiontype: data?.executiontype,
                         batchjson: data?.batchjson || [],
                         fields: {...new SelectedColumns(), ...data?.fields},

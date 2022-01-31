@@ -2960,6 +2960,12 @@ export const langKeys = {
     emissornone: 'emissornone',
     detractionnotepay1: 'detractionnotepay1',
     detractionnotepay2: 'detractionnotepay2',
+    ERROR: 'ERROR',
+    HSM: 'HSM',
+    MAIL: 'MAIL',
+    SMS: 'SMS',
+    ENVIO: 'ENVIO',
+    COMPRA: 'COMPRA',
 };
 
 export type LangKeys = typeof langKeys;

@@ -80,20 +80,6 @@ const StyledTableCell = withStyles((theme) => ({
 const StyledTableRow = withStyles((theme) => ({
 }))(TableRow);
 
-const datatotalize = [{value:1,description: "CORPORATION"},{value:2,description: "ORGANIZATION"}]
-
-const datacurrency = [{value:"PEN",description: "PEN"},{value:"USD",description: "USD"}]
-
-const datapaymentstatus = [{value:"PENDING",description: "PENDING"},{value:"PAID",description: "PAID"},{value:"NONE",description: "NONE"}]
-
-const years = [{desc:"2010"},{desc:"2011"},{desc:"2012"},{desc:"2013"},{desc:"2014"},{desc:"2015"},{desc:"2016"},{desc:"2017"},{desc:"2018"},{desc:"2020"},{desc:"2021"},{desc:"2022"},{desc:"2023"},{desc:"2024"},{desc:"2025"}]
-
-const months =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }]
-
-const transactiontype = [{value:"HSM", description: "HSM"}, { value:"MAIL", description: "MAIL" }, { value:"SMS", description: "SMS" }]
-
-const operationtype = [{value:"ENVIO", description: "ENVIO"}, { value:"COMPRA", description: "COMPRA" }]
-
 function formatNumber(num: number) {
     if (num)
         return num.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
@@ -122,7 +108,6 @@ export const DateOptionsMenuComponent = (value: any, handleClickItemMenu: (key: 
 
 const useStyles = makeStyles((theme) => ({
     fieldView: {
-        // flex: '1 1 250px'
     },
     container: {
         display: 'flex',
@@ -192,15 +177,6 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const isEmpty = (str?: string) => {
-    return !str || str.length === 0;
-}
-
-const YEARS = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }]
-const MONTHS = [{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" },]
-
-const statusToEdit = ["DRAFT", "INVOICED", "ERROR", "CANCELED"];
-
 const IDCOSTPERPERIOD = "IDCOSTPERPERIOD";
 const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const dispatch = useDispatch();
@@ -226,11 +202,15 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         supportplan: "",
         year: String(new Date().getFullYear())
     });
+
     const [disableSearch, setdisableSearch] = useState(false);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitCalculate, setWaitCalculate] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
+
+    const dataYears = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }];
+    const dataMonths =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
 
     function search(){
         dispatch(showBackdrop(true))
@@ -356,7 +336,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 valueDefault={dataMain.year}
                                 variant="outlined"
                                 onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||0}))}
-                                data={years}
+                                data={dataYears}
                                 optionDesc="desc"
                                 optionValue="desc"
                             />
@@ -366,7 +346,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 valueDefault={dataMain.month}
                                 variant="outlined"
                                 onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
-                                data={months}
+                                data={dataMonths}
                                 uset={true}
                                 prefixTranslation="month_"
                                 optionDesc="val"
@@ -1171,11 +1151,14 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
         orgid: user?.orgid || 0,
         totalize: 2,
     });
+
     const [datareport, setdatareport] = useState<any>([]);
     const [requesttipe, setrequesttipe] = useState(2)
     const [waitCalculate, setWaitCalculate] = useState(false);
     const [waitExport, setWaitExport] = useState(false);
     const [waitSearch, setWaitSearch] = useState(false);
+
+    const datatotalize = [{ value: 1, description: t(langKeys.corporation) }, { value: 2, description: t(langKeys.organization) }]
 
     function handleDateChange(e: any){
         if(e!==""){
@@ -1652,6 +1635,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
         paymentstatus: "",
         currency: ""
     });
+
     const [dataInvoice, setDataInvoice] = useState<Dictionary[]>([]);
     const [disableSearch, setdisableSearch] = useState(false);
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
@@ -1661,6 +1645,12 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
     const [waitRefresh, setWaitRefresh] = useState(false);
     const [modalRowSelect, setModalRowSelect] = useState<Dictionary | null>(null);
     const [modalRowSend, setModalRowSend] = useState(false);
+
+    const dataYears = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }];
+    const dataMonths =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
+
+    const dataCurrency = [{ value: "PEN", description: "PEN" }, { value: "USD", description: "USD" }]
+    const dataPayment = [{ value: "PENDING", description: t(langKeys.PENDING) }, { value: "PAID", description: t(langKeys.PAID) }, { value:"NONE", description: t(langKeys.NONE) }]
 
     const fetchData = () => dispatch(getCollection(selInvoiceClient(dataMain)));
 
@@ -1753,13 +1743,13 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                 accessor: 'orgid',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    if (row.paymentstatus !== "PENDING" || row.totalamount <= 0)
+                    if ((row.invoicestatus === "DRAFT" && row.paymentstatus !== "PENDING") || row.totalamount <= 0)
                         return null;
                     return (
                         <Button
                             variant="contained"
                             color="primary"
-                            style={{ width: 80, backgroundColor: "#55BD84" }}
+                            style={{ width: 40, backgroundColor: "#55BD84" }}
                             startIcon={<PaymentIcon style={{ color: 'white' }} />}
                             onClick={() => {setModalRowSelect(row); setModalRowSend(true)}}
                         >{t(langKeys.pay)}
@@ -1800,19 +1790,29 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
             {
                 Header: t(langKeys.paymentstatus),
                 accessor: 'paymentstatus',
+                Cell: (props: any) => {
+                    const { paymentstatus } = props.cell.row.original;
+                    return t(paymentstatus);
+                }
             },
             {
                 Header: t(langKeys.gotoreport),
                 accessor: 'invoiceid',
                 Cell: (props: any) => {
                     const selectedrow = props.cell.row.original;
-                    return (
-                        <Fragment>
-                            <div>
-                                {<span onClick={() => {setRowSelected(selectedrow); setRowSelect(true)}} style={{ display: "block", cursor: "pointer", color: "blue", textDecoration: "underline" }}>{t(langKeys.toreport)}</span>}
-                            </div>
-                        </Fragment>
-                    )
+                    const hasreport = selectedrow?.hasreport;
+                    
+                    if (hasreport) {
+                        return (
+                            <Fragment>
+                                <div>
+                                    {<span onClick={() => {setRowSelected(selectedrow); setRowSelect(true)}} style={{ display: "block", cursor: "pointer", color: "blue", textDecoration: "underline" }}>{t(langKeys.toreport)}</span>}
+                                </div>
+                            </Fragment>
+                        )
+                    } else {
+                        return t(langKeys.none);
+                    }
                 }
             },
             {
@@ -1827,7 +1827,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                                 { (urlpdf ?
                                     <a href={urlpdf} target="_blank" style={{ display: "block" }} rel="noreferrer">{docnumber}</a>
                                     :
-                                    <b style={{ display: "block" }}>{`X000-00000000`}</b>)
+                                    <span style={{ display: "block" }}>{`X000-00000000`}</span>)
                                 }
                             </div>
                         </Fragment>
@@ -1845,7 +1845,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                                 { (urlxml ?
                                     <a href={urlxml} target="_blank" style={{ display: "block" }} rel="noreferrer">{t(langKeys.xmldocumentopen)}</a>
                                     :
-                                    <b style={{ display: "block" }}>{t(langKeys.pendingpayment)}</b>)
+                                    <span style={{ display: "block" }}>{t(langKeys.pendingpayment)}</span>)
                                 }
                             </div>
                         </Fragment>
@@ -1863,7 +1863,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                                 { (urlcdr ?
                                     <a href={urlcdr} target="_blank" style={{ display: "block" }} rel="noreferrer">{t(langKeys.cdrdocumentopen)}</a>
                                     :
-                                    <b style={{ display: "block" }}>{t(langKeys.pendingpayment)}</b>)
+                                    <span style={{ display: "block" }}>{t(langKeys.pendingpayment)}</span>)
                                 }
                             </div>
                         </Fragment>
@@ -1887,7 +1887,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                                 valueDefault={dataMain.year}
                                 variant="outlined"
                                 onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||0}))}
-                                data={years}
+                                data={dataYears}
                                 optionDesc="desc"
                                 optionValue="desc"
                             />
@@ -1897,7 +1897,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                                 valueDefault={dataMain.month}
                                 variant="outlined"
                                 onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
-                                data={months}
+                                data={dataMonths}
                                 uset={true}
                                 prefixTranslation="month_"
                                 optionDesc="val"
@@ -1930,7 +1930,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                                 valueDefault={dataMain.currency}
                                 variant="outlined"
                                 onChange={(value) => setdataMain(prev=>({...prev,currency:value?.value||''}))}
-                                data={datacurrency}
+                                data={dataCurrency}
                                 optionDesc="description"
                                 optionValue="value"
                             />
@@ -1940,7 +1940,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                                 valueDefault={dataMain.paymentstatus}
                                 variant="outlined"
                                 onChange={(value) => setdataMain(prev=>({...prev,paymentstatus:value?.value||''}))}
-                                data={datapaymentstatus}
+                                data={dataPayment}
                                 optionDesc="description"
                                 optionValue="value"
                             />
@@ -2244,6 +2244,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         paymentstatus: "",
         currency: ""
     });
+
     const [dataInvoice, setDataInvoice] = useState<Dictionary[]>([]);
     const [disableSearch, setdisableSearch] = useState(false);
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
@@ -2252,6 +2253,12 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const [isRegularize, setIsRegularize] = useState(false);
     const [operationName, setOperationName] = useState('');
     const [waitSave, setWaitSave] = useState(false);
+
+    const dataYears = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }];
+    const dataMonths =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
+
+    const dataCurrency = [{ value: "PEN", description: "PEN" }, { value: "USD", description: "USD" }]
+    const dataPayment = [{ value: "PENDING", description: t(langKeys.PENDING) }, { value: "PAID", description: t(langKeys.PAID) }, { value:"NONE", description: t(langKeys.NONE) }]
 
     const fetchData = () => dispatch(getCollection(selInvoice(dataMain)));
 
@@ -2364,16 +2371,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             documenttype = 'pendingpayment';
                             break;
                     }
-                    return (
-                        <Fragment>
-                            <div>
-                                { documenttype === 'pendingpayment' ?
-                                    <b style={{ display: "block" }}>{t(documenttype)}</b>
-                                    :
-                                    <span style={{ display: "block" }}>{t(documenttype)}</span> }
-                            </div>
-                        </Fragment>
-                    )
+                    return t(documenttype);
                 }
             },
             {
@@ -2387,7 +2385,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 { receiverbusinessname ?
                                     <span style={{ display: "block" }}>{receiverbusinessname}</span>
                                     :
-                                    <b style={{ display: "block" }}>{t(langKeys.pendingpayment)}</b>
+                                    <span style={{ display: "block" }}>{t(langKeys.pendingpayment)}</span>
                                 }
                             </div>
                         </Fragment>
@@ -2405,7 +2403,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 { receiverdocnum ?
                                     <span style={{ display: "block" }}>{receiverdocnum}</span>
                                     :
-                                    <b style={{ display: "block" }}>{t(langKeys.pendingpayment)}</b>
+                                    <span style={{ display: "block" }}>{t(langKeys.pendingpayment)}</span>
                                 }
                             </div>
                         </Fragment>
@@ -2438,16 +2436,24 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 Header: t(langKeys.reportstatus),
                 accessor: 'concept',
                 Cell: () => {
-                    return <span style={{ display: "block" }}>{'PRELIMINAR'}</span>;
+                    return <span style={{ display: "block" }}>{'Preliminar'}</span>;
                 }
             },
             {
                 Header: t(langKeys.invoicestatus),
                 accessor: 'invoicestatus',
+                Cell: (props: any) => {
+                    const { invoicestatus } = props.cell.row.original;
+                    return t(invoicestatus);
+                }
             },
             {
                 Header: t(langKeys.paymentstatus),
                 accessor: 'paymentstatus',
+                Cell: (props: any) => {
+                    const { paymentstatus } = props.cell.row.original;
+                    return t(paymentstatus);
+                }
             },
         ],
         []
@@ -2520,7 +2526,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             valueDefault={dataMain.year}
                             variant="outlined"
                             onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||0}))}
-                            data={years}
+                            data={dataYears}
                             optionDesc="desc"
                             optionValue="desc"
                         />
@@ -2530,7 +2536,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             valueDefault={dataMain.month}
                             variant="outlined"
                             onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
-                            data={months}
+                            data={dataMonths}
                             uset={true}
                             prefixTranslation="month_"
                             optionDesc="val"
@@ -2563,7 +2569,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             valueDefault={dataMain.currency}
                             variant="outlined"
                             onChange={(value) => setdataMain(prev=>({...prev,currency:value?.value||''}))}
-                            data={datacurrency}
+                            data={dataCurrency}
                             optionDesc="description"
                             optionValue="value"
                         />
@@ -2573,7 +2579,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             valueDefault={dataMain.paymentstatus}
                             variant="outlined"
                             onChange={(value) => setdataMain(prev=>({...prev,paymentstatus:value?.value||''}))}
-                            data={datapaymentstatus}
+                            data={dataPayment}
                             optionDesc="description"
                             optionValue="value"
                         />
@@ -3505,6 +3511,8 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
     const [amountTax, setAmountTax] = useState(0);
     const [amountTotal, setAmountTotal] = useState(0);
 
+    const dataCurrency = [{ value: "PEN", description: "PEN" }, { value: "USD", description: "USD" }]
+
     const invocesBread = [
         { id: "view-1", name: t(langKeys.billingtitle) },
         { id: "view-3", name: t(langKeys.billinggeneration) }
@@ -4082,7 +4090,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                 label={t(langKeys.currency)}
                                 onChange={(value) => setValue('invoicecurrency', value?.value)}
                                 valueDefault={getValues('invoicecurrency')}
-                                data={datacurrency}
+                                data={dataCurrency}
                                 optionDesc="description"
                                 optionValue="value"
                                 error={errors?.invoicecurrency?.message}
@@ -4273,6 +4281,9 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         all: true,
     });
 
+    const transactionType = [{ value: "HSM", description: t(langKeys.HSM) }, { value: "MAIL", description: t(langKeys.MAIL) }, { value: "SMS", description: t(langKeys.SMS) }]
+    const operationType = [{ value: "ENVIO", description: t(langKeys.ENVIO) }, { value:"COMPRA", description: t(langKeys.COMPRA) }]
+
     const fetchData = () => dispatch(getCollection(selBalanceData(dataMain)));
 
     const search = () => dispatch(getCollection(selBalanceData(dataMain)));
@@ -4280,11 +4291,8 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     useEffect(() => {
         fetchData();
 
-        if (dataCorpList) {
-            var corporationdata = dataCorpList.find((x: { corpid: any; }) => x.corpid === dataMain.corpid);
-            if (corporationdata?.paymentmethod === 'PREPAGO') {
-                setCanRegister(true);
-            }
+        if (user?.paymentmethod === 'PREPAGO') {
+            setCanRegister(true);
         }
 
         dispatch(setMemoryTable({
@@ -4336,6 +4344,10 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             {
                 Header: t(langKeys.transactionreference),
                 accessor: 'description',
+                Cell: (props: any) => {
+                    const { description } = props.cell.row.original;
+                    return (description || langKeys.none);
+                }
             },
             {
                 Header: t(langKeys.quantity),
@@ -4360,10 +4372,18 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             {
                 Header: t(langKeys.transactionoperationtype),
                 accessor: 'operationtype',
+                Cell: (props: any) => {
+                    const { operationtype } = props.cell.row.original;
+                    return t(operationtype);
+                }
             },
             {
                 Header: t(langKeys.template),
                 accessor: 'messagetemplatedesc',
+                Cell: (props: any) => {
+                    const { messagetemplatedesc } = props.cell.row.original;
+                    return (messagetemplatedesc || langKeys.none);
+                }
             },
             {
                 Header: t(langKeys.documenttype),
@@ -4388,7 +4408,7 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             documenttype = 'billingfield_billingpass';
                             break;
                         default:
-                            documenttype = '';
+                            documenttype = langKeys.none;
                             break;
                     }
                     return (
@@ -4401,6 +4421,10 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             {
                 Header: t(langKeys.documentnumber),
                 accessor: 'documentnumber',
+                Cell: (props: any) => {
+                    const { documentnumber } = props.cell.row.original;
+                    return (documentnumber || langKeys.none);
+                }
             },
         ],
         []
@@ -4441,7 +4465,7 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 valueDefault={dataMain.type}
                                 variant="outlined"
                                 onChange={(value) => setdataMain(prev => ({...prev, type: value?.value || ''}))}
-                                data={transactiontype}
+                                data={transactionType}
                                 optionDesc="description"
                                 optionValue="value"
                             />
@@ -4451,7 +4475,7 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 valueDefault={dataMain.operationtype}
                                 variant="outlined"
                                 onChange={(value) => setdataMain(prev => ({...prev, operationtype: value?.value || ''}))}
-                                data={operationtype}
+                                data={operationType}
                                 optionDesc="description"
                                 optionValue="value"
                             />
