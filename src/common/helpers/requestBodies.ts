@@ -2630,3 +2630,16 @@ export const getBillingMessagingCurrent = (year: number, month: number, country:
         country: country,
     }
 });
+
+export const getBalanceSelSent = (corpid: number, orgid: number, date: any, type: string, module: string, messagetemplateid: number): IRequestBody => ({
+    method: "UFN_BALANCE_SEL_SENT",
+    key: "UFN_BALANCE_SEL_SENT",
+    parameters: {
+        corpid: corpid,
+        orgid: orgid,
+        date: date,
+        type: type,
+        module: module,
+        messagetemplateid: messagetemplateid,
+    }
+});

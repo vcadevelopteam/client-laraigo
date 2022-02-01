@@ -2990,6 +2990,9 @@ const translation: LangKeys = {
     pricemessagemail: 'Mail messages',
     pricemessagehsm: 'HSM messages',
     pricemessagenote: '(*) The price of HSM messags is only referential because it depends of the conversation cost when started by the company. You can find the details in this Facebook page:',
+    transactionreceiver: 'Receiver',
+    transactioncost: 'Unit cost',
+    transactiondatetime: 'Date and time',
 };
 
 const enResource: ResourceLanguage = {

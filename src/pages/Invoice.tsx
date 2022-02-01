@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { cleanMemoryTable, setMemoryTable, uploadFile } from 'store/main/actions';
 import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx, FieldEditArray, TemplateIcons } from 'components';
-import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, invoiceRefreshTest, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail, selBalanceData, getBillingMessagingCurrent } from 'common/helpers';
+import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, invoiceRefreshTest, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail, selBalanceData, getBillingMessagingCurrent, getBalanceSelSent } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -4703,6 +4703,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
     const [priceSms, setPriceSms] = useState(0);
     const [priceMail, setPriceMail] = useState(0);
     const [priceHsm, setPriceHsm] = useState(0);
+    const [balanceSent, setBalanceSent] = useState<any>([]);
 
     const handleCulqiSuccess = () => {
         fetchData();
@@ -4721,6 +4722,12 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
             dispatch(getExchangeRate(null));
             dispatch(showBackdrop(true));
             setWaitSave(true);
+        }
+        else {
+            if (data?.row?.operationtype === "ENVIO") {
+                setBalanceSent({ loading: true, data: [] });
+                dispatch(getMultiCollectionAux([getBalanceSelSent(data?.row?.corpid, data?.row?.orgid, data?.row?.transactiondate, data?.row?.type, data?.row?.module, data?.row?.messagetemplateid)]));
+            }
         }
     }, [])
 
@@ -4742,6 +4749,12 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
         if (indexMessaging > -1) {
             setMessagingList({ loading: false, data: multiResult.data[indexMessaging] && multiResult.data[indexMessaging].success ? multiResult.data[indexMessaging].data : [] });
         }
+
+        const indexSent = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_BALANCE_SEL_SENT'));
+
+        if (indexSent > -1) {
+            setBalanceSent({ loading: false, data: multiResult.data[indexSent] && multiResult.data[indexSent].success ? multiResult.data[indexSent].data : [] });
+        }
     }, [multiResult]);
 
     useEffect(() => {
@@ -4753,6 +4766,10 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
             }
         }
     }, [messagingList]);
+
+    useEffect(() => {
+        console.log(balanceSent);
+    }, [balanceSent]);
 
     useEffect(() => {
         updateTotalPay(buyAmount);
@@ -4887,6 +4904,19 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
         }
     }
 
+    const getInvoiceType = (invoicetype: string) => {
+        switch (invoicetype) {
+            case '01':
+                return 'emissorinvoice';
+            case '03':
+                return 'emissorticket';
+            case '07':
+                return 'emissorcreditnote';
+            default:
+                return 'emissornone';
+        }
+    }
+
     const paymentBread = [
         { id: "view-1", name: t(langKeys.messagingpackages) },
         { id: "view-2", name: (data?.edit ? t(langKeys.messagingpackagesnew) : t(langKeys.messagingpackagesdetail)) }
@@ -5004,10 +5034,9 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                             <FieldView
                                 className="col-12"
                                 label={t(langKeys.transactionreference)}
-                                value={data?.row?.description}
+                                value={data?.row?.description || t(langKeys.none)}
                             />
                         )}
-                        
                     </div>
                     <div className="row-zyx">
                         {data?.edit ? (
@@ -5054,29 +5083,147 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                             />
                         )}
                     </div>
-                    {data?.edit && <div className="row-zyx">
+                    {(data?.edit || data?.row?.operationtype === "COMPRA") && <div className="row-zyx">
                         <FieldView
                             className={classes.section}
                             label={''}
                             value={t(langKeys.payment_information)}
                         />
                     </div>}
-                    {data?.edit && <div className="row-zyx">
-                        <FieldView
+                    {(data?.edit || data?.row?.operationtype === "COMPRA") && <div className="row-zyx">
+                        {data?.edit && <FieldView
                             className="col-4"
                             label={t(langKeys.servicedescription)}
                             value={t(langKeys.transactionrechargetitle) + new Date().toISOString().split('T')[0]}
-                        />
-                        <FieldView
+                        />}
+                        {data?.row?.operationtype === "COMPRA" && <FieldView
+                            className="col-4"
+                            label={t(langKeys.servicedescription)}
+                            value={t(langKeys.transactionrechargetitle) + new Date(data?.row?.createdate).toISOString().split('T')[0]}
+                        />}
+                        {data?.edit && <FieldView
                             className="col-4"
                             label={t(langKeys.totalamount)}
                             value={'$'+formatNumber((buyAmount || 0))}
-                        />
-                        <FieldView
+                        />}
+                        {data?.row?.operationtype === "COMPRA" && <FieldView
+                            className="col-4"
+                            label={t(langKeys.totalamount)}
+                            value={'$'+formatNumber((data?.row?.amount || 0))}
+                        />}
+                        {data?.edit && <FieldView
                             className="col-4"
                             label={t(langKeys.totaltopay)}
                             value={'$'+formatNumber((totalPay || 0))}
+                        />}
+                        {data?.row?.operationtype === "COMPRA" && <FieldView
+                            className="col-4"
+                            label={t(langKeys.totaltopay)}
+                            value={'$'+formatNumber((data?.row?.culqiamount || 0))}
+                        />}
+                    </div>}
+                    {(data?.row?.operationtype === "COMPRA") && <div className="row-zyx">
+                        <FieldView
+                            className="col-4"
+                            label={t(langKeys.documenttype)}
+                            value={t(getInvoiceType(data?.row?.invoicetype))}
                         />
+                        <FieldView
+                            label={t(langKeys.billingvoucher)}
+                            value={(data?.row?.serie ? data?.row?.serie : 'X000') + '-' + (data?.row?.correlative ? data?.row?.correlative.toString().padStart(8, '0') : '00000000')}
+                            className="col-4"
+                        />
+                        <FieldView
+                            className="col-4"
+                            label={t(langKeys.purchaseorder)}
+                            value={data?.row?.purchaseorder || t(langKeys.none)}
+                        />
+                    </div>}
+                    {(data?.row?.operationtype === "ENVIO") && <div className="row-zyx">
+                        <TableContainer>
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>
+                                            <FieldView
+                                                label={''}
+                                                value={t(langKeys.transactionmessagetype)}
+                                                className={classes.fieldView}
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <FieldView
+                                                label={''}
+                                                value={t(langKeys.transactionreceiver)}
+                                                className={classes.fieldView}
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <FieldView
+                                                label={''}
+                                                value={t(langKeys.transactioncost)}
+                                                className={classes.fieldView}
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <FieldView
+                                                label={''}
+                                                value={t(langKeys.transactiondatetime)}
+                                                className={classes.fieldView}
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <FieldView
+                                                label={''}
+                                                value={t(langKeys.user)}
+                                                className={classes.fieldView}
+                                            />
+                                        </TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {balanceSent?.data?.map(function (file: any) {
+                                        return <TableRow>
+                                            <TableCell>
+                                                <FieldView
+                                                    label={''}
+                                                    value={t(file?.type || langKeys.none)}
+                                                    className={classes.fieldView}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldView
+                                                    label={''}
+                                                    value={file?.receiver}
+                                                    className={classes.fieldView}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldView
+                                                    label={''}
+                                                    value={formatNumberFourDecimals(file?.amount || 0)}
+                                                    className={classes.fieldView}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldView
+                                                    label={''}
+                                                    value={new Date(file?.createdate).toISOString().replace("T"," ").substring(0, 19)}
+                                                    className={classes.fieldView}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldView
+                                                    label={''}
+                                                    value={file?.transactionuser}
+                                                    className={classes.fieldView}
+                                                />
+                                            </TableCell>
+                                        </TableRow>
+                                    })} 
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
                     </div>}
                     {!disableInput && <div>
                         <div className="row-zyx">
