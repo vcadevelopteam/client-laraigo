@@ -2640,3 +2640,15 @@ export const getBalanceSelSent = (corpid: number, orgid: number, date: any, type
         messagetemplateid: messagetemplateid,
     }
 });
+
+export const getCorpSelVariant = (corpid: number, orgid: number, username: string): IRequestBody => ({
+    method: "UFN_CORP_SEL",
+    key: "UFN_CORP_SEL",
+    parameters: {
+        corpid: corpid,
+        orgid: orgid,
+        username: username,
+        id: 0,
+        all: true,
+    }
+});
