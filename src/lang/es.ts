@@ -1125,6 +1125,8 @@ const translation: LangKeys = {
     successful_change_plan: 'El plan fue cambiado satisfactoriamente. Vuelva a iniciar sesión para que pueda ver el cambio de plan.',
     successful_cancel_suscription: 'La suscripción se canceló satisfactoriamente',
 
+    no_records: 'No hay registros',
+
     apply: 'Aplicar',
     close: 'Cerrar',
     closetype: 'Tipo de cierre',
@@ -1300,6 +1302,7 @@ const translation: LangKeys = {
     dashboard_managerial_summary_hourrange: 'Rango de Hora de cierre',
     dashboard_managerial_summary_firstreplyagent: 'Tiempo primera respuesta asesor',
     dashboard_managerial_summary_averagereplyagent: 'Tiempo promedio respuesta asesor',
+    dashboard_managerial_summary_firstreplyclient: 'Tiempo primera respuesta cliente',
     dashboard_managerial_summary_averagereplyclient: 'Tiempo promedio respuesta cliente',
 
     dashboard_managerial_asesoresconectados_date: 'Fecha',
