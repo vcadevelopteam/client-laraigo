@@ -13,10 +13,10 @@ import Graphic from 'components/fields/Graphic';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { TemplateBreadcrumbs, SearchField, FieldSelect, FieldMultiSelect, SkeletonReportCard, DialogZyx } from 'components';
+import { TemplateBreadcrumbs, SearchField, FieldSelect, FieldMultiSelect, SkeletonReportCard, DialogZyx, DateRangePicker } from 'components';
 import { useSelector } from 'hooks';
 import { Dictionary, IFetchData, MultiData, IRequestBody } from "@types";
-import { getReportSel, getReportTemplateSel, getValuesFromDomain, getReportColumnSel, getReportFilterSel, getPaginatedForReports, getReportExport, insertReportTemplate, convertLocalDate, getTableOrigin, getReportGraphic, getConversationsWhatsapp } from 'common/helpers';
+import { getReportSel, getReportTemplateSel, getValuesFromDomain, getReportColumnSel, getReportFilterSel, getPaginatedForReports, getReportExport, insertReportTemplate, convertLocalDate, getTableOrigin, getReportGraphic, getConversationsWhatsapp, getDateCleaned } from 'common/helpers';
 import { getCollection, getCollectionAux, execute, resetMain, getCollectionPaginated, resetCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetMainAux, getMultiCollectionAux, getMainGraphic } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
@@ -35,6 +35,9 @@ import Heatmap from './Heatmap';
 import RecordHSMRecord from './RecordHSMReport';
 import { useForm } from 'react-hook-form';
 import AssessmentIcon from '@material-ui/icons/Assessment';
+import { Range } from 'react-date-range';
+import { CalendarIcon } from 'icons';
+import { Search as SearchIcon } from '@material-ui/icons';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -112,6 +115,13 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 500,
         fontSize: '14px',
         textTransform: 'initial'
+    },
+    itemDate: {
+        minHeight: 40,
+        height: 40,
+        border: '1px solid #bfbfc0',
+        borderRadius: 4,
+        color: 'rgb(143, 146, 161)'
     },
 }));
 
@@ -561,15 +571,45 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
     )
 }
 
+const initialRange = {
+    startDate: new Date(new Date().setDate(1)),
+    endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+    key: 'selection'
+}
+
 const ReportConversationWhatsapp: FC = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
 
-    const mainResult = useSelector((state) => state.main.mainAux);
+    const multiData = useSelector(state => state.main.multiData);
+
+    const classes = useStyles()
+    const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
+    const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
+
+    const search = () => {
+        dispatch(showBackdrop(true))
+        dispatch(getMultiCollection([
+            getConversationsWhatsapp(
+                {
+                    startdate: dateRangeCreateDate.startDate,
+                    enddate: dateRangeCreateDate.endDate
+                }
+            )
+        ]))
+    }
 
     useEffect(() => {
-        dispatch(getCollectionAux(getConversationsWhatsapp()))
+        return () => {
+            dispatch(resetMultiMain());
+        }
     }, [])
+
+    useEffect(() => {
+        if (!multiData.loading){
+            dispatch(showBackdrop(false));
+        }
+    }, [multiData])
 
     const columns = React.useMemo(
         () => [
@@ -609,19 +649,75 @@ const ReportConversationWhatsapp: FC = () => {
                     )
                 }
             },
+            {
+                Header: t(langKeys.countrycode),
+                accessor: 'country',
+            },
+            {
+                Header: t(langKeys.amount),
+                accessor: 'cost',
+                type: 'number'
+            },
         ],
         []
     );
 
     return (
-        <TableZyx
-            columns={columns}
-            titlemodule={t(langKeys.conversation_plural) + " Whatsapp"}
-            data={mainResult.data}
-            download={true}
-            loading={mainResult.loading}
-            register={false}
-        />
+        <React.Fragment>
+            <div style={{ height: 10 }}></div>
+            <TableZyx
+                columns={columns}
+                data={multiData.data[0]?.data || []}
+                ButtonsElement={() => (
+                    <div className={classes.containerHeader} style={{display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'space-between'}}>
+                        <div style={{display: 'flex', gap: 8}}>
+                            <DateRangePicker
+                                open={openDateRangeCreateDateModal}
+                                setOpen={setOpenDateRangeCreateDateModal}
+                                range={dateRangeCreateDate}
+                                onSelect={setDateRangeCreateDate}
+                            >
+                                <Button
+                                    className={classes.itemDate}
+                                    startIcon={<CalendarIcon />}
+                                    onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
+                                >
+                                    {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
+                                </Button>
+                            </DateRangePicker>
+                            {/* <FieldSelect
+                                onChange={(value) => setshippingtype(value?.domainvalue||"")}
+                                label={t(langKeys.shippingtype)}
+                                loading={multiDataAux.loading}
+                                variant="outlined"
+                                valueDefault={shippingtype}
+                                style={{width: "170px"}}
+                                data={shippingTypesData}
+                                optionValue="domainvalue"
+                                optionDesc="domainvalue"
+                                uset={true}
+                                prefixTranslation='type_shippingtype_'
+                            /> */}
+                            <div>
+                                <Button
+                                    disabled={multiData.loading}
+                                    variant="contained"
+                                    color="primary"
+                                    startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                    style={{ width: 120, backgroundColor: "#55BD84" }}
+                                    onClick={() => search()}
+                                >{t(langKeys.search)}
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+                download={true}
+                filterGeneral={false}
+                loading={multiData.loading}
+                register={false}
+            />
+        </React.Fragment>
     )
 }
 

@@ -2594,10 +2594,13 @@ export const getMeasureUnit = (): IRequestBody => ({
     parameters: { },
 });
 
-export const getConversationsWhatsapp = (): IRequestBody => ({
-    method: "QUERY_GET_CONVERSATION_WHATSAPP",
-    key: "QUERY_GET_CONVERSATION_WHATSAPP",
-    parameters: { },
+export const getConversationsWhatsapp = ({ startdate, enddate }: Dictionary): IRequestBody => ({
+    method: "UFN_CONVERSATIONWHATSAPP_REPORT",
+    key: "UFN_CONVERSATIONWHATSAPP_REPORT",
+    parameters: {
+        startdate, enddate,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
 });
 
 export const getInvoiceDetail = (corpid: number, orgid: number, invoiceid: number): IRequestBody => ({
