@@ -16,6 +16,7 @@ import { Dictionary } from '@types';
 import { LaraigoLogo } from 'icons';
 import { LeftSide } from './LeftSideMenu';
 import { SubscriptionContext, SubscriptionProvider } from './context';
+import Popus from 'components/layout/Popus';
 
 const useSignUpStyles = makeStyles(theme => ({
     root: {
@@ -272,6 +273,7 @@ export const SignUp: FC = () => {
                         }
                     </div>
                 </div>
+                <Popus />
             </div>
         </SubscriptionProvider>
     );

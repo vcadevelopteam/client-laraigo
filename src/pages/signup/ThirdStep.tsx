@@ -166,57 +166,75 @@ const useChannelAddStyles = makeStyles(theme => ({
 interface ThirdStepProps {
     setStep: (param: any) => void;
     setsendchannels: (param: any) => void;
-    setrequestchannels: (param: any) => void;
     setOpenWarning:(param:any) => void;
 }
 
 export const ThirdStep: FC<ThirdStepProps> = ({
     setStep,
     setsendchannels,
-    setrequestchannels,
     setOpenWarning,
 }) => {
     const {
+        plan,
         selectedChannels,
         listchannels,
         limitChannels,
         toggleChannel,
+        setrequestchannels,
     } = useContext(SubscriptionContext);
     const classes = useChannelAddStyles();
+    const planData = useSelector(state => state.signup.verifyPlan);
+    const provider = planData.data[0].providerwhatsapp;
     const socialMediaOptions: ChannelOption[] = [
         {
             icon: <FacebookMessengerIcon className={classes.icon} />,
             label: 'Messenger',
             key: 'messenger',
-            onClick: () => toggleChannel('messenger'),
+            onClick: () => {
+                toggleChannel('messenger');
+                setrequestchannels(prev => prev.filter(x => x.type !== "MESSENGER"));
+            },
             selected: listchannels.messenger
         },
         {
             icon: <WhatsAppIcon className={classes.icon} />,
             label: 'Whatsapp',
             key: 'whatsapp',
-            onClick: () => toggleChannel('whatsapp'),
+            onClick: () => {
+                const type = provider === "DIALOG" ? "WHATSAPP" : "WHATSAPPSMOOCH";
+                toggleChannel('whatsapp');
+                setrequestchannels(prev => prev.filter(x => x.type !== type));
+            },
             selected: listchannels.whatsapp
         },
         {
             icon: <FacebookIcon className={classes.icon} />,
             label: 'Facebook',
             key: 'facebook',
-            onClick: () => toggleChannel('facebook'),
+            onClick: () => {
+                toggleChannel('facebook');
+                setrequestchannels(prev => prev.filter(x => x.type !== "FACEBOOK"));
+            },
             selected: listchannels.facebook
         },
         {
             icon: <InstagramIcon className={classes.icon} />,
             label: 'Instagram',
             key: 'instagram',
-            onClick: () => toggleChannel('instagram'),
+            onClick: () => {
+                toggleChannel('instagram');
+                setrequestchannels(prev => prev.filter(x => x.type !== "INSTAGRAM"));
+            },
             selected: listchannels.instagram
         },
         {
             icon: <InstagramIcon className={classes.icon} />,
             label: 'Instagram DM',
             key: 'instagramDM',
-            onClick: () => toggleChannel('instagramDM'),
+            onClick: () => {
+                toggleChannel('instagramDM');
+                setrequestchannels(prev => prev.filter(x => x.type !== "INSTAMESSENGER"));
+            },
             selected: listchannels.instagramDM
         },
     ];
@@ -232,24 +250,33 @@ export const ThirdStep: FC<ThirdStepProps> = ({
             icon: <TelegramIcon className={classes.icon} />,
             label: 'Telegram',
             key: 'telegram',
-            onClick: () => toggleChannel('telegram'),
+            onClick: () => {
+                toggleChannel('telegram');
+                setrequestchannels(prev => prev.filter(x => x.type !== "TELEGRAM"));
+            },
             selected: listchannels.telegram
         },
         {
             icon: <TwitterIcon className={classes.icon} />,
             label: 'Twitter',
             key: 'twitter',
-            onClick: () => toggleChannel('twitter'),
+            onClick: () => {
+                toggleChannel('twitter');
+                setrequestchannels(prev => prev.filter(x => x.type !== "TWITTER"));
+            },
             selected: listchannels.twitter
         },
         {
             icon: <TwitterIcon className={classes.icon} />,
             label: 'Twitter DM',
             key: 'twitterDM',
-            onClick: () => toggleChannel('twitterDM'),
+            onClick: () => {
+                toggleChannel('twitterDM');
+                setrequestchannels(prev => prev.filter(x => x.type !== "TWITTERDM"));
+            },
             selected: listchannels.twitterDM
         },
-        {
+        /*{
             icon: <EmailIcon className={classes.icon} />,
             label: 'Email',
             key: 'email',
@@ -263,19 +290,25 @@ export const ThirdStep: FC<ThirdStepProps> = ({
             key: 'sms',
             onClick: () => toggleChannel('sms'),
             selected: listchannels.sms
-        },
+        },*/
         {
             icon: <AppleIcon className={classes.icon} />,
             label: 'iOS SDk',
             key: 'apple',
-            onClick: () => toggleChannel('apple'),
+            onClick: () => {
+                toggleChannel('apple');
+                setrequestchannels(prev => prev.filter(x => x.type !== "SMOOCHIOS"));
+            },
             selected: listchannels.apple
         },
         {
             icon: <AndroidIcon className={classes.icon} />,
             label: 'Android SDK',
             key: 'android',
-            onClick: () => toggleChannel('android'),
+            onClick: () => {
+                toggleChannel('android');
+                setrequestchannels(prev => prev.filter(x => x.type !== "SMOOCHANDROID"));
+            },
             selected: listchannels.android
         },
     ];
@@ -324,7 +357,7 @@ export const ThirdStep: FC<ThirdStepProps> = ({
         <div className={classes.root}>
             <LaraigoLogo style={{ width: '25%', height: 'auto', marginBottom: '1.58em' }} />
             <div className={classes.title}>
-                Basic
+                {plan}
             </div>
             <Typography style={{ fontSize: 20, fontWeight: 400 }}>
                 Solo se podrá seleccionar un canal

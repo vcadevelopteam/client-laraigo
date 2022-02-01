@@ -1,7 +1,13 @@
 import { makeStyles } from '@material-ui/core';
 import { IRequestBody } from '@types';
 import { useSelector } from 'hooks';
+import { langKeys } from 'lang/keys';
 import React, { FC, useState, createContext, useMemo, CSSProperties, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+import { useHistory, useRouteMatch } from 'react-router-dom';
+import { showBackdrop, showSnackbar } from 'store/popus/actions';
+import { executeSubscription } from 'store/signup/actions';
 
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 interface Subscription {
@@ -13,6 +19,8 @@ interface Subscription {
     mainData: MainData;
     requestchannels: IRequestBody[];
     foreground: keyof ListChannels | undefined;
+    plan: "BASIC" | "PRO";
+    finishreg: () => void;
     setForeground: SetState<keyof ListChannels | undefined>;
     setrequestchannels: SetState<IRequestBody[]>;
     setMainData: SetState<MainData>;
@@ -87,6 +95,8 @@ export const SubscriptionContext = createContext<Subscription>({
     mainData: {} as any,
     requestchannels: [],
     foreground: undefined,
+    plan: "BASIC",
+    finishreg: () => {},
     setForeground: () => {},
     setrequestchannels: () => {},
     setMainData: () => {},
@@ -147,6 +157,11 @@ const FBButtonStyles: CSSProperties = {
 
 export const SubscriptionProvider: FC = ({ children }) => {
     const classes = useStyles();
+    const dispatch = useDispatch();
+    const history = useHistory();
+    const { t } = useTranslation();
+    const match = useRouteMatch<{ token :string }>();
+    const [waitSave, setWaitSave] = useState(false);
     const [listchannels, setlistchannels] = useState<ListChannels>(defaultListChannels);
     const planData = useSelector(state => state.signup.verifyPlan);
     const [requestchannels, setrequestchannels] = useState<IRequestBody[]>([]);
@@ -171,6 +186,35 @@ export const SubscriptionProvider: FC = ({ children }) => {
         billingcontactmail: "",
         autosendinvoice: true,
     });
+    const executeResult = useSelector(state => state.signup.insertChannel);
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(showBackdrop(false));
+                
+                history.push({
+                    pathname: '/sign-in',
+                    state: { 
+                        showSnackbar: true,
+                        message: t(langKeys.successful_sign_up)
+                    }
+                })
+                // setSnackbar({ state: true, success: true, message: t(langKeys.successful_sign_up) })
+                setWaitSave(false);
+            } else if (executeResult.error) {
+                dispatch(showBackdrop(false));
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
+                dispatch(showSnackbar({
+                    show: true,
+                    success: false,
+                    message: errormessage,
+                }))
+                // setBackdrop(false)
+                setWaitSave(false);
+            }
+        }
+    }, [executeResult, waitSave, dispatch])
 
     const deleteChannel = (option: keyof ListChannels) => {
         setlistchannels(prev => {
@@ -197,10 +241,16 @@ export const SubscriptionProvider: FC = ({ children }) => {
     }
 
     const toggleChannel = (option: keyof ListChannels) => {
-        setlistchannels(prev => ({
-            ...prev,
-            [option]: !prev[option],
-        }));
+        setlistchannels(prev => {
+            const value = !prev[option];
+            if (!value && foreground === option) {
+                setForeground(undefined);
+            }
+            return {
+                ...prev,
+                [option]: value,
+            };
+        });
     }
 
     const resetChannels = () => setlistchannels(defaultListChannels);
@@ -212,6 +262,32 @@ export const SubscriptionProvider: FC = ({ children }) => {
             length;
     }, [listchannels]);
 
+    function finishreg(){
+        let majorfield = {
+            method: "UFN_CREATEZYXMEACCOUNT_INS",
+            parameters: {
+                ...mainData,
+                firstname: mainData.firstandlastname,
+                lastname: "",
+                username: mainData.email,
+                contactemail: mainData.billingcontactmail,
+                contact: mainData.billingcontact,
+                organizationname: mainData.companybusinessname,
+                phone: mainData.mobilephone,
+                industry: "", //lastfields.industry,
+                companysize: "", // lastfields.companysize,
+                rolecompany: "", // lastfields.companyrole,
+                paymentplanid: "", // planData.data[0].paymentplanid,
+                paymentplan: "", // planData.data[0].plan,
+                sunatcountry: "",
+            },
+            channellist: requestchannels
+        }
+        dispatch(showBackdrop(true));
+        setWaitSave(true);
+        dispatch(executeSubscription(majorfield))
+    }
+
     return (
         <SubscriptionContext.Provider value={{
             commonClasses: classes,
@@ -221,6 +297,8 @@ export const SubscriptionProvider: FC = ({ children }) => {
             mainData,
             requestchannels,
             foreground,
+            plan: match.params.token !== "BASIC" ? "PRO" : "BASIC",
+            finishreg,
             setForeground,
             setrequestchannels,
             setMainData,

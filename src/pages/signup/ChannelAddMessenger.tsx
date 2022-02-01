@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { CSSProperties, FC, useContext, useState } from "react";
+import { CSSProperties, FC, useContext, useEffect, useState } from "react";
 import { makeStyles, Breadcrumbs, Button, Box, Typography, IconButton } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { showBackdrop } from 'store/popus/actions';
@@ -24,13 +24,13 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
         selectedChannels,
         commonClasses,
         FBButtonStyles,
+        finishreg,
         deleteChannel,
         setrequestchannels,
     } = useContext(SubscriptionContext);
-    const [viewSelected, setViewSelected] = useState("view1");
-    const [nextbutton, setNextbutton] = useState(true);
+    const [pageLink, setPageLink] = useState("");
     const [coloricon, setcoloricon] = useState("#0078FF");
-    const [channelreg, setChannelreg] = useState(true);
+    const [channelName, setChannelName] = useState("");
     const mainResult = useSelector(state => state.channel.channelList)
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -59,20 +59,36 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
         }
     })
 
-    async function finishreg() {
-        setrequestchannels((p:any)=>([...p,fields]))
-        deleteChannel('messenger');
-    }
+    useEffect(() => {
+        if (channelName.length > 0 && pageLink.length > 0) {
+            setrequestchannels(prev => {
+                const index = prev.findIndex(x => x.type === "MESSENGER");
+                if (index === -1) {
+                    return [
+                        ...prev,
+                        fields,
+                    ]
+                } else {
+                    prev.splice(index, 1);
+                    return [
+                        ...prev,
+                        fields,
+                    ];
+                }
+            });
+        } else {
+            setrequestchannels(prev => prev.filter(x => x.type !== "MESSENGER"));
+        }
+    }, [channelName, pageLink, fields]);
 
     const processFacebookCallback = async (r: any) => {
         if (r.status !== "unknown" && !r.error) {
             dispatch(getChannelsListSub(r.accessToken))
-            setViewSelected("view2")
             dispatch(showBackdrop(true));
         }
     }
     function setValueField(value: any) {
-        setNextbutton(value==null)
+        setPageLink(value?.id || "");
         let partialf = fields;
         partialf.parameters.communicationchannelsite = value?.id||""
         partialf.parameters.communicationchannelowner = value?.name||""
@@ -82,7 +98,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
         setFields(partialf)
     }
     function setnameField(value: any) {
-        setChannelreg(value === "")
+        setChannelName(value);
         let partialf = fields;
         partialf.parameters.description = value
         setFields(partialf)
@@ -90,31 +106,32 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
 
     return (
         <div className={commonClasses.root}>
-            {viewSelected === "view1" && (
-                <FacebookMessengerIcon
-                    className={commonClasses.leadingIcon}
-                />
-            )}
-            {viewSelected === "view1" && (
-                <IconButton
-                    color="primary"
-                    className={commonClasses.trailingIcon}
-                    onClick={() => deleteChannel('messenger')}
-                >
-                    <DeleteOutlineIcon />
-                </IconButton>
-            )}
+            <FacebookMessengerIcon
+                className={commonClasses.leadingIcon}
+            />
+            <IconButton
+                color="primary"
+                className={commonClasses.trailingIcon}
+                onClick={() => {
+                    deleteChannel('messenger');
+                    setrequestchannels(prev => prev.filter(x => x.type !== "MESSENGER"));
+                }}
+            >
+                <DeleteOutlineIcon />
+            </IconButton>
             <Typography>
                 <Trans i18nKey={langKeys.connectface2} />
             </Typography>
             <FieldEdit
                 onChange={(value) => setnameField(value)}
+                valueDefault={channelName}
                 label={t(langKeys.givechannelname)}
                 variant="outlined"
                 size="small"
             />
             <FieldSelect
                 onChange={(value) => setValueField(value)}
+                valueDefault={pageLink}
                 label={t(langKeys.selectpagelink)}
                 data={mainResult.data}
                 optionDesc="name"
@@ -144,7 +161,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
                     </div>
                 </div>
             </div> */}
-            {viewSelected === "view1" ? (
+            {pageLink.length === 0 ? (
                 <FacebookLogin
                     appId={apiUrls.FACEBOOKAPP}
                     autoLoad={false}
@@ -169,9 +186,9 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
                     className={commonClasses.button}
                     variant="contained"
                     color="primary"
-                    disabled={nextbutton}
+                    disabled={channelName.length === 0}
                 >
-                    <Trans i18nKey={langKeys.next} />
+                    <Trans i18nKey={langKeys.finishreg} />
                 </Button>
             )}
         </div>

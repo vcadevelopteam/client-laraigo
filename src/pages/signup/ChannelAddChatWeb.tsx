@@ -1468,14 +1468,18 @@ const useStyles = makeStyles(theme => ({
 
 export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
     const classes = useStyles();
-
-    const { t } = useTranslation();
-
-    const { deleteChannel, setrequestchannels } = useContext(SubscriptionContext);
+    const {
+        foreground,
+        setForeground,
+        deleteChannel,
+        setrequestchannels,
+    } = useContext(SubscriptionContext);
     const dispatch = useDispatch();
+    const [hasFinished, setHasFinished] = useState(false);
     const [selectedView, setSelectedView] = useState("view1");
     const [tabIndex, setTabIndes] = useState('0');
     const [showFinalStep, setShowFinalStep] = useState(false);
+    const [channelName, setChannelName] = useState("");
 
     const insertChannel = useSelector(state => state.channel.insertChannel);
 
@@ -1484,6 +1488,12 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
             dispatch(resetInsertChannel());
         };
     }, []);
+
+    useEffect(() => {
+        if (foreground !== 'chatWeb' && selectedView !== "view1") {
+            setSelectedView("view1");
+        } 
+    }, [foreground, selectedView]);
 
     useEffect(() => {
         if (insertChannel.loading) return;
@@ -1558,14 +1568,29 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
         deleteChannel('chatWeb');
     }
 
+    const setView = (option: "view1" | "view2") => {
+        if (option === "view1") {
+            setSelectedView(option);
+            setForeground(undefined);
+        } else {
+            setSelectedView(option);
+            setForeground('chatWeb');
+        }
+    }
+
     if (selectedView === "view1") {
         return (
             <ChannelAddEnd
+                hasFinished={hasFinished}
+                channelName={channelName}
+                setChannelName={setChannelName}
                 loading={insertChannel.loading}
                 integrationId={insertChannel.value?.integrationid}
                 onSubmit={handleSubmit}
                 onClose={() => setShowFinalStep(false)}
-                onNext={() => setSelectedView("view2")}
+                onNext={() => {
+                    setView("view2");
+                }}
             />
         );
     }
@@ -1575,8 +1600,16 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
             [classes.rootextras]: tabIndex === "4",
         })}>
             <Breadcrumbs aria-label="breadcrumb">
-                <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
-                    {t(langKeys.previoustext)}
+                <Link
+                    color="textSecondary"
+                    key={"mainview"}
+                    href="/"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        setView("view1");
+                    }}
+                >
+                    <Trans i18nKey={langKeys.previoustext} />
                 </Link>
             </Breadcrumbs>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -1604,7 +1637,14 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
                 <TabPanel value="3" index={tabIndex}><TabPanelBubble form={form} /></TabPanel>
                 <TabPanel value="4" index={tabIndex}><TabPanelExtras form={form} /></TabPanel>
                 <div style={{ height: 20 }} />
-                <Button variant="contained" color="primary" onClick={handleNext}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => {
+                        setView("view1");
+                        setHasFinished(true);
+                    }}
+                >
                     <Trans i18nKey={langKeys.next} />
                 </Button>
             </div>
@@ -1641,6 +1681,9 @@ const useFinalStepStyles = makeStyles(theme => ({
 }));
 
 interface ChannelAddEndProps {
+    channelName: string;
+    hasFinished: boolean;
+    setChannelName: (value: string) => void;
     loading: boolean;
     integrationId?: string;
     onSubmit: (name: string, auto: boolean, hexIconCOlor: string) => void;
@@ -1649,17 +1692,23 @@ interface ChannelAddEndProps {
 }
 
 const ChannelAddEnd: FC<ChannelAddEndProps> = ({
+    channelName,
+    hasFinished,
+    setChannelName,
     onClose,
     onSubmit,
     onNext,
     loading,
     integrationId,
 }) => {
-    const { commonClasses, deleteChannel } = useContext(SubscriptionContext);
+    const {
+        commonClasses,
+        selectedChannels,
+        finishreg,
+        deleteChannel,
+    } = useContext(SubscriptionContext);
     const classes = useFinalStepStyles();
     const history = useHistory();
-    const [name, setName] = useState("");
-    const { t } = useTranslation();
     const [coloricon, setcoloricon] = useState("#7721ad");
     const [auto] = useState(true);
     const [hexIconColor, setHexIconColor] = useState("#7721ad");
@@ -1670,23 +1719,24 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
     }
 
     const handleSave = () => {
-        onSubmit(name, auto, hexIconColor);
+        onSubmit(channelName, auto, hexIconColor);
     }
 
     return (
         <div className={commonClasses.root}>
             <ZyxmeMessengerIcon
-                    className={commonClasses.leadingIcon}
-                />
+                className={commonClasses.leadingIcon}
+            />
             <IconButton
-                    color="primary"
-                    className={commonClasses.trailingIcon}
-                    onClick={() => deleteChannel('chatWeb')}
-                >
-                    <DeleteOutlineIcon />
-                </IconButton>
+                color="primary"
+                className={commonClasses.trailingIcon}
+                onClick={() => deleteChannel('chatWeb')}
+            >
+                <DeleteOutlineIcon />
+            </IconButton>
             <FieldEdit
-                onChange={(value) => setName(value)}
+                onChange={(value) => setChannelName(value)}
+                valueDefault={channelName}
                 label="Give your channel a name"
                 variant="outlined"
                 size="small"
@@ -1705,24 +1755,35 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
                         </div>
                     </div>
                 </div> */}
-            <Button
-                // onClick={handleSave}
-                onClick={onNext}
-                className={commonClasses.button}
-                variant="contained"
-                color="primary"
-                disabled={loading || integrationId != null}
-            >
-                FINISH REGISTRATION
-            </Button>
-            <div style={{ height: 20 }} />
+            {!hasFinished ? (
+                <Button
+                    onClick={onNext}
+                    className={commonClasses.button}
+                    variant="contained"
+                    color="primary"
+                    disabled={loading || integrationId != null || channelName.length === 0}
+                >
+                    <Trans i18nKey={langKeys.next} />
+                </Button>
+            ) : selectedChannels === 1 && (
+                <Button
+                    onClick={finishreg}
+                    className={commonClasses.button}
+                    variant="contained"
+                    color="primary"
+                    disabled={loading || integrationId != null || channelName.length === 0}
+                >
+                    <Trans i18nKey={langKeys.finishreg} />
+                </Button>
+            )}
+            {/* <div style={{ height: 20 }} />
             <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column' }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word' }}><code>
                 {`<script src="https://zyxmelinux.zyxmeapp.com/zyxme/chat/src/chatwebclient.min.js" integrationid="${integrationId}"></script>`}
             </code></pre><div style={{ height: 20 }} />
                 <Button variant="contained" color="primary" onClick={() => history.push(paths.CHANNELS)}>
                     Terminar
                 </Button>
-            </div>
+            </div> */}
         </div>
     );
 }

@@ -63,6 +63,9 @@ const CssPhonemui = styled(MuiPhoneNumber)({
 export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
     const {
         commonClasses,
+        foreground,
+        selectedChannels,
+        finishreg,
         setForeground,
         deleteChannel,
         setrequestchannels,
@@ -70,10 +73,11 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
     const [viewSelected, setViewSelected] = useState("view1");
     const planData = useSelector(state => state.signup.verifyPlan)
     const provider = planData.data[0].providerwhatsapp
-    const [nextbutton, setNextbutton] = useState(true);
+    const [apiKey, setApiKey] = useState("");
+    const [hasFinished, setHasFinished] = useState(false);
     const [disablebutton, setdisablebutton] = useState(true);
     const [coloricon, setcoloricon] = useState("#4AC959");
-    const [channelreg, setChannelreg] = useState(true);
+    const [channelName, setChannelName] = useState("");
     const { t } = useTranslation();
     const [errors, setErrors] = useState<Dictionary>({
         accesstoken: "",
@@ -88,6 +92,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
         nameassociatednumber: "",
     });
     const classes = useChannelAddStyles();
+    const type = provider === "DIALOG" ? "WHATSAPP" : "WHATSAPPSMOOCH";
     const [fields, setFields] = useState({
         "method": "UFN_COMMUNICATIONCHANNEL_INS",
         "parameters": {
@@ -105,7 +110,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
             "apikey": "",
             "coloricon": "#4AC959",
         },
-        "type": provider === "DIALOG" ? "WHATSAPP" : "WHATSAPPSMOOCH",
+        "type": type,
         "service": {
             "accesstoken": "",
             "brandname": "",
@@ -120,28 +125,40 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
         }
     })
 
-    // useEffect(() => {
-    //     console.log(viewSelected)
-    //     if (viewSelected === "view2") {
-    //         setBackButtonOnClick(() => setViewSelected("view1"));
-    //     } else if (viewSelected === "view3") {
-    //         setBackButtonOnClick(() => setViewSelected("view2"));
-    //     } else if (viewSelected === "view1") {
-    //         setBackButtonOnClick(undefined);
-    //     }
-    // }, [viewSelected]);
+    useEffect(() => {
+        if (foreground !== 'whatsapp' && viewSelected !== "view1") {
+            setViewSelected("view1");
+        } 
+    }, [foreground, viewSelected]);
+
+    useEffect(() => {
+        if (channelName.length > 0) {
+            setrequestchannels(prev => {
+                const index = prev.findIndex(x => x.type === type);
+                if (index === -1) {
+                    return [
+                        ...prev,
+                        fields,
+                    ]
+                } else {
+                    prev.splice(index, 1);
+                    return [
+                        ...prev,
+                        fields,
+                    ];
+                }
+            });
+        } else {
+            setrequestchannels(prev => prev.filter(x => x.type !== type));
+        }
+    }, [channelName, fields]);
 
     function checkissues() {
         setViewSelected("view2")
     }
 
-    async function finishreg() {
-        setrequestchannels((p: any) => ([...p, fields]))
-        deleteChannel('whatsapp');
-    }
-
     function setnameField(value: any) {
-        setChannelreg(value === "")
+        setChannelName(value);
         let partialf = fields;
         partialf.parameters.description = value
         setFields(partialf)
@@ -156,14 +173,24 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
         }
     }
 
+    const setView = (option: "view1" | "view2" | "view3") => {
+        if (option === "view1") {
+            setViewSelected(option);
+            setForeground(undefined);
+        } else {
+            setViewSelected(option);
+            setForeground('whatsapp');
+        }
+    }
+
     function setService(value: string, field: string) {
-        setNextbutton(value === "")
+        setApiKey(value);
         let partialf = fields;
         partialf.service.accesstoken = value;
         partialf.parameters.communicationchannelowner = "";
         setFields(partialf)
     }
-    console.log('chatweb:', viewSelected)
+
     if (viewSelected === "view2") {
         return (
             <div style={{ marginTop: "auto", marginBottom: "auto", maxHeight: "100%" }}>
@@ -173,8 +200,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                         href="/"
                         onClick={(e) => {
                             e.preventDefault();
-                            setViewSelected("view1");
-                            setForeground(undefined);
+                            setView("view1");
                         }}
                     >
                         {'<< '}<Trans i18nKey={langKeys.previoustext} />
@@ -312,10 +338,10 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                         // onClick={() => { checkissues() }}
                         onClick={() => {
                             if (provider === "DIALOG") {
-                                setViewSelected("view3");
+                                setView("view3");
                             } else {
-                                setViewSelected("view1");
-                                setForeground(undefined);
+                                setView("view1");
+                                setHasFinished(true);
                             }
                         }}
                         className={classes.button2}
@@ -332,55 +358,66 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
     else if (viewSelected === "view3" && provider === "DIALOG") {
         return (<div style={{ marginTop: "auto", marginBottom: "auto", maxHeight: "100%" }}>
             <Breadcrumbs aria-label="breadcrumb">
-                <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
-                    {t(langKeys.previoustext)}
+                <Link
+                    color="textSecondary"
+                    href="/"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        setView("view2");
+                    }}
+                >
+                    {'<< '}<Trans i18nKey={langKeys.previoustext} />
                 </Link>
             </Breadcrumbs>
             <div>
                 <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.whatsapptitle)}</div>
-
-                <Button
-                    className={classes.centerbutton}
-                    variant="contained"
-                    color="primary"
-                    disabled={nextbutton}
-                    onClick={() => { setViewSelected("viewfinishreg") }}
-                >{t(langKeys.registerwhats)}
-                </Button>
                 <div className="row-zyx">
                     <div className="col-3"></div>
                     <FieldEdit
                         onChange={(value) => setService(value, "accesstoken")}
                         label={t(langKeys.enterapikey)}
+                        valueDefault={apiKey}
                         className="col-6"
                     />
                 </div>
-
+                <Button
+                    className={classes.centerbutton}
+                    variant="contained"
+                    color="primary"
+                    disabled={apiKey.length === 0}
+                    onClick={() => {
+                        // setViewSelected("viewfinishreg")
+                        setView("view1");
+                        setHasFinished(true);
+                    }}
+                >
+                    <Trans i18nKey={langKeys.registerwhats} />
+                </Button>
             </div>
         </div>)
     }
 
     return (
         <div className={commonClasses.root}>
-            {viewSelected === "view1" && (
-                <WhatsappIcon
-                    className={commonClasses.leadingIcon}
-                />
-            )}
-            {viewSelected === "view1" && (
-                <IconButton
-                    color="primary"
-                    className={commonClasses.trailingIcon}
-                    onClick={() => deleteChannel('whatsapp')}
-                >
-                    <DeleteOutlineIcon />
-                </IconButton>
-            )}
+            <WhatsappIcon
+                className={commonClasses.leadingIcon}
+            />
+            <IconButton
+                color="primary"
+                className={commonClasses.trailingIcon}
+                onClick={() => {
+                    deleteChannel('whatsapp');
+                    setrequestchannels(prev => prev.filter(x => x.type !== type));
+                }}
+            >
+                <DeleteOutlineIcon />
+            </IconButton>
             <Typography>
                 <Trans i18nKey={langKeys.connectface2} />
             </Typography>
             <FieldEdit
                 onChange={(value) => setnameField(value)}
+                valueDefault={channelName}
                 label={t(langKeys.givechannelname)}
                 variant="outlined"
                 size="small"
@@ -406,18 +443,27 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                     </div>
                 </div>
             </div> */}
-            <Button
-                onClick={() => {
-                    setViewSelected("view2");
-                    setForeground('whatsapp');
-                }}
-                className={commonClasses.button}
-                disabled={channelreg}
-                variant="contained"
-                color="primary"
-            >
-                <Trans i18nKey={langKeys.next} />
-            </Button>
+            {!hasFinished ? (
+                <Button
+                    onClick={() => setView("view2")}
+                    className={commonClasses.button}
+                    disabled={channelName.length === 0}
+                    variant="contained"
+                    color="primary"
+                >
+                    <Trans i18nKey={langKeys.next} />
+                </Button>
+            ) : selectedChannels === 1 && (
+                <Button
+                    onClick={finishreg}
+                    className={commonClasses.button}
+                    disabled={channelName.length === 0}
+                    variant="contained"
+                    color="primary"
+                >
+                    <Trans i18nKey={langKeys.finishreg} />
+                </Button>
+            )}
         </div>
     );
 }

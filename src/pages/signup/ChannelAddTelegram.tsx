@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useContext, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { makeStyles, Breadcrumbs, Button, Box, Link, IconButton, Typography } from '@material-ui/core';
 import { DeleteOutline as DeleteOutlineIcon } from '@material-ui/icons';
 import { langKeys } from "lang/keys";
@@ -27,13 +27,13 @@ export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = 
     const {
         commonClasses,
         selectedChannels,
+        finishreg,
         deleteChannel,
         setrequestchannels,
     } = useContext(SubscriptionContext);
-    const [viewSelected, setViewSelected] = useState("view1");
-    const [nextbutton, setNextbutton] = useState(true);
+    const [botKey, $setBotKey] = useState("");
     const [coloricon, setcoloricon] = useState("#207FDD");
-    const [channelreg, setChannelreg] = useState(true);
+    const [channelName, setChannelName] = useState("");
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
     const [fields, setFields] = useState({
@@ -59,19 +59,36 @@ export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = 
         }
     })
 
-    async function finishreg() {
-        setrequestchannels((p: any) => ([...p, fields]))
-        deleteChannel('telegram');
-    }
+    useEffect(() => {
+        if (channelName.length > 0 && botKey.length > 0) {
+            setrequestchannels(prev => {
+                const index = prev.findIndex(x => x.type === "TELEGRAM");
+                if (index === -1) {
+                    return [
+                        ...prev,
+                        fields,
+                    ]
+                } else {
+                    prev.splice(index, 1);
+                    return [
+                        ...prev,
+                        fields,
+                    ];
+                }
+            });
+        } else {
+            setrequestchannels(prev => prev.filter(x => x.type !== "TELEGRAM"));
+        }
+    }, [channelName, botKey, fields]);
 
     function setnameField(value: any) {
-        setChannelreg(value === "")
+        setChannelName(value)
         let partialf = fields;
         partialf.parameters.description = value
         setFields(partialf)
     }
     function setBotKey(val: string) {
-        setNextbutton(val === "")
+        $setBotKey(val)
         let partialf = fields;
         partialf.service.accesstoken = val;
         partialf.parameters.communicationchannelowner = "";
@@ -86,7 +103,10 @@ export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = 
             <IconButton
                 color="primary"
                 className={commonClasses.trailingIcon}
-                onClick={() => deleteChannel('telegram')}
+                onClick={() => {
+                    deleteChannel('telegram');
+                    setrequestchannels(prev => prev.filter(x => x.type !== "TELEGRAM"));
+                }}
             >
                 <DeleteOutlineIcon />
             </IconButton>
@@ -95,12 +115,14 @@ export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = 
             </Typography>
             <FieldEdit
                 onChange={(value) => setnameField(value)}
+                valueDefault={channelName}
                 label={t(langKeys.givechannelname)}
                 variant="outlined"
                 size="small"
             />
             <FieldEdit
                 onChange={(value) => setBotKey(value)}
+                valueDefault={botKey}
                 label={t(langKeys.enterbotapikey)}
                 variant="outlined"
                 size="small"
@@ -128,13 +150,13 @@ export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = 
             </div> */}
             {selectedChannels === 1 && (
                 <Button
-                    onClick={() => { finishreg() }}
+                    onClick={finishreg}
                     className={commonClasses.button}
-                    disabled={channelreg}
+                    disabled={channelName.length === 0 && botKey.length === 0}
                     variant="contained"
                     color="primary"
                 >
-                    <Trans i18nKey={langKeys.next} />
+                    <Trans i18nKey={langKeys.finishreg} />
                 </Button>
             )}
         </div>

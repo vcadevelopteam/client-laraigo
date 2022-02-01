@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useContext, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { makeStyles, Breadcrumbs, Button, Box, IconButton, Link, Typography } from '@material-ui/core';
 import { DeleteOutline as DeleteOutlineIcon } from '@material-ui/icons';
 import { langKeys } from "lang/keys";
@@ -21,14 +21,19 @@ const useChannelAddStyles = makeStyles(theme => ({
 export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
     const {
         commonClasses,
+        foreground,
+        selectedChannels,
+        finishreg,
+        setForeground,
         deleteChannel,
         setrequestchannels,
     } = useContext(SubscriptionContext);
+    const [hasFinished, setHasFinished] = useState(false);
     const [viewSelected, setViewSelected] = useState("view1");
     const [nextbutton, setNextbutton] = useState(true);
-    const [nextbutton2, setNextbutton2] = useState(true);
+    const [devenvironment, setDevenvironment] = useState("");
     const [coloricon, setcoloricon] = useState("#1D9BF0");
-    const [channelreg, setChannelreg] = useState(true);
+    const [channelName, setChannelName] = useState("");
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
     const [fields, setFields] = useState({
@@ -58,21 +63,63 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
         }
     })
 
-    async function finishreg() {
-        setrequestchannels((p: any) => ([...p, fields]))
-        deleteChannel('twitterDM');
-    }
+    useEffect(() => {
+        if (foreground !== 'twitterDM' && viewSelected !== "view1") {
+            setViewSelected("view1");
+        } 
+    }, [foreground, viewSelected]);
+
+    useEffect(() => {
+        if (channelName.length > 0 && devenvironment.length > 0) {
+            setrequestchannels(prev => {
+                const index = prev.findIndex(x => x.type === "TWITTERDM");
+                if (index === -1) {
+                    return [
+                        ...prev,
+                        fields,
+                    ]
+                } else {
+                    prev.splice(index, 1);
+                    return [
+                        ...prev,
+                        fields,
+                    ];
+                }
+            });
+        } else {
+            setrequestchannels(prev => prev.filter(x => x.type !== "TWITTERDM"));
+        }
+    }, [channelName, devenvironment, fields]);
+
     function setnameField(value: any) {
-        setChannelreg(value === "")
+        setChannelName(value)
         let partialf = fields;
         partialf.parameters.description = value
         setFields(partialf)
     }
+
+    const setView = (option: "view1" | "view2") => {
+        if (option === "view1") {
+            setViewSelected(option);
+            setForeground(undefined);
+        } else {
+            setViewSelected(option);
+            setForeground('twitterDM');
+        }
+    }
+
     if (viewSelected === "view2") {
         return (
             <div style={{ marginTop: "auto", marginBottom: "auto", maxHeight: "100%" }}>
                 <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
+                    <Link
+                        color="textSecondary"
+                        href="/"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            setView("view1")
+                        }}
+                    >
                         {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
@@ -139,7 +186,10 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
                     <div style={{ paddingLeft: "80%" }}>
                         <Button
                             disabled={nextbutton}
-                            onClick={() => { setViewSelected("view2") }}
+                            onClick={() => {
+                                setView("view1");
+                                setHasFinished(true);
+                            }}
                             className={classes.button}
                             variant="contained"
                             color="primary"
@@ -161,7 +211,10 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
             <IconButton
                 color="primary"
                 className={commonClasses.trailingIcon}
-                onClick={() => deleteChannel('twitterDM')}
+                onClick={() => {
+                    deleteChannel('twitterDM');
+                    setrequestchannels(prev => prev.filter(x => x.type !== "TWITTERDM"));
+                }}
             >
                 <DeleteOutlineIcon />
             </IconButton>
@@ -175,13 +228,14 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
             />
             <FieldEdit
                 onChange={(value) => {
-                    setNextbutton2(value === "")
+                    setDevenvironment(value)
                     let partialf = fields;
                     partialf.service.devenvironment = value;
                     partialf.parameters.communicationchannelowner = "";
                     setFields(partialf)
                 }}
-                valueDefault={fields.service.devenvironment}
+                // valueDefault={fields.service.devenvironment}
+                valueDefault={devenvironment}
                 label={t(langKeys.devenvironment)}
                 className="col-6"
             />
@@ -206,16 +260,27 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
                     </div>
                 </div>
             </div> */}
-            <Button
-                // onClick={() => { finishreg() }}
-                onClick={() => setViewSelected("view2")}
-                className={commonClasses.button}
-                disabled={channelreg}
-                variant="contained"
-                color="primary"
-            >
-                <Trans i18nKey={langKeys.next} />
-            </Button>
+            {!hasFinished ? (
+                <Button
+                    onClick={() => setView("view2")}
+                    className={commonClasses.button}
+                    disabled={channelName.length === 0 || devenvironment.length === 0}
+                    variant="contained"
+                    color="primary"
+                >
+                    <Trans i18nKey={langKeys.next} />
+                </Button>
+            ) : selectedChannels === 1 && (
+                <Button
+                    onClick={finishreg}
+                    className={commonClasses.button}
+                    disabled={channelName.length === 0 || devenvironment.length === 0}
+                    variant="contained"
+                    color="primary"
+                >
+                    <Trans i18nKey={langKeys.finishreg} />
+                </Button>
+            )}
         </div>
     )
 }

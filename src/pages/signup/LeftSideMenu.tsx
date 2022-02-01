@@ -1,4 +1,4 @@
-import { FC, useContext, useMemo } from "react";
+import { FC, useContext, useEffect, useMemo, useState } from "react";
 import { Breadcrumbs, Button, Link, makeStyles } from "@material-ui/core";
 import { ChannelAddFacebook } from './ChannelAddFacebook'
 import { ChannelAddInstagram } from './ChannelAddInstagram'
@@ -11,9 +11,15 @@ import { ChannelAddTwitterDM } from './ChannelAddTwitterDM'
 import { ChannelAddChatWeb } from './ChannelAddChatWeb'
 import { ChannelAddAndroid } from './ChannelAddAndroid'
 import { ChannelAddIos } from './ChannelAddIos'
-import { Trans } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { ListChannels, SubscriptionContext } from "./context";
+import { executeSubscription } from "store/signup/actions";
+import { useDispatch } from "react-redux";
+import { showBackdrop } from "store/popus/actions";
+import { useSelector } from "hooks";
+import { useHistory } from "react-router-dom";
+import { showSnackbar } from "store/popus/actions";
 
 const useLeftSideStyles = makeStyles(theme => ({
     root: {
@@ -44,89 +50,12 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
     const classes = useLeftSideStyles();
     const {
         foreground,
+        finishreg,
         listchannels,
         selectedChannels,
-        requestchannels,
         commonClasses,
     } = useContext(SubscriptionContext);
-
-    const GetComponent: FC<{ channel: keyof ListChannels }> = ({ channel: key }) => {
-        switch (key as keyof ListChannels) {
-            case 'facebook':
-                return (
-                    <ChannelAddFacebook
-                        setOpenWarning={setOpenWarning}
-                    />
-                );
-            case 'instagram':
-                return (
-                    <ChannelAddInstagram
-                        setOpenWarning={setOpenWarning}
-                    />
-                );
-            case 'instagramDM':
-                return (
-                    <ChannelAddInstagramDM
-                        setOpenWarning={setOpenWarning}
-                    />
-                );
-            case 'messenger':
-                return (
-                    <ChannelAddMessenger
-                        setOpenWarning={setOpenWarning}
-                    />
-                );
-            case 'whatsapp':
-                return (
-                    <ChannelAddWhatsapp
-                        setOpenWarning={setOpenWarning}
-                    />
-                );
-            case 'telegram':
-                return (
-                    <ChannelAddTelegram
-                        setOpenWarning={setOpenWarning}
-                    />
-                );
-            case 'twitter':
-                return (
-                    <ChannelAddTwitter
-                        setOpenWarning={setOpenWarning}
-                    />
-                );
-            case 'twitterDM':
-                return (
-                    <ChannelAddTwitterDM
-                        setOpenWarning={setOpenWarning}
-                    />
-                );
-            case 'chatWeb':
-                return (
-                    <ChannelAddChatWeb
-                        setOpenWarning={setOpenWarning}
-                    />
-                );
-            case 'email':
-                return <div>email</div>;
-            case 'phone':
-                return <div>phone</div>;
-            case 'sms':
-                return <div>sms</div>;
-            case 'android':
-                return (
-                    <ChannelAddAndroid
-                        setOpenWarning={setOpenWarning}
-                    />
-                );
-            case 'apple':
-                return (
-                    <ChannelAddIos
-                        setOpenWarning={setOpenWarning}
-                    />
-                );
-            default: return <div />;
-        }
-    }
+    const executeResult = useSelector(state => state.signup.insertChannel);
 
     const channels = useMemo(() => {
         console.log('useMemo:channels', foreground);
@@ -249,12 +178,13 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
             </div>
             {(!foreground && selectedChannels > 1) && (
                 <Button
-                    // onClick={finishreg}
+                    onClick={finishreg}
                     className={commonClasses.button}
                     style={{ marginTop: '3em' }}
                     variant="contained"
                     color="primary"
-                    disabled={requestchannels.length < selectedChannels}
+                    disabled={executeResult.loading}
+                    // disabled={requestchannels.length < selectedChannels}
                 >
                     <Trans i18nKey={langKeys.next} />
                 </Button>
@@ -262,3 +192,83 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
         </div>
     );
 }
+
+/**
+ * const GetComponent: FC<{ channel: keyof ListChannels }> = ({ channel: key }) => {
+        switch (key as keyof ListChannels) {
+            case 'facebook':
+                return (
+                    <ChannelAddFacebook
+                        setOpenWarning={setOpenWarning}
+                    />
+                );
+            case 'instagram':
+                return (
+                    <ChannelAddInstagram
+                        setOpenWarning={setOpenWarning}
+                    />
+                );
+            case 'instagramDM':
+                return (
+                    <ChannelAddInstagramDM
+                        setOpenWarning={setOpenWarning}
+                    />
+                );
+            case 'messenger':
+                return (
+                    <ChannelAddMessenger
+                        setOpenWarning={setOpenWarning}
+                    />
+                );
+            case 'whatsapp':
+                return (
+                    <ChannelAddWhatsapp
+                        setOpenWarning={setOpenWarning}
+                    />
+                );
+            case 'telegram':
+                return (
+                    <ChannelAddTelegram
+                        setOpenWarning={setOpenWarning}
+                    />
+                );
+            case 'twitter':
+                return (
+                    <ChannelAddTwitter
+                        setOpenWarning={setOpenWarning}
+                    />
+                );
+            case 'twitterDM':
+                return (
+                    <ChannelAddTwitterDM
+                        setOpenWarning={setOpenWarning}
+                    />
+                );
+            case 'chatWeb':
+                return (
+                    <ChannelAddChatWeb
+                        setOpenWarning={setOpenWarning}
+                    />
+                );
+            case 'email':
+                return <div>email</div>;
+            case 'phone':
+                return <div>phone</div>;
+            case 'sms':
+                return <div>sms</div>;
+            case 'android':
+                return (
+                    <ChannelAddAndroid
+                        setOpenWarning={setOpenWarning}
+                    />
+                );
+            case 'apple':
+                return (
+                    <ChannelAddIos
+                        setOpenWarning={setOpenWarning}
+                    />
+                );
+            default: return <div />;
+        }
+    }
+ */

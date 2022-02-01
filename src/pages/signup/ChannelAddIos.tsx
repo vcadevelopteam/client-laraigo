@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useContext, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { makeStyles, Button, Box, IconButton, Typography } from '@material-ui/core';
 import { DeleteOutline as DeleteOutlineIcon } from '@material-ui/icons';
 import { langKeys } from "lang/keys";
@@ -21,10 +21,12 @@ const useChannelAddStyles = makeStyles(theme => ({
 export const ChannelAddIos: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
     const {
         commonClasses,
+        selectedChannels,
+        finishreg,
         deleteChannel,
         setrequestchannels,
     } = useContext(SubscriptionContext);
-    const [channelreg, setChannelreg] = useState(true);
+    const [channelName, setChannelName] = useState("");
     const { t } = useTranslation();
     const [coloricon, setcoloricon] = useState("#000000");
     const classes = useChannelAddStyles();
@@ -48,13 +50,30 @@ export const ChannelAddIos: FC<{ setOpenWarning: (param: any) => void }> = ({ se
         "type": "SMOOCHIOS",
     })
 
-    async function finishreg() {
-        setrequestchannels((p: any) => ([...p, fields]))
-        deleteChannel('apple');
-    }
+    useEffect(() => {
+        if (channelName.length > 0) {
+            setrequestchannels(prev => {
+                const index = prev.findIndex(x => x.type === "SMOOCHIOS");
+                if (index === -1) {
+                    return [
+                        ...prev,
+                        fields,
+                    ]
+                } else {
+                    prev.splice(index, 1);
+                    return [
+                        ...prev,
+                        fields,
+                    ];
+                }
+            });
+        } else {
+            setrequestchannels(prev => prev.filter(x => x.type !== "SMOOCHIOS"));
+        }
+    }, [channelName, fields]);
 
     function setnameField(value: any) {
-        setChannelreg(value === "")
+        setChannelName(value)
         let partialf = fields;
         partialf.parameters.description = value
         setFields(partialf)
@@ -67,7 +86,10 @@ export const ChannelAddIos: FC<{ setOpenWarning: (param: any) => void }> = ({ se
             <IconButton
                 color="primary"
                 className={commonClasses.trailingIcon}
-                onClick={() => deleteChannel('apple')}
+                onClick={() => {
+                    deleteChannel('apple');
+                    setrequestchannels(prev => prev.filter(x => x.type !== "SMOOCHIOS"));
+                }}
             >
                 <DeleteOutlineIcon />
             </IconButton>
@@ -76,6 +98,7 @@ export const ChannelAddIos: FC<{ setOpenWarning: (param: any) => void }> = ({ se
             </Typography>
             <FieldEdit
                 onChange={(value) => setnameField(value)}
+                valueDefault={channelName}
                 label={t(langKeys.givechannelname)}
                 variant="outlined"
                 size="small"
@@ -101,15 +124,17 @@ export const ChannelAddIos: FC<{ setOpenWarning: (param: any) => void }> = ({ se
                     </div>
                 </div>
             </div> */}
-            <Button
-                onClick={() => { finishreg() }}
-                className={commonClasses.button}
-                disabled={channelreg}
-                variant="contained"
-                color="primary"
-            >
-                <Trans i18nKey={langKeys.next} />
-            </Button>
+            {selectedChannels === 1 && (
+                <Button
+                    onClick={finishreg}
+                    className={commonClasses.button}
+                    disabled={channelName.length === 0}
+                    variant="contained"
+                    color="primary"
+                >
+                    <Trans i18nKey={langKeys.finishreg} />
+                </Button>
+            )}
         </div>
     )
 }

@@ -22,13 +22,13 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
         commonClasses,
         FBButtonStyles,
         selectedChannels,
+        finishreg,
         deleteChannel,
         setrequestchannels,
     } = useContext(SubscriptionContext);
-    const [viewSelected, setViewSelected] = useState("view1");
     const [waitSave, setWaitSave] = useState(false);
-    const [nextbutton, setNextbutton] = useState(true);
-    const [channelreg, setChannelreg] = useState(true);
+    const [pageLink, setPageLink] = useState("");
+    const [channelName, setChannelName] = useState("");
     const [coloricon, setcoloricon] = useState("#2d88ff");
     const mainResult = useSelector(state => state.channel.channelList)
     const dispatch = useDispatch();
@@ -62,10 +62,6 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
         window.open("/privacy", '_blank');
     }
 
-    async function finishreg() {
-        setrequestchannels((p: any) => ([...p, fields]))
-        deleteChannel('facebook');
-    }
     useEffect(() => {
         if (waitSave) {
             dispatch(showBackdrop(false));
@@ -74,16 +70,37 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mainResult])
 
+    useEffect(() => {
+        if (channelName.length > 0 && pageLink.length > 0) {
+            setrequestchannels(prev => {
+                const index = prev.findIndex(x => x.type === "FACEBOOK");
+                if (index === -1) {
+                    return [
+                        ...prev,
+                        fields,
+                    ]
+                } else {
+                    prev.splice(index, 1);
+                    return [
+                        ...prev,
+                        fields,
+                    ];
+                }
+            });
+        } else {
+            setrequestchannels(prev => prev.filter(x => x.type !== "FACEBOOK"));
+        }
+    }, [channelName, pageLink, fields]);
+
     const processFacebookCallback = async (r: any) => {
         if (r.status !== "unknown" && !r.error) {
             dispatch(getChannelsListSub(r.accessToken))
-            setViewSelected("view2")
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
     }
     function setValueField(value: any) {
-        setNextbutton(value == null)
+        setPageLink(value?.id || "");
         let partialf = fields;
         partialf.parameters.communicationchannelsite = value?.id || ""
         partialf.parameters.communicationchannelowner = value?.name || ""
@@ -93,7 +110,7 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
         setFields(partialf)
     }
     function setnameField(value: any) {
-        setChannelreg(value === "")
+        setChannelName(value)
         let partialf = fields;
         partialf.parameters.description = value
         setFields(partialf)
@@ -101,26 +118,26 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
 
     return (
         <div className={commonClasses.root}>
-            {viewSelected === "view1" && (
-                <FacebookIcon
-                    className={commonClasses.leadingIcon}
-                />
-            )}
-            {viewSelected === "view1" && (
-                <IconButton
-                    color="primary"
-                    className={commonClasses.trailingIcon}
-                    onClick={() => deleteChannel('facebook')}
-                >
-                    <DeleteOutlineIcon />
-                </IconButton>
-            )}
+            <FacebookIcon
+                className={commonClasses.leadingIcon}
+            />
+            <IconButton
+                color="primary"
+                className={commonClasses.trailingIcon}
+                onClick={() => {
+                    deleteChannel('facebook');
+                    setrequestchannels(prev => prev.filter(x => x.type !== "FACEBOOK"));
+                }}
+            >
+                <DeleteOutlineIcon />
+            </IconButton>
             <Typography>
                 <Trans i18nKey={langKeys.connectface2} />
             </Typography>
             <FieldEdit
                 onChange={(value) => setnameField(value)}
                 label={t(langKeys.givechannelname)}
+                valueDefault={channelName}
                 variant="outlined"
                 size="small"
             />
@@ -149,13 +166,14 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
                 onChange={(value) => setValueField(value)}
                 label={t(langKeys.selectpagelink)}
                 data={mainResult.data}
+                valueDefault={pageLink}
                 optionDesc="name"
                 optionValue="id"
                 variant="outlined"
                 size="small"
             />
 
-            {viewSelected === "view1" ? (
+            {pageLink.length === 0 ? (
                 <FacebookLogin
                     appId={apiUrls.FACEBOOKAPP}
                     autoLoad={false}
@@ -180,9 +198,9 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
                     className={commonClasses.button}
                     variant="contained"
                     color="primary"
-                    disabled={nextbutton}
+                    disabled={channelName.length === 0}
                 >
-                    <Trans i18nKey={langKeys.next} />
+                    <Trans i18nKey={langKeys.finishreg} />
                 </Button>
             )}
         </div>

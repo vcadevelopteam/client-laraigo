@@ -37,10 +37,7 @@ export const RightSideMenu: FC<RightSideMenuProps> = ({
     sendchannels,
     setsendchannels,
 }) => {
-    const {
-        setrequestchannels,
-        listchannels,
-    } = useContext(SubscriptionContext);
+    const { listchannels } = useContext(SubscriptionContext);
 
     if(step===1){
         return(
@@ -69,7 +66,6 @@ export const RightSideMenu: FC<RightSideMenuProps> = ({
             <ThirdStep
                 setStep={setStep}
                 setsendchannels={setsendchannels}
-                setrequestchannels={setrequestchannels}
                 setOpenWarning={setOpenWarning}
             />
         )

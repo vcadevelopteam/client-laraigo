@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useContext, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { makeStyles, Breadcrumbs, Button, Box, IconButton, Typography } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { showBackdrop } from 'store/popus/actions';
@@ -20,12 +20,12 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
         commonClasses,
         FBButtonStyles,
         selectedChannels,
+        finishreg,
         deleteChannel,
         setrequestchannels,
     } = useContext(SubscriptionContext);
-    const [viewSelected, setViewSelected] = useState("view1");
-    const [nextbutton, setNextbutton] = useState(true);
-    const [channelreg, setChannelreg] = useState(true);
+    const [pageLink, setPageLink] = useState("");
+    const [channelName, setChannelName] = useState("");
     const mainResult = useSelector(state => state.channel.channelList)
     const [coloricon, setcoloricon] = useState("#F56040");
     const dispatch = useDispatch();
@@ -55,24 +55,40 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
         }
     })
 
+    useEffect(() => {
+        if (channelName.length > 0 && pageLink.length > 0) {
+            setrequestchannels(prev => {
+                const index = prev.findIndex(x => x.type === "INSTAMESSENGER");
+                if (index === -1) {
+                    return [
+                        ...prev,
+                        fields,
+                    ]
+                } else {
+                    prev.splice(index, 1);
+                    return [
+                        ...prev,
+                        fields,
+                    ];
+                }
+            });
+        } else {
+            setrequestchannels(prev => prev.filter(x => x.type !== "INSTAMESSENGER"));
+        }
+    }, [channelName, pageLink, fields]);
+
     const openprivacypolicies = () => {
         window.open("/privacy", '_blank');
-    }
-
-    async function finishreg() {
-        setrequestchannels((p: any) => ([...p, fields]))
-        deleteChannel('instagramDM');
     }
 
     const processFacebookCallback = async (r: any) => {
         if (r.status !== "unknown" && !r.error) {
             dispatch(getChannelsListSub(r.accessToken))
-            setViewSelected("view2")
             dispatch(showBackdrop(true));
         }
     }
     function setValueField(value: any) {
-        setNextbutton(value == null)
+        setPageLink(value?.id || "");
         let partialf = fields;
         partialf.parameters.communicationchannelsite = value?.id || ""
         partialf.parameters.communicationchannelowner = value?.name || ""
@@ -82,7 +98,7 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
         setFields(partialf)
     }
     function setnameField(value: any) {
-        setChannelreg(value === "")
+        setChannelName(value);
         let partialf = fields;
         partialf.parameters.description = value
         setFields(partialf)
@@ -90,31 +106,32 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
 
     return (
         <div className={commonClasses.root}>
-            {viewSelected === "view1" && (
-                <InstagramIcon
-                    className={commonClasses.leadingIcon}
-                />
-            )}
-            {viewSelected === "view1" && (
-                <IconButton
-                    color="primary"
-                    className={commonClasses.trailingIcon}
-                    onClick={() => deleteChannel('instagramDM')}
-                >
-                    <DeleteOutlineIcon />
-                </IconButton>
-            )}
+            <InstagramIcon
+                className={commonClasses.leadingIcon}
+            />
+            <IconButton
+                color="primary"
+                className={commonClasses.trailingIcon}
+                onClick={() => {
+                    deleteChannel('instagramDM');
+                    setrequestchannels(prev => prev.filter(x => x.type !== "INSTAMESSENGER"));
+                }}
+            >
+                <DeleteOutlineIcon />
+            </IconButton>
             <Typography>
                 <Trans i18nKey={langKeys.connectface2} />
             </Typography>
             <FieldEdit
                 onChange={(value) => setnameField(value)}
+                valueDefault={channelName}
                 label={t(langKeys.givechannelname)}
                 variant="outlined"
                 size="small"
             />
             <FieldSelect
                 onChange={(value) => setValueField(value)}
+                valueDefault={pageLink}
                 label={t(langKeys.selectpagelink)}
                 data={mainResult.data}
                 optionDesc="name"
@@ -143,7 +160,7 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
                     </div>
                 </div>
             </div> */}
-            {viewSelected === "view1" ? (
+            {pageLink.length === 0 ? (
                 <FacebookLogin
                     appId={apiUrls.INSTAGRAMAPP}
                     autoLoad={false}
@@ -163,13 +180,13 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
                 />
             ) : selectedChannels === 1 && (
                 <Button
-                    onClick={() => { finishreg() }}
+                    onClick={finishreg}
                     className={commonClasses.button}
-                    disabled={channelreg}
+                    disabled={channelName.length === 0}
                     variant="contained"
                     color="primary"
                 >
-                    <Trans i18nKey={langKeys.next} />
+                    <Trans i18nKey={langKeys.finishreg} />
                 </Button>
             )}
         </div>
