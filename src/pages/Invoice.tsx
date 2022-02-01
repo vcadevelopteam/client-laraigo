@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { cleanMemoryTable, setMemoryTable, uploadFile } from 'store/main/actions';
 import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx, FieldEditArray, TemplateIcons } from 'components';
-import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, invoiceRefreshTest, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail, selBalanceData, getBillingMessagingCurrent, getBalanceSelSent } from 'common/helpers';
+import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, invoiceRefreshTest, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail, selBalanceData, getBillingMessagingCurrent, getBalanceSelSent, getCorpSelVariant } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -272,7 +272,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { totalcharge } = props.cell.row.original;
-                    return (totalcharge || 0).toFixed(2);
+                    return formatNumber(totalcharge || 0);
                 }
             },
         ],
@@ -724,7 +724,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                             className="col-6"
                             label={t(langKeys.costbasedonthesupportplan)}
-                            value={getValues('supportbasicfee').toFixed(2)}
+                            value={formatNumber(getValues('supportbasicfee') || 0)}
                             />
                         }
                     </div>
@@ -732,7 +732,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         <FieldView
                             className="col-6"
                             label={t(langKeys.totalcharge)}
-                            value={getValues('totalcharge').toFixed(2)}
+                            value={formatNumber(getValues('totalcharge') || 0)}
                         />
                     </div>
                 </div>}
@@ -782,13 +782,13 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                                 className="col-6"
                                 label={t(langKeys.useradditionalfee)}
-                                value={getValues('useradditionalfee').toFixed(2)}
+                                value={formatNumber(getValues('useradditionalfee') || 0)}
                             />
                         }
                         <FieldView
                             className="col-6"
                             label={t(langKeys.useradditionalcharge)}
-                            value={getValues("useradditionalcharge").toFixed(2)}
+                            value={formatNumber(getValues("useradditionalcharge") || 0)}
                         />
                     </div>
                 </div>}
@@ -819,7 +819,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                                 className="col-6"
                                 label={t(langKeys.channelwhatsappfee)}
-                                value={getValues('channelwhatsappfee').toFixed(4)}
+                                value={formatNumberFourDecimals(getValues('channelwhatsappfee') || 0)}
                             />
                         }
                     </div>
@@ -839,7 +839,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         <FieldView
                             className="col-6"
                             label={t(langKeys.channelcharge)}
-                            value={getValues("channelcharge").toFixed(2)}
+                            value={formatNumber(getValues("channelcharge") || 0)}
                         />
                     </div>
                 </div>}
@@ -872,12 +872,12 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationclientwhatfee)}
-                            value={getValues("conversationclientwhatfee").toFixed(4)}
+                            value={formatNumberFourDecimals(getValues("conversationclientwhatfee") || 0)}
                         />
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationclientwhatcharge)}
-                            value={getValues("conversationclientwhatcharge").toFixed(2)}
+                            value={formatNumber(getValues("conversationclientwhatcharge") || 0)}
                         />
                     </div>
                     <div className="row-zyx">
@@ -896,19 +896,19 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationcompanywhatfee)}
-                            value={getValues("conversationcompanywhatfee").toFixed(4)}
+                            value={formatNumberFourDecimals(getValues("conversationcompanywhatfee") || 0)}
                         />
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationcompanywhatcharge)}
-                            value={getValues("conversationcompanywhatcharge").toFixed(2)}
+                            value={formatNumber(getValues("conversationcompanywhatcharge") || 0)}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationwhatcharge)}
-                            value={getValues("conversationwhatcharge").toFixed(2)}
+                            value={formatNumber(getValues("conversationwhatcharge") || 0)}
                         />
                     </div>
                 </div>}
@@ -946,13 +946,13 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                                 className="col-6"
                                 label={t(langKeys.clientadditionalfee)}
-                                value={getValues("clientadditionalfee").toFixed(4)}
+                                value={formatNumberFourDecimals(getValues("clientadditionalfee") || 0)}
                             />
                         }
                         <FieldView
                             className="col-6"
                             label={t(langKeys.clientadditionalcharge)}
-                            value={getValues("clientadditionalcharge").toFixed(2)}
+                            value={formatNumber(getValues("clientadditionalcharge") || 0)}
                         />
                     </div>
                 </div>}
@@ -969,7 +969,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                                 className="col-6"
                                 label={t(langKeys.unitpricepersms)}
-                                value={getValues("unitpricepersms").toFixed(4)}
+                                value={formatNumberFourDecimals(getValues("unitpricepersms") || 0)}
                             />
                         }
                         { edit ? <FieldEdit
@@ -983,7 +983,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                                 className="col-6"
                                 label={t(langKeys.vcacomissionpersms)}
-                                value={getValues("vcacomissionpersms").toFixed(4)}
+                                value={formatNumberFourDecimals(getValues("vcacomissionpersms") || 0)}
                             />
                         }
                     </div>
@@ -991,12 +991,12 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         <FieldView
                             className="col-6"
                             label={t(langKeys.smsquantity)}
-                            value={getValues("smsquantity").toFixed(0)}
+                            value={formatNumberNoDecimals(getValues("smsquantity") || 0)}
                         />
                         <FieldView
                             className="col-6"
                             label={t(langKeys.smscost)}
-                            value={getValues("smscost").toFixed(2)}
+                            value={formatNumber(getValues("smscost") || 0)}
                         />
                     </div>
                     <div className="row-zyx">
@@ -1011,7 +1011,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                                 className="col-6"
                                 label={t(langKeys.unitepricepermail)}
-                                value={getValues("unitepricepermail").toFixed(4)}
+                                value={formatNumberFourDecimals(getValues("unitepricepermail") || 0)}
                             />
                         }
                         { edit ? <FieldEdit
@@ -1025,7 +1025,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                                 className="col-6"
                                 label={t(langKeys.vcacomissionpermail)}
-                                value={getValues("vcacomissionpermail").toFixed(4)}
+                                value={formatNumberFourDecimals(getValues("vcacomissionpermail") || 0)}
                             />
                         }
                     </div>
@@ -1033,12 +1033,12 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         <FieldView
                             className="col-6"
                             label={t(langKeys.mailquantity)}
-                            value={getValues("mailquantity").toFixed(0)}
+                            value={formatNumberNoDecimals(getValues("mailquantity") || 0)}
                         />
                         <FieldView
                             className="col-6"
                             label={t(langKeys.mailcost)}
-                            value={getValues("mailcost").toFixed(2)}
+                            value={formatNumber(getValues("mailcost") || 0)}
                         />
                     </div>
                 </div>}
@@ -1068,7 +1068,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                                 className="col-6"
                                 label={`${t(langKeys.additionalservicefee)} 1`}
-                                value={getValues("additionalservicefee1").toFixed(4)}
+                                value={formatNumberFourDecimals(getValues("additionalservicefee1") || 0)}
                             />
                         }
                     </div>
@@ -1097,7 +1097,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                                 className="col-6"
                                 label={`${t(langKeys.additionalservicefee)} 2`}
-                                value={getValues("additionalservicefee2").toFixed(4)}
+                                value={formatNumberFourDecimals(getValues("additionalservicefee2") || 0)}
                             />
                         }
                     </div>
@@ -1126,7 +1126,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                                 className="col-6"
                                 label={`${t(langKeys.additionalservicefee)} 3`}
-                                value={getValues("additionalservicefee3").toFixed(4)}
+                                value={formatNumberFourDecimals(getValues("additionalservicefee3") || 0)}
                             />
                         }
                     </div>
@@ -1790,7 +1790,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { totalamount } = props.cell.row.original;
-                    return (totalamount || 0).toFixed(2);
+                    return formatNumber(totalamount || 0);
                 }
             },
             {
@@ -2479,7 +2479,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { subtotal } = props.cell.row.original;
-                    return (subtotal || 0).toFixed(2);
+                    return formatNumber(subtotal || 0);
                 }
             },
             {
@@ -2489,7 +2489,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { taxes } = props.cell.row.original;
-                    return (taxes || 0).toFixed(2);
+                    return formatNumber(taxes || 0);
                 }
             },
             {
@@ -2499,7 +2499,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { totalamount } = props.cell.row.original;
-                    return (totalamount || 0).toFixed(2);
+                    return formatNumber(totalamount || 0);
                 }
             },
         ],
@@ -3066,17 +3066,17 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                             />
                             <FieldView
                                 label={t(langKeys.taxbase)}
-                                value={(data?.subtotal || 0).toFixed(2)}
+                                value={formatNumber(data?.subtotal || 0)}
                                 className="col-3"
                             />
                             <FieldView
                                 label={t(langKeys.billingtax)}
-                                value={(data?.taxes || 0).toFixed(2)}
+                                value={formatNumber(data?.taxes || 0)}
                                 className="col-3"
                             />
                             <FieldView
                                 label={t(langKeys.totalamount)}
-                                value={(data?.totalamount || 0).toFixed(2)}
+                                value={formatNumber(data?.totalamount || 0)}
                                 className="col-3"
                             />
                         </div>
@@ -3090,7 +3090,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                                 {(data?.creditnotetype === '04') ? (
                                     <FieldView
                                         label={t(langKeys.globaldiscount)}
-                                        value={(data?.creditnotediscount || 0).toFixed(2)}
+                                        value={formatNumber(data?.creditnotediscount || 0)}
                                         className="col-3"
                                     />
                                 ) : null}
@@ -3193,21 +3193,21 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                                                 <TableCell>
                                                     <FieldView
                                                         label={''}
-                                                        value={(getValues(`productdetail.${i}.productsubtotal`) || 0).toFixed(2)}
+                                                        value={formatNumber(getValues(`productdetail.${i}.productsubtotal`) || 0)}
                                                         className={classes.fieldView}
                                                     />
                                                 </TableCell>
                                                 <TableCell>
                                                     <FieldView
                                                         label={''}
-                                                        value={(getValues(`productdetail.${i}.productquantity`) || 0).toFixed(0)}
+                                                        value={formatNumber(getValues(`productdetail.${i}.productquantity`) || 0)}
                                                         className={classes.fieldView}
                                                     />
                                                 </TableCell>
                                                 <TableCell>
                                                     <FieldView
                                                         label={''}
-                                                        value={((getValues(`productdetail.${i}.productsubtotal`) || 0) * (getValues(`productdetail.${i}.productquantity`) || 0)).toFixed(2)}
+                                                        value={formatNumber((getValues(`productdetail.${i}.productsubtotal`) || 0) * (getValues(`productdetail.${i}.productquantity`) || 0))}
                                                         className={classes.fieldView}
                                                     />
                                                 </TableCell>
@@ -4224,7 +4224,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             />
                             <FieldEdit
                                 label={t(langKeys.taxbase)}
-                                valueDefault={getValues('invoicetotalamount').toFixed(2)}
+                                valueDefault={formatNumber(getValues('invoicetotalamount') || 0)}
                                 className="col-3"
                                 error={errors?.invoicetotalamount?.message}
                                 disabled={true}
@@ -4232,12 +4232,12 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             />
                             <FieldView
                                 label={t(langKeys.billingtax)}
-                                value={amountTax.toFixed(2)}
+                                value={formatNumber(amountTax || 0)}
                                 className="col-3"
                             />
                             <FieldView
                                 label={t(langKeys.totalamount)}
-                                value={amountTotal.toFixed(2)}
+                                value={formatNumber(amountTotal || 0)}
                                 className="col-3"
                             />
                         </div>
@@ -4368,7 +4368,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                                     <FieldView
                                                         className={classes.fieldView}
                                                         label={''}
-                                                        value={((getValues(`productdetail.${i}.productsubtotal`) || 0) * (getValues(`productdetail.${i}.productquantity`) || 0)).toFixed(2)}
+                                                        value={formatNumber((getValues(`productdetail.${i}.productsubtotal`) || 0) * (getValues(`productdetail.${i}.productquantity`) || 0))}
                                                     />
                                                 </TableCell>
                                                 <TableCell>
@@ -4501,7 +4501,7 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { amount } = props.cell.row.original;
-                    return (amount || 0).toFixed(4);
+                    return formatNumberFourDecimals(amount || 0);
                 }
             },
             {
@@ -4511,7 +4511,7 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { balance } = props.cell.row.original;
-                    return (balance || 0).toFixed(4);
+                    return formatNumberFourDecimals(balance || 0);
                 }
             },
             {
@@ -5043,13 +5043,13 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                             <FieldView
                                 className="col-4"
                                 label={t(langKeys.transactionlastbalance)}
-                                value={(beforeAmount || 0).toFixed(2)}
+                                value={formatNumber(beforeAmount || 0)}
                             />
                         ) : (
                             <FieldView
                                 className="col-4"
                                 label={t(langKeys.transactionlastbalance)}
-                                value={(data?.row?.balance - data?.row?.amount || 0).toFixed(2)}
+                                value={formatNumber((data?.row?.balance - data?.row?.amount) || 0)}
                             />
                         )}
                         {data?.edit ? (
@@ -5066,20 +5066,20 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                             <FieldView
                                 className="col-4"
                                 label={t(langKeys.transactionbuyamount)}
-                                value={(data?.row?.amount || 0).toFixed(2)}
+                                value={formatNumber(data?.row?.amount || 0)}
                             />
                         )}
                         {data?.edit ? (
                             <FieldView
                                 className="col-4"
                                 label={t(langKeys.transactionafterbalance)}
-                                value={(afterAmount || 0).toFixed(2)}
+                                value={formatNumber(afterAmount || 0)}
                             />
                         ) : (
                             <FieldView
                                 className="col-4"
                                 label={t(langKeys.transactionafterbalance)}
-                                value={(data?.row?.balance || 0).toFixed(2)}
+                                value={formatNumber(data?.row?.balance || 0)}
                             />
                         )}
                     </div>
@@ -5361,12 +5361,22 @@ const Invoice: FC = () => {
     useEffect(()=>{
         setsentfirstinfo(true)
         dispatch(getCountryList())
-        dispatch(getMultiCollection([
-            getPlanSel(),
-            getOrgSelList(0),
-            getCorpSel(0),
-            getPaymentPlanSel(),
-        ]));
+        if (user?.roledesc === "SUPERADMIN") {
+            dispatch(getMultiCollection([
+                getPlanSel(),
+                getOrgSelList(0),
+                getCorpSel(0),
+                getPaymentPlanSel(),
+            ]));
+        }
+        else {
+            dispatch(getMultiCollection([
+                getPlanSel(),
+                getOrgSelList(user?.corpid || 0),
+                getCorpSelVariant(user?.corpid || 0, user?.orgid || 0, user?.usr || ''),
+                getPaymentPlanSel(),
+            ]));
+        }
     },[])
 
     return (
