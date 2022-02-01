@@ -424,6 +424,9 @@ const DashboardManagerial: FC = () => {
                         []
                     ))
                 }
+                else {
+                    exportExcel(titlefile, [{'': t(langKeys.no_records)}])
+                }
                 setdownloaddatafile(false)
             }
         }

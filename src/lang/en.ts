@@ -1163,6 +1163,7 @@ const translation: LangKeys = {
     error_excess_channels: "The plan change cannot be made because the number of configured channels exceeds those supported by the selected plan",
     error_excess_users: "The plan change cannot be made because the number of configured users exceeds those supported by the selected plan",
 
+    no_records: 'No records',
 
     dateRangeFilterTitle: 'Filter by date range',
     person_who_modified: 'Person who modified',
@@ -1360,9 +1361,10 @@ const translation: LangKeys = {
     dashboard_managerial_summary_ticketnum: 'Ticketnum',
     dashboard_managerial_summary_closedby: 'Closedby',
     dashboard_managerial_summary_channel: 'Channel',
-    dashboard_managerial_summary_hourrange: 'Hour range',
+    dashboard_managerial_summary_hourrange: 'Close hour range',
     dashboard_managerial_summary_firstreplyagent: 'First reply agent',
     dashboard_managerial_summary_averagereplyagent: 'Average reply agent',
+    dashboard_managerial_summary_firstreplyclient: 'First reply client',
     dashboard_managerial_summary_averagereplyclient: 'Average reply client',
 
     dashboard_managerial_asesoresconectados_date: 'Date',
