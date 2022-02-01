@@ -709,7 +709,7 @@ const translation: LangKeys = {
     satisfied: "Satisfied",
     dissatisfied: "Dissatisfied",
     
-    successful_change_plan: 'The plan was successfully changed',
+    successful_change_plan: 'The plan was successfully changed. Sign back in so you can see the plan change',
     successful_cancel_suscription: 'Subscription was successfully canceled',
     
     ticket_number: "Ticket",
@@ -2388,7 +2388,7 @@ const translation: LangKeys = {
     scheduleActivity_plural: 'Schedule activities',
 
     channellimit: 'Reached maximum number of channels, upgrade your plan to continue',
-    userlimit: 'Reached maximum number of users, upgrade your plan to continue',
+    userlimit: 'Reached maximum number of users({{limit}}), upgrade your plan to continue',
     type_activitylead_call: 'Call',
     'type_activitylead_call for demo': 'Call for demo',
     'type_activitylead_email: welcome demo': 'Email: Welcome demo',
