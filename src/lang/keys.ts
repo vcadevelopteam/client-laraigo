@@ -2977,6 +2977,9 @@ export const langKeys = {
     pricemessagemail: 'pricemessagemail',
     pricemessagehsm: 'pricemessagehsm',
     pricemessagenote: 'pricemessagenote',
+    transactionreceiver: 'transactionreceiver',
+    transactioncost: 'transactioncost',
+    transactiondatetime: 'transactiondatetime',
 };
 
 export type LangKeys = typeof langKeys;
