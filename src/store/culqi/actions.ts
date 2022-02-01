@@ -109,3 +109,15 @@ export const getExchangeRate = (request: any): IActionCall => ({
 });
 
 export const resetGetExchangeRate = (): IActionCall => ({ type: actionTypes.GET_EXCHANGERATE_RESET });
+
+export const emitInvoice = (request: any): IActionCall => ({
+    callAPI: () => CulqiService.emitInvoice(request),
+    types: {
+        loading: actionTypes.EMIT_INVOICE,
+        success: actionTypes.EMIT_INVOICE_SUCCESS,
+        failure: actionTypes.EMIT_INVOICE_FAILURE,
+    },
+    type: null,
+});
+
+export const resetEmitInvoice = (): IActionCall => ({ type: actionTypes.EMIT_INVOICE_RESET });

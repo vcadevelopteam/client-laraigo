@@ -2966,6 +2966,17 @@ export const langKeys = {
     SMS: 'SMS',
     ENVIO: 'ENVIO',
     COMPRA: 'COMPRA',
+    GENERAL: 'GENERAL',
+    billingclienttype: 'billingclienttype',
+    billingvoucher: 'billingvoucher',
+    paymentcommentary: 'paymentcommentary',
+    CANCELED: 'CANCELED',
+    reemitinvoice: 'reemitinvoice',
+    confirmatiom_reemit: 'confirmatiom_reemit',
+    pricemessagesms: 'pricemessagesms',
+    pricemessagemail: 'pricemessagemail',
+    pricemessagehsm: 'pricemessagehsm',
+    pricemessagenote: 'pricemessagenote',
 };
 
 export type LangKeys = typeof langKeys;

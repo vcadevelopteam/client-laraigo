@@ -2617,3 +2617,13 @@ export const selBalanceData = ({ corpid, orgid, balanceid, type, operationtype, 
     key: "UFN_BALANCE_SEL",
     parameters: { corpid, orgid, balanceid, type, operationtype, all },
 });
+
+export const getBillingMessagingCurrent = (year: number, month: number, country: string): IRequestBody => ({
+    method: "UFN_BILLINGMESSAGING_CURRENT",
+    key: "UFN_BILLINGMESSAGING_CURRENT",
+    parameters: {
+        year: year,
+        month: month,
+        country: country,
+    }
+});
