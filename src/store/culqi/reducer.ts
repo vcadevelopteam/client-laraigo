@@ -18,6 +18,7 @@ export interface IRequest extends ITemplate {
 
 export interface IState {
     request: IRequest;
+    requestEmitInvoice: IRequest;
     requestCreateInvoice: IRequest;
     requestCreateCreditNote: IRequest;
     requestRegularizeInvoice: IRequest;
@@ -26,6 +27,7 @@ export interface IState {
 
 export const initialState: IState = {
     request: { ...initialCommon, data: null, loading: false, error: false },
+    requestEmitInvoice: { ...initialCommon, data: null, loading: false, error: false },
     requestCreateInvoice: { ...initialCommon, data: null, loading: false, error: false },
     requestCreateCreditNote: { ...initialCommon, data: null, loading: false, error: false },
     requestRegularizeInvoice: { ...initialCommon, data: null, loading: false, error: false },
@@ -77,4 +79,9 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_EXCHANGERATE_FAILURE]: caseFUnctions.getExchangeRateFailure,
     [actionTypes.GET_EXCHANGERATE_SUCCESS]: caseFUnctions.getExchangeRateSuccess,
     [actionTypes.GET_EXCHANGERATE_RESET]: caseFUnctions.getExchangeRateReset,
+
+    [actionTypes.EMIT_INVOICE]: caseFUnctions.emitInvoice,
+    [actionTypes.EMIT_INVOICE_FAILURE]: caseFUnctions.emitInvoiceFailure,
+    [actionTypes.EMIT_INVOICE_SUCCESS]: caseFUnctions.emitInvoiceSuccess,
+    [actionTypes.EMIT_INVOICE_RESET]: caseFUnctions.emitInvoiceReset,
 });
