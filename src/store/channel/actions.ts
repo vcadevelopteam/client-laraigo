@@ -2,8 +2,8 @@ import { IActionCall, IChannel, IChatWebAdd, IRequestBody } from "@types";
 import { ChannelsService, CommonService } from "network";
 import actionTypes from "./actionTypes";
 
-export const getChannelsList = (accessToken: String): IActionCall => ({
-    callAPI: () => ChannelsService.getPagelist(accessToken),
+export const getChannelsList = (accessToken: String, appId: String): IActionCall => ({
+    callAPI: () => ChannelsService.getPagelist(accessToken, appId),
     types: {
         loading: actionTypes.CHANNELS,
         success: actionTypes.CHANNELS_SUCCESS,
@@ -11,8 +11,8 @@ export const getChannelsList = (accessToken: String): IActionCall => ({
     },
     type: null,
 });
-export const getChannelsListSub = (accessToken: String): IActionCall => ({
-    callAPI: () => ChannelsService.getPagelistSub(accessToken),
+export const getChannelsListSub = (accessToken: String, appId: String): IActionCall => ({
+    callAPI: () => ChannelsService.getPagelistSub(accessToken, appId),
     types: {
         loading: actionTypes.CHANNELS,
         success: actionTypes.CHANNELS_SUCCESS,

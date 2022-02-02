@@ -1749,7 +1749,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                 accessor: 'orgid',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    if (((row.invoicestatus === "ERROR" || row.invoicestatus === "PENDING") || row.paymentstatus !== "PENDING") || row.totalamount <= 0)
+                    if (((row.invoicestatus === "ERROR" || row.invoicestatus === "PENDING" || row.invoicestatus === "CANCELED") || row.paymentstatus !== "PENDING") || row.totalamount <= 0)
                         return null;
                     return (
                         <Button
@@ -2042,22 +2042,22 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                                 }
     
                                 if (compareamount > appsetting.detractionminimum) {
-                                    setTotalPay(data?.totalamount - (data?.totalamount * appsetting.detraction));
-                                    setTotalAmount(data?.totalamount);
+                                    setTotalPay(Math.round(((data?.totalamount || 0) - ((data?.totalamount || 0) * (appsetting.detraction || 0)) + Number.EPSILON) * 100) / 100);
+                                    setTotalAmount(Math.round(((data?.totalamount || 0) + Number.EPSILON) * 100) / 100);
                                     setOverride(true);
                                     setShowCulqi(true);
                                     setDetractionAlert(true);
-                                    setDetractionAmount(appsetting.detraction * 100);
+                                    setDetractionAmount(Math.round((((appsetting.detraction || 0) * 100) + Number.EPSILON) * 100) / 100);
                                 }
                                 else {
-                                    setTotalPay(data?.totalamount);
-                                    setTotalAmount(data?.totalamount);;
+                                    setTotalPay(Math.round((((data?.totalamount || 0) * 100) + Number.EPSILON) * 100) / 100);
+                                    setTotalAmount(Math.round((((data?.totalamount || 0) * 100) + Number.EPSILON) * 100) / 100);;
                                     setShowCulqi(true);
                                 }
                             }
                             else {
-                                setTotalPay(data?.totalamount);
-                                setTotalAmount(data?.totalamount);
+                                setTotalPay(Math.round((((data?.totalamount || 0) * 100) + Number.EPSILON) * 100) / 100);
+                                setTotalAmount(Math.round((((data?.totalamount || 0) * 100) + Number.EPSILON) * 100) / 100);
                                 setShowCulqi(true);
                             }
                         }
@@ -2129,14 +2129,14 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                             style={{ backgroundColor: "#FB5F5F" }}
                             onClick={() => { setViewSelected("view-1"); fetchData(); }}
                         >{t(langKeys.back)}</Button>
-                        {(data?.paymentstatus === "PENDING" && publicKey && showCulqi) &&
+                        {(data?.paymentstatus === "PENDING" && (data?.invoicestatus === "INVOICED" || data?.invoicestatus === "DRAFT") && publicKey && showCulqi) &&
                             <CulqiModal
                                 type="CHARGE"
                                 invoiceid={data?.invoiceid}
                                 title={data?.description}
                                 description={data?.productdescription}
                                 currency={data?.currency}
-                                amount={parseFloat(totalPay.toFixed(2)) * 100}
+                                amount={Math.round(((totalPay * 100) + Number.EPSILON) * 100) / 100}
                                 callbackOnSuccess={() => { handleCulqiSuccess() }}
                                 buttontitle={t(langKeys.proceedpayment)}
                                 purchaseorder={purchaseOrder}
@@ -2147,6 +2147,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                                 successmessage={t(langKeys.culqipaysuccess)}
                                 publickey={publicKey}
                                 override={Override}
+                                totalpay={totalPay}
                             ></CulqiModal>
                         }
                     </div>
@@ -2190,7 +2191,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                             value={t(langKeys.additional_information)}
                         />
                     </div>
-                    {data?.invoicestatus !== "INVOICED" && <div className="row-zyx">
+                    {data?.invoicestatus === "DRAFT"  && <div className="row-zyx">
                         <FieldView
                             className={classes.commentary}
                             label={''}
@@ -2198,34 +2199,34 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                         />
                     </div>}
                     <div className="row-zyx">
-                        {data?.invoicestatus !== "INVOICED" && <FieldEdit
+                        {data?.invoicestatus === "DRAFT" && <FieldEdit
                             label={t(langKeys.purchaseorder)}
                             onChange={(value) => handlePurchaseOrder(value)}
                             valueDefault={purchaseOrder}
                             error={purchaseOrderError}
                             className="col-12"
                         />}
-                        {data?.invoicestatus === "INVOICED" && <FieldView
+                        {data?.invoicestatus !== "DRAFT" && <FieldView
                             label={t(langKeys.purchaseorder)}
                             value={data?.purchaseorder}
                             className="col-12"
                         />}
                     </div>
                     <div className="row-zyx">
-                        {data?.invoicestatus !== "INVOICED" && <FieldEdit
+                        {data?.invoicestatus === "DRAFT" && <FieldEdit
                             label={t(langKeys.comments)}
                             onChange={(value) => handleComments(value)}
                             valueDefault={comments}
                             error={commentsError}
                             className="col-12"
                         />}
-                        {data?.invoicestatus === "INVOICED" && <FieldView
+                        {data?.invoicestatus !== "DRAFT" && <FieldView
                             label={t(langKeys.comments)}
                             value={data?.comments}
                             className="col-12"
                         />}
                     </div>
-                    {data?.invoicestatus !== "INVOICED" && <div className="row-zyx">
+                    {data?.invoicestatus === "DRAFT" && <div className="row-zyx">
                         <FieldView
                             className={classes.commentary}
                             label={''}
@@ -3652,7 +3653,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
         setOrgList({ loading: false, data: [] });
         setProductList({ loading: false, data: [] });
 
-        dispatch(getMultiCollectionAux([getCorpSel(user?.roledesc === "ADMINISTRADOR" ? user?.corpid : 0), getMeasureUnit(), getValuesFromDomain("TYPECREDIT"), getAppsettingInvoiceSel()]));
+        dispatch(getMultiCollectionAux([getCorpSel(user?.roledesc === "ADMINISTRADOR" ? user?.corpid : 0), getMeasureUnit(), getValuesFromDomain("TYPECREDIT", null, user?.orgid, user?.corpid), getAppsettingInvoiceSel()]));
     }, [])
 
     useEffect(() => {
@@ -4228,7 +4229,6 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                 className="col-3"
                                 error={errors?.invoicetotalamount?.message}
                                 disabled={true}
-                                type='number'
                             />
                             <FieldView
                                 label={t(langKeys.billingtax)}
@@ -4768,10 +4768,6 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
     }, [messagingList]);
 
     useEffect(() => {
-        console.log(balanceSent);
-    }, [balanceSent]);
-
-    useEffect(() => {
         updateTotalPay(buyAmount);
     }, [currentCountry, currentDoctype, buyAmount]);
 
@@ -4809,28 +4805,28 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                     var compareamount = (buyAmount || 0) * (exchangeRequest?.exchangerate || 0);
 
                     if (compareamount > mainResult.mainData.data[0].detractionminimum) {
-                        setTotalPay((buyAmount * (1 + mainResult.mainData.data[0].igv)) - ((buyAmount * (1 + mainResult.mainData.data[0].igv)) * mainResult.mainData.data[0].detraction));
+                        setTotalPay(Math.round(((((buyAmount || 0) * (1 + (mainResult.mainData.data[0].igv || 0))) - (((buyAmount || 0) * (1 + (mainResult.mainData.data[0].igv || 0))) * (mainResult.mainData.data[0].detraction || 0))) + Number.EPSILON) * 100) / 100);                                 ;
                         setDetractionAlert(true);
-                        setDetractionAmount(mainResult.mainData.data[0].detraction * 100);
+                        setDetractionAmount(Math.round((((mainResult.mainData.data[0].detraction || 0) * 100) + Number.EPSILON) * 100) / 100);
                     }
                     else {
                         setDetractionAlert(false);
-                        setTotalPay(buyAmount * (1 + mainResult.mainData.data[0].igv))
+                        setTotalPay(Math.round((((buyAmount || 0) * (1 + (mainResult.mainData.data[0].igv || 0))) + Number.EPSILON) * 100) / 100);
                     }
                 }
                 else {
                     setDetractionAlert(false);
-                    setTotalPay(buyAmount * (1 + mainResult.mainData.data[0].igv))
+                    setTotalPay(Math.round((((buyAmount || 0) * (1 + (mainResult.mainData.data[0].igv || 0))) + Number.EPSILON) * 100) / 100)
                 }
             }
             else {
                 setDetractionAlert(false);
-                setTotalPay(buyAmount);
+                setTotalPay(Math.round(((buyAmount || 0) + Number.EPSILON) * 100) / 100);
             }
         }
         else {
             setDetractionAlert(false);
-            setTotalPay(buyAmount);
+            setTotalPay(Math.round(((buyAmount || 0) + Number.EPSILON) * 100) / 100);
         }
     }
 
@@ -4960,7 +4956,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                                 title={reference}
                                 description={reference}
                                 currency={'USD'}
-                                amount={parseFloat(totalPay.toFixed(2)) * 100}
+                                amount={Math.round(((totalPay * 100) + Number.EPSILON) * 100) / 100}
                                 callbackOnSuccess={() => { handleCulqiSuccess() }}
                                 buttontitle={t(langKeys.proceedpayment)}
                                 disabled={paymentDisabled}

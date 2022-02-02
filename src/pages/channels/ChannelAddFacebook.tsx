@@ -108,7 +108,7 @@ export const ChannelAddFacebook: FC = () => {
 
     const processFacebookCallback = async (r: any) => {
         if (r.status !== "unknown" && !r.error) {
-            dispatch(getChannelsList(r.accessToken))
+            dispatch(getChannelsList(r.accessToken, apiUrls.FACEBOOKAPP))
             setViewSelected("view2")
             dispatch(showBackdrop(true));
             setWaitSave(true);

@@ -1,10 +1,9 @@
-import { FC, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box } from '@material-ui/core';
-import Link from '@material-ui/core/Link';
+import { CSSProperties, FC, useContext, useEffect, useState } from "react";
+import { makeStyles, Breadcrumbs, Button, Box, IconButton, Typography } from '@material-ui/core';
 import { showBackdrop } from 'store/popus/actions';
-import { Facebook as FacebookIcon} from "@material-ui/icons";
+import { Facebook as FacebookIcon, DeleteOutline as DeleteOutlineIcon } from "@material-ui/icons";
 import { langKeys } from "lang/keys";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { FacebookWallIcon } from "icons";
 import { FieldEdit, FieldSelect, ColorInput } from "components";
 import FacebookLogin from 'react-facebook-login';
@@ -12,27 +11,28 @@ import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { getChannelsListSub } from "store/channel/actions";
 import { apiUrls } from 'common/constants';
+import { SubscriptionContext } from "./context";
 
-const useChannelAddStyles = makeStyles(theme => ({
-    button: {
-        padding: 12,
-        fontWeight: 500,
-        fontSize: '14px',
-        textTransform: 'initial',
-        width: "180px"
-    },
-}));
+interface ChannelAddFacebookProps {
+    setOpenWarning: (param: any) => void;
+}
 
-export const ChannelAddFacebook: FC<{setrequestchannels:(param:any)=>void,setlistchannels:(param:any)=>void,setOpenWarning:(param:any)=>void}> = ({setrequestchannels,setlistchannels,setOpenWarning}) => {
-    const [viewSelected, setViewSelected] = useState("view1");
+export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning }) => {
+    const {
+        commonClasses,
+        FBButtonStyles,
+        selectedChannels,
+        finishreg,
+        deleteChannel,
+        setrequestchannels,
+    } = useContext(SubscriptionContext);
     const [waitSave, setWaitSave] = useState(false);
-    const [nextbutton, setNextbutton] = useState(true);
-    const [channelreg, setChannelreg] = useState(true);
+    const [pageLink, setPageLink] = useState("");
+    const [channelName, setChannelName] = useState("");
     const [coloricon, setcoloricon] = useState("#2d88ff");
     const mainResult = useSelector(state => state.channel.channelList)
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const classes = useChannelAddStyles();
     const [fields, setFields] = useState({
         "method": "UFN_COMMUNICATIONCHANNEL_INS",
         "parameters": {
@@ -61,11 +61,7 @@ export const ChannelAddFacebook: FC<{setrequestchannels:(param:any)=>void,setlis
     const openprivacypolicies = () => {
         window.open("/privacy", '_blank');
     }
-    
-    async function finishreg() {
-        setrequestchannels((p:any)=>([...p,fields]))
-        setlistchannels((p:any)=>({...p,facebook:false}))
-    }
+
     useEffect(() => {
         if (waitSave) {
             dispatch(showBackdrop(false));
@@ -74,159 +70,139 @@ export const ChannelAddFacebook: FC<{setrequestchannels:(param:any)=>void,setlis
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mainResult])
 
+    useEffect(() => {
+        if (channelName.length > 0 && pageLink.length > 0) {
+            setrequestchannels(prev => {
+                const index = prev.findIndex(x => x.type === "FACEBOOK");
+                if (index === -1) {
+                    return [
+                        ...prev,
+                        fields,
+                    ]
+                } else {
+                    prev.splice(index, 1);
+                    return [
+                        ...prev,
+                        fields,
+                    ];
+                }
+            });
+        } else {
+            setrequestchannels(prev => prev.filter(x => x.type !== "FACEBOOK"));
+        }
+    }, [channelName, pageLink, fields]);
+
     const processFacebookCallback = async (r: any) => {
         if (r.status !== "unknown" && !r.error) {
-            dispatch(getChannelsListSub(r.accessToken))
-            setViewSelected("view2")
+            dispatch(getChannelsListSub(r.accessToken, apiUrls.FACEBOOKAPP))
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
     }
     function setValueField(value: any) {
-        setNextbutton(value==null)
+        setPageLink(value?.id || "");
         let partialf = fields;
-        partialf.parameters.communicationchannelsite = value?.id||""
-        partialf.parameters.communicationchannelowner = value?.name||""
-        partialf.service.siteid = value?.id||""
-        partialf.service.accesstoken = value?.access_token||""
+        partialf.parameters.communicationchannelsite = value?.id || ""
+        partialf.parameters.communicationchannelowner = value?.name || ""
+        partialf.service.siteid = value?.id || ""
+        partialf.service.accesstoken = value?.access_token || ""
 
         setFields(partialf)
     }
     function setnameField(value: any) {
-        setChannelreg(value === "")
+        setChannelName(value)
         let partialf = fields;
         partialf.parameters.description = value
         setFields(partialf)
     }
-    if(viewSelected==="view1"){
-        return (
-            <div style={{marginTop: "auto",marginBottom: "auto",maxHeight: "100%"}}>
-                <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
-                        {t(langKeys.previoustext)}
-                    </Link>
-                </Breadcrumbs>
-                <div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.connectface)}</div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px" }}>{t(langKeys.connectface2)}</div>
-                    <div style={{ textAlign: "center", padding: "20px", color: "#969ea5" }}>{t(langKeys.connectface3)}</div>
-    
-                        <FacebookLogin
-                            appId={apiUrls.FACEBOOKAPP}
-                            autoLoad={false}
-                            buttonStyle={{ marginLeft: "calc(50% - 174px)", marginTop: "16px", marginBottom: "16px", backgroundColor: "#7721ad", textTransform: "none", display: "flex", textAlign: "center", justifyItems: "center", alignItems: "center", justifyContent: "center" }}
-                            fields="name,email,picture"
-                            scope="pages_manage_engagement,pages_manage_metadata,pages_messaging,pages_read_engagement,pages_read_user_content,pages_show_list,public_profile"
-                            callback={processFacebookCallback}
-                            textButton={t(langKeys.linkfacebookpage)}
-                            icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
-                            onClick={(e: any) => {
-                                e.view.window.FB.init({
-                                    appId: apiUrls.FACEBOOKAPP,
-                                    cookie: true,
-                                    xfbml: true,
-                                    version: 'v8.0'
-                                });
+
+    return (
+        <div className={commonClasses.root}>
+            <FacebookIcon
+                className={commonClasses.leadingIcon}
+            />
+            <IconButton
+                color="primary"
+                className={commonClasses.trailingIcon}
+                onClick={() => {
+                    deleteChannel('facebook');
+                    setrequestchannels(prev => prev.filter(x => x.type !== "FACEBOOK"));
+                }}
+            >
+                <DeleteOutlineIcon />
+            </IconButton>
+            <Typography>
+                <Trans i18nKey={langKeys.connectface2} />
+            </Typography>
+            <FieldEdit
+                onChange={(value) => setnameField(value)}
+                label={t(langKeys.givechannelname)}
+                valueDefault={channelName}
+                variant="outlined"
+                size="small"
+            />
+            {/* <div className="row-zyx">
+                <div className="col-3"></div>
+                <div className="col-6">
+                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                        {t(langKeys.givechannelcolor)}
+                    </Box>
+                    <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
+                        <FacebookWallIcon style={{ fill: `${coloricon}`, width: "100px" }} />
+                        <ColorInput
+                            hex={fields.parameters.coloricon}
+                            onChange={e => {
+                                setFields(prev => ({
+                                    ...prev,
+                                    parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
+                                }));
+                                setcoloricon(e.hex)
                             }}
                         />
-    
-                    <div style={{ textAlign: "center", color: "#969ea5", fontStyle: "italic" }}>{t(langKeys.connectface4)}</div>
-                    <div style={{ textAlign: "center", paddingBottom: "80px", color: "#969ea5" }}><a style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={openprivacypolicies} rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
-    
+                    </div>
                 </div>
-            </div>
-        )
-    }else if(viewSelected==="view2"){
-        return (
-            <div style={{marginTop: "auto",marginBottom: "auto",maxHeight: "100%"}}>
-                <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view1") }}>
-                        {t(langKeys.previoustext)}
-                    </Link>
-                </Breadcrumbs>
-                <div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.connectface)}</div>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldSelect
-                            onChange={(value) => setValueField(value)}
-                            label={t(langKeys.selectpagelink)}
-                            className="col-6"
-                            data={mainResult.data}
-                            optionDesc="name"
-                            optionValue="id"
-                        />
-                    </div>
+            </div> */}
+            <FieldSelect
+                onChange={(value) => setValueField(value)}
+                label={t(langKeys.selectpagelink)}
+                data={mainResult.data}
+                valueDefault={pageLink}
+                optionDesc="name"
+                optionValue="id"
+                variant="outlined"
+                size="small"
+            />
 
-                    <div style={{ paddingLeft: "80%" }}>
-                        <Button
-                            onClick={() => { setViewSelected("viewfinishreg") }}
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            disabled={nextbutton}
-                        >{t(langKeys.next)}
-                        </Button>
-
-                    </div>
-
-                </div>
-            </div>
-        )
-    }else{
-        return (
-            <div style={{marginTop: "auto",marginBottom: "auto",maxHeight: "100%"}}>
-                <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view2") }}>
-                        {t(langKeys.previoustext)}
-                    </Link>
-                </Breadcrumbs>
-                <div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.commchannelfinishreg)}</div>
-
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldEdit
-                            onChange={(value) => setnameField(value)}
-                            label={t(langKeys.givechannelname)}
-                            className="col-6"
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <div className="col-6">
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                            {t(langKeys.givechannelcolor)}
-                            </Box>
-                            <div style={{display:"flex",justifyContent:"space-around", alignItems: "center"}}>
-                                <FacebookWallIcon style={{fill: `${coloricon}`, width: "100px" }}/>
-                                <ColorInput
-                                    hex={fields.parameters.coloricon}
-                                    onChange={e => {
-                                        setFields(prev => ({
-                                            ...prev,
-                                            parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
-                                        }));
-                                        setcoloricon(e.hex)
-                                    }}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                    <div style={{ paddingLeft: "80%" }}>
-                        <Button
-                            onClick={() => { finishreg() }}
-                            className={classes.button}
-                            disabled={channelreg}
-                            variant="contained"
-                            color="primary"
-                        >{t(langKeys.next)}
-                        </Button>
-
-                    </div>
-
-                </div>
-            </div>
-        )
-    }
+            {pageLink.length === 0 ? (
+                <FacebookLogin
+                    appId={apiUrls.FACEBOOKAPP}
+                    autoLoad={false}
+                    buttonStyle={FBButtonStyles}
+                    fields="name,email,picture"
+                    scope="pages_manage_engagement,pages_manage_metadata,pages_messaging,pages_read_engagement,pages_read_user_content,pages_show_list,public_profile"
+                    callback={processFacebookCallback}
+                    textButton={t(langKeys.linkfacebookpage)}
+                    // icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
+                    onClick={(e: any) => {
+                        e.view.window.FB.init({
+                            appId: apiUrls.FACEBOOKAPP,
+                            cookie: true,
+                            xfbml: true,
+                            version: 'v8.0'
+                        });
+                    }}
+                />
+            ) : selectedChannels === 1 && (
+                <Button
+                    onClick={finishreg}
+                    className={commonClasses.button}
+                    variant="contained"
+                    color="primary"
+                    disabled={channelName.length === 0}
+                >
+                    <Trans i18nKey={langKeys.finishreg} />
+                </Button>
+            )}
+        </div>
+    );
 }

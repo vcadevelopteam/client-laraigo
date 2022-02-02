@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { makeStyles, Button, TextField, InputAdornment, IconButton } from '@material-ui/core';
 import { Visibility, VisibilityOff } from "@material-ui/icons";
 import { langKeys } from "lang/keys";
@@ -13,6 +13,7 @@ import { useSelector } from 'hooks';
 import { apiUrls } from 'common/constants';
 
 import { executeCheckNewUser } from "store/signup/actions";
+import { SubscriptionContext } from "./context";
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
         padding: 12,
@@ -21,7 +22,13 @@ const useChannelAddStyles = makeStyles(theme => ({
         //textTransform: 'initial',
         width: "100%"
     },
+    buttonfacebook: {
+        display: 'flex',
+        justifyContent: 'center',
+    },
     buttonGoogle: {
+        display: 'flex',
+        justifyContent: 'center',
         '& button': {
             fontSize: '24px!important',
             justifyContent: 'center',
@@ -39,7 +46,8 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const FirstStep: FC<{ setMainData: (param: any) => void, mainData: any, setStep: (param: any) => void, setSnackbar: (param: any) => void }> = ({ setMainData, mainData, setStep, setSnackbar }) => {
+export const FirstStep: FC<{ setSnackbar: (param: any) => void }> = ({ setSnackbar }) => {
+    const { mainData, setMainData, setStep } = useContext(SubscriptionContext);
     const [errors, setErrors] = useState<Dictionary>({
         email: "",
         password: "",
@@ -144,17 +152,19 @@ export const FirstStep: FC<{ setMainData: (param: any) => void, mainData: any, s
             <meta name="google-signin-client_id" content="792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com" />
             <script src="https://apis.google.com/js/platform.js" async defer></script>
             <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", marginBottom: 32 , marginTop: 15}}>{t(langKeys.signupstep1title)}</div>
-            <FacebookLogin
-                appId={apiUrls.FACEBOOKAPP}
-                callback={onAuthWithFacebook}
-                fields="name,email,picture"
-                buttonStyle={{
-                    borderRadius: '3px', width: "400px", height: 50, display: 'flex', alignItems: 'center', 'fontSize': '24px', fontStyle: 'normal', fontWeight: 400, textTransform: 'none', justifyContent: 'center', marginBottom: 16
-                }}
-                textButton={t(langKeys.signup_with_facebook)}
-                icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
-                isDisabled={false}
-            />
+            <div className={classes.buttonfacebook}>
+                <FacebookLogin
+                    appId={apiUrls.FACEBOOKAPP}
+                    callback={onAuthWithFacebook}
+                    fields="name,email,picture"
+                    buttonStyle={{
+                        borderRadius: '3px', width: "400px", height: 50, display: 'flex', alignItems: 'center', 'fontSize': '24px', fontStyle: 'normal', fontWeight: 400, textTransform: 'none', justifyContent: 'center', marginBottom: 16
+                    }}
+                    textButton={t(langKeys.signup_with_facebook)}
+                    icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
+                    isDisabled={false}
+                />
+            </div>
             <div className={classes.buttonGoogle}>
                 <GoogleLogin
                     clientId="792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com"

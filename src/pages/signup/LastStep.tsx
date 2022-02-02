@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC ,useEffect,useState} from "react";
+import { FC ,useContext,useEffect,useState} from "react";
 import { makeStyles, Button, Breadcrumbs, Link} from '@material-ui/core';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
@@ -7,10 +7,9 @@ import { useTranslation } from "react-i18next";
 import { useSelector } from 'hooks';
 import { useDispatch } from "react-redux";
 
-import { executeSubscription } from "store/signup/actions";
-import { useHistory } from "react-router-dom";
 import { getMultiCollectionPublic } from "store/main/actions";
 import {  FieldSelect } from "components";
+import { SubscriptionContext } from "./context";
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -38,18 +37,26 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:any)=>void,setBackdrop:(param:any)=>void,setStep: (param: any) => void,setsendchannels:(param:any)=>void,setOpenWarning:(param:any)=>void }> = 
-                                                                                            ({mainData,requestchannels,setSnackbar,setBackdrop,setStep,setsendchannels,setOpenWarning}) => {
+interface LastStepProps {
+    setSnackbar:(param:any)=>void;
+    setBackdrop:(param:any)=>void;
+    setsendchannels:(param:any)=>void;
+    setOpenWarning:(param:any)=>void;
+}
+
+export const LastStep: FC<LastStepProps> = ({
+    setSnackbar,
+    setBackdrop,
+    setsendchannels,
+    setOpenWarning,
+}) => {
+    const { mainData, setMainData, setStep } = useContext(SubscriptionContext);
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
-    const history = useHistory();
     const dispatch = useDispatch();
-    const planData = useSelector(state => state.signup.verifyPlan)
-    const [waitSave, setWaitSave] = useState(false);
     const [industryList, setindustryList] = useState<any>([]);
     const [companySizeList, setcompanySizeList] = useState<any>([]);
     const [roleList, setroleList] = useState<any>([]);
-    // const [disablebutton, setDisablebutton] = useState(false);
     const multiResult = useSelector(state => state.main.multiData.data);
     const executeResult = useSelector(state => state.signup.insertChannel);
     const [isSpecial, setIsSpecial] = useState(false);
@@ -57,6 +64,7 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
     useEffect(() => {
         dispatch(getMultiCollectionPublic(["SignUpIndustry","SignUpCompanySize","SignUpRoles"]));
     }, []);
+
     useEffect(() => {
         if(multiResult.length){
             setindustryList(multiResult[0].data)
@@ -65,65 +73,17 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
         }
     }, [multiResult]);
 
-    const [lastfields, setLastFields] = useState({
-        industry: "",
-        companysize: "",
-        companyrole: "",
-    })
-    async function finishreg(){
-        setIsSpecial(mainData.email ? true : false);
-        let majorfield = {
-            method: "UFN_CREATEZYXMEACCOUNT_INS",
-            parameters: {
-                ...mainData,
-                firstname: mainData.firstandlastname,
-                lastname: "",
-                username: mainData.email,
-                contactemail: mainData.billingcontactmail,
-                contact: mainData.billingcontact,
-                organizationname: mainData.companybusinessname,
-                phone: mainData.mobilephone,
-                industry: lastfields.industry,
-                companysize: lastfields.companysize,
-                rolecompany: lastfields.companyrole,
-                paymentplanid: planData.data[0].paymentplanid,
-                paymentplan: planData.data[0].plan,
-                sunatcountry: "",
-            },
-            channellist: requestchannels
-        }
-        // setBackdrop(true)
-        setWaitSave(true);
-        // setDisablebutton(true);
-        dispatch(executeSubscription(majorfield))
-    }
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeResult.loading && !executeResult.error) {
-                setBackdrop(false)
-                
-                history.push({
-                    pathname: '/sign-in',
-                    state: { 
-                        showSnackbar: true,
-                        message: t(isSpecial ? langKeys.successful_sign_up : langKeys.success)
-                    }
-                })
-                // setSnackbar({ state: true, success: true, message: t(langKeys.successful_sign_up) })
-                setWaitSave(false);
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-                setSnackbar({ state: true, success: false, message: errormessage })
-                // setBackdrop(false)
-                setWaitSave(false);
-            }
-        }
-    }, [executeResult,waitSave])
-
     return (
         <div style={{marginTop: "auto",marginBottom: "auto",maxHeight: "100%"}}>
             <Breadcrumbs aria-label="breadcrumb">
-                <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
+                <Link
+                    color="textSecondary"
+                    href="/"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        setOpenWarning(true);
+                    }}
+                >
                     {t(langKeys.previoustext)}
                 </Link>
             </Breadcrumbs>
@@ -139,8 +99,11 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
                     variant="outlined" 
                     label={t(langKeys.industry)}
                     className="col-12"
-                    valueDefault={lastfields.industry}
-                    onChange={(e) => {setLastFields((p:any) =>({...p,industry:e?.domainvalue||""}))}}
+                    valueDefault={mainData.industry}
+                    onChange={(e) => setMainData(prev => ({
+                        ...prev,
+                        industry: e?.domainvalue || "",
+                    }))}
                     data={industryList}
                     prefixTranslation="industry_"
                     optionDesc="domaindesc"
@@ -152,8 +115,11 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
                     variant="outlined" 
                     label={t(langKeys.companysize)}
                     className="col-12"
-                    valueDefault={lastfields.companysize}
-                    onChange={(e) => {setLastFields((p:any) =>({...p,companysize:e?.domainvalue||""}))}}
+                    valueDefault={mainData.companysize}
+                    onChange={(e) => setMainData(prev => ({
+                        ...prev,
+                        companysize: e?.domainvalue || "",
+                    }))}
                     data={companySizeList}
                     prefixTranslation="companysize_"
                     optionDesc="domaindesc"
@@ -165,21 +131,24 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
                     variant="outlined" 
                     label={t(langKeys.roleincompany)}
                     className="col-12"
-                    valueDefault={lastfields.companyrole}
-                    onChange={(e) => {setLastFields((p:any) =>({...p,companyrole:e?.domainvalue||""}))}}
+                    valueDefault={mainData.rolecompany}
+                    onChange={(e) => setMainData(prev => ({
+                        ...prev,
+                        rolecompany: e?.domainvalue || "",
+                    }))}
                     data={roleList}
                     prefixTranslation="companyrole_"
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />
-                <div >
+                <div>
                     <Button
-                        onClick={()=>finishreg()}
+                        onClick={() => setStep(3)}
                         className={classes.button}
                         variant="contained"
                         color="primary"
                         disabled={executeResult.loading}
-                    >{t(langKeys.finishreg)}
+                    >{t(langKeys.next)}
                     </Button>
                 </div>
 

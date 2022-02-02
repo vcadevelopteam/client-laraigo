@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useEffect, useState } from 'react';
+import { FC, useContext, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { RightSideMenu } from './RightSideMenu';
 import Backdrop from '@material-ui/core/Backdrop';
@@ -11,10 +11,20 @@ import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { verifyPlan } from 'store/signup/actions';
 import { langKeys } from 'lang/keys';
-import { useTranslation } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { Dictionary } from '@types';
+import { LaraigoLogo } from 'icons';
+import { LeftSide } from './LeftSideMenu';
+import { SubscriptionContext, SubscriptionProvider } from './context';
+import Popus from 'components/layout/Popus';
 
 const useSignUpStyles = makeStyles(theme => ({
+    root: {
+        backgroundColor: '#F7F7F7',
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+    },
     purplecircle: {
         background: "#7721ad",
         borderRadius: "50%",
@@ -34,7 +44,7 @@ const useSignUpStyles = makeStyles(theme => ({
         flex: '0 0 1',
         paddingTop: 16,
         paddingBottom: 16,
-        marginBottom: 4,
+        // marginBottom: 4,
         backgroundColor: '#FFF',
         
     },
@@ -82,59 +92,35 @@ const useSignUpStyles = makeStyles(theme => ({
 }));
 
 export const SignUp: FC = () => {
-    
+    return (
+        <SubscriptionProvider>
+            <$SignUp />
+        </SubscriptionProvider>
+    );
+}
+
+const $SignUp: FC = () => {
+    const {
+        step,
+        setStep,
+        setrequestchannels,
+        setMainData,
+        resetChannels,
+    } = useContext(SubscriptionContext);
     const mainResult = useSelector(state => state.signup.verifyPlan)
     const {token}: any = useParams();
     const history = useHistory();
     const [openWarning, setOpenWarning] = useState(false);
     const [waitLoad, setWaitLoad] = useState(true);    
-    const { t } = useTranslation();
     const dispatch = useDispatch();
-    const [step, setStep] = useState(1);
     const [snackbar, setSnackbar] = useState({
         state: false,
         success: true,
         message: ""
     });
     const [sendchannels, setsendchannels] = useState(false);
-    const [requestchannels, setrequestchannels] = useState([]);
     const [backdrop, setBackdrop] = useState(false);
-    const [listchannels, setlistchannels] = useState<Dictionary>({
-        facebook:false,
-        instagram: false,
-        messenger: false,
-        whatsapp: false,
-        telegram: false,
-        twitter: false,
-        twitterDM: false,
-        chatWeb: false,
-        email: false,
-        phone: false,
-        sms: false,
-        android: false,
-        ios: false,
-    });
     
-    const [mainData, setMainData] = useState<Dictionary>({
-        email: "",
-        password: "",
-        confirmpassword: "",
-        firstandlastname: "",
-        companybusinessname: "",
-        mobilephone: "",
-        facebookid: "",
-        googleid: "",
-        join_reason: "",
-        country: "",
-        currency: "",
-        doctype: 0,
-        docnumber: "",
-        businessname: "",
-        fiscaladdress: "",
-        billingcontact: "",
-        billingcontactmail: "",
-        autosendinvoice: true,
-    });
     function setDefaultMainData(){
         setMainData((prev)=>({
             ...prev,
@@ -178,21 +164,7 @@ export const SignUp: FC = () => {
         if(sendchannels){
             setrequestchannels([])
             setsendchannels(false)
-            setlistchannels({
-                facebook:false,
-                instagram: false,
-                messenger: false,
-                whatsapp: false,
-                telegram: false,
-                twitter: false,
-                twitterDM: false,
-                chatWeb: false,
-                email: false,
-                phone: false,
-                sms: false,
-                android: false,
-                ios: false,
-            })
+            resetChannels();
         }else{
             console.log(step)
             if(step===2){
@@ -206,6 +178,8 @@ export const SignUp: FC = () => {
             } else if(step===2.5){
                 setDefaultMainData2()
                 setStep(2)
+            }else if (step === 2.6) {
+                setStep(2.5);
             }else{
                 setStep(step-1)
             }
@@ -226,20 +200,22 @@ export const SignUp: FC = () => {
     const classes = useSignUpStyles();
 
     return (
-        <div style={{ backgroundColor: '#F7F7F7', height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <div className={classes.root}>
             <Dialog
                 open={openWarning}
                 onClose={handleClose}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
-                <DialogTitle id="alert-dialog-title">{t(langKeys.goback)}</DialogTitle>
+                <DialogTitle id="alert-dialog-title">
+                    <Trans i18nKey={langKeys.goback} />
+                </DialogTitle>
                 <DialogActions>
                 <Button onClick={handleClose} color="primary">
                     No
                 </Button>
                 <Button onClick={handleClose2} color="primary" autoFocus>
-                    {t(langKeys.yes)}
+                    <Trans i18nKey={langKeys.yes} />
                 </Button>
                 </DialogActions>
             </Dialog>
@@ -253,11 +229,9 @@ export const SignUp: FC = () => {
                     {snackbar.message}
                 </MuiAlert>
             </Snackbar>
-
             <Backdrop style={{ zIndex: 999999999, color: '#fff', }} open={backdrop}>
                 <CircularProgress color="inherit" />
             </Backdrop>
-
             <div className={classes.containerHead}>
                 <div className={classes.emptyspacenumber}></div>
                 <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -267,46 +241,47 @@ export const SignUp: FC = () => {
                     <div className={classes.separator}> </div>
                     <div className={step === 2.5 ? classes.purplecircle : classes.notthisstep}> 3 </div>
                     <div className={classes.separator}> </div>
-                    <div className={step === 3 ? classes.purplecircle : classes.notthisstep}> 4 </div>
+                    <div className={step === 2.6 ? classes.purplecircle : classes.notthisstep}> 4 </div>
                     <div className={classes.separator}> </div>
-                    <div className={step === 4 ? classes.purplecircle : classes.notthisstep}> 5 </div>
+                    <div className={step === 3 ? classes.purplecircle : classes.notthisstep}> 5 </div>
+                    <div className={classes.separator}> </div>
+                    <div className={step === 4 ? classes.purplecircle : classes.notthisstep}> 6 </div>
                 </div>
             </div>
-            <div style={{ display: "flex", height: '100%' }}>
-                <div className={classes.containerLogo}> 
-                    {/* //containerlogo tiene flex 1, para q se divida con el texto */}
-                    <img src="../Laraigo-vertical-logo-name.svg" style={{ width: '50%' }} alt="logo" />
-                </div>
+            <div style={{
+                display: "flex",
+                flexDirection: step === 3 ? 'row-reverse' : 'row',
+                height: '100%',
+                flexGrow: 1,
+                overflow: 'hidden',
+            }}>
+                {step === 3 ? (
+                    <LeftSide
+                        setOpenWarning={setOpenWarning}
+                    />
+                ) : (
+                    <div className={classes.containerLogo}> 
+                        {/* //containerlogo tiene flex 1, para q se divida con el texto */}
+                        <LaraigoLogo style={{ width: '50%' }} />
+                    </div>
+                )}
                 <div style={{
-                    display: 'flex',
                     flex: 1,
-                    margin: 40,
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    padding: 40,
+                    overflowY: 'auto',
                 }}>
                     {!waitLoad?
                         <RightSideMenu //tiene flex 1, para q se ajuste con la imagen
                         setSnackbar={setSnackbar}
                         setBackdrop={setBackdrop}
-                        setStep={setStep}
-                        step={step}
-                        setMainData={setMainData}
-                        mainData={mainData}
                         setOpenWarning={setOpenWarning}
-                        requestchannels={requestchannels}
-                        setrequestchannels={setrequestchannels}
                         sendchannels={sendchannels}
                         setsendchannels={setsendchannels}
-                        listchannels={listchannels}
-                        setlistchannels={setlistchannels}
                     />:""
                     }
-                    
                 </div>
             </div>
+            <Popus />
         </div>
     );
 };
-
-
