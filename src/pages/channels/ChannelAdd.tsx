@@ -5,7 +5,9 @@ import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router";
 import paths from "common/constants/paths";
-import { AndroidIcon, AppleIcon, CallIcon, EmailIcon, FacebookMessengerIcon, FacebookWallIcon, InstagramIcon, SmsIcon, TelegramIcon, TwitterIcon, WhatsappIcon, ZyxmeMessengerIcon } from "icons";
+import { AndroidIcon, AppleIcon, CallIcon, EmailIcon, FacebookMessengerIcon, FacebookWallIcon, InstagramIcon, SmsIcon, TelegramIcon, TwitterIcon, WhatsappIcon, ZyxmeMessengerIcon,
+    AndroidColor, EmailColor, FacebookColor, FacebookMessengerColor, InstagramColor, IosColor, SmsColor, TelegramColor, TwitterColor, WebMessengerColor, WhatsappColor
+} from "icons";
 
 interface ChannelOption {
     icon: (className: string) => React.ReactNode;
@@ -50,19 +52,22 @@ const useChannelAddStyles = makeStyles(theme => ({
         margin: 4,
         display: 'flex',
         flexDirection: 'column',
-        width: 124,
-        height: 110,
+        width: 100,
+        height: 90,
         backgroundColor: 'white',
         fontSize: 16,
         fontWeight: 400,
         color: '#A59F9F',
         fill: '#A59F9F',
+        boxShadow: '-5px 7px 6px 0px #a5a5a5',
         '&:hover': {
-            color: 'white',
+            // color: 'white',
+            color: '#A59F9F',
+            boxShadow: 'none',
             fill: 'white',
-            backgroundColor: '#7721AD',
+            opacity: .6,
+            // backgroundColor: '#ffffffa8',
             cursor: 'pointer',
-            fontWeight: 700,
         },
     },
     centerbutton: {
@@ -99,42 +104,42 @@ export const ChannelAdd: FC = () => {
 
     const socialMediaOptions: ChannelOption[] = [
         {
-            icon: c => <FacebookWallIcon className={c} />,
+            icon: c => <FacebookColor className={c} />,
             label: 'Facebook',
             onClick: () => {history.push(paths.CHANNELS_ADD_FACEBOOK.path, whatsAppData)},
         },
         {
-            icon: c => <FacebookMessengerIcon className={c} />,
+            icon: c => <FacebookMessengerColor className={c} />,
             label: 'Messenger',
             onClick: () => {history.push(paths.CHANNELS_ADD_MESSENGER.path, whatsAppData)},
         },
         {
-            icon: c => <InstagramIcon className={c} />,
+            icon: c => <InstagramColor className={c} />,
             label: 'Instagram',
             onClick: () => {history.push(paths.CHANNELS_ADD_INSTAGRAM.path, whatsAppData)},
         },
         {
-            icon: c => <InstagramIcon className={c} />,
+            icon: c => <InstagramColor className={c} />,
             label: 'Instagram DM',
             onClick: () => {history.push(paths.CHANNELS_ADD_INSTAGRAMDM.path, whatsAppData)},
         },
         {
-            icon: c => <WhatsappIcon className={c}/>,
+            icon: c => <WhatsappColor className={c}/>,
             label: 'Whatsapp',
             onClick: () => {history.push(paths.CHANNELS_ADD_WHATSAPP.path, whatsAppData)},
         },
         {
-            icon: c => <TelegramIcon className={c} />,
+            icon: c => <TelegramColor className={c} />,
             label: 'Telegram',
             onClick: () => {history.push(paths.CHANNELS_ADD_TELEGRAM.path, whatsAppData)},
         },
         {
-            icon: c => <TwitterIcon className={c} />,
+            icon: c => <TwitterColor className={c} />,
             label: 'Twitter',
             onClick: () => {history.push(paths.CHANNELS_ADD_TWITTER.path, whatsAppData)},
         },
         {
-            icon: c => <TwitterIcon className={c} />,
+            icon: c => <TwitterColor className={c} />,
             label: 'Twitter DM',
             onClick: () => {history.push(paths.CHANNELS_ADD_TWITTERDM.path, whatsAppData)},
         },
@@ -143,12 +148,12 @@ export const ChannelAdd: FC = () => {
 
     const businessChannelOptions: ChannelOption[] = [
         {
-            icon: c => <ZyxmeMessengerIcon className={c} />,
+            icon: c => <WebMessengerColor className={c} />,
             label: 'Chat Web',
             onClick: () => history.push(paths.CHANNELS_ADD_CHATWEB),
         },
         {
-            icon: c => <EmailIcon className={c} />,
+            icon: c => <EmailColor className={c} />,
             label: 'Email',
             onClick: () => { },
         },
@@ -158,17 +163,17 @@ export const ChannelAdd: FC = () => {
             onClick: () => { },
         },
         {
-            icon: c => <SmsIcon className={c} />,
+            icon: c => <SmsColor className={c} />,
             label: 'Sms',
             onClick: () => { },
         },
         {
-            icon: c => <AppleIcon className={c} />,
+            icon: c => <IosColor className={c} />,
             label: 'iOS SDk',
             onClick: () => history.push(paths.CHANNELS_ADD_IOS.path, whatsAppData),
         },
         {
-            icon: c => <AndroidIcon className={c} />,
+            icon: c => <AndroidColor className={c} />,
             label: 'Android SDK',
             onClick: () => history.push(paths.CHANNELS_ADD_ANDROID.path, whatsAppData),
         },
@@ -188,8 +193,7 @@ export const ChannelAdd: FC = () => {
                 <div style={{ flexGrow: 2, alignItems: 'center', display: 'flex', justifyContent: 'center' }}>
                     {option.icon(classes.icon)}
                 </div>
-                <div style={{ height: 1, backgroundColor: color }} />
-                <div style={{ flexGrow: 1, alignItems: 'center', display: 'flex', justifyContent: 'center', maxHeight: 39 }}>
+                <div style={{ flexGrow: 1, fontSize: 14, alignItems: 'start', textAlign: 'center', flexWrap: 'wrap', display: 'flex', justifyContent: 'center', maxHeight: 39 }}>
                     {option.label}
                 </div>
             </Paper>
@@ -205,7 +209,7 @@ export const ChannelAdd: FC = () => {
             <h2 className={classes.title}>{t(langKeys.channeladdtitle)}</h2>
             <div style={{ height: 29 }} />
             <Typography className={classes.subtitle}>{t(langKeys.socialmediachannel)}</Typography>
-            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', gap: 8, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center' }}>
                 {socialMediaOptions.map((e, i) =>
                     <Option
                         key={`social_media_option_${i}`}

@@ -136,6 +136,18 @@ export { ReactComponent as DocTypeIcon } from './doctype.svg';
 export { ReactComponent as TelephoneIcon } from './telephone.svg';
 export { ReactComponent as ZipIcon } from './zipicon.svg';
 
+export { ReactComponent as AndroidColor } from './android-color.svg';
+export { ReactComponent as EmailColor } from './email-color.svg';
+export { ReactComponent as FacebookColor } from './facebook-color.svg';
+export { ReactComponent as FacebookMessengerColor } from './facebook-messenger-color.svg';
+export { ReactComponent as InstagramColor } from './instagram-color.svg';
+export { ReactComponent as IosColor } from './ios-color.svg';
+export { ReactComponent as SmsColor } from './sms-color.svg';
+export { ReactComponent as TelegramColor } from './telegram-color.svg';
+export { ReactComponent as TwitterColor } from './twitter-color.svg';
+export { ReactComponent as WebMessengerColor } from './web-messenger-color.svg';
+export { ReactComponent as WhatsappColor } from './whatsapp-color.svg';
+
 export { ReactComponent as LaraigoAnimalIcon } from './Laraigo-emojis_animal.svg';
 export { ReactComponent as LaraigoBanderaIcon } from './Laraigo-emojis_bandera.svg';
 export { ReactComponent as LaraigoCaraIcon } from './Laraigo-emojis_cara.svg';
