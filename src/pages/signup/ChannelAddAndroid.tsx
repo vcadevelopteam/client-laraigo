@@ -1,10 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useState } from "react";
-import { makeStyles, Button, Box, Breadcrumbs, Link } from '@material-ui/core';
+import { FC, useContext, useEffect, useState } from "react";
+import { makeStyles, Button, Box, IconButton, Typography } from '@material-ui/core';
+import { DeleteOutline as DeleteOutlineIcon } from '@material-ui/icons';
 import { langKeys } from "lang/keys";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { ColorInput, FieldEdit, } from "components";
 import { AndroidIcon } from "icons";
+import { SubscriptionContext } from "./context";
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -16,8 +18,15 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const ChannelAddAndroid: FC<{setrequestchannels:(param:any)=>void,setlistchannels:(param:any)=>void,setOpenWarning:(param:any)=>void}> = ({setrequestchannels,setlistchannels,setOpenWarning}) => {
-    const [channelreg, setChannelreg] = useState(true);
+export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
+    const {
+        commonClasses,
+        selectedChannels,
+        finishreg,
+        deleteChannel,
+        setrequestchannels,
+    } = useContext(SubscriptionContext);
+    const [channelName, setChannelName] = useState("");
     const { t } = useTranslation();
     const [coloricon, setcoloricon] = useState("#90c900");
     const classes = useChannelAddStyles();
@@ -41,69 +50,91 @@ export const ChannelAddAndroid: FC<{setrequestchannels:(param:any)=>void,setlist
         "type": "SMOOCHANDROID",
     })
 
-    async function finishreg() {
-        setrequestchannels((p:any)=>([...p,fields]))
-        setlistchannels((p:any)=>({...p,facebook:false}))
-    }
+    useEffect(() => {
+        if (channelName.length > 0) {
+            setrequestchannels(prev => {
+                const index = prev.findIndex(x => x.type === "SMOOCHANDROID");
+                if (index === -1) {
+                    return [
+                        ...prev,
+                        fields,
+                    ]
+                } else {
+                    prev.splice(index, 1);
+                    return [
+                        ...prev,
+                        fields,
+                    ];
+                }
+            });
+        } else {
+            setrequestchannels(prev => prev.filter(x => x.type !== "SMOOCHANDROID"));
+        }
+    }, [channelName, fields]);
 
     function setnameField(value: any) {
-        setChannelreg(value === "")
+        setChannelName(value)
         let partialf = fields;
         partialf.parameters.description = value
         setFields(partialf)
     }
     return (
-        <div style={{marginTop: "auto",marginBottom: "auto",maxHeight: "100%"}}>
-            <Breadcrumbs aria-label="breadcrumb">
-                <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
-                    {t(langKeys.previoustext)}
-                </Link>
-            </Breadcrumbs>
-            <div>
-                <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.commchannelfinishreg)}</div>
-
-                <div className="row-zyx">
-                    <div className="col-3"></div>
-                    <FieldEdit
-                        onChange={(value) => setnameField(value)}
-                        label={t(langKeys.givechannelname)}
-                        className="col-6"
-                    />
-                </div>
-                <div className="row-zyx">
-                    <div className="col-3"></div>
-                    <div className="col-6">
-                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+        <div className={commonClasses.root}>
+            <AndroidIcon
+                className={commonClasses.leadingIcon}
+            />
+            <IconButton
+                color="primary"
+                className={commonClasses.trailingIcon}
+                onClick={() => {
+                    deleteChannel('android');
+                    setrequestchannels(prev => prev.filter(x => x.type !== "SMOOCHANDROID"));
+                }}
+            >
+                <DeleteOutlineIcon />
+            </IconButton>
+            <Typography>
+                <Trans i18nKey={langKeys.connectface2} />
+            </Typography>
+            <FieldEdit
+                onChange={(value) => setnameField(value)}
+                valueDefault={channelName}
+                label={t(langKeys.givechannelname)}
+                variant="outlined"
+                size="small"
+            />
+            {/* <div className="row-zyx">
+                <div className="col-3"></div>
+                <div className="col-6">
+                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
                         {t(langKeys.givechannelcolor)}
-                        </Box>
-                        <div style={{display:"flex",justifyContent:"space-around", alignItems: "center"}}>
-                            <AndroidIcon style={{fill: `${coloricon}`, width: "100px" }}/>
-                            <ColorInput
-                                hex={fields.parameters.coloricon}
-                                onChange={e => {
-                                    setFields(prev => ({
-                                        ...prev,
-                                        parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
-                                    }));
-                                    setcoloricon(e.hex)
-                                }}
-                            />
-                        </div>
+                    </Box>
+                    <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
+                        <AndroidIcon style={{ fill: `${coloricon}`, width: "100px" }} />
+                        <ColorInput
+                            hex={fields.parameters.coloricon}
+                            onChange={e => {
+                                setFields(prev => ({
+                                    ...prev,
+                                    parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
+                                }));
+                                setcoloricon(e.hex)
+                            }}
+                        />
                     </div>
                 </div>
-                <div style={{ paddingLeft: "80%" }}>
-                    <Button
-                        onClick={() => { finishreg() }}
-                        className={classes.button}
-                        disabled={channelreg}
-                        variant="contained"
-                        color="primary"
-                    >{t(langKeys.next)}
-                    </Button>
-
-                </div>
-
-            </div>
+            </div> */}
+            {selectedChannels === 1 && (
+                <Button
+                    onClick={finishreg}
+                    className={commonClasses.button}
+                    disabled={channelName.length === 0}
+                    variant="contained"
+                    color="primary"
+                >
+                    <Trans i18nKey={langKeys.finishreg} />
+                </Button>
+            )}
         </div>
     )
 }

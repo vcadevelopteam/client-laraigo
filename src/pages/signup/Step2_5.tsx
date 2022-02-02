@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { makeStyles, Button, TextField, Breadcrumbs} from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { langKeys } from "lang/keys";
@@ -9,6 +9,7 @@ import { useSelector } from "hooks";
 import MuiPhoneNumber from 'material-ui-phone-number';
 import { styled } from '@material-ui/core/styles';
 import { FieldSelect, FieldView} from "components";
+import { SubscriptionContext } from "./context";
 
 
 const useChannelAddStyles = makeStyles(theme => ({
@@ -39,7 +40,8 @@ const CssPhonemui = styled(MuiPhoneNumber)({
 });
 
 
-export const Step2_5: FC<{ setMainData: (param: any) => void, mainData: any, setStep: (param: any) => void,setOpenWarning: (param: any) => void}> = ({ setMainData, mainData, setStep,setOpenWarning }) => {
+export const Step2_5: FC<{ setOpenWarning: (param: any) => void}> = ({ setOpenWarning }) => {
+    const { mainData, setMainData, setStep } = useContext(SubscriptionContext);
     const { t } = useTranslation();
     const URL="https://ipapi.co/json/";
     const [errors, setErrors] = useState<Dictionary>({
@@ -173,7 +175,7 @@ export const Step2_5: FC<{ setMainData: (param: any) => void, mainData: any, set
                     }}
                 /> 
                 <Button
-                    onClick={() => { setStep(3) }}
+                    onClick={() => { setStep(2.6) }}
                     className={classes.button}
                     fullWidth
                     variant="contained"

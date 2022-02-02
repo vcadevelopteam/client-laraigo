@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC } from "react";
+import { FC, useContext } from "react";
 import {FirstStep} from './FirstStep';
 import {SecondStep} from './SecondStep';
 import {Step2_5} from './Step2_5';
@@ -16,100 +16,84 @@ import {ChannelAddTwitterDM} from './ChannelAddTwitterDM'
 import {ChannelAddChatWeb} from './ChannelAddChatWeb'
 import {ChannelAddAndroid} from './ChannelAddAndroid'
 import {ChannelAddIos} from './ChannelAddIos'
+import { SubscriptionContext } from "./context";
+import { RateExperience } from "./Rating";
 
-
-export const RightSideMenu: FC<{
+interface RightSideMenuProps {
     setSnackbar:(param:any)=>void,
     setBackdrop:(param:any)=>void,
-    setStep:(param:any)=>void,
-    step:any,
-    setMainData:(param:any)=>void,
-    mainData:any,
     setOpenWarning:(param:any)=>void,
-    requestchannels:any,
-    setrequestchannels:(param:any)=>void,
     sendchannels:any,
     setsendchannels:(param:any)=>void,
-    listchannels:any,
-    setlistchannels:(param:any)=>void,
-}> = 
-    ({setSnackbar,setBackdrop,setStep,step,setMainData,mainData,setOpenWarning,requestchannels,setrequestchannels,sendchannels,setsendchannels,listchannels,setlistchannels}) => {
+}
+
+export const RightSideMenu: FC<RightSideMenuProps> = ({
+    setSnackbar,
+    setBackdrop,
+    setOpenWarning,
+    sendchannels,
+    setsendchannels,
+}) => {
+    const { listchannels, step, setStep } = useContext(SubscriptionContext);
 
     if(step===1){
         return(
             <FirstStep
-                setMainData={setMainData}
-                mainData={mainData}
-                setStep={setStep}
                 setSnackbar={setSnackbar}
-            ></FirstStep>
+            />
         )
     }else if(step===2){
         return (
             <SecondStep
-                setMainData={setMainData}
-                mainData={mainData}
-                setStep={setStep}
                 setOpenWarning={setOpenWarning}
-            >
-            </SecondStep>
+            />
         )
     }else if(step===2.5){
         return (
             <Step2_5
-                setMainData={setMainData}
-                mainData={mainData}
-                setStep={setStep}
                 setOpenWarning={setOpenWarning}
-            >
-            </Step2_5>
+            />
         )
+    }
+    else if (step === 2.6) {
+        return (
+            <LastStep
+                setSnackbar={setSnackbar}
+                setBackdrop={setBackdrop}
+                setsendchannels={setsendchannels}
+                setOpenWarning={setOpenWarning}
+            />
+        );
     }
     else if(step===3&&!sendchannels){
         return (
             <ThirdStep
-                setlistchannels={setlistchannels}
-                listchannels={listchannels}
-                setStep={setStep}
                 setsendchannels={setsendchannels}
-                setrequestchannels={setrequestchannels}
                 setOpenWarning={setOpenWarning}
-            >
-            </ThirdStep>
+            />
         )
     }
     else if(step===3&&sendchannels){
-        if(listchannels.facebook) return <ChannelAddFacebook  setrequestchannels={setrequestchannels} setlistchannels={setlistchannels} setOpenWarning={setOpenWarning}/>
-        if(listchannels.instagram) return <ChannelAddInstagram  setrequestchannels={setrequestchannels} setlistchannels={setlistchannels} setOpenWarning={setOpenWarning}/>
-        if(listchannels.instagram) return <ChannelAddInstagramDM  setrequestchannels={setrequestchannels} setlistchannels={setlistchannels} setOpenWarning={setOpenWarning}/>
-        if(listchannels.messenger) return <ChannelAddMessenger setrequestchannels={setrequestchannels} setlistchannels={setlistchannels} setOpenWarning={setOpenWarning}/>
-        if(listchannels.whatsapp) return <ChannelAddWhatsapp setrequestchannels={setrequestchannels} setlistchannels={setlistchannels} setOpenWarning={setOpenWarning}/>
-        if(listchannels.telegram) return <ChannelAddTelegram setrequestchannels={setrequestchannels} setlistchannels={setlistchannels} setOpenWarning={setOpenWarning}/>
-        if(listchannels.twitter) return <ChannelAddTwitter setrequestchannels={setrequestchannels} setlistchannels={setlistchannels} setOpenWarning={setOpenWarning}/>
-        if(listchannels.twitterDM) return <ChannelAddTwitterDM setrequestchannels={setrequestchannels} setlistchannels={setlistchannels} setOpenWarning={setOpenWarning}/>
-        if(listchannels.chatWeb) return <ChannelAddChatWeb setrequestchannels={setrequestchannels} setlistchannels={setlistchannels} setOpenWarning={setOpenWarning}/>
+        if(listchannels.facebook) return <ChannelAddFacebook setOpenWarning={setOpenWarning}/>
+        if(listchannels.instagram) return <ChannelAddInstagram setOpenWarning={setOpenWarning}/>
+        if(listchannels.instagram) return <ChannelAddInstagramDM setOpenWarning={setOpenWarning}/>
+        if(listchannels.messenger) return <ChannelAddMessenger setOpenWarning={setOpenWarning}/>
+        if(listchannels.whatsapp) return <ChannelAddWhatsapp setOpenWarning={setOpenWarning}/>
+        if(listchannels.telegram) return <ChannelAddTelegram setOpenWarning={setOpenWarning}/>
+        if(listchannels.twitter) return <ChannelAddTwitter setOpenWarning={setOpenWarning}/>
+        if(listchannels.twitterDM) return <ChannelAddTwitterDM setOpenWarning={setOpenWarning}/>
+        if(listchannels.chatWeb) return <ChannelAddChatWeb setOpenWarning={setOpenWarning}/>
         if(listchannels.email) return <div>email</div>
         if(listchannels.phone) return <div>phone</div>
         if(listchannels.sms) return <div>sms</div>
-        if(listchannels.android) return <ChannelAddAndroid setrequestchannels={setrequestchannels} setlistchannels={setlistchannels} setOpenWarning={setOpenWarning}/>
-        if(listchannels.apple) return <ChannelAddIos setrequestchannels={setrequestchannels} setlistchannels={setlistchannels} setOpenWarning={setOpenWarning}/>
+        if(listchannels.android) return <ChannelAddAndroid setOpenWarning={setOpenWarning}/>
+        if(listchannels.apple) return <ChannelAddIos setOpenWarning={setOpenWarning}/>
         else {
             setStep(4)
             return(<div>error no more channels</div>)
         }
     }
-    else {
-        return(
-            <LastStep
-                mainData={mainData}
-                requestchannels={requestchannels}
-                setSnackbar={setSnackbar}
-                setBackdrop={setBackdrop}
-                setStep={setStep}
-                setsendchannels={setsendchannels}
-                setOpenWarning={setOpenWarning}
-            ></LastStep>
-        )
-    }
+
+    return <RateExperience />;
 }
 export default RightSideMenu

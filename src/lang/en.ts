@@ -2647,7 +2647,7 @@ const translation: LangKeys = {
     privacypolicy41: "If we make any changes to this Privacy Policy, we will notify either through the e-mail address you have provided us, or by placing a prominent notice in our website.",
     privacypolicy42: "7. Contact Us",
     privacypolicy43: "If you have any questions about this Privacy Policy, please contact us by using this e-mail: laraigo@vcaperu.com",
-    previoustext: "<< Previous",
+    previoustext: "Previous",
     whatsappsubtitle1: "Our staff will contact you to advise you on the activation of the WhatsApp channel.",
     billingsetupruc: "RUC",
     billingpaymentendpoint: 'Vendor API URL',
