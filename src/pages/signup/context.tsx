@@ -308,7 +308,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
     return (
         <SubscriptionContext.Provider value={{
             commonClasses: classes,
-            limitChannels: 2, // planData.data[0]?.channelscontracted || 0,
+            limitChannels: planData.data[0]?.channelscontracted || 0,
             selectedChannels,
             listchannels,
             mainData,
