@@ -373,7 +373,7 @@ const DashboardManagerial: FC = () => {
     const [resDashboard, setResDashboard] = useState<any>([]);
     const [resInteraction, setResInteraction] = useState<any>([]);
     const [resAsesoreconectadosbar, setResAsesoreconectadosbar] = useState<any>([]);
-    const [resLabels, setResLabels] = useState<any>([]);
+    // const [resLabels, setResLabels] = useState<any>([]);
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
     const [dataqueue, setdataqueue] = useState<any>([]);
@@ -423,6 +423,9 @@ const DashboardManagerial: FC = () => {
                         ]),
                         []
                     ))
+                }
+                else {
+                    exportExcel(titlefile, [{'': t(langKeys.no_records)}])
                 }
                 setdownloaddatafile(false)
             }
@@ -1023,11 +1026,11 @@ const DashboardManagerial: FC = () => {
                 setResEncuesta(remultiaux.data[3].data)
                 setResDashboard(remultiaux.data[4].data)
                 setResInteraction(remultiaux.data[5].data)
-                setResLabels(remultiaux.data[6].data)
+                // setResLabels(remultiaux.data[6].data)
 
 
 
-                const asesoretmp = [...remultiaux.data[7].data];
+                const asesoretmp = [...remultiaux.data[6].data];
 
                 setResAsesoreconectadosbar([...Array(24)].map((_, i) => {
                     const hourFound = asesoretmp.find((x: Dictionary) => x.hora === i);
@@ -1060,7 +1063,7 @@ const DashboardManagerial: FC = () => {
             gerencialencuestasel({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider }),
             gerencialconversationsel({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider }),
             gerencialinteractionsel({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider }),
-            gerencialetiquetassel({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider }),
+            // gerencialetiquetassel({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider }),
             gerencialasesoresconectadosbarsel({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider }),
         ]))
         setWaitSave(true)
@@ -1082,10 +1085,10 @@ const DashboardManagerial: FC = () => {
         if(fieldToFilter==="averageconversationsattendedbyhour" || fieldToFilter==="averageconversationsattendedbytheadvisorbyhour"){
             dispatch(getCollectionAux(getdashboardgerencialconverstionxhoursel({ ...searchfieldsOnlyOne,startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
         }
-        if(fieldToFilter==="etiqueta"){
-            setResLabels([])
-            dispatch(getCollectionAux(gerencialetiquetassel({ ...searchfieldsOnlyOne,startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
-        }
+        // if(fieldToFilter==="etiqueta"){
+        //     setResLabels([])
+        //     dispatch(getCollectionAux(gerencialetiquetassel({ ...searchfieldsOnlyOne,startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+        // }
         setWaitSaveaux(true)
     }
     useEffect(() => {
@@ -1107,8 +1110,8 @@ const DashboardManagerial: FC = () => {
                     setDataaverageconversationsattendedbyhour(resaux.data)
                 if(fieldToFilter==="averageconversationsattendedbytheadvisorbyhour")
                     setDataaverageconversationsattendedbytheadvisorbyhour(resaux.data)
-                if(fieldToFilter==="etiqueta")
-                    setResLabels(resaux.data)
+                // if(fieldToFilter==="etiqueta")
+                //     setResLabels(resaux.data)
                 setWaitSaveaux(false);
             }
         }
@@ -1161,10 +1164,10 @@ const DashboardManagerial: FC = () => {
             settitlefile(t(langKeys.averageinteractionbyconversation));
             setSection('interaction')
             dispatch(getCollectionAux(gerencialinteractionseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
-        } else if (tipeoffilter === "etiqueta") {
-            settitlefile(t(langKeys.top5labels));
-            setSection('etiqueta')
-            dispatch(getCollectionAux(gerencialetiquetasseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+        // } else if (tipeoffilter === "etiqueta") {
+        //     settitlefile(t(langKeys.top5labels));
+        //     setSection('etiqueta')
+        //     dispatch(getCollectionAux(gerencialetiquetasseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
         } else if (tipeoffilter === "averageconversationsattendedbyhour") {
             settitlefile(t(langKeys.averageconversationsattendedbyhour));
             setSection('summary')
@@ -2047,7 +2050,7 @@ const DashboardManagerial: FC = () => {
                         <div className="row-zyx" style={{ paddingTop: "30px", margin: 0 }}>{dataInteraction.minvginteractionsxconversations} </div>
                         <div className="row-zyx" style={{ paddingTop: "0" }}>Bot</div>
                     </Box>
-                    { (resaux.loading && fieldToFilter==="etiqueta")?(<Box  className={classes.itemCard} style={{display: "flex", alignItems: 'center', justifyContent: "center"}}><CircularProgress/> </Box>):
+                    {/* { (resaux.loading && fieldToFilter==="etiqueta")?(<Box  className={classes.itemCard} style={{display: "flex", alignItems: 'center', justifyContent: "center"}}><CircularProgress/> </Box>):
                     (<Box
                         style={{ backgroundColor: "white", padding: "10px", flex: 4 }}
                     >
@@ -2067,7 +2070,7 @@ const DashboardManagerial: FC = () => {
                             </ResponsiveContainer>
 
                         </div>
-                    </Box>)}
+                    </Box>)} */}
                 </div>
             </div>
         </Fragment>

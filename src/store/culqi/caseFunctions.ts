@@ -334,3 +334,40 @@ export const getExchangeRateReset = (state: IState): IState => ({
     ...state,
     requestGetExchangeRate: initialState.requestGetExchangeRate
 })
+
+export const emitInvoice = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestEmitInvoice: {
+        ...state.requestEmitInvoice,
+        loading: true,
+        error: false
+    }
+})
+
+export const emitInvoiceFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestEmitInvoice: {
+        ...state.requestEmitInvoice,
+        loading: false,
+        error: true,
+        code: action.payload.code ? action.payload.code : action.payload.message,
+        message: action.payload.message
+    }
+})
+
+export const emitInvoiceSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestEmitInvoice: {
+        ...state.requestEmitInvoice,
+        loading: false,
+        error: false,
+        data: action.payload.data,
+        code: action.payload.code ? action.payload.code : action.payload.message,
+        message: action.payload.message
+    }
+})
+
+export const emitInvoiceReset = (state: IState): IState => ({
+    ...state,
+    requestEmitInvoice: initialState.requestEmitInvoice
+})

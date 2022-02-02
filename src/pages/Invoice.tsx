@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { cleanMemoryTable, setMemoryTable, uploadFile } from 'store/main/actions';
 import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx, FieldEditArray, TemplateIcons } from 'components';
-import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, invoiceRefreshTest, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail, selBalanceData } from 'common/helpers';
+import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, invoiceRefreshTest, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail, selBalanceData, getBillingMessagingCurrent, getBalanceSelSent, getCorpSelVariant } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -15,7 +15,7 @@ import { langKeys } from 'lang/keys';
 import { useForm, useFieldArray } from 'react-hook-form';
 import ClearIcon from '@material-ui/icons/Clear';
 import { getCollection, getMultiCollection, execute, exportData, getMultiCollectionAux } from 'store/main/actions';
-import { createInvoice, regularizeInvoice, createCreditNote, getExchangeRate } from 'store/culqi/actions';
+import { createInvoice, regularizeInvoice, createCreditNote, getExchangeRate, emitInvoice } from 'store/culqi/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { CircularProgress, IconButton, Tabs, TextField } from '@material-ui/core';
 import * as locale from "date-fns/locale";
@@ -84,6 +84,12 @@ function formatNumber(num: number) {
     if (num)
         return num.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
     return "0.00"
+}
+
+function formatNumberFourDecimals(num: number) {
+    if (num)
+        return num.toFixed(4).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1')
+    return "0.0000"
 }
 
 function formatNumberNoDecimals(num: number) {
@@ -266,7 +272,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { totalcharge } = props.cell.row.original;
-                    return (totalcharge || 0).toFixed(2);
+                    return formatNumber(totalcharge || 0);
                 }
             },
         ],
@@ -718,7 +724,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                             className="col-6"
                             label={t(langKeys.costbasedonthesupportplan)}
-                            value={getValues('supportbasicfee').toFixed(2)}
+                            value={formatNumber(getValues('supportbasicfee') || 0)}
                             />
                         }
                     </div>
@@ -726,7 +732,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         <FieldView
                             className="col-6"
                             label={t(langKeys.totalcharge)}
-                            value={getValues('totalcharge').toFixed(2)}
+                            value={formatNumber(getValues('totalcharge') || 0)}
                         />
                     </div>
                 </div>}
@@ -776,13 +782,13 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                                 className="col-6"
                                 label={t(langKeys.useradditionalfee)}
-                                value={getValues('useradditionalfee').toFixed(2)}
+                                value={formatNumber(getValues('useradditionalfee') || 0)}
                             />
                         }
                         <FieldView
                             className="col-6"
                             label={t(langKeys.useradditionalcharge)}
-                            value={getValues("useradditionalcharge").toFixed(2)}
+                            value={formatNumber(getValues("useradditionalcharge") || 0)}
                         />
                     </div>
                 </div>}
@@ -813,7 +819,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                                 className="col-6"
                                 label={t(langKeys.channelwhatsappfee)}
-                                value={getValues('channelwhatsappfee').toFixed(4)}
+                                value={formatNumberFourDecimals(getValues('channelwhatsappfee') || 0)}
                             />
                         }
                     </div>
@@ -833,7 +839,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         <FieldView
                             className="col-6"
                             label={t(langKeys.channelcharge)}
-                            value={getValues("channelcharge").toFixed(2)}
+                            value={formatNumber(getValues("channelcharge") || 0)}
                         />
                     </div>
                 </div>}
@@ -866,12 +872,12 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationclientwhatfee)}
-                            value={getValues("conversationclientwhatfee").toFixed(4)}
+                            value={formatNumberFourDecimals(getValues("conversationclientwhatfee") || 0)}
                         />
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationclientwhatcharge)}
-                            value={getValues("conversationclientwhatcharge").toFixed(2)}
+                            value={formatNumber(getValues("conversationclientwhatcharge") || 0)}
                         />
                     </div>
                     <div className="row-zyx">
@@ -890,19 +896,19 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationcompanywhatfee)}
-                            value={getValues("conversationcompanywhatfee").toFixed(4)}
+                            value={formatNumberFourDecimals(getValues("conversationcompanywhatfee") || 0)}
                         />
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationcompanywhatcharge)}
-                            value={getValues("conversationcompanywhatcharge").toFixed(2)}
+                            value={formatNumber(getValues("conversationcompanywhatcharge") || 0)}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationwhatcharge)}
-                            value={getValues("conversationwhatcharge").toFixed(2)}
+                            value={formatNumber(getValues("conversationwhatcharge") || 0)}
                         />
                     </div>
                 </div>}
@@ -940,13 +946,13 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                                 className="col-6"
                                 label={t(langKeys.clientadditionalfee)}
-                                value={getValues("clientadditionalfee").toFixed(4)}
+                                value={formatNumberFourDecimals(getValues("clientadditionalfee") || 0)}
                             />
                         }
                         <FieldView
                             className="col-6"
                             label={t(langKeys.clientadditionalcharge)}
-                            value={getValues("clientadditionalcharge").toFixed(2)}
+                            value={formatNumber(getValues("clientadditionalcharge") || 0)}
                         />
                     </div>
                 </div>}
@@ -963,7 +969,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                                 className="col-6"
                                 label={t(langKeys.unitpricepersms)}
-                                value={getValues("unitpricepersms").toFixed(4)}
+                                value={formatNumberFourDecimals(getValues("unitpricepersms") || 0)}
                             />
                         }
                         { edit ? <FieldEdit
@@ -977,7 +983,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                                 className="col-6"
                                 label={t(langKeys.vcacomissionpersms)}
-                                value={getValues("vcacomissionpersms").toFixed(4)}
+                                value={formatNumberFourDecimals(getValues("vcacomissionpersms") || 0)}
                             />
                         }
                     </div>
@@ -985,12 +991,12 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         <FieldView
                             className="col-6"
                             label={t(langKeys.smsquantity)}
-                            value={getValues("smsquantity").toFixed(0)}
+                            value={formatNumberNoDecimals(getValues("smsquantity") || 0)}
                         />
                         <FieldView
                             className="col-6"
                             label={t(langKeys.smscost)}
-                            value={getValues("smscost").toFixed(2)}
+                            value={formatNumber(getValues("smscost") || 0)}
                         />
                     </div>
                     <div className="row-zyx">
@@ -1005,7 +1011,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                                 className="col-6"
                                 label={t(langKeys.unitepricepermail)}
-                                value={getValues("unitepricepermail").toFixed(4)}
+                                value={formatNumberFourDecimals(getValues("unitepricepermail") || 0)}
                             />
                         }
                         { edit ? <FieldEdit
@@ -1019,7 +1025,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                                 className="col-6"
                                 label={t(langKeys.vcacomissionpermail)}
-                                value={getValues("vcacomissionpermail").toFixed(4)}
+                                value={formatNumberFourDecimals(getValues("vcacomissionpermail") || 0)}
                             />
                         }
                     </div>
@@ -1027,12 +1033,12 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         <FieldView
                             className="col-6"
                             label={t(langKeys.mailquantity)}
-                            value={getValues("mailquantity").toFixed(0)}
+                            value={formatNumberNoDecimals(getValues("mailquantity") || 0)}
                         />
                         <FieldView
                             className="col-6"
                             label={t(langKeys.mailcost)}
-                            value={getValues("mailcost").toFixed(2)}
+                            value={formatNumber(getValues("mailcost") || 0)}
                         />
                     </div>
                 </div>}
@@ -1062,7 +1068,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                                 className="col-6"
                                 label={`${t(langKeys.additionalservicefee)} 1`}
-                                value={getValues("additionalservicefee1").toFixed(4)}
+                                value={formatNumberFourDecimals(getValues("additionalservicefee1") || 0)}
                             />
                         }
                     </div>
@@ -1091,7 +1097,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                                 className="col-6"
                                 label={`${t(langKeys.additionalservicefee)} 2`}
-                                value={getValues("additionalservicefee2").toFixed(4)}
+                                value={formatNumberFourDecimals(getValues("additionalservicefee2") || 0)}
                             />
                         }
                     </div>
@@ -1120,7 +1126,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <FieldView
                                 className="col-6"
                                 label={`${t(langKeys.additionalservicefee)} 3`}
-                                value={getValues("additionalservicefee3").toFixed(4)}
+                                value={formatNumberFourDecimals(getValues("additionalservicefee3") || 0)}
                             />
                         }
                     </div>
@@ -1743,7 +1749,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                 accessor: 'orgid',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    if ((row.invoicestatus === "DRAFT" && row.paymentstatus !== "PENDING") || row.totalamount <= 0)
+                    if (((row.invoicestatus === "ERROR" || row.invoicestatus === "PENDING") || row.paymentstatus !== "PENDING") || row.totalamount <= 0)
                         return null;
                     return (
                         <Button
@@ -1784,7 +1790,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { totalamount } = props.cell.row.original;
-                    return (totalamount || 0).toFixed(2);
+                    return formatNumber(totalamount || 0);
                 }
             },
             {
@@ -1816,7 +1822,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                 }
             },
             {
-                Header: t(langKeys.documentnumber),
+                Header: t(langKeys.billingvoucher),
                 accessor: 'docnumber',
                 Cell: (props: any) => {
                     const urlpdf = props.cell.row.original.urlpdf;
@@ -2041,7 +2047,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                                     setOverride(true);
                                     setShowCulqi(true);
                                     setDetractionAlert(true);
-                                    setDetractionAmount(appsetting.detractionminimum * 100);
+                                    setDetractionAmount(appsetting.detraction * 100);
                                 }
                                 else {
                                     setTotalPay(data?.totalamount);
@@ -2184,38 +2190,48 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                             value={t(langKeys.additional_information)}
                         />
                     </div>
-                    <div className="row-zyx">
+                    {data?.invoicestatus !== "INVOICED" && <div className="row-zyx">
                         <FieldView
                             className={classes.commentary}
                             label={''}
                             value={t(langKeys.additionalinformation2)}
                         />
-                    </div>
+                    </div>}
                     <div className="row-zyx">
-                        <FieldEdit
+                        {data?.invoicestatus !== "INVOICED" && <FieldEdit
                             label={t(langKeys.purchaseorder)}
                             onChange={(value) => handlePurchaseOrder(value)}
                             valueDefault={purchaseOrder}
                             error={purchaseOrderError}
                             className="col-12"
-                        />
+                        />}
+                        {data?.invoicestatus === "INVOICED" && <FieldView
+                            label={t(langKeys.purchaseorder)}
+                            value={data?.purchaseorder}
+                            className="col-12"
+                        />}
                     </div>
                     <div className="row-zyx">
-                        <FieldEdit
+                        {data?.invoicestatus !== "INVOICED" && <FieldEdit
                             label={t(langKeys.comments)}
                             onChange={(value) => handleComments(value)}
                             valueDefault={comments}
                             error={commentsError}
                             className="col-12"
-                        />
+                        />}
+                        {data?.invoicestatus === "INVOICED" && <FieldView
+                            label={t(langKeys.comments)}
+                            value={data?.comments}
+                            className="col-12"
+                        />}
                     </div>
-                    <div className="row-zyx">
+                    {data?.invoicestatus !== "INVOICED" && <div className="row-zyx">
                         <FieldView
                             className={classes.commentary}
                             label={''}
                             value={t(langKeys.additionalinformation1)}
                         />
-                    </div>
+                    </div>}
                 </div>
             </div>
         </div >
@@ -2305,29 +2321,35 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 isComponent: true,
                 minWidth: 60,
                 width: '1%',
-                accessor: 'invoiceid',
+                accessor: 'corpid',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
 
-                    if (row.invoicestatus !== "INVOICED" && (row.paymentstatus !== 'PAID' && row.paymentstatus !== 'PENDING')) {
+                    if (row.hasreport === false && row.invoicestatus !== "INVOICED" && row.paymentstatus !== 'PAID') {
                         return (
                             <TemplateIcons
                                 deleteFunction={() => handleDelete(row)}
                             />
                         )
                     }
-
-                    if (row.invoicestatus !== "INVOICED" || row.type === 'CREDITNOTE') {
-                        return null;
+                    else {
+                        if (row.invoicestatus !== "INVOICED" || row.type === 'CREDITNOTE') {
+                            return null;
+                        }
+                        else {
+                            return (
+                                <TemplateIcons
+                                    extraFunction={() => handleCreditNote(row)}
+                                    extraOption={t(langKeys.generatecreditnote)}
+                                />
+                            )
+                        }
                     }
-
-                    return (
-                        <TemplateIcons
-                            extraFunction={() => handleCreditNote(row)}
-                            extraOption={t(langKeys.generatecreditnote)}
-                        />
-                    )
                 }
+            },
+            {
+                Header: t(langKeys.invoiceid),
+                accessor: 'invoiceid',
             },
             {
                 Header: t(langKeys.corporation),
@@ -2338,15 +2360,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 accessor: 'orgdesc',
             },
             {
-                Header: t(langKeys.year),
-                accessor: 'year',
-            },
-            {
-                Header: t(langKeys.month),
-                accessor: 'month',
-            },
-            {
-                Header: t(langKeys.billingfield_billingruc),
+                Header: t(langKeys.billingclienttype),
                 accessor: 'receiverdoctype',
                 Cell: (props: any) => {
                     const receiverdoctype = props.cell.row.original.receiverdoctype;
@@ -2375,24 +2389,6 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 }
             },
             {
-                Header: t(langKeys.businessname),
-                accessor: 'receiverbusinessname',
-                Cell: (props: any) => {
-                    const receiverbusinessname = props.cell.row.original.receiverbusinessname;
-                    return (
-                        <Fragment>
-                            <div>
-                                { receiverbusinessname ?
-                                    <span style={{ display: "block" }}>{receiverbusinessname}</span>
-                                    :
-                                    <span style={{ display: "block" }}>{t(langKeys.pendingpayment)}</span>
-                                }
-                            </div>
-                        </Fragment>
-                    )
-                }
-            },
-            {
                 Header: t(langKeys.documentnumber),
                 accessor: 'receiverdocnum',
                 Cell: (props: any) => {
@@ -2411,32 +2407,21 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 }
             },
             {
-                Header: t(langKeys.currency),
-                accessor: 'currency',
-            },
-            {
-                Header: t(langKeys.amount),
-                accessor: 'totalamount',
-                type: 'number',
-                sortType: 'number',
+                Header: t(langKeys.businessname),
+                accessor: 'receiverbusinessname',
                 Cell: (props: any) => {
-                    const { totalamount } = props.cell.row.original;
-                    return (totalamount || 0).toFixed(2);
-                }
-            },
-            {
-                Header: t(langKeys.documenttype),
-                accessor: 'invoicetype',
-                Cell: (props: any) => {
-                    const { invoicetype } = props.cell.row.original;
-                    return <span style={{ display: "block" }}>{t(getInvoiceType(invoicetype))}</span>;
-                }
-            },
-            {
-                Header: t(langKeys.reportstatus),
-                accessor: 'concept',
-                Cell: () => {
-                    return <span style={{ display: "block" }}>{'Preliminar'}</span>;
+                    const receiverbusinessname = props.cell.row.original.receiverbusinessname;
+                    return (
+                        <Fragment>
+                            <div>
+                                { receiverbusinessname ?
+                                    <span style={{ display: "block" }}>{receiverbusinessname}</span>
+                                    :
+                                    <span style={{ display: "block" }}>{t(langKeys.pendingpayment)}</span>
+                                }
+                            </div>
+                        </Fragment>
+                    )
                 }
             },
             {
@@ -2453,6 +2438,68 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 Cell: (props: any) => {
                     const { paymentstatus } = props.cell.row.original;
                     return t(paymentstatus);
+                }
+            },
+            {
+                Header: t(langKeys.documenttype),
+                accessor: 'invoicetype',
+                Cell: (props: any) => {
+                    const { invoicetype } = props.cell.row.original;
+                    return <span style={{ display: "block" }}>{t(getInvoiceType(invoicetype))}</span>;
+                }
+            },
+            {
+                Header: t(langKeys.billingvoucher),
+                accessor: 'serie',
+                Cell: (props: any) => {
+                    const docnumber = (props.cell.row.original.serie ? props.cell.row.original.serie : 'X000') + '-' + (props.cell.row.original.correlative ? props.cell.row.original.correlative.toString().padStart(8, '0') : '00000000');
+                    return docnumber;
+                }
+            },
+            {
+                Header: t(langKeys.invoicedate),
+                accessor: 'invoicedate',
+            },
+            {
+                Header: t(langKeys.expirationdate),
+                accessor: 'expirationdate',
+                Cell: (props: any) => {
+                    const { expirationdate } = props.cell.row.original;
+                    return (expirationdate || t(langKeys.none));
+                }
+            },
+            {
+                Header: t(langKeys.currency),
+                accessor: 'currency',
+            },
+            {
+                Header: t(langKeys.taxbase),
+                accessor: 'subtotal',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { subtotal } = props.cell.row.original;
+                    return formatNumber(subtotal || 0);
+                }
+            },
+            {
+                Header: t(langKeys.billingtax),
+                accessor: 'taxes',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { taxes } = props.cell.row.original;
+                    return formatNumber(taxes || 0);
+                }
+            },
+            {
+                Header: t(langKeys.totalamount),
+                accessor: 'totalamount',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { totalamount } = props.cell.row.original;
+                    return formatNumber(totalamount || 0);
                 }
             },
         ],
@@ -2474,7 +2521,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     }
 
     const handleView = (row: Dictionary) => {
-        if (row.invoicestatus === 'DRAFT' && row.paymentstatus === 'NONE') {
+        if (row.invoicestatus === 'PENDING') {
             setViewSelected("view-3");
             setRowSelected({ row: row, edit: true });
         }
@@ -2635,6 +2682,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
 
     const classes = useStyles();
     const culqiResult = useSelector(state => state.culqi.requestCreateCreditNote);
+    const emitResult = useSelector(state => state.culqi.requestEmitInvoice);
     const multiResult = useSelector(state => state.main.multiDataAux);
     
     const [measureList, setMeasureList] = useState<any>([]);
@@ -2643,6 +2691,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
     const [productList, setProductList] = useState<any>([]);
     const [showDiscount, setShowDiscount] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
+    const [invoiceStatus, setInvoiceStatus] = useState(data?.invoicestatus);
 
     const invocesBread = [
         { id: "view-1", name: t(langKeys.billingtitle) },
@@ -2653,7 +2702,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
         { value:"01", description: t(langKeys.billingcreditnote01) },
         { value:"04", description: t(langKeys.billingcreditnote04) }
     ]
-
+    
     useEffect(() => {
         if (!data) {
             setViewSelected("view-1");
@@ -2771,22 +2820,37 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
     }
 
     const onSubmit = handleSubmit((data) => {
-        if (creditNote) {
+        if (invoiceStatus === 'ERROR') {
             const callback = () => {
-                dispatch(createCreditNote(data));
+                dispatch(emitInvoice(data));
                 dispatch(showBackdrop(true));
                 setWaitSave(true);
             }
     
             dispatch(manageConfirmation({
                 visible: true,
-                question: t(langKeys.confirmation_save),
+                question: t(langKeys.confirmatiom_reemit),
                 callback
             }))
         }
-
-        if (regularize) {
-            setOpenModal(true);
+        else {
+            if (creditNote) {
+                const callback = () => {
+                    dispatch(createCreditNote(data));
+                    dispatch(showBackdrop(true));
+                    setWaitSave(true);
+                }
+        
+                dispatch(manageConfirmation({
+                    visible: true,
+                    question: t(langKeys.confirmation_save),
+                    callback
+                }))
+            }
+    
+            if (regularize) {
+                setOpenModal(true);
+            }
         }
     });
 
@@ -2798,22 +2862,40 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
 
     useEffect(() => {
         if (waitSave) {
-            if (!culqiResult.loading && !culqiResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(culqiResult.code || "success") }))
-                dispatch(showBackdrop(false));
-                fetchData();
-                setViewSelected('view-1');
-                setWaitSave(false);
+            if (data?.invoicestatus === 'ERROR') {
+                if (!emitResult.loading && !emitResult.error) {
+                    dispatch(showSnackbar({ show: true, success: true, message: t(emitResult.code || "success") }))
+                    dispatch(showBackdrop(false));
+                    fetchData();
+                    setViewSelected('view-1');
+                    setWaitSave(false);
+                }
+                else if (emitResult.error) {
+                    dispatch(showSnackbar({ show: true, success: false, message: t(emitResult.code || "error_unexpected_db_error") }))
+                    dispatch(showBackdrop(false));
+                    fetchData();
+                    setViewSelected('view-1');
+                    setWaitSave(false);
+                }
             }
-            else if (culqiResult.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(culqiResult.code || "error_unexpected_db_error") }))
-                dispatch(showBackdrop(false));
-                fetchData();
-                setViewSelected('view-1');
-                setWaitSave(false);
+            else {
+                if (!culqiResult.loading && !culqiResult.error) {
+                    dispatch(showSnackbar({ show: true, success: true, message: t(culqiResult.code || "success") }))
+                    dispatch(showBackdrop(false));
+                    fetchData();
+                    setViewSelected('view-1');
+                    setWaitSave(false);
+                }
+                else if (culqiResult.error) {
+                    dispatch(showSnackbar({ show: true, success: false, message: t(culqiResult.code || "error_unexpected_db_error") }))
+                    dispatch(showBackdrop(false));
+                    fetchData();
+                    setViewSelected('view-1');
+                    setWaitSave(false);
+                }
             }
         }
-    }, [culqiResult, waitSave])
+    }, [culqiResult, emitResult, waitSave])
 
     return (
         <div style={{ width: '100%' }}>
@@ -2843,6 +2925,18 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                             style={{ backgroundColor: "#FB5F5F" }}
                             onClick={() => { setViewSelected("view-1"); fetchData(); }}
                         >{t(langKeys.back)}</Button>
+                        { (data?.invoicestatus === 'ERROR' && data?.invoicetype !== '07') ? (
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                type='submit'
+                                startIcon={<PaymentIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >{t(langKeys.reemitinvoice)}
+                            </Button>
+                            ) : null
+                        }
                         { (data?.invoicestatus === 'INVOICED' && creditNote) ? (
                             <Button
                                 className={classes.button}
@@ -2916,7 +3010,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                                 className="col-3"
                             />
                             <FieldView
-                                label={t(langKeys.documentnumber)}
+                                label={t(langKeys.billingvoucher)}
                                 value={(data?.serie ? data.serie : 'X000') + '-' + (data?.correlative ? data?.correlative.toString().padStart(8, '0') : '00000000')}
                                 className="col-3"
                             />
@@ -2972,17 +3066,17 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                             />
                             <FieldView
                                 label={t(langKeys.taxbase)}
-                                value={(data?.subtotal || 0).toFixed(2)}
+                                value={formatNumber(data?.subtotal || 0)}
                                 className="col-3"
                             />
                             <FieldView
                                 label={t(langKeys.billingtax)}
-                                value={(data?.taxes || 0).toFixed(2)}
+                                value={formatNumber(data?.taxes || 0)}
                                 className="col-3"
                             />
                             <FieldView
                                 label={t(langKeys.totalamount)}
-                                value={(data?.totalamount || 0).toFixed(2)}
+                                value={formatNumber(data?.totalamount || 0)}
                                 className="col-3"
                             />
                         </div>
@@ -2996,7 +3090,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                                 {(data?.creditnotetype === '04') ? (
                                     <FieldView
                                         label={t(langKeys.globaldiscount)}
-                                        value={(data?.creditnotediscount || 0).toFixed(2)}
+                                        value={formatNumber(data?.creditnotediscount || 0)}
                                         className="col-3"
                                     />
                                 ) : null}
@@ -3055,6 +3149,13 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                                             <TableCell>
                                                 <FieldView
                                                     label={''}
+                                                    value={t(langKeys.unitaryprice)}
+                                                    className={classes.fieldView}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldView
+                                                    label={''}
                                                     value={t(langKeys.quantity)}
                                                     className={classes.fieldView}
                                                 />
@@ -3092,14 +3193,21 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                                                 <TableCell>
                                                     <FieldView
                                                         label={''}
-                                                        value={(getValues(`productdetail.${i}.productquantity`) || 0).toFixed(0)}
+                                                        value={formatNumber(getValues(`productdetail.${i}.productsubtotal`) || 0)}
                                                         className={classes.fieldView}
                                                     />
                                                 </TableCell>
                                                 <TableCell>
                                                     <FieldView
                                                         label={''}
-                                                        value={(getValues(`productdetail.${i}.productsubtotal`) || 0).toFixed(2)}
+                                                        value={formatNumber(getValues(`productdetail.${i}.productquantity`) || 0)}
+                                                        className={classes.fieldView}
+                                                    />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <FieldView
+                                                        label={''}
+                                                        value={formatNumber((getValues(`productdetail.${i}.productsubtotal`) || 0) * (getValues(`productdetail.${i}.productquantity`) || 0))}
                                                         className={classes.fieldView}
                                                     />
                                                 </TableCell>
@@ -3177,7 +3285,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                             />
                             <FieldView
                                 label={t(langKeys.paymentdate)}
-                                value={data?.paymentdate || t(langKeys.none)}
+                                value={data?.paymentdate ? new Date(data?.paymentdate).toISOString().replace("T"," ").substring(0, 19) : t(langKeys.none)}
                                 className="col-4"
                             />
                             <FieldView
@@ -3190,6 +3298,11 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                             <FieldView
                                 label={t(langKeys.paymentnote)}
                                 value={t(data?.invoicepaymentnote || langKeys.none)}
+                                className="col-4"
+                            />
+                            <FieldView
+                                label={t(langKeys.paymentcommentary)}
+                                value={t(data?.paymentcommentary || langKeys.none)}
                                 className="col-4"
                             />
                             {(data?.invoicereferencefile) ? (
@@ -3233,6 +3346,7 @@ const RegularizeModal: FC<{ data: any, openModal: boolean, setOpenModal: (param:
             invoiceid: data?.invoiceid,
             invoicereferencefile: '',
             invoicepaymentnote: '',
+            invoicepaymentcommentary: '',
         }
     });
 
@@ -3242,6 +3356,7 @@ const RegularizeModal: FC<{ data: any, openModal: boolean, setOpenModal: (param:
         register('invoiceid', { validate: (value) => (value && value > 0) || "" + t(langKeys.field_required) });
         register('invoicereferencefile', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('invoicepaymentnote', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('invoicepaymentcommentary', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
     }, [register]);
 
     useEffect(() => {
@@ -3348,14 +3463,14 @@ const RegularizeModal: FC<{ data: any, openModal: boolean, setOpenModal: (param:
             input.value = "";
         }
         setFileAttachment(null);
-        setValue('invoicereferencefile', getValues('invoicereferencefile').split(',').filter((a: string) => a !== f).join(','));
+        setValue('invoicereferencefile', getValues('invoicereferencefile').split(',').filter((a: string) => a !== f).join(''));
         await trigger('invoicereferencefile');
     }
 
     useEffect(() => {
         if (waitUploadFile) {
             if (!uploadResult.loading && !uploadResult.error) {
-                setValue('invoicereferencefile', [getValues('invoicereferencefile'), uploadResult?.url || ''].join(','))
+                setValue('invoicereferencefile', [getValues('invoicereferencefile'), uploadResult?.url || ''].join(''))
                 setWaitUploadFile(false);
             } else if (uploadResult.error) {
                 setWaitUploadFile(false);
@@ -3380,7 +3495,19 @@ const RegularizeModal: FC<{ data: any, openModal: boolean, setOpenModal: (param:
                 onChange={(value) => setValue('invoicepaymentnote', value)}
                 className="col-12"
             />
-            <FieldView label={t(langKeys.evidenceofpayment)} />
+            <FieldEdit
+                label={t(langKeys.paymentcommentary)}
+                valueDefault={getValues('invoicepaymentcommentary')}
+                error={errors?.invoicepaymentcommentary?.message}
+                onChange={(value) => setValue('invoicepaymentcommentary', value)}
+                className="col-12"
+            />
+            <FieldEdit
+                label={t(langKeys.evidenceofpayment)}
+                valueDefault={getValues('invoicereferencefile')}
+                error={errors?.invoicereferencefile?.message}
+                disabled={true}
+             />
             <React.Fragment>
                 <input
                     accept="image/*"
@@ -3391,7 +3518,7 @@ const RegularizeModal: FC<{ data: any, openModal: boolean, setOpenModal: (param:
                 />
                 {<IconButton
                     onClick={onClickAttachment}
-                    disabled={waitUploadFile}
+                    disabled={(waitUploadFile || fileAttachment !== null)}
                 >
                     <AttachFileIcon color="primary" />
                 </IconButton>}
@@ -4041,7 +4168,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                 className="col-3"
                             />
                             <FieldView
-                                label={t(langKeys.documentnumber)}
+                                label={t(langKeys.billingvoucher)}
                                 value={(data?.serie ? data.serie : 'X000') + '-' + (data?.correlative ? data?.correlative.toString().padStart(8, '0') : '00000000')}
                                 className="col-3"
                             />
@@ -4097,7 +4224,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             />
                             <FieldEdit
                                 label={t(langKeys.taxbase)}
-                                valueDefault={getValues('invoicetotalamount').toFixed(2)}
+                                valueDefault={formatNumber(getValues('invoicetotalamount') || 0)}
                                 className="col-3"
                                 error={errors?.invoicetotalamount?.message}
                                 disabled={true}
@@ -4105,12 +4232,12 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             />
                             <FieldView
                                 label={t(langKeys.billingtax)}
-                                value={amountTax.toFixed(2)}
+                                value={formatNumber(amountTax || 0)}
                                 className="col-3"
                             />
                             <FieldView
                                 label={t(langKeys.totalamount)}
-                                value={amountTotal.toFixed(2)}
+                                value={formatNumber(amountTotal || 0)}
                                 className="col-3"
                             />
                         </div>
@@ -4130,6 +4257,13 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                                 <FieldView
                                                     label={''}
                                                     value={t(langKeys.measureunit)}
+                                                    className={classes.fieldView}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldView
+                                                    label={''}
+                                                    value={t(langKeys.unitaryprice)}
                                                     className={classes.fieldView}
                                                 />
                                             </TableCell>
@@ -4205,6 +4339,21 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                                         className={classes.fieldView}
                                                         label={''}
                                                         fregister={{
+                                                            ...register(`productdetail.${i}.productsubtotal`, {
+                                                                validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
+                                                            })
+                                                        }}
+                                                        valueDefault={getValues(`productdetail.${i}.productsubtotal`)}
+                                                        error={errors?.productdetail?.[i]?.productsubtotal?.message}
+                                                        onChange={(value) => { setValue(`productdetail.${i}.productsubtotal`, "" + value); onProductChange(); }}
+                                                        type='number'
+                                                    />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <FieldEditArray
+                                                        className={classes.fieldView}
+                                                        label={''}
+                                                        fregister={{
                                                             ...register(`productdetail.${i}.productquantity`, {
                                                                 validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
                                                             })
@@ -4216,18 +4365,10 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                                     />
                                                 </TableCell>
                                                 <TableCell>
-                                                    <FieldEditArray
+                                                    <FieldView
                                                         className={classes.fieldView}
                                                         label={''}
-                                                        fregister={{
-                                                            ...register(`productdetail.${i}.productsubtotal`, {
-                                                                validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
-                                                            })
-                                                        }}
-                                                        valueDefault={getValues(`productdetail.${i}.productsubtotal`)}
-                                                        error={errors?.productdetail?.[i]?.productsubtotal?.message}
-                                                        onChange={(value) => { setValue(`productdetail.${i}.productsubtotal`, "" + value); onProductChange(); }}
-                                                        type='number'
+                                                        value={formatNumber((getValues(`productdetail.${i}.productsubtotal`) || 0) * (getValues(`productdetail.${i}.productquantity`) || 0))}
                                                     />
                                                 </TableCell>
                                                 <TableCell>
@@ -4281,7 +4422,7 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         all: true,
     });
 
-    const transactionType = [{ value: "HSM", description: t(langKeys.HSM) }, { value: "MAIL", description: t(langKeys.MAIL) }, { value: "SMS", description: t(langKeys.SMS) }]
+    const transactionType = [{ value: "HSM", description: t(langKeys.HSM) }, { value: "MAIL", description: t(langKeys.MAIL) }, { value: "SMS", description: t(langKeys.SMS) }, { value: "GENERAL", description: t(langKeys.GENERAL) }]
     const operationType = [{ value: "ENVIO", description: t(langKeys.ENVIO) }, { value:"COMPRA", description: t(langKeys.COMPRA) }]
 
     const fetchData = () => dispatch(getCollection(selBalanceData(dataMain)));
@@ -4340,13 +4481,17 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             {
                 Header: t(langKeys.transactionmessagetype),
                 accessor: 'type',
+                Cell: (props: any) => {
+                    const { type } = props.cell.row.original;
+                    return t(type);
+                }
             },
             {
                 Header: t(langKeys.transactionreference),
                 accessor: 'description',
                 Cell: (props: any) => {
                     const { description } = props.cell.row.original;
-                    return (description || langKeys.none);
+                    return (description || t(langKeys.none));
                 }
             },
             {
@@ -4356,7 +4501,7 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { amount } = props.cell.row.original;
-                    return (amount || 0).toFixed(4);
+                    return formatNumberFourDecimals(amount || 0);
                 }
             },
             {
@@ -4366,7 +4511,7 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { balance } = props.cell.row.original;
-                    return (balance || 0).toFixed(4);
+                    return formatNumberFourDecimals(balance || 0);
                 }
             },
             {
@@ -4382,7 +4527,7 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 accessor: 'messagetemplatedesc',
                 Cell: (props: any) => {
                     const { messagetemplatedesc } = props.cell.row.original;
-                    return (messagetemplatedesc || langKeys.none);
+                    return (messagetemplatedesc || t(langKeys.none));
                 }
             },
             {
@@ -4423,7 +4568,7 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 accessor: 'documentnumber',
                 Cell: (props: any) => {
                     const { documentnumber } = props.cell.row.original;
-                    return (documentnumber || langKeys.none);
+                    return (documentnumber || t(langKeys.none));
                 }
             },
         ],
@@ -4554,6 +4699,11 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
     const [waitSave, setWaitSave] = useState(false);
     const [detractionAlert, setDetractionAlert] = useState(false);
     const [detractionAmount, setDetractionAmount] = useState(0);
+    const [messagingList, setMessagingList] = useState<any>([]);
+    const [priceSms, setPriceSms] = useState(0);
+    const [priceMail, setPriceMail] = useState(0);
+    const [priceHsm, setPriceHsm] = useState(0);
+    const [balanceSent, setBalanceSent] = useState<any>([]);
 
     const handleCulqiSuccess = () => {
         fetchData();
@@ -4561,16 +4711,23 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
     }
 
     useEffect(() => {
+        setMessagingList({ loading: true, data: [] });
         setCorpList({ loading: true, data: [] });
         setOrgList({ loading: false, data: [] });
 
-        dispatch(getMultiCollectionAux([getCorpSel(user?.roledesc === "ADMINISTRADOR" ? user?.corpid : 0)]));
+        dispatch(getMultiCollectionAux([getCorpSel(user?.roledesc === "ADMINISTRADOR" ? user?.corpid : 0), getBillingMessagingCurrent(new Date().getFullYear(), new Date().getMonth(), user?.countrycode || '')]));
 
         if (data?.row === null) {
             dispatch(getCollection(getAppsettingInvoiceSel()));
             dispatch(getExchangeRate(null));
             dispatch(showBackdrop(true));
             setWaitSave(true);
+        }
+        else {
+            if (data?.row?.operationtype === "ENVIO") {
+                setBalanceSent({ loading: true, data: [] });
+                dispatch(getMultiCollectionAux([getBalanceSelSent(data?.row?.corpid, data?.row?.orgid, data?.row?.transactiondate, data?.row?.type, data?.row?.module, data?.row?.messagetemplateid)]));
+            }
         }
     }, [])
 
@@ -4586,7 +4743,33 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
         if (indexOrg > -1) {
             setOrgList({ loading: false, data: multiResult.data[indexOrg] && multiResult.data[indexOrg].success ? multiResult.data[indexOrg].data : [] });
         }
+
+        const indexMessaging = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_BILLINGMESSAGING_CURRENT'));
+
+        if (indexMessaging > -1) {
+            setMessagingList({ loading: false, data: multiResult.data[indexMessaging] && multiResult.data[indexMessaging].success ? multiResult.data[indexMessaging].data : [] });
+        }
+
+        const indexSent = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_BALANCE_SEL_SENT'));
+
+        if (indexSent > -1) {
+            setBalanceSent({ loading: false, data: multiResult.data[indexSent] && multiResult.data[indexSent].success ? multiResult.data[indexSent].data : [] });
+        }
     }, [multiResult]);
+
+    useEffect(() => {
+        if (!messagingList.loading) {
+            if (messagingList.data) {
+                setPriceHsm((messagingList.data[0].companystartfee || 0) + (messagingList.data[0].vcacomission || 0));
+                setPriceSms((messagingList.data[0].pricepersms || 0) + (messagingList.data[0].vcacomissionpersms || 0));
+                setPriceMail((messagingList.data[0].pricepermail || 0) + (messagingList.data[0].vcacomissionpermail || 0));
+            }
+        }
+    }, [messagingList]);
+
+    useEffect(() => {
+        console.log(balanceSent);
+    }, [balanceSent]);
 
     useEffect(() => {
         updateTotalPay(buyAmount);
@@ -4721,6 +4904,19 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
         }
     }
 
+    const getInvoiceType = (invoicetype: string) => {
+        switch (invoicetype) {
+            case '01':
+                return 'emissorinvoice';
+            case '03':
+                return 'emissorticket';
+            case '07':
+                return 'emissorcreditnote';
+            default:
+                return 'emissornone';
+        }
+    }
+
     const paymentBread = [
         { id: "view-1", name: t(langKeys.messagingpackages) },
         { id: "view-2", name: (data?.edit ? t(langKeys.messagingpackagesnew) : t(langKeys.messagingpackagesdetail)) }
@@ -4783,13 +4979,6 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                 </div>
                 <div style={{ backgroundColor: 'white', padding: 16 }}>
                     <div className="row-zyx">
-                        <FieldView
-                            className={classes.section}
-                            label={''}
-                            value={t(langKeys.transactioninformation)}
-                        />
-                    </div>
-                    <div className="row-zyx">
                         {data?.edit ? (
                             <FieldSelect
                                 label={t(langKeys.corporation)}
@@ -4845,23 +5034,22 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                             <FieldView
                                 className="col-12"
                                 label={t(langKeys.transactionreference)}
-                                value={data?.row?.description}
+                                value={data?.row?.description || t(langKeys.none)}
                             />
                         )}
-                        
                     </div>
                     <div className="row-zyx">
                         {data?.edit ? (
                             <FieldView
                                 className="col-4"
                                 label={t(langKeys.transactionlastbalance)}
-                                value={(beforeAmount || 0).toFixed(2)}
+                                value={formatNumber(beforeAmount || 0)}
                             />
                         ) : (
                             <FieldView
                                 className="col-4"
                                 label={t(langKeys.transactionlastbalance)}
-                                value={(data?.row?.balance - data?.row?.amount || 0).toFixed(2)}
+                                value={formatNumber((data?.row?.balance - data?.row?.amount) || 0)}
                             />
                         )}
                         {data?.edit ? (
@@ -4878,94 +5066,248 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                             <FieldView
                                 className="col-4"
                                 label={t(langKeys.transactionbuyamount)}
-                                value={(data?.row?.amount || 0).toFixed(2)}
+                                value={formatNumber(data?.row?.amount || 0)}
                             />
                         )}
                         {data?.edit ? (
                             <FieldView
                                 className="col-4"
                                 label={t(langKeys.transactionafterbalance)}
-                                value={(afterAmount || 0).toFixed(2)}
+                                value={formatNumber(afterAmount || 0)}
                             />
                         ) : (
                             <FieldView
                                 className="col-4"
                                 label={t(langKeys.transactionafterbalance)}
-                                value={(data?.row?.balance || 0).toFixed(2)}
+                                value={formatNumber(data?.row?.balance || 0)}
                             />
                         )}
                     </div>
-                    {data?.edit && <div className="row-zyx">
+                    {(data?.edit || data?.row?.operationtype === "COMPRA") && <div className="row-zyx">
                         <FieldView
                             className={classes.section}
                             label={''}
                             value={t(langKeys.payment_information)}
                         />
                     </div>}
-                    {data?.edit && <div className="row-zyx">
-                        <FieldView
+                    {(data?.edit || data?.row?.operationtype === "COMPRA") && <div className="row-zyx">
+                        {data?.edit && <FieldView
                             className="col-4"
                             label={t(langKeys.servicedescription)}
                             value={t(langKeys.transactionrechargetitle) + new Date().toISOString().split('T')[0]}
-                        />
-                        <FieldView
+                        />}
+                        {data?.row?.operationtype === "COMPRA" && <FieldView
+                            className="col-4"
+                            label={t(langKeys.servicedescription)}
+                            value={t(langKeys.transactionrechargetitle) + new Date(data?.row?.createdate).toISOString().split('T')[0]}
+                        />}
+                        {data?.edit && <FieldView
                             className="col-4"
                             label={t(langKeys.totalamount)}
                             value={'$'+formatNumber((buyAmount || 0))}
-                        />
-                        <FieldView
+                        />}
+                        {data?.row?.operationtype === "COMPRA" && <FieldView
+                            className="col-4"
+                            label={t(langKeys.totalamount)}
+                            value={'$'+formatNumber((data?.row?.amount || 0))}
+                        />}
+                        {data?.edit && <FieldView
                             className="col-4"
                             label={t(langKeys.totaltopay)}
                             value={'$'+formatNumber((totalPay || 0))}
-                        />
+                        />}
+                        {data?.row?.operationtype === "COMPRA" && <FieldView
+                            className="col-4"
+                            label={t(langKeys.totaltopay)}
+                            value={'$'+formatNumber((data?.row?.culqiamount || 0))}
+                        />}
                     </div>}
-                    {(data?.edit && detractionAlert) && <div className="row-zyx">
+                    {(data?.row?.operationtype === "COMPRA") && <div className="row-zyx">
                         <FieldView
-                            className={classes.commentary}
-                            label={''}
-                            value={t(langKeys.detractionnotepay1) + `${detractionAmount}` + t(langKeys.detractionnotepay2)}
+                            className="col-4"
+                            label={t(langKeys.documenttype)}
+                            value={t(getInvoiceType(data?.row?.invoicetype))}
                         />
-                    </div>}
-                    {data?.edit && <div className="row-zyx">
                         <FieldView
-                            className={classes.section}
-                            label={''}
-                            value={t(langKeys.additional_information)}
+                            label={t(langKeys.billingvoucher)}
+                            value={(data?.row?.serie ? data?.row?.serie : 'X000') + '-' + (data?.row?.correlative ? data?.row?.correlative.toString().padStart(8, '0') : '00000000')}
+                            className="col-4"
                         />
-                    </div>}
-                    {data?.edit && <div className="row-zyx">
                         <FieldView
-                            className={classes.commentary}
-                            label={''}
-                            value={t(langKeys.additionalinformation2)}
-                        />
-                    </div>}
-                    {data?.edit && <div className="row-zyx">
-                        <FieldEdit
+                            className="col-4"
                             label={t(langKeys.purchaseorder)}
-                            onChange={(value) => handlePurchaseOrder(value)}
-                            valueDefault={purchaseOrder}
-                            error={purchaseOrderError}
-                            className="col-12"
-                            disabled={disableInput}
+                            value={data?.row?.purchaseorder || t(langKeys.none)}
                         />
                     </div>}
-                    {data?.edit && <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.comments)}
-                            onChange={(value) => handleComments(value)}
-                            valueDefault={comments}
-                            error={commentsError}
-                            className="col-12"
-                            disabled={disableInput}
-                        />
+                    {(data?.row?.operationtype === "ENVIO") && <div className="row-zyx">
+                        <TableContainer>
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>
+                                            <FieldView
+                                                label={''}
+                                                value={t(langKeys.transactionmessagetype)}
+                                                className={classes.fieldView}
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <FieldView
+                                                label={''}
+                                                value={t(langKeys.transactionreceiver)}
+                                                className={classes.fieldView}
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <FieldView
+                                                label={''}
+                                                value={t(langKeys.transactioncost)}
+                                                className={classes.fieldView}
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <FieldView
+                                                label={''}
+                                                value={t(langKeys.transactiondatetime)}
+                                                className={classes.fieldView}
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <FieldView
+                                                label={''}
+                                                value={t(langKeys.user)}
+                                                className={classes.fieldView}
+                                            />
+                                        </TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {balanceSent?.data?.map(function (file: any) {
+                                        return <TableRow>
+                                            <TableCell>
+                                                <FieldView
+                                                    label={''}
+                                                    value={t(file?.type || langKeys.none)}
+                                                    className={classes.fieldView}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldView
+                                                    label={''}
+                                                    value={file?.receiver}
+                                                    className={classes.fieldView}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldView
+                                                    label={''}
+                                                    value={formatNumberFourDecimals(file?.amount || 0)}
+                                                    className={classes.fieldView}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldView
+                                                    label={''}
+                                                    value={new Date(file?.createdate).toISOString().replace("T"," ").substring(0, 19)}
+                                                    className={classes.fieldView}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FieldView
+                                                    label={''}
+                                                    value={file?.transactionuser}
+                                                    className={classes.fieldView}
+                                                />
+                                            </TableCell>
+                                        </TableRow>
+                                    })} 
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
                     </div>}
-                    {data?.edit && <div className="row-zyx">
-                        <FieldView
-                            className={classes.commentary}
-                            label={''}
-                            value={t(langKeys.additionalinformation1)}
-                        />
+                    {!disableInput && <div>
+                        <div className="row-zyx">
+                            <FieldView
+                                className={classes.section}
+                                label={''}
+                                value={t(langKeys.transactioninformation)}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldView
+                                className="col-4"
+                                label={t(langKeys.pricemessagesms)}
+                                value={'$'+formatNumberFourDecimals((priceSms || 0))}
+                            />
+                            <FieldView
+                                className="col-4"
+                                label={t(langKeys.pricemessagemail)}
+                                value={'$'+formatNumberFourDecimals((priceMail || 0))}
+                            />
+                            <FieldView
+                                className="col-4"
+                                label={t(langKeys.pricemessagehsm)}
+                                value={'$'+formatNumberFourDecimals((priceHsm || 0))}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldView
+                                className={classes.commentary}
+                                label={''}
+                                value={t(langKeys.pricemessagenote)}
+                            />
+                            <a href={'https://developers.facebook.com/docs/whatsapp/pricing'} target="_blank" style={{ display: "block" }} rel="noreferrer">{'https://developers.facebook.com/docs/whatsapp/pricing'}</a>
+                        </div>
+                    </div>}
+                    {disableInput && <div>
+                        {(data?.edit && detractionAlert) && <div className="row-zyx">
+                            <FieldView
+                                className={classes.commentary}
+                                label={''}
+                                value={t(langKeys.detractionnotepay1) + `${detractionAmount}` + t(langKeys.detractionnotepay2)}
+                            />
+                        </div>}
+                        {data?.edit && <div className="row-zyx">
+                            <FieldView
+                                className={classes.section}
+                                label={''}
+                                value={t(langKeys.additional_information)}
+                            />
+                        </div>}
+                        {data?.edit && <div className="row-zyx">
+                            <FieldView
+                                className={classes.commentary}
+                                label={''}
+                                value={t(langKeys.additionalinformation2)}
+                            />
+                        </div>}
+                        {data?.edit && <div className="row-zyx">
+                            <FieldEdit
+                                label={t(langKeys.purchaseorder)}
+                                onChange={(value) => handlePurchaseOrder(value)}
+                                valueDefault={purchaseOrder}
+                                error={purchaseOrderError}
+                                className="col-12"
+                                disabled={!disableInput}
+                            />
+                        </div>}
+                        {data?.edit && <div className="row-zyx">
+                            <FieldEdit
+                                label={t(langKeys.comments)}
+                                onChange={(value) => handleComments(value)}
+                                valueDefault={comments}
+                                error={commentsError}
+                                className="col-12"
+                                disabled={!disableInput}
+                            />
+                        </div>}
+                        {data?.edit && <div className="row-zyx">
+                            <FieldView
+                                className={classes.commentary}
+                                label={''}
+                                value={t(langKeys.additionalinformation1)}
+                            />
+                        </div>}
                     </div>}
                 </div>
             </div>
@@ -5019,12 +5361,22 @@ const Invoice: FC = () => {
     useEffect(()=>{
         setsentfirstinfo(true)
         dispatch(getCountryList())
-        dispatch(getMultiCollection([
-            getPlanSel(),
-            getOrgSelList(0),
-            getCorpSel(0),
-            getPaymentPlanSel(),
-        ]));
+        if (user?.roledesc === "SUPERADMIN") {
+            dispatch(getMultiCollection([
+                getPlanSel(),
+                getOrgSelList(0),
+                getCorpSel(0),
+                getPaymentPlanSel(),
+            ]));
+        }
+        else {
+            dispatch(getMultiCollection([
+                getPlanSel(),
+                getOrgSelList(user?.corpid || 0),
+                getCorpSelVariant(user?.corpid || 0, user?.orgid || 0, user?.usr || ''),
+                getPaymentPlanSel(),
+            ]));
+        }
     },[])
 
     return (

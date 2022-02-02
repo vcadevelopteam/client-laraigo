@@ -1251,6 +1251,7 @@ export const langKeys = {
     error_excess_channels: "error_excess_channels",
     error_excess_users: "error_excess_users",
 
+    no_records: 'no_records',
 
     dateRangeFilterTitle: 'dateRangeFilterTitle',
     apply: 'apply',
@@ -1430,6 +1431,7 @@ export const langKeys = {
     dashboard_managerial_summary_hourrange: 'dashboard_managerial_summary_hourrange',
     dashboard_managerial_summary_firstreplyagent: 'dashboard_managerial_summary_firstreplyagent',
     dashboard_managerial_summary_averagereplyagent: 'dashboard_managerial_summary_averagereplyagent',
+    dashboard_managerial_summary_firstreplyclient: 'dashboard_managerial_summary_firstreplyclient',
     dashboard_managerial_summary_averagereplyclient: 'dashboard_managerial_summary_averagereplyclient',
 
     dashboard_managerial_asesoresconectados_date: 'dashboard_managerial_asesoresconectados_date',
@@ -2966,6 +2968,20 @@ export const langKeys = {
     SMS: 'SMS',
     ENVIO: 'ENVIO',
     COMPRA: 'COMPRA',
+    GENERAL: 'GENERAL',
+    billingclienttype: 'billingclienttype',
+    billingvoucher: 'billingvoucher',
+    paymentcommentary: 'paymentcommentary',
+    CANCELED: 'CANCELED',
+    reemitinvoice: 'reemitinvoice',
+    confirmatiom_reemit: 'confirmatiom_reemit',
+    pricemessagesms: 'pricemessagesms',
+    pricemessagemail: 'pricemessagemail',
+    pricemessagehsm: 'pricemessagehsm',
+    pricemessagenote: 'pricemessagenote',
+    transactionreceiver: 'transactionreceiver',
+    transactioncost: 'transactioncost',
+    transactiondatetime: 'transactiondatetime',
 };
 
 export type LangKeys = typeof langKeys;

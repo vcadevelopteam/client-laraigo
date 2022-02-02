@@ -103,4 +103,5 @@ export const apiUrls = {
     BILLINGCREATECREDITNOTE: `${BASE_URL}/payment/createcreditnote`,
     BILLINGREGULARIZEINVOICE: `${BASE_URL}/payment/regularizeinvoice`,
     GETEXCHANGERATE: `${BASE_URL}/payment/getexchangerate`,
+    BILLINGEMITINVOICE: `${BASE_URL}/payment/emitinvoice`,
 };

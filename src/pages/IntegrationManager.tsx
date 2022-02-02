@@ -663,6 +663,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
     ];
 
     const handleViewTable = () => {
+        dispatch(showBackdrop(true));
         dispatch(getCollectionAux(getdataIntegrationManager(getValues('id'))));
         setWaitView(true);
     }

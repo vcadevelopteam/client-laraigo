@@ -46,3 +46,7 @@ export function regularizeInvoice(request: any) {
 export function getExchangeRate(request: any) {
     return APIManager.post(apiUrls.GETEXCHANGERATE, { data: request }, true);
 }
+
+export function emitInvoice(request: any) {
+    return APIManager.post(apiUrls.BILLINGEMITINVOICE, { data: request }, true);
+}
