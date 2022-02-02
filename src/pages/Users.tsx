@@ -174,6 +174,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
             setDataApplications({ loading: false, data: resFromOrg.data[indexApplications] && resFromOrg.data[indexApplications].success ? tempdata : [] });
         }
     }, [resFromOrg])
+
     useEffect(() => {
         //PARA MODALES SE DEBE RESETEAR EN EL EDITAR
         reset({
@@ -954,6 +955,8 @@ const Users: FC = () => {
     const [operation, setOperation] = useState('REGISTER');
     const [fileToUpload, setFileToUpload] = useState(null);
     const mainAuxResult = useSelector(state => state.main.mainAux);
+    const [messageError, setMessageError] = useState('');
+    const [importCount, setImportCount] = useState(0)
 
     const columns = React.useMemo(
         () => [
@@ -1092,21 +1095,49 @@ const Users: FC = () => {
             dispatch(resetAllMain());
         };
     }, []);
+
     useEffect(() => {
         if (waitImport) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
-                fetchData();
-                dispatch(showBackdrop(false));
-                setWaitImport(false);
+                const newcount = importCount - 1;
+
+                if (newcount === 0) {
+                    setImportCount(0);
+                    setMessageError('');
+                    if (messageError) {
+                        dispatch(showSnackbar({ show: true, success: false, message: messageError }));
+                    } else {
+                        dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
+                    }
+                    fetchData();
+                    dispatch(showBackdrop(false));
+                    setWaitImport(false);
+                } else {
+                    setImportCount(newcount);
+                }
+                // dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
             } else if (executeRes.error) {
+                const newcount = importCount - 1;
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: `${t(langKeys.user).toLocaleLowerCase()}(${executeRes.key})` })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                dispatch(showBackdrop(false));
-                setWaitImport(false);
+                if (newcount === 0) {
+                    setImportCount(0);
+                    setMessageError('');
+                    dispatch(showSnackbar({ show: true, success: false, message: messageError + errormessage }));
+
+                    fetchData();
+                    dispatch(showBackdrop(false));
+                    setWaitImport(false);
+                } else {
+                    setImportCount(newcount);
+                    setMessageError(messageError + errormessage + "\n");
+                }
+                // dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                // dispatch(showBackdrop(false));
+                // setWaitImport(false);
             }
         }
     }, [executeRes, waitImport])
+
     useEffect(() => {
         if (waitChanges) {
             if (!executeResult.loading && !executeResult.error) {
@@ -1148,8 +1179,8 @@ const Users: FC = () => {
         const file = files?.item(0);
         if (file) {
             let excel: any = await uploadExcel(file, undefined);
-            let data = array_trimmer(excel);
-            data = data.filter((f: any) =>{
+            const datainit = array_trimmer(excel);
+            const data = datainit.filter((f: any) =>{
                 return (f.company === undefined || Object.keys(domains.value?.company?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.company))
                 && (f.doctype === undefined || Object.keys(domains.value?.docTypes?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.doctype))
                 && (f.billinggroup === undefined || Object.keys(domains.value?.billinggroups?.reduce((a: any, d) => ({ ...a, [d.domainid]: `${d.domainid}` }), {})).includes('' + f.billinggroup))
@@ -1158,13 +1189,26 @@ const Users: FC = () => {
                 && (f.pwdchangefirstlogin === undefined || ["true", "false"].includes('' + f.pwdchangefirstlogin))
                 && (f.role === undefined || Object.keys(domains.value?.roles?.reduce((a: any, d) => ({ ...a, [d.roleid]: `${d.roleid}` }), {})).includes('' + f.role))
             });
+
+            const messageerrors = datainit.filter((f: any) =>{
+                return !(f.company === undefined || Object.keys(domains.value?.company?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.company))
+                || !(f.doctype === undefined || Object.keys(domains.value?.docTypes?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.doctype))
+                || !(f.billinggroup === undefined || Object.keys(domains.value?.billinggroups?.reduce((a: any, d) => ({ ...a, [d.domainid]: `${d.domainid}` }), {})).includes('' + f.billinggroup))
+                || !(f.twofactorauthentication === undefined || Object.keys(domains.value?.genericstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.twofactorauthentication))
+                || !(f.status === undefined || Object.keys(domains.value?.userstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.status))
+                || !(f.pwdchangefirstlogin === undefined || ["true", "false"].includes('' + f.pwdchangefirstlogin))
+                || !(f.role === undefined || Object.keys(domains.value?.roles?.reduce((a: any, d) => ({ ...a, [d.roleid]: `${d.roleid}` }), {})).includes('' + f.role))
+            }).reduce((acc, x) => acc + t(langKeys.error_estructure_user, { email: x.email }) + `\n`,'');
+            
+            setMessageError(messageerrors)
+
             if (data.length > 0) {
                 if (data.length > useravailable) {
                     dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.userlimit, { limit }) }))
                 }
                 else {
                     dispatch(showBackdrop(true));
-                    console.log(data)
+                    setImportCount(data.length);
                     let table: Dictionary = data.reduce((a: any, d) => ({
                         ...a,
                         [`${d.email}_${d.docnum}`]: {
@@ -1208,9 +1252,10 @@ const Users: FC = () => {
                     })
                     setWaitImport(true)
                 }
+            
             }
             else {
-                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.no_records_valid) }));
+                dispatch(showSnackbar({ show: true, success: false, message: messageerrors }));
             }
         }
     }

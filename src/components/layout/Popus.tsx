@@ -49,7 +49,9 @@ const Popus: React.FC = () => {
                 key={'topright'}
             >
                 <MuiAlert className={classes.cookieAlert} elevation={6} variant="filled" onClose={handleCloseSnackbar} severity={popus.snackbar.success ? "success" : "error"}>
-                    {popus.snackbar.message}
+                    <div style={{whiteSpace: 'pre-wrap'}}>
+                        {popus.snackbar.message}
+                    </div>
                 </MuiAlert>
             </Snackbar>
 
