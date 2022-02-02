@@ -23,6 +23,7 @@ export const langKeys = {
     boticon: "boticon",
     advisoricon: "advisoricon",
     typecredit: "typecredit",
+    error_estructure_user: "error_estructure_user",
     typecredit_alcontado: "typecredit_alcontado",
     contactbilling: "contactbilling",
     billingmail: "billingmail",
