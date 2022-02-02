@@ -20,6 +20,8 @@ interface Subscription {
     requestchannels: IRequestBody[];
     foreground: keyof ListChannels | undefined;
     plan: "BASIC" | "PRO";
+    step: number;
+    setStep: SetState<number>;
     finishreg: () => void;
     setForeground: SetState<keyof ListChannels | undefined>;
     setrequestchannels: SetState<IRequestBody[]>;
@@ -67,6 +69,10 @@ interface MainData {
     billingcontact: string;
     billingcontactmail: string;
     autosendinvoice: boolean;
+
+    industry: string;
+    companysize: string;
+    rolecompany: string;
 }
 
 const defaultListChannels: ListChannels = {
@@ -96,6 +102,8 @@ export const SubscriptionContext = createContext<Subscription>({
     requestchannels: [],
     foreground: undefined,
     plan: "BASIC",
+    step: 0,
+    setStep: () => {},
     finishreg: () => {},
     setForeground: () => {},
     setrequestchannels: () => {},
@@ -185,22 +193,31 @@ export const SubscriptionProvider: FC = ({ children }) => {
         billingcontact: "",
         billingcontactmail: "",
         autosendinvoice: true,
+
+        companysize: "",
+        industry: "",
+        rolecompany: "",
     });
+    const [step, setStep] = useState(1);
     const executeResult = useSelector(state => state.signup.insertChannel);
 
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
                 dispatch(showBackdrop(false));
-                
-                history.push({
-                    pathname: '/sign-in',
-                    state: { 
-                        showSnackbar: true,
-                        message: t(langKeys.successful_sign_up)
-                    }
-                })
-                // setSnackbar({ state: true, success: true, message: t(langKeys.successful_sign_up) })
+                setStep(4); // rating
+                // history.push({
+                //     pathname: '/sign-in',
+                //     state: { 
+                //         showSnackbar: true,
+                //         message: t(langKeys.successful_sign_up)
+                //     }
+                // })
+                dispatch(showSnackbar({
+                    show: true,
+                    success: true,
+                    message: t(langKeys.successful_sign_up),
+                }));
                 setWaitSave(false);
             } else if (executeResult.error) {
                 dispatch(showBackdrop(false));
@@ -274,20 +291,20 @@ export const SubscriptionProvider: FC = ({ children }) => {
                 contact: mainData.billingcontact,
                 organizationname: mainData.companybusinessname,
                 phone: mainData.mobilephone,
-                industry: "", //lastfields.industry,
-                companysize: "", // lastfields.companysize,
-                rolecompany: "", // lastfields.companyrole,
-                paymentplanid: "", // planData.data[0].paymentplanid,
-                paymentplan: "", // planData.data[0].plan,
+                industry: mainData.industry,
+                companysize: mainData.companysize,
+                rolecompany: mainData.rolecompany,
+                paymentplanid: planData.data[0].paymentplanid,
+                paymentplan: planData.data[0].plan,
                 sunatcountry: "",
             },
-            channellist: requestchannels
+            channellist: requestchannels,
         }
         dispatch(showBackdrop(true));
         setWaitSave(true);
         dispatch(executeSubscription(majorfield))
     }
-
+    console.log(step)
     return (
         <SubscriptionContext.Provider value={{
             commonClasses: classes,
@@ -298,6 +315,8 @@ export const SubscriptionProvider: FC = ({ children }) => {
             requestchannels,
             foreground,
             plan: match.params.token !== "BASIC" ? "PRO" : "BASIC",
+            step,
+            setStep,
             finishreg,
             setForeground,
             setrequestchannels,

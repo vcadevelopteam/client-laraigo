@@ -17,12 +17,11 @@ import {ChannelAddChatWeb} from './ChannelAddChatWeb'
 import {ChannelAddAndroid} from './ChannelAddAndroid'
 import {ChannelAddIos} from './ChannelAddIos'
 import { SubscriptionContext } from "./context";
+import { RateExperience } from "./Rating";
 
 interface RightSideMenuProps {
     setSnackbar:(param:any)=>void,
     setBackdrop:(param:any)=>void,
-    setStep:(param:any)=>void,
-    step:any,
     setOpenWarning:(param:any)=>void,
     sendchannels:any,
     setsendchannels:(param:any)=>void,
@@ -31,40 +30,44 @@ interface RightSideMenuProps {
 export const RightSideMenu: FC<RightSideMenuProps> = ({
     setSnackbar,
     setBackdrop,
-    setStep,
-    step,
     setOpenWarning,
     sendchannels,
     setsendchannels,
 }) => {
-    const { listchannels } = useContext(SubscriptionContext);
+    const { listchannels, step, setStep } = useContext(SubscriptionContext);
 
     if(step===1){
         return(
             <FirstStep
-                setStep={setStep}
                 setSnackbar={setSnackbar}
             />
         )
     }else if(step===2){
         return (
             <SecondStep
-                setStep={setStep}
                 setOpenWarning={setOpenWarning}
             />
         )
     }else if(step===2.5){
         return (
             <Step2_5
-                setStep={setStep}
                 setOpenWarning={setOpenWarning}
             />
         )
     }
+    else if (step === 2.6) {
+        return (
+            <LastStep
+                setSnackbar={setSnackbar}
+                setBackdrop={setBackdrop}
+                setsendchannels={setsendchannels}
+                setOpenWarning={setOpenWarning}
+            />
+        );
+    }
     else if(step===3&&!sendchannels){
         return (
             <ThirdStep
-                setStep={setStep}
                 setsendchannels={setsendchannels}
                 setOpenWarning={setOpenWarning}
             />
@@ -90,16 +93,7 @@ export const RightSideMenu: FC<RightSideMenuProps> = ({
             return(<div>error no more channels</div>)
         }
     }
-    else {
-        return(
-            <LastStep
-                setSnackbar={setSnackbar}
-                setBackdrop={setBackdrop}
-                setStep={setStep}
-                setsendchannels={setsendchannels}
-                setOpenWarning={setOpenWarning}
-            />
-        )
-    }
+
+    return <RateExperience />;
 }
 export default RightSideMenu

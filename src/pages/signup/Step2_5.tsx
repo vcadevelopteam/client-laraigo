@@ -40,8 +40,8 @@ const CssPhonemui = styled(MuiPhoneNumber)({
 });
 
 
-export const Step2_5: FC<{ setStep: (param: any) => void,setOpenWarning: (param: any) => void}> = ({ setStep,setOpenWarning }) => {
-    const { mainData, setMainData } = useContext(SubscriptionContext);
+export const Step2_5: FC<{ setOpenWarning: (param: any) => void}> = ({ setOpenWarning }) => {
+    const { mainData, setMainData, setStep } = useContext(SubscriptionContext);
     const { t } = useTranslation();
     const URL="https://ipapi.co/json/";
     const [errors, setErrors] = useState<Dictionary>({
@@ -175,7 +175,7 @@ export const Step2_5: FC<{ setStep: (param: any) => void,setOpenWarning: (param:
                     }}
                 /> 
                 <Button
-                    onClick={() => { setStep(3) }}
+                    onClick={() => { setStep(2.6) }}
                     className={classes.button}
                     fullWidth
                     variant="contained"

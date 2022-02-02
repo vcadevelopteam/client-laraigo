@@ -92,7 +92,17 @@ const useSignUpStyles = makeStyles(theme => ({
 }));
 
 export const SignUp: FC = () => {
+    return (
+        <SubscriptionProvider>
+            <$SignUp />
+        </SubscriptionProvider>
+    );
+}
+
+const $SignUp: FC = () => {
     const {
+        step,
+        setStep,
         setrequestchannels,
         setMainData,
         resetChannels,
@@ -103,7 +113,6 @@ export const SignUp: FC = () => {
     const [openWarning, setOpenWarning] = useState(false);
     const [waitLoad, setWaitLoad] = useState(true);    
     const dispatch = useDispatch();
-    const [step, setStep] = useState(1);
     const [snackbar, setSnackbar] = useState({
         state: false,
         success: true,
@@ -169,6 +178,8 @@ export const SignUp: FC = () => {
             } else if(step===2.5){
                 setDefaultMainData2()
                 setStep(2)
+            }else if (step === 2.6) {
+                setStep(2.5);
             }else{
                 setStep(step-1)
             }
@@ -189,92 +200,88 @@ export const SignUp: FC = () => {
     const classes = useSignUpStyles();
 
     return (
-        <SubscriptionProvider>
-            <div className={classes.root}>
-                <Dialog
-                    open={openWarning}
-                    onClose={handleClose}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                >
-                    <DialogTitle id="alert-dialog-title">
-                        <Trans i18nKey={langKeys.goback} />
-                    </DialogTitle>
-                    <DialogActions>
-                    <Button onClick={handleClose} color="primary">
-                        No
-                    </Button>
-                    <Button onClick={handleClose2} color="primary" autoFocus>
-                        <Trans i18nKey={langKeys.yes} />
-                    </Button>
-                    </DialogActions>
-                </Dialog>
-                <Snackbar
-                    anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                    color="white"
-                    open={snackbar.state}
-                    key={'topright'}
-                >
-                    <MuiAlert className={classes.cookieAlert} elevation={6} variant="filled" onClick={() => setSnackbar((p: any) => ({ ...p, state: false }))} severity={snackbar.success ? "success" : "error"}>
-                        {snackbar.message}
-                    </MuiAlert>
-                </Snackbar>
-
-                <Backdrop style={{ zIndex: 999999999, color: '#fff', }} open={backdrop}>
-                    <CircularProgress color="inherit" />
-                </Backdrop>
-
-                <div className={classes.containerHead}>
-                    <div className={classes.emptyspacenumber}></div>
-                    <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <div className={step === 1 ? classes.purplecircle : classes.notthisstep}> 1 </div>
-                        <div className={classes.separator}> </div>
-                        <div className={step === 2 ? classes.purplecircle : classes.notthisstep}> 2 </div>
-                        <div className={classes.separator}> </div>
-                        <div className={step === 2.5 ? classes.purplecircle : classes.notthisstep}> 3 </div>
-                        <div className={classes.separator}> </div>
-                        <div className={step === 3 ? classes.purplecircle : classes.notthisstep}> 4 </div>
-                        <div className={classes.separator}> </div>
-                        <div className={step === 4 ? classes.purplecircle : classes.notthisstep}> 5 </div>
-                    </div>
+        <div className={classes.root}>
+            <Dialog
+                open={openWarning}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    <Trans i18nKey={langKeys.goback} />
+                </DialogTitle>
+                <DialogActions>
+                <Button onClick={handleClose} color="primary">
+                    No
+                </Button>
+                <Button onClick={handleClose2} color="primary" autoFocus>
+                    <Trans i18nKey={langKeys.yes} />
+                </Button>
+                </DialogActions>
+            </Dialog>
+            <Snackbar
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                color="white"
+                open={snackbar.state}
+                key={'topright'}
+            >
+                <MuiAlert className={classes.cookieAlert} elevation={6} variant="filled" onClick={() => setSnackbar((p: any) => ({ ...p, state: false }))} severity={snackbar.success ? "success" : "error"}>
+                    {snackbar.message}
+                </MuiAlert>
+            </Snackbar>
+            <Backdrop style={{ zIndex: 999999999, color: '#fff', }} open={backdrop}>
+                <CircularProgress color="inherit" />
+            </Backdrop>
+            <div className={classes.containerHead}>
+                <div className={classes.emptyspacenumber}></div>
+                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div className={step === 1 ? classes.purplecircle : classes.notthisstep}> 1 </div>
+                    <div className={classes.separator}> </div>
+                    <div className={step === 2 ? classes.purplecircle : classes.notthisstep}> 2 </div>
+                    <div className={classes.separator}> </div>
+                    <div className={step === 2.5 ? classes.purplecircle : classes.notthisstep}> 3 </div>
+                    <div className={classes.separator}> </div>
+                    <div className={step === 2.6 ? classes.purplecircle : classes.notthisstep}> 4 </div>
+                    <div className={classes.separator}> </div>
+                    <div className={step === 3 ? classes.purplecircle : classes.notthisstep}> 5 </div>
+                    <div className={classes.separator}> </div>
+                    <div className={step === 4 ? classes.purplecircle : classes.notthisstep}> 6 </div>
                 </div>
-                <div style={{
-                    display: "flex",
-                    flexDirection: step >= 3 ? 'row-reverse' : 'row',
-                    height: '100%',
-                    flexGrow: 1,
-                    overflow: 'hidden',
-                }}>
-                    {step >= 3 ? (
-                        <LeftSide
-                            setOpenWarning={setOpenWarning}
-                        />
-                    ) : (
-                        <div className={classes.containerLogo}> 
-                            {/* //containerlogo tiene flex 1, para q se divida con el texto */}
-                            <LaraigoLogo style={{ width: '50%' }} />
-                        </div>
-                    )}
-                    <div style={{
-                        flex: 1,
-                        padding: 40,
-                        overflowY: 'auto',
-                    }}>
-                        {!waitLoad?
-                            <RightSideMenu //tiene flex 1, para q se ajuste con la imagen
-                            setSnackbar={setSnackbar}
-                            setBackdrop={setBackdrop}
-                            setStep={setStep}
-                            step={step}
-                            setOpenWarning={setOpenWarning}
-                            sendchannels={sendchannels}
-                            setsendchannels={setsendchannels}
-                        />:""
-                        }
-                    </div>
-                </div>
-                <Popus />
             </div>
-        </SubscriptionProvider>
+            <div style={{
+                display: "flex",
+                flexDirection: step === 3 ? 'row-reverse' : 'row',
+                height: '100%',
+                flexGrow: 1,
+                overflow: 'hidden',
+            }}>
+                {step === 3 ? (
+                    <LeftSide
+                        setOpenWarning={setOpenWarning}
+                    />
+                ) : (
+                    <div className={classes.containerLogo}> 
+                        {/* //containerlogo tiene flex 1, para q se divida con el texto */}
+                        <LaraigoLogo style={{ width: '50%' }} />
+                    </div>
+                )}
+                <div style={{
+                    flex: 1,
+                    padding: 40,
+                    overflowY: 'auto',
+                }}>
+                    {!waitLoad?
+                        <RightSideMenu //tiene flex 1, para q se ajuste con la imagen
+                        setSnackbar={setSnackbar}
+                        setBackdrop={setBackdrop}
+                        setOpenWarning={setOpenWarning}
+                        sendchannels={sendchannels}
+                        setsendchannels={setsendchannels}
+                    />:""
+                    }
+                </div>
+            </div>
+            <Popus />
+        </div>
     );
 };

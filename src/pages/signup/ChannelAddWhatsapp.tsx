@@ -310,7 +310,12 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                         }}
                     />
                 </div>
-                <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginLeft: "15px", marginBottom: "15px" }}>{t(langKeys.whatsappinformation3)}</div>
+                <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginLeft: "15px", marginBottom: "15px" }}>
+                    {t(langKeys.whatsappinformation3)+" "}
+                    <Link href="http://africau.edu/images/default/sample.pdf">
+                        Descarga: Guía de configuracion.pdf
+                    </Link>
+                </div>
                 <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display: "flex" }}>
                     <TextField
                         className={classes.fields3}

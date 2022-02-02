@@ -164,13 +164,11 @@ const useChannelAddStyles = makeStyles(theme => ({
 }));
 
 interface ThirdStepProps {
-    setStep: (param: any) => void;
     setsendchannels: (param: any) => void;
     setOpenWarning:(param:any) => void;
 }
 
 export const ThirdStep: FC<ThirdStepProps> = ({
-    setStep,
     setsendchannels,
     setOpenWarning,
 }) => {
@@ -360,7 +358,10 @@ export const ThirdStep: FC<ThirdStepProps> = ({
                 {plan}
             </div>
             <Typography style={{ fontSize: 20, fontWeight: 400 }}>
-                Solo se podrá seleccionar un canal
+                {plan === "BASIC"
+                    ? "Solo se podrá seleccionar un canal"
+                    : "Solo se podrá seleccionar 3 canales"
+                }
             </Typography>
             <Typography className={classes.subtitle}>
                 <Trans i18nKey={langKeys.socialmediachannel} />

@@ -41,8 +41,8 @@ const CssPhonemui = styled(MuiPhoneNumber)({
 });
 
 
-export const SecondStep: FC<{ setStep: (param: any) => void,setOpenWarning: (param: any) => void}> = ({ setStep,setOpenWarning }) => {
-    const { mainData, setMainData } = useContext(SubscriptionContext);
+export const SecondStep: FC<{ setOpenWarning: (param: any) => void}> = ({ setOpenWarning }) => {
+    const { mainData, setMainData, setStep } = useContext(SubscriptionContext);
     const dispatch = useDispatch();
     const ressignup = useSelector(state => state.signup.countryList);    
     const URL="https://ipapi.co/json/";
