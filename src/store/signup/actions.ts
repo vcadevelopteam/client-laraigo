@@ -2,8 +2,8 @@ import { IActionCall, IRequestBody } from "@types";
 import { ChannelsService } from "network";
 import actionTypes from "./actionTypes";
 
-export const getChannelsListSub = (accessToken: String): IActionCall => ({
-    callAPI: () => ChannelsService.getPagelistSub(accessToken),
+export const getChannelsListSub = (accessToken: String, appId: String): IActionCall => ({
+    callAPI: () => ChannelsService.getPagelistSub(accessToken, appId),
     types: {
         loading: actionTypes.PAGELIST,
         success: actionTypes.PAGELIST_SUCCESS,

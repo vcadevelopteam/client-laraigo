@@ -65,7 +65,7 @@ export const ChannelAddMessenger: FC<{setrequestchannels:(param:any)=>void,setli
 
     const processFacebookCallback = async (r: any) => {
         if (r.status !== "unknown" && !r.error) {
-            dispatch(getChannelsListSub(r.accessToken))
+            dispatch(getChannelsListSub(r.accessToken, apiUrls.FACEBOOKAPP))
             setViewSelected("view2")
             dispatch(showBackdrop(true));
         }

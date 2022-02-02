@@ -69,7 +69,7 @@ export const ChannelAddInstagramDM: FC<{setrequestchannels:(param:any)=>void,set
 
     const processFacebookCallback = async (r: any) => {
         if (r.status !== "unknown" && !r.error) {
-            dispatch(getChannelsListSub(r.accessToken))
+            dispatch(getChannelsListSub(r.accessToken, apiUrls.INSTAGRAMAPP))
             setViewSelected("view2")
             dispatch(showBackdrop(true));
         }
