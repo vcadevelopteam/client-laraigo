@@ -8,7 +8,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { FieldEdit, ColorInput } from "components";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { TwitterIcon } from "icons";
+import { TwitterColor } from "icons";
 import { SubscriptionContext } from "./context";
 
 const useChannelAddStyles = makeStyles(theme => ({
@@ -218,9 +218,7 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
 
     return (
         <div className={commonClasses.root}>
-            <TwitterIcon
-                className={commonClasses.leadingIcon}
-            />
+            <TwitterColor className={commonClasses.leadingIcon} />
             <IconButton
                 color="primary"
                 className={commonClasses.trailingIcon}

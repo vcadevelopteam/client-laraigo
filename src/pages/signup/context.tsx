@@ -130,8 +130,8 @@ const useStyles = makeStyles(theme => ({
         left: 14,
         width: 32,
         height: 32,
-        fill: 'red',
-        stroke: 'red',
+        fill: 'gray',
+        // stroke: 'red',
     },
     trailingIcon: {
         position: 'absolute',
@@ -304,7 +304,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
         setWaitSave(true);
         dispatch(executeSubscription(majorfield))
     }
-    console.log(step)
+
     return (
         <SubscriptionContext.Provider value={{
             commonClasses: classes,

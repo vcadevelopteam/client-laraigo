@@ -1,10 +1,10 @@
-import { CSSProperties, FC, useContext, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box, IconButton, Typography } from '@material-ui/core';
+import { FC, useContext, useEffect, useState } from "react";
+import { Button, IconButton, Typography } from '@material-ui/core';
 import { showBackdrop } from 'store/popus/actions';
-import { Facebook as FacebookIcon, DeleteOutline as DeleteOutlineIcon } from "@material-ui/icons";
+import { DeleteOutline as DeleteOutlineIcon } from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
-import { FacebookWallIcon } from "icons";
+import { FacebookColor } from "icons";
 import { FieldEdit, FieldSelect, ColorInput } from "components";
 import FacebookLogin from 'react-facebook-login';
 import { useSelector } from "hooks";
@@ -118,9 +118,7 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
 
     return (
         <div className={commonClasses.root}>
-            <FacebookIcon
-                className={commonClasses.leadingIcon}
-            />
+            <FacebookColor className={commonClasses.leadingIcon} />
             <IconButton
                 color="primary"
                 className={commonClasses.trailingIcon}

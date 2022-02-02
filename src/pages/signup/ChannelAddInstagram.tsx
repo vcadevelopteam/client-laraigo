@@ -1,13 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useContext, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box, Typography, IconButton } from '@material-ui/core';
-import Link from '@material-ui/core/Link';
+import { Button, Typography, IconButton } from '@material-ui/core';
 import { showBackdrop } from 'store/popus/actions';
-import { Facebook as FacebookIcon, DeleteOutline as DeleteOutlineIcon } from "@material-ui/icons";
+import { DeleteOutline as DeleteOutlineIcon } from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
 import { FieldEdit, FieldSelect, ColorInput } from "components";
-import { InstagramIcon } from "icons";
+import { InstagramColor } from "icons";
 import FacebookLogin from 'react-facebook-login';
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
@@ -110,9 +109,7 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
 
     return (
         <div className={commonClasses.root}>
-            <InstagramIcon
-                className={commonClasses.leadingIcon}
-            />
+            <InstagramColor className={commonClasses.leadingIcon} />
             <IconButton
                 color="primary"
                 className={commonClasses.trailingIcon}

@@ -4,11 +4,21 @@ import { makeStyles, Button, Typography, Paper } from '@material-ui/core';
 import { langKeys } from "lang/keys";
 import { Trans } from "react-i18next";
 import clsx from "clsx";
-import TelegramIcon from '@material-ui/icons/Telegram';
-import TwitterIcon from '@material-ui/icons/Twitter';
 import EmailIcon from '@material-ui/icons/Email';
-import { Facebook as FacebookIcon, Instagram as InstagramIcon, WhatsApp as WhatsAppIcon, ControlPoint as ControlPointIcon } from "@material-ui/icons";
-import { AndroidIcon, AppleIcon, FacebookMessengerIcon, LaraigoLogo, ZyxmeMessengerIcon } from "icons";
+import { ControlPoint as ControlPointIcon } from "@material-ui/icons";
+import {
+    LaraigoLogo,
+    ZyxmeMessengerIcon,
+
+    FacebookColor,
+    FacebookMessengerColor,
+    AndroidColor,
+    IosColor,
+    WhatsappColor,
+    InstagramColor,
+    TelegramColor,
+    TwitterColor,
+} from "icons";
 import SmsIcon from '@material-ui/icons/Sms';
 import { useSelector } from "hooks";
 import { ListChannels, SubscriptionContext } from "./context";
@@ -157,7 +167,8 @@ const useChannelAddStyles = makeStyles(theme => ({
         justifyContent: 'center',
     },
     icon: {
-        fill: 'inherit',
+        // fill: 'inherit',
+        fill: 'gray',
         height: 38,
         width: 'auto',
     },
@@ -185,7 +196,7 @@ export const ThirdStep: FC<ThirdStepProps> = ({
     const provider = planData.data[0].providerwhatsapp;
     const socialMediaOptions: ChannelOption[] = [
         {
-            icon: <FacebookMessengerIcon className={classes.icon} />,
+            icon: <FacebookMessengerColor className={classes.icon} />,
             label: 'Messenger',
             key: 'messenger',
             onClick: () => {
@@ -195,7 +206,7 @@ export const ThirdStep: FC<ThirdStepProps> = ({
             selected: listchannels.messenger
         },
         {
-            icon: <WhatsAppIcon className={classes.icon} />,
+            icon: <WhatsappColor className={classes.icon} />,
             label: 'Whatsapp',
             key: 'whatsapp',
             onClick: () => {
@@ -206,7 +217,7 @@ export const ThirdStep: FC<ThirdStepProps> = ({
             selected: listchannels.whatsapp
         },
         {
-            icon: <FacebookIcon className={classes.icon} />,
+            icon: <FacebookColor className={classes.icon} />,
             label: 'Facebook',
             key: 'facebook',
             onClick: () => {
@@ -216,7 +227,7 @@ export const ThirdStep: FC<ThirdStepProps> = ({
             selected: listchannels.facebook
         },
         {
-            icon: <InstagramIcon className={classes.icon} />,
+            icon: <InstagramColor className={classes.icon} />,
             label: 'Instagram',
             key: 'instagram',
             onClick: () => {
@@ -226,7 +237,7 @@ export const ThirdStep: FC<ThirdStepProps> = ({
             selected: listchannels.instagram
         },
         {
-            icon: <InstagramIcon className={classes.icon} />,
+            icon: <InstagramColor className={classes.icon} />,
             label: 'Instagram DM',
             key: 'instagramDM',
             onClick: () => {
@@ -245,7 +256,7 @@ export const ThirdStep: FC<ThirdStepProps> = ({
             selected: listchannels.chatWeb
         },
         {
-            icon: <TelegramIcon className={classes.icon} />,
+            icon: <TelegramColor className={classes.icon} />,
             label: 'Telegram',
             key: 'telegram',
             onClick: () => {
@@ -255,7 +266,7 @@ export const ThirdStep: FC<ThirdStepProps> = ({
             selected: listchannels.telegram
         },
         {
-            icon: <TwitterIcon className={classes.icon} />,
+            icon: <TwitterColor className={classes.icon} />,
             label: 'Twitter',
             key: 'twitter',
             onClick: () => {
@@ -265,7 +276,7 @@ export const ThirdStep: FC<ThirdStepProps> = ({
             selected: listchannels.twitter
         },
         {
-            icon: <TwitterIcon className={classes.icon} />,
+            icon: <TwitterColor className={classes.icon} />,
             label: 'Twitter DM',
             key: 'twitterDM',
             onClick: () => {
@@ -290,7 +301,7 @@ export const ThirdStep: FC<ThirdStepProps> = ({
             selected: listchannels.sms
         },*/
         {
-            icon: <AppleIcon className={classes.icon} />,
+            icon: <IosColor className={classes.icon} />,
             label: 'iOS SDk',
             key: 'apple',
             onClick: () => {
@@ -300,7 +311,7 @@ export const ThirdStep: FC<ThirdStepProps> = ({
             selected: listchannels.apple
         },
         {
-            icon: <AndroidIcon className={classes.icon} />,
+            icon: <AndroidColor className={classes.icon} />,
             label: 'Android SDK',
             key: 'android',
             onClick: () => {

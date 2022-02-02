@@ -5,7 +5,7 @@ import { DeleteOutline as DeleteOutlineIcon } from '@material-ui/icons';
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
 import { ColorInput, FieldEdit, } from "components";
-import { AppleIcon, TelegramIcon } from "icons";
+import { IosColor } from "icons";
 import { SubscriptionContext } from "./context";
 
 const useChannelAddStyles = makeStyles(theme => ({
@@ -80,9 +80,7 @@ export const ChannelAddIos: FC<{ setOpenWarning: (param: any) => void }> = ({ se
     }
     return (
         <div className={commonClasses.root}>
-            <TelegramIcon
-                className={commonClasses.leadingIcon}
-            />
+            <IosColor className={commonClasses.leadingIcon} />
             <IconButton
                 color="primary"
                 className={commonClasses.trailingIcon}

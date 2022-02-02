@@ -1,9 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { CSSProperties, FC, useContext, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box, Typography, IconButton } from '@material-ui/core';
-import Link from '@material-ui/core/Link';
+import { FC, useContext, useEffect, useState } from "react";
+import { Button, Typography, IconButton } from '@material-ui/core';
 import { showBackdrop } from 'store/popus/actions';
-import { Facebook as FacebookIcon, DeleteOutline as DeleteOutlineIcon } from "@material-ui/icons";
+import { DeleteOutline as DeleteOutlineIcon } from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
 import { FieldEdit, FieldSelect, ColorInput } from "components";
@@ -11,7 +10,7 @@ import FacebookLogin from 'react-facebook-login';
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { getChannelsListSub } from "store/channel/actions";
-import { FacebookMessengerIcon } from "icons";
+import { FacebookMessengerColor } from "icons";
 import { apiUrls } from 'common/constants';
 import { SubscriptionContext } from "./context";
 
@@ -106,9 +105,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
 
     return (
         <div className={commonClasses.root}>
-            <FacebookMessengerIcon
-                className={commonClasses.leadingIcon}
-            />
+            <FacebookMessengerColor className={commonClasses.leadingIcon} />
             <IconButton
                 color="primary"
                 className={commonClasses.trailingIcon}

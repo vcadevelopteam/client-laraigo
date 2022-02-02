@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useContext, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box, TextField, IconButton, Typography } from '@material-ui/core';
+import { makeStyles, Breadcrumbs, Button, TextField, IconButton, Typography } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { DeleteOutline as DeleteOutlineIcon } from '@material-ui/icons';
 import { langKeys } from "lang/keys";
@@ -8,7 +8,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { FieldEdit, ColorInput } from "components";
 import MuiPhoneNumber from 'material-ui-phone-number';
 import { styled } from '@material-ui/core/styles';
-import { WhatsappIcon } from "icons";
+import { WhatsappColor } from "icons";
 import { useSelector } from "hooks";
 import { Dictionary } from "@types";
 import { SubscriptionContext } from "./context";
@@ -404,9 +404,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
 
     return (
         <div className={commonClasses.root}>
-            <WhatsappIcon
-                className={commonClasses.leadingIcon}
-            />
+            <WhatsappColor className={commonClasses.leadingIcon} />
             <IconButton
                 color="primary"
                 className={commonClasses.trailingIcon}

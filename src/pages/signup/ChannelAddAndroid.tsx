@@ -5,7 +5,7 @@ import { DeleteOutline as DeleteOutlineIcon } from '@material-ui/icons';
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
 import { ColorInput, FieldEdit, } from "components";
-import { AndroidIcon } from "icons";
+import { AndroidColor } from "icons";
 import { SubscriptionContext } from "./context";
 
 const useChannelAddStyles = makeStyles(theme => ({
@@ -80,9 +80,7 @@ export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = (
     }
     return (
         <div className={commonClasses.root}>
-            <AndroidIcon
-                className={commonClasses.leadingIcon}
-            />
+            <AndroidColor className={commonClasses.leadingIcon} />
             <IconButton
                 color="primary"
                 className={commonClasses.trailingIcon}
