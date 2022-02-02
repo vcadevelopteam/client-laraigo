@@ -2050,14 +2050,14 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                                     setDetractionAmount(Math.round((((appsetting.detraction || 0) * 100) + Number.EPSILON) * 100) / 100);
                                 }
                                 else {
-                                    setTotalPay(Math.round((((data?.totalamount || 0) * 100) + Number.EPSILON) * 100) / 100);
-                                    setTotalAmount(Math.round((((data?.totalamount || 0) * 100) + Number.EPSILON) * 100) / 100);;
+                                    setTotalPay(Math.round(((data?.totalamount || 0) + Number.EPSILON) * 100) / 100);
+                                    setTotalAmount(Math.round(((data?.totalamount || 0) + Number.EPSILON) * 100) / 100);;
                                     setShowCulqi(true);
                                 }
                             }
                             else {
-                                setTotalPay(Math.round((((data?.totalamount || 0) * 100) + Number.EPSILON) * 100) / 100);
-                                setTotalAmount(Math.round((((data?.totalamount || 0) * 100) + Number.EPSILON) * 100) / 100);
+                                setTotalPay(Math.round(((data?.totalamount || 0) + Number.EPSILON) * 100) / 100);
+                                setTotalAmount(Math.round(((data?.totalamount || 0) + Number.EPSILON) * 100) / 100);
                                 setShowCulqi(true);
                             }
                         }
