@@ -2989,11 +2989,14 @@ const translation: LangKeys = {
     confirmatiom_reemit: 'Are you sure you want to send the document again?',
     pricemessagesms: 'SMS messages',
     pricemessagemail: 'Mail messages',
-    pricemessagehsm: 'HSM messages',
+    pricemessagehsm: 'HSM messages (*)',
     pricemessagenote: '(*) The price of HSM messags is only referential because it depends of the conversation cost when started by the company. You can find the details in this Facebook page:',
     transactionreceiver: 'Receiver',
     transactioncost: 'Unit cost',
     transactiondatetime: 'Date and time',
+    billingtaxes: 'Taxex',
+    pricemessagenote1: 'The price of the messages include an additional comission',
+    pricemessagenote2: 'The price of the messages do not include tax.',
 };
 
 const enResource: ResourceLanguage = {
