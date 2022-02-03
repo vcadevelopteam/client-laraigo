@@ -276,7 +276,6 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             </div>
         );
     else if (interactiontype === "quickreply") {
-
         let text, json;
 
         if (interactiontext.substring(0, 1) === "{") {
@@ -303,7 +302,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 {text}
                 <div className={classes.containerQuickreply}>
                     {listButtons.map((item: Dictionary, index: number) => {
-                        return <div key={index} className={classes.buttonQuickreply}>{item.text}
+                        return <div key={index} className={classes.buttonQuickreply}>{item.text || item.title}
                         </div>
                     })}
                 </div>
