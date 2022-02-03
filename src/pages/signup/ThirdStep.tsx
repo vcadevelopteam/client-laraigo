@@ -10,13 +10,13 @@ import {
     LaraigoLogo,
     ZyxmeMessengerIcon,
 
-    FacebookColor,
-    FacebookMessengerColor,
+    FacebookMessengerColor2 as FacebookMessengerColor,
+    FacebookColor2 as FacebookColor,
+    InstagramColor2 as InstagramColor,
+    TelegramColor2 as TelegramColor,
     AndroidColor,
     IosColor,
     WhatsappColor,
-    InstagramColor,
-    TelegramColor,
     TwitterColor,
 } from "icons";
 import SmsIcon from '@material-ui/icons/Sms';
