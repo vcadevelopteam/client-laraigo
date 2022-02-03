@@ -588,10 +588,10 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
 
     useEffect(() => {
         if (!multiData.loading && !multiData.error && multiData?.data[4]) {
-            setquickReplies(multiData?.data[4].data || [])
-            setquickRepliesToShow(multiData?.data[4].data.filter(x => !!x.favorite) || [])
-            setemojiNoShow(multiData?.data[10].data.filter(x => (!!x.restricted)).map(x => x.emojihex) || [])
-            setemojiFavorite(multiData?.data[10].data.filter(x => (!!x.favorite)).map(x => x.emojihex) || [])
+            setquickReplies(multiData?.data?.[4]?.data || [])
+            setquickRepliesToShow(multiData?.data?.[4]?.data.filter(x => !!x.favorite) || [])
+            setemojiNoShow(multiData?.data?.[10]?.data.filter(x => (!!x.restricted)).map(x => x.emojihex) || [])
+            setemojiFavorite(multiData?.data?.[10]?.data.filter(x => (!!x.favorite)).map(x => x.emojihex) || [])
             setinnappropiatewordsList(multiData?.data?.[11]?.data || [])
             // setinnappropiatewords(multiData?.data[11].data.filter(x => (x.status === "ACTIVO")).map(y => (y.description)) || [])
         }
