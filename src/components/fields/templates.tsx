@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { CSSProperties, FC, useEffect, useState } from 'react';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { emojis } from "common/constants";
@@ -188,10 +188,10 @@ export const Title: React.FC = ({ children }) => {
     return <label style={style}>{children}</label>;
 }
 
-export const FieldView: React.FC<{ label: string, value?: string, className?: any }> = ({ label, value, className }) => (
+export const FieldView: React.FC<{ label: string, value?: string, className?: any, styles?: CSSProperties, onclick?: (param: any) => void }> = ({ label, value, className, styles, onclick }) => (
     <div className={className}>
         <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
-        <Box lineHeight="20px" fontSize={15} color="textPrimary">{value || ""}</Box>
+        <Box onClick={onclick} lineHeight="20px" fontSize={15} color="textPrimary" style={styles}>{value || ""}</Box>
     </div>
 )
 
