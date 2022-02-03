@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useContext, useEffect, useState } from "react";
+import { CSSProperties, FC, useContext, useEffect, useState } from "react";
 import { makeStyles, Button, TextField, InputAdornment, IconButton } from '@material-ui/core';
 import { Visibility, VisibilityOff } from "@material-ui/icons";
 import { langKeys } from "lang/keys";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import FacebookLogin from 'react-facebook-login';
 import { useDispatch } from "react-redux";
 import GoogleLogin from 'react-google-login';
@@ -44,7 +44,28 @@ const useChannelAddStyles = makeStyles(theme => ({
         marginRight: 32,
         height: "0",
     },
+    orSeparator: {
+        display: "flex",
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 28,
+        marginBottom: 18,
+    },
 }));
+
+const FBButtonStyle2: CSSProperties = {
+    borderRadius: '3px',
+    width: "400px",
+    height: 50,
+    display: 'flex',
+    alignItems: 'center',
+    fontSize: '24px',
+    fontStyle: 'normal',
+    fontWeight: 400,
+    textTransform: 'none',
+    justifyContent: 'center',
+    marginBottom: 16,
+}
 
 export const FirstStep: FC<{ setSnackbar: (param: any) => void }> = ({ setSnackbar }) => {
     const { mainData, setMainData, setStep } = useContext(SubscriptionContext);
@@ -157,9 +178,7 @@ export const FirstStep: FC<{ setSnackbar: (param: any) => void }> = ({ setSnackb
                     appId={apiUrls.FACEBOOKAPP}
                     callback={onAuthWithFacebook}
                     fields="name,email,picture"
-                    buttonStyle={{
-                        borderRadius: '3px', width: "400px", height: 50, display: 'flex', alignItems: 'center', 'fontSize': '24px', fontStyle: 'normal', fontWeight: 400, textTransform: 'none', justifyContent: 'center', marginBottom: 16
-                    }}
+                    buttonStyle={FBButtonStyle2}
                     textButton={t(langKeys.signup_with_facebook)}
                     icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
                     isDisabled={false}
@@ -178,10 +197,12 @@ export const FirstStep: FC<{ setSnackbar: (param: any) => void }> = ({ setSnackb
                 />
             </div>
 
-            <div style={{ display: "flex", alignItems: 'center', marginTop: 28, marginBottom: 18 }}>
-                <div className={classes.separator}></div>
-                <div style={{ fontSize: 24, fontWeight: 500, color: "#989898" }}>{t(langKeys.signupor)}</div>
-                <div className={classes.separator}></div>
+            <div className={classes.orSeparator}>
+                <div className={classes.separator} />
+                <div style={{ fontSize: 24, fontWeight: 500, color: "#989898" }}>
+                    <Trans i18nKey={langKeys.signupor} />
+                </div>
+                <div className={classes.separator} />
             </div>
 
             <div>

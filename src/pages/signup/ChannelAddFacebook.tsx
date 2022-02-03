@@ -67,8 +67,7 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
             dispatch(showBackdrop(false));
             setWaitSave(false);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [mainResult])
+    }, [mainResult, waitSave])
 
     useEffect(() => {
         if (channelName.length > 0 && pageLink.length > 0) {

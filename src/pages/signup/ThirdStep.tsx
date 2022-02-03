@@ -322,6 +322,18 @@ export const ThirdStep: FC<ThirdStepProps> = ({
         },
     ];
 
+    const description = () => {
+        switch (plan) {
+            case "BASIC":return "Solo se podrá seleccionar un canal";
+            case "PRO": return "Solo se podrá seleccionar 3 canales";
+            case "ADVANCED":
+            case "ENTERPRISE":
+            case "PREMIUM":
+                return "Sin limite";
+            default: return "-";
+        }
+    }
+
     const Option: FC<{ option: ChannelOption, selected: Boolean, index: number }> = ({
         option,
         selected,
@@ -369,10 +381,7 @@ export const ThirdStep: FC<ThirdStepProps> = ({
                 {plan}
             </div>
             <Typography style={{ fontSize: 20, fontWeight: 400 }}>
-                {plan === "BASIC"
-                    ? "Solo se podrá seleccionar un canal"
-                    : "Solo se podrá seleccionar 3 canales"
-                }
+                {description()}
             </Typography>
             <Typography className={classes.subtitle}>
                 <Trans i18nKey={langKeys.socialmediachannel} />

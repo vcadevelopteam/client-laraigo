@@ -27,6 +27,7 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
         deleteChannel,
         setrequestchannels,
     } = useContext(SubscriptionContext);
+    const [waitSave, setWaitSave] = useState(false);
     const [pageLink, setPageLink] = useState("");
     const [channelName, setChannelName] = useState("");
     const mainResult = useSelector(state => state.channel.channelList)
@@ -59,6 +60,13 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
     })
 
     useEffect(() => {
+        if (waitSave) {
+            dispatch(showBackdrop(false));
+            setWaitSave(false);
+        }
+    }, [mainResult, waitSave])
+
+    useEffect(() => {
         if (channelName.length > 0 && pageLink.length > 0) {
             setrequestchannels(prev => {
                 const index = prev.findIndex(x => x.type === "INSTAGRAM");
@@ -88,6 +96,7 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
         if (r.status !== "unknown" && !r.error) {
             dispatch(getChannelsListSub(r.accessToken, apiUrls.INSTAGRAMAPP))
             dispatch(showBackdrop(true));
+            setWaitSave(true);
         }
     }
     function setValueField(value: any) {

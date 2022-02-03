@@ -1609,7 +1609,7 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
                         setView("view1");
                     }}
                 >
-                    <Trans i18nKey={langKeys.previoustext} />
+                    {'<< '}<Trans i18nKey={langKeys.previoustext} />
                 </Link>
             </Breadcrumbs>
             <div style={{ display: 'flex', flexDirection: 'column' }}>

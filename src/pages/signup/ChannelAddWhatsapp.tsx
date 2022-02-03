@@ -60,6 +60,8 @@ const CssPhonemui = styled(MuiPhoneNumber)({
     },
 });
 
+const phoneRegExp = /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/i;
+
 export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
     const {
         commonClasses,
@@ -263,7 +265,13 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                             let partialf = fields;
                             partialf.service.email = e.target.value;
                             setFields(partialf);
-                            setErrors(p => ({ ...p, email: e.target.value.includes('@') && e.target.value.includes('.') ? "" : t(langKeys.emailverification) }));
+                            setErrors(p => ({
+                                ...p,
+                                email: e.target.value.includes('@') &&
+                                    e.target.value.includes('.')
+                                    ? ""
+                                    : t(langKeys.emailverification)
+                            }));
                             disableContinue(e.target.value);
                         }}
                     />
@@ -281,9 +289,16 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                         fullWidth
                         defaultCountry={'pe'}
                         onChange={(e) => {
+                            console.log('CssPhonemui', e)
                             let partialf = fields;
                             partialf.service.phone = e;
                             setFields(partialf);
+                            setErrors(p => ({
+                                ...p,
+                                phone: !phoneRegExp.test(e as string)
+                                    ? "Ingrese un número de telefono válido"
+                                    : "",
+                            }));
                             disableContinue(e);
                         }}
                     />

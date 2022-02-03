@@ -23,6 +23,7 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
         deleteChannel,
         setrequestchannels,
     } = useContext(SubscriptionContext);
+    const [waitSave, setWaitSave] = useState(false);
     const [pageLink, setPageLink] = useState("");
     const [channelName, setChannelName] = useState("");
     const mainResult = useSelector(state => state.channel.channelList)
@@ -55,6 +56,13 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
     })
 
     useEffect(() => {
+        if (waitSave) {
+            dispatch(showBackdrop(false));
+            setWaitSave(false);
+        }
+    }, [mainResult, waitSave])
+
+    useEffect(() => {
         if (channelName.length > 0 && pageLink.length > 0) {
             setrequestchannels(prev => {
                 const index = prev.findIndex(x => x.type === "INSTAMESSENGER");
@@ -84,6 +92,7 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
         if (r.status !== "unknown" && !r.error) {
             dispatch(getChannelsListSub(r.accessToken, apiUrls.INSTAGRAMAPP))
             dispatch(showBackdrop(true));
+            setWaitSave(true);
         }
     }
     function setValueField(value: any) {

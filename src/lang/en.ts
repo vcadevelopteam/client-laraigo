@@ -2994,6 +2994,7 @@ const translation: LangKeys = {
     transactionreceiver: 'Receiver',
     transactioncost: 'Unit cost',
     transactiondatetime: 'Date and time',
+    optional: 'Optional'
 };
 
 const enResource: ResourceLanguage = {

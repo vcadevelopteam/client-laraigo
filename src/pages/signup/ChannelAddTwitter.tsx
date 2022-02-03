@@ -133,7 +133,7 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
                             setView("view1");
                         }}
                     >
-                        {t(langKeys.previoustext)}
+                        {'<< '}<Trans i18nKey={langKeys.previoustext} />
                     </Link>
                 </Breadcrumbs>
                 <div>

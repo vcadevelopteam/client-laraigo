@@ -2983,6 +2983,7 @@ const translation: LangKeys = {
     transactionreceiver: 'Distinatario',
     transactioncost: 'Costo unitario',
     transactiondatetime: 'Fecha y hora',
+    optional: 'Opcional',
 };
 
 const esResource: ResourceLanguage = {

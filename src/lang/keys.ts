@@ -2983,6 +2983,7 @@ export const langKeys = {
     transactionreceiver: 'transactionreceiver',
     transactioncost: 'transactioncost',
     transactiondatetime: 'transactiondatetime',
+    optional: 'optional',
 };
 
 export type LangKeys = typeof langKeys;
