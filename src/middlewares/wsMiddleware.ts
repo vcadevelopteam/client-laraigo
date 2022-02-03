@@ -13,25 +13,31 @@ const eventsListeners = [
     { event: 'changeStatusTicket', type: typesInbox.CHANGE_STATUS_TICKET_WS },
 ]
 
-let socket = io(apiUrls.WS_URL, {
+const socket = io(apiUrls.WS_URL, {
     autoConnect: false
 });
+
+declare module 'socket.io-client' {
+    interface Socket {
+        _callbacks?: any
+    }
+}
 
 const callWSMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async (action) => {
     const { type, payload } = action;
 
     if (type === typesInbox.WS_CONNECT) {
         const loginData = { data: payload };
-        let wasconnected = false;
+        // let wasconnected = false;
+        
         if (socket.connected) {
             console.log("vamos a desconectar")
-            wasconnected = true;
+            // wasconnected = true;
             socket.disconnect();
         }
         socket.auth = loginData;
         socket.connect();
-        if (!wasconnected) {
-
+        if (!socket._callbacks) {
             console.log("load eventsListeners")
             eventsListeners.forEach(({ event, type, extra = {} }) => {
                 socket.on(event, (datatmp) => {
@@ -40,7 +46,6 @@ const callWSMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async
                 });
             });
         }
-
         socket?.on("connect", () => {
             console.log("connect connected", socket.connected, socket.id)
             if (socket.connected) {
