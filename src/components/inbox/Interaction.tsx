@@ -276,7 +276,6 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             </div>
         );
     else if (interactiontype === "quickreply") {
-        debugger
         let text, json;
 
         if (interactiontext.substring(0, 1) === "{") {

@@ -44,6 +44,7 @@ interface CulqiModalProps {
     reference?:string;
     buyamount?:number;
     totalpay?:number;
+    totalamount?:number;
 }
 
 const globalpublickey = apiUrls.CULQIKEY;
@@ -73,6 +74,7 @@ const CulqiModal: FC<CulqiModalProps> = ({
     reference,
     buyamount,
     totalpay,
+    totalamount,
 }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -107,6 +109,7 @@ const CulqiModal: FC<CulqiModalProps> = ({
             comments,
             purchaseorder,
             totalpay,
+            totalamount,
         }));
     }
 

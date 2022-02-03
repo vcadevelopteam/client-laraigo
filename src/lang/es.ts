@@ -2978,12 +2978,15 @@ const translation: LangKeys = {
     confirmatiom_reemit: '¿Esta seguro que desea volver a enviar el documento?',
     pricemessagesms: 'Mensajes SMS',
     pricemessagemail: 'Mensajes correo',
-    pricemessagehsm: 'Mensajes HSM',
+    pricemessagehsm: 'Mensajes HSM (*)',
     pricemessagenote: '(*) El precio de los mensajes HSM, es un precio referencial, ya que este depende del costo de conversación iniciada por la empresa. Mayor detalle lo puede encontrar en la página de facebook:',
     transactionreceiver: 'Distinatario',
     transactioncost: 'Costo unitario',
     transactiondatetime: 'Fecha y hora',
     optional: 'Opcional',
+    billingtaxes: 'Impuesto',
+    pricemessagenote1: 'Los precios de los mensajes incluyen una comisión de la empresa.',
+    pricemessagenote2: 'Los precios de los mensajes no incluyen los impuestos de ley.',
 };
 
 const esResource: ResourceLanguage = {

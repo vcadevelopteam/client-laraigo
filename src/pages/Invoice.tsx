@@ -42,9 +42,10 @@ import TableCell from '@material-ui/core/TableCell';
 import TableBody from '@material-ui/core/TableBody';
 import clsx from 'clsx';
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
+import { Trans } from 'react-i18next';
+import DomToImage from 'dom-to-image';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -113,6 +114,7 @@ export const DateOptionsMenuComponent = (value: any, handleClickItemMenu: (key: 
 }
 
 const useStyles = makeStyles((theme) => ({
+    
     fieldView: {
     },
     container: {
@@ -1164,6 +1166,8 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
     const [waitExport, setWaitExport] = useState(false);
     const [waitSearch, setWaitSearch] = useState(false);
 
+    const el = React.useRef<null | HTMLDivElement>(null);
+
     const datatotalize = [{ value: 1, description: t(langKeys.corporation) }, { value: 2, description: t(langKeys.organization) }]
 
     function handleDateChange(e: any){
@@ -1262,16 +1266,6 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
         }))
     }
 
-    const exportReport = () => {
-        html2canvas(document.querySelector("#periodreportcanvas")!).then(canvas => {
-            document.body.appendChild(canvas);
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF('p', 'pt', 'a4', false);
-            pdf.addImage(imgData, 'PNG', 0, 0, 600, 0, undefined, undefined, undefined);
-            pdf.save("periodreport.pdf"); 
-        });
-    }
-
     useEffect(() => {
         if (waitExport) {
             if (!resExportData.loading && !resExportData.error) {
@@ -1286,6 +1280,59 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
             }
         }
     }, [resExportData, waitExport]);
+
+    const GenericPdfDownloader: React.FC<{ downloadFileName: string }> = ({ downloadFileName }) => {
+
+        const downloadPdfDocument = () => {
+            if (el.current) {
+                const gg = document.createElement('div');
+                gg.style.display = 'flex';
+                gg.style.flexDirection = 'column';
+                gg.style.gap = '8px';
+                gg.id = "newexportcontainer"
+                document.body.appendChild(gg);
+
+                gg.innerHTML = el.current.innerHTML;
+                document.body.appendChild(gg);
+                const pdf = new jsPDF('p', 'mm');
+
+                if (pdf) {
+                    DomToImage.toPng(gg)
+                        .then(imgData => {
+                            var imgWidth = 210;
+                            var pageHeight = 295;
+                            var imgHeight = gg.scrollHeight * imgWidth / gg.offsetWidth;
+                            var heightLeft = imgHeight;
+                            var doc = new jsPDF('p', 'mm');
+                            var position = 10; // give some top padding to first page
+
+                            doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                            heightLeft -= pageHeight;
+
+                            while (heightLeft >= 0) {
+                                position += heightLeft - imgHeight; // top padding for other pages
+                                doc.addPage();
+                                doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                                heightLeft -= pageHeight;
+                            }
+                            doc.save(`${downloadFileName}.pdf`);
+                            document.getElementById('newexportcontainer')?.remove();
+                        });
+                }
+            }
+        }
+        return (
+            <Button
+                className={classes.button}
+                variant="contained"
+                color="primary"
+                disabled={resExportData.loading}
+                startIcon={<DownloadIcon />}
+                onClick={downloadPdfDocument}
+            ><Trans i18nKey={langKeys.download} />
+            </Button>
+        )
+    }
 
     return (
         <Fragment>
@@ -1352,20 +1399,13 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                                 style={{ backgroundColor: "#55BD84" }}
                             >{`${t(langKeys.calculate)}`}
                             </Button>
+                            <GenericPdfDownloader
+                                downloadFileName={'periodreport-' + new Date().toTimeString()}
+                            />
                             <Button
                                 className={classes.button}
                                 variant="contained"
                                 color="primary"
-                                disabled={resExportData.loading}
-                                onClick={exportReport}
-                                startIcon={<DownloadIcon />}
-                            >{`${t(langKeys.download)}`}
-                            </Button>
-                            <Button
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"                            
-                                style={{marginRight: 10}}
                                 disabled={resExportData.loading}
                                 onClick={() => triggerExportDataPerson()}
                                 startIcon={<DownloadIcon />}
@@ -1386,7 +1426,7 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
             </div>
             {
                 !mainResult.mainData.loading && (
-                <div style={{width:"100%"}} id='periodreportcanvas'>
+                <div style={{width:"100%"}} ref={el}>
                     <div className={classes.containerDetail}>
                         <div className="row-zyx" >
                             <FieldView
@@ -1833,7 +1873,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                                 { (urlpdf ?
                                     <a href={urlpdf} target="_blank" style={{ display: "block" }} rel="noreferrer">{docnumber}</a>
                                     :
-                                    <span style={{ display: "block" }}>{`X000-00000000`}</span>)
+                                    <span style={{ display: "block" }}>{docnumber}</span>)
                                 }
                             </div>
                         </Fragment>
@@ -2453,8 +2493,19 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 Header: t(langKeys.billingvoucher),
                 accessor: 'serie',
                 Cell: (props: any) => {
+                    const urlpdf = props.cell.row.original.urlpdf;
                     const docnumber = (props.cell.row.original.serie ? props.cell.row.original.serie : 'X000') + '-' + (props.cell.row.original.correlative ? props.cell.row.original.correlative.toString().padStart(8, '0') : '00000000');
-                    return docnumber;
+                    return (
+                        <Fragment>
+                            <div>
+                                { (urlpdf ?
+                                    <a onClick={(e) => { e.stopPropagation(); }} href={urlpdf} target="_blank" style={{ display: "block" }} rel="noreferrer">{docnumber}</a>
+                                    :
+                                    <span style={{ display: "block" }}>{docnumber}</span>)
+                                }
+                            </div>
+                        </Fragment>
+                    )
                 }
             },
             {
@@ -4460,6 +4511,19 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         }
     }, [mainResult])
 
+    const getInvoiceType = (invoicetype: string) => {
+        switch (invoicetype) {
+            case '01':
+                return 'emissorinvoice';
+            case '03':
+                return 'emissorticket';
+            case '07':
+                return 'emissorcreditnote';
+            default:
+                return 'emissornone';
+        }
+    }
+
     const columns = React.useMemo(
         () => [
             {
@@ -4534,41 +4598,27 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 Header: t(langKeys.documenttype),
                 accessor: 'documenttype',
                 Cell: (props: any) => {
-                    const receiverdoctype = props.cell.row.original.documenttype;
-                    var documenttype = '';
-                    switch (receiverdoctype) {
-                        case '0':
-                            documenttype = 'billingfield_billingno';
-                            break;
-                        case '1':
-                            documenttype = 'billingfield_billingdni';
-                            break;
-                        case '4':
-                            documenttype = 'billingfield_billingextra';
-                            break;
-                        case '6':
-                            documenttype = 'billingfield_billingruc';
-                            break;
-                        case '7':
-                            documenttype = 'billingfield_billingpass';
-                            break;
-                        default:
-                            documenttype = langKeys.none;
-                            break;
-                    }
-                    return (
-                        <Fragment>
-                            <span style={{ display: "block" }}>{t(documenttype)}</span>
-                        </Fragment>
-                    )
+                    const invoicetype = props.cell.row.original.invoicetype;
+                    return t(getInvoiceType(invoicetype));
                 }
             },
             {
-                Header: t(langKeys.documentnumber),
+                Header: t(langKeys.billingvoucher),
                 accessor: 'documentnumber',
                 Cell: (props: any) => {
-                    const { documentnumber } = props.cell.row.original;
-                    return (documentnumber || t(langKeys.none));
+                    const urlpdf = props.cell.row.original.urlpdf;
+                    const docnumber = (props.cell.row.original.serie ? props.cell.row.original.serie : 'X000') + '-' + (props.cell.row.original.correlative ? props.cell.row.original.correlative.toString().padStart(8, '0') : '00000000');
+                    return (
+                        <Fragment>
+                            <div>
+                                { (urlpdf ?
+                                    <a onClick={(e) => { e.stopPropagation(); }} href={urlpdf} target="_blank" style={{ display: "block" }} rel="noreferrer">{docnumber}</a>
+                                    :
+                                    <span style={{ display: "block" }}>{docnumber}</span>)
+                                }
+                            </div>
+                        </Fragment>
+                    )
                 }
             },
         ],
@@ -4704,6 +4754,8 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
     const [priceMail, setPriceMail] = useState(0);
     const [priceHsm, setPriceHsm] = useState(0);
     const [balanceSent, setBalanceSent] = useState<any>([]);
+    const [paymentTax, setPaymentTax] = useState(0);
+    const [totalAmount, setTotalAmount] = useState(0);
 
     const handleCulqiSuccess = () => {
         fetchData();
@@ -4769,7 +4821,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
 
     useEffect(() => {
         updateTotalPay(buyAmount);
-    }, [currentCountry, currentDoctype, buyAmount]);
+    }, [currentCountry, currentDoctype, buyAmount, totalPay, totalAmount]);
 
     useEffect(() => {
         if (corp && org && comments.length <= 150 && purchaseOrder.length <= 15 && reference && (buyAmount && buyAmount > 0) && (totalPay && totalPay > 0)) {
@@ -4801,6 +4853,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
     const updateTotalPay = (buyAmount: number) => {
         if (currentCountry && currentDoctype) {
             if (currentCountry === 'PE') {
+                setTotalAmount(Math.round((((buyAmount || 0) * (1 + (mainResult.mainData.data[0].igv || 0))) + Number.EPSILON) * 100) / 100);
                 if (currentDoctype === '6') {
                     var compareamount = (buyAmount || 0) * (exchangeRequest?.exchangerate || 0);
 
@@ -4808,26 +4861,34 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                         setTotalPay(Math.round(((((buyAmount || 0) * (1 + (mainResult.mainData.data[0].igv || 0))) - (((buyAmount || 0) * (1 + (mainResult.mainData.data[0].igv || 0))) * (mainResult.mainData.data[0].detraction || 0))) + Number.EPSILON) * 100) / 100);                                 ;
                         setDetractionAlert(true);
                         setDetractionAmount(Math.round((((mainResult.mainData.data[0].detraction || 0) * 100) + Number.EPSILON) * 100) / 100);
+                        setPaymentTax(Math.round((((buyAmount || 0) * (mainResult.mainData.data[0].igv || 0)) + Number.EPSILON) * 100) / 100);
                     }
                     else {
                         setDetractionAlert(false);
                         setTotalPay(Math.round((((buyAmount || 0) * (1 + (mainResult.mainData.data[0].igv || 0))) + Number.EPSILON) * 100) / 100);
+                        setPaymentTax(Math.round((((buyAmount || 0) * (mainResult.mainData.data[0].igv || 0)) + Number.EPSILON) * 100) / 100);
                     }
                 }
                 else {
                     setDetractionAlert(false);
-                    setTotalPay(Math.round((((buyAmount || 0) * (1 + (mainResult.mainData.data[0].igv || 0))) + Number.EPSILON) * 100) / 100)
+                    setTotalPay(Math.round((((buyAmount || 0) * (1 + (mainResult.mainData.data[0].igv || 0))) + Number.EPSILON) * 100) / 100);
+                    setPaymentTax(Math.round((((buyAmount || 0) * (mainResult.mainData.data[0].igv || 0)) + Number.EPSILON) * 100) / 100);
                 }
             }
             else {
+                setTotalAmount(Math.round(((buyAmount || 0) + Number.EPSILON) * 100) / 100);
                 setDetractionAlert(false);
                 setTotalPay(Math.round(((buyAmount || 0) + Number.EPSILON) * 100) / 100);
+                setPaymentTax(0);
             }
         }
         else {
+            setTotalAmount(Math.round(((buyAmount || 0) + Number.EPSILON) * 100) / 100);
             setDetractionAlert(false);
             setTotalPay(Math.round(((buyAmount || 0) + Number.EPSILON) * 100) / 100);
+            setPaymentTax(0);
         }
+        setAfterAmount(beforeAmount + totalAmount);
     }
 
     const handleCorp = (value: any) => {
@@ -4853,7 +4914,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
             var organizationdata = orgList.data.find((x: { orgid: any; }) => x.orgid === value);
             if (organizationdata) {
                 setBeforeAmount((organizationdata?.balance || 0));
-                setAfterAmount((organizationdata?.balance || 0) + buyAmount);
+                setAfterAmount((organizationdata?.balance || 0) + totalAmount);
                 if (currentBillbyorg) {
                     setCurrentCountry(organizationdata?.sunatcountry);
                     setCurrentDoctype(organizationdata?.doctype);
@@ -4862,7 +4923,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
         }
         else {
             setBeforeAmount(0);
-            setAfterAmount(buyAmount);
+            setAfterAmount(totalAmount);
         }
         setOrg(value);
         setOrgError(value ? '' : t(langKeys.required));
@@ -4876,7 +4937,6 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
     const handleBuyAmount = (value: any) => {
         setBuyAmount(parseFloat(value));
         setBuyAmountError((value && value > 0) ? '' : t(langKeys.required));
-        setAfterAmount(beforeAmount + parseFloat(value));
     }
 
     const handlePurchaseOrder = (value: any) => {
@@ -4966,6 +5026,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                                 orgid={org}
                                 reference={reference}
                                 buyamount={buyAmount}
+                                totalamount={totalAmount}
                                 comments={comments}
                                 purchaseorder={purchaseOrder}
                                 totalpay={totalPay}
@@ -4974,149 +5035,194 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                     </div>
                 </div>
                 <div style={{ backgroundColor: 'white', padding: 16 }}>
-                    <div className="row-zyx">
-                        {data?.edit ? (
-                            <FieldSelect
-                                label={t(langKeys.corporation)}
-                                loading={corpList.loading}
-                                onChange={(value) => { handleCorp(value?.corpid || 0) }}
-                                className="col-6"
-                                valueDefault={corp}
-                                data={corpList.data}
-                                optionDesc="description"
-                                optionValue="corpid"
-                                error={corpError}
-                                disabled={disableInput}
-                            />
-                        ) : (
-                            <FieldView
-                                className="col-6"
-                                label={t(langKeys.corporation)}
-                                value={data?.row?.corpdesc}
-                            />
-                        )}
-                        {data?.edit ? (
-                            <FieldSelect
-                                label={t(langKeys.organization)}
-                                loading={orgList.loading}
-                                onChange={(value) => { handleOrg(value?.orgid || 0) }}
-                                className="col-6"
-                                valueDefault={org}
-                                data={orgList.data}
-                                optionDesc="orgdesc"
-                                optionValue="orgid"
-                                error={orgError}
-                                disabled={disableInput}
-                            />
-                        ) : (
-                            <FieldView
-                                className="col-6"
-                                label={t(langKeys.organization)}
-                                value={data?.row?.orgdesc}
-                            />
-                        )}
-                    </div>
-                    <div className="row-zyx">
-                        {data?.edit ? (
-                            <FieldEdit
-                                label={t(langKeys.transactionreference)}
-                                onChange={(value) => handleReference(value)}
-                                valueDefault={reference}
-                                error={referenceError}
-                                className="col-12"
-                                disabled={disableInput}
-                            />
-                        ) : (
-                            <FieldView
-                                className="col-12"
-                                label={t(langKeys.transactionreference)}
-                                value={data?.row?.description || t(langKeys.none)}
-                            />
-                        )}
-                    </div>
-                    <div className="row-zyx">
-                        {data?.edit ? (
-                            <FieldView
-                                className="col-4"
-                                label={t(langKeys.transactionlastbalance)}
-                                value={formatNumber(beforeAmount || 0)}
-                            />
-                        ) : (
-                            <FieldView
-                                className="col-4"
-                                label={t(langKeys.transactionlastbalance)}
-                                value={formatNumber((data?.row?.balance - data?.row?.amount) || 0)}
-                            />
-                        )}
-                        {data?.edit ? (
-                            <FieldEdit
-                                label={t(langKeys.transactionbuyamount)}
-                                onChange={(value) => handleBuyAmount(value || 0)}
-                                valueDefault={buyAmount}
-                                error={buyAmountError}
-                                className="col-4"
-                                type='number'
-                                disabled={disableInput}
-                            />
-                        ) : (
-                            <FieldView
-                                className="col-4"
-                                label={t(langKeys.transactionbuyamount)}
-                                value={formatNumber(data?.row?.amount || 0)}
-                            />
-                        )}
-                        {data?.edit ? (
-                            <FieldView
-                                className="col-4"
-                                label={t(langKeys.transactionafterbalance)}
-                                value={formatNumber(afterAmount || 0)}
-                            />
-                        ) : (
-                            <FieldView
-                                className="col-4"
-                                label={t(langKeys.transactionafterbalance)}
-                                value={formatNumber(data?.row?.balance || 0)}
-                            />
-                        )}
-                    </div>
-                    {(data?.edit || data?.row?.operationtype === "COMPRA") && <div className="row-zyx">
-                        <FieldView
-                            className={classes.section}
-                            label={''}
-                            value={t(langKeys.payment_information)}
-                        />
+                    {(!disableInput || data?.edit === false) && <div>
+                        <div className="row-zyx">
+                            {data?.edit ? (
+                                <FieldSelect
+                                    label={t(langKeys.corporation)}
+                                    loading={corpList.loading}
+                                    onChange={(value) => { handleCorp(value?.corpid || 0) }}
+                                    className="col-6"
+                                    valueDefault={corp}
+                                    data={corpList.data}
+                                    optionDesc="description"
+                                    optionValue="corpid"
+                                    error={corpError}
+                                    disabled={disableInput}
+                                />
+                            ) : (
+                                <FieldView
+                                    className="col-6"
+                                    label={t(langKeys.corporation)}
+                                    value={data?.row?.corpdesc}
+                                />
+                            )}
+                            {data?.edit ? (
+                                <FieldSelect
+                                    label={t(langKeys.organization)}
+                                    loading={orgList.loading}
+                                    onChange={(value) => { handleOrg(value?.orgid || 0) }}
+                                    className="col-6"
+                                    valueDefault={org}
+                                    data={orgList.data}
+                                    optionDesc="orgdesc"
+                                    optionValue="orgid"
+                                    error={orgError}
+                                    disabled={disableInput}
+                                />
+                            ) : (
+                                <FieldView
+                                    className="col-6"
+                                    label={t(langKeys.organization)}
+                                    value={data?.row?.orgdesc}
+                                />
+                            )}
+                        </div>
+                        <div className="row-zyx">
+                            {data?.edit ? (
+                                <FieldEdit
+                                    label={t(langKeys.transactionreference)}
+                                    onChange={(value) => handleReference(value)}
+                                    valueDefault={reference}
+                                    error={referenceError}
+                                    className="col-12"
+                                    disabled={disableInput}
+                                />
+                            ) : (
+                                <FieldView
+                                    className="col-12"
+                                    label={t(langKeys.transactionreference)}
+                                    value={data?.row?.description || t(langKeys.none)}
+                                />
+                            )}
+                        </div>
+                        {data?.row?.operationtype !== "ENVIO" && <div className="row-zyx">
+                            {data?.edit ? (
+                                <FieldEdit
+                                    label={t(langKeys.transactionbuyamount)}
+                                    onChange={(value) => handleBuyAmount(value || 0)}
+                                    valueDefault={buyAmount}
+                                    error={buyAmountError}
+                                    className="col-4"
+                                    type='number'
+                                    disabled={disableInput}
+                                />
+                            ) : (
+                                <FieldView
+                                    className="col-4"
+                                    label={t(langKeys.transactionbuyamount)}
+                                    value={formatNumber(data?.row?.subtotal || 0)}
+                                />
+                            )}
+                            {data?.edit ? (
+                                <FieldView
+                                    className="col-4"
+                                    label={t(langKeys.billingtaxes)}
+                                    value={'$'+formatNumber(paymentTax || 0)}
+                                />
+                            ) : (
+                                <FieldView
+                                    className="col-4"
+                                    label={t(langKeys.billingtaxes)}
+                                    value={'$'+formatNumber(data?.row?.taxes || 0)}
+                                />
+                            )}
+                            {data?.edit ? (
+                                <FieldView
+                                    className="col-4"
+                                    label={t(langKeys.totalamount)}
+                                    value={'$'+formatNumber((totalAmount || 0))}
+                                />
+                            ) : (
+                                <FieldView
+                                    className="col-4"
+                                    label={t(langKeys.totalamount)}
+                                    value={'$'+formatNumber((data?.row?.amount || 0))}
+                                />
+                            )}
+                        </div>}
+                        <div className="row-zyx">
+                            {data?.edit ? (
+                                <FieldView
+                                    className="col-4"
+                                    label={t(langKeys.transactionlastbalance)}
+                                    value={'$'+formatNumber(beforeAmount || 0)}
+                                />
+                            ) : (
+                                <FieldView
+                                    className="col-4"
+                                    label={t(langKeys.transactionlastbalance)}
+                                    value={'$'+formatNumber((data?.row?.balance - data?.row?.amount) || 0)}
+                                />
+                            )}
+                            {data?.edit ? (
+                                <FieldView
+                                    className="col-4"
+                                    label={t(langKeys.totalamount)}
+                                    value={'$'+formatNumber((totalAmount || 0))}
+                                />
+                            ) : (
+                                <FieldView
+                                    className="col-4"
+                                    label={t(langKeys.totalamount)}
+                                    value={'$'+formatNumber((data?.row?.amount || 0))}
+                                />
+                            )}
+                            {data?.edit ? (
+                                <FieldView
+                                    className="col-4"
+                                    label={t(langKeys.transactionafterbalance)}
+                                    value={'$'+formatNumber(afterAmount || 0)}
+                                />
+                            ) : (
+                                <FieldView
+                                    className="col-4"
+                                    label={t(langKeys.transactionafterbalance)}
+                                    value={'$'+formatNumber(data?.row?.balance || 0)}
+                                />
+                            )}
+                        </div>
                     </div>}
-                    {(data?.edit || data?.row?.operationtype === "COMPRA") && <div className="row-zyx">
-                        {data?.edit && <FieldView
-                            className="col-4"
-                            label={t(langKeys.servicedescription)}
-                            value={t(langKeys.transactionrechargetitle) + new Date().toISOString().split('T')[0]}
-                        />}
-                        {data?.row?.operationtype === "COMPRA" && <FieldView
-                            className="col-4"
-                            label={t(langKeys.servicedescription)}
-                            value={t(langKeys.transactionrechargetitle) + new Date(data?.row?.createdate).toISOString().split('T')[0]}
-                        />}
-                        {data?.edit && <FieldView
-                            className="col-4"
-                            label={t(langKeys.totalamount)}
-                            value={'$'+formatNumber((buyAmount || 0))}
-                        />}
-                        {data?.row?.operationtype === "COMPRA" && <FieldView
-                            className="col-4"
-                            label={t(langKeys.totalamount)}
-                            value={'$'+formatNumber((data?.row?.amount || 0))}
-                        />}
-                        {data?.edit && <FieldView
-                            className="col-4"
-                            label={t(langKeys.totaltopay)}
-                            value={'$'+formatNumber((totalPay || 0))}
-                        />}
-                        {data?.row?.operationtype === "COMPRA" && <FieldView
-                            className="col-4"
-                            label={t(langKeys.totaltopay)}
-                            value={'$'+formatNumber((data?.row?.culqiamount || 0))}
-                        />}
+                    {disableInput && <div>
+                        {(data?.edit || data?.row?.operationtype === "COMPRA") && <div className="row-zyx">
+                            <FieldView
+                                className={classes.section}
+                                label={''}
+                                value={t(langKeys.payment_information)}
+                            />
+                        </div>}
+                        {(data?.edit || data?.row?.operationtype === "COMPRA") && <div className="row-zyx">
+                            {data?.edit && <FieldView
+                                className="col-4"
+                                label={t(langKeys.servicedescription)}
+                                value={t(langKeys.transactionrechargetitle) + new Date().toISOString().split('T')[0]}
+                            />}
+                            {data?.row?.operationtype === "COMPRA" && <FieldView
+                                className="col-4"
+                                label={t(langKeys.servicedescription)}
+                                value={t(langKeys.transactionrechargetitle) + new Date(data?.row?.createdate).toISOString().split('T')[0]}
+                            />}
+                            {data?.edit && <FieldView
+                                className="col-4"
+                                label={t(langKeys.totalamount)}
+                                value={'$'+formatNumber((totalAmount || 0))}
+                            />}
+                            {data?.row?.operationtype === "COMPRA" && <FieldView
+                                className="col-4"
+                                label={t(langKeys.totalamount)}
+                                value={'$'+formatNumber((data?.row?.amount || 0))}
+                            />}
+                            {data?.edit && <FieldView
+                                className="col-4"
+                                label={t(langKeys.totaltopay)}
+                                value={'$'+formatNumber((totalPay || 0))}
+                            />}
+                            {data?.row?.operationtype === "COMPRA" && <FieldView
+                                className="col-4"
+                                label={t(langKeys.totaltopay)}
+                                value={'$'+formatNumber((data?.row?.culqiamount || 0))}
+                            />}
+                        </div>}
                     </div>}
                     {(data?.row?.operationtype === "COMPRA") && <div className="row-zyx">
                         <FieldView
@@ -5125,9 +5231,11 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                             value={t(getInvoiceType(data?.row?.invoicetype))}
                         />
                         <FieldView
+                            onclick={() => { if (data?.row?.urlpdf) { window.open(data?.row?.urlpdf, "_blank"); } }}
                             label={t(langKeys.billingvoucher)}
                             value={(data?.row?.serie ? data?.row?.serie : 'X000') + '-' + (data?.row?.correlative ? data?.row?.correlative.toString().padStart(8, '0') : '00000000')}
                             className="col-4"
+                            styles={(data?.row?.urlpdf) ? { cursor: 'pointer', textDecoration: 'underline', color: 'blue' } : undefined}
                         />
                         <FieldView
                             className="col-4"
@@ -5244,6 +5352,20 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                                 className="col-4"
                                 label={t(langKeys.pricemessagehsm)}
                                 value={'$'+formatNumberFourDecimals((priceHsm || 0))}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldView
+                                className={classes.commentary}
+                                label={''}
+                                value={t(langKeys.pricemessagenote1)}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldView
+                                className={classes.commentary}
+                                label={''}
+                                value={t(langKeys.pricemessagenote2)}
                             />
                         </div>
                         <div className="row-zyx">

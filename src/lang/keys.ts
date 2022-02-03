@@ -2984,6 +2984,9 @@ export const langKeys = {
     transactioncost: 'transactioncost',
     transactiondatetime: 'transactiondatetime',
     optional: 'optional',
+    billingtaxes: 'billingtaxes',
+    pricemessagenote1: 'pricemessagenote1',
+    pricemessagenote2: 'pricemessagenote2',
 };
 
 export type LangKeys = typeof langKeys;
