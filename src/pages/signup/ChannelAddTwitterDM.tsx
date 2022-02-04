@@ -222,7 +222,8 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
             <FieldEdit
                 onChange={(value) => setnameField(value)}
                 label={t(langKeys.givechannelname)}
-                className="col-6"
+                variant="outlined"
+                size="small"
             />
             <FieldEdit
                 onChange={(value) => {
@@ -235,7 +236,8 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
                 // valueDefault={fields.service.devenvironment}
                 valueDefault={devenvironment}
                 label={t(langKeys.devenvironment)}
-                className="col-6"
+                variant="outlined"
+                size="small"
             />
             {/* <div className="row-zyx">
                 <div className="col-3"></div>

@@ -42,7 +42,6 @@ const useRateStyles = makeStyles(theme => ({
 export const RateExperience: FC = () => {
     const classes = useRateStyles();
     const { t } = useTranslation();
-    const history = useHistory();
     const { commonClasses } = useContext(SubscriptionContext);
     const [rating, setRating] = useState<0 | 1 | 2 | 3>(0);
 
@@ -89,7 +88,7 @@ export const RateExperience: FC = () => {
                 style={{ resize: 'none' }}
             />
             <Button
-                onClick={() => window.open(paths.SIGNUPBASIC, "_self")}
+                onClick={() => window.open(paths.SIGNIN, "_self")}
                 className={commonClasses.button}
                 style={{ marginTop: '3em' }}
                 variant="contained"
