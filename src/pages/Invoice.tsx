@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { cleanMemoryTable, setMemoryTable, uploadFile } from 'store/main/actions';
 import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx, FieldEditArray, TemplateIcons } from 'components';
-import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, invoiceRefreshTest, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail, selBalanceData, getBillingMessagingCurrent, getBalanceSelSent, getCorpSelVariant } from 'common/helpers';
+import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, billingReportConversationWhatsApp, invoiceRefreshTest, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail, selBalanceData, getBillingMessagingCurrent, getBalanceSelSent, getCorpSelVariant } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -42,9 +42,10 @@ import TableCell from '@material-ui/core/TableCell';
 import TableBody from '@material-ui/core/TableBody';
 import clsx from 'clsx';
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
+import { Trans } from 'react-i18next';
+import DomToImage from 'dom-to-image';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -283,7 +284,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const fetchData = () => dispatch(getCollection(getBillingPeriodSel(dataMain)));
 
     useEffect(() => {
-        setdisableSearch(dataMain.year === "" ) 
+        setdisableSearch(dataMain.year === "") 
     }, [dataMain])
 
     useEffect(() => {
@@ -316,7 +317,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
 
     const handleCalculate = () => {
         const callback = () => {
-            dispatch(execute(getBillingPeriodCalcRefreshAll(0)));
+            dispatch(execute(getBillingPeriodCalcRefreshAll(parseInt(dataMain.year || '0'), parseInt(dataMain.month || '0'), dataMain.corpid, dataMain.orgid)));
             dispatch(showBackdrop(true));
             setWaitSave(true);
             setWaitCalculate(true);
@@ -1165,6 +1166,8 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
     const [waitExport, setWaitExport] = useState(false);
     const [waitSearch, setWaitSearch] = useState(false);
 
+    const el = React.useRef<null | HTMLDivElement>(null);
+
     const datatotalize = [{ value: 1, description: t(langKeys.corporation) }, { value: 2, description: t(langKeys.organization) }]
 
     function handleDateChange(e: any){
@@ -1249,9 +1252,15 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
         setWaitExport(true);
     };
 
+    const triggerExportDataConversation = () => {
+        dispatch(exportData(billingReportConversationWhatsApp(dataMain),"BillingUserConversation","excel",true))
+        dispatch(showBackdrop(true));
+        setWaitExport(true);
+    };
+
     const handleCalculate = () => {
         const callback = () => {
-            dispatch(execute(getBillingPeriodCalcRefreshAll(0)));
+            dispatch(execute(getBillingPeriodCalcRefreshAll(dataMain.year, dataMain.month, dataMain.corpid, dataMain.orgid)));
             dispatch(showBackdrop(true));
             setWaitCalculate(true);
         }
@@ -1261,16 +1270,6 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
             question: t(langKeys.confirmation_calculate),
             callback
         }))
-    }
-
-    const exportReport = () => {
-        html2canvas(document.querySelector("#periodreportcanvas")!).then(canvas => {
-            document.body.appendChild(canvas);
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF('p', 'pt', 'a4', false);
-            pdf.addImage(imgData, 'PNG', 0, 0, 600, 0, undefined, undefined, undefined);
-            pdf.save("periodreport.pdf"); 
-        });
     }
 
     useEffect(() => {
@@ -1287,6 +1286,59 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
             }
         }
     }, [resExportData, waitExport]);
+
+    const GenericPdfDownloader: React.FC<{ downloadFileName: string }> = ({ downloadFileName }) => {
+
+        const downloadPdfDocument = () => {
+            if (el.current) {
+                const gg = document.createElement('div');
+                gg.style.display = 'flex';
+                gg.style.flexDirection = 'column';
+                gg.style.gap = '8px';
+                gg.id = "newexportcontainer"
+                document.body.appendChild(gg);
+
+                gg.innerHTML = el.current.innerHTML;
+                document.body.appendChild(gg);
+                const pdf = new jsPDF('p', 'mm');
+
+                if (pdf) {
+                    DomToImage.toPng(gg)
+                        .then(imgData => {
+                            var imgWidth = 210;
+                            var pageHeight = 295;
+                            var imgHeight = gg.scrollHeight * imgWidth / gg.offsetWidth;
+                            var heightLeft = imgHeight;
+                            var doc = new jsPDF('p', 'mm');
+                            var position = 10; // give some top padding to first page
+
+                            doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                            heightLeft -= pageHeight;
+
+                            while (heightLeft >= 0) {
+                                position += heightLeft - imgHeight; // top padding for other pages
+                                doc.addPage();
+                                doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                                heightLeft -= pageHeight;
+                            }
+                            doc.save(`${downloadFileName}.pdf`);
+                            document.getElementById('newexportcontainer')?.remove();
+                        });
+                }
+            }
+        }
+        return (
+            <Button
+                className={classes.button}
+                variant="contained"
+                color="primary"
+                disabled={resExportData.loading}
+                startIcon={<DownloadIcon />}
+                onClick={downloadPdfDocument}
+            ><Trans i18nKey={langKeys.download} />
+            </Button>
+        )
+    }
 
     return (
         <Fragment>
@@ -1353,20 +1405,13 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                                 style={{ backgroundColor: "#55BD84" }}
                             >{`${t(langKeys.calculate)}`}
                             </Button>
+                            <GenericPdfDownloader
+                                downloadFileName={'periodreport-' + new Date().toTimeString()}
+                            />
                             <Button
                                 className={classes.button}
                                 variant="contained"
                                 color="primary"
-                                disabled={resExportData.loading}
-                                onClick={exportReport}
-                                startIcon={<DownloadIcon />}
-                            >{`${t(langKeys.download)}`}
-                            </Button>
-                            <Button
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"                            
-                                style={{marginRight: 10}}
                                 disabled={resExportData.loading}
                                 onClick={() => triggerExportDataPerson()}
                                 startIcon={<DownloadIcon />}
@@ -1381,13 +1426,22 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                                 startIcon={<DownloadIcon />}
                             >{`${t(langKeys.report)} ${t(langKeys.agent_plural)}`}
                             </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={resExportData.loading}
+                                onClick={() => triggerExportDataConversation()}
+                                startIcon={<DownloadIcon />}
+                            >{`${t(langKeys.report)} ${t(langKeys.conversationwhatsapp)}`}
+                            </Button>
                         </Fragment>)
                     }
                 </div>
             </div>
             {
                 !mainResult.mainData.loading && (
-                <div style={{width:"100%"}} id='periodreportcanvas'>
+                <div style={{width:"100%"}} ref={el}>
                     <div className={classes.containerDetail}>
                         <div className="row-zyx" >
                             <FieldView
@@ -1410,7 +1464,7 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                                 value={`${datareport.year}-${String(datareport.month).padStart(2, '0')}`}
                             />
                         </div>
-                        <TableContainer component={Paper}>
+                        <TableContainer component={Paper} style={{overflow: "hidden"}}>
                             <Table aria-label="customized table">
                                 <TableHead>
                                 <TableRow>
@@ -1579,7 +1633,7 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                             </Table>
                         </TableContainer>
                         <div style={{paddingTop: 30, fontWeight: "bold", fontSize: "1.5em"}}>{t(langKeys.servicedata)}</div>
-                        <TableContainer component={Paper}>
+                        <TableContainer component={Paper} style={{overflow: "hidden"}}>
                             <Table aria-label="customized table">
                                 <TableHead>
                                 <TableRow>
@@ -1663,7 +1717,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
 
     const search = () => dispatch(getCollection(selInvoiceClient(dataMain)));
 
-    const refreshAll = () => { dispatch(execute(invoiceRefreshTest())); setWaitRefresh(true) }
+    const refreshAll = () => { dispatch(execute(invoiceRefreshTest(parseInt(dataMain.year || '0'), parseInt(dataMain.month || '0'), dataMain.corpid))); setWaitRefresh(true) }
 
     useEffect(() => {
         fetchData()

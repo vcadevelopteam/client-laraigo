@@ -3,7 +3,7 @@ import { FC, useContext, useEffect, useState } from "react";
 import { makeStyles, Button, TextField, Breadcrumbs} from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { langKeys } from "lang/keys";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { Dictionary } from "@types"
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
@@ -164,13 +164,26 @@ export const SecondStep: FC<{ setOpenWarning: (param: any) => void}> = ({ setOpe
                     name="mobilephone"
                     fullWidth
                     defaultCountry={countrycode.toLowerCase()}
-                    onChange={(e:any) => setMainData((p: any) => ({ ...p, mobilephone: e }))}
+                    onChange={(e:any) => setMainData(prev => ({
+                        ...prev,
+                        mobilephone: e,
+                    }))}
                 />
-                <div style={{ paddingTop: 20, fontWeight: "bold", color: "#381052" }}>{t(langKeys.laraigouse)}</div>
+                <div style={{ paddingTop: 20, fontWeight: "bold", color: "#381052" }}>
+                    <Trans i18nKey={langKeys.laraigouse} />
+                    <span style={{ fontSize: 14, fontWeight: 500 }}>
+                        {` (${t(langKeys.optional).toLowerCase()})`}
+                    </span>
+                </div>
                 
                 <FieldMultiSelect
                     uset={true}
-                    onChange={(value) => setMainData((p:any) => ({ ...p, join_reason: value.map((o: any) => o.domainvalue).join() }))}
+                    onChange={(value) => setMainData(prev => ({
+                        ...prev,
+                        join_reason: value
+                            .map((o: any) => o.domainvalue)
+                            .join(),
+                    }))}
                     variant="outlined"
                     className="col-6"
                     style={{margin:"15px 0"}}

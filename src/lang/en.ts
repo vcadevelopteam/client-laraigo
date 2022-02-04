@@ -243,9 +243,12 @@ const translation: LangKeys = {
     productivity: "Productivity",
     usertmepercentmax: 'TME adviser objective',
     usertmo: 'TMO user',
+    paymentmethod: "Payment method",
     usertmopercentmax: 'TMO user objective',
     person: 'Person',
     person_plural: 'People',
+    prepaid: "Prepaid",
+    postpaid: "Postpaid",
     summarize: 'Summarize',
     detail: 'Detail',
     detail_plural: 'Details',
@@ -2994,9 +2997,11 @@ const translation: LangKeys = {
     transactionreceiver: 'Receiver',
     transactioncost: 'Unit cost',
     transactiondatetime: 'Date and time',
+    optional: 'Optional',
     billingtaxes: 'Taxex',
     pricemessagenote1: 'The price of the messages include an additional comission',
     pricemessagenote2: 'The price of the messages do not include tax.',
+    conversationwhatsapp: 'WhatsApp Conversation',
 };
 
 const enResource: ResourceLanguage = {

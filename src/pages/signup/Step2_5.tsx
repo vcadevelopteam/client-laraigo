@@ -61,17 +61,67 @@ export const Step2_5: FC<{ setOpenWarning: (param: any) => void}> = ({ setOpenWa
     const mainResult = useSelector(state => state.main);
     useEffect(() => {
         if (mainData.billingcontactmail.includes('@') && mainData.billingcontactmail.includes('.')) {
-            setdisablebutton((isNaN(mainData.doctype) || isNaN(parseInt(mainData.docnumber)) || mainData.businessname === ""|| mainData.fiscaladdress === ""|| mainData.billingcontact === ""|| mainData.billingcontactmail === ""))
-        }
-        else {
+            setdisablebutton(
+                isNaN(mainData.doctype) ||
+                docTypeValidate(mainData.docnumber, mainData.doctype).length > 0 ||
+                isNaN(parseInt(mainData.docnumber)) ||
+                mainData.businessname === "" ||
+                mainData.fiscaladdress === "" ||
+                mainData.billingcontact === "" ||
+                mainData.billingcontactmail === ""
+            );
+        } else {
             setdisablebutton(true);
         }
     }, [mainData])
 
+    const docTypeValidate = (docnum: string, docType: number): string => {
+        if (!docnum) {
+            return t(langKeys.field_required);
+        }
+
+        let msg = "";
+        switch (docType) {
+            case 1: // DNI
+                msg = t(langKeys.doctype_dni_error);
+                return docnum.length !== 8 ? msg : "";
+            case 2: // CARNET DE EXTRANJERIA
+                msg = t(langKeys.doctype_foreigners_card);
+                return docnum.length > 12 ? msg : "";
+            case 3: // REG. UNICO DE CONTRIBUYENTES
+                msg = t(langKeys.doctype_ruc_error);
+                return docnum.length !== 11 ? msg : "";
+            default: return t(langKeys.doctype_unknown_error);
+        }
+    }
+
+    const setDoctype = (value: any) => {
+        console.log('setDoctype')
+        setErrors(p => ({
+            ...p,
+            doctype: !(value?.id) ? t(langKeys.field_required) : "",
+            docnumber: docTypeValidate(mainData.docnumber, value?.id || 0),
+        }))
+        setMainData((p:any) => ({ ...p, doctype: value?.id}))
+    }
+
     function maindataChange(field: string, value: any) {
         setMainData((p: any) => ({ ...p, [field]: value }))
-        setErrors(p => ({ ...p, [field]: !value ? t(langKeys.field_required) : "" }))
+        setErrors(p => {
+            let error = "";
+            if (field === "docnumber" && value) {
+                error = docTypeValidate(value, mainData.doctype);
+            } else if (!value) {
+                error = t(langKeys.field_required);
+            }
+
+            return {
+                ...p,
+                [field]: error,
+            };
+        })
     }
+    console.log(errors)
 
     /*useEffect(() => {
         setMainData((p:any) => ({ ...p, country: countrycode, countryname: countryname, currency: currency }))
@@ -94,10 +144,7 @@ export const Step2_5: FC<{ setOpenWarning: (param: any) => void}> = ({ setOpenWa
                         value={t(langKeys.billingfield_billingno)}
                     />:
                     <FieldSelect
-                        onChange={(value) => {
-                            setErrors(p => ({ ...p, doctype: !(value?.id) ? t(langKeys.field_required) : "" }))
-                            setMainData((p:any) => ({ ...p, doctype: value?.id}))
-                        }}
+                        onChange={setDoctype}
                         data={databilling}
                         variant="outlined"
                         className="col-6"
@@ -118,7 +165,7 @@ export const Step2_5: FC<{ setOpenWarning: (param: any) => void}> = ({ setOpenWa
                         defaultValue={mainData.docnumber}
                         label={t(langKeys.docNumber)}
                         name="docnumber"
-                        error={!!errors.docnumber}
+                        error={errors.docnumber !== ""}
                         helperText={errors.docnumber}
                         onChange={(e) => maindataChange('docnumber', e.target.value)}
                     /> 
@@ -175,7 +222,7 @@ export const Step2_5: FC<{ setOpenWarning: (param: any) => void}> = ({ setOpenWa
                     }}
                 /> 
                 <Button
-                    onClick={() => { setStep(2.6) }}
+                    onClick={() => setStep(2.6)}
                     className={classes.button}
                     fullWidth
                     variant="contained"

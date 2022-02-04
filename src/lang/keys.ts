@@ -349,6 +349,9 @@ export const langKeys = {
     confirmchangeplan: "confirmchangeplan",
     cancelsuscriptionconfirmation: "cancelsuscriptionconfirmation",
     detailchangeplan1: "detailchangeplan1",
+    prepaid: "prepaid",
+    postpaid: "postpaid",
+    paymentmethod: "paymentmethod",
     totalsatisfied: "totalsatisfied",
     successful_update: "successful_update",
     confirmation_changepassword: "confirmation_changepassword",
@@ -2983,9 +2986,11 @@ export const langKeys = {
     transactionreceiver: 'transactionreceiver',
     transactioncost: 'transactioncost',
     transactiondatetime: 'transactiondatetime',
+    optional: 'optional',
     billingtaxes: 'billingtaxes',
     pricemessagenote1: 'pricemessagenote1',
     pricemessagenote2: 'pricemessagenote2',
+    conversationwhatsapp: 'conversationwhatsapp',
 };
 
 export type LangKeys = typeof langKeys;

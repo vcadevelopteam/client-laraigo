@@ -1369,6 +1369,16 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                     return (hsmfee || 0).toFixed(4);
                 }
             },
+            {
+                Header: t(langKeys.freeconversations),
+                accessor: 'whatsappconversationfreequantity',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { whatsappconversationfreequantity } = props.cell.row.original;
+                    return (whatsappconversationfreequantity || 0).toFixed(0);
+                }
+            }
         ],
         []
     );
@@ -1547,6 +1557,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
             clientadditionalfee: row?.clientadditionalfee || 0,
             channelotherfee: row?.channelotherfee || 0,
             hsmfee: row?.hsmfee || 0,
+            whatsappconversationfreequantity: row?.whatsappconversationfreequantity || 0,
             allowhsm: row?.allowhsm || false,
             status: row ? row.status : 'ACTIVO',
             type: row ? row.type : '',
@@ -1585,6 +1596,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
         register('channelwhatsappfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
         register('clientadditionalfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
         register('hsmfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('whatsappconversationfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
     }, [edit, register]);
 
     useEffect(() => {
@@ -1756,6 +1768,16 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             className="col-6"
                         />
                     </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.freeconversations)}
+                            onChange={(value) => setValue('whatsappconversationfreequantity', value)}
+                            valueDefault={getValues('whatsappconversationfreequantity')}
+                            error={errors?.whatsappconversationfreequantity?.message}
+                            type="number"
+                            className="col-6"
+                        />
+                    </div>
                 </div>
             </form>
         </div>
@@ -1873,16 +1895,6 @@ const ConversationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                     return (clientstartfee || 0).toFixed(4);
                 }
             },
-            {
-                Header: t(langKeys.freeconversations),
-                accessor: 'freeconversations',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { freeconversations } = props.cell.row.original;
-                    return (freeconversations || 0).toFixed(0);
-                }
-            }
         ],
         []
     );
@@ -2185,16 +2197,6 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                             onChange={(value) => setValue('clientstartfee', value)}
                             valueDefault={getValues('clientstartfee')}
                             error={errors?.clientstartfee?.message}
-                            type="number"
-                            className="col-6"
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.freeconversations)}
-                            onChange={(value) => setValue('freeconversations', value)}
-                            valueDefault={getValues('freeconversations')}
-                            error={errors?.freeconversations?.message}
                             type="number"
                             className="col-6"
                         />

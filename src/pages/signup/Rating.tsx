@@ -9,6 +9,7 @@ import {
     InsertEmoticon as InsertEmoticonIcon,
     Face as  Faceicon,
 } from '@material-ui/icons';
+import paths from "common/constants/paths";
 
 const useRateStyles = makeStyles(theme => ({
     root: {
@@ -88,21 +89,12 @@ export const RateExperience: FC = () => {
                 style={{ resize: 'none' }}
             />
             <Button
-                onClick={() => {
-                    history.push({
-                        pathname: '/sign-in',
-                        state: { 
-                            showSnackbar: true,
-                            message: t(langKeys.successful_sign_up)
-                        }
-                    })
-                }}
+                onClick={() => window.open(paths.SIGNUPBASIC, "_self")}
                 className={commonClasses.button}
                 style={{ marginTop: '3em' }}
                 variant="contained"
                 color="primary"
                 disabled={rating === 0}
-                // disabled={requestchannels.length < selectedChannels}
             >
                 <Trans i18nKey={langKeys.next} />
             </Button>

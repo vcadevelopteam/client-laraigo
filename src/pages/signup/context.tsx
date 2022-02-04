@@ -10,6 +10,7 @@ import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { executeSubscription } from 'store/signup/actions';
 
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
+type PlanType = "BASIC" | "PRO" | "PREMIUM" | "ENTERPRISE" | "ADVANCED";
 interface Subscription {
     selectedChannels: number;
     listchannels: ListChannels;
@@ -19,7 +20,7 @@ interface Subscription {
     mainData: MainData;
     requestchannels: IRequestBody[];
     foreground: keyof ListChannels | undefined;
-    plan: "BASIC" | "PRO";
+    plan: PlanType;
     step: number;
     setStep: SetState<number>;
     finishreg: () => void;
@@ -314,7 +315,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
             mainData,
             requestchannels,
             foreground,
-            plan: match.params.token !== "BASIC" ? "PRO" : "BASIC",
+            plan: match.params.token as PlanType,
             step,
             setStep,
             finishreg,

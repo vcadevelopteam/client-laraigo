@@ -259,6 +259,9 @@ const translation: LangKeys = {
     usertmepercentmax: 'Objetivo asesor TME',
     usertmo: 'TMO usuario',
     usertmopercentmax: 'Objetivo asesor TMO',
+    prepaid: "Prepago",
+    postpaid: "Postpago",
+    paymentmethod: "Método de pago",
     person: 'Persona',
     person_plural: 'Personas',
     detail: 'Detalle',
@@ -2983,9 +2986,11 @@ const translation: LangKeys = {
     transactionreceiver: 'Distinatario',
     transactioncost: 'Costo unitario',
     transactiondatetime: 'Fecha y hora',
+    optional: 'Opcional',
     billingtaxes: 'Impuesto',
     pricemessagenote1: 'Los precios de los mensajes incluyen una comisión de la empresa.',
     pricemessagenote2: 'Los precios de los mensajes no incluyen los impuestos de ley.',
+    conversationwhatsapp: 'Conversación WhatsApp',
 };
 
 const esResource: ResourceLanguage = {

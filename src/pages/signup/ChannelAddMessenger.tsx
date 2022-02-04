@@ -28,6 +28,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
         setrequestchannels,
     } = useContext(SubscriptionContext);
     const [pageLink, setPageLink] = useState("");
+    const [waitSave, setWaitSave] = useState(false);
     const [coloricon, setcoloricon] = useState("#0078FF");
     const [channelName, setChannelName] = useState("");
     const mainResult = useSelector(state => state.channel.channelList)
@@ -59,6 +60,13 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
     })
 
     useEffect(() => {
+        if (waitSave) {
+            dispatch(showBackdrop(false));
+            setWaitSave(false);
+        }
+    }, [mainResult, waitSave])
+
+    useEffect(() => {
         if (channelName.length > 0 && pageLink.length > 0) {
             setrequestchannels(prev => {
                 const index = prev.findIndex(x => x.type === "MESSENGER");
@@ -84,6 +92,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
         if (r.status !== "unknown" && !r.error) {
             dispatch(getChannelsListSub(r.accessToken, apiUrls.FACEBOOKAPP))
             dispatch(showBackdrop(true));
+            setWaitSave(true);
         }
     }
     function setValueField(value: any) {

@@ -1487,7 +1487,7 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
         return () => {
             dispatch(resetInsertChannel());
         };
-    }, []);
+    }, [dispatch]);
 
     useEffect(() => {
         if (foreground !== 'chatWeb' && selectedView !== "view1") {
@@ -1558,6 +1558,28 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
         }
     });
 
+    // useEffect(() => {
+    //     if (channelName.length > 0) {
+    //         setrequestchannels(prev => {
+    //             const index = prev.findIndex(x => x.type === "MESSENGER");
+    //             if (index === -1) {
+    //                 return [
+    //                     ...prev,
+    //                     form.getValues(),
+    //                 ]
+    //             } else {
+    //                 prev.splice(index, 1);
+    //                 return [
+    //                     ...prev,
+    //                     form.getValues(),
+    //                 ];
+    //             }
+    //         });
+    //     } else {
+    //         setrequestchannels(prev => prev.filter(x => x.type !== "MESSENGER"));
+    //     }
+    // }, [channelName, form.getValues]);
+
     const handleNext = () => {
         setShowFinalStep(true);
     }
@@ -1609,7 +1631,7 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
                         setView("view1");
                     }}
                 >
-                    <Trans i18nKey={langKeys.previoustext} />
+                    {'<< '}<Trans i18nKey={langKeys.previoustext} />
                 </Link>
             </Breadcrumbs>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
