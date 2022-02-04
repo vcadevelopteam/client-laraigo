@@ -42,7 +42,6 @@ const useRateStyles = makeStyles(theme => ({
 export const RateExperience: FC = () => {
     const classes = useRateStyles();
     const { t } = useTranslation();
-    const history = useHistory();
     const { commonClasses } = useContext(SubscriptionContext);
     const [rating, setRating] = useState<0 | 1 | 2 | 3>(0);
 
