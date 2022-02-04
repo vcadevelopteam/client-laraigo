@@ -2266,10 +2266,10 @@ export const getBillingConfigurationSel = ({ year, month, plan }: Dictionary): I
     parameters: { year, month, plan }
 })
 
-export const billingConfigurationIns = ({ year, month, plan, id, basicfee, userfreequantity, useradditionalfee, channelfreequantity, channelwhatsappfee, channelotherfee = 0, clientfreequantity, clientadditionalfee, allowhsm, hsmfee, description, status, type, operation }: Dictionary): IRequestBody => ({
+export const billingConfigurationIns = ({ year, month, plan, id, basicfee, userfreequantity, useradditionalfee, channelfreequantity, channelwhatsappfee, channelotherfee = 0, clientfreequantity, clientadditionalfee, allowhsm, hsmfee, description, status, whatsappconversationfreequantity, type, operation }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGCONFIGURATION_INS",
     key: "UFN_BILLINGCONFIGURATION_INS",
-    parameters: { year, month, plan, id, basicfee, userfreequantity, useradditionalfee, channelfreequantity, channelwhatsappfee, channelotherfee, clientfreequantity, clientadditionalfee, allowhsm, hsmfee, description, status, type, operation }
+    parameters: { year, month, plan, id, basicfee, userfreequantity, useradditionalfee, channelfreequantity, channelwhatsappfee, channelotherfee, clientfreequantity, clientadditionalfee, allowhsm, hsmfee, description, status, whatsappconversationfreequantity, type, operation }
 })
 
 export const getBillingConversationSel = ({ year, month, countrycode = "" }: Dictionary): IRequestBody => ({
@@ -2516,11 +2516,14 @@ export const changeStatus = ({ conversationid, status, obs, motive }: {
         type: motive,
     },
 });
-export const getBillingPeriodCalcRefreshAll = (exchangerate: number): IRequestBody => ({
+export const getBillingPeriodCalcRefreshAll = (year: number, month: number, corpid: number, orgid: number): IRequestBody => ({
     method: "UFN_BILLINGPERIOD_CALC_REFRESHALL",
     key: "UFN_BILLINGPERIOD_CALC_REFRESHALL",
     parameters: {
-        exchangerate
+        year,
+        month,
+        corpid,
+        orgid,
     },
 });
 
@@ -2548,10 +2551,10 @@ export const billingMessagingIns = ({ year, month, id, pricepersms, vcacomission
     parameters: { year, month, id, pricepersms, vcacomissionpersms, pricepermail, vcacomissionpermail, description, status, type, operation }
 })
 
-export const invoiceRefreshTest = (): IRequestBody => ({
+export const invoiceRefreshTest = (year: number, month: number, corpid: number): IRequestBody => ({
     method: "UFN_INVOICE_REFRESHTEST",
     key: "UFN_INVOICE_REFRESHTEST",
-    parameters: { },
+    parameters: { year, month, corpid },
 });
 
 export const getAdviserFilteredUserRol = (): IRequestBody => ({
@@ -2655,3 +2658,9 @@ export const getCorpSelVariant = (corpid: number, orgid: number, username: strin
         all: true,
     }
 });
+
+export const billingReportConversationWhatsApp = ({ corpid, orgid, year, month }: Dictionary): IRequestBody => ({
+    method: "UFN_BILLING_REPORT_CONVERSATIONWHATSAPP",
+    key: "UFN_BILLING_REPORT_CONVERSATIONWHATSAPP",
+    parameters: { corpid, orgid, year, month }
+})

@@ -3001,6 +3001,7 @@ const translation: LangKeys = {
     billingtaxes: 'Taxex',
     pricemessagenote1: 'The price of the messages include an additional comission',
     pricemessagenote2: 'The price of the messages do not include tax.',
+    conversationwhatsapp: 'WhatsApp Conversation',
 };
 
 const enResource: ResourceLanguage = {
