@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { cleanMemoryTable, setMemoryTable, uploadFile } from 'store/main/actions';
 import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx, FieldEditArray, TemplateIcons } from 'components';
-import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, invoiceRefreshTest, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail, selBalanceData, getBillingMessagingCurrent, getBalanceSelSent, getCorpSelVariant } from 'common/helpers';
+import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, billingReportConversationWhatsApp, invoiceRefreshTest, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail, selBalanceData, getBillingMessagingCurrent, getBalanceSelSent, getCorpSelVariant } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -1252,6 +1252,12 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
         setWaitExport(true);
     };
 
+    const triggerExportDataConversation = () => {
+        dispatch(exportData(billingReportConversationWhatsApp(dataMain),"BillingUserConversation","excel",true))
+        dispatch(showBackdrop(true));
+        setWaitExport(true);
+    };
+
     const handleCalculate = () => {
         const callback = () => {
             dispatch(execute(getBillingPeriodCalcRefreshAll(dataMain.year, dataMain.month, dataMain.corpid, dataMain.orgid)));
@@ -1419,6 +1425,15 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                                 onClick={() => triggerExportDataUser()}
                                 startIcon={<DownloadIcon />}
                             >{`${t(langKeys.report)} ${t(langKeys.agent_plural)}`}
+                            </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={resExportData.loading}
+                                onClick={() => triggerExportDataConversation()}
+                                startIcon={<DownloadIcon />}
+                            >{`${t(langKeys.report)} ${t(langKeys.conversationwhatsapp)}`}
                             </Button>
                         </Fragment>)
                     }

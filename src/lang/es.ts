@@ -2990,6 +2990,7 @@ const translation: LangKeys = {
     billingtaxes: 'Impuesto',
     pricemessagenote1: 'Los precios de los mensajes incluyen una comisión de la empresa.',
     pricemessagenote2: 'Los precios de los mensajes no incluyen los impuestos de ley.',
+    conversationwhatsapp: 'Conversación WhatsApp',
 };
 
 const esResource: ResourceLanguage = {

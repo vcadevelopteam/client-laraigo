@@ -2990,6 +2990,7 @@ export const langKeys = {
     billingtaxes: 'billingtaxes',
     pricemessagenote1: 'pricemessagenote1',
     pricemessagenote2: 'pricemessagenote2',
+    conversationwhatsapp: 'conversationwhatsapp',
 };
 
 export type LangKeys = typeof langKeys;

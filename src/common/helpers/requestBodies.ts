@@ -2658,3 +2658,9 @@ export const getCorpSelVariant = (corpid: number, orgid: number, username: strin
         all: true,
     }
 });
+
+export const billingReportConversationWhatsApp = ({ corpid, orgid, year, month }: Dictionary): IRequestBody => ({
+    method: "UFN_BILLING_REPORT_CONVERSATIONWHATSAPP",
+    key: "UFN_BILLING_REPORT_CONVERSATIONWHATSAPP",
+    parameters: { corpid, orgid, year, month }
+})
