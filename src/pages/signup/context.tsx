@@ -214,10 +214,14 @@ export const SubscriptionProvider: FC = ({ children }) => {
                 //         message: t(langKeys.successful_sign_up)
                 //     }
                 // })
+                let msg = t(langKeys.successful_sign_up);
+                if (mainData.googleid || mainData.facebookid) {
+                    msg = t(langKeys.successful_sign_up);
+                }
                 dispatch(showSnackbar({
                     show: true,
                     success: true,
-                    message: t(langKeys.successful_sign_up),
+                    message: msg,
                 }));
                 setWaitSave(false);
             } else if (executeResult.error) {
