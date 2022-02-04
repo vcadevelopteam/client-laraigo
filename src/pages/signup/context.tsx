@@ -2,12 +2,14 @@ import { makeStyles } from '@material-ui/core';
 import { IRequestBody } from '@types';
 import { useSelector } from 'hooks';
 import { langKeys } from 'lang/keys';
-import React, { FC, useState, createContext, useMemo, CSSProperties, useEffect } from 'react';
+import React, { FC, useState, createContext, useMemo, CSSProperties, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { executeSubscription } from 'store/signup/actions';
+import { executeSubscription, getChannelsListSub } from 'store/signup/actions';
+import FacebookLogin, { ReactFacebookFailureResponse, ReactFacebookLoginInfo } from 'react-facebook-login';
+import { apiUrls } from 'common/constants';
 
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 type PlanType = "BASIC" | "PRO" | "PREMIUM" | "ENTERPRISE" | "ADVANCED";
@@ -31,7 +33,6 @@ interface Subscription {
     addChannel: (option: keyof ListChannels) => void;
     deleteChannel: (option: keyof ListChannels) => void;
     toggleChannel: (option: keyof ListChannels) => void;
-    
 }
 
 export interface ListChannels {
@@ -74,6 +75,10 @@ interface MainData {
     industry: string;
     companysize: string;
     rolecompany: string;
+}
+
+interface FacebookButtonProps {
+    callback: (userInfo: ReactFacebookLoginInfo | ReactFacebookFailureResponse) => void;
 }
 
 const defaultListChannels: ListChannels = {

@@ -144,6 +144,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
                 optionValue="id"
                 variant="outlined"
                 size="small"
+                disabled={mainResult.loading || mainResult.data.length === 0}
             />
  
             {/* <div className="row-zyx">
@@ -167,7 +168,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
                     </div>
                 </div>
             </div> */}
-            {pageLink.length === 0 ? (
+            {pageLink.length === 0 && mainResult.data.length === 0 ? (
                 <FacebookLogin
                     appId={apiUrls.FACEBOOKAPP}
                     autoLoad={false}
@@ -185,6 +186,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
                             version: 'v8.0'
                         });
                     }}
+                    isDisabled={mainResult.loading}
                 />
             ) : selectedChannels === 1 && (
                 <Button
@@ -192,7 +194,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
                     className={commonClasses.button}
                     variant="contained"
                     color="primary"
-                    disabled={channelName.length === 0}
+                    disabled={channelName.length === 0 || mainResult.loading}
                 >
                     <Trans i18nKey={langKeys.finishreg} />
                 </Button>

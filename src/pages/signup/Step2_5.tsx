@@ -121,7 +121,6 @@ export const Step2_5: FC<{ setOpenWarning: (param: any) => void}> = ({ setOpenWa
             };
         })
     }
-    console.log(errors)
 
     /*useEffect(() => {
         setMainData((p:any) => ({ ...p, country: countrycode, countryname: countryname, currency: currency }))

@@ -1,9 +1,8 @@
 import { FC, useContext, useState } from "react";
-import { Button, IconButton, makeStyles, TextareaAutosize, TextField } from "@material-ui/core";
+import { Button, Collapse, IconButton, makeStyles, TextareaAutosize, TextField } from "@material-ui/core";
 import { Trans, useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { SubscriptionContext } from "./context";
-import { useHistory } from "react-router-dom";
 import {
     MoodBad as MoodBadIcon,
     InsertEmoticon as InsertEmoticonIcon,
@@ -79,14 +78,17 @@ export const RateExperience: FC = () => {
                     <span>Me encanto</span>
                 </div>
             </div>
-            <TextField
-                label="¿Cómo podemos mejorar?"
-                variant="outlined"
-                multiline
-                minRows={6}
-                maxRows={6}
-                style={{ resize: 'none' }}
-            />
+            <Collapse in={rating !== 0}>
+                <TextField
+                    label="¿Cómo podemos mejorar?"
+                    variant="outlined"
+                    multiline
+                    minRows={6}
+                    maxRows={6}
+                    style={{ resize: 'none' }}
+                    fullWidth
+                />
+            </Collapse>
             <Button
                 onClick={() => window.open(paths.SIGNIN, "_self")}
                 className={commonClasses.button}

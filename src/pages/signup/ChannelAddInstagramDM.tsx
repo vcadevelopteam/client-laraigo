@@ -144,6 +144,7 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
                 optionValue="id"
                 variant="outlined"
                 size="small"
+                disabled={mainResult.loading || mainResult.data.length === 0}
             />
             {/* <div className="row-zyx">
                 <div className="col-3"></div>
@@ -166,7 +167,7 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
                     </div>
                 </div>
             </div> */}
-            {pageLink.length === 0 ? (
+            {pageLink.length === 0 && mainResult.data.length === 0 ? (
                 <FacebookLogin
                     appId={apiUrls.INSTAGRAMAPP}
                     autoLoad={false}
@@ -183,12 +184,13 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
                             version: 'v8.0'
                         });
                     }}
+                    isDisabled={mainResult.loading}
                 />
             ) : selectedChannels === 1 && (
                 <Button
                     onClick={finishreg}
                     className={commonClasses.button}
-                    disabled={channelName.length === 0}
+                    disabled={channelName.length === 0 || mainResult.loading}
                     variant="contained"
                     color="primary"
                 >

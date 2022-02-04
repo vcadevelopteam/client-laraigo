@@ -171,7 +171,7 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
                 disabled={mainResult.loading || mainResult.data.length === 0}
             />
 
-            {pageLink.length === 0 ? (
+            {pageLink.length === 0 && mainResult.data.length === 0 ? (
                 <FacebookLogin
                     appId={apiUrls.FACEBOOKAPP}
                     autoLoad={false}
