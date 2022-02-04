@@ -168,7 +168,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
 
     function disableContinue(value: any) {
         if (fields.service.email.includes('@') && fields.service.email.includes('.')) {
-            setdisablebutton(!(value) || !(fields.service.lastname) || !(fields.service.email) || !(fields.service.phone) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber))
+            setdisablebutton(!(value) || !(fields.service.lastname) || !(fields.service.email) || !(fields.service.phone.length>9) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber))
         }
         else {
             setdisablebutton(true);
@@ -289,13 +289,12 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                         fullWidth
                         defaultCountry={'pe'}
                         onChange={(e) => {
-                            console.log('CssPhonemui', e)
                             let partialf = fields;
                             partialf.service.phone = e;
                             setFields(partialf);
                             setErrors(p => ({
                                 ...p,
-                                phone: !phoneRegExp.test(e as string)
+                                phone: (!phoneRegExp.test(e as string) || e.length < 10)
                                     ? "Ingrese un número de telefono válido"
                                     : "",
                             }));
