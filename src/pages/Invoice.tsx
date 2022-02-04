@@ -1537,36 +1537,58 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                                     </StyledTableRow>
                                     <StyledTableRow>
                                         <StyledTableCell >
-                                            <div><b>{t(langKeys.conversation_plural)}</b></div>
+                                            <div><b>{t(langKeys.billingreportconversations)}</b></div>
                                             <div>{t(langKeys.reportfreeconversations)}</div>
                                             <div>{t(langKeys.userinitiatedconversations)}</div>
                                             <div>{t(langKeys.businessinitiatedconversations)}</div>
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>{formatNumberNoDecimals(0)}</div>
-                                            <div>{formatNumberNoDecimals(0)}</div>
-                                            <div>{formatNumberNoDecimals(0)}</div>
+                                            <div>{formatNumberNoDecimals((datareport.channelwhatsappquantity || 0) * 1000)}</div>
+                                            <div>{formatNumberNoDecimals(datareport.conversationclientwhatquantity || 0)}</div>
+                                            <div>{formatNumberNoDecimals(datareport.conversationcompanywhatquantity || 0)}</div>
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>$ {datareport.channelwhatsappfee?formatNumber(0):"0.00"}</div>
-                                            <div>$ {datareport.channelotherfee?formatNumber(0):"0.00"}</div>
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div style={{color:"transparent"}}>.</div>
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>$ {datareport.channelwhatsappcharge?formatNumber(0):"0.00"}</div>
-                                            <div>$ {datareport.channelothercharge?formatNumber(0):"0.00"}</div>
+                                            <div>$ {formatNumber(datareport.conversationclientwhatcharge || 0)}</div>
+                                            <div>$ {formatNumber(datareport.conversationcompanywhatcharge || 0)}</div>
                                         </StyledTableCell>
                                     </StyledTableRow>
                                     <StyledTableRow>
                                         <StyledTableCell >
-                                            <div><b>{t(langKeys.uniquecontacts)}</b></div>
+                                            <div><b>{t(langKeys.billingreportmessaging)}</b></div>
+                                            <div>{t(langKeys.billingreportsms)}</div>
+                                            <div>{t(langKeys.billingreportmail)}</div>
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div>{formatNumberNoDecimals(datareport.smsquantity || 0)}</div>
+                                            <div>{formatNumberNoDecimals(datareport.mailquantity || 0)}</div>
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div>{formatNumber(0)}</div>
+                                            <div>{formatNumber(0)}</div>
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div>{formatNumber(0)}</div>
+                                            <div>{formatNumber(0)}</div>
+                                        </StyledTableCell>
+                                    </StyledTableRow>
+                                    <StyledTableRow>
+                                        <StyledTableCell >
+                                            <div><b>{t(langKeys.billingreportcontacts)}</b></div>
                                             <div>{t(langKeys.freecontacts)}</div>
-                                            <div>{t(langKeys.total)} {t(langKeys.contact_plural)}</div>
-                                            <div>{t(langKeys.additional)} {t(langKeys.contact_plural)}</div>
+                                            <div>{t(langKeys.billingreporttotalcontacts)}</div>
+                                            <div>{t(langKeys.billingreportadditionalcontacts)}</div>
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>

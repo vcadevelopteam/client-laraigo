@@ -2991,6 +2991,13 @@ export const langKeys = {
     pricemessagenote1: 'pricemessagenote1',
     pricemessagenote2: 'pricemessagenote2',
     conversationwhatsapp: 'conversationwhatsapp',
+    billingreportconversations: 'billingreportconversations',
+    billingreportmessaging: 'billingreportmessaging',
+    billingreportsms: 'billingreportsms',
+    billingreportmail: 'billingreportmail',
+    billingreportcontacts: 'billingreportcontacts',
+    billingreporttotalcontacts: 'billingreporttotalcontacts',
+    billingreportadditionalcontacts: 'billingreportadditionalcontacts',
 };
 
 export type LangKeys = typeof langKeys;

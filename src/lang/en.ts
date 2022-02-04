@@ -2888,9 +2888,9 @@ const translation: LangKeys = {
     enterDashboardDescription: 'Enter dashboard description',
     moreOptions: 'More options',
 
-    reportfreeconversations: 'Free conversations',
-    userinitiatedconversations: 'User-initiated conversations',
-    businessinitiatedconversations: 'Business-initiated conversations',
+    reportfreeconversations: 'WhatsApp free conversations',
+    userinitiatedconversations: 'WhatsApp user-initiated conversations',
+    businessinitiatedconversations: 'WhatsApp business-initiated conversations',
     reportstatus: 'Report status',
     generateinvoice: 'Generate Voucher',
     clientsearch: 'Client search:',
@@ -3002,6 +3002,13 @@ const translation: LangKeys = {
     pricemessagenote1: 'The price of the messages include an additional comission',
     pricemessagenote2: 'The price of the messages do not include tax.',
     conversationwhatsapp: 'WhatsApp Conversation',
+    billingreportconversations: 'WhatsApp Conversations',
+    billingreportmessaging: 'Messaging',
+    billingreportsms: 'SMS messages',
+    billingreportmail: 'E-Mail messages',
+    billingreportcontacts: 'Contacts',
+    billingreporttotalcontacts: 'Total contacts',
+    billingreportadditionalcontacts: 'Additional contacts',
 };
 
 const enResource: ResourceLanguage = {

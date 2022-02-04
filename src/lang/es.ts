@@ -1025,7 +1025,7 @@ const translation: LangKeys = {
     basecost: "Costo base",
     contracted: "Contratado",
     whatsappchannel: "Canal WhatsApp",
-    freecontacts: "Contactos libres",
+    freecontacts: "Contactos gratis",
     periodamount: "Importe del período",
     servicedata: "Datos del servicio",
     interaction_plural: "Interactiones",
@@ -2877,9 +2877,9 @@ const translation: LangKeys = {
     enterDashboardDescription: 'Ingrese la descripción del dashboard',
     moreOptions: 'Más opciones',
     
-    reportfreeconversations: 'Conversaciones gratis',
-    userinitiatedconversations: 'Conversaciones iniciadas por el usuario',
-    businessinitiatedconversations: 'Conversaciones iniciadas por el negocio',
+    reportfreeconversations: 'Conversaciones WhatsApp gratis',
+    userinitiatedconversations: 'Conversaciones WhatsApp iniciadas por el usuario',
+    businessinitiatedconversations: 'Conversaciones WhatsApp iniciadas por el negocio',
     reportstatus: 'Estado de reporte',
     generateinvoice: 'Generar Comprobante',
     clientsearch: 'Busqueda de cliente:',
@@ -2991,6 +2991,13 @@ const translation: LangKeys = {
     pricemessagenote1: 'Los precios de los mensajes incluyen una comisión de la empresa.',
     pricemessagenote2: 'Los precios de los mensajes no incluyen los impuestos de ley.',
     conversationwhatsapp: 'Conversación WhatsApp',
+    billingreportconversations: 'Conversaciones WhatsApp',
+    billingreportmessaging: 'Mensajeria',
+    billingreportsms: 'Mensajes SMS',
+    billingreportmail: 'Mensajes Correo',
+    billingreportcontacts: 'Contactos',
+    billingreporttotalcontacts: 'Contactos totales',
+    billingreportadditionalcontacts: 'Contactos adicionales',
 };
 
 const esResource: ResourceLanguage = {
