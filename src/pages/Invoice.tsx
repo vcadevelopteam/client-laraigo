@@ -284,7 +284,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const fetchData = () => dispatch(getCollection(getBillingPeriodSel(dataMain)));
 
     useEffect(() => {
-        setdisableSearch(dataMain.year === "" ) 
+        setdisableSearch(dataMain.year === "") 
     }, [dataMain])
 
     useEffect(() => {
@@ -317,7 +317,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
 
     const handleCalculate = () => {
         const callback = () => {
-            dispatch(execute(getBillingPeriodCalcRefreshAll(0)));
+            dispatch(execute(getBillingPeriodCalcRefreshAll(parseInt(dataMain.year || '0'), parseInt(dataMain.month || '0'), dataMain.corpid, dataMain.orgid)));
             dispatch(showBackdrop(true));
             setWaitSave(true);
             setWaitCalculate(true);
@@ -1254,7 +1254,7 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
 
     const handleCalculate = () => {
         const callback = () => {
-            dispatch(execute(getBillingPeriodCalcRefreshAll(0)));
+            dispatch(execute(getBillingPeriodCalcRefreshAll(dataMain.year, dataMain.month, dataMain.corpid, dataMain.orgid)));
             dispatch(showBackdrop(true));
             setWaitCalculate(true);
         }
@@ -1702,7 +1702,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
 
     const search = () => dispatch(getCollection(selInvoiceClient(dataMain)));
 
-    const refreshAll = () => { dispatch(execute(invoiceRefreshTest())); setWaitRefresh(true) }
+    const refreshAll = () => { dispatch(execute(invoiceRefreshTest(parseInt(dataMain.year || '0'), parseInt(dataMain.month || '0'), dataMain.corpid))); setWaitRefresh(true) }
 
     useEffect(() => {
         fetchData()
