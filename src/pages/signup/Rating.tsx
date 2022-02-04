@@ -88,7 +88,7 @@ export const RateExperience: FC = () => {
                 style={{ resize: 'none' }}
             />
             <Button
-                onClick={() => window.open(paths.SIGNUPBASIC, "_self")}
+                onClick={() => window.open(paths.SIGNIN, "_self")}
                 className={commonClasses.button}
                 style={{ marginTop: '3em' }}
                 variant="contained"
