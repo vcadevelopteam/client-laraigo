@@ -241,6 +241,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
             autosendinvoice: row?.autosendinvoice || false,
             credittype: row?.credittype || "typecredit_alcontado",
             operation: row ? "UPDATE" : "INSERT",
+            paymentmethod: row?.paymentmethod || "",
             companysize: null,
         }
     });
@@ -283,6 +284,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
         register('contactemail', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('sunatcountry', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('credittype', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
+        register('paymentmethod', { validate: (value) => user?.roledesc === "SUPERADMIN"? ((value && value.length) || t(langKeys.field_required)) : true });
         register('paymentplanid');
     }, [register, billbyorg, doctype, getValues, t]);
 
@@ -475,6 +477,19 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                 trigger('billbyorg');
                             }}
                         />
+                        {user?.roledesc === "SUPERADMIN" &&
+                            
+                            <FieldSelect
+                                label={t(langKeys.paymentmethod)}
+                                className="col-6"
+                                valueDefault={getValues("paymentmethod")}
+                                onChange={(value) => setValue('paymentmethod', value?.value || "")}
+                                data={[{name: t(langKeys.prepaid), value: "PREPAGO"},{name: t(langKeys.postpaid), value: "POSTPAGO"}]}
+                                error={errors?.paymentmethod?.message}
+                                optionDesc="name"   
+                                optionValue="value"                        
+                            />
+                        }
                     </div>
                     {!getValues('billbyorg') && (
                         <>

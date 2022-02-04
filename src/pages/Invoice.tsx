@@ -1449,7 +1449,7 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                                 value={`${datareport.year}-${String(datareport.month).padStart(2, '0')}`}
                             />
                         </div>
-                        <TableContainer component={Paper}>
+                        <TableContainer component={Paper} style={{overflow: "hidden"}}>
                             <Table aria-label="customized table">
                                 <TableHead>
                                 <TableRow>
@@ -1618,7 +1618,7 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                             </Table>
                         </TableContainer>
                         <div style={{paddingTop: 30, fontWeight: "bold", fontSize: "1.5em"}}>{t(langKeys.servicedata)}</div>
-                        <TableContainer component={Paper}>
+                        <TableContainer component={Paper} style={{overflow: "hidden"}}>
                             <Table aria-label="customized table">
                                 <TableHead>
                                 <TableRow>
