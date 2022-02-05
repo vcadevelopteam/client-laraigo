@@ -2998,6 +2998,9 @@ export const langKeys = {
     billingreportcontacts: 'billingreportcontacts',
     billingreporttotalcontacts: 'billingreporttotalcontacts',
     billingreportadditionalcontacts: 'billingreportadditionalcontacts',
+    freewhatsappchannel: 'freewhatsappchannel',
+    whatsappfreechannel: 'whatsappfreechannel',
+    whatsappadditionalchannel: 'whatsappadditionalchannel',
 };
 
 export type LangKeys = typeof langKeys;

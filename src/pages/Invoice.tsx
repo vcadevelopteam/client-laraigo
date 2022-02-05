@@ -518,6 +518,8 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
             vcacomissionpermail: row?.vcacomissionpermail||0,
             mailquantity: row?.mailquantity||0,
             mailcost: row?.mailcost||0,
+            freewhatsappchannel: row?.freewhatsappchannel||0,
+            freewhatsappconversations: row?.freewhatsappconversations||0,
         }
     });
 
@@ -555,6 +557,8 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
         register('vcacomissionpermail');
         register('mailquantity');
         register('mailcost');
+        register('freewhatsappchannel', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('freewhatsappconversations');
     }, [edit, register]);
 
     useEffect(() => {
@@ -708,6 +712,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             error={errors?.basicfee?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         /> :
                             <FieldView
                             className="col-6"
@@ -722,6 +727,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             error={errors?.supportbasicfee?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         />:
                             <FieldView
                             className="col-6"
@@ -780,6 +786,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             error={errors?.useradditionalfee?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         /> :
                             <FieldView
                                 className="col-6"
@@ -817,6 +824,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             error={errors?.channelwhatsappfee?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         /> :
                             <FieldView
                                 className="col-6"
@@ -835,6 +843,27 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             className="col-6"
                             label={t(langKeys.channelwhatsappquantity)}
                             value={getValues("channelwhatsappquantity").toString()}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        { edit ? <FieldEdit
+                            label={t(langKeys.freewhatsappchannel)}
+                            onChange={(value) => setValue('freewhatsappchannel', value)}
+                            valueDefault={getValues('freewhatsappchannel')}
+                            error={errors?.freewhatsappchannel?.message}
+                            type="number"
+                            className="col-6"
+                        /> :
+                            <FieldView
+                            className="col-6"
+                            label={t(langKeys.freewhatsappchannel)}
+                            value={getValues("freewhatsappchannel").toString()}
+                        />
+                        }
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.reportfreeconversations)}
+                            value={getValues("freewhatsappconversations").toString()}
                         />
                     </div>
                     <div className="row-zyx">
@@ -944,6 +973,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             error={errors?.clientadditionalfee?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         /> :
                             <FieldView
                                 className="col-6"
@@ -967,6 +997,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             error={errors?.unitpricepersms?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         /> :
                             <FieldView
                                 className="col-6"
@@ -981,6 +1012,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             error={errors?.vcacomissionpersms?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         /> :
                             <FieldView
                                 className="col-6"
@@ -1009,6 +1041,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             error={errors?.unitepricepermail?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         /> :
                             <FieldView
                                 className="col-6"
@@ -1023,6 +1056,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             error={errors?.vcacomissionpermail?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         /> :
                             <FieldView
                                 className="col-6"
@@ -1066,6 +1100,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             error={errors?.additionalservicefee1?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         /> :
                             <FieldView
                                 className="col-6"
@@ -1095,6 +1130,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             error={errors?.additionalservicefee2?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         /> :
                             <FieldView
                                 className="col-6"
@@ -1124,6 +1160,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             error={errors?.additionalservicefee3?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         /> :
                             <FieldView
                                 className="col-6"
@@ -1495,44 +1532,52 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>{formatNumberNoDecimals(datareport.userfreequantity)}</div>
-                                            <div>{formatNumberNoDecimals(datareport.useradditionalquantity)}</div>
+                                            <div>{formatNumberNoDecimals(datareport.userfreequantity || 0)}</div>
+                                            <div>{formatNumberNoDecimals(datareport.useradditionalquantity || 0)}</div>
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>$ {datareport.useradditionalfee?formatNumber(datareport.useradditionalfee):"0.00"}</div>
+                                            <div>$ {formatNumber(datareport.useradditionalfee || 0)}</div>
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>                                            
-                                            <div>$ {datareport.useradditionalcharge ?formatNumber(datareport.useradditionalcharge):"0.00"}</div>
+                                            <div>$ {formatNumber(datareport.useradditionalcharge || 0)}</div>
                                         </StyledTableCell>
                                     </StyledTableRow>
                                     <StyledTableRow>
-                                        <StyledTableCell >
+                                        <StyledTableCell>
                                             <div><b>{t(langKeys.channel_plural)}</b></div>
                                             <div>{t(langKeys.contracted)}</div>
+                                            <div>{t(langKeys.whatsappfreechannel)}</div>
                                             <div>{t(langKeys.whatsappchannel)}</div>
+                                            <div>{t(langKeys.whatsappadditionalchannel)}</div>
                                             <div>{t(langKeys.otherchannels)}</div>
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>{formatNumberNoDecimals(datareport.channelfreequantity)}</div>
-                                            <div>{formatNumberNoDecimals(datareport.channelwhatsappquantity)}</div>
-                                            <div>{formatNumberNoDecimals(datareport.channelotherquantity)}</div>
+                                            <div>{formatNumberNoDecimals(datareport.channelfreequantity || 0)}</div>
+                                            <div>{formatNumberNoDecimals(datareport.freewhatsappchannel || 0)}</div>
+                                            <div>{formatNumberNoDecimals(datareport.channelwhatsappquantity || 0)}</div>
+                                            <div>{formatNumberNoDecimals(((datareport.channelwhatsappquantity - datareport.freewhatsappchannel) < 0 ? 0 : (datareport.channelwhatsappquantity - datareport.freewhatsappchannel)) || 0)}</div>
+                                            <div>{formatNumberNoDecimals(datareport.channelotherquantity || 0)}</div>
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>$ {datareport.channelwhatsappfee?formatNumber(datareport.channelwhatsappfee):"0.00"}</div>
-                                            <div>$ {datareport.channelotherfee?formatNumber(datareport.channelotherfee):"0.00"}</div>
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div>$ {formatNumber(datareport.channelwhatsappfee || 0)}</div>
+                                            <div>$ {formatNumber(datareport.channelotherfee || 0)}</div>
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>$ {datareport.channelwhatsappcharge?formatNumber(datareport.channelwhatsappcharge):"0.00"}</div>
-                                            <div>$ {datareport.channelothercharge?formatNumber(datareport.channelothercharge):"0.00"}</div>
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div>$ {formatNumber(datareport.channelwhatsappcharge || 0)}</div>
+                                            <div>$ {formatNumber(datareport.channelothercharge || 0)}</div>
                                         </StyledTableCell>
                                     </StyledTableRow>
                                     <StyledTableRow>
@@ -1544,7 +1589,7 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>{formatNumberNoDecimals((datareport.channelwhatsappquantity || 0) * 1000)}</div>
+                                            <div>{formatNumberNoDecimals((datareport.channelwhatsappquantity || 0) * (datareport.freewhatsappconversations || 0))}</div>
                                             <div>{formatNumberNoDecimals(datareport.conversationclientwhatquantity || 0)}</div>
                                             <div>{formatNumberNoDecimals(datareport.conversationcompanywhatquantity || 0)}</div>
                                         </StyledTableCell>
@@ -1574,13 +1619,13 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>{formatNumber(0)}</div>
-                                            <div>{formatNumber(0)}</div>
+                                            <div>$ {formatNumber((datareport.unitpricepersms || 0) + (datareport.vcacomissionpersms || 0))}</div>
+                                            <div>$ {formatNumber((datareport.unitepricepermail || 0) + (datareport.vcacomissionpermail || 0))}</div>
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>{formatNumber(0)}</div>
-                                            <div>{formatNumber(0)}</div>
+                                            <div>$ {formatNumber(datareport.smscost || 0)}</div>
+                                            <div>$ {formatNumber(datareport.mailcost || 0)}</div>
                                         </StyledTableCell>
                                     </StyledTableRow>
                                     <StyledTableRow>
@@ -1592,21 +1637,21 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>{formatNumberNoDecimals(datareport.clientfreequantity)}</div>
-                                            <div>{formatNumberNoDecimals(datareport.clientquantity)}</div>
-                                            <div>{formatNumberNoDecimals(datareport.clientadditionalquantity)}</div>
+                                            <div>{formatNumberNoDecimals(datareport.clientfreequantity || 0)}</div>
+                                            <div>{formatNumberNoDecimals(datareport.clientquantity || 0)}</div>
+                                            <div>{formatNumberNoDecimals(datareport.clientadditionalquantity || 0)}</div>
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>$ {datareport.clientadditionalfee?formatNumber(datareport.clientadditionalfee):"0.00"}</div>
+                                            <div>$ {formatNumber(datareport.clientadditionalfee || 0)}</div>
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>$ {datareport.clientadditionalcharge?formatNumber(datareport.clientadditionalcharge):"0.00"}</div>
+                                            <div>$ {formatNumber(datareport.clientadditionalcharge || 0)}</div>
                                         </StyledTableCell>
                                     </StyledTableRow>
                                     <StyledTableRow>
@@ -1618,27 +1663,25 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                                         <StyledTableCell >
                                         </StyledTableCell>
                                         <StyledTableCell  align="right">
-                                            $ {datareport.supportbasicfee?formatNumber(datareport.supportbasicfee):"0.00"}
+                                            $ {formatNumber(datareport.supportbasicfee || 0)}
                                         </StyledTableCell>
                                     </StyledTableRow>
-                                    { (datareport.additionalservicefee1>0 || datareport.additionalservicefee2>0 || datareport.additionalservicefee3>0) &&
                                     <StyledTableRow>
-                                        <StyledTableCell >
-                                            {datareport.additionalservicefee1>0? <div className={clsx({[classes.transparent]: datareport.additionalservicename1===""})}>{datareport.additionalservicename1===""?'.':datareport.additionalservicename1}</div>:""}
-                                            {datareport.additionalservicefee2>0? <div className={clsx({[classes.transparent]: datareport.additionalservicename2===""})}>{datareport.additionalservicename2===""?'.':datareport.additionalservicename2}</div>:""}
-                                            {datareport.additionalservicefee3>0? <div className={clsx({[classes.transparent]: datareport.additionalservicename3===""})}>{datareport.additionalservicename3===""?'.':datareport.additionalservicename3}</div>:""}
+                                        <StyledTableCell>
+                                            {datareport.additionalservicefee1 ? <div className={clsx({[classes.transparent]: datareport.additionalservicename1 === ""})}>{datareport.additionalservicename1 === "" ? <div style={{color:"transparent"}}>.</div> : datareport.additionalservicename1}</div> : <div style={{color:"transparent"}}>.</div>}
+                                            {datareport.additionalservicefee2 ? <div className={clsx({[classes.transparent]: datareport.additionalservicename2 === ""})}>{datareport.additionalservicename2 === "" ? <div style={{color:"transparent"}}>.</div> : datareport.additionalservicename2}</div> : <div style={{color:"transparent"}}>.</div>}
+                                            {datareport.additionalservicefee3 ? <div className={clsx({[classes.transparent]: datareport.additionalservicename3 === ""})}>{datareport.additionalservicename3 === "" ? <div style={{color:"transparent"}}>.</div> : datareport.additionalservicename3}</div> : <div style={{color:"transparent"}}>.</div>}
                                         </StyledTableCell>
                                         <StyledTableCell >
                                         </StyledTableCell>
                                         <StyledTableCell >
                                         </StyledTableCell>
                                         <StyledTableCell  align="right">
-                                            {datareport.additionalservicefee1>0? <div>$ {datareport.additionalservicefee1?formatNumber(datareport.additionalservicefee1):"0.00"}</div>:""}
-                                            {datareport.additionalservicefee2>0? <div>$ {datareport.additionalservicefee2?formatNumber(datareport.additionalservicefee2):"0.00"}</div>:""}
-                                            {datareport.additionalservicefee3>0? <div>$ {datareport.additionalservicefee3?formatNumber(datareport.additionalservicefee3):"0.00"}</div>:""}
+                                            {datareport.additionalservicefee1 ? <div>$ {formatNumber(datareport.additionalservicefee1 || 0)}</div> : <div style={{color:"transparent"}}>.</div>}
+                                            {datareport.additionalservicefee2 ? <div>$ {formatNumber(datareport.additionalservicefee2 || 0)}</div> : <div style={{color:"transparent"}}>.</div>}
+                                            {datareport.additionalservicefee3 ? <div>$ {formatNumber(datareport.additionalservicefee3 || 0)}</div> : <div style={{color:"transparent"}}>.</div>}
                                         </StyledTableCell>
                                     </StyledTableRow>
-                                    }
                                     <StyledTableRow>
                                         <StyledTableCell >
                                             <b>{t(langKeys.periodamount)}</b>
@@ -1648,7 +1691,7 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                                         <StyledTableCell >
                                         </StyledTableCell>
                                         <StyledTableCell  align="right">
-                                        $ {datareport.totalcharge?formatNumber(datareport.totalcharge):"0.00"}
+                                        $ {formatNumber(datareport.totalcharge || 0)}
                                         </StyledTableCell>
                                     </StyledTableRow>
                                 </TableBody>
@@ -3211,7 +3254,8 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                                         valueDefault={getValues('creditnotediscount')}
                                         onChange={(value) => setValue('creditnotediscount', value)}
                                         error={errors?.creditnotediscount?.message}
-                                        type='number'
+                                        type="number"
+                                        inputProps={{ step: "any" }}
                                     />
                                 ) : null}
                             </div>
@@ -4434,7 +4478,8 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                                         valueDefault={getValues(`productdetail.${i}.productsubtotal`)}
                                                         error={errors?.productdetail?.[i]?.productsubtotal?.message}
                                                         onChange={(value) => { setValue(`productdetail.${i}.productsubtotal`, "" + value); onProductChange(); }}
-                                                        type='number'
+                                                        type="number"
+                                                        inputProps={{ step: "any" }}
                                                     />
                                                 </TableCell>
                                                 <TableCell>
@@ -4449,7 +4494,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                                         valueDefault={getValues(`productdetail.${i}.productquantity`)}
                                                         error={errors?.productdetail?.[i]?.productquantity?.message}
                                                         onChange={(value) => { setValue(`productdetail.${i}.productquantity`, "" + value); onProductChange(); }}
-                                                        type='number'
+                                                        type="number"
                                                     />
                                                 </TableCell>
                                                 <TableCell>
@@ -5141,7 +5186,8 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                                     valueDefault={buyAmount}
                                     error={buyAmountError}
                                     className="col-4"
-                                    type='number'
+                                    type="number"
+                                    inputProps={{ step: "any" }}
                                     disabled={disableInput}
                                 />
                             ) : (

@@ -1024,7 +1024,7 @@ const translation: LangKeys = {
     rate: "Tasa",
     basecost: "Costo base",
     contracted: "Contratado",
-    whatsappchannel: "Canal WhatsApp",
+    whatsappchannel: "Canales WhatsApp totales",
     freecontacts: "Contactos gratis",
     periodamount: "Importe del período",
     servicedata: "Datos del servicio",
@@ -2563,7 +2563,7 @@ const translation: LangKeys = {
     detractionaccount: 'Número de Cuenta de Detracción',
     operationcodeperu: 'Tipo Operación SUNAT (Perú)',
     operationcodeother: 'Tipo Operación SUNAT (No domiciliado)',
-    freeconversations: 'Cupo conversaciones gratis',
+    freeconversations: 'Conversaciones WhatsApp gratis',
     messagingcost: 'Costo de Mensajería',
     pricepersms: 'PU por SMS',
     vcacomissionpersms: 'Comisión VCA por SMS',
@@ -2998,6 +2998,9 @@ const translation: LangKeys = {
     billingreportcontacts: 'Contactos',
     billingreporttotalcontacts: 'Contactos totales',
     billingreportadditionalcontacts: 'Contactos adicionales',
+    freewhatsappchannel: 'Cantidad de canales WhatsApp gratis',
+    whatsappfreechannel: 'Canales WhatsApp gratis',
+    whatsappadditionalchannel: 'Canales WhatsApp adicionales',
 };
 
 const esResource: ResourceLanguage = {

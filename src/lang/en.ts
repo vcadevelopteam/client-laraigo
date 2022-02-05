@@ -2122,7 +2122,7 @@ const translation: LangKeys = {
     formBaseHistory: 'Form base history',
     sendMetaData: 'Send meta data',
     basecost: "Base cost",
-    whatsappchannel: "WhatsApp channel",
+    whatsappchannel: "Total WhatsApp channels",
     otherchannels: "Other channel",
     freecontacts: "Free contacts",
     create_custom_report: 'Create custom report',
@@ -2574,7 +2574,7 @@ const translation: LangKeys = {
     detractionaccount: 'Detraction Account Number',
     operationcodeperu: 'SUNAT Operation Type (Peru)',
     operationcodeother: 'SUNAT Operation Type (No Document)',
-    freeconversations: 'Free tier conversations',
+    freeconversations: 'Free WhatsApp conversations',
     messagingcost: 'Messaging Cost',
     pricepersms: 'UP per SMS',
     vcacomissionpersms: 'VCA Comission per SMS',
@@ -3009,6 +3009,9 @@ const translation: LangKeys = {
     billingreportcontacts: 'Contacts',
     billingreporttotalcontacts: 'Total contacts',
     billingreportadditionalcontacts: 'Additional contacts',
+    freewhatsappchannel: 'Free WhatsApp channel quantity',
+    whatsappfreechannel: 'Free WhatsApp channels',
+    whatsappadditionalchannel: 'Additional WhatsApp channels',
 };
 
 const enResource: ResourceLanguage = {
