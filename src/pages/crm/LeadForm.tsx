@@ -1680,7 +1680,14 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
 
     const handleSave = useCallback((status: "PROGRAMADO" | "REALIZADO" | "ELIMINADO") => {
         handleSubmit((values) => {
-            onSubmit?.({ ...values, status, detailjson: JSON.stringify(detail) });
+            const dueate = new Date(values.duedate);
+            dueate.setHours(dueate.getHours() - 5);
+            onSubmit?.({
+                ...values,
+                status,
+                detailjson: JSON.stringify(detail),
+                duedate: dueate.toLocaleString().replaceAll("/", "-"),
+            });
             if (leadid === 0 && mustCloseOnSubmit.current) {
                 onClose();
             } else {

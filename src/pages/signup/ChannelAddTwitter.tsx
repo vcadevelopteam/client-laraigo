@@ -26,6 +26,7 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
         commonClasses,
         foreground,
         selectedChannels,
+        setConfirmations,
         finishreg,
         setForeground,
         deleteChannel,
@@ -202,6 +203,7 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
                             onClick={() => {
                                 setView("view1");
                                 setHasFinished(true);
+                                setConfirmations(prev => prev++);
                             }}
                             className={classes.button}
                             variant="contained"
