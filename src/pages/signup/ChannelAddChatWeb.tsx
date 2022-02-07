@@ -1471,14 +1471,12 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
     const {
         foreground,
         setForeground,
-        deleteChannel,
         setrequestchannels,
     } = useContext(SubscriptionContext);
     const dispatch = useDispatch();
     const [hasFinished, setHasFinished] = useState(false);
     const [selectedView, setSelectedView] = useState("view1");
     const [tabIndex, setTabIndes] = useState('0');
-    const [showFinalStep, setShowFinalStep] = useState(false);
     const [channelName, setChannelName] = useState("");
 
     const insertChannel = useSelector(state => state.channel.insertChannel);
@@ -1555,40 +1553,31 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
                 botnameenabled: true,
                 botnametext: "",
             },
-        }
+        },
     });
 
-    // useEffect(() => {
-    //     if (channelName.length > 0) {
-    //         setrequestchannels(prev => {
-    //             const index = prev.findIndex(x => x.type === "MESSENGER");
-    //             if (index === -1) {
-    //                 return [
-    //                     ...prev,
-    //                     form.getValues(),
-    //                 ]
-    //             } else {
-    //                 prev.splice(index, 1);
-    //                 return [
-    //                     ...prev,
-    //                     form.getValues(),
-    //                 ];
-    //             }
-    //         });
-    //     } else {
-    //         setrequestchannels(prev => prev.filter(x => x.type !== "MESSENGER"));
-    //     }
-    // }, [channelName, form.getValues]);
-
-    const handleNext = () => {
-        setShowFinalStep(true);
-    }
-
-    const handleSubmit = (name: string, auto: boolean, hexIconColor: string) => {
-        const body = getInsertChatwebChannel(name, auto, hexIconColor, form.getValues());
-        setrequestchannels((p: any) => ([...p, body]))
-        deleteChannel('chatWeb');
-    }
+    useEffect(() => {
+        if (channelName.length > 0) {
+            setrequestchannels(prev => {
+                const body = getInsertChatwebChannel(channelName, false, "#7721ad", form.getValues());
+                const index = prev.findIndex(x => x.type === "CHATWEB");
+                if (index === -1) {
+                    return [
+                        ...prev,
+                        body,
+                    ]
+                } else {
+                    prev.splice(index, 1);
+                    return [
+                        ...prev,
+                        body,
+                    ];
+                }
+            });
+        } else {
+            setrequestchannels(prev => prev.filter(x => x.type !== "CHATWEB"));
+        }
+    }, [channelName, form.getValues]);
 
     const setView = (option: "view1" | "view2") => {
         if (option === "view1") {
@@ -1608,8 +1597,6 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
                 setChannelName={setChannelName}
                 loading={insertChannel.loading}
                 integrationId={insertChannel.value?.integrationid}
-                onSubmit={handleSubmit}
-                onClose={() => setShowFinalStep(false)}
                 onNext={() => {
                     setView("view2");
                 }}
@@ -1663,6 +1650,22 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
                     variant="contained"
                     color="primary"
                     onClick={() => {
+                        setrequestchannels(prev => {
+                            const body = getInsertChatwebChannel(channelName, false, "#7721ad", form.getValues());
+                            const index = prev.findIndex(x => x.type === "CHATWEB");
+                            if (index === -1) {
+                                return [
+                                    ...prev,
+                                    body,
+                                ]
+                            } else {
+                                prev.splice(index, 1);
+                                return [
+                                    ...prev,
+                                    body,
+                                ];
+                            }
+                        });
                         setView("view1");
                         setHasFinished(true);
                     }}
@@ -1708,17 +1711,13 @@ interface ChannelAddEndProps {
     setChannelName: (value: string) => void;
     loading: boolean;
     integrationId?: string;
-    onSubmit: (name: string, auto: boolean, hexIconCOlor: string) => void;
     onNext: () => void;
-    onClose: () => void;
 }
 
 const ChannelAddEnd: FC<ChannelAddEndProps> = ({
     channelName,
     hasFinished,
     setChannelName,
-    onClose,
-    onSubmit,
     onNext,
     loading,
     integrationId,
@@ -1729,26 +1728,12 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
         finishreg,
         deleteChannel,
     } = useContext(SubscriptionContext);
-    const classes = useFinalStepStyles();
-    const history = useHistory();
-    const [coloricon, setcoloricon] = useState("#7721ad");
-    const [auto] = useState(true);
-    const [hexIconColor, setHexIconColor] = useState("#7721ad");
-
-    const handleGoBack = (e: React.MouseEvent) => {
-        e.preventDefault();
-        if (!integrationId) onClose();
-    }
-
-    const handleSave = () => {
-        onSubmit(channelName, auto, hexIconColor);
-    }
+    const { t } = useTranslation();
+    // const [hexIconColor, setHexIconColor] = useState("#7721ad");
 
     return (
         <div className={commonClasses.root}>
-            <ZyxmeMessengerIcon
-                className={commonClasses.leadingIcon}
-            />
+            <ZyxmeMessengerIcon className={commonClasses.leadingIcon} />
             <IconButton
                 color="primary"
                 className={commonClasses.trailingIcon}
@@ -1759,7 +1744,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
             <FieldEdit
                 onChange={(value) => setChannelName(value)}
                 valueDefault={channelName}
-                label="Give your channel a name"
+                label={t(langKeys.givechannelname)}
                 variant="outlined"
                 size="small"
                 disabled={loading || integrationId != null}

@@ -13,7 +13,6 @@ import { useDispatch } from "react-redux";
 import { getChannelsListSub } from "store/channel/actions";
 import { apiUrls } from 'common/constants';
 import { SubscriptionContext } from "./context";
-
 interface ChannelAddInstagramProps {
     setOpenWarning: (param: any) => void;
 }
@@ -148,6 +147,7 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
                 optionValue="id"
                 variant="outlined"
                 size="small"
+                disabled={mainResult.loading || mainResult.data.length === 0}
             />
             {/* <div className="row-zyx">
                 <div className="col-3"></div>
@@ -170,7 +170,7 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
                     </div>
                 </div>
             </div> */}
-            {pageLink.length === 0 ? (
+            {pageLink.length === 0 && mainResult.data.length === 0 ? (
                 <FacebookLogin
                     appId={apiUrls.INSTAGRAMAPP}
                     autoLoad={false}
@@ -187,12 +187,13 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
                             version: 'v8.0'
                         });
                     }}
+                    isDisabled={mainResult.loading}
                 />
             ) : selectedChannels === 1 && (
                 <Button
                     onClick={finishreg}
                     className={commonClasses.button}
-                    disabled={channelName.length === 0}
+                    disabled={channelName.length === 0 || mainResult.loading}
                     variant="contained"
                     color="primary"
                 >

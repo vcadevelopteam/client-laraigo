@@ -1370,6 +1370,16 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 }
             },
             {
+                Header: t(langKeys.freewhatsappchannel),
+                accessor: 'freewhatsappchannel',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { freewhatsappchannel } = props.cell.row.original;
+                    return (freewhatsappchannel || 0).toFixed(0);
+                }
+            },
+            {
                 Header: t(langKeys.freeconversations),
                 accessor: 'whatsappconversationfreequantity',
                 type: 'number',
@@ -1378,7 +1388,7 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                     const { whatsappconversationfreequantity } = props.cell.row.original;
                     return (whatsappconversationfreequantity || 0).toFixed(0);
                 }
-            }
+            },
         ],
         []
     );
@@ -1557,6 +1567,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
             clientadditionalfee: row?.clientadditionalfee || 0,
             channelotherfee: row?.channelotherfee || 0,
             hsmfee: row?.hsmfee || 0,
+            freewhatsappchannel: row?.freewhatsappchannel || 0,
             whatsappconversationfreequantity: row?.whatsappconversationfreequantity || 0,
             allowhsm: row?.allowhsm || false,
             status: row ? row.status : 'ACTIVO',
@@ -1597,6 +1608,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
         register('clientadditionalfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
         register('hsmfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
         register('whatsappconversationfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('freewhatsappchannel', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
     }, [edit, register]);
 
     useEffect(() => {
@@ -1769,6 +1781,14 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                         />
                     </div>
                     <div className="row-zyx">
+                    <FieldEdit
+                            label={t(langKeys.freewhatsappchannel)}
+                            onChange={(value) => setValue('freewhatsappchannel', value)}
+                            valueDefault={getValues('freewhatsappchannel')}
+                            error={errors?.freewhatsappchannel?.message}
+                            type="number"
+                            className="col-6"
+                        />
                         <FieldEdit
                             label={t(langKeys.freeconversations)}
                             onChange={(value) => setValue('whatsappconversationfreequantity', value)}

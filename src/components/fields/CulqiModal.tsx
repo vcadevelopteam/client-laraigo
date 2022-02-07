@@ -141,7 +141,6 @@ const CulqiModal: FC<CulqiModalProps> = ({
 
     const onError = (error: any) => {
         console.log(error)
-        onError && onError(error);
         dispatch(resetCharge());
     }
 
