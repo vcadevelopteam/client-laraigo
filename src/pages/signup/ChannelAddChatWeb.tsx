@@ -1470,6 +1470,7 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
     const classes = useStyles();
     const {
         foreground,
+        setConfirmations,
         setForeground,
         setrequestchannels,
     } = useContext(SubscriptionContext);
@@ -1668,6 +1669,7 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
                         });
                         setView("view1");
                         setHasFinished(true);
+                        setConfirmations(prev => prev++);
                     }}
                 >
                     <Trans i18nKey={langKeys.next} />

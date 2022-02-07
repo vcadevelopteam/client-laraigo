@@ -22,6 +22,7 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
         commonClasses,
         FBButtonStyles,
         selectedChannels,
+        setConfirmations,
         finishreg,
         deleteChannel,
         setrequestchannels,
