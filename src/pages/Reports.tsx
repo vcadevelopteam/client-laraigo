@@ -658,6 +658,14 @@ const ReportConversationWhatsapp: FC = () => {
                 accessor: 'cost',
                 type: 'number'
             },
+            {
+                Header: t(langKeys.paymentmethod),
+                accessor: 'paymenttype',
+                Cell: (props: any) => {
+                    const { paymenttype } = props.cell.row.original;
+                    return (t(`${paymenttype}`.toLowerCase()) || "").toUpperCase()
+                }
+            },
         ],
         []
     );
