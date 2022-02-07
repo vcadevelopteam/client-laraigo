@@ -1682,11 +1682,15 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
         handleSubmit((values) => {
             const dueate = new Date(values.duedate);
             dueate.setHours(dueate.getHours() - 5);
+            const day = dueate.toLocaleDateString("en-US", { day: '2-digit' });
+            const month = dueate.toLocaleDateString("en-US", { month: '2-digit' });
+            const year = dueate.toLocaleDateString("en-US", { year: 'numeric' });
+            const time = dueate.toLocaleDateString("en-US", { hour: '2-digit', minute: '2-digit' });
             onSubmit?.({
                 ...values,
                 status,
                 detailjson: JSON.stringify(detail),
-                duedate: dueate.toLocaleString().replaceAll("/", "-"),
+                duedate: `${year}-${month}-${day}T${time.split(",")[1]}`,
             });
             if (leadid === 0 && mustCloseOnSubmit.current) {
                 onClose();
@@ -2225,7 +2229,7 @@ interface Options {
 const formatDate = (strDate: string, options: Options = { withTime: true }) => {
     if (!strDate || strDate === '') return '';
 
-    const date = new Date(strDate);
+    const date = new Date(strDate + "+2");
     const day = date.toLocaleDateString("en-US", { day: '2-digit' });
     const month = date.toLocaleDateString("en-US", { month: '2-digit' });
     const year = date.toLocaleDateString("en-US", { year: 'numeric' });
