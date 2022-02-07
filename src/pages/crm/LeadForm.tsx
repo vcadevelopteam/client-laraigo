@@ -26,6 +26,7 @@ import { getCollection, resetMain } from 'store/main/actions';
 import { AntTab } from 'components';
 import { EmailIcon, WhatsappIcon, SmsIcon } from 'icons';
 import { Descendant } from 'slate';
+import { defaultDecorate } from 'slate-react/dist/components/editable';
 
 const tagsOptions = [
     { title: "Information" },
@@ -1680,17 +1681,19 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
 
     const handleSave = useCallback((status: "PROGRAMADO" | "REALIZADO" | "ELIMINADO") => {
         handleSubmit((values) => {
-            const dueate = new Date(values.duedate);
-            dueate.setHours(dueate.getHours() - 5);
-            const day = dueate.toLocaleDateString("en-US", { day: '2-digit' });
-            const month = dueate.toLocaleDateString("en-US", { month: '2-digit' });
-            const year = dueate.toLocaleDateString("en-US", { year: 'numeric' });
-            const time = dueate.toLocaleDateString("en-US", { hour: '2-digit', minute: '2-digit' });
+            // const dueate = new Date(values.duedate);
+            // dueate.setHours(dueate.getHours() - 5);
+            // const day = dueate.toLocaleDateString("en-US", { day: '2-digit' });
+            // const month = dueate.toLocaleDateString("en-US", { month: '2-digit' });
+            // const year = dueate.toLocaleDateString("en-US", { year: 'numeric' });
+            // const time = dueate.toLocaleDateString("en-US", { hour: '2-digit', minute: '2-digit' });
+            
             onSubmit?.({
                 ...values,
                 status,
                 detailjson: JSON.stringify(detail),
-                duedate: `${year}-${month}-${day}T${time.split(",")[1]}`,
+                // duedate: dueate.toUTCString()
+                // duedate: `${year}-${month}-${day}T${time.split(",")[1]}`,
             });
             if (leadid === 0 && mustCloseOnSubmit.current) {
                 onClose();
@@ -1752,7 +1755,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                             valueDefault={(getValues('duedate') as string)?.replace(' ', 'T')?.substring(0, 16)}
                                             onChange={(value) => setValue('duedate', value)}
                                             error={errors?.duedate?.message}
-                                        />
+                                        /> 
                                     </Grid>
                                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                                         <FieldSelect
@@ -2229,7 +2232,8 @@ interface Options {
 const formatDate = (strDate: string, options: Options = { withTime: true }) => {
     if (!strDate || strDate === '') return '';
 
-    const date = new Date(strDate + "+2");
+    const date = new Date(strDate.replace("Z", ""));
+    // date.setHours(date.getHours() + 5);
     const day = date.toLocaleDateString("en-US", { day: '2-digit' });
     const month = date.toLocaleDateString("en-US", { month: '2-digit' });
     const year = date.toLocaleDateString("en-US", { year: 'numeric' });
