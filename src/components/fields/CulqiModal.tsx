@@ -123,7 +123,7 @@ const CulqiModal: FC<CulqiModalProps> = ({
     }
 
     const onToken = (token: any) => {
-        console.log(token);
+        // console.log(token);
         switch (type) {
             case 'CHARGE':
                 createCharge(token);

@@ -522,7 +522,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         const tagsAlreadyHasChange = leadTagsChanges.current.some(x => x.description === desc);
         const previousTagsIncludeDesc = lead.value.tags.includes(desc);
 
-        console.log('handleUpdateLeadTags:', action, previousTagsIncludeDesc, tagsAlreadyHasChange);
+        // console.log('handleUpdateLeadTags:', action, previousTagsIncludeDesc, tagsAlreadyHasChange);
         if (
             (!previousTagsIncludeDesc && !tagsAlreadyHasChange) ||
             (action === "REMOVETAG" && previousTagsIncludeDesc && !tagsAlreadyHasChange)
@@ -792,7 +792,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     className={classes.field}
                                     valueDefault={getValues('leadproduct')}
                                     onChange={(v, value2: {action: "remove-option" | "select-option", option: {option: any}}) => {
-                                        console.log(value2);
+                                        // console.log(value2);
                                         const products = v?.map((o: Dictionary) => o['domainvalue']).join(',') || '';
                                         setValue('leadproduct', products);
 

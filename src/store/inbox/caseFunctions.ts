@@ -603,7 +603,7 @@ export const getDataTicket = (state: IState): IState => ({
 });
 
 export const getDataTicketSuccess = (state: IState, action: IAction): IState => {
-    console.log("aaa", state.ticketSelected)
+    // console.log("aaa", state.ticketSelected)
     return {
         ...state,
         ticketSelected: { ...state.ticketSelected!!, isAnswered: action.payload.data[0].data.some((x: IInteraction) => x.userid === state.agentSelected?.userid && x.interactiontype !== "LOG") },

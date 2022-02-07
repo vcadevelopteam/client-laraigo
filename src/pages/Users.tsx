@@ -1325,7 +1325,6 @@ const Users: FC = () => {
                     dispatch(showBackdrop(false));
                     setWaitCheck(false);
                     if (!(mainAuxResult.data[0].usernumber < mainAuxResult.data[0].userscontracted)) {
-                        console.log("mainAuxResult.data[0].userscontracted", mainAuxResult.data[0].userscontracted)
                         dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.userlimit, {
                             limit: mainAuxResult.data[0].userscontracted
                         }) }))

@@ -135,9 +135,9 @@ const RichTextExample: FC = () => {
     const [value, setValue] = useState<Descendant[]>(initialValue2);
     const ele = useMemo(() => toElement(value), [value]);
 
-    useEffect(() => {
-        console.log(renderToString(ele));
-    }, []);
+    // useEffect(() => {
+    //     console.log(renderToString(ele));
+    // }, []);
 
     return (
         <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -145,7 +145,7 @@ const RichTextExample: FC = () => {
                 value={value}
                 onChange={e => {
                     setValue(e);
-                    console.log(e);
+                    // console.log(e);
                 }}
                 placeholder="Escribe algo"
                 // className={classes.richText}

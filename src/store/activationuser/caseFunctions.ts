@@ -61,10 +61,7 @@ export const saveUserFailure = (state: IState, action: IAction): IState => ({
         ...state.saveUser,
         loading: false,
         error: true,
-        key: (() => {
-            console.log(action.payload)
-            return action.payload.key;
-        })(),
+        key: action.payload.key,
         code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
         message: action.payload.message || 'error_unexpected_error',
         success: false,

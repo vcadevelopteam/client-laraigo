@@ -72,7 +72,7 @@ export const Channels: FC = () => {
     }
 
     const handleEdit = (row: IChannel) => {
-        console.log(row)
+        // console.log(row)
         if (row.type === 'WHAT' && row.status === 'PENDIENTE' && roledesc === "SUPERADMIN") {
             var whatsAppData = {
                 typeWhatsApp: 'SMOOCH',

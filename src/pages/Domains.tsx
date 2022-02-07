@@ -479,7 +479,6 @@ const Domains: FC = () => {
     const [waitSave, setWaitSave] = useState(false);
     const user = useSelector(state => state.login.validateToken.user);
     const superadmin = user?.roledesc === "SUPERADMIN"
-    console.log(superadmin)
 
     const columns = React.useMemo(
         () => [

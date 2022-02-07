@@ -873,7 +873,7 @@ const TabPanelForm: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
         }
         return temp;
     }
-    console.log(fields)
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
             <Grid container direction="column">
@@ -1612,7 +1612,7 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
 
     const handleSubmit = (name: string, auto: boolean, hexIconColor: string) => {
         const values = form.getValues();
-        console.log("handleSubmit:values", values);
+        // console.log("handleSubmit:values", values);
         if (!channel) {
             const body = getInsertChatwebChannel(name, auto, hexIconColor, values);
             dispatch(insertChannel2(body));

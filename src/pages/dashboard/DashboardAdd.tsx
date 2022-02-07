@@ -250,7 +250,7 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
             }));
         } else {
             handleSubmit((data) => {
-                console.log(data);
+                // console.log(data);
                 setOpenModal(true);
             }, e => console.log('errores', e))();
         }

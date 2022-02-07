@@ -96,7 +96,7 @@ export const Step2_5: FC<{ setOpenWarning: (param: any) => void}> = ({ setOpenWa
     }
 
     const setDoctype = (value: any) => {
-        console.log('setDoctype')
+        // console.log('setDoctype')
         setErrors(p => ({
             ...p,
             doctype: !(value?.id) ? t(langKeys.field_required) : "",

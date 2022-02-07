@@ -166,7 +166,7 @@ const $SignUp: FC = () => {
             setsendchannels(false)
             resetChannels();
         }else{
-            console.log(step)
+            // console.log(step)
             if(step===2){
                 setDefaultMainData()
             }

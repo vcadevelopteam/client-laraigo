@@ -203,7 +203,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
             setValue('hsmtemplateid', 0);
         }
     }
-    console.log(personWithData)
+    // console.log(personWithData)
     const onSubmit = handleSubmit((data) => {
         const messagedata = {
             hsmtemplateid: data.hsmtemplateid,
@@ -881,7 +881,7 @@ export const Person: FC = () => {
                     state: {},
                 })}
                 onFilterChange={f => {
-                    console.log('Persons::onFilterChange', f);
+                    // console.log('Persons::onFilterChange', f);
                     const params = buildQueryFilters(f);
                     if (filterChannelsType !== '') params.append('channelTypes', filterChannelsType);
                     history.push({ search: params.toString() });

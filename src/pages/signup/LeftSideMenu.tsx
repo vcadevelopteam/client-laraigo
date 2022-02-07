@@ -58,7 +58,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
     const executeResult = useSelector(state => state.signup.insertChannel);
 
     const channels = useMemo(() => {
-        console.log('useMemo:channels', foreground);
+        // console.log('useMemo:channels', foreground);
         // if (foreground !== undefined) {
         //     const result = Object.
         //         keys(listchannels).

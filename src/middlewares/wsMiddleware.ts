@@ -28,11 +28,9 @@ const callWSMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async
 
     if (type === typesInbox.WS_CONNECT) {
         const loginData = { data: payload };
-        // let wasconnected = false;
         
         if (socket.connected) {
-            console.log("vamos a desconectar")
-            // wasconnected = true;
+            // console.log("vamos a desconectar")
             socket.disconnect();
         }
         socket.auth = loginData;

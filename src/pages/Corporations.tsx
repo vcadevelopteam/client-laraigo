@@ -332,7 +332,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                     autosendinvoice: false,
                 }
             }
-            console.log(data)
+            // console.log(data)
             setWaitSave(true)
             dispatch(execute(insCorp(data)));
         }
