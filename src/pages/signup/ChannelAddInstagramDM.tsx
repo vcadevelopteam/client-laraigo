@@ -6,7 +6,7 @@ import { DeleteOutline as DeleteOutlineIcon } from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
 import { FieldEdit, FieldSelect, ColorInput } from "components";
-import { InstagramColor } from "icons";
+import { InstagramColor3 } from "icons";
 import FacebookLogin from 'react-facebook-login';
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
@@ -116,7 +116,7 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
 
     return (
         <div className={commonClasses.root}>
-            {!hasFinished && <InstagramColor className={commonClasses.leadingIcon} />}
+            {!hasFinished && <InstagramColor3 className={commonClasses.leadingIcon} />}
             {!hasFinished && <IconButton
                 color="primary"
                 className={commonClasses.trailingIcon}
@@ -130,7 +130,7 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
             {!hasFinished && <Typography>
                 <Trans i18nKey={langKeys.connectface2} />
             </Typography>}
-            {hasFinished && <InstagramColor
+            {hasFinished && <InstagramColor3
                 style={{ width: 100, height: 100, alignSelf: 'center' }}/>
             }
             {hasFinished && (
