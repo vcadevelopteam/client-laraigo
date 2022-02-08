@@ -144,6 +144,7 @@ export { ReactComponent as FacebookMessengerColor } from './facebook-messenger-c
 export { ReactComponent as FacebookMessengerColor2 } from './facebook-messenger-color2.svg';
 export { ReactComponent as InstagramColor } from './instagram-color.svg';
 export { ReactComponent as InstagramColor2 } from './instagram-color2.svg';
+export { ReactComponent as InstagramColor3 } from './instagram-color3.svg';
 export { ReactComponent as IosColor } from './ios-color.svg';
 export { ReactComponent as SmsColor } from './sms-color.svg';
 export { ReactComponent as TelegramColor } from './telegram-color.svg';
