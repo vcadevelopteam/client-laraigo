@@ -26,6 +26,7 @@ export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = (
         deleteChannel,
         setrequestchannels,
     } = useContext(SubscriptionContext);
+    const [hasFinished, setHasFinished] = useState(false)
     const [channelName, setChannelName] = useState("");
     const { t } = useTranslation();
     const [coloricon, setcoloricon] = useState("#90c900");
@@ -67,6 +68,7 @@ export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = (
                     ];
                 }
             });
+            setHasFinished(true)
         } else {
             setrequestchannels(prev => prev.filter(x => x.type !== "SMOOCHANDROID"));
         }
@@ -80,8 +82,8 @@ export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = (
     }
     return (
         <div className={commonClasses.root}>
-            <AndroidColor className={commonClasses.leadingIcon} />
-            <IconButton
+            {!hasFinished && <AndroidColor className={commonClasses.leadingIcon} />}
+            {!hasFinished && <IconButton
                 color="primary"
                 className={commonClasses.trailingIcon}
                 onClick={() => {
@@ -90,10 +92,27 @@ export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = (
                 }}
             >
                 <DeleteOutlineIcon />
-            </IconButton>
-            <Typography>
+            </IconButton>}
+            {!hasFinished && <Typography>
                 <Trans i18nKey={langKeys.connectface2} />
-            </Typography>
+            </Typography>}
+            {hasFinished && <AndroidColor
+                style={{ width: 100, height: 100, alignSelf: 'center' }}/>
+            }
+            {hasFinished && (
+                <div style={{ alignSelf: 'center' }}>
+                    <Typography
+                        color="primary"
+                        style={{ fontSize: '1.5vw', fontWeight: 'bold', textAlign: 'center' }}>
+                        ¡Felicitaciones!
+                    </Typography>
+                    <Typography
+                        color="primary"
+                        style={{ fontSize: '1.2vw', fontWeight: 500 }}>
+                        Haz integrado con Android SDK
+                    </Typography>
+            </div>
+            )}
             <FieldEdit
                 onChange={(value) => setnameField(value)}
                 valueDefault={channelName}

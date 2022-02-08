@@ -28,6 +28,7 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
         setrequestchannels,
     } = useContext(SubscriptionContext);
     const [waitSave, setWaitSave] = useState(false);
+    const [hasFinished, setHasFinished] = useState(false)
     const [pageLink, setPageLink] = useState("");
     const [channelName, setChannelName] = useState("");
     const [coloricon, setcoloricon] = useState("#2d88ff");
@@ -87,6 +88,7 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
                     ];
                 }
             });
+            setHasFinished(true)
         } else {
             setrequestchannels(prev => prev.filter(x => x.type !== "FACEBOOK"));
         }
@@ -118,8 +120,8 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
 
     return (
         <div className={commonClasses.root}>
-            <FacebookColor className={commonClasses.leadingIcon} />
-            <IconButton
+            {!hasFinished && <FacebookColor className={commonClasses.leadingIcon} />}
+            {!hasFinished && <IconButton
                 color="primary"
                 className={commonClasses.trailingIcon}
                 onClick={() => {
@@ -128,10 +130,27 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
                 }}
             >
                 <DeleteOutlineIcon />
-            </IconButton>
-            <Typography>
+            </IconButton>}
+            {!hasFinished && <Typography>
                 <Trans i18nKey={langKeys.connectface2} />
-            </Typography>
+            </Typography>}
+            {hasFinished && <FacebookColor
+                style={{ width: 100, height: 100, alignSelf: 'center' }}/>
+            }
+            {hasFinished && (
+                <div style={{ alignSelf: 'center' }}>
+                    <Typography
+                        color="primary"
+                        style={{ fontSize: '1.5vw', fontWeight: 'bold', textAlign: 'center' }}>
+                        ¡Felicitaciones!
+                    </Typography>
+                    <Typography
+                        color="primary"
+                        style={{ fontSize: '1.2vw', fontWeight: 500 }}>
+                        Haz conectado Facebook con tu cuenta
+                    </Typography>
+            </div>
+            )}
             <FieldEdit
                 onChange={(value) => setnameField(value)}
                 label={t(langKeys.givechannelname)}

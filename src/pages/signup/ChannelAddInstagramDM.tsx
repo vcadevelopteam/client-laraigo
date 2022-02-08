@@ -24,6 +24,7 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
         setrequestchannels,
     } = useContext(SubscriptionContext);
     const [waitSave, setWaitSave] = useState(false);
+    const [hasFinished, setHasFinished] = useState(false)
     const [pageLink, setPageLink] = useState("");
     const [channelName, setChannelName] = useState("");
     const mainResult = useSelector(state => state.channel.channelList)
@@ -79,6 +80,7 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
                     ];
                 }
             });
+            setHasFinished(true)
         } else {
             setrequestchannels(prev => prev.filter(x => x.type !== "INSTAMESSENGER"));
         }
@@ -114,8 +116,8 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
 
     return (
         <div className={commonClasses.root}>
-            <InstagramColor className={commonClasses.leadingIcon} />
-            <IconButton
+            {!hasFinished && <InstagramColor className={commonClasses.leadingIcon} />}
+            {!hasFinished && <IconButton
                 color="primary"
                 className={commonClasses.trailingIcon}
                 onClick={() => {
@@ -124,10 +126,27 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
                 }}
             >
                 <DeleteOutlineIcon />
-            </IconButton>
-            <Typography>
+            </IconButton>}
+            {!hasFinished && <Typography>
                 <Trans i18nKey={langKeys.connectface2} />
-            </Typography>
+            </Typography>}
+            {hasFinished && <InstagramColor
+                style={{ width: 100, height: 100, alignSelf: 'center' }}/>
+            }
+            {hasFinished && (
+                <div style={{ alignSelf: 'center' }}>
+                    <Typography
+                        color="primary"
+                        style={{ fontSize: '1.5vw', fontWeight: 'bold', textAlign: 'center' }}>
+                        ¡Felicitaciones!
+                    </Typography>
+                    <Typography
+                        color="primary"
+                        style={{ fontSize: '1.2vw', fontWeight: 500 }}>
+                        Haz conectado Facebook con tu cuenta
+                    </Typography>
+            </div>
+            )}
             <FieldEdit
                 onChange={(value) => setnameField(value)}
                 valueDefault={channelName}

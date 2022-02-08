@@ -220,8 +220,8 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
 
     return (
         <div className={commonClasses.root}>
-            <TwitterColor className={commonClasses.leadingIcon} />
-            <IconButton
+            {!hasFinished && <TwitterColor className={commonClasses.leadingIcon} />}
+            {!hasFinished && <IconButton
                 color="primary"
                 className={commonClasses.trailingIcon}
                 onClick={() => {
@@ -230,10 +230,27 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
                 }}
             >
                 <DeleteOutlineIcon />
-            </IconButton>
-            <Typography>
+            </IconButton>}
+            {!hasFinished && <Typography>
                 <Trans i18nKey={langKeys.connectface2} />
-            </Typography>
+            </Typography>}
+            {hasFinished && <TwitterColor
+                style={{ width: 100, height: 100, alignSelf: 'center' }}/>
+            }
+            {hasFinished && (
+                <div style={{ alignSelf: 'center' }}>
+                    <Typography
+                        color="primary"
+                        style={{ fontSize: '1.5vw', fontWeight: 'bold', textAlign: 'center' }}>
+                        ¡Felicitaciones!
+                    </Typography>
+                    <Typography
+                        color="primary"
+                        style={{ fontSize: '1.2vw', fontWeight: 500 }}>
+                        Haz conectado Twitter con tu cuenta
+                    </Typography>
+            </div>
+            )}
             <FieldEdit
                 onChange={(value) => setnameField(value)}
                 valueDefault={channelName}
