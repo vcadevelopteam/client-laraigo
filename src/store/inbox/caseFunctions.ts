@@ -413,7 +413,6 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
     let newAgentList = [...state.agentList.data];
 
     const { agentSelected, ticketSelected, userType } = state;
-
     if (userType === 'SUPERVISOR') {
         if (data.newConversation) {
             newAgentList = newAgentList.map(x => x.userid === data.userid ? {
@@ -430,7 +429,7 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
         }
     }
 
-    if (agentSelected?.userid === data.userid || userType === 'AGENT' || newticketList.some(x => x.conversationid === data.conversationid)) {
+    if (agentSelected?.userid === data.userid || newticketList.some(x => x.conversationid === data.conversationid)) {
         if (data.newConversation) {
             if (!newticketList.some(x => x.conversationid === data.conversationid)) { // a veces se cruza cuando esta cargando al data
                 newticketList = [...newticketList, { ...data, isAnswered: data.userid === 2 }]
