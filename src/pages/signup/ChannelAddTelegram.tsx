@@ -32,6 +32,7 @@ export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = 
         setrequestchannels,
     } = useContext(SubscriptionContext);
     const [botKey, $setBotKey] = useState("");
+    const [hasFinished, setHasFinished] = useState(false)
     const [coloricon, setcoloricon] = useState("#207FDD");
     const [channelName, setChannelName] = useState("");
     const { t } = useTranslation();
@@ -76,6 +77,7 @@ export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = 
                     ];
                 }
             });
+            setHasFinished(true)
         } else {
             setrequestchannels(prev => prev.filter(x => x.type !== "TELEGRAM"));
         }
@@ -97,8 +99,8 @@ export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = 
 
     return (
         <div className={commonClasses.root}>
-            <TelegramColor className={commonClasses.leadingIcon} />
-            <IconButton
+            {!hasFinished && <TelegramColor className={commonClasses.leadingIcon} />}
+            {!hasFinished && <IconButton
                 color="primary"
                 className={commonClasses.trailingIcon}
                 onClick={() => {
@@ -107,10 +109,27 @@ export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = 
                 }}
             >
                 <DeleteOutlineIcon />
-            </IconButton>
-            <Typography>
+            </IconButton>}
+            {!hasFinished && <Typography>
                 <Trans i18nKey={langKeys.connectface2} />
-            </Typography>
+            </Typography>}
+            {hasFinished && <TelegramColor
+                style={{ width: 100, height: 100, alignSelf: 'center' }}/>
+            }
+            {hasFinished && (
+                <div style={{ alignSelf: 'center' }}>
+                    <Typography
+                        color="primary"
+                        style={{ fontSize: '1.5vw', fontWeight: 'bold', textAlign: 'center' }}>
+                        ¡Felicitaciones!
+                    </Typography>
+                    <Typography
+                        color="primary"
+                        style={{ fontSize: '1.2vw', fontWeight: 500 }}>
+                        Haz conectado Teletram
+                    </Typography>
+            </div>
+            )}
             <FieldEdit
                 onChange={(value) => setnameField(value)}
                 valueDefault={channelName}

@@ -3001,6 +3001,10 @@ export const langKeys = {
     freewhatsappchannel: 'freewhatsappchannel',
     whatsappfreechannel: 'whatsappfreechannel',
     whatsappadditionalchannel: 'whatsappadditionalchannel',
+    contractedplanfreewhatsappchannel: 'contractedplanfreewhatsappchannel',
+    contractedplanfreewhatsappconversation: 'contractedplanfreewhatsappconversation',
+    contractedplanchannelotherfee: 'contractedplanchannelotherfee',
+    allowuseroverride:'allowuseroverride',
 };
 
 export type LangKeys = typeof langKeys;

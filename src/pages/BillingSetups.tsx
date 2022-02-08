@@ -39,23 +39,23 @@ interface DetailSupportPlanProps {
     dataPlan: any[];
 }
 
-const arrayBreadCostPerHSMPeriod = [
-    { id: "view-1", name: "Cost Per HSM Period" },
-    { id: "view-2", name: "Cost Per HSM Period detail" }
-];
+function formatNumber(num: number) {
+    if (num)
+        return num.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+    return "0.00"
+}
 
-const StyledTableCell = withStyles((theme) => ({
-    head: {
-        backgroundColor: "#7721ad",
-        color: theme.palette.common.white,
-    },
-    body: {
-        fontSize: 14,
-    },
-}))(TableCell);
+function formatNumberFourDecimals(num: number) {
+    if (num)
+        return num.toFixed(4).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1')
+    return "0.0000"
+}
 
-const years = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2019" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }]
-const months = [{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" },]
+function formatNumberNoDecimals(num: number) {
+    if (num)
+        return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+    return "0"
+}
 
 export const DateOptionsMenuComponent = (value: any, handleClickItemMenu: (key: any) => void) => {
     return (
@@ -107,417 +107,6 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: "bold"
     }
 }));
-
-/*const CostPerHSMPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
-    const dispatch = useDispatch();
-    const { t } = useTranslation();
-    const mainResult = useSelector(state => state.main);
-    const executeResult = useSelector(state => state.main.execute);
-    const classes = useStyles();
-    const [viewSelected, setViewSelected] = useState("view-1");
-    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
-    const [disableSearch, setdisableSearch] = useState(false);
-    const [waitSave, setWaitSave] = useState(false);
-    const [dataMain, setdataMain] = useState({
-        year: String(new Date().getFullYear()),
-        month: (new Date().getMonth() + 1).toString().padStart(2, "0"),
-        corpid: 0,
-        orgid: 0,
-    });
-    const dataPlanList = dataPlan.data[0] && dataPlan.data[0].success? dataPlan.data[0].data : []
-    const dataOrgList = dataPlan.data[1] && dataPlan.data[1].success? dataPlan.data[1].data : []
-    const dataCorpList = dataPlan.data[2] && dataPlan.data[2].success? dataPlan.data[2].data : []
-    useEffect(() => {
-        setdisableSearch(dataMain.year === "" ) 
-    }, [dataMain])
-
-    function search(){
-        dispatch(showBackdrop(true))
-        dispatch(getCollection(getBillingPeriodHSMSel(dataMain)))
-    }
-    useEffect(() => {
-        search()
-    }, [])
-    useEffect(() => {
-        if (!mainResult.mainData.loading){
-            dispatch(showBackdrop(false))
-        }
-    }, [mainResult])
-    const columns = React.useMemo(
-        () => [
-            {
-                accessor: 'billingsupportid',
-                isComponent: true,
-                minWidth: 60,
-                width: '1%',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <TemplateIcons
-                            editFunction={() => handleEdit(row)}
-                        />
-                    )
-                }
-            },
-            {
-                Header: t(langKeys.corporation),
-                accessor: 'corpdesc',
-            },
-            {
-                Header: t(langKeys.organization),
-                accessor: 'orgdesc',
-            },
-            {
-                Header: t(langKeys.month),
-                accessor: 'month',
-            },
-            {
-                Header: t(langKeys.year),
-                accessor: 'year',
-            },
-            {
-                Header: t(langKeys.billingplan),
-                accessor: 'billingplan',
-            },
-            {
-                Header: t(langKeys.country),
-                accessor: 'country',
-            },
-            {
-                Header: t(langKeys.hsmquantity),
-                accessor: 'hsmquantity',
-                type: 'number',
-                sortType: 'number',
-            },
-            {
-                Header: t(langKeys.wacost),
-                accessor: 'hsmcost',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { hsmcost } = props.cell.row.original;
-                    return (hsmcost || 0).toFixed(4);
-                }
-            },
-            {
-                Header: t(langKeys.pucommissionVCA),
-                accessor: 'hsmutilityfee',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { hsmutilityfee } = props.cell.row.original;
-                    return (hsmutilityfee || 0).toFixed(4);
-                }
-            },
-            {
-                Header: t(langKeys.vcacommissioncost),
-                accessor: 'hsmutility',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { hsmutility } = props.cell.row.original;
-                    return (hsmutility || 0).toFixed(4);
-                }
-            },
-            {
-                Header: t(langKeys.hsmshippingcost),
-                accessor: 'hsmcharge',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { hsmcharge } = props.cell.row.original;
-                    return (hsmcharge || 0).toFixed(4);
-                }
-            },
-        ],
-        []
-    );
-
-    const fetchData = () => dispatch(getCollection(getBillingPeriodHSMSel(dataMain)));
-
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
-                fetchData();
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            }
-        }
-    }, [executeResult, waitSave])
-
-    const handleEdit = (row: Dictionary) => {
-        setViewSelected("view-2");
-        setRowSelected({ row, edit: true });
-    }
-
-    if (viewSelected === "view-1") {
-
-        return (
-            <Fragment>
-
-                <TableZyx
-                    onClickRow={handleEdit}
-                    columns={columns}                    
-                    ButtonsElement={() => (
-                        <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
-                            <FieldSelect
-                                label={t(langKeys.year)}
-                                style={{width: 150}}
-                                valueDefault={dataMain.year}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||0}))}
-                                data={years}
-                                optionDesc="desc"
-                                optionValue="desc"
-                            />
-                            <FieldMultiSelect
-                                label={t(langKeys.month)}
-                                style={{width: 300}}
-                                valueDefault={dataMain.month}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
-                                data={months}
-                                uset={true}
-                                prefixTranslation="month_"
-                                optionDesc="val"
-                                optionValue="val"
-                            />
-                            <FieldSelect
-                                label={t(langKeys.corporation)}
-                                className={classes.fieldsfilter}
-                                valueDefault={dataMain.corpid}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,corpid:value?.corpid||0,orgid:0}))}
-                                data={dataCorpList}
-                                optionDesc="description"
-                                optionValue="corpid"
-                            />
-                            <FieldSelect
-                                label={t(langKeys.organization)}
-                                className={classes.fieldsfilter}
-                                valueDefault={dataMain.orgid}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,orgid:value?.orgid||0}))}
-                                data={dataOrgList.filter((e:any)=>{return e.corpid===dataMain.corpid})}
-                                optionDesc="orgdesc"
-                                optionValue="orgid"
-                            />
-                            <Button
-                                disabled={mainResult.mainData.loading || disableSearch}
-                                variant="contained"
-                                color="primary"
-                                style={{ width: 120, backgroundColor: "#55BD84" }}
-                                startIcon={<SearchIcon style={{ color: 'white' }} />}
-                                onClick={() => search()}
-                            >{t(langKeys.search)}
-                            </Button>
-                        </div>
-                    )}
-                    data={mainResult.mainData.data}
-                    filterGeneral={false}
-                    download={true}
-                    loading={mainResult.mainData.loading}
-                    register={false}
-                />
-            </Fragment>
-        )
-    }
-    else if (viewSelected === "view-2") {
-        return (
-            <DetailCostPerHSMPeriod
-                data={rowSelected}
-                setViewSelected={setViewSelected}
-                fetchData={fetchData}
-                dataPlan = {dataPlanList}
-            />
-        )
-    } else
-        return null;
-}
-
-const DetailCostPerHSMPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, setViewSelected, fetchData,dataPlan }) => {
-    const classes = useStyles();
-    const [waitSave, setWaitSave] = useState(false);
-    const executeRes = useSelector(state => state.main.execute);
-    const dispatch = useDispatch();
-    const { t } = useTranslation();
-    
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
-        defaultValues: {
-            orgid: row?.orgid || '',
-            corpid: row?.corpid || '',
-            orgdesc: row?.orgdesc || '',
-            corpdesc: row?.corpdesc || '',
-            year: row?.year || 0,
-            month: row?.month || 0,
-            billingplan: row?.billingplan || '',
-            country: row?.country || '',
-            hsmquantity: row?.hsmquantity || 0,
-            hsmcost: row?.hsmcost || 0,
-            hsmutilityfee: row?.hsmutilityfee || 0,
-            hsmutility: row?.hsmutility || 0,
-            hsmcharge: row?.hsmcharge || 0,
-            force: row?.force || true,
-        }
-    });
-
-    React.useEffect(() => {
-        register('corpid');
-        register('orgid');
-        register('year');
-        register('month');
-        register('hsmutilityfee');
-        register('force');
-    }, [edit, register]);
-
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row? langKeys.successful_edit : langKeys.successful_register) }))
-                fetchData && fetchData();
-                dispatch(showBackdrop(false));
-                setViewSelected("view-1")
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                setWaitSave(false);
-                dispatch(showBackdrop(false));
-            }
-        }
-    }, [executeRes, waitSave])
-
-    const onSubmit = handleSubmit((data) => {
-        const callback = () => {
-            dispatch(execute(billingPeriodHSMUpd(data)));
-            dispatch(showBackdrop(true));
-            setWaitSave(true)
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))
-    });
-
-    return (
-        <div style={{ width: '100%' }}>
-            <form onSubmit={onSubmit}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div>
-                        <TemplateBreadcrumbs
-                            breadcrumbs={arrayBreadCostPerHSMPeriod}
-                            handleClick={setViewSelected}
-                        />
-                        <TitleDetail
-                           title={row? `${row.corpdesc} - ${row.orgdesc}` : ""}
-                        />
-                    </div>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                        <Button
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            startIcon={<ClearIcon color="secondary" />}
-                            style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => setViewSelected("view-1")}
-                        >{t(langKeys.back)}</Button>
-                        {edit &&
-                            <Button
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                                type="submit"
-                                startIcon={<SaveIcon color="secondary" />}
-                                style={{ backgroundColor: "#55BD84" }}
-                            >{t(langKeys.save)}
-                            </Button>
-                        }
-                    </div>
-                </div>
-                <div className={classes.containerDetail}>
-                    <div className="row-zyx">
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.corporation)}
-                            value={getValues("corpdesc")}
-                        />
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.organization)}
-                            value={getValues("orgdesc")}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.year)}
-                            value={getValues("year")}
-                        />
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.month)}
-                            value={getValues("month")}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.billingplan)}
-                            value={getValues("billingplan")}
-                        />
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.country)}
-                            value={getValues("country")}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.hsmquantity)}
-                            value={getValues("hsmquantity").toString()}
-                        />
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.wacost)}
-                            value={getValues("hsmcost").toFixed(4)}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.pucommissionVCA)}
-                            onChange={(value) => setValue('hsmutilityfee', value)}
-                            valueDefault={getValues('hsmutilityfee')}
-                            error={errors?.hsmutilityfee?.message}
-                            type="number"
-                            className="col-6"
-                        />
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.hsmshippingcost)}
-                            value={getValues("hsmcharge").toFixed(4)}
-                        />
-                        
-                    </div>
-                    <div className="row-zyx">
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.vcacommissioncost)}
-                            value={getValues("hsmutility").toFixed(4)}
-                        />
-                    </div>
-                </div>
-            </form>
-        </div>
-    );
-}*/
 
 const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const dispatch = useDispatch();
@@ -948,7 +537,8 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                             valueDefault={getValues('invoicecorrelative')}
                             onChange={(value) => setValue('invoicecorrelative', value)}
                             error={errors?.invoicecorrelative?.message}
-                            type='number'
+                            type="number"
+                            inputProps={{ step: "any" }}
                         />
                     </div>
                     <div className="row-zyx">
@@ -965,7 +555,8 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                             valueDefault={getValues('ticketcorrelative')}
                             onChange={(value) => setValue('ticketcorrelative', value)}
                             error={errors?.ticketcorrelative?.message}
-                            type='number'
+                            type="number"
+                            inputProps={{ step: "any" }}
                         />
                     </div>
                     <div className="row-zyx">
@@ -982,7 +573,8 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                             valueDefault={getValues('invoicecreditcorrelative')}
                             onChange={(value) => setValue('invoicecreditcorrelative', value)}
                             error={errors?.invoicecreditcorrelative?.message}
-                            type='number'
+                            type="number"
+                            inputProps={{ step: "any" }}
                         />
                     </div>
                     <div className="row-zyx">
@@ -999,7 +591,8 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                             valueDefault={getValues('ticketcreditcorrelative')}
                             onChange={(value) => setValue('ticketcreditcorrelative', value)}
                             error={errors?.ticketcreditcorrelative?.message}
-                            type='number'
+                            type="number"
+                            inputProps={{ step: "any" }}
                         />
                     </div>
                     <div className="row-zyx">
@@ -1016,7 +609,8 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                             valueDefault={getValues('igv')}
                             onChange={(value) => setValue('igv', value)}
                             error={errors?.igv?.message}
-                            type='number'
+                            type="number"
+                            inputProps={{ step: "any" }}
                         />
                     </div>
                     <div className="row-zyx">
@@ -1033,7 +627,8 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                             valueDefault={getValues('detraction')}
                             onChange={(value) => setValue('detraction', value)}
                             error={errors?.detraction?.message}
-                            type='number'
+                            type="number"
+                            inputProps={{ step: "any" }}
                         />
                     </div>
                     <div className="row-zyx">
@@ -1050,7 +645,8 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                             valueDefault={getValues('detractionminimum')}
                             onChange={(value) => setValue('detractionminimum', value)}
                             error={errors?.detractionminimum?.message}
-                            type='number'
+                            type="number"
+                            inputProps={{ step: "any" }}
                         />
                     </div>
                     <div className="row-zyx">
@@ -1220,16 +816,21 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const executeResult = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main);
     const memoryTable = useSelector(state => state.main.memoryTable);
+
     const [dataMain, setdataMain] = useState({
         plan: "",
         year: String(new Date().getFullYear()),
         month: (new Date().getMonth() + 1).toString().padStart(2, "0")
     });
+
     const [disableSearch, setdisableSearch] = useState(false);
     const [duplicateop, setduplicateop] = useState(false);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitSave, setWaitSave] = useState(false);
+
+    const dataYears = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }];
+    const dataMonths =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
 
     function search() {
         dispatch(showBackdrop(true))
@@ -1269,8 +870,8 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                         <TemplateIcons
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
-                        //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
-                        //extraOption={t(langKeys.duplicate)}
+                            //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
+                            //extraOption={t(langKeys.duplicate)}
                         />
                     )
                 }
@@ -1294,7 +895,7 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { basicfee } = props.cell.row.original;
-                    return (basicfee || 0).toFixed(2);
+                    return formatNumber(basicfee || 0);
                 }
             },
             {
@@ -1302,6 +903,10 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 accessor: 'userfreequantity',
                 type: 'number',
                 sortType: 'number',
+                Cell: (props: any) => {
+                    const { userfreequantity } = props.cell.row.original;
+                    return formatNumberNoDecimals(userfreequantity || 0);
+                }
             },
             {
                 Header: t(langKeys.useradditionalfee),
@@ -1310,7 +915,21 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { useradditionalfee } = props.cell.row.original;
-                    return (useradditionalfee || 0).toFixed(4);
+                    return formatNumberFourDecimals(useradditionalfee || 0);
+                }
+            },
+            {
+                Header: t(langKeys.allowuseroverride),
+                accessor: 'usercreateoverride',
+                NoFilter: false,
+                type: 'boolean',
+                sortType: 'basic',
+                editable: true,
+                width: 180,
+                maxWidth: 180,
+                Cell: (props: any) => {
+                    const { usercreateoverride } = props.cell.row.original;
+                    return usercreateoverride ? t(langKeys.yes) : "No"
                 }
             },
             {
@@ -1318,6 +937,30 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 accessor: 'channelfreequantity',
                 type: 'number',
                 sortType: 'number',
+                Cell: (props: any) => {
+                    const { channelfreequantity } = props.cell.row.original;
+                    return formatNumberNoDecimals(channelfreequantity || 0);
+                }
+            },
+            {
+                Header: t(langKeys.contractedplanchannelotherfee),
+                accessor: 'channelotherfee',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { channelotherfee } = props.cell.row.original;
+                    return formatNumberFourDecimals(channelotherfee || 0);
+                }
+            },
+            {
+                Header: t(langKeys.contractedplanfreewhatsappchannel),
+                accessor: 'freewhatsappchannel',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { freewhatsappchannel } = props.cell.row.original;
+                    return formatNumberNoDecimals(freewhatsappchannel || 0);
+                }
             },
             {
                 Header: t(langKeys.channelwhatsappfee),
@@ -1326,7 +969,17 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { channelwhatsappfee } = props.cell.row.original;
-                    return (channelwhatsappfee || 0).toFixed(4);
+                    return formatNumberFourDecimals(channelwhatsappfee || 0);
+                }
+            },
+            {
+                Header: t(langKeys.contractedplanfreewhatsappconversation),
+                accessor: 'whatsappconversationfreequantity',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { whatsappconversationfreequantity } = props.cell.row.original;
+                    return formatNumberNoDecimals(whatsappconversationfreequantity || 0);
                 }
             },
             {
@@ -1334,6 +987,10 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 accessor: 'clientfreequantity',
                 type: 'number',
                 sortType: 'number',
+                Cell: (props: any) => {
+                    const { clientfreequantity } = props.cell.row.original;
+                    return formatNumberNoDecimals(clientfreequantity || 0);
+                }
             },
             {
                 Header: t(langKeys.clientadditionalfee),
@@ -1342,7 +999,7 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { clientadditionalfee } = props.cell.row.original;
-                    return (clientadditionalfee || 0).toFixed(4);
+                    return formatNumberFourDecimals(clientadditionalfee || 0);
                 }
             },
             {
@@ -1366,27 +1023,7 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { hsmfee } = props.cell.row.original;
-                    return (hsmfee || 0).toFixed(4);
-                }
-            },
-            {
-                Header: t(langKeys.freewhatsappchannel),
-                accessor: 'freewhatsappchannel',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { freewhatsappchannel } = props.cell.row.original;
-                    return (freewhatsappchannel || 0).toFixed(0);
-                }
-            },
-            {
-                Header: t(langKeys.freeconversations),
-                accessor: 'whatsappconversationfreequantity',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { whatsappconversationfreequantity } = props.cell.row.original;
-                    return (whatsappconversationfreequantity || 0).toFixed(0);
+                    return formatNumberFourDecimals(hsmfee || 0);
                 }
             },
         ],
@@ -1470,7 +1107,7 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                                 valueDefault={dataMain.year}
                                 variant="outlined"
                                 onChange={(value) => setdataMain(prev => ({ ...prev, year: value?.desc || 0 }))}
-                                data={years}
+                                data={dataYears}
                                 optionDesc="desc"
                                 optionValue="desc"
                             />
@@ -1480,7 +1117,7 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                                 valueDefault={dataMain.month}
                                 variant="outlined"
                                 onChange={(value) => setdataMain(prev => ({ ...prev, month: value.map((o: Dictionary) => o.val).join() }))}
-                                data={months}
+                                data={dataMonths}
                                 uset={true}
                                 prefixTranslation="month_"
                                 optionDesc="val"
@@ -1545,6 +1182,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
         row ? `${row.year}-${String(row.month).padStart(2, '0')}` : `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth() + 1).padStart(2, '0')}`
     )
     const [checkedaux, setCheckedaux] = useState(row?.allowhsm || false);
+    const [checkeduser, setCheckeduser] = useState(row?.usercreateoverride || false);
     const [waitSave, setWaitSave] = useState(false);
 
     const arrayBreadContractedPlan = [
@@ -1570,6 +1208,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
             freewhatsappchannel: row?.freewhatsappchannel || 0,
             whatsappconversationfreequantity: row?.whatsappconversationfreequantity || 0,
             allowhsm: row?.allowhsm || false,
+            usercreateoverride: row?.usercreateoverride || false,
             status: row ? row.status : 'ACTIVO',
             type: row ? row.type : '',
             description: row ? row.description : '',
@@ -1596,7 +1235,8 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
         register('month');
         register('operation');
         register('allowhsm');
-        register('channelotherfee');
+        register('usercreateoverride');
+        register('channelotherfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
         register('description');
         register('plan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('basicfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
@@ -1706,6 +1346,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             error={errors?.basicfee?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         />
                     </div>
                     <div className="row-zyx">
@@ -1724,7 +1365,18 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             error={errors?.useradditionalfee?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         />
+                    </div>
+                    <div className="row-zyx">
+                        <div className={"col-6"} style={{ paddingBottom: '3px' }}>
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.allowuseroverride)}</Box>
+                            <FormControlLabel
+                                style={{ paddingLeft: 10 }}
+                                control={<IOSSwitch checked={checkeduser} onChange={(e) => { setCheckeduser(e.target.checked); setValue('usercreateoverride', e.target.checked) }} />}
+                                label={""}
+                            />
+                        </div>
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
@@ -1736,10 +1388,40 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             className="col-6"
                         />
                         <FieldEdit
+                            label={t(langKeys.contractedplanchannelotherfee)}
+                            onChange={(value) => setValue('channelotherfee', value)}
+                            valueDefault={getValues('channelotherfee')}
+                            error={errors?.channelotherfee?.message}
+                            type="number"
+                            className="col-6"
+                            inputProps={{ step: "any" }}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.contractedplanfreewhatsappchannel)}
+                            onChange={(value) => setValue('freewhatsappchannel', value)}
+                            valueDefault={getValues('freewhatsappchannel')}
+                            error={errors?.freewhatsappchannel?.message}
+                            type="number"
+                            className="col-6"
+                        />
+                        <FieldEdit
                             label={t(langKeys.channelwhatsappfee)}
                             onChange={(value) => setValue('channelwhatsappfee', value)}
                             valueDefault={getValues('channelwhatsappfee')}
                             error={errors?.channelwhatsappfee?.message}
+                            type="number"
+                            className="col-6"
+                            inputProps={{ step: "any" }}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.contractedplanfreewhatsappconversation)}
+                            onChange={(value) => setValue('whatsappconversationfreequantity', value)}
+                            valueDefault={getValues('whatsappconversationfreequantity')}
+                            error={errors?.whatsappconversationfreequantity?.message}
                             type="number"
                             className="col-6"
                         />
@@ -1760,6 +1442,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             error={errors?.clientadditionalfee?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         />
                     </div>
                     <div className="row-zyx">
@@ -1778,24 +1461,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             error={errors?.hsmfee?.message}
                             type="number"
                             className="col-6"
-                        />
-                    </div>
-                    <div className="row-zyx">
-                    <FieldEdit
-                            label={t(langKeys.freewhatsappchannel)}
-                            onChange={(value) => setValue('freewhatsappchannel', value)}
-                            valueDefault={getValues('freewhatsappchannel')}
-                            error={errors?.freewhatsappchannel?.message}
-                            type="number"
-                            className="col-6"
-                        />
-                        <FieldEdit
-                            label={t(langKeys.freeconversations)}
-                            onChange={(value) => setValue('whatsappconversationfreequantity', value)}
-                            valueDefault={getValues('whatsappconversationfreequantity')}
-                            error={errors?.whatsappconversationfreequantity?.message}
-                            type="number"
-                            className="col-6"
+                            inputProps={{ step: "any" }}
                         />
                     </div>
                 </div>
@@ -1814,16 +1480,21 @@ const ConversationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const executeResult = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main);
     const memoryTable = useSelector(state => state.main.memoryTable);
+
     const [dataMain, setdataMain] = useState({
         countrycode: "",
         year: String(new Date().getFullYear()),
         month: (new Date().getMonth() + 1).toString().padStart(2, "0")
     });
+
     const [disableSearch, setdisableSearch] = useState(false);
     const [duplicateop, setduplicateop] = useState(false);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitSave, setWaitSave] = useState(false);
+
+    const dataYears = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }];
+    const dataMonths =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
 
     function search() {
         dispatch(showBackdrop(true))
@@ -1863,8 +1534,8 @@ const ConversationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                         <TemplateIcons
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
-                        //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
-                        //extraOption={t(langKeys.duplicate)}
+                            //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
+                            //extraOption={t(langKeys.duplicate)}
                         />
                     )
                 }
@@ -1892,7 +1563,7 @@ const ConversationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { vcacomission } = props.cell.row.original;
-                    return (vcacomission || 0).toFixed(4);
+                    return formatNumberFourDecimals(vcacomission || 0);
                 }
             },
             {
@@ -1902,7 +1573,7 @@ const ConversationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { companystartfee } = props.cell.row.original;
-                    return (companystartfee || 0).toFixed(4);
+                    return formatNumberFourDecimals(companystartfee || 0);
                 }
             },
             {
@@ -1912,7 +1583,7 @@ const ConversationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { clientstartfee } = props.cell.row.original;
-                    return (clientstartfee || 0).toFixed(4);
+                    return formatNumberFourDecimals(clientstartfee || 0);
                 }
             },
         ],
@@ -1981,7 +1652,7 @@ const ConversationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                                 valueDefault={dataMain.year}
                                 variant="outlined"
                                 onChange={(value) => setdataMain(prev => ({ ...prev, year: value?.desc || 0 }))}
-                                data={years}
+                                data={dataYears}
                                 optionDesc="desc"
                                 optionValue="desc"
                             />
@@ -1991,7 +1662,7 @@ const ConversationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                                 valueDefault={dataMain.month}
                                 variant="outlined"
                                 onChange={(value) => setdataMain(prev => ({ ...prev, month: value.map((o: Dictionary) => o.val).join() }))}
-                                data={months}
+                                data={dataMonths}
                                 uset={true}
                                 prefixTranslation="month_"
                                 optionDesc="val"
@@ -2201,6 +1872,7 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                             error={errors?.vcacomission?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         />
                     </div>
                     <div className="row-zyx">
@@ -2211,6 +1883,7 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                             error={errors?.companystartfee?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         />
                         <FieldEdit
                             label={t(langKeys.customerinitiatedcost)}
@@ -2219,6 +1892,7 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                             error={errors?.clientstartfee?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         />
                     </div>
                     <div className="row-zyx">
@@ -2256,12 +1930,16 @@ const NotificationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
         year: String(new Date().getFullYear()),
         month: (new Date().getMonth() + 1).toString().padStart(2, "0")
     });
+
     const [disableSearch, setdisableSearch] = useState(false);
     const [duplicateop, setduplicateop] = useState(false);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitSave, setWaitSave] = useState(false);
     const memoryTable = useSelector(state => state.main.memoryTable);
+
+    const dataYears = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }];
+    const dataMonths =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
 
     function search() {
         dispatch(showBackdrop(true))
@@ -2301,8 +1979,8 @@ const NotificationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                         <TemplateIcons
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
-                        //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
-                        //extraOption={t(langKeys.duplicate)}
+                            //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
+                            //extraOption={t(langKeys.duplicate)}
                         />
                     )
                 }
@@ -2330,7 +2008,7 @@ const NotificationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { vcacomission } = props.cell.row.original;
-                    return (vcacomission || 0).toFixed(4);
+                    return formatNumberFourDecimals(vcacomission || 0);
                 }
             },
             {
@@ -2340,7 +2018,7 @@ const NotificationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { c250000 } = props.cell.row.original;
-                    return (c250000 || 0).toFixed(4);
+                    return formatNumberFourDecimals(c250000 || 0);
                 }
             },
             {
@@ -2350,7 +2028,7 @@ const NotificationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { c750000 } = props.cell.row.original;
-                    return (c750000 || 0).toFixed(4);
+                    return formatNumberFourDecimals(c750000 || 0);
                 }
             },
             {
@@ -2360,7 +2038,7 @@ const NotificationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { c2000000 } = props.cell.row.original;
-                    return (c2000000 || 0).toFixed(4);
+                    return formatNumberFourDecimals(c2000000 || 0);
                 }
             },
             {
@@ -2370,7 +2048,7 @@ const NotificationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { c3000000 } = props.cell.row.original;
-                    return (c3000000 || 0).toFixed(4);
+                    return formatNumberFourDecimals(c3000000 || 0);
                 }
             },
             {
@@ -2380,7 +2058,7 @@ const NotificationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { c4000000 } = props.cell.row.original;
-                    return (c4000000 || 0).toFixed(4);
+                    return formatNumberFourDecimals(c4000000 || 0);
                 }
             },
             {
@@ -2390,7 +2068,7 @@ const NotificationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { c5000000 } = props.cell.row.original;
-                    return (c5000000 || 0).toFixed(4);
+                    return formatNumberFourDecimals(c5000000 || 0);
                 }
             },
             {
@@ -2400,7 +2078,7 @@ const NotificationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { c10000000 } = props.cell.row.original;
-                    return (c10000000 || 0).toFixed(4);
+                    return formatNumberFourDecimals(c10000000 || 0);
                 }
             },
             {
@@ -2410,7 +2088,7 @@ const NotificationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { c25000000 } = props.cell.row.original;
-                    return (c25000000 || 0).toFixed(4);
+                    return formatNumberFourDecimals(c25000000 || 0);
                 }
             },
         ],
@@ -2446,20 +2124,19 @@ const NotificationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
         setRowSelected({ row: null, edit: true });
     }
 
-    // const handleView = (row: Dictionary) => {
-    //     setduplicateop(true)
-    //     const callback = () => {
-    //         dispatch(execute(billingNotificationIns({ ...row, operation: 'DUPLICATE', id: 0 })));
-    //         dispatch(showBackdrop(true));
-    //         setWaitSave(true);
-    //     }
-
-    //     dispatch(manageConfirmation({
-    //         visible: true,
-    //         question: t(langKeys.confirmation_duplicate),
-    //         callback
-    //     }))
-    // }
+    const handleView = (row: Dictionary) => {
+        setduplicateop(true)
+        const callback = () => {
+            dispatch(execute(billingNotificationIns({ ...row, operation: 'DUPLICATE', id: 0 })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_duplicate),
+            callback
+        }))
+    }
 
     const handleEdit = (row: Dictionary) => {
         setViewSelected("view-2");
@@ -2494,7 +2171,7 @@ const NotificationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                                 valueDefault={dataMain.year}
                                 variant="outlined"
                                 onChange={(value) => setdataMain(prev => ({ ...prev, year: value?.desc || 0 }))}
-                                data={years}
+                                data={dataYears}
                                 optionDesc="desc"
                                 optionValue="desc"
                             />
@@ -2504,7 +2181,7 @@ const NotificationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                                 valueDefault={dataMain.month}
                                 variant="outlined"
                                 onChange={(value) => setdataMain(prev => ({ ...prev, month: value.map((o: Dictionary) => o.val).join() }))}
-                                data={months}
+                                data={dataMonths}
                                 uset={true}
                                 prefixTranslation="month_"
                                 optionDesc="val"
@@ -2726,6 +2403,7 @@ const DetailNotificationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                             error={errors?.vcacomission?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         />
                     </div>
                     <div className="row-zyx">
@@ -2736,6 +2414,7 @@ const DetailNotificationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                             error={errors?.c250000?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         />
                         <FieldEdit
                             label={`${t(langKeys.next_plural)} 750k`}
@@ -2744,6 +2423,7 @@ const DetailNotificationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                             error={errors?.c750000?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         />
                     </div>
                     <div className="row-zyx">
@@ -2754,6 +2434,7 @@ const DetailNotificationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                             error={errors?.c2000000?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         />
                         <FieldEdit
                             label={`${t(langKeys.next_plural)} 3 ${t(langKeys.millions)}`}
@@ -2762,6 +2443,7 @@ const DetailNotificationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                             error={errors?.c3000000?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         />
                     </div>
                     <div className="row-zyx">
@@ -2772,6 +2454,7 @@ const DetailNotificationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                             error={errors?.c4000000?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         />
                         <FieldEdit
                             label={`${t(langKeys.next_plural)} 5 ${t(langKeys.millions)}`}
@@ -2780,6 +2463,7 @@ const DetailNotificationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                             error={errors?.c5000000?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         />
                     </div>
                     <div className="row-zyx">
@@ -2790,6 +2474,7 @@ const DetailNotificationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                             error={errors?.c10000000?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         />
                         <FieldEdit
                             label={`${t(langKeys.greaterthan)} 25 ${t(langKeys.millions)}`}
@@ -2798,6 +2483,7 @@ const DetailNotificationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                             error={errors?.c25000000?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         />
                     </div>
                     <div className="row-zyx">
@@ -2831,16 +2517,21 @@ const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const executeResult = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main);
     const memoryTable = useSelector(state => state.main.memoryTable);
+
     const [dataMain, setdataMain] = useState({
         plan: "",
         year: String(new Date().getFullYear()),
         month: (new Date().getMonth() + 1).toString().padStart(2, "0")
     });
+
     const [disableSearch, setdisableSearch] = useState(false);
     const [duplicateop, setduplicateop] = useState(false);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitSave, setWaitSave] = useState(false);
+
+    const dataYears = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }];
+    const dataMonths =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
 
     function search() {
         dispatch(showBackdrop(true))
@@ -2876,8 +2567,8 @@ const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                         <TemplateIcons
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
-                        //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
-                        //extraOption={t(langKeys.duplicate)}
+                            //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
+                            //extraOption={t(langKeys.duplicate)}
                         />
                     )
                 }
@@ -2901,7 +2592,7 @@ const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { basicfee } = props.cell.row.original;
-                    return (basicfee || 0).toFixed(2);
+                    return formatNumber(basicfee || 0);
                 }
             },
             {
@@ -2986,12 +2677,6 @@ const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     if (viewSelected === "view-1") {
         return (
             <Fragment>
-                {/* <div>
-                    <div style={{width:"100%", display: "flex", padding: 10}}>
-                        
-                    </div>
-                </div> */}
-
                 <TableZyx
                     onClickRow={handleEdit}
                     columns={columns}
@@ -3003,7 +2688,7 @@ const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                                 valueDefault={dataMain.year}
                                 variant="outlined"
                                 onChange={(value) => setdataMain(prev => ({ ...prev, year: value?.desc || 0 }))}
-                                data={years}
+                                data={dataYears}
                                 optionDesc="desc"
                                 optionValue="desc"
                             />
@@ -3013,7 +2698,7 @@ const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                                 valueDefault={dataMain.month}
                                 variant="outlined"
                                 onChange={(value) => setdataMain(prev => ({ ...prev, month: value.map((o: Dictionary) => o.val).join() }))}
-                                data={months}
+                                data={dataMonths}
                                 uset={true}
                                 prefixTranslation="month_"
                                 optionDesc="val"
@@ -3041,7 +2726,6 @@ const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                             </Button>
                         </div>
                     )}
-                    // titlemodule={t(langKeys.billingplan, { count: 2 })}
                     data={mainResult.mainData.data}
                     filterGeneral={false}
                     download={true}
@@ -3235,6 +2919,7 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({ data: { row, edit
                             error={errors?.basicfee?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         />
                     </div>
                     <div className="row-zyx">
@@ -3271,16 +2956,21 @@ const MessagingCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const executeResult = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main);
     const memoryTable = useSelector(state => state.main.memoryTable);
+
     const [dataMain, setdataMain] = useState({
         countrycode: "",
         year: String(new Date().getFullYear()),
         month: (new Date().getMonth() + 1).toString().padStart(2, "0")
     });
+
     const [disableSearch, setdisableSearch] = useState(false);
     const [duplicateop, setduplicateop] = useState(false);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitSave, setWaitSave] = useState(false);
+
+    const dataYears = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }];
+    const dataMonths =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
 
     function search() {
         dispatch(showBackdrop(true))
@@ -3320,8 +3010,8 @@ const MessagingCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                         <TemplateIcons
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
-                        //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
-                        //extraOption={t(langKeys.duplicate)}
+                            //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
+                            //extraOption={t(langKeys.duplicate)}
                         />
                     )
                 }
@@ -3341,7 +3031,7 @@ const MessagingCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { pricepersms } = props.cell.row.original;
-                    return (pricepersms || 0).toFixed(4);
+                    return formatNumberFourDecimals(pricepersms || 0);
                 }
             },
             {
@@ -3351,7 +3041,7 @@ const MessagingCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { vcacomissionpersms } = props.cell.row.original;
-                    return (vcacomissionpersms || 0).toFixed(4);
+                    return formatNumberFourDecimals(vcacomissionpersms || 0);
                 }
             },
             {
@@ -3361,7 +3051,7 @@ const MessagingCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { pricepermail } = props.cell.row.original;
-                    return (pricepermail || 0).toFixed(4);
+                    return formatNumberFourDecimals(pricepermail || 0);
                 }
             },
             {
@@ -3371,7 +3061,7 @@ const MessagingCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { vcacomissionpermail } = props.cell.row.original;
-                    return (vcacomissionpermail || 0).toFixed(4);
+                    return formatNumberFourDecimals(vcacomissionpermail || 0);
                 }
             }
         ],
@@ -3455,7 +3145,7 @@ const MessagingCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                                 valueDefault={dataMain.year}
                                 variant="outlined"
                                 onChange={(value) => setdataMain(prev => ({ ...prev, year: value?.desc || 0 }))}
-                                data={years}
+                                data={dataYears}
                                 optionDesc="desc"
                                 optionValue="desc"
                             />
@@ -3465,7 +3155,7 @@ const MessagingCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                                 valueDefault={dataMain.month}
                                 variant="outlined"
                                 onChange={(value) => setdataMain(prev => ({ ...prev, month: value.map((o: Dictionary) => o.val).join() }))}
-                                data={months}
+                                data={dataMonths}
                                 uset={true}
                                 prefixTranslation="month_"
                                 optionDesc="val"
@@ -3666,6 +3356,7 @@ const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                             error={errors?.pricepersms?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         />
                         <FieldEdit
                             label={t(langKeys.vcacomissionpersms)}
@@ -3674,6 +3365,7 @@ const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                             error={errors?.vcacomissionpersms?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         />
                     </div>
                     <div className="row-zyx">
@@ -3698,6 +3390,7 @@ const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                             error={errors?.pricepermail?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         />
                         <FieldEdit
                             label={t(langKeys.vcacomissionpermail)}
@@ -3706,6 +3399,7 @@ const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                             error={errors?.vcacomissionpermail?.message}
                             type="number"
                             className="col-6"
+                            inputProps={{ step: "any" }}
                         />
                     </div>
                 </div>
@@ -3782,9 +3476,6 @@ const BillingSetup: FC = () => {
                 {user?.roledesc === "SUPERADMIN" &&
                     <AntTab label={t(langKeys.supportplan)} />
                 }
-                {/*user?.roledesc === "SUPERADMIN" && 
-                    <AntTab label={t(langKeys.costperHSMperiod)} />
-                */}
             </Tabs>
             {pageSelected === 0 &&
                 <div style={{ marginTop: 16 }}>
@@ -3816,11 +3507,6 @@ const BillingSetup: FC = () => {
                     <SupportPlan dataPlan={dataPlan} />
                 </div>
             }
-            {/*pageSelected === 6 &&
-                <div style={{ marginTop: 16 }}>
-                    <CostPerHSMPeriod dataPlan={multiData}/>
-                </div>
-            */}
         </div>
     );
 }

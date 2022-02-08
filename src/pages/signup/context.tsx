@@ -24,6 +24,8 @@ interface Subscription {
     foreground: keyof ListChannels | undefined;
     plan: PlanType;
     step: number;
+    confirmations: number;
+    setConfirmations: SetState<number>;
     setStep: SetState<number>;
     finishreg: () => void;
     setForeground: SetState<keyof ListChannels | undefined>;
@@ -109,6 +111,8 @@ export const SubscriptionContext = createContext<Subscription>({
     foreground: undefined,
     plan: "BASIC",
     step: 0,
+    confirmations: 0,
+    setConfirmations: () => {},
     setStep: () => {},
     finishreg: () => {},
     setForeground: () => {},
@@ -176,6 +180,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
     const { t } = useTranslation();
     const match = useRouteMatch<{ token :string }>();
     const [waitSave, setWaitSave] = useState(false);
+    const [confirmations, setConfirmations] = useState(0);
     const [listchannels, setlistchannels] = useState<ListChannels>(defaultListChannels);
     const planData = useSelector(state => state.signup.verifyPlan);
     const [requestchannels, setrequestchannels] = useState<IRequestBody[]>([]);
@@ -290,6 +295,16 @@ export const SubscriptionProvider: FC = ({ children }) => {
     }, [listchannels]);
 
     function finishreg(){
+        // requestchannels.length !== confirmations
+        if (requestchannels.length === 0) {
+            dispatch(showSnackbar({
+                message: "Debe completar el/los canal/es",
+                show: true,
+                success: false,
+            }))
+            return
+        }
+
         let majorfield = {
             method: "UFN_CREATEZYXMEACCOUNT_INS",
             parameters: {
@@ -326,6 +341,8 @@ export const SubscriptionProvider: FC = ({ children }) => {
             foreground,
             plan: match.params.token as PlanType,
             step,
+            confirmations,
+            setConfirmations,
             setStep,
             finishreg,
             setForeground,

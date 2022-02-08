@@ -99,6 +99,14 @@ function formatNumberNoDecimals(num: number) {
     return "0"
 }
 
+function toISOLocalString(date: { getTimezoneOffset: () => number; getTime: () => number; }) {
+    const z = (n: string | number) => ('0' + n).slice(-2);
+    let off = date.getTimezoneOffset();
+    const sign = off < 0 ? '+' : '-';
+    off = Math.abs(off);
+    return new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().slice(0, -1) + sign + z(off / 60 | 0) + ':' + z(off % 60);
+  }
+
 export const DateOptionsMenuComponent = (value: any, handleClickItemMenu: (key: any) => void) => {
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(locale as any)[navigator.language.split('-')[0]]} >
@@ -535,7 +543,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
         register('useradditionalfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
         register('channelfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
         register('channelwhatsappfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
-        register('channelotherfee');
+        register('channelotherfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
         register('clientfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
         register('clientadditionalfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
         register('supportbasicfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
@@ -818,6 +826,37 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             />
                         }
                         { edit ? <FieldEdit
+                            label={t(langKeys.contractedplanchannelotherfee)}
+                            onChange={(value) => setValue('channelotherfee', value)}
+                            valueDefault={getValues('channelotherfee')}
+                            error={errors?.channelotherfee?.message}
+                            type="number"
+                            className="col-6"
+                            inputProps={{ step: "any" }}
+                        /> :
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.contractedplanchannelotherfee)}
+                                value={formatNumberFourDecimals(getValues('channelotherfee') || 0)}
+                            />
+                        }
+                    </div>
+                    <div className="row-zyx">
+                    { edit ? <FieldEdit
+                            label={t(langKeys.contractedplanfreewhatsappchannel)}
+                            onChange={(value) => setValue('freewhatsappchannel', value)}
+                            valueDefault={getValues('freewhatsappchannel')}
+                            error={errors?.freewhatsappchannel?.message}
+                            type="number"
+                            className="col-6"
+                        /> :
+                            <FieldView
+                            className="col-6"
+                            label={t(langKeys.contractedplanfreewhatsappchannel)}
+                            value={getValues("freewhatsappchannel").toString()}
+                        />
+                        }
+                        { edit ? <FieldEdit
                             label={t(langKeys.channelwhatsappfee)}
                             onChange={(value) => setValue('channelwhatsappfee', value)}
                             valueDefault={getValues('channelwhatsappfee')}
@@ -846,31 +885,15 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         />
                     </div>
                     <div className="row-zyx">
-                        { edit ? <FieldEdit
-                            label={t(langKeys.freewhatsappchannel)}
-                            onChange={(value) => setValue('freewhatsappchannel', value)}
-                            valueDefault={getValues('freewhatsappchannel')}
-                            error={errors?.freewhatsappchannel?.message}
-                            type="number"
-                            className="col-6"
-                        /> :
-                            <FieldView
-                            className="col-6"
-                            label={t(langKeys.freewhatsappchannel)}
-                            value={getValues("freewhatsappchannel").toString()}
-                        />
-                        }
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.reportfreeconversations)}
-                            value={getValues("freewhatsappconversations").toString()}
-                        />
-                    </div>
-                    <div className="row-zyx">
                         <FieldView
                             className="col-6"
                             label={t(langKeys.channelcharge)}
                             value={formatNumber(getValues("channelcharge") || 0)}
+                        />
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.reportfreeconversations)}
+                            value={getValues("freewhatsappconversations").toString()}
                         />
                     </div>
                 </div>}
@@ -3418,7 +3441,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                             />
                             <FieldView
                                 label={t(langKeys.paymentdate)}
-                                value={data?.paymentdate ? new Date(data?.paymentdate).toISOString().replace("T"," ").substring(0, 19) : t(langKeys.none)}
+                                value={data?.paymentdate ? toISOLocalString(new Date(data?.paymentdate)).replace("T"," ").substring(0, 19) : t(langKeys.none)}
                                 className="col-4"
                             />
                             <FieldView
@@ -4641,7 +4664,7 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 }
             },
             {
-                Header: t(langKeys.quantity),
+                Header: t(langKeys.amount),
                 accessor: 'amount',
                 type: 'number',
                 sortType: 'number',
@@ -5278,12 +5301,12 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                             {data?.edit && <FieldView
                                 className="col-4"
                                 label={t(langKeys.servicedescription)}
-                                value={t(langKeys.transactionrechargetitle) + new Date().toISOString().split('T')[0]}
+                                value={t(langKeys.transactionrechargetitle) + toISOLocalString(new Date()).split('T')[0]}
                             />}
                             {data?.row?.operationtype === "COMPRA" && <FieldView
                                 className="col-4"
                                 label={t(langKeys.servicedescription)}
-                                value={t(langKeys.transactionrechargetitle) + new Date(data?.row?.createdate).toISOString().split('T')[0]}
+                                value={t(langKeys.transactionrechargetitle) + toISOLocalString(new Date(data?.row?.createdate)).split('T')[0]}
                             />}
                             {data?.edit && <FieldView
                                 className="col-4"
@@ -5395,7 +5418,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                                             <TableCell>
                                                 <FieldView
                                                     label={''}
-                                                    value={new Date(file?.createdate).toISOString().replace("T"," ").substring(0, 19)}
+                                                    value={toISOLocalString(new Date(file?.createdate)).replace("T"," ").substring(0, 19)}
                                                     className={classes.fieldView}
                                                 />
                                             </TableCell>

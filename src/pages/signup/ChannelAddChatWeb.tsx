@@ -1470,6 +1470,7 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
     const classes = useStyles();
     const {
         foreground,
+        setConfirmations,
         setForeground,
         setrequestchannels,
     } = useContext(SubscriptionContext);
@@ -1668,6 +1669,7 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
                         });
                         setView("view1");
                         setHasFinished(true);
+                        setConfirmations(prev => prev++);
                     }}
                 >
                     <Trans i18nKey={langKeys.next} />
@@ -1733,14 +1735,31 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
 
     return (
         <div className={commonClasses.root}>
-            <ZyxmeMessengerIcon className={commonClasses.leadingIcon} />
-            <IconButton
+            {!hasFinished && <ZyxmeMessengerIcon className={commonClasses.leadingIcon} />}
+            {!hasFinished && <IconButton
                 color="primary"
                 className={commonClasses.trailingIcon}
                 onClick={() => deleteChannel('chatWeb')}
             >
                 <DeleteOutlineIcon />
-            </IconButton>
+            </IconButton>}
+            {hasFinished && <ZyxmeMessengerIcon
+                style={{ width: 100, height: 100, alignSelf: 'center', fill: 'gray' }}/>
+            }
+            {hasFinished && (
+                <div style={{ alignSelf: 'center' }}>
+                    <Typography
+                        color="primary"
+                        style={{ fontSize: '1.5vw', fontWeight: 'bold', textAlign: 'center' }}>
+                        ¡Felicitaciones!
+                    </Typography>
+                    <Typography
+                        color="primary"
+                        style={{ fontSize: '1.2vw', fontWeight: 500 }}>
+                        Haz conectado con ChatWeb
+                    </Typography>
+            </div>
+            )}
             <FieldEdit
                 onChange={(value) => setChannelName(value)}
                 valueDefault={channelName}
@@ -1748,7 +1767,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
                 variant="outlined"
                 size="small"
                 disabled={loading || integrationId != null}
-            />
+            />  
 
             {/* <div className="row-zyx">
                     <div className="col-3"></div>

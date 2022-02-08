@@ -43,6 +43,7 @@ export const RateExperience: FC = () => {
     const { t } = useTranslation();
     const { commonClasses } = useContext(SubscriptionContext);
     const [rating, setRating] = useState<0 | 1 | 2 | 3>(0);
+    const [comment, setComment] = useState("");
 
     return (
         <div className={classes.root}>
@@ -82,6 +83,8 @@ export const RateExperience: FC = () => {
                 <TextField
                     label="¿Cómo podemos mejorar?"
                     variant="outlined"
+                    value={comment}
+                    onChange={e => setComment(e.target.value)}
                     multiline
                     minRows={6}
                     maxRows={6}
@@ -95,7 +98,7 @@ export const RateExperience: FC = () => {
                 style={{ marginTop: '3em' }}
                 variant="contained"
                 color="primary"
-                disabled={rating === 0}
+                disabled={rating === 0 || comment.length === 0}
             >
                 <Trans i18nKey={langKeys.next} />
             </Button>

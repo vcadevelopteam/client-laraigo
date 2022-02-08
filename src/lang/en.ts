@@ -927,7 +927,7 @@ const translation: LangKeys = {
     numberofagentshired: "Amount of hired agents",
     useradditionalfee: "UP per additional agent",
     channelfreequantity: "Amount of contracted channels",
-    channelwhatsappfee:"UP per WhatsApp channel",
+    channelwhatsappfee:"UP per additional WhatsApp channel",
     clientfreequantity: "Contact limit",
     clientadditionalfee:"UP per aditional contact",
     allowhsm:"Allow HSM messaging",
@@ -3012,6 +3012,10 @@ const translation: LangKeys = {
     freewhatsappchannel: 'Free WhatsApp channel quantity',
     whatsappfreechannel: 'Free WhatsApp channels',
     whatsappadditionalchannel: 'Additional WhatsApp channels',
+    contractedplanfreewhatsappchannel: 'Amount of contracted WhatsApp channels',
+    contractedplanfreewhatsappconversation: 'Amount of free WhatsApp conversations',
+    contractedplanchannelotherfee:"UP per additional channel",
+    allowuseroverride:"Allow users over limit",
 };
 
 const enResource: ResourceLanguage = {
