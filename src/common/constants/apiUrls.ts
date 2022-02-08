@@ -6,7 +6,7 @@ const APIS_URL = {
         // WS: 'http://localhost:7070',
         WS: 'https://socket.laraigo.com',
         CHATFLOW: 'https://zyxmelinux.zyxmeapp.com/zyxme/chatflow',
-        FACEBOOKAPP: '1094526090706564',
+        FACEBOOKAPP: '367176075182579',
         INSTAGRAMAPP: '1924971937716955',
         CULQIKEY: 'pk_test_041501e753dcb2f9'
     },
@@ -31,7 +31,7 @@ const APIS_URL = {
         // WS: 'http://localhost:7070',
         WS: 'https://socket.laraigo.com',
         CHATFLOW: 'https://localhost:4200',
-        FACEBOOKAPP: '1094526090706564',
+        FACEBOOKAPP: '367176075182579',
         INSTAGRAMAPP: '1924971937716955',
         CULQIKEY: 'pk_test_041501e753dcb2f9'
     }
