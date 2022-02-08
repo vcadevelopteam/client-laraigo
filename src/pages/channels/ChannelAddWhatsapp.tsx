@@ -657,49 +657,6 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                     <div style={{ width: '100%' }}>
                         <div>    
                             <div >
-                                <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad",marginBottom: 15}}>{t(langKeys.signupstep1title2)}</div>
-                                <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display:"flex"}}>
-                                    <TextField
-                                        className={classes.fields1}
-                                        variant="outlined"
-                                        margin="normal"
-                                        size="small"
-                                        defaultValue={fields.service.brandname}
-                                        label={t(langKeys.brandname)}
-                                        name="brandname"
-                                        error={!!errors.brandname}
-                                        helperText={errors.brandname}
-                                        onChange={(e) => {
-                                            let partialf = {...fields};
-                                            partialf.service.brandname = e.target.value;
-                                            setFields(partialf)
-                                            setdisablebutton(!(e.target.value) || !(fields.service.brandaddress) || !(fields.service.firstname) || !(fields.service.lastname) || !(fields.service.email) 
-                                                    || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber) )
-                                        }}
-                                        value={fields.service.brandname}
-                                        disabled={edit}
-                                    />
-                                    <TextField
-                                        className={classes.fields2}
-                                        variant="outlined"
-                                        margin="normal"
-                                        size="small"
-                                        defaultValue={fields.service.brandaddress}
-                                        label={t(langKeys.brandaddress)}
-                                        name="brandaddress"
-                                        error={!!errors.brandaddress}
-                                        helperText={errors.brandaddress}
-                                        onChange={(e) => {
-                                            let partialf = {...fields};
-                                            partialf.service.brandaddress = e.target.value;
-                                            setFields(partialf)
-                                            setdisablebutton(!(e.target.value) || !(fields.service.brandname) || !(fields.service.firstname) || !(fields.service.lastname) || !(fields.service.email) 
-                                                    || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber) )
-                                        }}
-                                        value={fields.service.brandaddress}
-                                        disabled={edit}
-                                    />
-                                </div>
                                 <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad",marginBottom: 10}}>{t(langKeys.brandpointcontact)}</div>
                                 <div style={{ textAlign: "center", fontWeight: 500, fontSize: 16, color: "grey"}}>{t(langKeys.brandpointcontact2)}</div>
                                 <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display:"flex"}}>
@@ -801,30 +758,6 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                         margin="normal"
                                         fullWidth
                                         size="small"
-                                        defaultValue={fields.service.customerfacebookid}
-                                        label={t(langKeys.customerfacebookid)}
-                                        name="customerfacebookid"
-                                        error={!!errors.customerfacebookid}
-                                        helperText={errors.customerfacebookid}
-                                        onChange={(e) => {
-                                            let partialf = {...fields};
-                                            partialf.service.customerfacebookid = e.target.value;
-                                            setFields(partialf)
-                                            setdisablebutton(!(e.target.value) || !(fields.service.brandname) || !(fields.service.brandaddress) || !(fields.service.firstname) || !(fields.service.lastname) 
-                                                    || !(fields.service.email) || !(fields.service.phone) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber) )
-                                        }}
-                                        value={fields.service.customerfacebookid}
-                                        disabled={edit}
-                                    />
-                                </div>
-                                <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey",marginLeft: "15px",marginBottom: "15px"}}>{t(langKeys.whatsappinformation2)}</div>
-                                <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display:"flex"}}>
-                                    <TextField
-                                        className={classes.fields3}
-                                        variant="outlined"
-                                        margin="normal"
-                                        fullWidth
-                                        size="small"
                                         defaultValue={fields.service.phonenumberwhatsappbusiness}
                                         label={t(langKeys.desiredphonenumberwhatsappbusiness)}
                                         name="phonenumberwhatsappbusiness"
@@ -841,7 +774,12 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                         disabled={edit}
                                     />
                                 </div>
-                                <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey",marginLeft: "15px",marginBottom: "15px"}}>{t(langKeys.whatsappinformation3)}</div>
+                                <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginLeft: "15px", marginBottom: "15px" }}>
+                                    {t(langKeys.whatsappinformation3)+" "}
+                                    <Link href="http://africau.edu/images/default/sample.pdf">
+                                        Descarga: Guía de configuracion.pdf
+                                    </Link>
+                                </div>
                                 <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display:"flex"}}>
                                     <TextField
                                         className={classes.fields3}
@@ -866,6 +804,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                     />
                                 </div>
                                 <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey",marginLeft: "15px",marginBottom: "15px"}}>{t(langKeys.whatsappinformation4)}</div>
+                                <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginLeft: "15px", marginBottom: "15px" }}><b>*{t(langKeys.whatsappsubtitle1)}</b></div>
                                 <div style={{ width: "100%", alignItems: "center", display: "flex"}}>
                                     <div style={{ flex: "1", margin: "0px 15px"}}>
                                         {edit ?
