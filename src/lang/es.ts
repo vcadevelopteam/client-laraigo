@@ -1084,7 +1084,7 @@ const translation: LangKeys = {
     conversationcompanywhatcharge: "Costo por conversaciones WA iniciadas por la empresa",
     conversationclientwhatquantity: "Cantidad de conversaciones WA iniciadas por el cliente",
     conversationclientwhatfee: "PU de conversaciones WA iniciadas por el cliente",
-    channelwhatsappfee:"PU por canal WhatsApp",
+    channelwhatsappfee:"PU por canal WhatsApp adicional",
     channelotherquantity: "Cantidad de canales no WhatsApp",
     channelwhatsappquantity: "Cantidad de canales WhatsApp",
     clientfreequantity: "Límite de contactos",
@@ -3001,6 +3001,10 @@ const translation: LangKeys = {
     freewhatsappchannel: 'Cantidad de canales WhatsApp gratis',
     whatsappfreechannel: 'Canales WhatsApp gratis',
     whatsappadditionalchannel: 'Canales WhatsApp adicionales',
+    contractedplanfreewhatsappchannel: 'Cantidad de canales WhatsApp contratados',
+    contractedplanfreewhatsappconversation: 'Cantidad de conversaciones WhatsApp gratis',
+    contractedplanchannelotherfee:"PU por canal adicional",
+    allowuseroverride:"Permite usuarios sobre el límite",
 };
 
 const esResource: ResourceLanguage = {
