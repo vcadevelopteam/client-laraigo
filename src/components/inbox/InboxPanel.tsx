@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, memo } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { ITicket } from "@types";
@@ -20,9 +20,10 @@ import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import Tooltip from '@material-ui/core/Tooltip';
-import { FixedSizeList } from 'react-window';
+import { FixedSizeList, areEqual } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import ClearIcon from '@material-ui/icons/Clear';
+import memoize from 'memoize-one';
 
 const useStyles = makeStyles((theme) => ({
     containerPanel: {
@@ -348,6 +349,38 @@ const filterAboutStatusName = (data: ITicket[], page: number, searchName: string
     return data;
 }
 
+const RenderRow = memo(
+    ({ data, index, style }: any) => {
+        const { items, setTicketSelected, classes } = data;
+        const item = items[index]
+        return (
+            <div style={style}>
+                <ItemTicket key={item.conversationid} classes={classes} item={item} setTicketSelected={setTicketSelected} />
+            </div>
+        )
+    },
+    areEqual
+)
+
+const RenderRowFilterd = memo(
+    ({ data, index, style }: any) => {
+        const { items, setTicketSelected, classes } = data;
+        const item = items[index]
+        return (
+            <div style={style}>
+                <ItemTicket key={item.conversationid} classes={classes} item={item} setTicketSelected={setTicketSelected} />
+            </div>
+        )
+    },
+    areEqual
+)
+
+const createItemData = memoize((items, setTicketSelected, classes) => ({
+    items,
+    setTicketSelected,
+    classes
+}));
+
 const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, userType }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -405,29 +438,8 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
         return () => setTicketsToShow(dataTickets)
     }, [pageSelected, search, dataTickets])
 
-    const RenderRow = React.useCallback(
-        ({ index, style }) => {
-            const item = ticketsToShow[index]
-            return (
-                <div style={style}>
-                    <ItemTicket key={item.conversationid} classes={classes} item={item} setTicketSelected={setTicketSelected} />
-                </div>
-            )
-        },
-        [ticketsToShow]
-    )
-
-    const RenderRowFilterd = React.useCallback(
-        ({ index, style }) => {
-            const item = ticketFilteredList.data[index]
-            return (
-                <div style={style}>
-                    <ItemTicket key={item.conversationid} classes={classes} item={item} setTicketSelected={setTicketSelected} />
-                </div>
-            )
-        },
-        [ticketFilteredList.data]
-    )
+    const ticketFilteredListData = createItemData(ticketFilteredList.data, setTicketSelected, classes);
+    const ticketsToShowData = createItemData(ticketsToShow, setTicketSelected, classes);
 
     return (
         <div className={classes.containerTickets}>
@@ -517,6 +529,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                                                 height={height}
                                                 itemCount={ticketFilteredList.data.length}
                                                 itemSize={82.59}
+                                                itemData={ticketFilteredListData}
                                             >
                                                 {RenderRowFilterd}
                                             </FixedSizeList>
@@ -534,6 +547,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                                         height={height}
                                         itemCount={ticketsToShow.length}
                                         itemSize={82.59}
+                                        itemData={ticketsToShowData}
                                     >
                                         {RenderRow}
                                     </FixedSizeList>
