@@ -500,7 +500,7 @@ export const changeStatusTicketWS = (state: IState, action: IAction): IState => 
     const { agentList: { data }, userType } = state;
 
     if (userType === 'SUPERVISOR') {
-        debugger
+        
         newAgentList = data.map(x => x.userid === userid ? {
             ...x,
             countPaused: status === "SUSPENDIDO" ? x.countPaused + 1 : x.countPaused - 1,
