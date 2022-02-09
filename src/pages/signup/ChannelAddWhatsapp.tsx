@@ -356,15 +356,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                 <div style={{ width: "100%", margin: "0px 15px" }}>
                     <Button
                         // onClick={() => { checkissues() }}
-                        onClick={() => {
-                            if (provider === "DIALOG") {
-                                setView("view3");
-                            } else {
-                                setView("view1");
-                                setHasFinished(true);
-                                setConfirmations(prev => prev++);
-                            }
-                        }}
+                        onClick={() => setView("view3")}
                         className={classes.button2}
                         disabled={disablebutton}
                         variant="contained"
@@ -376,7 +368,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
             </div>
         );
     }
-    else if (viewSelected === "view3" && provider === "DIALOG") {
+    else if (viewSelected === "view3") {
         return (<div style={{ marginTop: "auto", marginBottom: "auto", maxHeight: "100%" }}>
             <Breadcrumbs aria-label="breadcrumb">
                 <Link
