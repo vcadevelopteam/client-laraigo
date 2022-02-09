@@ -40,7 +40,7 @@ const CssPhonemui = styled(MuiPhoneNumber)({
 });
 
 
-export const Step2_5: FC<{ setOpenWarning: (param: any) => void}> = ({ setOpenWarning }) => {
+const Step2_5: FC<{ setOpenWarning: (param: any) => void}> = ({ setOpenWarning }) => {
     const { mainData, setMainData, setStep } = useContext(SubscriptionContext);
     const { t } = useTranslation();
     const URL="https://ipapi.co/json/";
@@ -234,4 +234,5 @@ export const Step2_5: FC<{ setOpenWarning: (param: any) => void}> = ({ setOpenWa
         </div>
     )
 }
+
 export default Step2_5

@@ -2,42 +2,37 @@ import { makeStyles } from '@material-ui/core';
 import { IRequestBody } from '@types';
 import { useSelector } from 'hooks';
 import { langKeys } from 'lang/keys';
-import React, { FC, useState, createContext, useMemo, CSSProperties, useEffect, useContext } from 'react';
+import React, { FC, useState, createContext, useMemo, CSSProperties, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { useHistory, useRouteMatch } from 'react-router-dom';
+import { useRouteMatch } from 'react-router-dom';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { executeSubscription, getChannelsListSub } from 'store/signup/actions';
-import FacebookLogin, { ReactFacebookFailureResponse, ReactFacebookLoginInfo } from 'react-facebook-login';
-import { apiUrls } from 'common/constants';
+import { executeSubscription, verifyPlan } from 'store/signup/actions';
+import { FormProvider, SubmitErrorHandler, SubmitHandler, useForm, useWatch } from 'react-hook-form';
+import paths from 'common/constants/paths';
 
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 type PlanType = "BASIC" | "PRO" | "PREMIUM" | "ENTERPRISE" | "ADVANCED";
 interface Subscription {
-    selectedChannels: number;
-    listchannels: ListChannels;
     commonClasses: ReturnType<typeof useStyles>;
     FBButtonStyles: CSSProperties;
-    limitChannels: number;
-    mainData: MainData;
-    requestchannels: IRequestBody[];
     foreground: keyof ListChannels | undefined;
-    plan: PlanType;
     step: number;
     confirmations: number;
     setConfirmations: SetState<number>;
     setStep: SetState<number>;
     finishreg: () => void;
     setForeground: SetState<keyof ListChannels | undefined>;
-    setrequestchannels: SetState<IRequestBody[]>;
-    setMainData: SetState<MainData>;
     resetChannels: () => void;
     addChannel: (option: keyof ListChannels) => void;
     deleteChannel: (option: keyof ListChannels) => void;
     toggleChannel: (option: keyof ListChannels) => void;
 }
 
-export interface ListChannels {
+export interface RouteParams {
+    token: PlanType;
+}
+export interface ListChannels2 {
     facebook: boolean;
     instagram: boolean;
     instagramDM: boolean;
@@ -54,15 +49,30 @@ export interface ListChannels {
     apple: boolean;
 }
 
-interface MainData {
+export interface ListChannels {
+    facebook?: IRequestBody;
+    instagram?: IRequestBody;
+    instagramDM?: IRequestBody;
+    messenger?: IRequestBody;
+    whatsapp?: IRequestBody;
+    telegram?: IRequestBody;
+    twitter?: IRequestBody;
+    twitterDM?: IRequestBody;
+    chatWeb?: IRequestBody;
+    email?: IRequestBody;
+    phone?: IRequestBody;
+    sms?: IRequestBody;
+    android?: IRequestBody;
+    apple?: IRequestBody;
+}
+
+export interface MainData {
     email: string;
     password: string;
     confirmpassword: string;
     firstandlastname: string;
     companybusinessname: string;
     mobilephone: string;
-    facebookid: string;
-    googleid: string;
     join_reason: string;
     country: string;
     currency: string;
@@ -74,50 +84,43 @@ interface MainData {
     billingcontactmail: string;
     autosendinvoice: boolean;
 
+    facebookid: string;
+    googleid: string;
+    
     industry: string;
     companysize: string;
     rolecompany: string;
-}
 
-interface FacebookButtonProps {
-    callback: (userInfo: ReactFacebookLoginInfo | ReactFacebookFailureResponse) => void;
+    channels: ListChannels;
 }
 
 const defaultListChannels: ListChannels = {
-    facebook: false,
-    instagram: false,
-    instagramDM: false,
-    messenger: false,
-    whatsapp: false,
-    telegram: false,
-    twitter: false,
-    twitterDM: false,
-    chatWeb: false,
-    email: false,
-    phone: false,
-    sms: false,
-    android: false,
-    apple: false,
+    facebook: undefined,
+    instagram: undefined,
+    instagramDM: undefined,
+    messenger: undefined,
+    whatsapp: undefined,
+    telegram: undefined,
+    twitter: undefined,
+    twitterDM: undefined,
+    chatWeb: undefined,
+    email: undefined,
+    phone: undefined,
+    sms: undefined,
+    android: undefined,
+    apple: undefined,
 };
 
 export const SubscriptionContext = createContext<Subscription>({
     FBButtonStyles: {},
-    limitChannels: 0,
     commonClasses: {} as any,
-    selectedChannels: 0,
-    listchannels: defaultListChannels,
-    mainData: {} as any,
-    requestchannels: [],
     foreground: undefined,
-    plan: "BASIC",
     step: 0,
     confirmations: 0,
     setConfirmations: () => {},
     setStep: () => {},
     finishreg: () => {},
     setForeground: () => {},
-    setrequestchannels: () => {},
-    setMainData: () => {},
     addChannel: () => {},
     deleteChannel: () => {},
     resetChannels: () => {},
@@ -176,56 +179,64 @@ const FBButtonStyles: CSSProperties = {
 export const SubscriptionProvider: FC = ({ children }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
-    const history = useHistory();
     const { t } = useTranslation();
-    const match = useRouteMatch<{ token :string }>();
+    const match = useRouteMatch<RouteParams>();
     const [waitSave, setWaitSave] = useState(false);
     const [confirmations, setConfirmations] = useState(0);
-    const [listchannels, setlistchannels] = useState<ListChannels>(defaultListChannels);
     const planData = useSelector(state => state.signup.verifyPlan);
-    const [requestchannels, setrequestchannels] = useState<IRequestBody[]>([]);
     const [foreground, setForeground] = useState<keyof ListChannels | undefined>(undefined);
-    const [mainData, setMainData] = useState<MainData>({
-        email: "",
-        password: "",
-        confirmpassword: "",
-        firstandlastname: "",
-        companybusinessname: "",
-        mobilephone: "",
-        facebookid: "",
-        googleid: "",
-        join_reason: "",
-        country: "",
-        currency: "",
-        doctype: 0,
-        docnumber: "",
-        businessname: "",
-        fiscaladdress: "",
-        billingcontact: "",
-        billingcontactmail: "",
-        autosendinvoice: true,
+    const form = useForm<MainData>({
+        defaultValues: {
+            email: "",
+            password: "",
+            confirmpassword: "",
+            firstandlastname: "",
+            companybusinessname: "",
+            mobilephone: "",
+            facebookid: "",
+            googleid: "",
+            join_reason: "",
+            country: "",
+            currency: "",
+            doctype: 0,
+            docnumber: "",
+            businessname: "",
+            fiscaladdress: "",
+            billingcontact: "",
+            billingcontactmail: "",
+            autosendinvoice: true,
+    
+            companysize: "",
+            industry: "",
+            rolecompany: "",
 
-        companysize: "",
-        industry: "",
-        rolecompany: "",
-    });
+            channels: {},
+        },
+    })
     const [step, setStep] = useState(1);
     const executeResult = useSelector(state => state.signup.insertChannel);
+
+    useEffect(() => {
+        if (!planData.loading) {
+            if (planData.error) {
+                window.open(paths.SIGNIN, "_self");
+            }
+        }
+    }, [planData]);
+
+    useEffect(() => {
+        dispatch(verifyPlan(match.params.token));
+    }, [dispatch, match.params.token]);
 
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
                 dispatch(showBackdrop(false));
                 setStep(4); // rating
-                // history.push({
-                //     pathname: '/sign-in',
-                //     state: { 
-                //         showSnackbar: true,
-                //         message: t(langKeys.successful_sign_up)
-                //     }
-                // })
                 let msg = t(langKeys.successful_sign_up);
-                if (mainData.googleid || mainData.facebookid) {
+                const googleid = form.getValues('googleid');
+                const facebookid = form.getValues('facebookid');
+                if (googleid || facebookid) {
                     msg = t(langKeys.successful_sign_up);
                 }
                 dispatch(showSnackbar({
@@ -242,119 +253,131 @@ export const SubscriptionProvider: FC = ({ children }) => {
                     success: false,
                     message: errormessage,
                 }))
-                // setBackdrop(false)
                 setWaitSave(false);
             }
         }
-    }, [executeResult, waitSave, dispatch])
+    }, [executeResult, waitSave, form.getValues, dispatch])
 
     const deleteChannel = (option: keyof ListChannels) => {
-        setlistchannels(prev => {
-            const v = prev[option];
-            if (foreground === option) setForeground(undefined);
-            
-            if (v === false) return prev;
-            return {
-                ...prev,
-                [option]: false,
-            };
-        });
+        if (foreground === option) setForeground(undefined);
+        form.unregister(`channels.${option}`);
     }
 
     const addChannel = (option: keyof ListChannels) => {
-        setlistchannels(prev => {
-            const v = prev[option];
-            if (v === true) return prev;
-            return {
-                ...prev,
-                [option]: true,
-            };
+        form.register(`channels.${option}`, {
+            value: { method: "", parameters: {} },
         });
     }
 
     const toggleChannel = (option: keyof ListChannels) => {
-        setlistchannels(prev => {
-            const value = !prev[option];
-            if (!value && foreground === option) {
-                setForeground(undefined);
-            }
-            return {
-                ...prev,
-                [option]: value,
-            };
-        });
+        const v = form.getValues(`channels.${option}`);
+        if (v === undefined) {
+            addChannel(option);
+        } else {
+            deleteChannel(option);
+        }
     }
 
-    const resetChannels = () => setlistchannels(defaultListChannels);
+    const resetChannels = () => form.setValue('channels', {});
 
-    const selectedChannels = useMemo(() => {
+    /*const selectedChannels = useMemo(() => {
+        console.log('selectedChannels useMemo');
+        const channels = form.getValues('channels');
         return Object.
-            keys(listchannels).
-            filter(key => listchannels[key as keyof ListChannels] === true).
+            keys(channels).
+            filter(key => channels[key as keyof ListChannels] !== undefined).
             length;
-    }, [listchannels]);
+    }, [form.getValues('channels')]);*/
 
-    function finishreg(){
-        // requestchannels.length !== confirmations
-        if (requestchannels.length === 0) {
-            dispatch(showSnackbar({
-                message: "Debe completar el/los canal/es",
-                show: true,
-                success: false,
-            }))
-            return
-        }
+    const finishreg = () => form.handleSubmit(onSubmit, onError)
 
-        let majorfield = {
+    const onSubmit: SubmitHandler<MainData> = (data) => {
+        const { channels, ...mainData } = data;
+        const majorfield = {
             method: "UFN_CREATEZYXMEACCOUNT_INS",
             parameters: {
                 ...mainData,
-                firstname: mainData.firstandlastname,
-                lastname: "",
-                username: mainData.email,
-                contactemail: mainData.billingcontactmail,
-                contact: mainData.billingcontact,
-                organizationname: mainData.companybusinessname,
-                phone: mainData.mobilephone,
-                industry: mainData.industry,
-                companysize: mainData.companysize,
-                rolecompany: mainData.rolecompany,
                 paymentplanid: planData.data[0].paymentplanid,
                 paymentplan: planData.data[0].plan,
                 sunatcountry: "",
             },
-            channellist: requestchannels,
+            channellist: Object.values(channels),
         }
         dispatch(showBackdrop(true));
         setWaitSave(true);
-        dispatch(executeSubscription(majorfield))
+        dispatch(executeSubscription(majorfield));
+    }
+
+    const onError: SubmitErrorHandler<MainData> = (err) => {
+        dispatch(showSnackbar({
+            message: "Debe completar el/los canal/es",
+            show: true,
+            success: false,
+        }))
     }
 
     return (
         <SubscriptionContext.Provider value={{
             commonClasses: classes,
-            limitChannels: planData.data[0]?.channelscontracted || 0,
-            selectedChannels,
-            listchannels,
-            mainData,
-            requestchannels,
             foreground,
-            plan: match.params.token as PlanType,
             step,
             confirmations,
             setConfirmations,
             setStep,
             finishreg,
             setForeground,
-            setrequestchannels,
-            setMainData,
             addChannel,
             deleteChannel,
             resetChannels,
             toggleChannel,
             FBButtonStyles,
         }}>
-            {children}
+            <FormProvider {...form}>
+                {children}
+            </FormProvider>
         </SubscriptionContext.Provider>
     )
+}
+
+export function useChannelsCount() {
+    const channels = useWatch<MainData>({
+        name: 'channels',
+        defaultValue: {},
+    }) as ListChannels;
+    return useMemo(() => {
+        console.log('useChannelsCount useMemo')
+        return Object.keys(channels).length;
+    }, [channels]);
+}
+
+interface PlanData {
+    loading: boolean;
+    plan: {
+        limitChannels: number,
+        plan: PlanType,
+        provider: string,
+    } | null
+}
+
+export function usePlanData(): PlanData {
+    const match = useRouteMatch<RouteParams>();
+    const planData = useSelector(state => state.signup.verifyPlan);
+    return useMemo(() => {
+        if (planData.loading) {
+            return {
+                loading: true,
+                plan: null,
+            };
+        }
+
+        return {
+            loading: false,
+            plan: {
+                // ...planData.data[0],
+                limitChannels: planData.data[0]?.channelscontracted || 0,
+                plan: match.params.token as PlanType,
+                provider: planData.data[0].providerwhatsapp,
+            },
+        };
+    }, [planData, match.params.token]);
 }

@@ -41,7 +41,7 @@ const CssPhonemui = styled(MuiPhoneNumber)({
 });
 
 
-export const SecondStep: FC<{ setOpenWarning: (param: any) => void}> = ({ setOpenWarning }) => {
+const SecondStep: FC<{ setOpenWarning: (param: any) => void}> = ({ setOpenWarning }) => {
     const { mainData, setMainData, setStep } = useContext(SubscriptionContext);
     const dispatch = useDispatch();
     const ressignup = useSelector(state => state.signup.countryList);    
@@ -207,4 +207,5 @@ export const SecondStep: FC<{ setOpenWarning: (param: any) => void}> = ({ setOpe
         </div>
     )
 }
+
 export default SecondStep

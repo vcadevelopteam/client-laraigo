@@ -66,12 +66,10 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
     const {
         commonClasses,
         foreground,
-        selectedChannels,
         setConfirmations,
         finishreg,
         setForeground,
         deleteChannel,
-        setrequestchannels,
     } = useContext(SubscriptionContext);
     const [viewSelected, setViewSelected] = useState("view1");
     const planData = useSelector(state => state.signup.verifyPlan)

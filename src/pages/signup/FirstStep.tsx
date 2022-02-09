@@ -13,7 +13,9 @@ import { useSelector } from 'hooks';
 import { apiUrls } from 'common/constants';
 
 import { executeCheckNewUser } from "store/signup/actions";
-import { SubscriptionContext } from "./context";
+import { MainData, SubscriptionContext } from "./context";
+import { showSnackbar } from "store/popus/actions";
+import { useFormContext } from "react-hook-form";
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
         padding: 12,
@@ -67,19 +69,26 @@ const FBButtonStyle2: CSSProperties = {
     marginBottom: 16,
 }
 
-export const FirstStep: FC<{ setSnackbar: (param: any) => void }> = ({ setSnackbar }) => {
-    const { mainData, setMainData, setStep } = useContext(SubscriptionContext);
-    const [errors, setErrors] = useState<Dictionary>({
-        email: "",
-        password: "",
-        confirmpassword: "",
-    });
+const FirstStep: FC = () => {
+    const { setStep } = useContext(SubscriptionContext);
+    const { register, setValue, getValues, formState: { errors } } = useFormContext<MainData>();
     const rescheckuser = useSelector(state => state.signup);
     const [waitSave, setwaitSave] = useState(false);
     const [disablebutton, setdisablebutton] = useState(true);
+
     useEffect(() => {
-        setdisablebutton(!(mainData.email !== "" && mainData.email.includes('@') && mainData.email.includes('.') && mainData.password !== "" && mainData.confirmpassword !== "" && mainData.confirmpassword === mainData.password))
-    }, [mainData])
+        register('password')
+        register('email')
+        register('confirmpassword')
+        /*setdisablebutton(!
+            (mainData.email !== "" &&
+            mainData.email.includes('@') &&
+            mainData.email.includes('.') &&
+            mainData.password !== "" &&
+            mainData.confirmpassword !== "" &&
+            mainData.confirmpassword === mainData.password)
+        )*/
+    }, [register])
 
     const dispatch = useDispatch();
     const [showPassword, setShowPassword] = useState(false);
@@ -93,7 +102,11 @@ export const FirstStep: FC<{ setSnackbar: (param: any) => void }> = ({ setSnackb
                     setStep(2)
                     setwaitSave(false)
                 } else {
-                    setSnackbar({ state: true, success: false, message: t(langKeys.useralreadyregistered) })
+                    dispatch(showSnackbar({
+                        show: true,
+                        success: false,
+                        message: t(langKeys.useralreadyregistered),
+                    }))
                     setwaitSave(false)
                 }
             }    
@@ -115,9 +128,10 @@ export const FirstStep: FC<{ setSnackbar: (param: any) => void }> = ({ setSnackb
                 }
             }
             setwaitSave(true)
-            setMainData((p: any) => ({ ...p, password: "" }))
-            setMainData((p: any) => ({ ...p, email: "" }))
-            setMainData((p: any) => ({ ...p, googleid: r.googleId }))
+            setValue('password', '');
+            setValue('confirmpassword', '');
+            setValue('email', '');
+            setValue('googleid', r.googleId);
             dispatch(executeCheckNewUser(content))
         }
     }
@@ -146,9 +160,10 @@ export const FirstStep: FC<{ setSnackbar: (param: any) => void }> = ({ setSnackb
                 }
             }
             setwaitSave(true)
-            setMainData((p: any) => ({ ...p, password: "" }))
-            setMainData((p: any) => ({ ...p, email: "" }))
-            setMainData((p: any) => ({ ...p, facebookid: r.id }))
+            setValue('password', '');
+            setValue('confirmpassword', '');
+            setValue('email', '');
+            setValue('googleid', r.id);
             dispatch(executeCheckNewUser(content))
         }
     }
@@ -156,7 +171,7 @@ export const FirstStep: FC<{ setSnackbar: (param: any) => void }> = ({ setSnackb
         const content = {
             "method": "UFN_USERIDBYUSER",
             "parameters": {
-                "usr": mainData.email,
+                "usr": getValues('email'),
                 "facebookid": null,
                 "googleid": null
             }
@@ -287,16 +302,18 @@ export const FirstStep: FC<{ setSnackbar: (param: any) => void }> = ({ setSnackb
                 />
                 <div style={{ textAlign: "center", padding: "20px" }}>{t(langKeys.tos)}<a style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={openprivacypolicies} rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
                 <Button
-                    onClick={() => { handlesubmit() }}
+                    onClick={handlesubmit}
                     className={classes.button}
                     variant="contained"
                     color="primary"
                     disabled={disablebutton}
-                >{t(langKeys.next)}
+                >
+                    <Trans i18nKey={langKeys.next} />
                 </Button>
 
             </div>
         </>
     )
 }
+
 export default FirstStep

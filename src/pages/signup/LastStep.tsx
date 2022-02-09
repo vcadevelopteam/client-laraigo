@@ -38,18 +38,10 @@ const useChannelAddStyles = makeStyles(theme => ({
 }));
 
 interface LastStepProps {
-    setSnackbar:(param:any)=>void;
-    setBackdrop:(param:any)=>void;
-    setsendchannels:(param:any)=>void;
     setOpenWarning:(param:any)=>void;
 }
 
-export const LastStep: FC<LastStepProps> = ({
-    setSnackbar,
-    setBackdrop,
-    setsendchannels,
-    setOpenWarning,
-}) => {
+const Step2_6: FC<LastStepProps> = ({ setOpenWarning }) => {
     const { mainData, setMainData, setStep } = useContext(SubscriptionContext);
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
@@ -156,4 +148,4 @@ export const LastStep: FC<LastStepProps> = ({
         </div>
     )
 }
-export default LastStep
+export default Step2_6
