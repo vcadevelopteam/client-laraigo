@@ -95,7 +95,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
         nameassociatednumber: "",
     });
     const classes = useChannelAddStyles();
-    const type = provider === "DIALOG" ? "WHATSAPP" : "WHATSAPPSMOOCH";
+    const type = provider === "DIALOG" ? "WHATSAPPSMOOCH" : "WHATSAPPSMOOCH";
     const [fields, setFields] = useState({
         "method": "UFN_COMMUNICATIONCHANNEL_INS",
         "parameters": {
@@ -356,7 +356,12 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                 <div style={{ width: "100%", margin: "0px 15px" }}>
                     <Button
                         // onClick={() => { checkissues() }}
-                        onClick={() => setView("view3")}
+                        onClick={() => {
+                            // setViewSelected("viewfinishreg")
+                            setView("view1");
+                            setHasFinished(true);
+                            setConfirmations(prev => prev++);
+                        }}
                         className={classes.button2}
                         disabled={disablebutton}
                         variant="contained"
