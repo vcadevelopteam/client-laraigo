@@ -41,7 +41,7 @@ const CssPhonemui = styled(MuiPhoneNumber)({
 
 
 const Step2_5: FC<{ setOpenWarning: (param: any) => void}> = ({ setOpenWarning }) => {
-    const { mainData, setMainData, setStep } = useContext(SubscriptionContext);
+    const { setStep } = useContext(SubscriptionContext);
     const { t } = useTranslation();
     const URL="https://ipapi.co/json/";
     const [errors, setErrors] = useState<Dictionary>({
@@ -59,23 +59,24 @@ const Step2_5: FC<{ setOpenWarning: (param: any) => void}> = ({ setOpenWarning }
     ]
     const [disablebutton, setdisablebutton] = useState(true);
     const mainResult = useSelector(state => state.main);
-    useEffect(() => {
-        if (mainData.billingcontactmail.includes('@') && mainData.billingcontactmail.includes('.')) {
-            setdisablebutton(
-                isNaN(mainData.doctype) ||
-                docTypeValidate(mainData.docnumber, mainData.doctype).length > 0 ||
-                isNaN(parseInt(mainData.docnumber)) ||
-                mainData.businessname === "" ||
-                mainData.fiscaladdress === "" ||
-                mainData.billingcontact === "" ||
-                mainData.billingcontactmail === ""
-            );
-        } else {
-            setdisablebutton(true);
-        }
-    }, [mainData])
+    
+    // useEffect(() => {
+    //     if (mainData.billingcontactmail.includes('@') && mainData.billingcontactmail.includes('.')) {
+    //         setdisablebutton(
+    //             isNaN(mainData.doctype) ||
+    //             docTypeValidate(mainData.docnumber, mainData.doctype).length > 0 ||
+    //             isNaN(parseInt(mainData.docnumber)) ||
+    //             mainData.businessname === "" ||
+    //             mainData.fiscaladdress === "" ||
+    //             mainData.billingcontact === "" ||
+    //             mainData.billingcontactmail === ""
+    //         );
+    //     } else {
+    //         setdisablebutton(true);
+    //     }
+    // }, [mainData])
 
-    const docTypeValidate = (docnum: string, docType: number): string => {
+    /*const docTypeValidate = (docnum: string, docType: number): string => {
         if (!docnum) {
             return t(langKeys.field_required);
         }
@@ -120,7 +121,7 @@ const Step2_5: FC<{ setOpenWarning: (param: any) => void}> = ({ setOpenWarning }
                 [field]: error,
             };
         })
-    }
+    }*/
 
     /*useEffect(() => {
         setMainData((p:any) => ({ ...p, country: countrycode, countryname: countryname, currency: currency }))
@@ -136,7 +137,7 @@ const Step2_5: FC<{ setOpenWarning: (param: any) => void}> = ({ setOpenWarning }
             </Breadcrumbs>
             <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad" , marginTop: 15}}>{t(langKeys.signupstep1title25)}</div>
             <div >             
-                {mainData.doctype === 0 ?
+                {/* {mainData.doctype === 0 ?
                     <FieldView
                         className={classes.fieldview}
                         label={t(langKeys.docType)}
@@ -219,7 +220,7 @@ const Step2_5: FC<{ setOpenWarning: (param: any) => void}> = ({ setOpenWarning }
                         maindataChange('billingcontactmail', e.target.value);
                         setErrors(p => ({ ...p, billingcontactmail: e.target.value.includes('@') && e.target.value.includes('.') ? "" : t(langKeys.emailverification) }));
                     }}
-                /> 
+                />  */}
                 <Button
                     onClick={() => setStep(2.6)}
                     className={classes.button}

@@ -91,11 +91,20 @@ const useChannelAddStyles = makeStyles(theme => ({
         height: 38,
         width: 'auto',
     },
+    optionsContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%'
+    },
 }));
 
 const ThirdStep: FC = () => {
     const { toggleChannel } = useContext(SubscriptionContext);
-    const plan = usePlanData();
+    const listchannels: any = {}
+    const planData = usePlanData();
     const classes = useChannelAddStyles();
     const socialMediaOptions: ChannelOption[] = [
         {
@@ -112,7 +121,7 @@ const ThirdStep: FC = () => {
             label: 'Whatsapp',
             key: 'whatsapp',
             onClick: () => {
-                const type = plan.provider === "DIALOG" ? "WHATSAPP" : "WHATSAPPSMOOCH";
+                const type = planData.plan!.provider === "DIALOG" ? "WHATSAPP" : "WHATSAPPSMOOCH";
                 toggleChannel('whatsapp');
             },
             selected: listchannels.whatsapp
@@ -216,7 +225,7 @@ const ThirdStep: FC = () => {
     ];
 
     const description = () => {
-        switch (plan.plan) {
+        switch (planData.plan!.plan) {
             case "BASIC":return "Solo se podrá seleccionar un canal";
             case "PRO": return "Solo se podrá seleccionar 3 canales";
             case "ADVANCED":
@@ -231,7 +240,7 @@ const ThirdStep: FC = () => {
         <div className={classes.root}>
             <LaraigoLogo style={{ width: '25%', height: 'auto', marginBottom: '1.58em' }} />
             <div className={classes.title}>
-                {plan}
+                {planData.plan!.plan}
             </div>
             <Typography style={{ fontSize: 20, fontWeight: 400 }}>
                 {description()}
@@ -370,10 +379,10 @@ const Option: FC<{ option: ChannelOption, selected: Boolean, index: number }> = 
     index,
 }) => {
     const classes = useOptionClasses();
-    const plan = usePlanData();
+    const planData = usePlanData();
     const selectedChannels = useChannelsCount();
 
-    const reachedLimit = plan.limitChannels <= selectedChannels;
+    const reachedLimit = planData.plan!.limitChannels <= selectedChannels;
     const withOpacity = reachedLimit && !selected;
 
     return (

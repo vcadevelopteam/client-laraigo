@@ -42,7 +42,7 @@ interface LastStepProps {
 }
 
 const Step2_6: FC<LastStepProps> = ({ setOpenWarning }) => {
-    const { mainData, setMainData, setStep } = useContext(SubscriptionContext);
+    const { setStep } = useContext(SubscriptionContext);
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
     const dispatch = useDispatch();
@@ -85,7 +85,7 @@ const Step2_6: FC<LastStepProps> = ({ setOpenWarning }) => {
             </div>
             
             <div style={{padding:"20px"}}>
-                <FieldSelect    
+                {/* <FieldSelect    
                     uset={true} 
                     style={{marginBottom: "20px"}}
                     variant="outlined" 
@@ -132,7 +132,7 @@ const Step2_6: FC<LastStepProps> = ({ setOpenWarning }) => {
                     prefixTranslation="companyrole_"
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
-                />
+                /> */}
                 <div>
                     <Button
                         onClick={() => setStep(3)}

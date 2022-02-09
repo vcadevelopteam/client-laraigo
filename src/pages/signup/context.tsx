@@ -86,7 +86,7 @@ export interface MainData {
 
     facebookid: string;
     googleid: string;
-    
+
     industry: string;
     companysize: string;
     rolecompany: string;
@@ -376,7 +376,7 @@ export function usePlanData(): PlanData {
                 // ...planData.data[0],
                 limitChannels: planData.data[0]?.channelscontracted || 0,
                 plan: match.params.token as PlanType,
-                provider: planData.data[0].providerwhatsapp,
+                provider: planData.data[0]?.providerwhatsapp || "",
             },
         };
     }, [planData, match.params.token]);

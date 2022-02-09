@@ -9,7 +9,7 @@ import { FieldEdit, ColorInput } from "components";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { TwitterColor } from "icons";
-import { SubscriptionContext } from "./context";
+import { SubscriptionContext, useChannelsCount } from "./context";
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -25,13 +25,12 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
     const {
         commonClasses,
         foreground,
-        selectedChannels,
         setConfirmations,
         finishreg,
         setForeground,
         deleteChannel,
-        setrequestchannels,
     } = useContext(SubscriptionContext);
+    const selectedChannels = useChannelsCount();
     const [hasFinished, setHasFinished] = useState(false);
     const [viewSelected, setViewSelected] = useState("view1");
     const [waitSave, setWaitSave] = useState(false);
@@ -76,27 +75,27 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
         } 
     }, [foreground, viewSelected]);
 
-    useEffect(() => {
-        if (channelName.length > 0 && devenvironment.length > 0) {
-            setrequestchannels(prev => {
-                const index = prev.findIndex(x => x.type === "TWITTER");
-                if (index === -1) {
-                    return [
-                        ...prev,
-                        fields,
-                    ]
-                } else {
-                    prev.splice(index, 1);
-                    return [
-                        ...prev,
-                        fields,
-                    ];
-                }
-            });
-        } else {
-            setrequestchannels(prev => prev.filter(x => x.type !== "TWITTER"));
-        }
-    }, [channelName, devenvironment, fields]);
+    // useEffect(() => {
+    //     if (channelName.length > 0 && devenvironment.length > 0) {
+    //         setrequestchannels(prev => {
+    //             const index = prev.findIndex(x => x.type === "TWITTER");
+    //             if (index === -1) {
+    //                 return [
+    //                     ...prev,
+    //                     fields,
+    //                 ]
+    //             } else {
+    //                 prev.splice(index, 1);
+    //                 return [
+    //                     ...prev,
+    //                     fields,
+    //                 ];
+    //             }
+    //         });
+    //     } else {
+    //         setrequestchannels(prev => prev.filter(x => x.type !== "TWITTER"));
+    //     }
+    // }, [channelName, devenvironment, fields]);
 
     useEffect(() => {
         if (waitSave) {
@@ -226,7 +225,7 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
                 className={commonClasses.trailingIcon}
                 onClick={() => {
                     deleteChannel('twitter');
-                    setrequestchannels(prev => prev.filter(x => x.type !== "TWITTER"));
+                    // setrequestchannels(prev => prev.filter(x => x.type !== "TWITTER"));
                 }}
             >
                 <DeleteOutlineIcon />

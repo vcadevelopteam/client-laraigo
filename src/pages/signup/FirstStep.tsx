@@ -15,7 +15,7 @@ import { apiUrls } from 'common/constants';
 import { executeCheckNewUser } from "store/signup/actions";
 import { MainData, SubscriptionContext } from "./context";
 import { showSnackbar } from "store/popus/actions";
-import { useFormContext } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
         padding: 12,
@@ -71,24 +71,9 @@ const FBButtonStyle2: CSSProperties = {
 
 const FirstStep: FC = () => {
     const { setStep } = useContext(SubscriptionContext);
-    const { register, setValue, getValues, formState: { errors } } = useFormContext<MainData>();
+    const { control, setValue, getValues, trigger } = useFormContext<MainData>();
     const rescheckuser = useSelector(state => state.signup);
     const [waitSave, setwaitSave] = useState(false);
-    const [disablebutton, setdisablebutton] = useState(true);
-
-    useEffect(() => {
-        register('password')
-        register('email')
-        register('confirmpassword')
-        /*setdisablebutton(!
-            (mainData.email !== "" &&
-            mainData.email.includes('@') &&
-            mainData.email.includes('.') &&
-            mainData.password !== "" &&
-            mainData.confirmpassword !== "" &&
-            mainData.confirmpassword === mainData.password)
-        )*/
-    }, [register])
 
     const dispatch = useDispatch();
     const [showPassword, setShowPassword] = useState(false);
@@ -96,7 +81,7 @@ const FirstStep: FC = () => {
     const classes = useChannelAddStyles();
 
     useEffect(() => {
-        if(waitSave){
+        if (waitSave) {
             if (!rescheckuser.loading) {
                 if (rescheckuser.isvalid) {
                     setStep(2)
@@ -109,7 +94,7 @@ const FirstStep: FC = () => {
                     }))
                     setwaitSave(false)
                 }
-            }    
+            }
         }
     }, [rescheckuser])
 
@@ -167,6 +152,7 @@ const FirstStep: FC = () => {
             dispatch(executeCheckNewUser(content))
         }
     }
+
     function handlesubmit() {
         const content = {
             "method": "UFN_USERIDBYUSER",
@@ -178,7 +164,6 @@ const FirstStep: FC = () => {
         }
         setwaitSave(true)
         dispatch(executeCheckNewUser(content))
-
     }
 
     const handleClickShowPassword = () => setShowPassword(!showPassword);
@@ -187,7 +172,7 @@ const FirstStep: FC = () => {
         <>
             <meta name="google-signin-client_id" content="792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com" />
             <script src="https://apis.google.com/js/platform.js" async defer></script>
-            <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", marginBottom: 32 , marginTop: 15}}>{t(langKeys.signupstep1title)}</div>
+            <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", marginBottom: 32, marginTop: 15 }}>{t(langKeys.signupstep1title)}</div>
             <div className={classes.buttonfacebook}>
                 <FacebookLogin
                     appId={apiUrls.FACEBOOKAPP}
@@ -221,92 +206,121 @@ const FirstStep: FC = () => {
             </div>
 
             <div>
-                <TextField
-                    variant="outlined"
-                    size="small"
-                    margin="normal"
-                    fullWidth
-                    type="email"
-                    label={t(langKeys.email)}
+                <Controller
                     name="email"
-                    error={!!errors.email}
-                    helperText={errors.email}
-                    onChange={(e) => {
-                        setMainData((p: any) => ({ ...p, email: e.target.value }))
-                        setErrors(p => ({ ...p, email: !e.target.value ? t(langKeys.field_required) : "" }))
-                        setErrors(p => ({ ...p, email: e.target.value.includes('@') && e.target.value.includes('.') ? "" : t(langKeys.emailverification) }))
-                    }}
+                    control={control}
+                    rules={{ validate: (value) => {
+                        if (value.length === 0) {
+                            return t(langKeys.field_required) as string;
+                        } else if (!/\S+@\S+\.\S+/.test(value)) {
+                            return t(langKeys.emailverification) as string;
+                        }
+                    }}}
+                    render={({ field, formState: { errors } }) => (
+                        <TextField
+                            {...field}
+                            variant="outlined"
+                            size="small"
+                            margin="normal"
+                            fullWidth
+                            type="email"
+                            label={t(langKeys.email)}
+                            error={!!errors.email}
+                            helperText={errors.email?.message}
+                        />
+                    )}
                 />
-                <TextField
-                    variant="outlined"
-                    size="small"
-                    margin="normal"
-                    fullWidth
-                    label={t(langKeys.password)}
+                <Controller
                     name="password"
-                    type={showPassword ? 'text' : 'password'}
-                    autoComplete="current-password"
-                    error={!!errors.password}
-                    helperText={errors.password}
-                    onChange={(e) => {
-                        setMainData((p: any) => ({ ...p, password: e.target.value }))
-                        setErrors(p => ({ ...p, password: !e.target.value ? t(langKeys.field_required) : "" }))
-                        setErrors(p => ({ ...p, confirmpassword: !mainData.confirmpassword ? t(langKeys.field_required) : "" }))
-                        setErrors(p => ({ ...p, confirmpassword: mainData.confirmpassword === e.target.value ? p.confirmpassword : t(langKeys.passwordsmustbeequal) }))
-                    }}
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton
-                                    aria-label="toggle password visibility"
-                                    onClick={handleClickShowPassword}
-                                    onMouseDown={handleMouseDownPassword}
-                                    edge="end"
-                                >
-                                    {showPassword ? <Visibility /> : <VisibilityOff />}
-                                </IconButton>
-                            </InputAdornment>
-                        ),
-                    }}
+                    control={control}
+                    rules={{ validate: (value) => {
+                        if (value.length === 0) {
+                            return t(langKeys.field_required) as string;
+                        } else if (value !== getValues('confirmpassword')) {
+                            return t(langKeys.passwordsmustbeequal) as string;
+                        }
+
+                    }}}
+                    render={({ field, formState: { errors } }) => (
+                        <TextField
+                            {...field}
+                            variant="outlined"
+                            size="small"
+                            margin="normal"
+                            fullWidth
+                            label={t(langKeys.password)}
+                            type={showPassword ? 'text' : 'password'}
+                            autoComplete="current-password"
+                            error={!!errors.password}
+                            helperText={errors.password?.message}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            aria-label="toggle password visibility"
+                                            onClick={handleClickShowPassword}
+                                            onMouseDown={handleMouseDownPassword}
+                                            edge="end"
+                                        >
+                                            {showPassword ? <Visibility /> : <VisibilityOff />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
+                    )}
                 />
-                <TextField
-                    variant="outlined"
-                    size="small"
-                    margin="normal"
-                    fullWidth
-                    label={t(langKeys.confirmpassword)}
+                <Controller
                     name="confirmpassword"
-                    type={showPassword ? 'text' : 'password'}
-                    autoComplete="current-password"
-                    error={!!errors.confirmpassword}
-                    helperText={errors.confirmpassword}
-                    onChange={(e) => {
-                        setMainData((p: any) => ({ ...p, confirmpassword: e.target.value }))
-                        setErrors(p => ({ ...p, confirmpassword: !e.target.value ? t(langKeys.field_required) : "" }))
-                        setErrors(p => ({ ...p, confirmpassword: mainData.password === e.target.value ? p.confirmpassword : t(langKeys.passwordsmustbeequal) }))
-                    }}
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton
-                                    aria-label="toggle password visibility"
-                                    onClick={handleClickShowPassword}
-                                    onMouseDown={handleMouseDownPassword}
-                                    edge="end"
-                                >
-                                    {showPassword ? <Visibility /> : <VisibilityOff />}
-                                </IconButton>
-                            </InputAdornment>
-                        ),
-                    }}
+                    control={control}
+                    rules={{ validate: (value) => {
+                        if (value.length === 0) {
+                            return t(langKeys.field_required) as string;
+                        } else if (value !== getValues('confirmpassword')) {
+                            return t(langKeys.passwordsmustbeequal) as string;
+                        }
+                    }}}
+                    render={({ field, formState: { errors }}) => (
+                        <TextField
+                            {...field}
+                            variant="outlined"
+                            size="small"
+                            margin="normal"
+                            fullWidth
+                            label={t(langKeys.confirmpassword)}
+                            type={showPassword ? 'text' : 'password'}
+                            autoComplete="current-password"
+                            error={!!errors.password}
+                            helperText={errors.password?.message}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            aria-label="toggle password visibility"
+                                            onClick={handleClickShowPassword}
+                                            onMouseDown={handleMouseDownPassword}
+                                            edge="end"
+                                        >
+                                            {showPassword ? <Visibility /> : <VisibilityOff />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
+                    )}
                 />
                 <div style={{ textAlign: "center", padding: "20px" }}>{t(langKeys.tos)}<a style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={openprivacypolicies} rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
                 <Button
-                    onClick={handlesubmit}
+                    onClick={async () => {
+                        const valid = await trigger();
+                        if (valid) {
+                            handlesubmit();
+                        }
+                    }}
                     className={classes.button}
                     variant="contained"
                     color="primary"
-                    disabled={disablebutton}
+                    // disabled={disablebutton}
                 >
                     <Trans i18nKey={langKeys.next} />
                 </Button>

@@ -11,7 +11,7 @@ import { styled } from '@material-ui/core/styles';
 import { WhatsappColor } from "icons";
 import { useSelector } from "hooks";
 import { Dictionary } from "@types";
-import { SubscriptionContext } from "./context";
+import { SubscriptionContext, useChannelsCount } from "./context";
 
 const useChannelAddStyles = makeStyles(theme => ({
     centerbutton: {
@@ -71,6 +71,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
         setForeground,
         deleteChannel,
     } = useContext(SubscriptionContext);
+    const selectedChannels = useChannelsCount();
     const [viewSelected, setViewSelected] = useState("view1");
     const planData = useSelector(state => state.signup.verifyPlan)
     const provider = planData.data[0].providerwhatsapp
@@ -132,27 +133,27 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
         } 
     }, [foreground, viewSelected]);
 
-    useEffect(() => {
-        if (channelName.length > 0) {
-            setrequestchannels(prev => {
-                const index = prev.findIndex(x => x.type === type);
-                if (index === -1) {
-                    return [
-                        ...prev,
-                        fields,
-                    ]
-                } else {
-                    prev.splice(index, 1);
-                    return [
-                        ...prev,
-                        fields,
-                    ];
-                }
-            });
-        } else {
-            setrequestchannels(prev => prev.filter(x => x.type !== type));
-        }
-    }, [channelName, fields]);
+    // useEffect(() => {
+    //     if (channelName.length > 0) {
+    //         setrequestchannels(prev => {
+    //             const index = prev.findIndex(x => x.type === type);
+    //             if (index === -1) {
+    //                 return [
+    //                     ...prev,
+    //                     fields,
+    //                 ]
+    //             } else {
+    //                 prev.splice(index, 1);
+    //                 return [
+    //                     ...prev,
+    //                     fields,
+    //                 ];
+    //             }
+    //         });
+    //     } else {
+    //         setrequestchannels(prev => prev.filter(x => x.type !== type));
+    //     }
+    // }, [channelName, fields]);
 
     function checkissues() {
         setViewSelected("view2")
@@ -417,7 +418,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                 className={commonClasses.trailingIcon}
                 onClick={() => {
                     deleteChannel('whatsapp');
-                    setrequestchannels(prev => prev.filter(x => x.type !== type));
+                    // setrequestchannels(prev => prev.filter(x => x.type !== type));
                 }}
             >
                 <DeleteOutlineIcon />

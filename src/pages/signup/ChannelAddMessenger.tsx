@@ -12,7 +12,7 @@ import { useDispatch } from "react-redux";
 import { getChannelsListSub } from "store/channel/actions";
 import { FacebookMessengerColor } from "icons";
 import { apiUrls } from 'common/constants';
-import { SubscriptionContext } from "./context";
+import { SubscriptionContext, useChannelsCount } from "./context";
 
 interface ChannelAddMessengerProps {
     setOpenWarning:(param:any)=>void;
@@ -20,13 +20,12 @@ interface ChannelAddMessengerProps {
 
 export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarning }) => {
     const {
-        selectedChannels,
         commonClasses,
         FBButtonStyles,
         finishreg,
         deleteChannel,
-        setrequestchannels,
     } = useContext(SubscriptionContext);
+    const selectedChannels = useChannelsCount();
     const [pageLink, setPageLink] = useState("");
     const [hasFinished, setHasFinished] = useState(false)
     const [waitSave, setWaitSave] = useState(false);
@@ -67,28 +66,28 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
         }
     }, [mainResult, waitSave])
 
-    useEffect(() => {
-        if (channelName.length > 0 && pageLink.length > 0) {
-            setrequestchannels(prev => {
-                const index = prev.findIndex(x => x.type === "MESSENGER");
-                if (index === -1) {
-                    return [
-                        ...prev,
-                        fields,
-                    ]
-                } else {
-                    prev.splice(index, 1);
-                    return [
-                        ...prev,
-                        fields,
-                    ];
-                }
-            });
-            setHasFinished(true)
-        } else {
-            setrequestchannels(prev => prev.filter(x => x.type !== "MESSENGER"));
-        }
-    }, [channelName, pageLink, fields]);
+    // useEffect(() => {
+    //     if (channelName.length > 0 && pageLink.length > 0) {
+    //         setrequestchannels(prev => {
+    //             const index = prev.findIndex(x => x.type === "MESSENGER");
+    //             if (index === -1) {
+    //                 return [
+    //                     ...prev,
+    //                     fields,
+    //                 ]
+    //             } else {
+    //                 prev.splice(index, 1);
+    //                 return [
+    //                     ...prev,
+    //                     fields,
+    //                 ];
+    //             }
+    //         });
+    //         setHasFinished(true)
+    //     } else {
+    //         setrequestchannels(prev => prev.filter(x => x.type !== "MESSENGER"));
+    //     }
+    // }, [channelName, pageLink, fields]);
 
     const processFacebookCallback = async (r: any) => {
         if (r.status !== "unknown" && !r.error) {
@@ -122,7 +121,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
                 className={commonClasses.trailingIcon}
                 onClick={() => {
                     deleteChannel('messenger');
-                    setrequestchannels(prev => prev.filter(x => x.type !== "MESSENGER"));
+                    // setrequestchannels(prev => prev.filter(x => x.type !== "MESSENGER"));
                 }}
             >
                 <DeleteOutlineIcon />

@@ -6,7 +6,7 @@ import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
 import { FieldEdit, ColorInput } from "components";
 import { TwitterColor } from "icons";
-import { SubscriptionContext } from "./context";
+import { SubscriptionContext, useChannelsCount } from "./context";
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -22,13 +22,12 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
     const {
         commonClasses,
         foreground,
-        selectedChannels,
         setConfirmations,
         finishreg,
         setForeground,
         deleteChannel,
-        setrequestchannels,
     } = useContext(SubscriptionContext);
+    const selectedChannels = useChannelsCount();
     const [hasFinished, setHasFinished] = useState(false);
     const [viewSelected, setViewSelected] = useState("view1");
     const [nextbutton, setNextbutton] = useState(true);
@@ -70,27 +69,27 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
         } 
     }, [foreground, viewSelected]);
 
-    useEffect(() => {
-        if (channelName.length > 0 && devenvironment.length > 0) {
-            setrequestchannels(prev => {
-                const index = prev.findIndex(x => x.type === "TWITTERDM");
-                if (index === -1) {
-                    return [
-                        ...prev,
-                        fields,
-                    ]
-                } else {
-                    prev.splice(index, 1);
-                    return [
-                        ...prev,
-                        fields,
-                    ];
-                }
-            });
-        } else {
-            setrequestchannels(prev => prev.filter(x => x.type !== "TWITTERDM"));
-        }
-    }, [channelName, devenvironment, fields]);
+    // useEffect(() => {
+    //     if (channelName.length > 0 && devenvironment.length > 0) {
+    //         setrequestchannels(prev => {
+    //             const index = prev.findIndex(x => x.type === "TWITTERDM");
+    //             if (index === -1) {
+    //                 return [
+    //                     ...prev,
+    //                     fields,
+    //                 ]
+    //             } else {
+    //                 prev.splice(index, 1);
+    //                 return [
+    //                     ...prev,
+    //                     fields,
+    //                 ];
+    //             }
+    //         });
+    //     } else {
+    //         setrequestchannels(prev => prev.filter(x => x.type !== "TWITTERDM"));
+    //     }
+    // }, [channelName, devenvironment, fields]);
 
     function setnameField(value: any) {
         setChannelName(value)
@@ -213,7 +212,7 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
                 className={commonClasses.trailingIcon}
                 onClick={() => {
                     deleteChannel('twitterDM');
-                    setrequestchannels(prev => prev.filter(x => x.type !== "TWITTERDM"));
+                    // setrequestchannels(prev => prev.filter(x => x.type !== "TWITTERDM"));
                 }}
             >
                 <DeleteOutlineIcon />

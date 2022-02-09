@@ -12,17 +12,16 @@ import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { getChannelsListSub } from "store/channel/actions";
 import { apiUrls } from 'common/constants';
-import { SubscriptionContext } from "./context";
+import { SubscriptionContext, useChannelsCount } from "./context";
 
 export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
     const {
         commonClasses,
         FBButtonStyles,
-        selectedChannels,
         finishreg,
         deleteChannel,
-        setrequestchannels,
     } = useContext(SubscriptionContext);
+    const selectedChannels = useChannelsCount();
     const [waitSave, setWaitSave] = useState(false);
     const [hasFinished, setHasFinished] = useState(false)
     const [pageLink, setPageLink] = useState("");
@@ -63,28 +62,28 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
         }
     }, [mainResult, waitSave])
 
-    useEffect(() => {
-        if (channelName.length > 0 && pageLink.length > 0) {
-            setrequestchannels(prev => {
-                const index = prev.findIndex(x => x.type === "INSTAMESSENGER");
-                if (index === -1) {
-                    return [
-                        ...prev,
-                        fields,
-                    ]
-                } else {
-                    prev.splice(index, 1);
-                    return [
-                        ...prev,
-                        fields,
-                    ];
-                }
-            });
-            setHasFinished(true)
-        } else {
-            setrequestchannels(prev => prev.filter(x => x.type !== "INSTAMESSENGER"));
-        }
-    }, [channelName, pageLink, fields]);
+    // useEffect(() => {
+    //     if (channelName.length > 0 && pageLink.length > 0) {
+    //         setrequestchannels(prev => {
+    //             const index = prev.findIndex(x => x.type === "INSTAMESSENGER");
+    //             if (index === -1) {
+    //                 return [
+    //                     ...prev,
+    //                     fields,
+    //                 ]
+    //             } else {
+    //                 prev.splice(index, 1);
+    //                 return [
+    //                     ...prev,
+    //                     fields,
+    //                 ];
+    //             }
+    //         });
+    //         setHasFinished(true)
+    //     } else {
+    //         setrequestchannels(prev => prev.filter(x => x.type !== "INSTAMESSENGER"));
+    //     }
+    // }, [channelName, pageLink, fields]);
 
     const openprivacypolicies = () => {
         window.open("/privacy", '_blank');
@@ -122,7 +121,7 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
                 className={commonClasses.trailingIcon}
                 onClick={() => {
                     deleteChannel('instagramDM');
-                    setrequestchannels(prev => prev.filter(x => x.type !== "INSTAMESSENGER"));
+                    // setrequestchannels(prev => prev.filter(x => x.type !== "INSTAMESSENGER"));
                 }}
             >
                 <DeleteOutlineIcon />

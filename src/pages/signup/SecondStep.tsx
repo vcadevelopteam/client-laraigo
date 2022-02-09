@@ -42,7 +42,7 @@ const CssPhonemui = styled(MuiPhoneNumber)({
 
 
 const SecondStep: FC<{ setOpenWarning: (param: any) => void}> = ({ setOpenWarning }) => {
-    const { mainData, setMainData, setStep } = useContext(SubscriptionContext);
+    const { setStep } = useContext(SubscriptionContext);
     const dispatch = useDispatch();
     const ressignup = useSelector(state => state.signup.countryList);    
     const URL="https://ipapi.co/json/";
@@ -56,13 +56,13 @@ const SecondStep: FC<{ setOpenWarning: (param: any) => void}> = ({ setOpenWarnin
     });
     const [disablebutton, setdisablebutton] = useState(true);
     const mainResult = useSelector(state => state.main);
-    useEffect(() => {
-        setdisablebutton(!(mainData.firstandlastname !== "" && mainData.companybusinessname !== "" && mainData.country!== ""))
-    }, [mainData])
-    function maindataChange(field: string, value: any) {
-        setMainData((p: any) => ({ ...p, [field]: value }))
-        setErrors(p => ({ ...p, [field]: !value ? t(langKeys.field_required) : "" }))
-    }
+    // useEffect(() => {
+    //     setdisablebutton(!(mainData.firstandlastname !== "" && mainData.companybusinessname !== "" && mainData.country!== ""))
+    // }, [mainData])
+    // function maindataChange(field: string, value: any) {
+    //     setMainData((p: any) => ({ ...p, [field]: value }))
+    //     setErrors(p => ({ ...p, [field]: !value ? t(langKeys.field_required) : "" }))
+    // }
     const fetchData = () => dispatch(getCollectionPublic(getValuesFromDomain("REASONSSIGNUP")));
     useEffect(() => {
         dispatch(getCountryList())
@@ -85,23 +85,23 @@ const SecondStep: FC<{ setOpenWarning: (param: any) => void}> = ({ setOpenWarnin
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    useEffect(() => {
-        setMainData((p:any) => ({ ...p, country: countrycode, countryname: countryname, currency: currency, doctype: countrycode==="PE"?1:0 }))
-    }, [countrycode, countryname, currency]);
+    // useEffect(() => {
+    //     setMainData((p:any) => ({ ...p, country: countrycode, countryname: countryname, currency: currency, doctype: countrycode==="PE"?1:0 }))
+    // }, [countrycode, countryname, currency]);
     
-    useEffect(() => {
-        if (ressignup.data?.length > 0) {
-            if (countrycode) {
-                setMainData((p:any) => ({ ...p, country: countrycode }))
-            }
-            if (countryname) {
-                setMainData((p:any) => ({ ...p, countryname: countryname }))
-            }
-            if (currency) {
-                setMainData((p:any) => ({ ...p, currency: currency }))
-            }
-        }
-    }, [ressignup])
+    // useEffect(() => {
+    //     if (ressignup.data?.length > 0) {
+    //         if (countrycode) {
+    //             setMainData((p:any) => ({ ...p, country: countrycode }))
+    //         }
+    //         if (countryname) {
+    //             setMainData((p:any) => ({ ...p, countryname: countryname }))
+    //         }
+    //         if (currency) {
+    //             setMainData((p:any) => ({ ...p, currency: currency }))
+    //         }
+    //     }
+    // }, [ressignup])
     
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
@@ -114,7 +114,7 @@ const SecondStep: FC<{ setOpenWarning: (param: any) => void}> = ({ setOpenWarnin
             </Breadcrumbs>
             <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad" , marginTop: 15}}>{t(langKeys.signupstep1title2)}</div>
             <div >
-                <TextField
+                {/* <TextField
                     variant="outlined"
                     margin="normal"
                     fullWidth
@@ -192,7 +192,7 @@ const SecondStep: FC<{ setOpenWarning: (param: any) => void}> = ({ setOpenWarnin
                     data={mainResult.mainData.data}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
-                />
+                /> */}
                 <Button
                     onClick={() => { setStep(2.5) }}
                     className={classes.button}

@@ -11,7 +11,7 @@ import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { getChannelsListSub } from "store/channel/actions";
 import { apiUrls } from 'common/constants';
-import { SubscriptionContext } from "./context";
+import { SubscriptionContext, useChannelsCount } from "./context";
 
 interface ChannelAddFacebookProps {
     setOpenWarning: (param: any) => void;
@@ -21,12 +21,11 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
     const {
         commonClasses,
         FBButtonStyles,
-        selectedChannels,
         setConfirmations,
         finishreg,
         deleteChannel,
-        setrequestchannels,
     } = useContext(SubscriptionContext);
+    const selectedChannels = useChannelsCount();
     const [waitSave, setWaitSave] = useState(false);
     const [hasFinished, setHasFinished] = useState(false)
     const [pageLink, setPageLink] = useState("");
@@ -71,28 +70,28 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
         }
     }, [mainResult, waitSave])
 
-    useEffect(() => {
-        if (channelName.length > 0 && pageLink.length > 0) {
-            setrequestchannels(prev => {
-                const index = prev.findIndex(x => x.type === "FACEBOOK");
-                if (index === -1) {
-                    return [
-                        ...prev,
-                        fields,
-                    ]
-                } else {
-                    prev.splice(index, 1);
-                    return [
-                        ...prev,
-                        fields,
-                    ];
-                }
-            });
-            setHasFinished(true)
-        } else {
-            setrequestchannels(prev => prev.filter(x => x.type !== "FACEBOOK"));
-        }
-    }, [channelName, pageLink, fields]);
+    // useEffect(() => {
+    //     if (channelName.length > 0 && pageLink.length > 0) {
+    //         setrequestchannels(prev => {
+    //             const index = prev.findIndex(x => x.type === "FACEBOOK");
+    //             if (index === -1) {
+    //                 return [
+    //                     ...prev,
+    //                     fields,
+    //                 ]
+    //             } else {
+    //                 prev.splice(index, 1);
+    //                 return [
+    //                     ...prev,
+    //                     fields,
+    //                 ];
+    //             }
+    //         });
+    //         setHasFinished(true)
+    //     } else {
+    //         setrequestchannels(prev => prev.filter(x => x.type !== "FACEBOOK"));
+    //     }
+    // }, [channelName, pageLink, fields]);
 
     const processFacebookCallback = async (r: any) => {
         if (r.status !== "unknown" && !r.error) {
@@ -126,7 +125,7 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
                 className={commonClasses.trailingIcon}
                 onClick={() => {
                     deleteChannel('facebook');
-                    setrequestchannels(prev => prev.filter(x => x.type !== "FACEBOOK"));
+                    // setrequestchannels(prev => prev.filter(x => x.type !== "FACEBOOK"));
                 }}
             >
                 <DeleteOutlineIcon />

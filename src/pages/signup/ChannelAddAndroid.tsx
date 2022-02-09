@@ -6,7 +6,7 @@ import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
 import { ColorInput, FieldEdit, } from "components";
 import { AndroidColor } from "icons";
-import { SubscriptionContext } from "./context";
+import { SubscriptionContext, useChannelsCount } from "./context";
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -21,11 +21,10 @@ const useChannelAddStyles = makeStyles(theme => ({
 export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
     const {
         commonClasses,
-        selectedChannels,
         finishreg,
         deleteChannel,
-        setrequestchannels,
     } = useContext(SubscriptionContext);
+    const selectedChannels = useChannelsCount();
     const [hasFinished, setHasFinished] = useState(false)
     const [channelName, setChannelName] = useState("");
     const { t } = useTranslation();
@@ -51,28 +50,28 @@ export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = (
         "type": "SMOOCHANDROID",
     })
 
-    useEffect(() => {
-        if (channelName.length > 0) {
-            setrequestchannels(prev => {
-                const index = prev.findIndex(x => x.type === "SMOOCHANDROID");
-                if (index === -1) {
-                    return [
-                        ...prev,
-                        fields,
-                    ]
-                } else {
-                    prev.splice(index, 1);
-                    return [
-                        ...prev,
-                        fields,
-                    ];
-                }
-            });
-            setHasFinished(true)
-        } else {
-            setrequestchannels(prev => prev.filter(x => x.type !== "SMOOCHANDROID"));
-        }
-    }, [channelName, fields]);
+    // useEffect(() => {
+    //     if (channelName.length > 0) {
+    //         setrequestchannels(prev => {
+    //             const index = prev.findIndex(x => x.type === "SMOOCHANDROID");
+    //             if (index === -1) {
+    //                 return [
+    //                     ...prev,
+    //                     fields,
+    //                 ]
+    //             } else {
+    //                 prev.splice(index, 1);
+    //                 return [
+    //                     ...prev,
+    //                     fields,
+    //                 ];
+    //             }
+    //         });
+    //         setHasFinished(true)
+    //     } else {
+    //         setrequestchannels(prev => prev.filter(x => x.type !== "SMOOCHANDROID"));
+    //     }
+    // }, [channelName, fields]);
 
     function setnameField(value: any) {
         setChannelName(value)
@@ -88,7 +87,7 @@ export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = (
                 className={commonClasses.trailingIcon}
                 onClick={() => {
                     deleteChannel('android');
-                    setrequestchannels(prev => prev.filter(x => x.type !== "SMOOCHANDROID"));
+                    // setrequestchannels(prev => prev.filter(x => x.type !== "SMOOCHANDROID"));
                 }}
             >
                 <DeleteOutlineIcon />

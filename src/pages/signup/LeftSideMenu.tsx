@@ -13,7 +13,7 @@ import { ChannelAddAndroid } from './ChannelAddAndroid'
 import { ChannelAddIos } from './ChannelAddIos'
 import { Trans, useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
-import { ListChannels, SubscriptionContext } from "./context";
+import { ListChannels, SubscriptionContext, useChannelsCount } from "./context";
 import { executeSubscription } from "store/signup/actions";
 import { useDispatch } from "react-redux";
 import { showBackdrop } from "store/popus/actions";
@@ -51,13 +51,12 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
     const {
         foreground,
         finishreg,
-        listchannels,
-        selectedChannels,
         commonClasses,
     } = useContext(SubscriptionContext);
+    const selectedChannels = useChannelsCount();
     const executeResult = useSelector(state => state.signup.insertChannel);
 
-    const channels = useMemo(() => {
+    /*const channels = useMemo(() => {
         // console.log('useMemo:channels', foreground);
         // if (foreground !== undefined) {
         //     const result = Object.
@@ -88,15 +87,16 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
         //         key={i}
         //     />
         // ));
-    }, [listchannels]);
+    }, [listchannels]);*/
 
-    const getDisplay = (option: keyof ListChannels): string => {
+   /* const getDisplay = (option: keyof ListChannels): string => {
         if (foreground !== undefined) {
             return option === foreground ? 'block' : 'none';
         }
 
         return channels.includes(option) ? 'block' : 'none';
-    }
+    }*/
+    const getDisplay = (a: any) => 'none';
 
     return (
         <div className={classes.root}>

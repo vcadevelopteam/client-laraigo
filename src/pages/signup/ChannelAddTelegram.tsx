@@ -6,7 +6,7 @@ import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
 import { FieldEdit, ColorInput } from "components";
 import { TelegramColor } from "icons";
-import { SubscriptionContext } from "./context";
+import { SubscriptionContext, useChannelsCount } from "./context";
 
 const useChannelAddStyles = makeStyles(theme => ({
     centerbutton: {
@@ -26,11 +26,10 @@ const useChannelAddStyles = makeStyles(theme => ({
 export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
     const {
         commonClasses,
-        selectedChannels,
         finishreg,
         deleteChannel,
-        setrequestchannels,
     } = useContext(SubscriptionContext);
+    const selectedChannels = useChannelsCount();
     const [botKey, $setBotKey] = useState("");
     const [hasFinished, setHasFinished] = useState(false)
     const [coloricon, setcoloricon] = useState("#207FDD");
@@ -60,28 +59,28 @@ export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = 
         }
     })
 
-    useEffect(() => {
-        if (channelName.length > 0 && botKey.length > 0) {
-            setrequestchannels(prev => {
-                const index = prev.findIndex(x => x.type === "TELEGRAM");
-                if (index === -1) {
-                    return [
-                        ...prev,
-                        fields,
-                    ]
-                } else {
-                    prev.splice(index, 1);
-                    return [
-                        ...prev,
-                        fields,
-                    ];
-                }
-            });
-            setHasFinished(true)
-        } else {
-            setrequestchannels(prev => prev.filter(x => x.type !== "TELEGRAM"));
-        }
-    }, [channelName, botKey, fields]);
+    // useEffect(() => {
+    //     if (channelName.length > 0 && botKey.length > 0) {
+    //         setrequestchannels(prev => {
+    //             const index = prev.findIndex(x => x.type === "TELEGRAM");
+    //             if (index === -1) {
+    //                 return [
+    //                     ...prev,
+    //                     fields,
+    //                 ]
+    //             } else {
+    //                 prev.splice(index, 1);
+    //                 return [
+    //                     ...prev,
+    //                     fields,
+    //                 ];
+    //             }
+    //         });
+    //         setHasFinished(true)
+    //     } else {
+    //         setrequestchannels(prev => prev.filter(x => x.type !== "TELEGRAM"));
+    //     }
+    // }, [channelName, botKey, fields]);
 
     function setnameField(value: any) {
         setChannelName(value)
@@ -105,7 +104,7 @@ export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = 
                 className={commonClasses.trailingIcon}
                 onClick={() => {
                     deleteChannel('telegram');
-                    setrequestchannels(prev => prev.filter(x => x.type !== "TELEGRAM"));
+                    // setrequestchannels(prev => prev.filter(x => x.type !== "TELEGRAM"));
                 }}
             >
                 <DeleteOutlineIcon />

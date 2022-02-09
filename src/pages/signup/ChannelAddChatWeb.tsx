@@ -17,7 +17,7 @@ import { showSnackbar } from 'store/popus/actions';
 import { getInsertChatwebChannel } from 'common/helpers';
 import paths from 'common/constants/paths';
 import { ZyxmeMessengerIcon } from 'icons';
-import { SubscriptionContext } from './context';
+import { SubscriptionContext, useChannelsCount } from './context';
 
 interface TabPanelProps {
     value: string;
@@ -1472,7 +1472,6 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
         foreground,
         setConfirmations,
         setForeground,
-        setrequestchannels,
     } = useContext(SubscriptionContext);
     const dispatch = useDispatch();
     const [hasFinished, setHasFinished] = useState(false);
@@ -1557,28 +1556,28 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
         },
     });
 
-    useEffect(() => {
-        if (channelName.length > 0) {
-            setrequestchannels(prev => {
-                const body = getInsertChatwebChannel(channelName, false, "#7721ad", form.getValues());
-                const index = prev.findIndex(x => x.type === "CHATWEB");
-                if (index === -1) {
-                    return [
-                        ...prev,
-                        body,
-                    ]
-                } else {
-                    prev.splice(index, 1);
-                    return [
-                        ...prev,
-                        body,
-                    ];
-                }
-            });
-        } else {
-            setrequestchannels(prev => prev.filter(x => x.type !== "CHATWEB"));
-        }
-    }, [channelName, form.getValues]);
+    // useEffect(() => {
+    //     if (channelName.length > 0) {
+    //         setrequestchannels(prev => {
+    //             const body = getInsertChatwebChannel(channelName, false, "#7721ad", form.getValues());
+    //             const index = prev.findIndex(x => x.type === "CHATWEB");
+    //             if (index === -1) {
+    //                 return [
+    //                     ...prev,
+    //                     body,
+    //                 ]
+    //             } else {
+    //                 prev.splice(index, 1);
+    //                 return [
+    //                     ...prev,
+    //                     body,
+    //                 ];
+    //             }
+    //         });
+    //     } else {
+    //         setrequestchannels(prev => prev.filter(x => x.type !== "CHATWEB"));
+    //     }
+    // }, [channelName, form.getValues]);
 
     const setView = (option: "view1" | "view2") => {
         if (option === "view1") {
@@ -1651,22 +1650,22 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
                     variant="contained"
                     color="primary"
                     onClick={() => {
-                        setrequestchannels(prev => {
-                            const body = getInsertChatwebChannel(channelName, false, "#7721ad", form.getValues());
-                            const index = prev.findIndex(x => x.type === "CHATWEB");
-                            if (index === -1) {
-                                return [
-                                    ...prev,
-                                    body,
-                                ]
-                            } else {
-                                prev.splice(index, 1);
-                                return [
-                                    ...prev,
-                                    body,
-                                ];
-                            }
-                        });
+                        // setrequestchannels(prev => {
+                        //     const body = getInsertChatwebChannel(channelName, false, "#7721ad", form.getValues());
+                        //     const index = prev.findIndex(x => x.type === "CHATWEB");
+                        //     if (index === -1) {
+                        //         return [
+                        //             ...prev,
+                        //             body,
+                        //         ]
+                        //     } else {
+                        //         prev.splice(index, 1);
+                        //         return [
+                        //             ...prev,
+                        //             body,
+                        //         ];
+                        //     }
+                        // });
                         setView("view1");
                         setHasFinished(true);
                         setConfirmations(prev => prev++);
@@ -1726,10 +1725,10 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
 }) => {
     const {
         commonClasses,
-        selectedChannels,
         finishreg,
         deleteChannel,
     } = useContext(SubscriptionContext);
+    const selectedChannels = useChannelsCount();
     const { t } = useTranslation();
     // const [hexIconColor, setHexIconColor] = useState("#7721ad");
 

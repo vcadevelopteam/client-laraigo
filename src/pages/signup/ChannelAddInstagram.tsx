@@ -12,7 +12,7 @@ import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { getChannelsListSub } from "store/channel/actions";
 import { apiUrls } from 'common/constants';
-import { SubscriptionContext } from "./context";
+import { SubscriptionContext, useChannelsCount } from "./context";
 interface ChannelAddInstagramProps {
     setOpenWarning: (param: any) => void;
 }
@@ -21,11 +21,10 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
     const {
         commonClasses,
         FBButtonStyles,
-        selectedChannels,
         finishreg,
         deleteChannel,
-        setrequestchannels,
     } = useContext(SubscriptionContext);
+    const selectedChannels = useChannelsCount();
     const [waitSave, setWaitSave] = useState(false);
     const [hasFinished, setHasFinished] = useState(false)
     const [pageLink, setPageLink] = useState("");
@@ -66,28 +65,28 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
         }
     }, [mainResult, waitSave])
 
-    useEffect(() => {
-        if (channelName.length > 0 && pageLink.length > 0) {
-            setrequestchannels(prev => {
-                const index = prev.findIndex(x => x.type === "INSTAGRAM");
-                if (index === -1) {
-                    return [
-                        ...prev,
-                        fields,
-                    ]
-                } else {
-                    prev.splice(index, 1);
-                    return [
-                        ...prev,
-                        fields,
-                    ];
-                }
-            });
-            setHasFinished(true)
-        } else {
-            setrequestchannels(prev => prev.filter(x => x.type !== "INSTAGRAM"));
-        }
-    }, [channelName, pageLink, fields]);
+    // useEffect(() => {
+    //     if (channelName.length > 0 && pageLink.length > 0) {
+    //         setrequestchannels(prev => {
+    //             const index = prev.findIndex(x => x.type === "INSTAGRAM");
+    //             if (index === -1) {
+    //                 return [
+    //                     ...prev,
+    //                     fields,
+    //                 ]
+    //             } else {
+    //                 prev.splice(index, 1);
+    //                 return [
+    //                     ...prev,
+    //                     fields,
+    //                 ];
+    //             }
+    //         });
+    //         setHasFinished(true)
+    //     } else {
+    //         setrequestchannels(prev => prev.filter(x => x.type !== "INSTAGRAM"));
+    //     }
+    // }, [channelName, pageLink, fields]);
 
     const openprivacypolicies = () => {
         window.open("/privacy", '_blank');
@@ -125,7 +124,7 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
                 className={commonClasses.trailingIcon}
                 onClick={() => {
                     deleteChannel('instagram');
-                    setrequestchannels(prev => prev.filter(x => x.type !== "INSTAGRAM"));
+                    // setrequestchannels(prev => prev.filter(x => x.type !== "INSTAGRAM"));
                 }}
             >
                 <DeleteOutlineIcon />
