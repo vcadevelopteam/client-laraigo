@@ -8,7 +8,7 @@ import { billingSupportIns, getBillingConfigurationSel, getBillingSupportSel, ge
 import { cleanMemoryTable, setMemoryTable } from 'store/main/actions';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -18,7 +18,6 @@ import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/acti
 import ClearIcon from '@material-ui/icons/Clear';
 import { Box, FormControlLabel, Tabs, TextField } from '@material-ui/core';
 import { getCountryList } from 'store/signup/actions';
-import TableCell from '@material-ui/core/TableCell';
 import * as locale from "date-fns/locale";
 import {
     Search as SearchIcon,
