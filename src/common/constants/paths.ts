@@ -25,6 +25,10 @@ const paths = {
         path: "/sign-up/:token",
         resolve: (token: string) => `/sign-up/${token}`,
     },
+    LOCATION: {
+        path: "/getLocations/:token",
+        resolve: (token: string) => `/getLocations/${token}`,
+    },
     PRIVACY: "/privacy",
     ACTIVATE_USER: {
         path: '/activateuser/:token',
