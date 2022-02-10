@@ -110,7 +110,7 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, da
                         onChange={(value) => setValue('domainname', value)}
                     />
                 }
-                {
+                {false &&
                     <TemplateSwitch
                         label={t(langKeys.bydefault)}
                         className="col-6"
@@ -189,7 +189,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
                 accessor: 'domaindesc',
                 NoFilter: true
             },
-            {
+            /*{
                 Header: t(langKeys.bydefault),
                 accessor: 'bydefault',
                 NoFilter: true,
@@ -198,7 +198,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
                     const val = (row ? (row.bydefault ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative))
                     return val;
                 }
-            },
+            },*/
             {
                 Header: t(langKeys.organization),
                 accessor: 'organization',

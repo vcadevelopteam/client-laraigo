@@ -513,6 +513,17 @@ export const changeStatusTicketWS = (state: IState, action: IAction): IState => 
 
     return {
         ...state,
+        ticketSelected: state.ticketSelected?.conversationid === action.payload.conversationid ? {
+            ...state.ticketSelected!!,
+            status: action.payload.status
+        } : state.ticketSelected,
+        ticketList: {
+            ...state.ticketList,
+            data: state.ticketList.data.map((x: ITicket) => x.conversationid === action.payload.conversationid ? {
+                ...x,
+                status: action.payload.status
+            } : x)
+        },
         agentList: {
             data: newAgentList,
             count: newAgentList.length,
