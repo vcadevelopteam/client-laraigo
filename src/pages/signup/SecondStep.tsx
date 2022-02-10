@@ -214,7 +214,8 @@ const SecondStep: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarni
                     color="primary"
                     style={{ marginTop: '0.43em' }}
                     disabled={mainResult.loading || ressignup.loading}
-                >{t(langKeys.next)}
+                >
+                    <Trans i18nKey={langKeys.next} />
                 </Button>
             </div>
 

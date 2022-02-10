@@ -200,7 +200,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
             country: "PE",
             countryname: "PERU",
             currency: "PEN",
-            doctype: 0,
+            doctype: 1,
             docnumber: "",
             businessname: "",
             fiscaladdress: "",
