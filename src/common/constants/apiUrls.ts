@@ -75,6 +75,7 @@ export const apiUrls = {
     SEND_HSM: `${BASE_URL}/ticket/send/hsm`,
     UPDATE_USER: `${BASE_URL}/user/update/info`,
     SAVE_USER: `${BASE_URL}/user/sendmail/password`,
+    GETLOCATION: `${BASE_URL}/flow/location`,
 
 
     INTEGRATION_URL: `${BASE_URL}/load`,

@@ -6,13 +6,14 @@ import usePlacesAutocomplete, {getGeocode,getLatLng,
 import {Combobox,ComboboxInput,ComboboxPopover,ComboboxList,ComboboxOption,} from "@reach/combobox";
 import { useParams } from 'react-router';
 import { makeStyles } from '@material-ui/core/styles';
+import { getLocations } from 'store/getlocations/actions';
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'hooks';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Button, TextField } from '@material-ui/core';
 
 import "@reach/combobox/styles.css";
-import GetLocations from "./GetLocations";
-
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
@@ -121,6 +122,10 @@ export default function Map() {
     lng: 0,
     time: new Date(),
   });
+  
+  useEffect(() => {
+    getLocation();
+  }, []);
   function getLocation(){
     if(navigator.geolocation){
       navigator.geolocation.getCurrentPosition(showPosition)
@@ -190,7 +195,6 @@ export default function Map() {
         try {
             const r = await response.json();
             if (r.status === "OK" && r.results && r.results instanceof Array && r.results.length > 0) {
-                console.log('ddd', r.results[0].formatted_address);
                 cleanDataAddres(r.results[0].address_components);
                 setDirectionData((prev)=>({...prev, 
                   movedmarker: true,
@@ -218,7 +222,6 @@ export default function Map() {
   if (loadError) return <div>"Error"</div>;
   if (!isLoaded) return <div>Loading...</div>;
   
-  getLocation();
   return (
     <div>
       <GoogleMap
@@ -246,34 +249,20 @@ export default function Map() {
 function Search({ panTo,setMarker,directionData, setDirectionData, cleanDataAddres,marker}) {
     const classes = useStyles();
     const { t } = useTranslation();
+    const getlocationdata = useSelector(state => state.getlocations);
+    const dispatch = useDispatch();
     
   async function sendData(){
-    const response = await fetch("../flow/location", {
-        method: 'POST',
-        body: JSON.stringify(
-          {
-            lon:marker.lng,
-            lat:marker.lat,
-            ...directionData
-          }
-        ),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
-    if (response.ok) {
-      try {
-          const result =  await response.json();
-          console.log(result)
-          } catch (e) {
-              // if (alert)
-                  // swal('¡Oh, hubo un error!', 'Vuelva a intentarlo.', "error");
-          }
-      } else {
-          // if (alert)
-              // swal('¡Oh, hubo un error!', 'Vuelva a intentarlo.', "error");
-      }
+    dispatch(getLocations(
+      {
+        lon:marker.lng,
+        lat:marker.lat,
+        ...directionData
+      }))
   }
+  useEffect(() => {
+    console.log(getlocationdata)
+  }, [getlocationdata]);
 	const {
 		ready,
 		value,
