@@ -75,6 +75,7 @@ export interface MainData {
     mobilephone: string;
     join_reason: string;
     country: string;
+    countryname: string;
     currency: string;
     doctype: number;
     docnumber: string;
@@ -196,8 +197,9 @@ export const SubscriptionProvider: FC = ({ children }) => {
             facebookid: "",
             googleid: "",
             join_reason: "",
-            country: "",
-            currency: "",
+            country: "PE",
+            countryname: "PERU",
+            currency: "PEN",
             doctype: 0,
             docnumber: "",
             businessname: "",
