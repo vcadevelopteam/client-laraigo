@@ -1,4 +1,4 @@
-import { ITransaction } from '@types';
+import { IRequestBody, ITransaction } from '@types';
 import { apiUrls } from '../../common/constants';
 import { APIManager } from '../manager';
 
@@ -9,4 +9,7 @@ export function postActivationUser(token: string) {
 
 export function postSaveUser(requestBody: ITransaction) {
     return APIManager.post(apiUrls.SAVE_USER, { data: requestBody }, true);
+}
+export function getLocations(requestBody: IRequestBody) {
+    return APIManager.post(apiUrls.GETLOCATION, { data: requestBody }, true);
 }

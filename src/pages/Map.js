@@ -1,18 +1,19 @@
 import React,{useEffect} from "react";
-import {GoogleMap,useLoadScript,Marker,InfoWindow,getDetails
+import {GoogleMap,useLoadScript,Marker
 } from "@react-google-maps/api";
 import usePlacesAutocomplete, {getGeocode,getLatLng,
 } from "use-places-autocomplete";
 import {Combobox,ComboboxInput,ComboboxPopover,ComboboxList,ComboboxOption,} from "@reach/combobox";
-import { formatRelative } from "date-fns";
+import { useParams } from 'react-router';
 import { makeStyles } from '@material-ui/core/styles';
+import { getLocations } from 'store/getlocations/actions';
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'hooks';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Button, TextField } from '@material-ui/core';
-import {  FieldSelect } from 'components';
 
 import "@reach/combobox/styles.css";
-
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
@@ -90,12 +91,10 @@ const options = {
   disableDefaultUI: true,
   zoomControl: true,
 };
-const center = {
-  lat: -12.164043457451433,
-  lng: -76.98795506382666,
-};
 
 export default function Map() {
+  
+  const {token} = useParams();
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: "AIzaSyCBij6DbsB8SQC_RRKm3-X07RLmvQEnP9w",
     libraries,
@@ -106,18 +105,68 @@ export default function Map() {
     district: "",
     zone: "",
     zipcode: "",
-    extra: "",
+    reference: "",
     street: "",
     streetNumber: "",
     movedmarker: false,
-    generalAdress: ""
+    searchLocation: "",
+    token: token
   });
-  const [marker, setMarker] = React.useState({
-    lat: -12.164043457451433,
-    lng: -76.98795506382666,
+  const [center, setcenter] = React.useState({
+    lat: 0,
+    lng: 0,
     time: new Date(),
   });
+  const [marker, setMarker] = React.useState({
+    lat: 0,
+    lng: 0,
+    time: new Date(),
+  });
+  
+  useEffect(() => {
+    getLocation();
+  }, []);
+  function getLocation(){
+    if(navigator.geolocation){
+      navigator.geolocation.getCurrentPosition(showPosition)
+    }else{
+      console.error('Geolocation not supported by this browser')
+    }
+  }
+  async function showPosition(position) {
+    const lat = position.coords.latitude;
+    const lng = position.coords.longitude;
+
+    
+    setMarker({
+      lat: lat,
+      lng: lng,
+      time: new Date(),
+    });
+    setcenter({
+      lat: lat,
+      lng: lng,
+    });
+
+    const urltosearch = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyCBij6DbsB8SQC_RRKm3-X07RLmvQEnP9w`;
+    const response = await fetch(urltosearch, {
+        method: 'GET',
+    });
+    if (response.ok) {
+        try {
+            const r = await response.json();
+            if (r.status === "OK" && r.results && r.results instanceof Array && r.results.length > 0) {
+                cleanDataAddres(r.results[0].address_components);
+                setDirectionData((prev)=>({...prev, 
+                  movedmarker: true,
+                  searchLocation: r.results[0].formatted_address
+                }))
+            }
+        } catch (e) { }
+    }
+  }
   const [selected, setSelected] = React.useState(null);
+  
   function cleanDataAddres(r) {
     const street_number = r.find(x => x.types.includes("street_number"));
     const postal_code = r.find(x => x.types.includes("postal_code"));
@@ -146,11 +195,10 @@ export default function Map() {
         try {
             const r = await response.json();
             if (r.status === "OK" && r.results && r.results instanceof Array && r.results.length > 0) {
-                console.log('ddd', r.results[0].formatted_address);
                 cleanDataAddres(r.results[0].address_components);
                 setDirectionData((prev)=>({...prev, 
                   movedmarker: true,
-                  generalAdress: r.results[0].formatted_address
+                  searchLocation: r.results[0].formatted_address
                 }))
             }
         } catch (e) { }
@@ -173,7 +221,7 @@ export default function Map() {
 
   if (loadError) return <div>"Error"</div>;
   if (!isLoaded) return <div>Loading...</div>;
-
+  
   return (
     <div>
       <GoogleMap
@@ -193,14 +241,28 @@ export default function Map() {
           }}
         />
       </GoogleMap>	  
-      <Search panTo={panTo} setMarker={setMarker} directionData={directionData} setDirectionData={setDirectionData} cleanDataAddres={cleanDataAddres}/>
+      <Search panTo={panTo} setMarker={setMarker} directionData={directionData} setDirectionData={setDirectionData} cleanDataAddres={cleanDataAddres} marker={marker}/>
     </div>
   );
 }
 
-function Search({ panTo,setMarker,directionData, setDirectionData, cleanDataAddres}) {
+function Search({ panTo,setMarker,directionData, setDirectionData, cleanDataAddres,marker}) {
     const classes = useStyles();
     const { t } = useTranslation();
+    const getlocationdata = useSelector(state => state.getlocations);
+    const dispatch = useDispatch();
+    
+  async function sendData(){
+    dispatch(getLocations(
+      {
+        lon:marker.lng,
+        lat:marker.lat,
+        ...directionData
+      }))
+  }
+  useEffect(() => {
+    console.log(getlocationdata)
+  }, [getlocationdata]);
 	const {
 		ready,
 		value,
@@ -225,7 +287,7 @@ function Search({ panTo,setMarker,directionData, setDirectionData, cleanDataAddr
       setDirectionData((prev)=>({...prev, 
         movedmarker: false
       }))
-      setValue(directionData.generalAdress)
+      setValue(directionData.searchLocation)
     }
   }, [directionData.movedmarker]);
 	const handleSelect = async (address) => {
@@ -248,7 +310,7 @@ function Search({ panTo,setMarker,directionData, setDirectionData, cleanDataAddr
 		}
 	};
 
-  	return (
+    return (
 	  
 	<div style={{width:"100%"}}>
 		
@@ -256,7 +318,6 @@ function Search({ panTo,setMarker,directionData, setDirectionData, cleanDataAddr
 		<div className="search">
 			
 		<div className={classes.containersearch}>
-			<input type="hidden" id="tokenlocation" value='@ViewData["token"]'></input>
 			<div className={classes.textlabel}>{t(langKeys.firstDataLocation)}</div>
 
 			<Combobox onSelect={handleSelect} style={{width:"100%"}}>
@@ -280,28 +341,29 @@ function Search({ panTo,setMarker,directionData, setDirectionData, cleanDataAddr
 			<div className={classes.textlabel}>{t(langKeys.secondDataLocation)}</div>
 			
 			<div className="row-zyx" style={{ marginBottom: "0px"}}>
-				<TextField label={t(langKeys.department)} variant="outlined" className="col-6" value={directionData.department} onChange={(e)=>{setDirectionData((prev)=>({...prev, department: e.target.value}))}}/>
-				<TextField label={t(langKeys.province)} variant="outlined" className="col-6" value={directionData.province} onChange={(e)=>{setDirectionData((prev)=>({...prev, province: e.target.value}))}}/>
+				<TextField label={t(langKeys.department)} variant="outlined" size="small" className="col-6" value={directionData.department} onChange={(e)=>{setDirectionData((prev)=>({...prev, department: e.target.value}))}}/>
+				<TextField label={t(langKeys.province)} variant="outlined" size="small" className="col-6" value={directionData.province} onChange={(e)=>{setDirectionData((prev)=>({...prev, province: e.target.value}))}}/>
 			</div>
 			<div className="row-zyx" style={{ marginBottom: "0px"}}>
-				<TextField label={t(langKeys.district)} variant="outlined" className="col-6" value={directionData.district} onChange={(e)=>{setDirectionData((prev)=>({...prev, district: e.target.value}))}}/>
-				<TextField label={t(langKeys.zone)} variant="outlined" className="col-6" value={directionData.zone} onChange={(e)=>{setDirectionData((prev)=>({...prev, zone: e.target.value}))}}/>
+				<TextField label={t(langKeys.district)} variant="outlined" size="small" className="col-6" value={directionData.district} onChange={(e)=>{setDirectionData((prev)=>({...prev, district: e.target.value}))}}/>
+				<TextField label={t(langKeys.zone)} variant="outlined" size="small" className="col-6" value={directionData.zone} onChange={(e)=>{setDirectionData((prev)=>({...prev, zone: e.target.value}))}}/>
 			</div>
 			<div className="row-zyx" style={{ marginBottom: "0px"}}>
-				<TextField label={t(langKeys.street)} variant="outlined" className="col-6" value={directionData.street} onChange={(e)=>{setDirectionData((prev)=>({...prev, street: e.target.value}))}}/>
-				<TextField label={`N° ${t(langKeys.street)}`} variant="outlined" className="col-6" value={directionData.streetNumber} onChange={(e)=>{setDirectionData((prev)=>({...prev, streetNumber: e.target.value}))}}/>
+				<TextField label={t(langKeys.street)} variant="outlined" size="small" className="col-6" value={directionData.street} onChange={(e)=>{setDirectionData((prev)=>({...prev, street: e.target.value}))}}/>
+				<TextField label={`N° ${t(langKeys.street)}`} variant="outlined" size="small" className="col-6" value={directionData.streetNumber} onChange={(e)=>{setDirectionData((prev)=>({...prev, streetNumber: e.target.value}))}}/>
 			</div>
 			<div className="row-zyx" style={{ marginBottom: "0px"}}>
-				<TextField label={t(langKeys.postalcode)} variant="outlined" className="col-6" value={directionData.zipcode} onChange={(e)=>{setDirectionData((prev)=>({...prev, zipcode: e.target.value}))}}/>
+				<TextField label={t(langKeys.postalcode)} variant="outlined" size="small" className="col-6" value={directionData.zipcode} onChange={(e)=>{setDirectionData((prev)=>({...prev, zipcode: e.target.value}))}}/>
 			</div>
 			<div className="row-zyx" style={{ marginBottom: "0px"}}>
-				<TextField label={t(langKeys.extraInformation)} multiline variant="outlined" style={{width:"100%"}} maxRows={4}  value={directionData.extra} onChange={(e)=>{setDirectionData((prev)=>({...prev, extra: e.target.value}))}}/>
+				<TextField label={t(langKeys.extraInformation)} multiline variant="outlined" size="small" style={{width:"100%"}} maxRows={4}  value={directionData.reference} onChange={(e)=>{setDirectionData((prev)=>({...prev, reference: e.target.value}))}}/>
 			</div>
 			<div style={{ marginLeft: "auto", paddingTop: "10px", marginRight: "auto", display: "block", width: "10%" }}>
 				<Button
 					variant="contained"
 					type="button"
 					color="primary"
+          onClick={()=>sendData()}
 					style={{ backgroundColor: "#eb002b" }}
 				>{t(langKeys.send)}</Button>
 			</div>
