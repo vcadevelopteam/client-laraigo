@@ -185,7 +185,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('currency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('doctype', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
-        register('docnum', { validate: docTypeValidate });
+        register('docnum', { validate: (value) => getValues('billbyorg') ? docTypeValidate(value) : true });
         register('businessname', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('fiscaladdress', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('contact', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
