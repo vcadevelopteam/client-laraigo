@@ -144,6 +144,7 @@ export default function Map() {
         center={center}
         options={options}
         onLoad={onMapLoad}
+        onClick={onMapClick}
       >
         <Marker
           key={`${marker.lat}-${marker.lng}`}
