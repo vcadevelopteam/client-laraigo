@@ -32,6 +32,7 @@ export const langKeys = {
     typecredit_45: "typecredit_45",
     typecredit_60: "typecredit_60",
     typecredit_90: "typecredit_90",
+    timezone: "timezone",
     notecompletedasesors: "notecompletedasesors",
     noteabandonedasesors: "noteabandonedasesors",
     clienticon: "clienticon",

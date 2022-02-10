@@ -226,6 +226,7 @@ const translation: LangKeys = {
     intelligentmodels: 'Intelligent models',
     endpoint: 'Endpoint',
     modelid: 'Model ID',
+    timezone: "Time zone",
     apikey: 'API Key',
     provider: 'Supplier',
     sla: 'Service level agreement',

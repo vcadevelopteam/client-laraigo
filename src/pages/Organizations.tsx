@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch } from 'components';
-import { getCorpSel, getOrgSel, getValuesFromDomain, getValuesFromDomainCorp, insOrg } from 'common/helpers';
+import { getCorpSel, getOrgSel, getTimeZoneSel, getValuesFromDomain, getValuesFromDomainCorp, insOrg } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -140,6 +140,8 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             iconadvisor: row?.iconadvisor || "",
             iconclient: row?.iconclient || "",
             credittype: row?.credittype || "typecredit_alcontado",
+            timezone: row?.timezone || "",
+            timezoneoffset: row?.timezoneoffset || "",
         }
     });
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
@@ -147,6 +149,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const dataCorp = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const dataDocType = multiData[3] && multiData[3].success ? multiData[3].data : [];
     const typeofcreditList = multiData[4] && multiData[4].success ? multiData[4].data : [];
+    const timezoneList = multiData[5] && multiData[5].success ? multiData[5]?.data : [];
 
     const [chatBtn, setChatBtn] = useState<File | null>(getValues("iconbot") as File);
     const [headerBtn, setHeaderBtn] = useState<File | null>(getValues("iconadvisor") as File);
@@ -184,6 +187,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('currency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('timezone', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('doctype', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('docnum', { validate: (value) => getValues('billbyorg') ? docTypeValidate(value) : true });
         register('businessname', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
@@ -492,6 +496,18 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 value={row ? (row.currency || "") : ""}
                                 className="col-6"
                             />}
+                        <FieldSelect
+                            label={t(langKeys.timezone)}
+                            className="col-6"
+                            valueDefault={getValues('timezone')}
+                            onChange={(value) => {setValue('timezone', value ? value.code : ''); setValue('timezoneoffset', value ? value.houroffset : '')}}
+                            error={errors?.timezone?.message}
+                            data={timezoneList}
+                            //uset={true}
+                            //prefixTranslation="status_"
+                            optionDesc="description"
+                            optionValue="code"
+                        />
                     </div>
                     {getValues('billbyorg') && (
                         <>
@@ -922,6 +938,7 @@ const Organizations: FC = () => {
             getCorpSel(0),
             getValuesFromDomainCorp('BILLINGDOCUMENTTYPE', '_DOCUMENT', 1, 0),
             getValuesFromDomain("TYPECREDIT"),
+            getTimeZoneSel()
         ]));
         return () => {
             dispatch(resetAllMain());
