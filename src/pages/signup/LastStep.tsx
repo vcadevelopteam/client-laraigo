@@ -1,15 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC ,useContext,useEffect,useState} from "react";
-import { makeStyles, Button, Breadcrumbs, Link} from '@material-ui/core';
+import { FC, useContext, useEffect, useState } from "react";
+import { makeStyles, Button, Breadcrumbs, Link } from '@material-ui/core';
 import { langKeys } from "lang/keys";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 
 import { useSelector } from 'hooks';
 import { useDispatch } from "react-redux";
 
 import { getMultiCollectionPublic } from "store/main/actions";
-import {  FieldSelect } from "components";
-import { SubscriptionContext } from "./context";
+import { FieldSelect } from "components";
+import { MainData, SubscriptionContext } from "./context";
+import { Controller, useFormContext } from "react-hook-form";
+import { IDomain } from "@types";
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -24,12 +26,12 @@ const useChannelAddStyles = makeStyles(theme => ({
             fontSize: '24px!important',
             justifyContent: 'center',
             fontFamily: "Helvetica,sans-serif!important",
-            width: "50%", 
-            marginLeft: "25%", 
+            width: "50%",
+            marginLeft: "25%",
             marginBottom: '20px'
         }
     },
-    separator:{
+    separator: {
         borderBottom: "grey solid 1px",
         width: "10vh",
         height: "1.6vh",
@@ -38,11 +40,12 @@ const useChannelAddStyles = makeStyles(theme => ({
 }));
 
 interface LastStepProps {
-    setOpenWarning:(param:any)=>void;
+    setOpenWarning: (param: any) => void;
 }
 
 const Step2_6: FC<LastStepProps> = ({ setOpenWarning }) => {
     const { setStep } = useContext(SubscriptionContext);
+    const { getValues, setValue, control, trigger, handleSubmit } = useFormContext<MainData>();
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
     const dispatch = useDispatch();
@@ -52,13 +55,13 @@ const Step2_6: FC<LastStepProps> = ({ setOpenWarning }) => {
     const multiResult = useSelector(state => state.main.multiData.data);
     const executeResult = useSelector(state => state.signup.insertChannel);
     const [isSpecial, setIsSpecial] = useState(false);
-    
+
     useEffect(() => {
-        dispatch(getMultiCollectionPublic(["SignUpIndustry","SignUpCompanySize","SignUpRoles"]));
+        dispatch(getMultiCollectionPublic(["SignUpIndustry", "SignUpCompanySize", "SignUpRoles"]));
     }, []);
 
     useEffect(() => {
-        if(multiResult.length){
+        if (multiResult.length) {
             setindustryList(multiResult[0].data)
             setcompanySizeList(multiResult[1].data)
             setroleList(multiResult[2].data)
@@ -66,7 +69,7 @@ const Step2_6: FC<LastStepProps> = ({ setOpenWarning }) => {
     }, [multiResult]);
 
     return (
-        <div style={{marginTop: "auto",marginBottom: "auto",maxHeight: "100%"}}>
+        <div style={{ marginTop: "auto", marginBottom: "auto", maxHeight: "100%" }}>
             <Breadcrumbs aria-label="breadcrumb">
                 <Link
                     color="textSecondary"
@@ -76,71 +79,110 @@ const Step2_6: FC<LastStepProps> = ({ setOpenWarning }) => {
                         setOpenWarning(true);
                     }}
                 >
-                    {t(langKeys.previoustext)}
+                    {' <<'}<Trans i18nKey={langKeys.previoustext} />
                 </Link>
             </Breadcrumbs>
             <div>
                 <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.laststepsignup)}</div>
                 <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px" }}>{t(langKeys.laststepsignup2)}</div>
             </div>
-            
-            <div style={{padding:"20px"}}>
-                {/* <FieldSelect    
-                    uset={true} 
-                    style={{marginBottom: "20px"}}
-                    variant="outlined" 
-                    label={t(langKeys.industry)}
-                    className="col-12"
-                    valueDefault={mainData.industry}
-                    onChange={(e) => setMainData(prev => ({
-                        ...prev,
-                        industry: e?.domainvalue || "",
-                    }))}
-                    data={industryList}
-                    prefixTranslation="industry_"
-                    optionDesc="domaindesc"
-                    optionValue="domainvalue"
+
+            <div style={{ padding: "20px" }}>
+                <Controller
+                    name="industry"
+                    control={control}
+                    rules={{
+                        validate: (value) => {
+                            if (value.length === 0) {
+                                return t(langKeys.field_required) as string;
+                            }
+                        }
+                    }}
+                    render={({ field: { onChange }, formState: { errors } }) => (
+                        <FieldSelect
+                            uset
+                            onChange={(data: IDomain) => {
+                                onChange(data?.domainvalue || "");
+                            }}
+                            variant="outlined"
+                            style={{ marginBottom: "20px" }}
+                            label={t(langKeys.industry)}
+                            error={errors.industry?.message}
+                            data={industryList as IDomain[]}
+                            prefixTranslation="industry_"
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
+                    )}
                 />
-                <FieldSelect     
-                    uset={true} 
-                    style={{marginBottom: "20px"}}
-                    variant="outlined" 
-                    label={t(langKeys.companysize)}
-                    className="col-12"
-                    valueDefault={mainData.companysize}
-                    onChange={(e) => setMainData(prev => ({
-                        ...prev,
-                        companysize: e?.domainvalue || "",
-                    }))}
-                    data={companySizeList}
-                    prefixTranslation="companysize_"
-                    optionDesc="domaindesc"
-                    optionValue="domainvalue"
+                <Controller
+                    name="companysize"
+                    control={control}
+                    rules={{
+                        validate: (value) => {
+                            if (value.length === 0) {
+                                return t(langKeys.field_required) as string;
+                            }
+                        }
+                    }}
+                    render={({ field: { onChange }, formState: { errors } }) => (
+                        <FieldSelect
+                            uset
+                            onChange={(data: IDomain) => {
+                                onChange(data?.domainvalue || "");
+                            }}
+                            variant="outlined"
+                            style={{ marginBottom: "20px" }}
+                            label={t(langKeys.companysize)}
+                            error={errors.companysize?.message}
+                            data={companySizeList as IDomain[]}
+                            prefixTranslation="companysize_"
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
+                    )}
                 />
-                <FieldSelect     
-                    uset={true} 
-                    style={{marginBottom: "20px"}}
-                    variant="outlined" 
-                    label={t(langKeys.roleincompany)}
-                    className="col-12"
-                    valueDefault={mainData.rolecompany}
-                    onChange={(e) => setMainData(prev => ({
-                        ...prev,
-                        rolecompany: e?.domainvalue || "",
-                    }))}
-                    data={roleList}
-                    prefixTranslation="companyrole_"
-                    optionDesc="domaindesc"
-                    optionValue="domainvalue"
-                /> */}
+                <Controller
+                    name="rolecompany"
+                    control={control}
+                    rules={{
+                        validate: (value) => {
+                            if (value.length === 0) {
+                                return t(langKeys.field_required) as string;
+                            }
+                        }
+                    }}
+                    render={({ field: { onChange }, formState: { errors } }) => (
+                        <FieldSelect
+                            uset
+                            onChange={(data: IDomain) => {
+                                onChange(data?.domainvalue || "");
+                            }}
+                            variant="outlined"
+                            style={{ marginBottom: "20px" }}
+                            label={t(langKeys.roleincompany)}
+                            error={errors.rolecompany?.message}
+                            data={roleList as IDomain[]}
+                            prefixTranslation="companyrole_"
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
+                    )}
+                />
                 <div>
                     <Button
-                        onClick={() => setStep(3)}
+                        onClick={async () => {
+                            const valid = await trigger();
+                            if (valid) {
+                                setStep(3);
+                            }
+                        }}
                         className={classes.button}
                         variant="contained"
                         color="primary"
                         disabled={executeResult.loading}
-                    >{t(langKeys.next)}
+                    >
+                        <Trans i18nKey={langKeys.next} />
                     </Button>
                 </div>
 
@@ -148,4 +190,5 @@ const Step2_6: FC<LastStepProps> = ({ setOpenWarning }) => {
         </div>
     )
 }
+
 export default Step2_6
