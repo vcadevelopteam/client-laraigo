@@ -206,7 +206,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
                     }}
                     isDisabled={mainResult.loading}
                 />
-            ) : selectedChannels === 1 && (
+            ) : selectedChannels.count === 1 && (
                 <Button
                     onClick={finishreg}
                     className={commonClasses.button}

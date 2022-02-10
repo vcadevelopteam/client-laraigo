@@ -207,7 +207,7 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
                     }}
                     isDisabled={mainResult.loading}
                 />
-            ) : selectedChannels === 1 && (
+            ) : selectedChannels.count === 1 && (
                 <Button
                     onClick={finishreg}
                     className={commonClasses.button}

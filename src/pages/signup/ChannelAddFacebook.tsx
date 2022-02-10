@@ -210,7 +210,7 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
                     }}
                     isDisabled={mainResult.loading}
                 />
-            ) : selectedChannels === 1 && (
+            ) : selectedChannels.count === 1 && (
                 <Button
                     onClick={finishreg}
                     className={commonClasses.button}

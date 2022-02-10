@@ -140,7 +140,7 @@ export const ChannelAddIos: FC<{ setOpenWarning: (param: any) => void }> = ({ se
                     </div>
                 </div>
             </div> */}
-            {selectedChannels === 1 && (
+            {selectedChannels.count === 1 && (
                 <Button
                     onClick={finishreg}
                     className={commonClasses.button}

@@ -95,23 +95,6 @@ export interface MainData {
     channels: ListChannels;
 }
 
-const defaultListChannels: ListChannels = {
-    facebook: undefined,
-    instagram: undefined,
-    instagramDM: undefined,
-    messenger: undefined,
-    whatsapp: undefined,
-    telegram: undefined,
-    twitter: undefined,
-    twitterDM: undefined,
-    chatWeb: undefined,
-    email: undefined,
-    phone: undefined,
-    sms: undefined,
-    android: undefined,
-    apple: undefined,
-};
-
 export const SubscriptionContext = createContext<Subscription>({
     FBButtonStyles: {},
     commonClasses: {} as any,
@@ -348,7 +331,11 @@ export function useChannelsCount() {
     }) as ListChannels;
     return useMemo(() => {
         console.log('useChannelsCount useMemo')
-        return Object.keys(channels).length;
+        const keys = Object.keys(channels);
+        return {
+            count: keys.length,
+            hasChannel: (option: keyof ListChannels) => keys.includes(option),
+        };
     }, [channels]);
 }
 

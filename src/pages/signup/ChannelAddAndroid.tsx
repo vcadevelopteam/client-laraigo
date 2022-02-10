@@ -140,7 +140,7 @@ export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = (
                     </div>
                 </div>
             </div> */}
-            {selectedChannels === 1 && (
+            {selectedChannels.count === 1 && (
                 <Button
                     onClick={finishreg}
                     className={commonClasses.button}

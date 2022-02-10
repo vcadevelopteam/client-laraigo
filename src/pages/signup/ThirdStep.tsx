@@ -1,10 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useContext, useState } from "react";
-import { makeStyles, Button, Typography, Paper } from '@material-ui/core';
+import { FC, useContext } from "react";
+import { makeStyles, Typography, Paper } from '@material-ui/core';
 import { langKeys } from "lang/keys";
 import { Trans } from "react-i18next";
 import clsx from "clsx";
-import EmailIcon from '@material-ui/icons/Email';
 import { ControlPoint as ControlPointIcon } from "@material-ui/icons";
 import {
     LaraigoLogo,
@@ -19,8 +18,6 @@ import {
     WhatsappColor,
     TwitterColor,
 } from "icons";
-import SmsIcon from '@material-ui/icons/Sms';
-import { useSelector } from "hooks";
 import { ListChannels, SubscriptionContext, useChannelsCount, usePlanData } from "./context";
 
 interface ChannelOption {
@@ -59,8 +56,6 @@ const useChannelAddStyles = makeStyles(theme => ({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        // justifyContent: 'center', // altera el scroll vertical
-        // transform: 'translateY(-20px)',
     },
     content: {
         flexGrow: 1,
@@ -106,6 +101,7 @@ const ThirdStep: FC = () => {
     const listchannels: any = {}
     const planData = usePlanData();
     const classes = useChannelAddStyles();
+    const { hasChannel } = useChannelsCount();
     const socialMediaOptions: ChannelOption[] = [
         {
             icon: <FacebookMessengerColor className={classes.icon} />,
@@ -114,7 +110,7 @@ const ThirdStep: FC = () => {
             onClick: () => {
                 toggleChannel('messenger');
             },
-            selected: listchannels.messenger
+            selected: hasChannel('messenger'),
         },
         {
             icon: <WhatsappColor className={classes.icon} />,
@@ -380,9 +376,9 @@ const Option: FC<{ option: ChannelOption, selected: Boolean, index: number }> = 
 }) => {
     const classes = useOptionClasses();
     const planData = usePlanData();
-    const selectedChannels = useChannelsCount();
+    const { count } = useChannelsCount();
 
-    const reachedLimit = planData.plan!.limitChannels <= selectedChannels;
+    const reachedLimit = planData.plan!.limitChannels <= count;
     const withOpacity = reachedLimit && !selected;
 
     return (

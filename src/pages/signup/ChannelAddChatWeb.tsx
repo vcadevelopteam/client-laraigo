@@ -1790,7 +1790,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
                 >
                     <Trans i18nKey={langKeys.next} />
                 </Button>
-            ) : selectedChannels === 1 && (
+            ) : selectedChannels.count === 1 && (
                 <Button
                     onClick={finishreg}
                     className={commonClasses.button}

@@ -288,7 +288,7 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
                 >
                     <Trans i18nKey={langKeys.next} />
                 </Button>
-            ) : selectedChannels === 1 && (
+            ) : selectedChannels.count === 1 && (
                 <Button
                     onClick={finishreg}
                     className={commonClasses.button}

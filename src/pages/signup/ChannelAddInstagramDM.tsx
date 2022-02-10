@@ -204,7 +204,7 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
                     }}
                     isDisabled={mainResult.loading}
                 />
-            ) : selectedChannels === 1 && (
+            ) : selectedChannels.count === 1 && (
                 <Button
                     onClick={finishreg}
                     className={commonClasses.button}
