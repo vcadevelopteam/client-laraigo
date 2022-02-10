@@ -471,7 +471,7 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
 
     return {
         ...state,
-        triggerNewMessageClient: !state.triggerNewMessageClient,
+        triggerNewMessageClient: state.ticketSelected?.conversationid === data.conversationid ? !state.triggerNewMessageClient : state.triggerNewMessageClient,
         ticketList: {
             ...state.ticketList,
             data: newticketList
