@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useEffect} from "react";
 import {GoogleMap,useLoadScript,Marker,InfoWindow,getDetails
 } from "@react-google-maps/api";
 import usePlacesAutocomplete, {getGeocode,getLatLng,
@@ -100,28 +100,67 @@ export default function Map() {
     googleMapsApiKey: "AIzaSyCBij6DbsB8SQC_RRKm3-X07RLmvQEnP9w",
     libraries,
   });
+  const [directionData, setDirectionData] = React.useState({
+    department: "",
+    province: "",
+    district: "",
+    zone: "",
+    zipcode: "",
+    extra: "",
+    street: "",
+    streetNumber: "",
+    movedmarker: false,
+    generalAdress: ""
+  });
   const [marker, setMarker] = React.useState({
     lat: -12.164043457451433,
     lng: -76.98795506382666,
     time: new Date(),
   });
   const [selected, setSelected] = React.useState(null);
-  const [directionData, setDirectionData] = React.useState({
-    department: "",
-    province: "",
-    district: "",
-    zone: "",
-    postalcode: "",
-    extra: ""
-  });
+  function cleanDataAddres(r) {
+    const street_number = r.find(x => x.types.includes("street_number"));
+    const postal_code = r.find(x => x.types.includes("postal_code"));
+    const route = r.find(x => x.types.includes("route"));
+    const administrative_area_level_1 = r.find(x => x.types.includes("administrative_area_level_1"));
+    const administrative_area_level_2 = r.find(x => x.types.includes("administrative_area_level_2"));
+    const locality = r.find(x => x.types.includes("locality"));
+    const sublocality_level_1 = r.find(x => x.types.includes("sublocality_level_1"));
 
-  const onMapClick = React.useCallback((e) => {
+    setDirectionData((prev)=>({...prev, 
+      department: administrative_area_level_1 ? administrative_area_level_1.long_name : "", 
+      province: administrative_area_level_2 ? administrative_area_level_2.long_name : "", 
+      district: locality ? locality.long_name : "", 
+      zone: sublocality_level_1 ? sublocality_level_1.long_name : "", 
+      zipcode: postal_code ? postal_code.long_name : "",
+      street: route ? route.long_name : "", 
+      streetNumber: street_number ? street_number.long_name : "",
+    }))
+  }
+  async function onMapClick(e){
+    const urltosearch = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${e.latLng.lat()},${e.latLng.lng()}&key=AIzaSyCBij6DbsB8SQC_RRKm3-X07RLmvQEnP9w`;
+    const response = await fetch(urltosearch, {
+        method: 'GET',
+    });
+    if (response.ok) {
+        try {
+            const r = await response.json();
+            if (r.status === "OK" && r.results && r.results instanceof Array && r.results.length > 0) {
+                console.log('ddd', r.results[0].formatted_address);
+                cleanDataAddres(r.results[0].address_components);
+                setDirectionData((prev)=>({...prev, 
+                  movedmarker: true,
+                  generalAdress: r.results[0].formatted_address
+                }))
+            }
+        } catch (e) { }
+    }
     setMarker({
         lat: e.latLng.lat(),
         lng: e.latLng.lng(),
         time: new Date(),
       });
-  }, []);
+  }
 
   const mapRef = React.useRef();
   const onMapLoad = React.useCallback((map) => {
@@ -154,12 +193,12 @@ export default function Map() {
           }}
         />
       </GoogleMap>	  
-      <Search panTo={panTo} setMarker={setMarker} />
+      <Search panTo={panTo} setMarker={setMarker} directionData={directionData} setDirectionData={setDirectionData} cleanDataAddres={cleanDataAddres}/>
     </div>
   );
 }
 
-function Search({ panTo,setMarker}) {
+function Search({ panTo,setMarker,directionData, setDirectionData, cleanDataAddres}) {
     const classes = useStyles();
     const { t } = useTranslation();
 	const {
@@ -178,65 +217,25 @@ function Search({ panTo,setMarker}) {
   // https://developers.google.com/maps/documentation/javascript/reference/places-autocomplete-service#AutocompletionRequest
 
 	const handleInput = (e) => {
+    console.log(e.target.value)
 		setValue(e.target.value);
 	};
-  
-  const [directionData, setDirectionData] = React.useState({
-    department: "",
-    province: "",
-    district: "",
-    zone: "",
-    postalcode: "",
-    extra: "",
-    street: "",
-    streetnumber: ""
-  });
-
+  useEffect(() => {
+    if(directionData.movedmarker){
+      setDirectionData((prev)=>({...prev, 
+        movedmarker: false
+      }))
+      setValue(directionData.generalAdress)
+    }
+  }, [directionData.movedmarker]);
 	const handleSelect = async (address) => {
 		setValue(address, false);
 		clearSuggestions();
-    /*setDirectionData((prev)=>({...prev,
-      department: "",
-      province: "",
-      district: "",
-    }))*/
 		try {
 		const results = await getGeocode({ address });
-    let dpd = {
-      department: "",
-      province: "",
-      district: "",
-      zone: "",
-      postalcode: "",
-    }
 		const { lat, lng } = await getLatLng(results[0]);
     if(results){
-      console.log(results)
-      results[0].address_components.forEach(x=>{
-        if(x.types.includes("administrative_area_level_1")){
-          dpd.department = x.long_name
-        }
-        if(x.types.includes("administrative_area_level_2")){
-          dpd.province = x.long_name
-        }
-        if(x.types.includes("locality")){
-          dpd.district = x.long_name
-        }
-        if(x.types.includes("sublocality")){
-          dpd.zone = x.long_name
-        }
-        if(x.types.includes("postal_code")){
-          dpd.postalcode = x.long_name
-        }
-        if(x.types.includes("street_number")){
-          dpd.streetnumber = x.long_name
-        }
-        if(x.types.includes("route")){
-          dpd.street = x.long_name
-        }
-      })
-      setDirectionData((prev)=>({...prev, department: dpd.department, province: dpd.province, district: dpd.district, zone:dpd.zone, postalcode: dpd.postalcode,
-      street: dpd.street, streetnumber: dpd.streetnumber}))
+      cleanDataAddres(results[0].address_components)
     }
     setMarker({
       lat: lat,
@@ -290,10 +289,10 @@ function Search({ panTo,setMarker}) {
 			</div>
 			<div className="row-zyx" style={{ marginBottom: "0px"}}>
 				<TextField label={t(langKeys.street)} variant="outlined" className="col-6" value={directionData.street} onChange={(e)=>{setDirectionData((prev)=>({...prev, street: e.target.value}))}}/>
-				<TextField label={`N° ${t(langKeys.street)}`} variant="outlined" className="col-6" value={directionData.streetnumber} onChange={(e)=>{setDirectionData((prev)=>({...prev, streetnumber: e.target.value}))}}/>
+				<TextField label={`N° ${t(langKeys.street)}`} variant="outlined" className="col-6" value={directionData.streetNumber} onChange={(e)=>{setDirectionData((prev)=>({...prev, streetNumber: e.target.value}))}}/>
 			</div>
 			<div className="row-zyx" style={{ marginBottom: "0px"}}>
-				<TextField label={t(langKeys.postalcode)} variant="outlined" className="col-6" value={directionData.postalcode} onChange={(e)=>{setDirectionData((prev)=>({...prev, postalcode: e.target.value}))}}/>
+				<TextField label={t(langKeys.postalcode)} variant="outlined" className="col-6" value={directionData.zipcode} onChange={(e)=>{setDirectionData((prev)=>({...prev, zipcode: e.target.value}))}}/>
 			</div>
 			<div className="row-zyx" style={{ marginBottom: "0px"}}>
 				<TextField label={t(langKeys.extraInformation)} multiline variant="outlined" style={{width:"100%"}} maxRows={4}  value={directionData.extra} onChange={(e)=>{setDirectionData((prev)=>({...prev, extra: e.target.value}))}}/>
