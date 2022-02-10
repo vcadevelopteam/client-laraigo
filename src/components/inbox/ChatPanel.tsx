@@ -253,7 +253,7 @@ const DialogCloseticket: React.FC<{
             if (!changeStatusRes.loading && !changeStatusRes.error) {
 
                 dispatch(showSnackbar({ show: true, success: true, message: status === "SUSPENDIDO" ? t(langKeys.successful_suspend_ticket) : t(langKeys.successful_reactivate_ticket) }))
-                dispatch(changeStatusTicket(ticketSelected?.conversationid!!, status));
+                // dispatch(changeStatusTicket(ticketSelected?.conversationid!!, status));
 
                 dispatch(emitEvent({
                     event: 'changeStatusTicket',
