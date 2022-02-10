@@ -774,7 +774,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         <FieldView
                             className="col-6"
                             label={t(langKeys.numberofactiveadvisers)}
-                            value={String(getValues("asesorquantity"))}
+                            value={String(getValues("userquantity"))}
                         />
                     </div>
                     <div className="row-zyx">
@@ -786,7 +786,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         <FieldView
                             className="col-6"
                             label={t(langKeys.numberofactiveagents)}
-                            value={String(getValues("userquantity"))}
+                            value={String(getValues("asesorquantity"))}
                         />
                     </div>
                     <div className="row-zyx">
@@ -1562,7 +1562,7 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                                     </StyledTableRow>
                                     <StyledTableRow>
                                         <StyledTableCell >
-                                            <div><b>{t(langKeys.agent_plural)}</b></div>
+                                            <div><b>{t(langKeys.agents_plural)}</b></div>
                                             <div>{t(langKeys.contracted)}</div>
                                             <div>{t(langKeys.additional)}</div>
                                         </StyledTableCell>
