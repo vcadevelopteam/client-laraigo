@@ -562,10 +562,10 @@ export const insCorp = ({ id, description, type, status, logo, logotype, operati
     key: "UFN_CORP_INS",
     parameters: { companysize: null, id, description, type, status, logo, logotype, operation, paymentplanid, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, billbyorg,credittype,paymentmethod }
 });
-export const insOrg = ({ corpid, description, status, type, id, operation, currency, email = "", password = "", port = 0, host, ssl, default_credentials, private_mail, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, iconbot = "", iconadvisor="", iconclient="", credittype="" }: Dictionary): IRequestBody => ({
+export const insOrg = ({ corpid, description, status, type, id, operation, currency, email = "", password = "", port = 0, host, ssl, default_credentials, private_mail, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, iconbot = "", iconadvisor="", iconclient="", credittype="", timezone, timezoneoffset }: Dictionary): IRequestBody => ({
     method: "UFN_ORG_INS",
     key: "UFN_ORG_INS",
-    parameters: { corpid, id, description, status, type, operation, currency, email, password, port: parseInt(port), host, ssl, default_credentials, private_mail, country: null, timezoneoffset: null, timezone: null, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice,iconbot,iconadvisor, iconclient,credittype }
+    parameters: { corpid, id, description, status, type, operation, currency, email, password, port: parseInt(port), host, ssl, default_credentials, private_mail, country: null, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice,iconbot,iconadvisor, iconclient,credittype, timezone, timezoneoffset }
 });
 
 export const insQuickreplies = ({ id, classificationid, description, quickreply, status, type, operation, favorite }: Dictionary): IRequestBody => ({
@@ -574,6 +574,11 @@ export const insQuickreplies = ({ id, classificationid, description, quickreply,
     parameters: { id, classificationid, description, quickreply, status, type, operation, favorite }
 });
 
+export const getTimeZoneSel = () => ({
+    method: "UFN_TIMEZONE_SEL",
+    key: "UFN_TIMEZONE_SEL",
+    parameters: { }
+})
 export const getClassificationSel = (id: number): IRequestBody => ({
     method: "UFN_CLASSIFICATION_SEL",
     key: "UFN_CLASSIFICATION_SEL",

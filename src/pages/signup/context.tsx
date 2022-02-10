@@ -204,7 +204,6 @@ export const SubscriptionProvider: FC = ({ children }) => {
         billingcontact: "",
         billingcontactmail: "",
         autosendinvoice: true,
-
         companysize: "",
         industry: "",
         rolecompany: "",
@@ -321,7 +320,9 @@ export const SubscriptionProvider: FC = ({ children }) => {
                 rolecompany: mainData.rolecompany,
                 paymentplanid: planData.data[0].paymentplanid,
                 paymentplan: planData.data[0].plan,
-                sunatcountry: "",
+                sunatcountry: mainData.country,
+                timezoneoffset: (new Date().getTimezoneOffset() / 60) * -1,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
             },
             channellist: requestchannels,
         }

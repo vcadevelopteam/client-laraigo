@@ -829,6 +829,7 @@ const translation: LangKeys = {
     column_at_least_required: 'Debe registrar al menos una columna.',
     report_designer: 'Diseñador de reportes',
     column_plural: 'Columnas',
+    timezone: "Zona horaria",
     new_report_designer: 'Nuevo reporte',
     designed_reports: 'Reportes personalizados',
     filters: 'Filtros',
