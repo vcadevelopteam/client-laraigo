@@ -84,6 +84,7 @@ const AccountMenu: FC = () => {
         history.push('/sign-in');
     }
     const gotoSettings = () => {
+        setAnchorEl(null);
         history.push('/usersettings');
     }
     const openprivacypolicies = () => {

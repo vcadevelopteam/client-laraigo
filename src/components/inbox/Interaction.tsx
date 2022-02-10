@@ -249,7 +249,8 @@ const PickerInteraction: React.FC<{ userType: string, fill?: string }> = ({ user
 
 const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userType: string }> = ({ interaction: { interactiontype, interactiontext, listImage, indexImage, createdate, onlyTime }, classes, userType }) => {
     const dispatch = useDispatch();
-
+    if (!interactiontext.trim() || interactiontype === "typing")
+        return null;
     if (interactiontype === "text")
         return (
             <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
