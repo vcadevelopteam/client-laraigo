@@ -1497,7 +1497,7 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                                 disabled={resExportData.loading}
                                 onClick={() => triggerExportDataUser()}
                                 startIcon={<DownloadIcon />}
-                            >{`${t(langKeys.report)} ${t(langKeys.agent_plural)}`}
+                            >{`${t(langKeys.report)} ${t(langKeys.agents_plural)}`}
                             </Button>
                             <Button
                                 className={classes.button}
