@@ -253,6 +253,7 @@ function Search({ panTo,setMarker,directionData, setDirectionData, cleanDataAddr
     const dispatch = useDispatch();
     
   async function sendData(){
+    setdisabled(true)
     dispatch(getLocations(
       {
         lon:marker.lng,
@@ -261,8 +262,12 @@ function Search({ panTo,setMarker,directionData, setDirectionData, cleanDataAddr
       }))
   }
   useEffect(() => {
-    console.log(getlocationdata)
+    if(getlocationdata.getLocations.success){
+      console.log(getlocationdata)
+      window.close();
+    }
   }, [getlocationdata]);
+  
 	const {
 		ready,
 		value,
@@ -275,6 +280,7 @@ function Search({ panTo,setMarker,directionData, setDirectionData, cleanDataAddr
 		radius: 100 * 1000,
 		},
 	});
+  const [disabled, setdisabled] = React.useState(false);
 
   // https://developers.google.com/maps/documentation/javascript/reference/places-autocomplete-service#AutocompletionRequest
 
@@ -292,6 +298,10 @@ function Search({ panTo,setMarker,directionData, setDirectionData, cleanDataAddr
   }, [directionData.movedmarker]);
 	const handleSelect = async (address) => {
 		setValue(address, false);
+    
+    setDirectionData((prev)=>({...prev, 
+      searchLocation: address
+    }))
 		clearSuggestions();
 		try {
 		const results = await getGeocode({ address });
@@ -364,6 +374,7 @@ function Search({ panTo,setMarker,directionData, setDirectionData, cleanDataAddr
 					type="button"
 					color="primary"
           onClick={()=>sendData()}
+          disabled={disabled}
 					style={{ backgroundColor: "#eb002b" }}
 				>{t(langKeys.send)}</Button>
 			</div>
