@@ -417,8 +417,10 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
         if (data.newConversation) {
             newAgentList = newAgentList.map(x => x.userid === data.userid ? {
                 ...x,
-                countAnswered: x.countAnswered + (data.userid === 2 ? 1 : (data.isAnswered ? 1 : 0)),
-                countNotAnswered: (x.countNotAnswered || 0) + (data.userid === 2 ? 0 : (data.isAnswered ? 0 : 1)),
+                countAnswered: (data.status === "ASIGNADO") ? (x.countAnswered + (data.userid === 2 ? 1 : (data.isAnswered ? 1 : 0))) : x.countAnswered,
+                countNotAnswered: (data.status === "ASIGNADO") ? ((x.countNotAnswered || 0) + (data.userid === 2 ? 0 : (data.isAnswered ? 0 : 1))) : x.countNotAnswered,
+
+                countPaused: (data.status === "SUSPENDIDO") ? x.countPaused + 1 : x.countPaused
             } : x)
         } else if (data.usertype === "agent" && data.ticketWasAnswered) {
             newAgentList = newAgentList.map(x => x.userid === data.userid ? {
@@ -500,7 +502,7 @@ export const changeStatusTicketWS = (state: IState, action: IAction): IState => 
     const { agentList: { data }, userType } = state;
 
     if (userType === 'SUPERVISOR') {
-        debugger
+        
         newAgentList = data.map(x => x.userid === userid ? {
             ...x,
             countPaused: status === "SUSPENDIDO" ? x.countPaused + 1 : x.countPaused - 1,

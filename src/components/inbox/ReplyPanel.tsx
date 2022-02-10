@@ -461,7 +461,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const [showReply, setShowReply] = useState(true);
 
     useEffect(() => {
-        if (ticketSelected?.status === "CERRADO")
+        if (ticketSelected?.status !== "ASIGNADO")
             setShowReply(false);
         else if (channelsWhatsapp.includes(ticketSelected!!.communicationchanneltype)) {
             const hoursWaiting = getSecondsUntelNow(convertLocalDate(ticketSelected?.personlastreplydate)) / 3600;

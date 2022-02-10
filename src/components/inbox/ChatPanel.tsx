@@ -358,7 +358,10 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     const agentToReassignList = useSelector(state => state.inbox.agentToReassignList);
     const userType = useSelector(state => state.inbox.userType);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
+
     const reassigningRes = useSelector(state => state.inbox.triggerReassignTicket);
+    
+    const interactionBaseList = useSelector(state => state.inbox.interactionBaseList);
 
     const { register, handleSubmit, setValue, getValues, trigger, reset, formState: { errors } } = useForm<{
         newUserId: number;
@@ -367,6 +370,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
         token: string;
     }>();
 
+
     useEffect(() => {
         if (waitReassign) {
             if (!reassigningRes.loading && !reassigningRes.error) {
@@ -374,6 +378,8 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitReassign(false);
+                
+                const isAnsweredNew = interactionBaseList.some((x) => x.userid === (getValues('newUserId') || 3) && x.interactiontype !== "LOG");
 
                 dispatch(emitEvent({
                     event: 'reassignTicket',
@@ -381,6 +387,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                         ...ticketSelected,
                         usergroup: getValues('newUserGroup'),
                         isanswered: ticketSelected?.isAnswered,
+                        isAnsweredNew,
                         userid: userType === "AGENT" ? 0 : agentSelected?.userid,
                         newuserid: getValues('newUserId') || 3,
                     }

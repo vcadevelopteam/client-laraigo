@@ -95,7 +95,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
         nameassociatednumber: "",
     });
     const classes = useChannelAddStyles();
-    const type = provider === "DIALOG" ? "WHATSAPP" : "WHATSAPPSMOOCH";
+    const type = provider === "DIALOG" ? "WHATSAPPSMOOCH" : "WHATSAPPSMOOCH";
     const [fields, setFields] = useState({
         "method": "UFN_COMMUNICATIONCHANNEL_INS",
         "parameters": {
@@ -357,13 +357,10 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                     <Button
                         // onClick={() => { checkissues() }}
                         onClick={() => {
-                            if (provider === "DIALOG") {
-                                setView("view3");
-                            } else {
-                                setView("view1");
-                                setHasFinished(true);
-                                setConfirmations(prev => prev++);
-                            }
+                            // setViewSelected("viewfinishreg")
+                            setView("view1");
+                            setHasFinished(true);
+                            setConfirmations(prev => prev++);
                         }}
                         className={classes.button2}
                         disabled={disablebutton}
@@ -376,7 +373,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
             </div>
         );
     }
-    else if (viewSelected === "view3" && provider === "DIALOG") {
+    else if (viewSelected === "view3") {
         return (<div style={{ marginTop: "auto", marginBottom: "auto", maxHeight: "100%" }}>
             <Breadcrumbs aria-label="breadcrumb">
                 <Link
