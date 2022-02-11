@@ -29,6 +29,7 @@ export const langKeys = {
     billingmail: "billingmail",
     typecredit_15: "typecredit_15",
     typecredit_30: "typecredit_30",
+    showmore: "Show more",
     typecredit_45: "typecredit_45",
     typecredit_60: "typecredit_60",
     typecredit_90: "typecredit_90",

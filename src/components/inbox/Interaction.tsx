@@ -7,6 +7,8 @@ import Fab from '@material-ui/core/Fab';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
+import { langKeys } from 'lang/keys';
 import { useSelector } from 'hooks';
 import { manageLightBox } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
@@ -249,6 +251,9 @@ const PickerInteraction: React.FC<{ userType: string, fill?: string }> = ({ user
 
 const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userType: string }> = ({ interaction: { interactiontype, interactiontext, listImage, indexImage, createdate, onlyTime }, classes, userType }) => {
     const dispatch = useDispatch();
+    const { t } = useTranslation();
+    const [texttoshow,settexttoshow] = useState(interactiontext.length>450?interactiontext.substring(0,450) + "... ":interactiontext)
+    const [display,setdisplay] = useState(interactiontext.length>450?"contents":"none")
     if (!interactiontext.trim() || interactiontype === "typing")
         return null;
     if (interactiontype === "text")
@@ -256,7 +261,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
                 [classes.interactionTextAgent]: userType !== 'client',
             })}>
-                {interactiontext}
+                {texttoshow}<div style={{color:"#53bdeb", display: display, cursor: "pointer"}}  onClick={() => {settexttoshow(interactiontext);setdisplay("none")}}>{t(langKeys.showmore)}</div>
                 <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
             </div>
@@ -332,7 +337,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
                 [classes.interactionTextAgent]: userType !== 'client',
             })} style={{ backgroundColor: '#84818A', color: 'white' }}>
-                {interactiontext}
+                {texttoshow}<div style={{color:"#53bdeb", display: display, cursor: "pointer"}}  onClick={() => {settexttoshow(interactiontext);setdisplay("none")}}>{t(langKeys.showmore)}</div>
                 <PickerInteraction userType={userType!!} fill="#84818A" />
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} background={true} time={onlyTime || ""} />
             </div>
