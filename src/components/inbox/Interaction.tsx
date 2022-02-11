@@ -261,7 +261,11 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
                 [classes.interactionTextAgent]: userType !== 'client',
             })}>
-                {showfulltext?interactiontext:interactiontext.substring(0,450) + "... "}<div style={{color:"#53bdeb", display: showfulltext?"none":"contents", cursor: "pointer"}}  onClick={() => setshowfulltext(true)}>{t(langKeys.showmore)}</div>
+                {showfulltext?interactiontext:interactiontext.substring(0,450) + "... "}
+                {!showfulltext && (
+                        <div style={{color:"#53bdeb", display:"contents", cursor: "pointer"}}  onClick={() => setshowfulltext(true)}>{t(langKeys.showmore)}</div>
+                    )
+                }
                 <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
             </div>
@@ -337,7 +341,11 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
                 [classes.interactionTextAgent]: userType !== 'client',
             })} style={{ backgroundColor: '#84818A', color: 'white' }}>
-                {showfulltext?interactiontext:interactiontext.substring(0,450) + "... "}<div style={{color:"#53bdeb", display: showfulltext?"none":"contents", cursor: "pointer"}}  onClick={() => setshowfulltext(true)}>{t(langKeys.showmore)}</div>
+                {showfulltext?interactiontext:interactiontext.substring(0,450) + "... "}
+                {!showfulltext && (
+                        <div style={{color:"#53bdeb", display:"contents", cursor: "pointer"}}  onClick={() => setshowfulltext(true)}>{t(langKeys.showmore)}</div>
+                    )
+                }
                 <PickerInteraction userType={userType!!} fill="#84818A" />
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} background={true} time={onlyTime || ""} />
             </div>
