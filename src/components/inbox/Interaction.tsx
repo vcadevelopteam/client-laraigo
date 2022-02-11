@@ -252,8 +252,8 @@ const PickerInteraction: React.FC<{ userType: string, fill?: string }> = ({ user
 const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userType: string }> = ({ interaction: { interactiontype, interactiontext, listImage, indexImage, createdate, onlyTime }, classes, userType }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const [texttoshow,settexttoshow] = useState(interactiontext.length>450?interactiontext.substring(0,450) + "... ":interactiontext)
-    const [display,setdisplay] = useState(interactiontext.length>450?"contents":"none")
+    const [showfulltext,setshowfulltext] = useState(interactiontext.length<=450)
+
     if (!interactiontext.trim() || interactiontype === "typing")
         return null;
     if (interactiontype === "text")
@@ -261,7 +261,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
                 [classes.interactionTextAgent]: userType !== 'client',
             })}>
-                {texttoshow}<div style={{color:"#53bdeb", display: display, cursor: "pointer"}}  onClick={() => {settexttoshow(interactiontext);setdisplay("none")}}>{t(langKeys.showmore)}</div>
+                {showfulltext?interactiontext:interactiontext.substring(0,450) + "... "}<div style={{color:"#53bdeb", display: showfulltext?"none":"contents", cursor: "pointer"}}  onClick={() => setshowfulltext(true)}>{t(langKeys.showmore)}</div>
                 <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
             </div>
@@ -337,7 +337,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
                 [classes.interactionTextAgent]: userType !== 'client',
             })} style={{ backgroundColor: '#84818A', color: 'white' }}>
-                {texttoshow}<div style={{color:"#53bdeb", display: display, cursor: "pointer"}}  onClick={() => {settexttoshow(interactiontext);setdisplay("none")}}>{t(langKeys.showmore)}</div>
+                {showfulltext?interactiontext:interactiontext.substring(0,450) + "... "}<div style={{color:"#53bdeb", display: showfulltext?"none":"contents", cursor: "pointer"}}  onClick={() => setshowfulltext(true)}>{t(langKeys.showmore)}</div>
                 <PickerInteraction userType={userType!!} fill="#84818A" />
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} background={true} time={onlyTime || ""} />
             </div>
