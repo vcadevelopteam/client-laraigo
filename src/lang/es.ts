@@ -817,6 +817,7 @@ const translation: LangKeys = {
     newsla: "Nuevo acuerdo de nivel de servicio",
     newwhitelist: "Nueva whitelist",
     registervalue: "Registrar valor",
+    showmore: "Mostrar más",
     newcorporation: "Nueva Corporación",
     neworganization: "Nueva organización",
     newiaservice: "Nuevo Servicio IA",
