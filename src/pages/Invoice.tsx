@@ -530,6 +530,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
             freewhatsappchannel: row?.freewhatsappchannel||0,
             freewhatsappconversations: row?.freewhatsappconversations||0,
             usercreateoverride: row?.usercreateoverride || false,
+            vcacomissionperconversation: row?.vcacomissionperconversation || 0,
         }
     });
 
@@ -570,6 +571,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
         register('freewhatsappchannel', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
         register('freewhatsappconversations');
         register('usercreateoverride');
+        register('vcacomissionperconversation');
     }, [edit, register]);
 
     useEffect(() => {
@@ -972,6 +974,11 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         />
                     </div>
                     <div className="row-zyx">
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.billingvcacomission)}
+                            value={formatNumberFourDecimals(getValues("vcacomissionperconversation") || 0)}
+                        />
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationwhatcharge)}
