@@ -94,6 +94,11 @@ export interface TelegramChannel {
     build: (v: Omit<TelegramChannel, 'build'>) => IRequestBody;
 }
 
+export interface MobileChannel {
+    description: string;
+    build: (v: Omit<MobileChannel, 'build'>) => IRequestBody;
+}
+
 export interface Channels {
     facebook: FacebookChannel;
     instagram: FacebookChannel;
@@ -107,8 +112,8 @@ export interface Channels {
     email: any;
     phone: any;
     sms: any;
-    android: any;
-    apple: any;
+    android: MobileChannel;
+    apple: MobileChannel;
 }
 
 export interface MainData {

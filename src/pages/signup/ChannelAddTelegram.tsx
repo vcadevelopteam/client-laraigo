@@ -77,7 +77,11 @@ export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = 
     function setBotKey(val: string) {
         setValue('channels.telegram.accesstoken', val);
         setValue('channels.telegram.communicationchannelowner', "");
-        setHasFinished(true);
+        if (val.length > 0 && !hasFinished) {
+            setHasFinished(true);
+        } else if (val.length === 0 && hasFinished) {
+            setHasFinished(false);
+        }
     }
 
     return (
