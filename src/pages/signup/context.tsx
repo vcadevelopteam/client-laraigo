@@ -87,13 +87,20 @@ export interface TwitterChannel {
     build: (v: Omit<TwitterChannel, 'build'>) => IRequestBody;
 }
 
+export interface TelegramChannel {
+    description: string;
+    accesstoken: string;
+    communicationchannelowner: string;
+    build: (v: Omit<TelegramChannel, 'build'>) => IRequestBody;
+}
+
 export interface Channels {
     facebook: FacebookChannel;
     instagram: FacebookChannel;
     instagramDM: FacebookChannel;
     messenger: FacebookChannel;
     whatsapp: WhatsAppChannel;
-    telegram: any;
+    telegram: TelegramChannel;
     twitter: TwitterChannel;
     twitterDM: TwitterChannel;
     chatWeb: any;
