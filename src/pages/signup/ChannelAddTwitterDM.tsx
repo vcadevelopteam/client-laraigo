@@ -242,7 +242,7 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
                 label={t(langKeys.givechannelname)}
                 variant="outlined"
                 size="small"
-                error={errors.channels?.twitter?.description?.message}
+                error={errors.channels?.twitterDM?.description?.message}
             />
             <FieldEdit
                 onChange={(value) => {
