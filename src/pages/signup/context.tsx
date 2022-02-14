@@ -14,11 +14,13 @@ import paths from 'common/constants/paths';
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 type PlanType = "BASIC" | "PRO" | "PREMIUM" | "ENTERPRISE" | "ADVANCED";
 interface Subscription {
+    selectedChannels: number;
     commonClasses: ReturnType<typeof useStyles>;
     FBButtonStyles: CSSProperties;
     foreground: keyof ListChannels | undefined;
     step: number;
     confirmations: number;
+    listchannels: ListChannels;
     setConfirmations: SetState<number>;
     setStep: SetState<number>;
     finishreg: () => void;
@@ -32,7 +34,7 @@ interface Subscription {
 export interface RouteParams {
     token: PlanType;
 }
-export interface ListChannels2 {
+export interface ListChannels {
     facebook: boolean;
     instagram: boolean;
     instagramDM: boolean;
@@ -49,21 +51,30 @@ export interface ListChannels2 {
     apple: boolean;
 }
 
-export interface ListChannels {
-    facebook?: IRequestBody;
-    instagram?: IRequestBody;
-    instagramDM?: IRequestBody;
-    messenger?: IRequestBody;
-    whatsapp?: IRequestBody;
-    telegram?: IRequestBody;
-    twitter?: IRequestBody;
-    twitterDM?: IRequestBody;
-    chatWeb?: IRequestBody;
-    email?: IRequestBody;
-    phone?: IRequestBody;
-    sms?: IRequestBody;
-    android?: IRequestBody;
-    apple?: IRequestBody;
+export interface FacebookChannel {
+    description: string;
+    communicationchannelsite: string;
+    communicationchannelowner: string;
+    siteid: string;
+    accesstoken: string;
+    build: (v: Omit<FacebookChannel, 'build'>) => IRequestBody;
+}
+
+export interface Channels {
+    facebook: FacebookChannel;
+    instagram?: any;
+    instagramDM?: any;
+    messenger?: any;
+    whatsapp?: any;
+    telegram?: any;
+    twitter?: any;
+    twitterDM?: any;
+    chatWeb?: any;
+    email?: any;
+    phone?: any;
+    sms?: any;
+    android?: any;
+    apple?: any;
 }
 
 export interface MainData {
@@ -92,15 +103,34 @@ export interface MainData {
     companysize: string;
     rolecompany: string;
 
-    channels: ListChannels;
+    channels: Channels;
 }
 
+const defaultListChannels: ListChannels = {
+    facebook: false,
+    instagram: false,
+    instagramDM: false,
+    messenger: false,
+    whatsapp: false,
+    telegram: false,
+    twitter: false,
+    twitterDM: false,
+    chatWeb: false,
+    email: false,
+    phone: false,
+    sms: false,
+    android: false,
+    apple: false,
+};
+
 export const SubscriptionContext = createContext<Subscription>({
+    selectedChannels: 0,
     FBButtonStyles: {},
     commonClasses: {} as any,
     foreground: undefined,
     step: 0,
     confirmations: 0,
+    listchannels: defaultListChannels,
     setConfirmations: () => {},
     setStep: () => {},
     finishreg: () => {},
@@ -168,6 +198,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
     const [waitSave, setWaitSave] = useState(false);
     const [confirmations, setConfirmations] = useState(0);
     const planData = useSelector(state => state.signup.verifyPlan);
+    const [listchannels, setlistchannels] = useState<ListChannels>(defaultListChannels);
     const [foreground, setForeground] = useState<keyof ListChannels | undefined>(undefined);
     const form = useForm<MainData>({
         defaultValues: {
@@ -243,7 +274,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
         }
     }, [executeResult, waitSave, form.getValues, dispatch])
 
-    const deleteChannel = (option: keyof ListChannels) => {
+    /*const deleteChannel = (option: keyof ListChannels) => {
         if (foreground === option) setForeground(undefined);
         form.unregister(`channels.${option}`);
     }
@@ -263,20 +294,59 @@ export const SubscriptionProvider: FC = ({ children }) => {
         }
     }
 
-    const resetChannels = () => form.setValue('channels', {});
+    const resetChannels = () => form.setValue('channels', {});*/
 
-    /*const selectedChannels = useMemo(() => {
-        console.log('selectedChannels useMemo');
-        const channels = form.getValues('channels');
+    const deleteChannel = (option: keyof ListChannels) => {
+        setlistchannels(prev => {
+            const v = prev[option];
+            if (foreground === option) setForeground(undefined);
+            
+            if (v === false) return prev;
+            return {
+                ...prev,
+                [option]: false,
+            };
+        });
+    }
+
+    const addChannel = (option: keyof ListChannels) => {
+        setlistchannels(prev => {
+            const v = prev[option];
+            if (v === true) return prev;
+            return {
+                ...prev,
+                [option]: true,
+            };
+        });
+    }
+
+    const toggleChannel = (option: keyof ListChannels) => {
+        setlistchannels(prev => {
+            const value = !prev[option];
+            if (!value && foreground === option) {
+                setForeground(undefined);
+            }
+            return {
+                ...prev,
+                [option]: value,
+            };
+        });
+    }
+
+    const resetChannels = () => setlistchannels(defaultListChannels);
+
+    const selectedChannels = useMemo(() => {
         return Object.
-            keys(channels).
-            filter(key => channels[key as keyof ListChannels] !== undefined).
+            keys(listchannels).
+            filter(key => listchannels[key as keyof ListChannels] === true).
             length;
-    }, [form.getValues('channels')]);*/
+    }, [form.getValues('channels')]);
 
-    const finishreg = () => form.handleSubmit(onSubmit, onError)
+    const finishreg = () => form.handleSubmit(onSubmit, onError)()
 
     const onSubmit: SubmitHandler<MainData> = (data) => {
+        console.log('success', data);
+        return
         const { channels, ...mainData } = data;
         const majorfield = {
             method: "UFN_CREATEZYXMEACCOUNT_INS",
@@ -294,6 +364,8 @@ export const SubscriptionProvider: FC = ({ children }) => {
     }
 
     const onError: SubmitErrorHandler<MainData> = (err) => {
+        console.log('error', err);
+        return
         dispatch(showSnackbar({
             message: "Debe completar el/los canal/es",
             show: true,
@@ -303,10 +375,12 @@ export const SubscriptionProvider: FC = ({ children }) => {
 
     return (
         <SubscriptionContext.Provider value={{
+            selectedChannels,
             commonClasses: classes,
             foreground,
             step,
             confirmations,
+            listchannels,
             setConfirmations,
             setStep,
             finishreg,
@@ -324,20 +398,26 @@ export const SubscriptionProvider: FC = ({ children }) => {
     )
 }
 
-export function useChannelsCount() {
+/*export function useChannelsCount() {
     const channels = useWatch<MainData>({
         name: 'channels',
-        defaultValue: {},
+        defaultValue: undefined,
     }) as ListChannels;
     return useMemo(() => {
         console.log('useChannelsCount useMemo')
+        if (channels === undefined) {
+            return {
+                count: 0,
+                hasChannel: (option: keyof ListChannels) => false,
+            }
+        }
         const keys = Object.keys(channels);
         return {
             count: keys.length,
             hasChannel: (option: keyof ListChannels) => keys.includes(option),
         };
     }, [channels]);
-}
+}*/
 
 interface PlanData {
     loading: boolean;

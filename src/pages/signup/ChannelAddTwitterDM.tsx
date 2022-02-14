@@ -6,7 +6,7 @@ import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
 import { FieldEdit, ColorInput } from "components";
 import { TwitterColor } from "icons";
-import { SubscriptionContext, useChannelsCount } from "./context";
+import { SubscriptionContext } from "./context";
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -22,12 +22,12 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
     const {
         commonClasses,
         foreground,
+        selectedChannels,
         setConfirmations,
         finishreg,
         setForeground,
         deleteChannel,
     } = useContext(SubscriptionContext);
-    const selectedChannels = useChannelsCount();
     const [hasFinished, setHasFinished] = useState(false);
     const [viewSelected, setViewSelected] = useState("view1");
     const [nextbutton, setNextbutton] = useState(true);
@@ -288,7 +288,7 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
                 >
                     <Trans i18nKey={langKeys.next} />
                 </Button>
-            ) : selectedChannels.count === 1 && (
+            ) : selectedChannels === 1 && (
                 <Button
                     onClick={finishreg}
                     className={commonClasses.button}

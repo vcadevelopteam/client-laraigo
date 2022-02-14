@@ -12,7 +12,7 @@ import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { getChannelsListSub } from "store/channel/actions";
 import { apiUrls } from 'common/constants';
-import { SubscriptionContext, useChannelsCount } from "./context";
+import { SubscriptionContext } from "./context";
 interface ChannelAddInstagramProps {
     setOpenWarning: (param: any) => void;
 }
@@ -21,10 +21,10 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
     const {
         commonClasses,
         FBButtonStyles,
+        selectedChannels,
         finishreg,
         deleteChannel,
     } = useContext(SubscriptionContext);
-    const selectedChannels = useChannelsCount();
     const [waitSave, setWaitSave] = useState(false);
     const [hasFinished, setHasFinished] = useState(false)
     const [pageLink, setPageLink] = useState("");
@@ -57,7 +57,9 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
             "appid": apiUrls.INSTAGRAMAPP
         }
     })
-
+    useEffect(() => {
+        console.log("INSTRAGRASM")
+    }, []);
     useEffect(() => {
         if (waitSave) {
             dispatch(showBackdrop(false));
@@ -207,7 +209,7 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
                     }}
                     isDisabled={mainResult.loading}
                 />
-            ) : selectedChannels.count === 1 && (
+            ) : selectedChannels === 1 && (
                 <Button
                     onClick={finishreg}
                     className={commonClasses.button}

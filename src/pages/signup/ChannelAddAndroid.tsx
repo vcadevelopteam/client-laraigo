@@ -6,7 +6,7 @@ import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
 import { ColorInput, FieldEdit, } from "components";
 import { AndroidColor } from "icons";
-import { SubscriptionContext, useChannelsCount } from "./context";
+import { SubscriptionContext } from "./context";
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -21,10 +21,10 @@ const useChannelAddStyles = makeStyles(theme => ({
 export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
     const {
         commonClasses,
+        selectedChannels,
         finishreg,
         deleteChannel,
     } = useContext(SubscriptionContext);
-    const selectedChannels = useChannelsCount();
     const [hasFinished, setHasFinished] = useState(false)
     const [channelName, setChannelName] = useState("");
     const { t } = useTranslation();
@@ -140,7 +140,7 @@ export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = (
                     </div>
                 </div>
             </div> */}
-            {selectedChannels.count === 1 && (
+            {selectedChannels === 1 && (
                 <Button
                     onClick={finishreg}
                     className={commonClasses.button}

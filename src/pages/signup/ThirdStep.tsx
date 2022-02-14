@@ -18,7 +18,7 @@ import {
     WhatsappColor,
     TwitterColor,
 } from "icons";
-import { ListChannels, SubscriptionContext, useChannelsCount, usePlanData } from "./context";
+import { ListChannels, SubscriptionContext, usePlanData } from "./context";
 
 interface ChannelOption {
     icon: React.ReactNode;
@@ -97,11 +97,9 @@ const useChannelAddStyles = makeStyles(theme => ({
 }));
 
 const ThirdStep: FC = () => {
-    const { toggleChannel } = useContext(SubscriptionContext);
-    const listchannels: any = {}
+    const { listchannels, toggleChannel } = useContext(SubscriptionContext);
     const planData = usePlanData();
     const classes = useChannelAddStyles();
-    const { hasChannel } = useChannelsCount();
     const socialMediaOptions: ChannelOption[] = [
         {
             icon: <FacebookMessengerColor className={classes.icon} />,
@@ -110,7 +108,7 @@ const ThirdStep: FC = () => {
             onClick: () => {
                 toggleChannel('messenger');
             },
-            selected: hasChannel('messenger'),
+            selected: listchannels.messenger,
         },
         {
             icon: <WhatsappColor className={classes.icon} />,
@@ -120,7 +118,7 @@ const ThirdStep: FC = () => {
                 const type = planData.plan!.provider === "DIALOG" ? "WHATSAPP" : "WHATSAPPSMOOCH";
                 toggleChannel('whatsapp');
             },
-            selected: listchannels.whatsapp
+            selected: listchannels.whatsapp,
         },
         {
             icon: <FacebookColor className={classes.icon} />,
@@ -129,7 +127,7 @@ const ThirdStep: FC = () => {
             onClick: () => {
                 toggleChannel('facebook');
             },
-            selected: listchannels.facebook
+            selected: listchannels.facebook,
         },
         {
             icon: <InstagramColor className={classes.icon} />,
@@ -138,7 +136,7 @@ const ThirdStep: FC = () => {
             onClick: () => {
                 toggleChannel('instagram');
             },
-            selected: listchannels.instagram
+            selected: listchannels.instagram,
         },
         {
             icon: <InstagramColor className={classes.icon} />,
@@ -147,7 +145,7 @@ const ThirdStep: FC = () => {
             onClick: () => {
                 toggleChannel('instagramDM');
             },
-            selected: listchannels.instagramDM
+            selected: listchannels.instagramDM,
         },
     ];
     const businessChannelOptions: ChannelOption[] = [
@@ -156,7 +154,7 @@ const ThirdStep: FC = () => {
             label: 'Chat Web',
             key: 'chatWeb',
             onClick: () => toggleChannel('chatWeb'),
-            selected: listchannels.chatWeb
+            selected: listchannels.chatWeb,
         },
         {
             icon: <TelegramColor className={classes.icon} />,
@@ -165,7 +163,7 @@ const ThirdStep: FC = () => {
             onClick: () => {
                 toggleChannel('telegram');
             },
-            selected: listchannels.telegram
+            selected: listchannels.telegram,
         },
         {
             icon: <TwitterColor className={classes.icon} />,
@@ -174,7 +172,7 @@ const ThirdStep: FC = () => {
             onClick: () => {
                 toggleChannel('twitter');
             },
-            selected: listchannels.twitter
+            selected: listchannels.twitter,
         },
         {
             icon: <TwitterColor className={classes.icon} />,
@@ -183,7 +181,7 @@ const ThirdStep: FC = () => {
             onClick: () => {
                 toggleChannel('twitterDM');
             },
-            selected: listchannels.twitterDM
+            selected: listchannels.twitterDM,
         },
         /*{
             icon: <EmailIcon className={classes.icon} />,
@@ -207,7 +205,7 @@ const ThirdStep: FC = () => {
             onClick: () => {
                 toggleChannel('apple');
             },
-            selected: listchannels.apple
+            selected: listchannels.apple,
         },
         {
             icon: <AndroidColor className={classes.icon} />,
@@ -216,7 +214,7 @@ const ThirdStep: FC = () => {
             onClick: () => {
                 toggleChannel('android');
             },
-            selected: listchannels.android
+            selected: listchannels.android,
         },
     ];
 
@@ -369,16 +367,18 @@ const useOptionClasses = makeStyles(theme => ({
     },
 }));
 
-const Option: FC<{ option: ChannelOption, selected: Boolean, index: number }> = ({
-    option,
-    selected,
-    index,
-}) => {
-    const classes = useOptionClasses();
-    const planData = usePlanData();
-    const { count } = useChannelsCount();
+interface OptionProps {
+    option: ChannelOption;
+    selected: Boolean;
+    index: number;
+}
 
-    const reachedLimit = planData.plan!.limitChannels <= count;
+const Option: FC<OptionProps> = ({ option, selected, index }) => {
+    const classes = useOptionClasses();
+    const { plan } = usePlanData();
+    const { selectedChannels } = useContext(SubscriptionContext);
+
+    const reachedLimit = plan!.limitChannels <= selectedChannels;
     const withOpacity = reachedLimit && !selected;
 
     return (

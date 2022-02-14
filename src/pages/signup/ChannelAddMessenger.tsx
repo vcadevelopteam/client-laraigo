@@ -12,7 +12,7 @@ import { useDispatch } from "react-redux";
 import { getChannelsListSub } from "store/channel/actions";
 import { FacebookMessengerColor } from "icons";
 import { apiUrls } from 'common/constants';
-import { SubscriptionContext, useChannelsCount } from "./context";
+import { SubscriptionContext } from "./context";
 
 interface ChannelAddMessengerProps {
     setOpenWarning:(param:any)=>void;
@@ -22,10 +22,10 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
     const {
         commonClasses,
         FBButtonStyles,
+        selectedChannels,
         finishreg,
         deleteChannel,
     } = useContext(SubscriptionContext);
-    const selectedChannels = useChannelsCount();
     const [pageLink, setPageLink] = useState("");
     const [hasFinished, setHasFinished] = useState(false)
     const [waitSave, setWaitSave] = useState(false);
@@ -206,7 +206,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
                     }}
                     isDisabled={mainResult.loading}
                 />
-            ) : selectedChannels.count === 1 && (
+            ) : selectedChannels === 1 && (
                 <Button
                     onClick={finishreg}
                     className={commonClasses.button}

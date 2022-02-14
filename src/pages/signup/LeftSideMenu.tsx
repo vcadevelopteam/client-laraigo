@@ -13,13 +13,14 @@ import { ChannelAddAndroid } from './ChannelAddAndroid'
 import { ChannelAddIos } from './ChannelAddIos'
 import { Trans, useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
-import { ListChannels, SubscriptionContext, useChannelsCount } from "./context";
+import { ListChannels, MainData, SubscriptionContext } from "./context";
 import { executeSubscription } from "store/signup/actions";
 import { useDispatch } from "react-redux";
 import { showBackdrop } from "store/popus/actions";
 import { useSelector } from "hooks";
 import { useHistory } from "react-router-dom";
 import { showSnackbar } from "store/popus/actions";
+import { useFormContext, useWatch } from "react-hook-form";
 
 const useLeftSideStyles = makeStyles(theme => ({
     root: {
@@ -50,14 +51,15 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
     const classes = useLeftSideStyles();
     const {
         foreground,
+        listchannels,
+        selectedChannels,
         finishreg,
         commonClasses,
-    } = useContext(SubscriptionContext);
-    const selectedChannels = useChannelsCount();
+    } = useContext(SubscriptionContext);  
     const executeResult = useSelector(state => state.signup.insertChannel);
 
-    /*const channels = useMemo(() => {
-        // console.log('useMemo:channels', foreground);
+    const channels = useMemo(() => {
+        console.log('useMemo:channels', foreground);
         // if (foreground !== undefined) {
         //     const result = Object.
         //         keys(listchannels).
@@ -68,35 +70,39 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
         //         return <GetComponent channel={foreground} />;
         //     }
         // }
+        if (listchannels === undefined) {
+            return null;
+        }
 
         return Object
             .keys(listchannels)
             .filter(x => {
-                // if (foreground !== undefined) {
-                //     return (
-                //         listchannels[x as keyof ListChannels] === true &&
-                //         foreground === x
-                //     );
-                // }
+                if (foreground !== undefined) {
+                    return (
+                        listchannels[x as keyof ListChannels] === true &&
+                        foreground === x
+                    );
+                }
 
                 return listchannels[x as keyof ListChannels] === true;
             })
-        // .map((key, i) => (
-        //     <GetComponent
-        //         channel={key as keyof ListChannels}
-        //         key={i}
-        //     />
-        // ));
-    }, [listchannels]);*/
+            .map((key, i) => (
+                <GetComponent
+                    channel={key as keyof ListChannels}
+                    setOpenWarning={setOpenWarning}
+                    key={i}
+                />
+            ));
+    }, [listchannels, foreground]);
 
-   /* const getDisplay = (option: keyof ListChannels): string => {
-        if (foreground !== undefined) {
-            return option === foreground ? 'block' : 'none';
-        }
-
-        return channels.includes(option) ? 'block' : 'none';
-    }*/
-    const getDisplay = (a: any) => 'none';
+    /* const getDisplay = (option: keyof ListChannels): string => {
+         if (foreground !== undefined) {
+             return option === foreground ? 'block' : 'none';
+         }
+ 
+         return channels.includes(option) ? 'block' : 'none';
+     }*/
+    // const getDisplay = (a: any) => 'none';
 
     return (
         <div className={classes.root}>
@@ -116,8 +122,8 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
             )}
             {!foreground && <h1 className={classes.title}>Canal seleccionado</h1>}
             <div className={classes.channelList}>
-                {/* {channels} */}
-                <div style={{ display: getDisplay('facebook') }}>
+                {channels}
+                {/* <div style={{ display: getDisplay('facebook') }}>
                     <ChannelAddFacebook
                         setOpenWarning={setOpenWarning}
                     />
@@ -174,7 +180,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                     <ChannelAddIos
                         setOpenWarning={setOpenWarning}
                     />
-                </div>
+                </div> */}
             </div>
             {(!foreground && selectedChannels > 1) && (
                 <Button
@@ -193,82 +199,63 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
     );
 }
 
-/**
- * const GetComponent: FC<{ channel: keyof ListChannels }> = ({ channel: key }) => {
-        switch (key as keyof ListChannels) {
-            case 'facebook':
-                return (
-                    <ChannelAddFacebook
-                        setOpenWarning={setOpenWarning}
-                    />
-                );
-            case 'instagram':
-                return (
-                    <ChannelAddInstagram
-                        setOpenWarning={setOpenWarning}
-                    />
-                );
-            case 'instagramDM':
-                return (
-                    <ChannelAddInstagramDM
-                        setOpenWarning={setOpenWarning}
-                    />
-                );
-            case 'messenger':
-                return (
-                    <ChannelAddMessenger
-                        setOpenWarning={setOpenWarning}
-                    />
-                );
-            case 'whatsapp':
-                return (
-                    <ChannelAddWhatsapp
-                        setOpenWarning={setOpenWarning}
-                    />
-                );
-            case 'telegram':
-                return (
-                    <ChannelAddTelegram
-                        setOpenWarning={setOpenWarning}
-                    />
-                );
-            case 'twitter':
-                return (
-                    <ChannelAddTwitter
-                        setOpenWarning={setOpenWarning}
-                    />
-                );
-            case 'twitterDM':
-                return (
-                    <ChannelAddTwitterDM
-                        setOpenWarning={setOpenWarning}
-                    />
-                );
-            case 'chatWeb':
-                return (
-                    <ChannelAddChatWeb
-                        setOpenWarning={setOpenWarning}
-                    />
-                );
-            case 'email':
-                return <div>email</div>;
-            case 'phone':
-                return <div>phone</div>;
-            case 'sms':
-                return <div>sms</div>;
-            case 'android':
-                return (
-                    <ChannelAddAndroid
-                        setOpenWarning={setOpenWarning}
-                    />
-                );
-            case 'apple':
-                return (
-                    <ChannelAddIos
-                        setOpenWarning={setOpenWarning}
-                    />
-                );
-            default: return <div />;
-        }
+interface GetComponentProps {
+    channel: keyof ListChannels;
+    setOpenWarning: (param: any) => void;
+}
+
+const GetComponent: FC<GetComponentProps> = ({ channel: key, setOpenWarning }) => {
+    switch (key as keyof ListChannels) {
+        case 'facebook':
+            return (
+                <ChannelAddFacebook setOpenWarning={setOpenWarning} />
+            );
+        case 'instagram':
+            return (
+                <ChannelAddInstagram setOpenWarning={setOpenWarning} />
+            );
+        case 'instagramDM':
+            return (
+                <ChannelAddInstagramDM setOpenWarning={setOpenWarning} />
+            );
+        case 'messenger':
+            return (
+                <ChannelAddMessenger setOpenWarning={setOpenWarning} />
+            );
+        case 'whatsapp':
+            return (
+                <ChannelAddWhatsapp setOpenWarning={setOpenWarning} />
+            );
+        case 'telegram':
+            return (
+                <ChannelAddTelegram setOpenWarning={setOpenWarning} />
+            );
+        case 'twitter':
+            return (
+                <ChannelAddTwitter setOpenWarning={setOpenWarning} />
+            );
+        case 'twitterDM':
+            return (
+                <ChannelAddTwitterDM setOpenWarning={setOpenWarning} />
+            );
+        case 'chatWeb':
+            return (
+                <ChannelAddChatWeb setOpenWarning={setOpenWarning} />
+            );
+        case 'email':
+            return <div>email</div>;
+        case 'phone':
+            return <div>phone</div>;
+        case 'sms':
+            return <div>sms</div>;
+        case 'android':
+            return (
+                <ChannelAddAndroid setOpenWarning={setOpenWarning} />
+            );
+        case 'apple':
+            return (
+                <ChannelAddIos setOpenWarning={setOpenWarning} />
+            );
+        default: return <div />;
     }
- */
+}

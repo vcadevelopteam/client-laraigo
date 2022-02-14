@@ -17,7 +17,7 @@ import { showSnackbar } from 'store/popus/actions';
 import { getInsertChatwebChannel } from 'common/helpers';
 import paths from 'common/constants/paths';
 import { ZyxmeMessengerIcon } from 'icons';
-import { SubscriptionContext, useChannelsCount } from './context';
+import { SubscriptionContext } from './context';
 
 interface TabPanelProps {
     value: string;
@@ -1725,10 +1725,10 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
 }) => {
     const {
         commonClasses,
+        selectedChannels,
         finishreg,
         deleteChannel,
     } = useContext(SubscriptionContext);
-    const selectedChannels = useChannelsCount();
     const { t } = useTranslation();
     // const [hexIconColor, setHexIconColor] = useState("#7721ad");
 
@@ -1790,7 +1790,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
                 >
                     <Trans i18nKey={langKeys.next} />
                 </Button>
-            ) : selectedChannels.count === 1 && (
+            ) : selectedChannels === 1 && (
                 <Button
                     onClick={finishreg}
                     className={commonClasses.button}

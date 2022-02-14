@@ -12,16 +12,16 @@ import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { getChannelsListSub } from "store/channel/actions";
 import { apiUrls } from 'common/constants';
-import { SubscriptionContext, useChannelsCount } from "./context";
+import { SubscriptionContext } from "./context";
 
 export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
     const {
         commonClasses,
         FBButtonStyles,
+        selectedChannels,
         finishreg,
         deleteChannel,
     } = useContext(SubscriptionContext);
-    const selectedChannels = useChannelsCount();
     const [waitSave, setWaitSave] = useState(false);
     const [hasFinished, setHasFinished] = useState(false)
     const [pageLink, setPageLink] = useState("");
@@ -204,7 +204,7 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
                     }}
                     isDisabled={mainResult.loading}
                 />
-            ) : selectedChannels.count === 1 && (
+            ) : selectedChannels === 1 && (
                 <Button
                     onClick={finishreg}
                     className={commonClasses.button}

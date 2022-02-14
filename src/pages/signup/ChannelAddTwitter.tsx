@@ -9,7 +9,7 @@ import { FieldEdit, ColorInput } from "components";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { TwitterColor } from "icons";
-import { SubscriptionContext, useChannelsCount } from "./context";
+import { SubscriptionContext } from "./context";
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -25,12 +25,12 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
     const {
         commonClasses,
         foreground,
+        selectedChannels,
         setConfirmations,
         finishreg,
         setForeground,
         deleteChannel,
     } = useContext(SubscriptionContext);
-    const selectedChannels = useChannelsCount();
     const [hasFinished, setHasFinished] = useState(false);
     const [viewSelected, setViewSelected] = useState("view1");
     const [waitSave, setWaitSave] = useState(false);
@@ -302,7 +302,7 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
                 >
                     <Trans i18nKey={langKeys.next} />
                 </Button>
-            ) : selectedChannels.count === 1 && (
+            ) : selectedChannels === 1 && (
                 <Button
                     onClick={finishreg}
                     className={commonClasses.button}

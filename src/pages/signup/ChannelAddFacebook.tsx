@@ -11,7 +11,8 @@ import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { getChannelsListSub } from "store/channel/actions";
 import { apiUrls } from 'common/constants';
-import { SubscriptionContext, useChannelsCount } from "./context";
+import { MainData, SubscriptionContext } from "./context";
+import { useFormContext } from "react-hook-form";
 
 interface ChannelAddFacebookProps {
     setOpenWarning: (param: any) => void;
@@ -21,15 +22,13 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
     const {
         commonClasses,
         FBButtonStyles,
-        setConfirmations,
+        selectedChannels,
         finishreg,
         deleteChannel,
     } = useContext(SubscriptionContext);
-    const selectedChannels = useChannelsCount();
+    const { getValues, setValue, register, unregister, formState: { errors } } = useFormContext<MainData>();
     const [waitSave, setWaitSave] = useState(false);
     const [hasFinished, setHasFinished] = useState(false)
-    const [pageLink, setPageLink] = useState("");
-    const [channelName, setChannelName] = useState("");
     const [coloricon, setcoloricon] = useState("#2d88ff");
     const mainResult = useSelector(state => state.channel.channelList)
     const dispatch = useDispatch();
@@ -62,6 +61,53 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
     const openprivacypolicies = () => {
         window.open("/privacy", '_blank');
     }
+
+    useEffect(() => {
+        const strRequired = (value: string) => {
+            if (!value) {
+                return t(langKeys.field_required);
+            }
+        }
+        
+        register('channels.facebook.description', { validate: strRequired, value: '' });
+        register('channels.facebook.accesstoken', { validate: strRequired, value: '' });
+        register('channels.facebook.communicationchannelowner', { validate: strRequired, value: '' });
+        register('channels.facebook.communicationchannelsite', { validate: strRequired, value: '' });
+        register('channels.facebook.siteid', { validate: strRequired, value: '' });
+        register('channels.facebook.build', { value: values => ({
+            "method": "UFN_COMMUNICATIONCHANNEL_INS",
+            "parameters": {
+                "id": 0,
+                "description": values.description,
+                "type": "",
+                "communicationchannelsite": values.communicationchannelsite,
+                "communicationchannelowner": values.communicationchannelowner,
+                "chatflowenabled": true,
+                "integrationid": "",
+                "color": "",
+                "icons": "",
+                "other": "",
+                "form": "",
+                "apikey": "",
+                "coloricon": "#2d88ff",
+            },
+            "type": "FACEBOOK",
+            "service": {
+                "accesstoken": values.accesstoken,
+                "siteid": values.siteid,
+                "appid": apiUrls.FACEBOOKAPP
+            }
+        })});
+
+        return () => {
+            unregister('channels.facebook.description')
+            unregister('channels.facebook.accesstoken')
+            unregister('channels.facebook.communicationchannelowner');
+            unregister('channels.facebook.communicationchannelsite')
+            unregister('channels.facebook.siteid')
+            unregister('channels.facebook.build')
+        }
+    }, [register, unregister]);
 
     useEffect(() => {
         if (waitSave) {
@@ -101,20 +147,10 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
         }
     }
     function setValueField(value: any) {
-        setPageLink(value?.id || "");
-        let partialf = fields;
-        partialf.parameters.communicationchannelsite = value?.id || ""
-        partialf.parameters.communicationchannelowner = value?.name || ""
-        partialf.service.siteid = value?.id || ""
-        partialf.service.accesstoken = value?.access_token || ""
-
-        setFields(partialf)
-    }
-    function setnameField(value: any) {
-        setChannelName(value)
-        let partialf = fields;
-        partialf.parameters.description = value
-        setFields(partialf)
+        setValue('channels.facebook.communicationchannelsite', value?.id || "");
+        setValue('channels.facebook.communicationchannelowner', value?.name || "");
+        setValue('channels.facebook.siteid', value?.id || "");
+        setValue('channels.facebook.accesstoken', value?.access_token || "");
     }
 
     return (
@@ -151,11 +187,12 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
             </div>
             )}
             <FieldEdit
-                onChange={(value) => setnameField(value)}
+                onChange={(value) => setValue('channels.facebook.description', value)}
                 label={t(langKeys.givechannelname)}
-                valueDefault={channelName}
+                valueDefault={getValues('channels.facebook.description')}
                 variant="outlined"
                 size="small"
+                error={errors.channels?.facebook?.description?.message}
             />
             {/* <div className="row-zyx">
                 <div className="col-3"></div>
@@ -182,15 +219,16 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
                 onChange={(value) => setValueField(value)}
                 label={t(langKeys.selectpagelink)}
                 data={mainResult.data}
-                valueDefault={pageLink}
+                valueDefault={getValues('channels.facebook.siteid')}
                 optionDesc="name"
                 optionValue="id"
                 variant="outlined"
                 size="small"
                 disabled={mainResult.loading || mainResult.data.length === 0}
+                error={errors.channels?.facebook?.siteid?.message}
             />
 
-            {pageLink.length === 0 && mainResult.data.length === 0 ? (
+            {getValues('channels.facebook.siteid')?.length || 0 === 0 && mainResult.data.length === 0 ? (
                 <FacebookLogin
                     appId={apiUrls.FACEBOOKAPP}
                     autoLoad={false}
@@ -210,13 +248,13 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
                     }}
                     isDisabled={mainResult.loading}
                 />
-            ) : selectedChannels.count === 1 && (
+            ) : selectedChannels === 1 && (
                 <Button
                     onClick={finishreg}
                     className={commonClasses.button}
                     variant="contained"
                     color="primary"
-                    disabled={channelName.length === 0 || mainResult.loading}
+                    disabled={mainResult.loading}
                 >
                     <Trans i18nKey={langKeys.finishreg} />
                 </Button>

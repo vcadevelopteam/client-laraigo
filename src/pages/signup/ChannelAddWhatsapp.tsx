@@ -11,7 +11,7 @@ import { styled } from '@material-ui/core/styles';
 import { WhatsappColor } from "icons";
 import { useSelector } from "hooks";
 import { Dictionary } from "@types";
-import { SubscriptionContext, useChannelsCount } from "./context";
+import { SubscriptionContext } from "./context";
 
 const useChannelAddStyles = makeStyles(theme => ({
     centerbutton: {
@@ -66,12 +66,12 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
     const {
         commonClasses,
         foreground,
+        selectedChannels,
         setConfirmations,
         finishreg,
         setForeground,
         deleteChannel,
     } = useContext(SubscriptionContext);
-    const selectedChannels = useChannelsCount();
     const [viewSelected, setViewSelected] = useState("view1");
     const planData = useSelector(state => state.signup.verifyPlan)
     const provider = planData.data[0].providerwhatsapp
@@ -481,7 +481,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                 >
                     <Trans i18nKey={langKeys.next} />
                 </Button>
-            ) : selectedChannels.count === 1 && (
+            ) : selectedChannels === 1 && (
                 <Button
                     onClick={finishreg}
                     className={commonClasses.button}
