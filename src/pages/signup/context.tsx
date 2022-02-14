@@ -76,6 +76,17 @@ export interface WhatsAppChannel {
     build: (v: Omit<WhatsAppChannel, 'build'>) => IRequestBody;
 }
 
+export interface TwitterChannel {
+    description: string;
+    consumerkey: string;
+    consumersecret: string;
+    accesstoken: string;
+    accesssecret: string;
+    devenvironment: string;
+    communicationchannelowner: string;
+    build: (v: Omit<TwitterChannel, 'build'>) => IRequestBody;
+}
+
 export interface Channels {
     facebook: FacebookChannel;
     instagram: FacebookChannel;
@@ -83,8 +94,8 @@ export interface Channels {
     messenger: FacebookChannel;
     whatsapp: WhatsAppChannel;
     telegram: any;
-    twitter: any;
-    twitterDM: any;
+    twitter: TwitterChannel;
+    twitterDM: TwitterChannel;
     chatWeb: any;
     email: any;
     phone: any;

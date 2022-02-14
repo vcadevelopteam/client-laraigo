@@ -114,6 +114,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
         register('channels.whatsapp.customerfacebookid', { validate: strRequired, value: '' });
         register('channels.whatsapp.phonenumberwhatsappbusiness', { validate: strRequired, value: '' });
         register('channels.whatsapp.nameassociatednumber', { validate: strRequired, value: '' });
+        register('channels.whatsapp.communicationchannelowner', { value: '' });
         register('channels.whatsapp.build', { value: values => ({
             "method": "UFN_COMMUNICATIONCHANNEL_INS",
             "parameters": {

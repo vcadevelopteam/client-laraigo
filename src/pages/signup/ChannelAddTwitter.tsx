@@ -9,7 +9,8 @@ import { FieldEdit, ColorInput } from "components";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { TwitterColor } from "icons";
-import { SubscriptionContext } from "./context";
+import { MainData, SubscriptionContext } from "./context";
+import { useFormContext } from "react-hook-form";
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -26,48 +27,65 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
         commonClasses,
         foreground,
         selectedChannels,
-        setConfirmations,
         finishreg,
         setForeground,
         deleteChannel,
     } = useContext(SubscriptionContext);
+    const { getValues, setValue, register, unregister, formState: { errors }, trigger } = useFormContext<MainData>();
     const [hasFinished, setHasFinished] = useState(false);
     const [viewSelected, setViewSelected] = useState("view1");
     const [waitSave, setWaitSave] = useState(false);
-    const [nextbutton, setNextbutton] = useState(true);
-    const [devenvironment, setDevenvironment] = useState("");
-    const [channelName, setChannelName] = useState("");
     const [coloricon, setcoloricon] = useState("#1D9BF0");
     const mainResult = useSelector(state => state.channel.channelList)
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
-    const [fields, setFields] = useState({
-        "method": "UFN_COMMUNICATIONCHANNEL_INS",
-        "parameters": {
-            "id": 0,
-            "description": "",
-            "type": "",
-            "communicationchannelsite": "",
-            "communicationchannelowner": "",
-            "chatflowenabled": true,
-            "integrationid": "",
-            "color": "",
-            "icons": "",
-            "other": "",
-            "form": "",
-            "apikey": "",
-            "coloricon": "#1D9BF0",
-        },
-        "type": "TWITTER",
-        "service": {
-            "consumerkey": "",
-            "consumersecret": "",
-            "accesstoken": "",
-            "accesssecret": "",
-            "devenvironment": ""
+
+    useEffect(() => {
+        const strRequired = (value: string) => {
+            if (!value) {
+                return t(langKeys.field_required);
+            }
         }
-    })
+        
+        register('channels.twitter.description', { validate: strRequired, value: '' });
+        register('channels.twitter.consumerkey', { validate: strRequired, value: '' });
+        register('channels.twitter.consumersecret', { validate: strRequired, value: '' });
+        register('channels.twitter.accesstoken', { validate: strRequired, value: '' });
+        register('channels.twitter.accesssecret', { validate: strRequired, value: '' });
+        register('channels.twitter.devenvironment', { validate: strRequired, value: '' });
+        register('channels.twitter.communicationchannelowner', { value: '' });
+        register('channels.twitter.build', { value: values => ({
+            "method": "UFN_COMMUNICATIONCHANNEL_INS",
+            "parameters": {
+                "id": 0,
+                "description": values.description,
+                "type": "",
+                "communicationchannelsite": "",
+                "communicationchannelowner": values.communicationchannelowner,
+                "chatflowenabled": true,
+                "integrationid": "",
+                "color": "",
+                "icons": "",
+                "other": "",
+                "form": "",
+                "apikey": "",
+                "coloricon": "#1D9BF0",
+            },
+            "type": "TWITTER",
+            "service": {
+                "consumerkey": values.consumerkey,
+                "consumersecret": values.consumersecret,
+                "accesstoken": values.accesstoken,
+                "accesssecret": values.accesssecret,
+                "devenvironment": values.devenvironment
+            }
+        })});
+
+        return () => {
+            unregister('channels.twitter');
+        }
+    }, [register, unregister]);
 
     useEffect(() => {
         if (foreground !== 'twitter' && viewSelected !== "view1") {
@@ -75,41 +93,12 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
         } 
     }, [foreground, viewSelected]);
 
-    // useEffect(() => {
-    //     if (channelName.length > 0 && devenvironment.length > 0) {
-    //         setrequestchannels(prev => {
-    //             const index = prev.findIndex(x => x.type === "TWITTER");
-    //             if (index === -1) {
-    //                 return [
-    //                     ...prev,
-    //                     fields,
-    //                 ]
-    //             } else {
-    //                 prev.splice(index, 1);
-    //                 return [
-    //                     ...prev,
-    //                     fields,
-    //                 ];
-    //             }
-    //         });
-    //     } else {
-    //         setrequestchannels(prev => prev.filter(x => x.type !== "TWITTER"));
-    //     }
-    // }, [channelName, devenvironment, fields]);
-
     useEffect(() => {
         if (waitSave) {
             dispatch(showBackdrop(false));
             setWaitSave(false);
         }
     }, [mainResult])
-
-    function setnameField(value: any) {
-        setChannelName(value)
-        let partialf = fields;
-        partialf.parameters.description = value
-        setFields(partialf)
-    }
 
     const setView = (option: "view1" | "view2") => {
         if (option === "view1") {
@@ -142,72 +131,61 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
-                            onChange={(value) => {
-                                setNextbutton(value === "" || fields.service.consumersecret === "" || fields.service.accesstoken === "" || fields.service.accesssecret === "")
-                                let partialf = fields;
-                                partialf.service.consumerkey = value
-                                setFields(partialf)
-                            }}
-                            valueDefault={fields.service.consumerkey}
+                            onChange={v => setValue('channels.twitter.consumerkey', v)}
+                            valueDefault={getValues('channels.twitter.consumerkey')}
                             label={t(langKeys.consumerapikey)}
                             className="col-6"
+                            error={errors.channels?.twitter?.consumerkey?.message}
                         />
                     </div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
-                            onChange={(value) => {
-                                setNextbutton(value === "" || fields.service.consumerkey === "" || fields.service.accesstoken === "" || fields.service.accesssecret === "")
-                                let partialf = fields;
-                                partialf.service.consumersecret = value
-                                setFields(partialf)
-                            }}
-                            valueDefault={fields.service.consumersecret}
+                            onChange={v => setValue('channels.twitter.consumersecret', v)}
+                            valueDefault={getValues('channels.twitter.consumersecret')}
                             label={t(langKeys.consumerapisecret)}
                             className="col-6"
+                            error={errors.channels?.twitter?.consumersecret?.message}
                         />
                     </div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
-                            onChange={(value) => {
-                                setNextbutton(value === "" || fields.service.consumerkey === "" || fields.service.consumersecret === "" || fields.service.accesssecret === "")
-                                let partialf = fields;
-                                partialf.service.accesstoken = value
-                                setFields(partialf)
-                            }}
-                            valueDefault={fields.service.accesstoken}
+                            onChange={v => setValue('channels.twitter.accesstoken', v)}
+                            valueDefault={getValues('channels.twitter.accesstoken')}
                             label={t(langKeys.authenticationtoken)}
                             className="col-6"
+                            error={errors.channels?.twitter?.accesstoken?.message}
                         />
                     </div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
-                            onChange={(value) => {
-                                setNextbutton(value === "" || fields.service.consumerkey === "" || fields.service.consumersecret === "" || fields.service.accesstoken === "")
-                                let partialf = fields;
-                                partialf.service.accesssecret = value
-                                setFields(partialf)
-                            }}
-                            valueDefault={fields.service.accesssecret}
+                            onChange={v => setValue('channels.twitter.accesssecret', v)}
+                            valueDefault={getValues('channels.twitter.accesssecret')}
                             label={t(langKeys.authenticationsecret)}
                             className="col-6"
+                            error={errors.channels?.twitter?.accesssecret?.message}
                         />
                     </div>
 
                     <div style={{ paddingLeft: "80%" }}>
                         <Button
-                            disabled={nextbutton}
-                            onClick={() => {
-                                setView("view1");
-                                setHasFinished(true);
-                                setConfirmations(prev => prev++);
+                            onClick={async () => {
+                                const v1 = await trigger('channels.twitter.consumerkey');
+                                const v2 = await trigger('channels.twitter.consumersecret');
+                                const v3 = await trigger('channels.twitter.accesstoken');
+                                const v4 = await trigger('channels.twitter.accesssecret');
+                                if (v1 && v2 && v3 && v4) {
+                                    setView("view1");
+                                    setHasFinished(true);
+                                }
                             }}
                             className={classes.button}
                             variant="contained"
                             color="primary"
-                        >{t(langKeys.next)}
+                        >
+                            <Trans i18nKey={langKeys.next} />
                         </Button>
 
                     </div>
@@ -251,25 +229,23 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
             </div>
             )}
             <FieldEdit
-                onChange={(value) => setnameField(value)}
-                valueDefault={channelName}
+                onChange={(value) => setValue('channels.twitter.description', value)}
+                valueDefault={getValues('channels.twitter.description')}
                 label={t(langKeys.givechannelname)}
                 variant="outlined"
                 size="small"
+                error={errors.channels?.twitter?.description?.message}
             />
             <FieldEdit
                 onChange={(value) => {
-                    setDevenvironment(value)
-                    let partialf = fields;
-                    partialf.parameters.communicationchannelowner = "";
-                    partialf.service.devenvironment = value;
-                    setFields(partialf)
+                    setValue('channels.twitter.devenvironment', value);
+                    setValue('channels.twitter.communicationchannelowner', "");
                 }}
-                // valueDefault={fields.service.devenvironment}
-                valueDefault={devenvironment}
+                valueDefault={getValues('channels.twitter.devenvironment')}
                 label={t(langKeys.devenvironment)}
                 variant="outlined"
                 size="small"
+                error={errors.channels?.twitter?.devenvironment?.message}
             />
             {/* <div className="row-zyx">
                 <div className="col-3"></div>
@@ -296,7 +272,6 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
                 <Button
                     onClick={() => setView("view2")}
                     className={commonClasses.button}
-                    disabled={channelName.length === 0 || devenvironment.length === 0}
                     variant="contained"
                     color="primary"
                 >
@@ -306,7 +281,6 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
                 <Button
                     onClick={finishreg}
                     className={commonClasses.button}
-                    disabled={channelName.length === 0 || devenvironment.length === 0}
                     variant="contained"
                     color="primary"
                 >

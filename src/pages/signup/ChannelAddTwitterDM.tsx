@@ -6,7 +6,8 @@ import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
 import { FieldEdit, ColorInput } from "components";
 import { TwitterColor } from "icons";
-import { SubscriptionContext } from "./context";
+import { MainData, SubscriptionContext } from "./context";
+import { useFormContext } from "react-hook-form";
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -23,46 +24,63 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
         commonClasses,
         foreground,
         selectedChannels,
-        setConfirmations,
         finishreg,
         setForeground,
         deleteChannel,
     } = useContext(SubscriptionContext);
+    const { getValues, setValue, register, unregister, formState: { errors }, trigger } = useFormContext<MainData>();
     const [hasFinished, setHasFinished] = useState(false);
     const [viewSelected, setViewSelected] = useState("view1");
-    const [nextbutton, setNextbutton] = useState(true);
-    const [devenvironment, setDevenvironment] = useState("");
     const [coloricon, setcoloricon] = useState("#1D9BF0");
-    const [channelName, setChannelName] = useState("");
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
-    const [fields, setFields] = useState({
-        "method": "UFN_COMMUNICATIONCHANNEL_INS",
-        "parameters": {
-            "id": 0,
-            "description": "",
-            "type": "",
-            "communicationchannelsite": "",
-            "communicationchannelowner": "",
-            "chatflowenabled": true,
-            "integrationid": "",
-            "color": "",
-            "icons": "",
-            "other": "",
-            "form": "",
-            "apikey": "",
-            "coloricon": "#1D9BF0",
-        },
-        "type": "TWITTERDM",
-        "service": {
-            "consumerkey": "",
-            "consumersecret": "",
-            "accesstoken": "",
-            "accesssecret": "",
-            "devenvironment": ""
-        }
-    })
 
+    useEffect(() => {
+        const strRequired = (value: string) => {
+            if (!value) {
+                return t(langKeys.field_required);
+            }
+        }
+        
+        register('channels.twitterDM.description', { validate: strRequired, value: '' });
+        register('channels.twitterDM.consumerkey', { validate: strRequired, value: '' });
+        register('channels.twitterDM.consumersecret', { validate: strRequired, value: '' });
+        register('channels.twitterDM.accesstoken', { validate: strRequired, value: '' });
+        register('channels.twitterDM.accesssecret', { validate: strRequired, value: '' });
+        register('channels.twitterDM.devenvironment', { validate: strRequired, value: '' });
+        register('channels.twitterDM.communicationchannelowner', { value: '' });
+        register('channels.twitterDM.build', { value: values => ({
+            "method": "UFN_COMMUNICATIONCHANNEL_INS",
+            "parameters": {
+                "id": 0,
+                "description": values.description,
+                "type": "",
+                "communicationchannelsite": "",
+                "communicationchannelowner": values.communicationchannelowner,
+                "chatflowenabled": true,
+                "integrationid": "",
+                "color": "",
+                "icons": "",
+                "other": "",
+                "form": "",
+                "apikey": "",
+                "coloricon": "#1D9BF0",
+            },
+            "type": "TWITTERDM",
+            "service": {
+                "consumerkey": values.consumerkey,
+                "consumersecret": values.consumersecret,
+                "accesstoken": values.accesstoken,
+                "accesssecret": values.accesssecret,
+                "devenvironment": values.devenvironment
+            }
+        })});
+
+        return () => {
+            unregister('channels.twitterDM');
+        }
+    }, [register, unregister]);
+    
     useEffect(() => {
         if (foreground !== 'twitterDM' && viewSelected !== "view1") {
             setViewSelected("view1");
@@ -90,13 +108,6 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
     //         setrequestchannels(prev => prev.filter(x => x.type !== "TWITTERDM"));
     //     }
     // }, [channelName, devenvironment, fields]);
-
-    function setnameField(value: any) {
-        setChannelName(value)
-        let partialf = fields;
-        partialf.parameters.description = value
-        setFields(partialf)
-    }
 
     const setView = (option: "view1" | "view2") => {
         if (option === "view1") {
@@ -129,67 +140,55 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
-                            onChange={(value) => {
-                                setNextbutton(value === "" || fields.service.consumersecret === "" || fields.service.accesstoken === "" || fields.service.accesssecret === "")
-                                let partialf = fields;
-                                partialf.service.consumerkey = value
-                                setFields(partialf)
-                            }}
-                            valueDefault={fields.service.consumerkey}
+                            onChange={v => setValue('channels.twitterDM.consumerkey', v)}
+                            valueDefault={getValues('channels.twitterDM.consumerkey')}
                             label={t(langKeys.consumerapikey)}
                             className="col-6"
+                            error={errors.channels?.twitterDM?.consumerkey?.message}
                         />
                     </div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
-                            onChange={(value) => {
-                                setNextbutton(value === "" || fields.service.consumerkey === "" || fields.service.accesstoken === "" || fields.service.accesssecret === "")
-                                let partialf = fields;
-                                partialf.service.consumersecret = value
-                                setFields(partialf)
-                            }}
-                            valueDefault={fields.service.consumersecret}
+                            onChange={v => setValue('channels.twitterDM.consumersecret', v)}
+                            valueDefault={getValues('channels.twitterDM.consumersecret')}
                             label={t(langKeys.consumerapisecret)}
                             className="col-6"
+                            error={errors.channels?.twitterDM?.consumersecret?.message}
                         />
                     </div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
-                            onChange={(value) => {
-                                setNextbutton(value === "" || fields.service.consumerkey === "" || fields.service.consumersecret === "" || fields.service.accesssecret === "")
-                                let partialf = fields;
-                                partialf.service.accesstoken = value
-                                setFields(partialf)
-                            }}
-                            valueDefault={fields.service.accesstoken}
+                            onChange={v => setValue('channels.twitterDM.accesstoken', v)}
+                            valueDefault={getValues('channels.twitterDM.accesstoken')}
                             label={t(langKeys.authenticationtoken)}
                             className="col-6"
+                            error={errors.channels?.twitterDM?.accesstoken?.message}
                         />
                     </div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
-                            onChange={(value) => {
-                                setNextbutton(value === "" || fields.service.consumerkey === "" || fields.service.consumersecret === "" || fields.service.accesstoken === "")
-                                let partialf = fields;
-                                partialf.service.accesssecret = value
-                                setFields(partialf)
-                            }}
-                            valueDefault={fields.service.accesssecret}
+                            onChange={v => setValue('channels.twitterDM.accesssecret', v)}
+                            valueDefault={getValues('channels.twitterDM.accesssecret')}
                             label={t(langKeys.authenticationsecret)}
                             className="col-6"
+                            error={errors.channels?.twitterDM?.accesssecret?.message}
                         />
                     </div>
 
                     <div style={{ paddingLeft: "80%" }}>
                         <Button
-                            disabled={nextbutton}
-                            onClick={() => {
-                                setView("view1");
-                                setHasFinished(true);
-                                setConfirmations(prev => prev++);
+                            onClick={async () => {
+                                const v1 = await trigger('channels.twitterDM.consumerkey');
+                                const v2 = await trigger('channels.twitterDM.consumersecret');
+                                const v3 = await trigger('channels.twitterDM.accesstoken');
+                                const v4 = await trigger('channels.twitterDM.accesssecret');
+                                if (v1 && v2 && v3 && v4) {
+                                    setView("view1");
+                                    setHasFinished(true);
+                                }
                             }}
                             className={classes.button}
                             variant="contained"
@@ -238,24 +237,22 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
             </div>
             )}
             <FieldEdit
-                onChange={(value) => setnameField(value)}
-                label={t(langKeys.givechannelname)}
+                onChange={(value) => setValue('channels.twitterDM.description', value)}
+                valueDefault={getValues('channels.twitterDM.description')}
                 variant="outlined"
                 size="small"
+                error={errors.channels?.twitter?.description?.message}
             />
             <FieldEdit
                 onChange={(value) => {
-                    setDevenvironment(value)
-                    let partialf = fields;
-                    partialf.service.devenvironment = value;
-                    partialf.parameters.communicationchannelowner = "";
-                    setFields(partialf)
+                    setValue('channels.twitterDM.devenvironment', value);
+                    setValue('channels.twitterDM.communicationchannelowner', "");
                 }}
-                // valueDefault={fields.service.devenvironment}
-                valueDefault={devenvironment}
+                valueDefault={getValues('channels.twitterDM.devenvironment')}
                 label={t(langKeys.devenvironment)}
                 variant="outlined"
                 size="small"
+                error={errors.channels?.twitterDM?.devenvironment?.message}
             />
             {/* <div className="row-zyx">
                 <div className="col-3"></div>
@@ -282,7 +279,6 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
                 <Button
                     onClick={() => setView("view2")}
                     className={commonClasses.button}
-                    disabled={channelName.length === 0 || devenvironment.length === 0}
                     variant="contained"
                     color="primary"
                 >
@@ -292,7 +288,6 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
                 <Button
                     onClick={finishreg}
                     className={commonClasses.button}
-                    disabled={channelName.length === 0 || devenvironment.length === 0}
                     variant="contained"
                     color="primary"
                 >
