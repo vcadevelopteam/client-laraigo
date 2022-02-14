@@ -38,7 +38,7 @@ const useRateStyles = makeStyles(theme => ({
     },
 }));
 
-export const RateExperience: FC = () => {
+const RateExperience: FC = () => {
     const classes = useRateStyles();
     const { t } = useTranslation();
     const { commonClasses } = useContext(SubscriptionContext);
@@ -105,3 +105,5 @@ export const RateExperience: FC = () => {
         </div>
     )
 }
+
+export default RateExperience

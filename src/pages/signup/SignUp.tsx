@@ -1,22 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useContext, useEffect, useState } from 'react';
+import { FC, useContext, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { RightSideMenu } from './RightSideMenu';
-import Backdrop from '@material-ui/core/Backdrop';
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
+import RightSideMenu from './RightSideMenu';
 import { Button, CircularProgress, Dialog, DialogActions, DialogTitle } from '@material-ui/core';
-import { useHistory, useParams } from 'react-router';
-import { useDispatch } from 'react-redux';
-import { useSelector } from 'hooks';
-import { verifyPlan } from 'store/signup/actions';
 import { langKeys } from 'lang/keys';
 import { Trans } from 'react-i18next';
-import { Dictionary } from '@types';
 import { LaraigoLogo } from 'icons';
 import { LeftSide } from './LeftSideMenu';
-import { SubscriptionContext, SubscriptionProvider } from './context';
+import { SubscriptionContext, SubscriptionProvider, usePlanData } from './context';
 import Popus from 'components/layout/Popus';
+import { useFormContext } from 'react-hook-form';
 
 const useSignUpStyles = makeStyles(theme => ({
     root: {
@@ -46,7 +39,7 @@ const useSignUpStyles = makeStyles(theme => ({
         paddingBottom: 16,
         // marginBottom: 4,
         backgroundColor: '#FFF',
-        
+
     },
     containerLogo: {
         flex: 1,
@@ -83,7 +76,7 @@ const useSignUpStyles = makeStyles(theme => ({
             color: 'white'
         }
     },
-    emptyspacenumber:{
+    emptyspacenumber: {
         flex: 1,
         [theme.breakpoints.down("sm")]: {
             display: "none"
@@ -95,35 +88,20 @@ export const SignUp: FC = () => {
     return (
         <SubscriptionProvider>
             <$SignUp />
+            <Popus />
         </SubscriptionProvider>
     );
 }
 
 const $SignUp: FC = () => {
-    const {
-        step,
-        setStep,
-        setrequestchannels,
-        setMainData,
-        resetChannels,
-    } = useContext(SubscriptionContext);
-    const mainResult = useSelector(state => state.signup.verifyPlan)
-    const {token}: any = useParams();
-    const history = useHistory();
+    const { step, setStep } = useContext(SubscriptionContext);
+    const { getValues, reset } = useFormContext();
+    const { loading: planDataLoading } = usePlanData();
     const [openWarning, setOpenWarning] = useState(false);
-    const [waitLoad, setWaitLoad] = useState(true);    
-    const dispatch = useDispatch();
-    const [snackbar, setSnackbar] = useState({
-        state: false,
-        success: true,
-        message: ""
-    });
-    const [sendchannels, setsendchannels] = useState(false);
-    const [backdrop, setBackdrop] = useState(false);
-    
-    function setDefaultMainData(){
-        setMainData((prev)=>({
-            ...prev,
+
+    function setDefaultMainData() {
+        reset({
+            ...getValues(),
             email: "",
             password: "",
             confirmpassword: "",
@@ -141,61 +119,40 @@ const $SignUp: FC = () => {
             billingcontact: "",
             billingcontactmail: "",
             autosendinvoice: true,
-        }))
+        });
     }
-    function setDefaultMainData2(){
-        setMainData((prev)=>({
-            ...prev,
+    function setDefaultMainData2() {
+        reset({
+            ...getValues(),
             doctype: 0,
             docnumber: "",
             businessname: "",
             fiscaladdress: "",
             billingcontact: "",
             billingcontactmail: "",
-        }))
+        })
     }
-    useEffect(() => {
-        dispatch(verifyPlan(token))
-    }, [])
+
     const handleClose = () => {
         setOpenWarning(false);
     };
     const handleClose2 = () => {
-        if(sendchannels){
-            setrequestchannels([])
-            setsendchannels(false)
-            resetChannels();
-        }else{
-            // console.log(step)
-            if(step===2){
-                setDefaultMainData()
-            }
-            if(step===4){
-                setrequestchannels([])
-            }
-            if(step===3){
-                setStep(2.5)
-            } else if(step===2.5){
-                setDefaultMainData2()
-                setStep(2)
-            }else if (step === 2.6) {
-                setStep(2.5);
-            }else{
-                setStep(step-1)
-            }
+        if (step === 2) {
+            setDefaultMainData()
+        } else if (step === 4) {
+            // setrequestchannels([])
+        } else if (step === 3) {
+            setStep(2.5)
+        } else if (step === 2.5) {
+            setDefaultMainData2()
+            setStep(2)
+        } else if (step === 2.6) {
+            setStep(2.5);
+        } else {
+            setStep(step - 1)
         }
         setOpenWarning(false);
     };
-
-    useEffect(() => {
-        if(!mainResult.loading){
-            if(!mainResult.error){
-                setWaitLoad(false)
-            }else{
-                history.push('/sign-in')
-            }
-        }
-    }, [mainResult])
 
     const classes = useSignUpStyles();
 
@@ -211,27 +168,14 @@ const $SignUp: FC = () => {
                     <Trans i18nKey={langKeys.goback} />
                 </DialogTitle>
                 <DialogActions>
-                <Button onClick={handleClose} color="primary">
-                    No
-                </Button>
-                <Button onClick={handleClose2} color="primary" autoFocus>
-                    <Trans i18nKey={langKeys.yes} />
-                </Button>
+                    <Button onClick={handleClose} color="primary">
+                        No
+                    </Button>
+                    <Button onClick={handleClose2} color="primary" autoFocus>
+                        <Trans i18nKey={langKeys.yes} />
+                    </Button>
                 </DialogActions>
             </Dialog>
-            <Snackbar
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                color="white"
-                open={snackbar.state}
-                key={'topright'}
-            >
-                <MuiAlert className={classes.cookieAlert} elevation={6} variant="filled" onClick={() => setSnackbar((p: any) => ({ ...p, state: false }))} severity={snackbar.success ? "success" : "error"}>
-                    {snackbar.message}
-                </MuiAlert>
-            </Snackbar>
-            <Backdrop style={{ zIndex: 999999999, color: '#fff', }} open={backdrop}>
-                <CircularProgress color="inherit" />
-            </Backdrop>
             <div className={classes.containerHead}>
                 <div className={classes.emptyspacenumber}></div>
                 <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -256,12 +200,10 @@ const $SignUp: FC = () => {
                 overflow: 'hidden',
             }}>
                 {step === 3 ? (
-                    <LeftSide
-                        setOpenWarning={setOpenWarning}
-                    />
+                    <LeftSide setOpenWarning={setOpenWarning} />
                 ) : (
-                    <div className={classes.containerLogo}> 
-                        {/* //containerlogo tiene flex 1, para q se divida con el texto */}
+                    <div className={classes.containerLogo}>
+                        {/* containerlogo tiene flex 1, para q se divida con el texto */}
                         <LaraigoLogo style={{ width: '50%' }} />
                     </div>
                 )}
@@ -270,18 +212,12 @@ const $SignUp: FC = () => {
                     padding: 40,
                     overflowY: 'auto',
                 }}>
-                    {!waitLoad?
-                        <RightSideMenu //tiene flex 1, para q se ajuste con la imagen
-                        setSnackbar={setSnackbar}
-                        setBackdrop={setBackdrop}
-                        setOpenWarning={setOpenWarning}
-                        sendchannels={sendchannels}
-                        setsendchannels={setsendchannels}
-                    />:""
+                    {!planDataLoading
+                        ? <RightSideMenu setOpenWarning={setOpenWarning} />
+                        : <CircularProgress />
                     }
                 </div>
             </div>
-            <Popus />
         </div>
     );
 };

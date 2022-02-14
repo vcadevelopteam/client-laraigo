@@ -1,12 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useContext, useEffect, useState } from "react";
-import { makeStyles, Button, Box, IconButton, Typography } from '@material-ui/core';
-import { DeleteOutline as DeleteOutlineIcon } from '@material-ui/icons';
+import { makeStyles, Button, Box, IconButton, Typography, InputAdornment } from '@material-ui/core';
+import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon } from '@material-ui/icons';
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
 import { ColorInput, FieldEdit, } from "components";
 import { IosColor } from "icons";
-import { SubscriptionContext } from "./context";
+import { MainData, SubscriptionContext } from "./context";
+import { useFormContext } from "react-hook-form";
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -24,62 +25,47 @@ export const ChannelAddIos: FC<{ setOpenWarning: (param: any) => void }> = ({ se
         selectedChannels,
         finishreg,
         deleteChannel,
-        setrequestchannels,
     } = useContext(SubscriptionContext);
+    const { getValues, setValue, register, unregister, formState: { errors } } = useFormContext<MainData>();
     const [hasFinished, setHasFinished] = useState(false)
-    const [channelName, setChannelName] = useState("");
     const { t } = useTranslation();
     const [coloricon, setcoloricon] = useState("#000000");
-    const classes = useChannelAddStyles();
-    const [fields, setFields] = useState({
-        "method": "UFN_COMMUNICATIONCHANNEL_INS",
-        "parameters": {
-            "id": 0,
-            "description": "",
-            "type": "",
-            "communicationchannelsite": "",
-            "communicationchannelowner": "",
-            "chatflowenabled": true,
-            "integrationid": "",
-            "color": "",
-            "icons": "",
-            "other": "",
-            "form": "",
-            "apikey": "",
-            "coloricon": "#000000",
-        },
-        "type": "SMOOCHIOS",
-    })
 
     useEffect(() => {
-        if (channelName.length > 0) {
-            setrequestchannels(prev => {
-                const index = prev.findIndex(x => x.type === "SMOOCHIOS");
-                if (index === -1) {
-                    return [
-                        ...prev,
-                        fields,
-                    ]
-                } else {
-                    prev.splice(index, 1);
-                    return [
-                        ...prev,
-                        fields,
-                    ];
-                }
-            });
-            setHasFinished(true)
-        } else {
-            setrequestchannels(prev => prev.filter(x => x.type !== "SMOOCHIOS"));
+        const strRequired = (value: string) => {
+            if (!value) {
+                return t(langKeys.field_required);
+            }
         }
-    }, [channelName, fields]);
 
-    function setnameField(value: any) {
-        setChannelName(value)
-        let partialf = fields;
-        partialf.parameters.description = value
-        setFields(partialf)
-    }
+        register('channels.apple.description', { validate: strRequired, value: '' });
+        register('channels.apple.build', {
+            value: values => ({
+                "method": "UFN_COMMUNICATIONCHANNEL_INS",
+                "parameters": {
+                    "id": 0,
+                    "description": values.description,
+                    "type": "",
+                    "communicationchannelsite": "",
+                    "communicationchannelowner": "",
+                    "chatflowenabled": true,
+                    "integrationid": "",
+                    "color": "",
+                    "icons": "",
+                    "other": "",
+                    "form": "",
+                    "apikey": "",
+                    "coloricon": "#000000",
+                },
+                "type": "SMOOCHIOS",
+            })
+        });
+
+        return () => {
+            unregister('channels.apple')
+        }
+    }, [register, unregister]);
+
     return (
         <div className={commonClasses.root}>
             {!hasFinished && <IosColor className={commonClasses.leadingIcon} />}
@@ -88,7 +74,7 @@ export const ChannelAddIos: FC<{ setOpenWarning: (param: any) => void }> = ({ se
                 className={commonClasses.trailingIcon}
                 onClick={() => {
                     deleteChannel('apple');
-                    setrequestchannels(prev => prev.filter(x => x.type !== "SMOOCHIOS"));
+                    // setrequestchannels(prev => prev.filter(x => x.type !== "SMOOCHIOS"));
                 }}
             >
                 <DeleteOutlineIcon />
@@ -97,7 +83,7 @@ export const ChannelAddIos: FC<{ setOpenWarning: (param: any) => void }> = ({ se
                 <Trans i18nKey={langKeys.connectface2} />
             </Typography>}
             {hasFinished && <IosColor
-                style={{ width: 100, height: 100, alignSelf: 'center' }}/>
+                style={{ width: 100, height: 100, alignSelf: 'center' }} />
             }
             {hasFinished && (
                 <div style={{ alignSelf: 'center' }}>
@@ -111,14 +97,29 @@ export const ChannelAddIos: FC<{ setOpenWarning: (param: any) => void }> = ({ se
                         style={{ fontSize: '1.2vw', fontWeight: 500 }}>
                         Haz integrado con iOS SDK
                     </Typography>
-            </div>
+                </div>
             )}
             <FieldEdit
-                onChange={(value) => setnameField(value)}
-                valueDefault={channelName}
+                onChange={(val: string) => {
+                    setValue('channels.apple.description', val);
+                    if (val.length > 0 && !hasFinished) {
+                        setHasFinished(true);
+                    } else if (val.length === 0 && hasFinished) {
+                        setHasFinished(false);
+                    }
+                }}
+                valueDefault={getValues('channels.apple.description')}
                 label={t(langKeys.givechannelname)}
                 variant="outlined"
                 size="small"
+                error={errors.channels?.apple?.description?.message}
+                InputProps={{
+                    endAdornment: (
+                        <InputAdornment position="end">
+                            <LinkIcon />
+                        </InputAdornment>
+                    )
+                }}
             />
             {/* <div className="row-zyx">
                 <div className="col-3"></div>
@@ -145,7 +146,6 @@ export const ChannelAddIos: FC<{ setOpenWarning: (param: any) => void }> = ({ se
                 <Button
                     onClick={finishreg}
                     className={commonClasses.button}
-                    disabled={channelName.length === 0}
                     variant="contained"
                     color="primary"
                 >

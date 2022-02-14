@@ -1,10 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useContext, useState } from "react";
-import { makeStyles, Button, Typography, Paper } from '@material-ui/core';
+import { FC, useContext } from "react";
+import { makeStyles, Typography, Paper } from '@material-ui/core';
 import { langKeys } from "lang/keys";
 import { Trans } from "react-i18next";
 import clsx from "clsx";
-import EmailIcon from '@material-ui/icons/Email';
 import { ControlPoint as ControlPointIcon } from "@material-ui/icons";
 import {
     LaraigoLogo,
@@ -19,9 +18,7 @@ import {
     WhatsappColor,
     TwitterColor,
 } from "icons";
-import SmsIcon from '@material-ui/icons/Sms';
-import { useSelector } from "hooks";
-import { ListChannels, SubscriptionContext } from "./context";
+import { ListChannels, SubscriptionContext, usePlanData } from "./context";
 
 interface ChannelOption {
     icon: React.ReactNode;
@@ -59,8 +56,6 @@ const useChannelAddStyles = makeStyles(theme => ({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        // justifyContent: 'center', // altera el scroll vertical
-        // transform: 'translateY(-20px)',
     },
     content: {
         flexGrow: 1,
@@ -85,6 +80,210 @@ const useChannelAddStyles = makeStyles(theme => ({
         width: '100%',
         textAlign: 'start',
     },
+    icon: {
+        // fill: 'inherit',
+        fill: 'gray',
+        height: 38,
+        width: 'auto',
+    },
+    optionsContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%'
+    },
+}));
+
+const ThirdStep: FC = () => {
+    const { listchannels, toggleChannel } = useContext(SubscriptionContext);
+    const planData = usePlanData();
+    const classes = useChannelAddStyles();
+    const socialMediaOptions: ChannelOption[] = [
+        {
+            icon: <FacebookMessengerColor className={classes.icon} />,
+            label: 'Messenger',
+            key: 'messenger',
+            onClick: () => {
+                toggleChannel('messenger');
+            },
+            selected: listchannels.messenger,
+        },
+        {
+            icon: <WhatsappColor className={classes.icon} />,
+            label: 'Whatsapp',
+            key: 'whatsapp',
+            onClick: () => {
+                const type = planData.plan!.provider === "DIALOG" ? "WHATSAPP" : "WHATSAPPSMOOCH";
+                toggleChannel('whatsapp');
+            },
+            selected: listchannels.whatsapp,
+        },
+        {
+            icon: <FacebookColor className={classes.icon} />,
+            label: 'Facebook',
+            key: 'facebook',
+            onClick: () => {
+                toggleChannel('facebook');
+            },
+            selected: listchannels.facebook,
+        },
+        {
+            icon: <InstagramColor className={classes.icon} />,
+            label: 'Instagram',
+            key: 'instagram',
+            onClick: () => {
+                toggleChannel('instagram');
+            },
+            selected: listchannels.instagram,
+        },
+        {
+            icon: <InstagramColor className={classes.icon} />,
+            label: 'Instagram DM',
+            key: 'instagramDM',
+            onClick: () => {
+                toggleChannel('instagramDM');
+            },
+            selected: listchannels.instagramDM,
+        },
+    ];
+    const businessChannelOptions: ChannelOption[] = [
+        {
+            icon: <ZyxmeMessengerIcon className={classes.icon} />,
+            label: 'Chat Web',
+            key: 'chatWeb',
+            onClick: () => toggleChannel('chatWeb'),
+            selected: listchannels.chatWeb,
+        },
+        {
+            icon: <TelegramColor className={classes.icon} />,
+            label: 'Telegram',
+            key: 'telegram',
+            onClick: () => {
+                toggleChannel('telegram');
+            },
+            selected: listchannels.telegram,
+        },
+        {
+            icon: <TwitterColor className={classes.icon} />,
+            label: 'Twitter',
+            key: 'twitter',
+            onClick: () => {
+                toggleChannel('twitter');
+            },
+            selected: listchannels.twitter,
+        },
+        {
+            icon: <TwitterColor className={classes.icon} />,
+            label: 'Twitter DM',
+            key: 'twitterDM',
+            onClick: () => {
+                toggleChannel('twitterDM');
+            },
+            selected: listchannels.twitterDM,
+        },
+        /*{
+            icon: <EmailIcon className={classes.icon} />,
+            label: 'Email',
+            key: 'email',
+            onClick: () => toggleChannel('email'),
+            selected: listchannels.email
+
+        },
+        {
+            icon: <SmsIcon className={classes.icon} />,
+            label: 'Sms',
+            key: 'sms',
+            onClick: () => toggleChannel('sms'),
+            selected: listchannels.sms
+        },*/
+        {
+            icon: <IosColor className={classes.icon} />,
+            label: 'iOS SDk',
+            key: 'apple',
+            onClick: () => {
+                toggleChannel('apple');
+            },
+            selected: listchannels.apple,
+        },
+        {
+            icon: <AndroidColor className={classes.icon} />,
+            label: 'Android SDK',
+            key: 'android',
+            onClick: () => {
+                toggleChannel('android');
+            },
+            selected: listchannels.android,
+        },
+    ];
+
+    const description = () => {
+        switch (planData.plan!.plan) {
+            case "BASIC":return "Solo se podrá seleccionar un canal";
+            case "PRO": return "Solo se podrá seleccionar 3 canales";
+            case "ADVANCED":
+            case "ENTERPRISE":
+            case "PREMIUM":
+                return "Sin limite";
+            default: return "-";
+        }
+    }
+
+    return (
+        <div className={classes.root}>
+            <LaraigoLogo style={{ width: '25%', height: 'auto', marginBottom: '1.58em' }} />
+            <div className={classes.title}>
+                {planData.plan!.plan}
+            </div>
+            <Typography style={{ fontSize: 20, fontWeight: 400 }}>
+                {description()}
+            </Typography>
+            <Typography className={classes.subtitle}>
+                <Trans i18nKey={langKeys.socialmediachannel} />
+            </Typography>
+            <div className={classes.optionsContainer}>
+                {socialMediaOptions.map((e, i) =>
+                    <Option
+                        key={`social_media_option_${i}`}
+                        option={e}
+                        selected={listchannels[e.key as keyof ListChannels]}
+                        index={i}
+                    />
+                )}
+            </div>
+            <Typography className={classes.subtitle}>
+                <Trans i18nKey={langKeys.businesschannel} />
+            </Typography>
+            <div className={classes.optionsContainer}>
+                {businessChannelOptions.map((e, i) => (
+                    <Option
+                        key={`business_channel_option_${i}`}
+                        option={e}
+                        selected={listchannels[e.key as keyof ListChannels]}
+                        index={i}
+                    />
+                ))}
+            </div>
+            {/* <Button
+                onClick={() => {
+                    setsendchannels(true);
+                    setrequestchannels([]);
+                }}
+                className={classes.button}
+                fullWidth
+                style={{ marginTop: 30 }}
+                variant="contained"
+                color="primary"
+                //disabled={nextbutton}
+            >
+                <Trans i18nKey={langKeys.next} />
+            </Button> */}
+        </div>
+    )
+}
+
+const useOptionClasses = makeStyles(theme => ({
     optionsContainer: {
         display: 'flex',
         flexDirection: 'row',
@@ -166,264 +365,53 @@ const useChannelAddStyles = makeStyles(theme => ({
         display: 'flex',
         justifyContent: 'center',
     },
-    icon: {
-        // fill: 'inherit',
-        fill: 'gray',
-        height: 38,
-        width: 'auto',
-    },
 }));
 
-interface ThirdStepProps {
-    setsendchannels: (param: any) => void;
-    setOpenWarning:(param:any) => void;
+interface OptionProps {
+    option: ChannelOption;
+    selected: Boolean;
+    index: number;
 }
 
-export const ThirdStep: FC<ThirdStepProps> = ({
-    setsendchannels,
-    setOpenWarning,
-}) => {
-    const {
-        plan,
-        selectedChannels,
-        listchannels,
-        limitChannels,
-        toggleChannel,
-        setrequestchannels,
-    } = useContext(SubscriptionContext);
-    const classes = useChannelAddStyles();
-    const planData = useSelector(state => state.signup.verifyPlan);
-    const provider = planData.data[0].providerwhatsapp;
-    const socialMediaOptions: ChannelOption[] = [
-        {
-            icon: <FacebookMessengerColor className={classes.icon} />,
-            label: 'Messenger',
-            key: 'messenger',
-            onClick: () => {
-                toggleChannel('messenger');
-                setrequestchannels(prev => prev.filter(x => x.type !== "MESSENGER"));
-            },
-            selected: listchannels.messenger
-        },
-        {
-            icon: <WhatsappColor className={classes.icon} />,
-            label: 'Whatsapp',
-            key: 'whatsapp',
-            onClick: () => {
-                const type = provider === "DIALOG" ? "WHATSAPP" : "WHATSAPPSMOOCH";
-                toggleChannel('whatsapp');
-                setrequestchannels(prev => prev.filter(x => x.type !== type));
-            },
-            selected: listchannels.whatsapp
-        },
-        {
-            icon: <FacebookColor className={classes.icon} />,
-            label: 'Facebook',
-            key: 'facebook',
-            onClick: () => {
-                toggleChannel('facebook');
-                setrequestchannels(prev => prev.filter(x => x.type !== "FACEBOOK"));
-            },
-            selected: listchannels.facebook
-        },
-        {
-            icon: <InstagramColor className={classes.icon} />,
-            label: 'Instagram',
-            key: 'instagram',
-            onClick: () => {
-                toggleChannel('instagram');
-                setrequestchannels(prev => prev.filter(x => x.type !== "INSTAGRAM"));
-            },
-            selected: listchannels.instagram
-        },
-        {
-            icon: <InstagramColor className={classes.icon} />,
-            label: 'Instagram DM',
-            key: 'instagramDM',
-            onClick: () => {
-                toggleChannel('instagramDM');
-                setrequestchannels(prev => prev.filter(x => x.type !== "INSTAMESSENGER"));
-            },
-            selected: listchannels.instagramDM
-        },
-    ];
-    const businessChannelOptions: ChannelOption[] = [
-        {
-            icon: <ZyxmeMessengerIcon className={classes.icon} />,
-            label: 'Chat Web',
-            key: 'chatWeb',
-            onClick: () => toggleChannel('chatWeb'),
-            selected: listchannels.chatWeb
-        },
-        {
-            icon: <TelegramColor className={classes.icon} />,
-            label: 'Telegram',
-            key: 'telegram',
-            onClick: () => {
-                toggleChannel('telegram');
-                setrequestchannels(prev => prev.filter(x => x.type !== "TELEGRAM"));
-            },
-            selected: listchannels.telegram
-        },
-        {
-            icon: <TwitterColor className={classes.icon} />,
-            label: 'Twitter',
-            key: 'twitter',
-            onClick: () => {
-                toggleChannel('twitter');
-                setrequestchannels(prev => prev.filter(x => x.type !== "TWITTER"));
-            },
-            selected: listchannels.twitter
-        },
-        {
-            icon: <TwitterColor className={classes.icon} />,
-            label: 'Twitter DM',
-            key: 'twitterDM',
-            onClick: () => {
-                toggleChannel('twitterDM');
-                setrequestchannels(prev => prev.filter(x => x.type !== "TWITTERDM"));
-            },
-            selected: listchannels.twitterDM
-        },
-        /*{
-            icon: <EmailIcon className={classes.icon} />,
-            label: 'Email',
-            key: 'email',
-            onClick: () => toggleChannel('email'),
-            selected: listchannels.email
+const Option: FC<OptionProps> = ({ option, selected, index }) => {
+    const classes = useOptionClasses();
+    const { plan } = usePlanData();
+    const { selectedChannels } = useContext(SubscriptionContext);
 
-        },
-        {
-            icon: <SmsIcon className={classes.icon} />,
-            label: 'Sms',
-            key: 'sms',
-            onClick: () => toggleChannel('sms'),
-            selected: listchannels.sms
-        },*/
-        {
-            icon: <IosColor className={classes.icon} />,
-            label: 'iOS SDk',
-            key: 'apple',
-            onClick: () => {
-                toggleChannel('apple');
-                setrequestchannels(prev => prev.filter(x => x.type !== "SMOOCHIOS"));
-            },
-            selected: listchannels.apple
-        },
-        {
-            icon: <AndroidColor className={classes.icon} />,
-            label: 'Android SDK',
-            key: 'android',
-            onClick: () => {
-                toggleChannel('android');
-                setrequestchannels(prev => prev.filter(x => x.type !== "SMOOCHANDROID"));
-            },
-            selected: listchannels.android
-        },
-    ];
+    const reachedLimit = plan!.limitChannels <= selectedChannels;
+    const withOpacity = reachedLimit && !selected;
 
-    const description = () => {
-        switch (plan) {
-            case "BASIC":return "Solo se podrá seleccionar un canal";
-            case "PRO": return "Solo se podrá seleccionar 3 canales";
-            case "ADVANCED":
-            case "ENTERPRISE":
-            case "PREMIUM":
-                return "Sin limite";
-            default: return "-";
-        }
-    }
-
-    const Option: FC<{ option: ChannelOption, selected: Boolean, index: number }> = ({
-        option,
-        selected,
-        index,
-    }) => {
-        const reachedLimit = limitChannels <= selectedChannels;
-        const withOpacity = reachedLimit && !selected;
-
-        return (
-            <Paper
-                className={
-                    clsx(classes.optionContainer, {
-                        [classes.optionContainerHover]: !withOpacity,
-                        [classes.optionContainerSelected]: selected,
-                        [classes.optionContainerActive]: !withOpacity,
-                        [classes.optionContainerDisabled]: withOpacity,
-                    })
-                }
-                elevation={selected ? 4 : 0}
-                onClick={() => withOpacity || option.onClick()}
-            >
-                <div
-                    className={clsx(classes.optionPlusDecorator, {
-                        [classes.optionPlusDecoratorDisabled]: selected || withOpacity,
-                    })}
-                >
-                    <ControlPointIcon style={{ height: 'inherit', width: 'inherit' }} />
-                </div>
-                {selected && <div className={classes.indexDecorator}>
-                    {index + 1}
-                </div>}
-                <div className={classes.optionIconContainer}>
-                    {option.icon}
-                </div>
-                <div style={{ height: 38 }}>
-                    <span>{option.label}</span>
-                </div>
-            </Paper>
-        );
-    };
     return (
-        <div className={classes.root}>
-            <LaraigoLogo style={{ width: '25%', height: 'auto', marginBottom: '1.58em' }} />
-            <div className={classes.title}>
-                {plan}
-            </div>
-            <Typography style={{ fontSize: 20, fontWeight: 400 }}>
-                {description()}
-            </Typography>
-            <Typography className={classes.subtitle}>
-                <Trans i18nKey={langKeys.socialmediachannel} />
-            </Typography>
-            <div className={classes.optionsContainer}>
-                {socialMediaOptions.map((e, i) =>
-                    <Option
-                        key={`social_media_option_${i}`}
-                        option={e}
-                        selected={listchannels[e.key as keyof ListChannels]}
-                        index={i}
-                    />
-                )}
-            </div>
-            <Typography className={classes.subtitle}>
-                <Trans i18nKey={langKeys.businesschannel} />
-            </Typography>
-            <div className={classes.optionsContainer}>
-                {businessChannelOptions.map((e, i) => (
-                    <Option
-                        key={`business_channel_option_${i}`}
-                        option={e}
-                        selected={listchannels[e.key as keyof ListChannels]}
-                        index={i}
-                    />
-                ))}
-            </div>
-            {/* <Button
-                onClick={() => {
-                    setsendchannels(true);
-                    setrequestchannels([]);
-                }}
-                className={classes.button}
-                fullWidth
-                style={{ marginTop: 30 }}
-                variant="contained"
-                color="primary"
-                //disabled={nextbutton}
+        <Paper
+            className={
+                clsx(classes.optionContainer, {
+                    [classes.optionContainerHover]: !withOpacity,
+                    [classes.optionContainerSelected]: selected,
+                    [classes.optionContainerActive]: !withOpacity,
+                    [classes.optionContainerDisabled]: withOpacity,
+                })
+            }
+            elevation={selected ? 4 : 0}
+            onClick={() => withOpacity || option.onClick()}
+        >
+            <div
+                className={clsx(classes.optionPlusDecorator, {
+                    [classes.optionPlusDecoratorDisabled]: selected || withOpacity,
+                })}
             >
-                <Trans i18nKey={langKeys.next} />
-            </Button> */}
-        </div>
-    )
-}
+                <ControlPointIcon style={{ height: 'inherit', width: 'inherit' }} />
+            </div>
+            {selected && <div className={classes.indexDecorator}>
+                {index + 1}
+            </div>}
+            <div className={classes.optionIconContainer}>
+                {option.icon}
+            </div>
+            <div style={{ height: 38 }}>
+                <span>{option.label}</span>
+            </div>
+        </Paper>
+    );
+};
+
 export default ThirdStep
