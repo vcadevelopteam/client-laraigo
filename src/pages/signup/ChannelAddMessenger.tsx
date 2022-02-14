@@ -12,7 +12,8 @@ import { useDispatch } from "react-redux";
 import { getChannelsListSub } from "store/channel/actions";
 import { FacebookMessengerColor } from "icons";
 import { apiUrls } from 'common/constants';
-import { SubscriptionContext } from "./context";
+import { MainData, SubscriptionContext } from "./context";
+import { useFormContext } from "react-hook-form";
 
 interface ChannelAddMessengerProps {
     setOpenWarning:(param:any)=>void;
@@ -26,6 +27,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
         finishreg,
         deleteChannel,
     } = useContext(SubscriptionContext);
+    const { getValues, setValue, register, unregister, formState: { errors } } = useFormContext<MainData>();
     const [pageLink, setPageLink] = useState("");
     const [hasFinished, setHasFinished] = useState(false)
     const [waitSave, setWaitSave] = useState(false);
@@ -34,30 +36,53 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
     const mainResult = useSelector(state => state.channel.channelList)
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const [fields, setFields] = useState({
-        "method": "UFN_COMMUNICATIONCHANNEL_INS",
-        "parameters": {
-            "id": 0,
-            "description": "",
-            "type": "",
-            "communicationchannelsite": "",
-            "communicationchannelowner": "",
-            "chatflowenabled": true,
-            "integrationid": "",
-            "color": "",
-            "icons": "",
-            "other": "",
-            "form": "",
-            "apikey": "",
-            "coloricon": "#0078FF",
-        },
-        "type": "MESSENGER",
-        "service": {
-            "accesstoken": "",
-            "siteid": "",
-            "appid": apiUrls.FACEBOOKAPP
+
+    useEffect(() => {
+        const strRequired = (value: string) => {
+            if (!value) {
+                return t(langKeys.field_required);
+            }
         }
-    })
+        
+        register('channels.messenger.description', { validate: strRequired, value: '' });
+        register('channels.messenger.accesstoken', { validate: strRequired, value: '' });
+        register('channels.messenger.communicationchannelowner', { validate: strRequired, value: '' });
+        register('channels.messenger.communicationchannelsite', { validate: strRequired, value: '' });
+        register('channels.messenger.siteid', { validate: strRequired, value: '' });
+        register('channels.messenger.build', { value: values => ({
+            "method": "UFN_COMMUNICATIONCHANNEL_INS",
+            "parameters": {
+                "id": 0,
+                "description": values.description,
+                "type": "",
+                "communicationchannelsite": values.communicationchannelsite,
+                "communicationchannelowner": values.communicationchannelowner,
+                "chatflowenabled": true,
+                "integrationid": "",
+                "color": "",
+                "icons": "",
+                "other": "",
+                "form": "",
+                "apikey": "",
+                "coloricon": "#0078FF",
+            },
+            "type": "MESSENGER",
+            "service": {
+                "accesstoken": values.accesstoken,
+                "siteid": values.siteid,
+                "appid": apiUrls.FACEBOOKAPP
+            }
+        })});
+
+        return () => {
+            unregister('channels.messenger.description')
+            unregister('channels.messenger.accesstoken')
+            unregister('channels.messenger.communicationchannelowner');
+            unregister('channels.messenger.communicationchannelsite')
+            unregister('channels.messenger.siteid')
+            unregister('channels.messenger.build')
+        }
+    }, [register, unregister]);
 
     useEffect(() => {
         if (waitSave) {
@@ -66,51 +91,19 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
         }
     }, [mainResult, waitSave])
 
-    // useEffect(() => {
-    //     if (channelName.length > 0 && pageLink.length > 0) {
-    //         setrequestchannels(prev => {
-    //             const index = prev.findIndex(x => x.type === "MESSENGER");
-    //             if (index === -1) {
-    //                 return [
-    //                     ...prev,
-    //                     fields,
-    //                 ]
-    //             } else {
-    //                 prev.splice(index, 1);
-    //                 return [
-    //                     ...prev,
-    //                     fields,
-    //                 ];
-    //             }
-    //         });
-    //         setHasFinished(true)
-    //     } else {
-    //         setrequestchannels(prev => prev.filter(x => x.type !== "MESSENGER"));
-    //     }
-    // }, [channelName, pageLink, fields]);
-
     const processFacebookCallback = async (r: any) => {
         if (r.status !== "unknown" && !r.error) {
             dispatch(getChannelsListSub(r.accessToken, apiUrls.FACEBOOKAPP))
             dispatch(showBackdrop(true));
             setWaitSave(true);
+            setHasFinished(true);
         }
     }
     function setValueField(value: any) {
-        setPageLink(value?.id || "");
-        let partialf = fields;
-        partialf.parameters.communicationchannelsite = value?.id||""
-        partialf.parameters.communicationchannelowner = value?.name||""
-        partialf.service.siteid = value?.id||""
-        partialf.service.accesstoken = value?.access_token||""
-
-        setFields(partialf)
-    }
-    function setnameField(value: any) {
-        setChannelName(value);
-        let partialf = fields;
-        partialf.parameters.description = value
-        setFields(partialf)
+        setValue('channels.instagramDM.communicationchannelsite', value?.id || "");
+        setValue('channels.instagramDM.communicationchannelowner', value?.name || "");
+        setValue('channels.instagramDM.siteid', value?.id || "");
+        setValue('channels.instagramDM.accesstoken', value?.access_token || "");
     }
 
     return (
@@ -147,15 +140,16 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
             </div>
             )}
             <FieldEdit
-                onChange={(value) => setnameField(value)}
-                valueDefault={channelName}
+                onChange={(value) => setValue('channels.messenger.description', value)}
+                valueDefault={getValues('channels.messenger.description')}
                 label={t(langKeys.givechannelname)}
                 variant="outlined"
                 size="small"
+                error={errors.channels?.messenger?.description?.message}
             />
             <FieldSelect
                 onChange={(value) => setValueField(value)}
-                valueDefault={pageLink}
+                valueDefault={getValues('channels.messenger.siteid')}
                 label={t(langKeys.selectpagelink)}
                 data={mainResult.data}
                 optionDesc="name"
@@ -163,6 +157,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
                 variant="outlined"
                 size="small"
                 disabled={mainResult.loading || mainResult.data.length === 0}
+                error={errors.channels?.messenger?.siteid?.message}
             />
  
             {/* <div className="row-zyx">
@@ -186,7 +181,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
                     </div>
                 </div>
             </div> */}
-            {pageLink.length === 0 && mainResult.data.length === 0 ? (
+            {getValues('channels.facebook.siteid')?.length || 0 === 0 && mainResult.data.length === 0 ? (
                 <FacebookLogin
                     appId={apiUrls.FACEBOOKAPP}
                     autoLoad={false}

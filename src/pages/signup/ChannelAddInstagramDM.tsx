@@ -12,7 +12,8 @@ import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { getChannelsListSub } from "store/channel/actions";
 import { apiUrls } from 'common/constants';
-import { SubscriptionContext } from "./context";
+import { MainData, SubscriptionContext } from "./context";
+import { useFormContext } from "react-hook-form";
 
 export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
     const {
@@ -22,6 +23,7 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
         finishreg,
         deleteChannel,
     } = useContext(SubscriptionContext);
+    const { getValues, setValue, register, unregister, formState: { errors } } = useFormContext<MainData>();
     const [waitSave, setWaitSave] = useState(false);
     const [hasFinished, setHasFinished] = useState(false)
     const [pageLink, setPageLink] = useState("");
@@ -30,30 +32,53 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
     const [coloricon, setcoloricon] = useState("#F56040");
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const [fields, setFields] = useState({
-        "method": "UFN_COMMUNICATIONCHANNEL_INS",
-        "parameters": {
-            "id": 0,
-            "description": "",
-            "type": "",
-            "communicationchannelsite": "",
-            "communicationchannelowner": "",
-            "chatflowenabled": true,
-            "integrationid": "",
-            "color": "",
-            "icons": "",
-            "other": "",
-            "form": "",
-            "apikey": "",
-            "coloricon": "#F56040",
-        },
-        "type": "INSTAMESSENGER",
-        "service": {
-            "accesstoken": "",
-            "siteid": "",
-            "appid": apiUrls.INSTAGRAMAPP
+
+    useEffect(() => {
+        const strRequired = (value: string) => {
+            if (!value) {
+                return t(langKeys.field_required);
+            }
         }
-    })
+        
+        register('channels.instagramDM.description', { validate: strRequired, value: '' });
+        register('channels.instagramDM.accesstoken', { validate: strRequired, value: '' });
+        register('channels.instagramDM.communicationchannelowner', { validate: strRequired, value: '' });
+        register('channels.instagramDM.communicationchannelsite', { validate: strRequired, value: '' });
+        register('channels.instagramDM.siteid', { validate: strRequired, value: '' });
+        register('channels.instagramDM.build', { value: values => ({
+            "method": "UFN_COMMUNICATIONCHANNEL_INS",
+            "parameters": {
+                "id": 0,
+                "description": values.description,
+                "type": "",
+                "communicationchannelsite": values.communicationchannelsite,
+                "communicationchannelowner": values.communicationchannelowner,
+                "chatflowenabled": true,
+                "integrationid": "",
+                "color": "",
+                "icons": "",
+                "other": "",
+                "form": "",
+                "apikey": "",
+                "coloricon": "#F56040",
+            },
+            "type": "INSTAMESSENGER",
+            "service": {
+                "accesstoken": values.accesstoken,
+                "siteid": values.siteid,
+                "appid": apiUrls.INSTAGRAMAPP
+            }
+        })});
+
+        return () => {
+            unregister('channels.instagramDM.description')
+            unregister('channels.instagramDM.accesstoken')
+            unregister('channels.instagramDM.communicationchannelowner');
+            unregister('channels.instagramDM.communicationchannelsite')
+            unregister('channels.instagramDM.siteid')
+            unregister('channels.instagramDM.build')
+        }
+    }, [register, unregister]);
 
     useEffect(() => {
         if (waitSave) {
@@ -61,29 +86,6 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
             setWaitSave(false);
         }
     }, [mainResult, waitSave])
-
-    // useEffect(() => {
-    //     if (channelName.length > 0 && pageLink.length > 0) {
-    //         setrequestchannels(prev => {
-    //             const index = prev.findIndex(x => x.type === "INSTAMESSENGER");
-    //             if (index === -1) {
-    //                 return [
-    //                     ...prev,
-    //                     fields,
-    //                 ]
-    //             } else {
-    //                 prev.splice(index, 1);
-    //                 return [
-    //                     ...prev,
-    //                     fields,
-    //                 ];
-    //             }
-    //         });
-    //         setHasFinished(true)
-    //     } else {
-    //         setrequestchannels(prev => prev.filter(x => x.type !== "INSTAMESSENGER"));
-    //     }
-    // }, [channelName, pageLink, fields]);
 
     const openprivacypolicies = () => {
         window.open("/privacy", '_blank');
@@ -94,23 +96,14 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
             dispatch(getChannelsListSub(r.accessToken, apiUrls.INSTAGRAMAPP))
             dispatch(showBackdrop(true));
             setWaitSave(true);
+            setHasFinished(true);
         }
     }
     function setValueField(value: any) {
-        setPageLink(value?.id || "");
-        let partialf = fields;
-        partialf.parameters.communicationchannelsite = value?.id || ""
-        partialf.parameters.communicationchannelowner = value?.name || ""
-        partialf.service.siteid = value?.id || ""
-        partialf.service.accesstoken = value?.access_token || ""
-
-        setFields(partialf)
-    }
-    function setnameField(value: any) {
-        setChannelName(value);
-        let partialf = fields;
-        partialf.parameters.description = value
-        setFields(partialf)
+        setValue('channels.instagramDM.communicationchannelsite', value?.id || "");
+        setValue('channels.instagramDM.communicationchannelowner', value?.name || "");
+        setValue('channels.instagramDM.siteid', value?.id || "");
+        setValue('channels.instagramDM.accesstoken', value?.access_token || "");
     }
 
     return (
@@ -147,15 +140,16 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
             </div>
             )}
             <FieldEdit
-                onChange={(value) => setnameField(value)}
-                valueDefault={channelName}
+                onChange={(value) => setValue('channels.instagramDM.description', value)}
+                valueDefault={getValues('channels.instagramDM.description')}
                 label={t(langKeys.givechannelname)}
                 variant="outlined"
                 size="small"
+                error={errors.channels?.instagramDM?.description?.message}
             />
             <FieldSelect
                 onChange={(value) => setValueField(value)}
-                valueDefault={pageLink}
+                valueDefault={getValues('channels.instagramDM.siteid')}
                 label={t(langKeys.selectpagelink)}
                 data={mainResult.data}
                 optionDesc="name"
@@ -163,6 +157,7 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
                 variant="outlined"
                 size="small"
                 disabled={mainResult.loading || mainResult.data.length === 0}
+                error={errors.channels?.instagramDM?.siteid?.message}
             />
             {/* <div className="row-zyx">
                 <div className="col-3"></div>
@@ -185,7 +180,7 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
                     </div>
                 </div>
             </div> */}
-            {pageLink.length === 0 && mainResult.data.length === 0 ? (
+            {getValues('channels.facebook.siteid')?.length || 0 === 0 && mainResult.data.length === 0 ? (
                 <FacebookLogin
                     appId={apiUrls.INSTAGRAMAPP}
                     autoLoad={false}

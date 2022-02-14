@@ -62,19 +62,19 @@ export interface FacebookChannel {
 
 export interface Channels {
     facebook: FacebookChannel;
-    instagram?: any;
-    instagramDM?: any;
-    messenger?: any;
-    whatsapp?: any;
-    telegram?: any;
-    twitter?: any;
-    twitterDM?: any;
-    chatWeb?: any;
-    email?: any;
-    phone?: any;
-    sms?: any;
-    android?: any;
-    apple?: any;
+    instagram: FacebookChannel;
+    instagramDM: FacebookChannel;
+    messenger: FacebookChannel;
+    whatsapp: any;
+    telegram: any;
+    twitter: any;
+    twitterDM: any;
+    chatWeb: any;
+    email: any;
+    phone: any;
+    sms: any;
+    android: any;
+    apple: any;
 }
 
 export interface MainData {

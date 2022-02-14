@@ -33,30 +33,6 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
     const mainResult = useSelector(state => state.channel.channelList)
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const [fields, setFields] = useState({
-        "method": "UFN_COMMUNICATIONCHANNEL_INS",
-        "parameters": {
-            "id": 0,
-            "description": "",
-            "type": "",
-            "communicationchannelsite": "",
-            "communicationchannelowner": "",
-            "chatflowenabled": true,
-            "integrationid": "",
-            "color": "",
-            "icons": "",
-            "other": "",
-            "form": "",
-            "apikey": "",
-            "coloricon": "#2d88ff",
-        },
-        "type": "FACEBOOK",
-        "service": {
-            "accesstoken": "",
-            "siteid": "",
-            "appid": apiUrls.FACEBOOKAPP
-        }
-    })
 
     const openprivacypolicies = () => {
         window.open("/privacy", '_blank');
@@ -116,34 +92,12 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
         }
     }, [mainResult, waitSave])
 
-    // useEffect(() => {
-    //     if (channelName.length > 0 && pageLink.length > 0) {
-    //         setrequestchannels(prev => {
-    //             const index = prev.findIndex(x => x.type === "FACEBOOK");
-    //             if (index === -1) {
-    //                 return [
-    //                     ...prev,
-    //                     fields,
-    //                 ]
-    //             } else {
-    //                 prev.splice(index, 1);
-    //                 return [
-    //                     ...prev,
-    //                     fields,
-    //                 ];
-    //             }
-    //         });
-    //         setHasFinished(true)
-    //     } else {
-    //         setrequestchannels(prev => prev.filter(x => x.type !== "FACEBOOK"));
-    //     }
-    // }, [channelName, pageLink, fields]);
-
     const processFacebookCallback = async (r: any) => {
         if (r.status !== "unknown" && !r.error) {
             dispatch(getChannelsListSub(r.accessToken, apiUrls.FACEBOOKAPP))
             dispatch(showBackdrop(true));
             setWaitSave(true);
+            setHasFinished(true);
         }
     }
     function setValueField(value: any) {
