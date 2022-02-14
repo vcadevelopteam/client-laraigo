@@ -37,27 +37,29 @@ export const ChannelAddIos: FC<{ setOpenWarning: (param: any) => void }> = ({ se
                 return t(langKeys.field_required);
             }
         }
-        
+
         register('channels.apple.description', { validate: strRequired, value: '' });
-        register('channels.apple.build', { value: values => ({
-            "method": "UFN_COMMUNICATIONCHANNEL_INS",
-            "parameters": {
-                "id": 0,
-                "description": values.description,
-                "type": "",
-                "communicationchannelsite": "",
-                "communicationchannelowner": "",
-                "chatflowenabled": true,
-                "integrationid": "",
-                "color": "",
-                "icons": "",
-                "other": "",
-                "form": "",
-                "apikey": "",
-                "coloricon": "#000000",
-            },
-            "type": "SMOOCHIOS",
-        })});
+        register('channels.apple.build', {
+            value: values => ({
+                "method": "UFN_COMMUNICATIONCHANNEL_INS",
+                "parameters": {
+                    "id": 0,
+                    "description": values.description,
+                    "type": "",
+                    "communicationchannelsite": "",
+                    "communicationchannelowner": "",
+                    "chatflowenabled": true,
+                    "integrationid": "",
+                    "color": "",
+                    "icons": "",
+                    "other": "",
+                    "form": "",
+                    "apikey": "",
+                    "coloricon": "#000000",
+                },
+                "type": "SMOOCHIOS",
+            })
+        });
 
         return () => {
             unregister('channels.apple')
@@ -81,7 +83,7 @@ export const ChannelAddIos: FC<{ setOpenWarning: (param: any) => void }> = ({ se
                 <Trans i18nKey={langKeys.connectface2} />
             </Typography>}
             {hasFinished && <IosColor
-                style={{ width: 100, height: 100, alignSelf: 'center' }}/>
+                style={{ width: 100, height: 100, alignSelf: 'center' }} />
             }
             {hasFinished && (
                 <div style={{ alignSelf: 'center' }}>
@@ -95,7 +97,7 @@ export const ChannelAddIos: FC<{ setOpenWarning: (param: any) => void }> = ({ se
                         style={{ fontSize: '1.2vw', fontWeight: 500 }}>
                         Haz integrado con iOS SDK
                     </Typography>
-            </div>
+                </div>
             )}
             <FieldEdit
                 onChange={(val: string) => {

@@ -99,6 +99,11 @@ export interface MobileChannel {
     build: (v: Omit<MobileChannel, 'build'>) => IRequestBody;
 }
 
+export interface ChatWebChannel {
+    description: string;
+    build: (v: Omit<ChatWebChannel, 'build'>) => IRequestBody;
+}
+
 export interface Channels {
     facebook: FacebookChannel;
     instagram: FacebookChannel;
@@ -108,7 +113,7 @@ export interface Channels {
     telegram: TelegramChannel;
     twitter: TwitterChannel;
     twitterDM: TwitterChannel;
-    chatWeb: any;
+    chatWeb: ChatWebChannel;
     email: any;
     phone: any;
     sms: any;
