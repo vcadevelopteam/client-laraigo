@@ -28,11 +28,9 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
         deleteChannel,
     } = useContext(SubscriptionContext);
     const { getValues, setValue, register, unregister, formState: { errors } } = useFormContext<MainData>();
-    const [pageLink, setPageLink] = useState("");
     const [hasFinished, setHasFinished] = useState(false)
     const [waitSave, setWaitSave] = useState(false);
     const [coloricon, setcoloricon] = useState("#0078FF");
-    const [channelName, setChannelName] = useState("");
     const mainResult = useSelector(state => state.channel.channelList)
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -207,7 +205,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
                     className={commonClasses.button}
                     variant="contained"
                     color="primary"
-                    disabled={channelName.length === 0 || mainResult.loading}
+                    disabled={mainResult.loading}
                 >
                     <Trans i18nKey={langKeys.finishreg} />
                 </Button>

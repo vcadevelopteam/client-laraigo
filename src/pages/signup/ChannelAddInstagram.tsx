@@ -29,8 +29,6 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
     const { getValues, setValue, register, unregister, formState: { errors } } = useFormContext<MainData>();
     const [waitSave, setWaitSave] = useState(false);
     const [hasFinished, setHasFinished] = useState(false)
-    const [pageLink, setPageLink] = useState("");
-    const [channelName, setChannelName] = useState("");
     const mainResult = useSelector(state => state.channel.channelList)
     const [coloricon, setcoloricon] = useState("#F56040");
     const dispatch = useDispatch();
@@ -206,7 +204,7 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
                 <Button
                     onClick={finishreg}
                     className={commonClasses.button}
-                    disabled={channelName.length === 0 || mainResult.loading}
+                    disabled={mainResult.loading}
                     variant="contained"
                     color="primary"
                 >
