@@ -945,7 +945,7 @@ const emojiPickerStyle = makeStyles({
 });
 
 
-export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisNoShow, emojiFavorite, onSelect, style, icon }) => {
+export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisNoShow = [], emojiFavorite = [], onSelect, style, icon }) => {
     const [open, setOpen] = React.useState(false);
     const classes = emojiPickerStyle();
     const handleClick = () => setOpen((prev) => !prev);
@@ -979,7 +979,7 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisNoShow, em
                                     symbols: t(langKeys.symbols),
                                     flags: t(langKeys.flags),
                                 }}} 
-                            recent={emojiFavorite?.map(x => (EMOJISINDEXED as Dictionary)?.[x || ""]?.id || '')}
+                            recent={emojiFavorite.length > 0 ? emojiFavorite?.map(x => (EMOJISINDEXED as Dictionary)?.[x || ""]?.id || '') : undefined}
                             emojisToShowFilter={emojisNoShow && emojisNoShow.length > 0 ? (emoji: any) => emojisNoShow.map(x => x.toUpperCase()).indexOf(emoji.unified.toUpperCase()) === -1 : undefined}
                         />
                     </div>
