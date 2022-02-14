@@ -60,12 +60,28 @@ export interface FacebookChannel {
     build: (v: Omit<FacebookChannel, 'build'>) => IRequestBody;
 }
 
+export interface WhatsAppChannel {
+    description: string;
+    accesstoken: string;
+    brandName: string;
+    brandAddress: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    customerfacebookid: string;
+    phonenumberwhatsappbusiness: string;
+    nameassociatednumber: string;
+    communicationchannelowner: string;
+    build: (v: Omit<WhatsAppChannel, 'build'>) => IRequestBody;
+}
+
 export interface Channels {
     facebook: FacebookChannel;
     instagram: FacebookChannel;
     instagramDM: FacebookChannel;
     messenger: FacebookChannel;
-    whatsapp: any;
+    whatsapp: WhatsAppChannel;
     telegram: any;
     twitter: any;
     twitterDM: any;
