@@ -68,7 +68,6 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
         commonClasses,
         foreground,
         selectedChannels,
-        setConfirmations,
         finishreg,
         setForeground,
         deleteChannel,
@@ -76,7 +75,6 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
     const { getValues, setValue, register, unregister, formState: { errors }, trigger } = useFormContext<MainData>();
     const [viewSelected, setViewSelected] = useState("view1");
     const planData = useSelector(state => state.signup.verifyPlan)
-    const provider = planData.data[0].providerwhatsapp
     const [apiKey, setApiKey] = useState("");
     const [hasFinished, setHasFinished] = useState(false);
     const [coloricon, setcoloricon] = useState("#4AC959");
@@ -149,8 +147,8 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
         })});
 
         return () => {
-            unregister('channels.facebook.description')
-            unregister('channels.facebook.accesstoken')
+            unregister('channels.whatsapp.description')
+            unregister('channels.whatsapp.accesstoken')
             unregister('channels.whatsapp.brandName');
             unregister('channels.whatsapp.brandAddress');
             unregister('channels.whatsapp.firstName');
@@ -160,7 +158,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
             unregister('channels.whatsapp.customerfacebookid');
             unregister('channels.whatsapp.phonenumberwhatsappbusiness');
             unregister('channels.whatsapp.nameassociatednumber');
-            unregister('channels.facebook.build')
+            unregister('channels.whatsapp.build')
         }
     }, [register, unregister]);
 
