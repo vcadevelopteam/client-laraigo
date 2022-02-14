@@ -1,7 +1,7 @@
 import { FC, useContext, useEffect, useState } from "react";
-import { Button, IconButton, Typography } from '@material-ui/core';
+import { Button, IconButton, InputAdornment, Typography } from '@material-ui/core';
 import { showBackdrop } from 'store/popus/actions';
-import { DeleteOutline as DeleteOutlineIcon } from "@material-ui/icons";
+import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon } from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
 import { FacebookColor } from "icons";
@@ -142,6 +142,13 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
                 variant="outlined"
                 size="small"
                 error={errors.channels?.facebook?.description?.message}
+                InputProps={{
+                    endAdornment: (
+                        <InputAdornment position="end">
+                            <LinkIcon />
+                        </InputAdornment>
+                    )
+                }}
             />
             {/* <div className="row-zyx">
                 <div className="col-3"></div>

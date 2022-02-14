@@ -59,17 +59,6 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
     const executeResult = useSelector(state => state.signup.insertChannel);
 
     const channels = useMemo(() => {
-        console.log('useMemo:channels', foreground);
-        // if (foreground !== undefined) {
-        //     const result = Object.
-        //         keys(listchannels).
-        //         findIndex(x => x === foreground && listchannels[foreground]);
-        //     console.log('result', result);
-        //     if (result !== -1) {
-        //         console.log('result !== -1');
-        //         return <GetComponent channel={foreground} />;
-        //     }
-        // }
         if (listchannels === undefined) {
             return null;
         }
@@ -77,32 +66,31 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
         return Object
             .keys(listchannels)
             .filter(x => {
-                if (foreground !== undefined) {
+                /*if (foreground !== undefined) {
                     return (
                         listchannels[x as keyof ListChannels] === true &&
                         foreground === x
                     );
-                }
+                }*/
 
                 return listchannels[x as keyof ListChannels] === true;
             })
-            .map((key, i) => (
-                <GetComponent
-                    channel={key as keyof ListChannels}
-                    setOpenWarning={setOpenWarning}
-                    key={i}
-                />
-            ));
-    }, [listchannels, foreground]);
+            .map((key, i) => {
+                let display = true;
+                if (foreground !== undefined) {
+                    display = foreground === key;
+                }
 
-    /* const getDisplay = (option: keyof ListChannels): string => {
-         if (foreground !== undefined) {
-             return option === foreground ? 'block' : 'none';
-         }
- 
-         return channels.includes(option) ? 'block' : 'none';
-     }*/
-    // const getDisplay = (a: any) => 'none';
+                return (
+                    <GetComponent
+                        channel={key as keyof ListChannels}
+                        setOpenWarning={setOpenWarning}
+                        key={i}
+                        display={display}
+                    />
+                );
+            });
+    }, [listchannels, foreground]);
 
     return (
         <div className={classes.root}>
@@ -123,64 +111,6 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
             {!foreground && <h1 className={classes.title}>Canal seleccionado</h1>}
             <div className={classes.channelList}>
                 {channels}
-                {/* <div style={{ display: getDisplay('facebook') }}>
-                    <ChannelAddFacebook
-                        setOpenWarning={setOpenWarning}
-                    />
-                </div>
-                <div style={{ display: getDisplay('instagram') }}>
-                    <ChannelAddInstagram
-                        setOpenWarning={setOpenWarning}
-                    />
-                </div>
-                <div style={{ display: getDisplay('instagramDM') }}>
-                    <ChannelAddInstagramDM
-                        setOpenWarning={setOpenWarning}
-                    />
-                </div>
-                <div style={{ display: getDisplay('messenger') }}>
-                    <ChannelAddMessenger
-                        setOpenWarning={setOpenWarning}
-                    />
-                </div>
-                <div style={{ display: getDisplay('whatsapp') }}>
-                    <ChannelAddWhatsapp
-                        setOpenWarning={setOpenWarning}
-                    />
-                </div>
-                <div style={{ display: getDisplay('telegram') }}>
-                    <ChannelAddTelegram
-                        setOpenWarning={setOpenWarning}
-                    />
-                </div>
-                <div style={{ display: getDisplay('twitter') }}>
-                    <ChannelAddTwitter
-                        setOpenWarning={setOpenWarning}
-                    />
-                </div>
-                <div style={{ display: getDisplay('twitterDM') }}>
-                    <ChannelAddTwitterDM
-                        setOpenWarning={setOpenWarning}
-                    />
-                </div>
-                <div style={{ display: getDisplay('chatWeb') }}>
-                    <ChannelAddChatWeb
-                        setOpenWarning={setOpenWarning}
-                    />
-                </div>
-                <div style={{ display: getDisplay('email') }}>email</div>
-                <div style={{ display: getDisplay('phone') }}>phone</div>
-                <div style={{ display: getDisplay('sms') }}>sms</div>
-                <div style={{ display: getDisplay('android') }}>
-                    <ChannelAddAndroid
-                        setOpenWarning={setOpenWarning}
-                    />
-                </div>
-                <div style={{ display: getDisplay('apple') }}>
-                    <ChannelAddIos
-                        setOpenWarning={setOpenWarning}
-                    />
-                </div> */}
             </div>
             {(!foreground && selectedChannels > 1) && (
                 <Button
@@ -190,7 +120,6 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                     variant="contained"
                     color="primary"
                     disabled={executeResult.loading}
-                    // disabled={requestchannels.length < selectedChannels}
                 >
                     <Trans i18nKey={langKeys.next} />
                 </Button>
@@ -201,46 +130,65 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
 
 interface GetComponentProps {
     channel: keyof ListChannels;
+    display: boolean;
     setOpenWarning: (param: any) => void;
 }
 
-const GetComponent: FC<GetComponentProps> = ({ channel: key, setOpenWarning }) => {
+const GetComponent: FC<GetComponentProps> = ({ channel: key, display, setOpenWarning }) => {
     switch (key as keyof ListChannels) {
         case 'facebook':
             return (
+                <div style={{ display: display ? 'block' : 'none' }}>
                 <ChannelAddFacebook setOpenWarning={setOpenWarning} />
+                </div>
             );
         case 'instagram':
             return (
+                <div style={{ display: display ? 'block' : 'none' }}>
                 <ChannelAddInstagram setOpenWarning={setOpenWarning} />
+                </div>
             );
         case 'instagramDM':
             return (
+                <div style={{ display: display ? 'block' : 'none' }}>
                 <ChannelAddInstagramDM setOpenWarning={setOpenWarning} />
+                </div>
             );
         case 'messenger':
             return (
+                <div style={{ display: display ? 'block' : 'none' }}>
                 <ChannelAddMessenger setOpenWarning={setOpenWarning} />
+                </div>
             );
         case 'whatsapp':
             return (
+                <div style={{ display: display ? 'block' : 'none' }}>
                 <ChannelAddWhatsapp setOpenWarning={setOpenWarning} />
+                </div>
             );
         case 'telegram':
             return (
+                <div style={{ display: display ? 'block' : 'none' }}>
                 <ChannelAddTelegram setOpenWarning={setOpenWarning} />
+                </div>
             );
         case 'twitter':
             return (
+                <div style={{ display: display ? 'block' : 'none' }}>
                 <ChannelAddTwitter setOpenWarning={setOpenWarning} />
+                </div>
             );
         case 'twitterDM':
             return (
+                <div style={{ display: display ? 'block' : 'none' }}>
                 <ChannelAddTwitterDM setOpenWarning={setOpenWarning} />
+                </div>
             );
         case 'chatWeb':
             return (
+                <div style={{ display: display ? 'block' : 'none' }}>
                 <ChannelAddChatWeb setOpenWarning={setOpenWarning} />
+                </div>
             );
         case 'email':
             return <div>email</div>;
@@ -250,11 +198,15 @@ const GetComponent: FC<GetComponentProps> = ({ channel: key, setOpenWarning }) =
             return <div>sms</div>;
         case 'android':
             return (
+                <div style={{ display: display ? 'block' : 'none' }}>
                 <ChannelAddAndroid setOpenWarning={setOpenWarning} />
+                </div>
             );
         case 'apple':
             return (
+                <div style={{ display: display ? 'block' : 'none' }}>
                 <ChannelAddIos setOpenWarning={setOpenWarning} />
+                </div>
             );
         default: return <div />;
     }

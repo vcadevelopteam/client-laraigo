@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useContext, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box, Link, IconButton, Typography } from '@material-ui/core';
-import { DeleteOutline as DeleteOutlineIcon } from '@material-ui/icons';
+import { makeStyles, Breadcrumbs, Button, Box, Link, IconButton, Typography, InputAdornment } from '@material-ui/core';
+import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon } from '@material-ui/icons';
 import { showBackdrop } from 'store/popus/actions';
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
@@ -235,6 +235,13 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
                 variant="outlined"
                 size="small"
                 error={errors.channels?.twitter?.description?.message}
+                InputProps={{
+                    endAdornment: (
+                        <InputAdornment position="end">
+                            <LinkIcon />
+                        </InputAdornment>
+                    )
+                }}
             />
             <FieldEdit
                 onChange={(value) => {

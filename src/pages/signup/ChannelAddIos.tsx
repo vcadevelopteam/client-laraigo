@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useContext, useEffect, useState } from "react";
-import { makeStyles, Button, Box, IconButton, Typography } from '@material-ui/core';
-import { DeleteOutline as DeleteOutlineIcon } from '@material-ui/icons';
+import { makeStyles, Button, Box, IconButton, Typography, InputAdornment } from '@material-ui/core';
+import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon } from '@material-ui/icons';
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
 import { ColorInput, FieldEdit, } from "components";
@@ -113,6 +113,13 @@ export const ChannelAddIos: FC<{ setOpenWarning: (param: any) => void }> = ({ se
                 variant="outlined"
                 size="small"
                 error={errors.channels?.apple?.description?.message}
+                InputProps={{
+                    endAdornment: (
+                        <InputAdornment position="end">
+                            <LinkIcon />
+                        </InputAdornment>
+                    )
+                }}
             />
             {/* <div className="row-zyx">
                 <div className="col-3"></div>

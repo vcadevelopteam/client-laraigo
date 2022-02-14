@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useContext, useEffect, useState } from 'react';
-import { AppBar, Box, Button, makeStyles, Link, Tab, Tabs, Typography, TextField, Grid, Select, IconButton, FormControl, MenuItem, Divider, Breadcrumbs } from '@material-ui/core';
+import { AppBar, Box, Button, makeStyles, Link, Tab, Tabs, Typography, TextField, Grid, Select, IconButton, FormControl, MenuItem, Divider, Breadcrumbs, InputAdornment } from '@material-ui/core';
 import { FieldEdit, IOSSwitch } from 'components';
 import { Trans, useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { langKeys } from 'lang/keys';
 import { ChromePicker, ColorChangeHandler } from 'react-color';
-import { ArrowDropDown, Close, CloudUpload, DeleteOutline as DeleteOutlineIcon } from '@material-ui/icons';
+import { ArrowDropDown, Close, CloudUpload, DeleteOutline as DeleteOutlineIcon, Link as LinkIcon } from '@material-ui/icons';
 import { useForm, useFormContext, UseFormReturn } from 'react-hook-form';
 import { IChatWebAdd, IChatWebAddFormField } from '@types';
 import { useDispatch } from 'react-redux';
@@ -1755,6 +1755,13 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
                 size="small"
                 disabled={loading || integrationId != null}
                 error={errors.channels?.chatWeb?.description?.message}
+                InputProps={{
+                    endAdornment: (
+                        <InputAdornment position="end">
+                            <LinkIcon />
+                        </InputAdornment>
+                    )
+                }}
             />  
 
             {/* <div className="row-zyx">

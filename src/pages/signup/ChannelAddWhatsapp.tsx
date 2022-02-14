@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useContext, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, TextField, IconButton, Typography } from '@material-ui/core';
+import { makeStyles, Breadcrumbs, Button, TextField, IconButton, Typography, InputAdornment } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
-import { DeleteOutline as DeleteOutlineIcon } from '@material-ui/icons';
+import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon } from '@material-ui/icons';
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
 import { FieldEdit, ColorInput } from "components";
@@ -10,7 +10,6 @@ import MuiPhoneNumber from 'material-ui-phone-number';
 import { styled } from '@material-ui/core/styles';
 import { WhatsappColor } from "icons";
 import { useSelector } from "hooks";
-import { Dictionary } from "@types";
 import { MainData, SubscriptionContext } from "./context";
 import { useFormContext } from "react-hook-form";
 
@@ -406,6 +405,13 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                 variant="outlined"
                 size="small"
                 error={errors.channels?.whatsapp?.description?.message}
+                InputProps={{
+                    endAdornment: (
+                        <InputAdornment position="end">
+                            <LinkIcon />
+                        </InputAdornment>
+                    )
+                }}
             />
             {/* <div className="row-zyx">
                 <div className="col-3"></div>

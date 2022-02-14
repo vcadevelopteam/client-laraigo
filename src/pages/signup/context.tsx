@@ -318,28 +318,6 @@ export const SubscriptionProvider: FC = ({ children }) => {
         }
     }, [executeResult, waitSave, form.getValues, dispatch])
 
-    /*const deleteChannel = (option: keyof ListChannels) => {
-        if (foreground === option) setForeground(undefined);
-        form.unregister(`channels.${option}`);
-    }
-
-    const addChannel = (option: keyof ListChannels) => {
-        form.register(`channels.${option}`, {
-            value: { method: "", parameters: {} },
-        });
-    }
-
-    const toggleChannel = (option: keyof ListChannels) => {
-        const v = form.getValues(`channels.${option}`);
-        if (v === undefined) {
-            addChannel(option);
-        } else {
-            deleteChannel(option);
-        }
-    }
-
-    const resetChannels = () => form.setValue('channels', {});*/
-
     const deleteChannel = (option: keyof ListChannels) => {
         setlistchannels(prev => {
             const v = prev[option];
@@ -389,8 +367,6 @@ export const SubscriptionProvider: FC = ({ children }) => {
     const finishreg = () => form.handleSubmit(onSubmit, onError)()
 
     const onSubmit: SubmitHandler<MainData> = (data) => {
-        console.log('success', data);
-        return
         const { channels, ...mainData } = data;
         const majorfield = {
             method: "UFN_CREATEZYXMEACCOUNT_INS",
@@ -412,8 +388,6 @@ export const SubscriptionProvider: FC = ({ children }) => {
     }
 
     const onError: SubmitErrorHandler<MainData> = (err) => {
-        console.log('error', err);
-        return
         dispatch(showSnackbar({
             message: "Debe completar el/los canal/es",
             show: true,
@@ -445,27 +419,6 @@ export const SubscriptionProvider: FC = ({ children }) => {
         </SubscriptionContext.Provider>
     )
 }
-
-/*export function useChannelsCount() {
-    const channels = useWatch<MainData>({
-        name: 'channels',
-        defaultValue: undefined,
-    }) as ListChannels;
-    return useMemo(() => {
-        console.log('useChannelsCount useMemo')
-        if (channels === undefined) {
-            return {
-                count: 0,
-                hasChannel: (option: keyof ListChannels) => false,
-            }
-        }
-        const keys = Object.keys(channels);
-        return {
-            count: keys.length,
-            hasChannel: (option: keyof ListChannels) => keys.includes(option),
-        };
-    }, [channels]);
-}*/
 
 interface PlanData {
     loading: boolean;

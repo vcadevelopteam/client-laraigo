@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useContext, useEffect, useState } from "react";
-import { Button, Typography, IconButton } from '@material-ui/core';
+import { Button, Typography, IconButton, InputAdornment } from '@material-ui/core';
 import { showBackdrop } from 'store/popus/actions';
-import { DeleteOutline as DeleteOutlineIcon } from "@material-ui/icons";
+import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon } from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
 import { FieldEdit, FieldSelect, ColorInput } from "components";
@@ -142,6 +142,13 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
                 variant="outlined"
                 size="small"
                 error={errors.channels?.instagram?.description?.message}
+                InputProps={{
+                    endAdornment: (
+                        <InputAdornment position="end">
+                            <LinkIcon />
+                        </InputAdornment>
+                    )
+                }}
             />
             <FieldSelect
                 onChange={(value) => setValueField(value)}
