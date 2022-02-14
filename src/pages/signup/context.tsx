@@ -10,6 +10,7 @@ import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { executeSubscription, verifyPlan } from 'store/signup/actions';
 import { FormProvider, SubmitErrorHandler, SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import paths from 'common/constants/paths';
+import { resetInsertChannel } from 'store/channel/actions';
 
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 type PlanType = "BASIC" | "PRO" | "PREMIUM" | "ENTERPRISE" | "ADVANCED";
@@ -277,10 +278,12 @@ export const SubscriptionProvider: FC = ({ children }) => {
     const executeResult = useSelector(state => state.signup.insertChannel);
 
     useEffect(() => {
-        if (!planData.loading) {
-            if (planData.error) {
-                window.open(paths.SIGNIN, "_self");
-            }
+        if (!planData.loading && planData.error) {
+            window.open(paths.SIGNIN, "_self");
+        }
+
+        return () => {
+            dispatch(resetInsertChannel());
         }
     }, [planData]);
 
@@ -288,35 +291,72 @@ export const SubscriptionProvider: FC = ({ children }) => {
         dispatch(verifyPlan(match.params.token));
     }, [dispatch, match.params.token]);
 
+    // useEffect(() => {
+    //     if (waitSave) {
+    //         if (!executeResult.loading && !executeResult.error) {
+    //             console.log('success', executeResult);
+    //             dispatch(showBackdrop(false));
+    //             setStep(4); // rating
+    //             let msg = t(langKeys.successful_sign_up);
+    //             const googleid = form.getValues('googleid');
+    //             const facebookid = form.getValues('facebookid');
+    //             if (googleid || facebookid) {
+    //                 msg = t(langKeys.successful_sign_up);
+    //             }
+    //             dispatch(showSnackbar({
+    //                 show: true,
+    //                 success: true,
+    //                 message: msg,
+    //             }));
+    //             setWaitSave(false);
+    //         } else if (executeResult.error) {
+    //             console.log('error', executeResult);
+    //             dispatch(showBackdrop(false));
+    //             const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
+    //             dispatch(showSnackbar({
+    //                 show: true,
+    //                 success: false,
+    //                 message: errormessage,
+    //             }))
+    //             setWaitSave(false);
+    //         }
+    //     }
+
+    //     return () => {
+    //         dispatch(resetInsertChannel());
+    //     }
+    // }, [executeResult, waitSave, form.getValues, dispatch])
+
     useEffect(() => {
-        if (waitSave) {
-            if (!executeResult.loading && !executeResult.error) {
-                dispatch(showBackdrop(false));
-                setStep(4); // rating
-                let msg = t(langKeys.successful_sign_up);
-                const googleid = form.getValues('googleid');
-                const facebookid = form.getValues('facebookid');
-                if (googleid || facebookid) {
-                    msg = t(langKeys.successful_sign_up);
-                }
-                dispatch(showSnackbar({
-                    show: true,
-                    success: true,
-                    message: msg,
-                }));
-                setWaitSave(false);
-            } else if (executeResult.error) {
-                dispatch(showBackdrop(false));
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-                dispatch(showSnackbar({
-                    show: true,
-                    success: false,
-                    message: errormessage,
-                }))
-                setWaitSave(false);
+        if (executeResult.loading === true) return;
+        if (executeResult.value && !executeResult.error) {
+            console.log('success', executeResult);
+            dispatch(showBackdrop(false));
+            setStep(4); // rating
+            let msg = t(langKeys.successful_sign_up);
+            const googleid = form.getValues('googleid');
+            const facebookid = form.getValues('facebookid');
+            if (googleid || facebookid) {
+                msg = t(langKeys.successful_sign_up);
             }
+            dispatch(showSnackbar({
+                show: true,
+                success: true,
+                message: msg,
+            }));
+            setWaitSave(false);
+        } else if (executeResult.error) {
+            console.log('error', executeResult);
+            dispatch(showBackdrop(false));
+            const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
+            dispatch(showSnackbar({
+                show: true,
+                success: false,
+                message: errormessage,
+            }))
+            setWaitSave(false);
         }
-    }, [executeResult, waitSave, form.getValues, dispatch])
+    }, [executeResult, form.getValues, dispatch])
 
     const deleteChannel = (option: keyof ListChannels) => {
         setlistchannels(prev => {
@@ -362,7 +402,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
             keys(listchannels).
             filter(key => listchannels[key as keyof ListChannels] === true).
             length;
-    }, [form.getValues('channels')]);
+    }, [listchannels]);
 
     const finishreg = () => form.handleSubmit(onSubmit, onError)()
 
@@ -375,6 +415,8 @@ export const SubscriptionProvider: FC = ({ children }) => {
                 paymentplanid: planData.data[0].paymentplanid,
                 paymentplan: planData.data[0].plan,
                 sunatcountry: "",
+                timezoneoffset: (new Date().getTimezoneOffset() / 60) * -1,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
             },
             channellist: Object.values(channels).map(
                 function<T extends {build: (v: any) => IRequestBody}>(x: T) {
