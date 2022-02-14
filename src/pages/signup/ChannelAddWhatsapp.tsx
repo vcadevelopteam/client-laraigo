@@ -148,18 +148,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
         })});
 
         return () => {
-            unregister('channels.whatsapp.description')
-            unregister('channels.whatsapp.accesstoken')
-            unregister('channels.whatsapp.brandName');
-            unregister('channels.whatsapp.brandAddress');
-            unregister('channels.whatsapp.firstName');
-            unregister('channels.whatsapp.lastName');
-            unregister('channels.whatsapp.email');
-            unregister('channels.whatsapp.phone');
-            unregister('channels.whatsapp.customerfacebookid');
-            unregister('channels.whatsapp.phonenumberwhatsappbusiness');
-            unregister('channels.whatsapp.nameassociatednumber');
-            unregister('channels.whatsapp.build')
+            unregister('channels.whatsapp')
         }
     }, [register, unregister]);
 

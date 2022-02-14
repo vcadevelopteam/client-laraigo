@@ -69,12 +69,7 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
         })});
 
         return () => {
-            unregister('channels.instagramDM.description')
-            unregister('channels.instagramDM.accesstoken')
-            unregister('channels.instagramDM.communicationchannelowner');
-            unregister('channels.instagramDM.communicationchannelsite')
-            unregister('channels.instagramDM.siteid')
-            unregister('channels.instagramDM.build')
+            unregister('channels.instagramDM')
         }
     }, [register, unregister]);
 

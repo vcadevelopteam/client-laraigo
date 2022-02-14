@@ -72,12 +72,7 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
         })});
 
         return () => {
-            unregister('channels.instagram.description')
-            unregister('channels.instagram.accesstoken')
-            unregister('channels.instagram.communicationchannelowner');
-            unregister('channels.instagram.communicationchannelsite')
-            unregister('channels.instagram.siteid')
-            unregister('channels.instagram.build')
+            unregister('channels.instagram')
         }
     }, [register, unregister]);
 

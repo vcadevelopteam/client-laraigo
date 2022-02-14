@@ -73,12 +73,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
         })});
 
         return () => {
-            unregister('channels.messenger.description')
-            unregister('channels.messenger.accesstoken')
-            unregister('channels.messenger.communicationchannelowner');
-            unregister('channels.messenger.communicationchannelsite')
-            unregister('channels.messenger.siteid')
-            unregister('channels.messenger.build')
+            unregister('channels.messenger')
         }
     }, [register, unregister]);
 

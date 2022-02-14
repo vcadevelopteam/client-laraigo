@@ -76,12 +76,7 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
         })});
 
         return () => {
-            unregister('channels.facebook.description')
-            unregister('channels.facebook.accesstoken')
-            unregister('channels.facebook.communicationchannelowner');
-            unregister('channels.facebook.communicationchannelsite')
-            unregister('channels.facebook.siteid')
-            unregister('channels.facebook.build')
+            unregister('channels.facebook')
         }
     }, [register, unregister]);
 
