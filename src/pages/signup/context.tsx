@@ -400,8 +400,12 @@ export const SubscriptionProvider: FC = ({ children }) => {
                 paymentplan: planData.data[0].plan,
                 sunatcountry: "",
             },
-            channellist: Object.values(channels),
-        }
+            channellist: Object.values(channels).map(
+                function<T extends {build: (v: any) => IRequestBody}>(x: T) {
+                    return x.build(x);
+                }
+            ),
+        };
         dispatch(showBackdrop(true));
         setWaitSave(true);
         dispatch(executeSubscription(majorfield));

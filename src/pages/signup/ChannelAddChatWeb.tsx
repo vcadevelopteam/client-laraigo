@@ -7,17 +7,15 @@ import clsx from 'clsx';
 import { langKeys } from 'lang/keys';
 import { ChromePicker, ColorChangeHandler } from 'react-color';
 import { ArrowDropDown, Close, CloudUpload, DeleteOutline as DeleteOutlineIcon } from '@material-ui/icons';
-import { useHistory } from 'react-router';
-import { useForm, UseFormReturn } from 'react-hook-form';
+import { useForm, useFormContext, UseFormReturn } from 'react-hook-form';
 import { IChatWebAdd, IChatWebAddFormField } from '@types';
 import { useDispatch } from 'react-redux';
 import { resetInsertChannel } from 'store/channel/actions';
 import { useSelector } from 'hooks';
 import { showSnackbar } from 'store/popus/actions';
 import { getInsertChatwebChannel } from 'common/helpers';
-import paths from 'common/constants/paths';
 import { ZyxmeMessengerIcon } from 'icons';
-import { SubscriptionContext } from './context';
+import { MainData, SubscriptionContext } from './context';
 
 interface TabPanelProps {
     value: string;
@@ -103,6 +101,17 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) =
     const [headerBtn, setHeaderBtn] = useState<File | null>(getValues('interface.iconheader') as File);
     const [botBtn, setBotBtn] = useState<File | null>(getValues('interface.iconbot') as File);
 
+    useEffect(() => {
+        const strRequired = (value: string) => {
+            if (!value) {
+                return t(langKeys.field_required);
+            }
+        }
+
+        form.register('interface.chattitle', { validate: strRequired, value: '' });
+        form.register('interface.chatsubtitle', { validate: strRequired, value: '' });
+    }, [form.register, form.unregister]);
+
     const handleChatBtnClick = () => {
         const input = document.getElementById('chatBtnInput');
         input!.click();
@@ -183,6 +192,8 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) =
                                 size="small"
                                 defaultValue={getValues('interface.chattitle')}
                                 onChange={(e) => setValue('interface.chattitle', e.target.value)}
+                                error={!!form.formState.errors.interface?.chattitle}
+                                helperText={form.formState.errors.interface?.chattitle?.message}
                             />
                         </Grid>
                     </Grid>
@@ -205,6 +216,8 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) =
                                 size="small"
                                 defaultValue={getValues('interface.chatsubtitle')}
                                 onChange={(e) => setValue('interface.chatsubtitle', e.target.value)}
+                                error={!!form.formState.errors.interface?.chatsubtitle}
+                                helperText={form.formState.errors.interface?.chatsubtitle?.message}
                             />
                         </Grid>
                     </Grid>
@@ -1468,16 +1481,13 @@ const useStyles = makeStyles(theme => ({
 
 export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
     const classes = useStyles();
-    const {
-        foreground,
-        setConfirmations,
-        setForeground,
-    } = useContext(SubscriptionContext);
+    const { foreground, setForeground } = useContext(SubscriptionContext);
+    const { getValues, setValue, register, unregister, formState: { errors } } = useFormContext<MainData>();
     const dispatch = useDispatch();
     const [hasFinished, setHasFinished] = useState(false);
     const [selectedView, setSelectedView] = useState("view1");
     const [tabIndex, setTabIndes] = useState('0');
-    const [channelName, setChannelName] = useState("");
+    const { t } = useTranslation();
 
     const insertChannel = useSelector(state => state.channel.insertChannel);
 
@@ -1510,7 +1520,7 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
         }
     }, [insertChannel]);
 
-    const form: UseFormReturn<IChatWebAdd> = useForm<IChatWebAdd>({
+    const nestedForm: UseFormReturn<IChatWebAdd> = useForm<IChatWebAdd>({
         defaultValues: {
             interface: {
                 chattitle: "",
@@ -1556,28 +1566,27 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
         },
     });
 
-    // useEffect(() => {
-    //     if (channelName.length > 0) {
-    //         setrequestchannels(prev => {
-    //             const body = getInsertChatwebChannel(channelName, false, "#7721ad", form.getValues());
-    //             const index = prev.findIndex(x => x.type === "CHATWEB");
-    //             if (index === -1) {
-    //                 return [
-    //                     ...prev,
-    //                     body,
-    //                 ]
-    //             } else {
-    //                 prev.splice(index, 1);
-    //                 return [
-    //                     ...prev,
-    //                     body,
-    //                 ];
-    //             }
-    //         });
-    //     } else {
-    //         setrequestchannels(prev => prev.filter(x => x.type !== "CHATWEB"));
-    //     }
-    // }, [channelName, form.getValues]);
+    useEffect(() => {
+        const strRequired = (value: string) => {
+            if (!value) {
+                return t(langKeys.field_required);
+            }
+        }
+        
+        register('channels.chatWeb.description', { validate: strRequired, value: '' });
+        register('channels.chatWeb.build', { value: values => {
+            return getInsertChatwebChannel(
+                getValues('channels.chatWeb.description'),
+                false,
+                "#7721ad",
+                nestedForm.getValues(),
+            );
+        }});
+
+        return () => {
+            unregister('channels.chatWeb')
+        }
+    }, [register, unregister]);
 
     const setView = (option: "view1" | "view2") => {
         if (option === "view1") {
@@ -1593,13 +1602,9 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
         return (
             <ChannelAddEnd
                 hasFinished={hasFinished}
-                channelName={channelName}
-                setChannelName={setChannelName}
                 loading={insertChannel.loading}
                 integrationId={insertChannel.value?.integrationid}
-                onNext={() => {
-                    setView("view2");
-                }}
+                onNext={() => setView("view2")}
             />
         );
     }
@@ -1640,35 +1645,21 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
                         <Tab className={clsx(classes.tab, tabIndex === "4" && classes.activetab)} label={<Trans i18nKey={langKeys.extra} count={2} />} value="4" />
                     </Tabs>
                 </AppBar>
-                <TabPanel value="0" index={tabIndex}><TabPanelInterface form={form} /></TabPanel>
-                <TabPanel value="1" index={tabIndex}><TabPanelColors form={form} /></TabPanel>
-                <TabPanel value="2" index={tabIndex}><TabPanelForm form={form} /></TabPanel>
-                <TabPanel value="3" index={tabIndex}><TabPanelBubble form={form} /></TabPanel>
-                <TabPanel value="4" index={tabIndex}><TabPanelExtras form={form} /></TabPanel>
+                <TabPanel value="0" index={tabIndex}><TabPanelInterface form={nestedForm} /></TabPanel>
+                <TabPanel value="1" index={tabIndex}><TabPanelColors form={nestedForm} /></TabPanel>
+                <TabPanel value="2" index={tabIndex}><TabPanelForm form={nestedForm} /></TabPanel>
+                <TabPanel value="3" index={tabIndex}><TabPanelBubble form={nestedForm} /></TabPanel>
+                <TabPanel value="4" index={tabIndex}><TabPanelExtras form={nestedForm} /></TabPanel>
                 <div style={{ height: 20 }} />
                 <Button
                     variant="contained"
                     color="primary"
-                    onClick={() => {
-                        // setrequestchannels(prev => {
-                        //     const body = getInsertChatwebChannel(channelName, false, "#7721ad", form.getValues());
-                        //     const index = prev.findIndex(x => x.type === "CHATWEB");
-                        //     if (index === -1) {
-                        //         return [
-                        //             ...prev,
-                        //             body,
-                        //         ]
-                        //     } else {
-                        //         prev.splice(index, 1);
-                        //         return [
-                        //             ...prev,
-                        //             body,
-                        //         ];
-                        //     }
-                        // });
-                        setView("view1");
-                        setHasFinished(true);
-                        setConfirmations(prev => prev++);
+                    onClick={async () => {
+                        const valid = await nestedForm.trigger();
+                        if (valid) {
+                            setView("view1");
+                            setHasFinished(true);
+                        }
                     }}
                 >
                     <Trans i18nKey={langKeys.next} />
@@ -1707,18 +1698,14 @@ const useFinalStepStyles = makeStyles(theme => ({
 }));
 
 interface ChannelAddEndProps {
-    channelName: string;
     hasFinished: boolean;
-    setChannelName: (value: string) => void;
     loading: boolean;
     integrationId?: string;
     onNext: () => void;
 }
 
 const ChannelAddEnd: FC<ChannelAddEndProps> = ({
-    channelName,
     hasFinished,
-    setChannelName,
     onNext,
     loading,
     integrationId,
@@ -1730,6 +1717,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
         deleteChannel,
     } = useContext(SubscriptionContext);
     const { t } = useTranslation();
+    const { getValues, setValue, formState: { errors } } = useFormContext<MainData>();
     // const [hexIconColor, setHexIconColor] = useState("#7721ad");
 
     return (
@@ -1760,12 +1748,13 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
             </div>
             )}
             <FieldEdit
-                onChange={(value) => setChannelName(value)}
-                valueDefault={channelName}
+                onChange={v => setValue('channels.chatWeb.description', v)}
+                valueDefault={getValues('channels.chatWeb.description')}
                 label={t(langKeys.givechannelname)}
                 variant="outlined"
                 size="small"
                 disabled={loading || integrationId != null}
+                error={errors.channels?.chatWeb?.description?.message}
             />  
 
             {/* <div className="row-zyx">
@@ -1786,7 +1775,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
                     className={commonClasses.button}
                     variant="contained"
                     color="primary"
-                    disabled={loading || integrationId != null || channelName.length === 0}
+                    disabled={loading || integrationId != null}
                 >
                     <Trans i18nKey={langKeys.next} />
                 </Button>
@@ -1796,7 +1785,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
                     className={commonClasses.button}
                     variant="contained"
                     color="primary"
-                    disabled={loading || integrationId != null || channelName.length === 0}
+                    disabled={loading || integrationId != null}
                 >
                     <Trans i18nKey={langKeys.finishreg} />
                 </Button>
