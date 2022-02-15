@@ -147,6 +147,8 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, da
 const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit }, setViewSelected, multiData, fetchData }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
+    const user = useSelector(state => state.login.validateToken.user);
+    const useradmin = user?.roledesc === "ADMINISTRADOR"
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
@@ -156,7 +158,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
     const [openDialogDomain, setOpenDialogDomain] = useState(false);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, domainname: "", edit: false });
     const dataDomainStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataDomainType = multiData[0] && multiData[1].success ? multiData[1].data : [];
+    const dataDomainType = multiData[0] && multiData[1].success ? (useradmin?multiData[1].data.filter(x=>x.domainvalue === "BOT"):multiData[1].data) : [];
 
     const columns = React.useMemo(
         () => [
@@ -387,7 +389,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
                                         />}
                                 </div>
                                 <div className="row-zyx">
-                                    {edit ?
+                                    {!useradmin ?
                                         <FieldSelect
                                             label={t(langKeys.type)}
                                             className="col-6"
@@ -478,7 +480,7 @@ const Domains: FC = () => {
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, domainname: "", edit: false });
     const [waitSave, setWaitSave] = useState(false);
     const user = useSelector(state => state.login.validateToken.user);
-    const superadmin = user?.roledesc === "SUPERADMIN"
+    const superadmin = user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMINISTRADOR"
 
     const columns = React.useMemo(
         () => [
