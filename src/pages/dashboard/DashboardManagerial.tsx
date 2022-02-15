@@ -1368,6 +1368,7 @@ const DashboardManagerial: FC = () => {
             </div>
             <div style={{ display: 'flex', gap: 16, flexDirection: 'column' }}>
                 <div className={classes.replacerowzyx}>
+                    {console.log(data)}
                     { (resaux.loading && fieldToFilter==="TMO")?
                         (<Box  className={classes.itemCard} style={{display: "flex", alignItems: 'center', justifyContent: "center"}}>
                             <CircularProgress/>
