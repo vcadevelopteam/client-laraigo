@@ -1,12 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useContext, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box, Link, IconButton, Typography } from '@material-ui/core';
-import { DeleteOutline as DeleteOutlineIcon } from '@material-ui/icons';
+import { makeStyles, Breadcrumbs, Button, Box, Link, IconButton, Typography, InputAdornment } from '@material-ui/core';
+import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon } from '@material-ui/icons';
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
 import { FieldEdit, ColorInput } from "components";
 import { TelegramColor } from "icons";
-import { SubscriptionContext } from "./context";
+import { MainData, SubscriptionContext } from "./context";
+import { useFormContext } from "react-hook-form";
 
 const useChannelAddStyles = makeStyles(theme => ({
     centerbutton: {
@@ -29,72 +30,58 @@ export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = 
         selectedChannels,
         finishreg,
         deleteChannel,
-        setrequestchannels,
     } = useContext(SubscriptionContext);
-    const [botKey, $setBotKey] = useState("");
+    const { getValues, setValue, register, unregister, formState: { errors } } = useFormContext<MainData>();
     const [hasFinished, setHasFinished] = useState(false)
     const [coloricon, setcoloricon] = useState("#207FDD");
-    const [channelName, setChannelName] = useState("");
     const { t } = useTranslation();
-    const classes = useChannelAddStyles();
-    const [fields, setFields] = useState({
-        "method": "UFN_COMMUNICATIONCHANNEL_INS",
-        "parameters": {
-            "id": 0,
-            "description": "",
-            "type": "",
-            "communicationchannelsite": "",
-            "communicationchannelowner": "",
-            "chatflowenabled": true,
-            "integrationid": "",
-            "color": "",
-            "icons": "",
-            "other": "",
-            "form": "",
-            "apikey": "",
-            "coloricon": "#207FDD",
-        },
-        "type": "TELEGRAM",
-        "service": {
-            "accesstoken": ""
-        }
-    })
 
     useEffect(() => {
-        if (channelName.length > 0 && botKey.length > 0) {
-            setrequestchannels(prev => {
-                const index = prev.findIndex(x => x.type === "TELEGRAM");
-                if (index === -1) {
-                    return [
-                        ...prev,
-                        fields,
-                    ]
-                } else {
-                    prev.splice(index, 1);
-                    return [
-                        ...prev,
-                        fields,
-                    ];
-                }
-            });
-            setHasFinished(true)
-        } else {
-            setrequestchannels(prev => prev.filter(x => x.type !== "TELEGRAM"));
+        const strRequired = (value: string) => {
+            if (!value) {
+                return t(langKeys.field_required);
+            }
         }
-    }, [channelName, botKey, fields]);
+        
+        register('channels.telegram.description', { validate: strRequired, value: '' });
+        register('channels.telegram.accesstoken', { validate: strRequired, value: '' });
+        register('channels.telegram.communicationchannelowner', { value: '' });
+        register('channels.telegram.build', { value: values => ({
+            "method": "UFN_COMMUNICATIONCHANNEL_INS",
+            "parameters": {
+                "id": 0,
+                "description": values.description,
+                "type": "",
+                "communicationchannelsite": "",
+                "communicationchannelowner": "",
+                "chatflowenabled": true,
+                "integrationid": "",
+                "color": "",
+                "icons": "",
+                "other": "",
+                "form": "",
+                "apikey": "",
+                "coloricon": "#207FDD",
+            },
+            "type": "TELEGRAM",
+            "service": {
+                "accesstoken": values.accesstoken
+            }
+        })});
 
-    function setnameField(value: any) {
-        setChannelName(value)
-        let partialf = fields;
-        partialf.parameters.description = value
-        setFields(partialf)
-    }
+        return () => {
+            unregister('channels.telegram')
+        }
+    }, [register, unregister]);
+
     function setBotKey(val: string) {
-        $setBotKey(val)
-        let partialf = fields;
-        partialf.service.accesstoken = val;
-        partialf.parameters.communicationchannelowner = "";
-        setFields(partialf)
+        setValue('channels.telegram.accesstoken', val);
+        setValue('channels.telegram.communicationchannelowner', "");
+        if (val.length > 0 && !hasFinished) {
+            setHasFinished(true);
+        } else if (val.length === 0 && hasFinished) {
+            setHasFinished(false);
+        }
     }
 
     return (
@@ -105,7 +92,7 @@ export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = 
                 className={commonClasses.trailingIcon}
                 onClick={() => {
                     deleteChannel('telegram');
-                    setrequestchannels(prev => prev.filter(x => x.type !== "TELEGRAM"));
+                    // setrequestchannels(prev => prev.filter(x => x.type !== "TELEGRAM"));
                 }}
             >
                 <DeleteOutlineIcon />
@@ -131,18 +118,27 @@ export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = 
             </div>
             )}
             <FieldEdit
-                onChange={(value) => setnameField(value)}
-                valueDefault={channelName}
+                onChange={v => setValue('channels.telegram.description', v)}
+                valueDefault={getValues('channels.telegram.description')}
                 label={t(langKeys.givechannelname)}
                 variant="outlined"
                 size="small"
+                error={errors.channels?.telegram?.description?.message}
+                InputProps={{
+                    endAdornment: (
+                        <InputAdornment position="end">
+                            <LinkIcon />
+                        </InputAdornment>
+                    )
+                }}
             />
             <FieldEdit
                 onChange={(value) => setBotKey(value)}
-                valueDefault={botKey}
+                valueDefault={getValues('channels.telegram.accesstoken')}
                 label={t(langKeys.enterbotapikey)}
                 variant="outlined"
                 size="small"
+                error={errors.channels?.telegram?.accesstoken?.message}
             />
             {/* <div className="row-zyx">
                 <div className="col-3"></div>
@@ -169,7 +165,6 @@ export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = 
                 <Button
                     onClick={finishreg}
                     className={commonClasses.button}
-                    disabled={channelName.length === 0 && botKey.length === 0}
                     variant="contained"
                     color="primary"
                 >

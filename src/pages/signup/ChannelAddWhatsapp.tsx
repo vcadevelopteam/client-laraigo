@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useContext, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, TextField, IconButton, Typography } from '@material-ui/core';
+import { makeStyles, Breadcrumbs, Button, TextField, IconButton, Typography, InputAdornment } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
-import { DeleteOutline as DeleteOutlineIcon } from '@material-ui/icons';
+import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon } from '@material-ui/icons';
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
 import { FieldEdit, ColorInput } from "components";
@@ -10,8 +10,8 @@ import MuiPhoneNumber from 'material-ui-phone-number';
 import { styled } from '@material-ui/core/styles';
 import { WhatsappColor } from "icons";
 import { useSelector } from "hooks";
-import { Dictionary } from "@types";
-import { SubscriptionContext } from "./context";
+import { MainData, SubscriptionContext } from "./context";
+import { useFormContext } from "react-hook-form";
 
 const useChannelAddStyles = makeStyles(theme => ({
     centerbutton: {
@@ -67,66 +67,89 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
         commonClasses,
         foreground,
         selectedChannels,
-        setConfirmations,
         finishreg,
         setForeground,
         deleteChannel,
-        setrequestchannels,
     } = useContext(SubscriptionContext);
+    const { getValues, setValue, register, unregister, formState: { errors }, trigger } = useFormContext<MainData>();
     const [viewSelected, setViewSelected] = useState("view1");
     const planData = useSelector(state => state.signup.verifyPlan)
-    const provider = planData.data[0].providerwhatsapp
     const [apiKey, setApiKey] = useState("");
     const [hasFinished, setHasFinished] = useState(false);
-    const [disablebutton, setdisablebutton] = useState(true);
     const [coloricon, setcoloricon] = useState("#4AC959");
-    const [channelName, setChannelName] = useState("");
     const { t } = useTranslation();
-    const [errors, setErrors] = useState<Dictionary>({
-        accesstoken: "",
-        brandName: "",
-        brandAddress: "",
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        customerfacebookid: "",
-        phonenumberwhatsappbusiness: "",
-        nameassociatednumber: "",
-    });
+
     const classes = useChannelAddStyles();
-    const type = provider === "DIALOG" ? "WHATSAPPSMOOCH" : "WHATSAPPSMOOCH";
-    const [fields, setFields] = useState({
-        "method": "UFN_COMMUNICATIONCHANNEL_INS",
-        "parameters": {
-            "id": 0,
-            "description": "",
-            "type": "",
-            "communicationchannelsite": "",
-            "communicationchannelowner": "",
-            "chatflowenabled": true,
-            "integrationid": "",
-            "color": "",
-            "icons": "",
-            "other": "",
-            "form": "",
-            "apikey": "",
-            "coloricon": "#4AC959",
-        },
-        "type": type,
-        "service": {
-            "accesstoken": "",
-            "brandname": "",
-            "brandaddress": "",
-            "firstname": "",
-            "lastname": "",
-            "email": "",
-            "phone": "",
-            "customerfacebookid": "",
-            "phonenumberwhatsappbusiness": "",
-            "nameassociatednumber": "",
+
+    useEffect(() => {
+        const strRequired = (value: string) => {
+            if (!value) {
+                return t(langKeys.field_required);
+            }
         }
-    })
+
+        const emailRequired = (value: string) => {
+            if (value.length === 0) {
+                return t(langKeys.field_required) as string;
+            } else if (!/\S+@\S+\.\S+/.test(value)) {
+                return t(langKeys.emailverification) as string;
+            }
+        }
+        
+        const phoneRequired = (value: string) => {
+            if (!phoneRegExp.test(value) || value.length < 10) {
+                return "Ingrese un número de telefono válido"
+            }
+        }
+
+        register('channels.whatsapp.description', { validate: strRequired, value: '' });
+        register('channels.whatsapp.accesstoken', { validate: strRequired, value: '' });
+        register('channels.whatsapp.brandName', { validate: strRequired, value: '' });
+        register('channels.whatsapp.brandAddress', { validate: strRequired, value: '' });
+        register('channels.whatsapp.firstName', { validate: strRequired, value: '' });
+        register('channels.whatsapp.lastName', { validate: strRequired, value: '' });
+        register('channels.whatsapp.email', { validate: emailRequired, value: '' });
+        register('channels.whatsapp.phone', { validate: phoneRequired, value: '' });
+        register('channels.whatsapp.customerfacebookid', { validate: strRequired, value: '' });
+        register('channels.whatsapp.phonenumberwhatsappbusiness', { validate: strRequired, value: '' });
+        register('channels.whatsapp.nameassociatednumber', { validate: strRequired, value: '' });
+        register('channels.whatsapp.communicationchannelowner', { value: '' });
+        register('channels.whatsapp.build', { value: values => ({
+            "method": "UFN_COMMUNICATIONCHANNEL_INS",
+            "parameters": {
+                "id": 0,
+                "description": values.description,
+                "type": "",
+                "communicationchannelsite": "",
+                "communicationchannelowner": values.communicationchannelowner,
+                "chatflowenabled": true,
+                "integrationid": "",
+                "color": "",
+                "icons": "",
+                "other": "",
+                "form": "",
+                "apikey": "",
+                "coloricon": "#4AC959",
+            },
+            "type": "WHATSAPPSMOOCH",
+            "service": {
+                "accesstoken": values.accesstoken,
+                "brandname": values.brandName,
+                "brandaddress": values.brandAddress,
+                "firstname": values.firstName,
+                "lastname": values.lastName,
+                "email": values.email,
+                "phone": values.phone,
+                "customerfacebookid": values.customerfacebookid,
+                "phonenumberwhatsappbusiness": values.phonenumberwhatsappbusiness,
+                "nameassociatednumber": values.nameassociatednumber,
+            }
+        })});
+
+        return () => {
+            unregister('channels.whatsapp')
+        }
+    }, [register, unregister]);
 
     useEffect(() => {
         if (foreground !== 'whatsapp' && viewSelected !== "view1") {
@@ -134,46 +157,8 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
         } 
     }, [foreground, viewSelected]);
 
-    useEffect(() => {
-        if (channelName.length > 0) {
-            setrequestchannels(prev => {
-                const index = prev.findIndex(x => x.type === type);
-                if (index === -1) {
-                    return [
-                        ...prev,
-                        fields,
-                    ]
-                } else {
-                    prev.splice(index, 1);
-                    return [
-                        ...prev,
-                        fields,
-                    ];
-                }
-            });
-        } else {
-            setrequestchannels(prev => prev.filter(x => x.type !== type));
-        }
-    }, [channelName, fields]);
-
     function checkissues() {
         setViewSelected("view2")
-    }
-
-    function setnameField(value: any) {
-        setChannelName(value);
-        let partialf = fields;
-        partialf.parameters.description = value
-        setFields(partialf)
-    }
-
-    function disableContinue(value: any) {
-        if (fields.service.email.includes('@') && fields.service.email.includes('.')) {
-            setdisablebutton(!(value) || !(fields.service.lastname) || !(fields.service.email) || !(fields.service.phone.length>9) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber))
-        }
-        else {
-            setdisablebutton(true);
-        }
     }
 
     const setView = (option: "view1" | "view2" | "view3") => {
@@ -188,10 +173,8 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
 
     function setService(value: string, field: string) {
         setApiKey(value);
-        let partialf = fields;
-        partialf.service.accesstoken = value;
-        partialf.parameters.communicationchannelowner = "";
-        setFields(partialf)
+        setValue('channels.whatsapp.accesstoken', value);
+        setValue('channels.whatsapp.communicationchannelowner', "");
     }
 
     if (viewSelected === "view2") {
@@ -218,17 +201,12 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                         margin="normal"
                         fullWidth
                         size="small"
-                        defaultValue={fields.service.firstname}
+                        defaultValue={getValues('channels.whatsapp.firstName')}
                         label={t(langKeys.firstname)}
                         name="firstname"
-                        error={!!errors.firstname}
-                        helperText={errors.firstname}
-                        onChange={(e) => {
-                            let partialf = fields;
-                            partialf.service.firstname = e.target.value;
-                            setFields(partialf);
-                            disableContinue(e.target.value);
-                        }}
+                        error={!!errors.channels?.whatsapp?.firstName}
+                        helperText={errors.channels?.whatsapp?.firstName?.message}
+                        onChange={(e) => setValue('channels.whatsapp.firstName', e.target.value)}
                     />
                     <TextField
                         className={classes.fields2}
@@ -236,17 +214,12 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                         margin="normal"
                         fullWidth
                         size="small"
-                        defaultValue={fields.service.lastname}
+                        defaultValue={getValues('channels.whatsapp.lastName')}
                         label={t(langKeys.lastname)}
                         name="lastname"
-                        error={!!errors.lastname}
-                        helperText={errors.lastname}
-                        onChange={(e) => {
-                            let partialf = fields;
-                            partialf.service.lastname = e.target.value;
-                            setFields(partialf);
-                            disableContinue(e.target.value);
-                        }}
+                        error={!!errors.channels?.whatsapp?.lastName}
+                        helperText={errors.channels?.whatsapp?.lastName?.message}
+                        onChange={(e) => setValue('channels.whatsapp.lastName', e.target.value)}
                     />
                 </div>
                 <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display: "flex" }}>
@@ -259,22 +232,10 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                         size="small"
                         label={t(langKeys.email)}
                         name="email"
-                        defaultValue={fields.service.email}
-                        error={!!errors.email}
-                        helperText={errors.email}
-                        onChange={(e) => {
-                            let partialf = fields;
-                            partialf.service.email = e.target.value;
-                            setFields(partialf);
-                            setErrors(p => ({
-                                ...p,
-                                email: e.target.value.includes('@') &&
-                                    e.target.value.includes('.')
-                                    ? ""
-                                    : t(langKeys.emailverification)
-                            }));
-                            disableContinue(e.target.value);
-                        }}
+                        defaultValue={getValues('channels.whatsapp.email')}
+                        error={!!errors.channels?.whatsapp?.email}
+                        helperText={errors.channels?.whatsapp?.email?.message}
+                        onChange={(e) => setValue('channels.whatsapp.email', e.target.value)}
                     />
                     <CssPhonemui
                         className={classes.fields2}
@@ -282,25 +243,14 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                         margin="normal"
                         size="small"
                         disableAreaCodes={true}
-                        value={fields.service.phone}
-                        error={!!errors.phone}
-                        helperText={errors.phone}
+                        value={getValues('channels.whatsapp.phone')}
+                        error={!!errors.channels?.whatsapp?.phone}
+                        helperText={errors.channels?.whatsapp?.phone?.message}
                         label={t(langKeys.phone)}
                         name="phone"
                         fullWidth
                         defaultCountry={'pe'}
-                        onChange={(e) => {
-                            let partialf = fields;
-                            partialf.service.phone = e;
-                            setFields(partialf);
-                            setErrors(p => ({
-                                ...p,
-                                phone: (!phoneRegExp.test(e as string) || e.length < 10)
-                                    ? "Ingrese un número de telefono válido"
-                                    : "",
-                            }));
-                            disableContinue(e);
-                        }}
+                        onChange={(e: string) => setValue('channels.whatsapp.phone', e)}
                     />
                 </div>
                 <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginLeft: "15px", marginBottom: "15px" }}>{t(langKeys.emailcondition)}</div>
@@ -312,17 +262,12 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                         margin="normal"
                         fullWidth
                         size="small"
-                        defaultValue={fields.service.phonenumberwhatsappbusiness}
+                        defaultValue={getValues('channels.whatsapp.phonenumberwhatsappbusiness')}
                         label={t(langKeys.desiredphonenumberwhatsappbusiness)}
                         name="phonenumberwhatsappbusiness"
-                        error={!!errors.phonenumberwhatsappbusiness}
-                        helperText={errors.phonenumberwhatsappbusiness}
-                        onChange={(e) => {
-                            let partialf = fields;
-                            partialf.service.phonenumberwhatsappbusiness = e.target.value;
-                            setFields(partialf);
-                            disableContinue(e.target.value);
-                        }}
+                        error={!!errors.channels?.whatsapp?.phonenumberwhatsappbusiness}
+                        helperText={errors.channels?.whatsapp?.phonenumberwhatsappbusiness?.message}
+                        onChange={e => setValue('channels.whatsapp.phonenumberwhatsappbusiness', e.target.value)}
                     />
                 </div>
                 <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginLeft: "15px", marginBottom: "15px" }}>
@@ -338,32 +283,36 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                         margin="normal"
                         fullWidth
                         size="small"
-                        defaultValue={fields.service.nameassociatednumber}
+                        defaultValue={getValues('channels.whatsapp.nameassociatednumber')}
                         label={t(langKeys.nameassociatednumber)}
                         name="nameassociatednumber"
-                        error={!!errors.nameassociatednumber}
-                        helperText={errors.nameassociatednumber}
-                        onChange={(e) => {
-                            let partialf = fields;
-                            partialf.service.nameassociatednumber = e.target.value;
-                            setFields(partialf);
-                            disableContinue(e.target.value);
-                        }}
+                        error={!!errors.channels?.whatsapp?.nameassociatednumber}
+                        helperText={errors.channels?.whatsapp?.nameassociatednumber?.message}
+                        onChange={e => setValue('channels.whatsapp.nameassociatednumber', e.target.value)}
                     />
                 </div>
                 <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginLeft: "15px", marginBottom: "20px" }}>{t(langKeys.whatsappinformation4)}</div>
                 <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginLeft: "15px", marginBottom: "15px" }}><b>*{t(langKeys.whatsappsubtitle1)}</b></div>
                 <div style={{ width: "100%", margin: "0px 15px" }}>
                     <Button
-                        // onClick={() => { checkissues() }}
-                        onClick={() => {
-                            // setViewSelected("viewfinishreg")
-                            setView("view1");
-                            setHasFinished(true);
-                            setConfirmations(prev => prev++);
+                        onClick={async () => {
+                            const v1 = await trigger('channels.whatsapp.description');
+                            const v2 = await trigger('channels.whatsapp.accesstoken');
+                            const v3 = await trigger('channels.whatsapp.brandName');
+                            const v4 = await trigger('channels.whatsapp.brandAddress');
+                            const v5 = await trigger('channels.whatsapp.firstName');
+                            const v6 = await trigger('channels.whatsapp.lastName');
+                            const v7 = await trigger('channels.whatsapp.email');
+                            const v8 = await trigger('channels.whatsapp.phone');
+                            const v9 = await trigger('channels.whatsapp.customerfacebookid');
+                            const v10 = await trigger('channels.whatsapp.phonenumberwhatsappbusiness');
+                            const v11 = await trigger('channels.whatsapp.nameassociatednumber');
+                            if (v1 && v2 && v3 && v4 && v5 && v6 && v7 && v8 && v9 && v10 && v11) {
+                                setView("view1");
+                                setHasFinished(true);
+                            }
                         }}
                         className={classes.button2}
-                        disabled={disablebutton}
                         variant="contained"
                         color="primary"
                     >
@@ -373,7 +322,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
             </div>
         );
     }
-    else if (viewSelected === "view3") {
+    /*else if (viewSelected === "view3") {
         return (<div style={{ marginTop: "auto", marginBottom: "auto", maxHeight: "100%" }}>
             <Breadcrumbs aria-label="breadcrumb">
                 <Link
@@ -414,7 +363,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                 </Button>
             </div>
         </div>)
-    }
+    }*/
 
     return (
         <div className={commonClasses.root}>
@@ -424,7 +373,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                 className={commonClasses.trailingIcon}
                 onClick={() => {
                     deleteChannel('whatsapp');
-                    setrequestchannels(prev => prev.filter(x => x.type !== type));
+                    // setrequestchannels(prev => prev.filter(x => x.type !== type));
                 }}
             >
                 <DeleteOutlineIcon />
@@ -450,11 +399,19 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
             </div>
             )}
             <FieldEdit
-                onChange={(value) => setnameField(value)}
-                valueDefault={channelName}
+                onChange={(value) => setValue('channels.whatsapp.description', value)}
+                valueDefault={getValues('channels.whatsapp.description')}
                 label={t(langKeys.givechannelname)}
                 variant="outlined"
                 size="small"
+                error={errors.channels?.whatsapp?.description?.message}
+                InputProps={{
+                    endAdornment: (
+                        <InputAdornment position="end">
+                            <LinkIcon />
+                        </InputAdornment>
+                    )
+                }}
             />
             {/* <div className="row-zyx">
                 <div className="col-3"></div>
@@ -481,7 +438,6 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                 <Button
                     onClick={() => setView("view2")}
                     className={commonClasses.button}
-                    disabled={channelName.length === 0}
                     variant="contained"
                     color="primary"
                 >
@@ -491,7 +447,6 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                 <Button
                     onClick={finishreg}
                     className={commonClasses.button}
-                    disabled={channelName.length === 0}
                     variant="contained"
                     color="primary"
                 >

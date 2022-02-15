@@ -1,12 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useContext, useEffect, useState } from "react";
-import { makeStyles, Button, Box, IconButton, Typography } from '@material-ui/core';
-import { DeleteOutline as DeleteOutlineIcon } from '@material-ui/icons';
+import { makeStyles, Button, Box, IconButton, Typography, InputAdornment } from '@material-ui/core';
+import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon } from '@material-ui/icons';
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
 import { ColorInput, FieldEdit, } from "components";
 import { AndroidColor } from "icons";
-import { SubscriptionContext } from "./context";
+import { MainData, SubscriptionContext } from "./context";
+import { useFormContext } from "react-hook-form";
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -24,62 +25,45 @@ export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = (
         selectedChannels,
         finishreg,
         deleteChannel,
-        setrequestchannels,
     } = useContext(SubscriptionContext);
+    const { getValues, setValue, register, unregister, formState: { errors } } = useFormContext<MainData>();
     const [hasFinished, setHasFinished] = useState(false)
-    const [channelName, setChannelName] = useState("");
     const { t } = useTranslation();
     const [coloricon, setcoloricon] = useState("#90c900");
-    const classes = useChannelAddStyles();
-    const [fields, setFields] = useState({
-        "method": "UFN_COMMUNICATIONCHANNEL_INS",
-        "parameters": {
-            "id": 0,
-            "description": "",
-            "type": "",
-            "communicationchannelsite": "",
-            "communicationchannelowner": "",
-            "chatflowenabled": true,
-            "integrationid": "",
-            "color": "",
-            "icons": "",
-            "other": "",
-            "form": "",
-            "apikey": "",
-            "coloricon": "#90c900",
-        },
-        "type": "SMOOCHANDROID",
-    })
 
     useEffect(() => {
-        if (channelName.length > 0) {
-            setrequestchannels(prev => {
-                const index = prev.findIndex(x => x.type === "SMOOCHANDROID");
-                if (index === -1) {
-                    return [
-                        ...prev,
-                        fields,
-                    ]
-                } else {
-                    prev.splice(index, 1);
-                    return [
-                        ...prev,
-                        fields,
-                    ];
-                }
-            });
-            setHasFinished(true)
-        } else {
-            setrequestchannels(prev => prev.filter(x => x.type !== "SMOOCHANDROID"));
+        const strRequired = (value: string) => {
+            if (!value) {
+                return t(langKeys.field_required);
+            }
         }
-    }, [channelName, fields]);
+        
+        register('channels.android.description', { validate: strRequired, value: '' });
+        register('channels.android.build', { value: values => ({
+            "method": "UFN_COMMUNICATIONCHANNEL_INS",
+            "parameters": {
+                "id": 0,
+                "description": values.description,
+                "type": "",
+                "communicationchannelsite": "",
+                "communicationchannelowner": "",
+                "chatflowenabled": true,
+                "integrationid": "",
+                "color": "",
+                "icons": "",
+                "other": "",
+                "form": "",
+                "apikey": "",
+                "coloricon": "#90c900",
+            },
+            "type": "SMOOCHANDROID",
+        })});
 
-    function setnameField(value: any) {
-        setChannelName(value)
-        let partialf = fields;
-        partialf.parameters.description = value
-        setFields(partialf)
-    }
+        return () => {
+            unregister('channels.android')
+        }
+    }, [register, unregister]);
+
     return (
         <div className={commonClasses.root}>
             {!hasFinished && <AndroidColor className={commonClasses.leadingIcon} />}
@@ -88,7 +72,7 @@ export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = (
                 className={commonClasses.trailingIcon}
                 onClick={() => {
                     deleteChannel('android');
-                    setrequestchannels(prev => prev.filter(x => x.type !== "SMOOCHANDROID"));
+                    // setrequestchannels(prev => prev.filter(x => x.type !== "SMOOCHANDROID"));
                 }}
             >
                 <DeleteOutlineIcon />
@@ -114,11 +98,26 @@ export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = (
             </div>
             )}
             <FieldEdit
-                onChange={(value) => setnameField(value)}
-                valueDefault={channelName}
+                onChange={(val: string) => {
+                    setValue('channels.android.description', val);
+                    if (val.length > 0 && !hasFinished) {
+                        setHasFinished(true);
+                    } else if (val.length === 0 && hasFinished) {
+                        setHasFinished(false);
+                    }
+                }}
+                valueDefault={getValues('channels.android.description')}
                 label={t(langKeys.givechannelname)}
                 variant="outlined"
                 size="small"
+                error={errors.channels?.android?.description?.message}
+                InputProps={{
+                    endAdornment: (
+                        <InputAdornment position="end">
+                            <LinkIcon />
+                        </InputAdornment>
+                    )
+                }}
             />
             {/* <div className="row-zyx">
                 <div className="col-3"></div>
@@ -145,7 +144,6 @@ export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = (
                 <Button
                     onClick={finishreg}
                     className={commonClasses.button}
-                    disabled={channelName.length === 0}
                     variant="contained"
                     color="primary"
                 >

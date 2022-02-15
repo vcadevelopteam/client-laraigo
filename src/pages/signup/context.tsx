@@ -2,41 +2,39 @@ import { makeStyles } from '@material-ui/core';
 import { IRequestBody } from '@types';
 import { useSelector } from 'hooks';
 import { langKeys } from 'lang/keys';
-import React, { FC, useState, createContext, useMemo, CSSProperties, useEffect, useContext } from 'react';
+import React, { FC, useState, createContext, useMemo, CSSProperties, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { useHistory, useRouteMatch } from 'react-router-dom';
+import { useRouteMatch } from 'react-router-dom';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { executeSubscription, getChannelsListSub } from 'store/signup/actions';
-import FacebookLogin, { ReactFacebookFailureResponse, ReactFacebookLoginInfo } from 'react-facebook-login';
-import { apiUrls } from 'common/constants';
+import { executeSubscription, verifyPlan } from 'store/signup/actions';
+import { FormProvider, SubmitErrorHandler, SubmitHandler, useForm, useWatch } from 'react-hook-form';
+import paths from 'common/constants/paths';
+import { resetInsertChannel } from 'store/channel/actions';
 
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 type PlanType = "BASIC" | "PRO" | "PREMIUM" | "ENTERPRISE" | "ADVANCED";
 interface Subscription {
     selectedChannels: number;
-    listchannels: ListChannels;
     commonClasses: ReturnType<typeof useStyles>;
     FBButtonStyles: CSSProperties;
-    limitChannels: number;
-    mainData: MainData;
-    requestchannels: IRequestBody[];
     foreground: keyof ListChannels | undefined;
-    plan: PlanType;
     step: number;
     confirmations: number;
+    listchannels: ListChannels;
     setConfirmations: SetState<number>;
     setStep: SetState<number>;
     finishreg: () => void;
     setForeground: SetState<keyof ListChannels | undefined>;
-    setrequestchannels: SetState<IRequestBody[]>;
-    setMainData: SetState<MainData>;
     resetChannels: () => void;
     addChannel: (option: keyof ListChannels) => void;
     deleteChannel: (option: keyof ListChannels) => void;
     toggleChannel: (option: keyof ListChannels) => void;
 }
 
+export interface RouteParams {
+    token: PlanType;
+}
 export interface ListChannels {
     facebook: boolean;
     instagram: boolean;
@@ -54,17 +52,86 @@ export interface ListChannels {
     apple: boolean;
 }
 
-interface MainData {
+export interface FacebookChannel {
+    description: string;
+    communicationchannelsite: string;
+    communicationchannelowner: string;
+    siteid: string;
+    accesstoken: string;
+    build: (v: Omit<FacebookChannel, 'build'>) => IRequestBody;
+}
+
+export interface WhatsAppChannel {
+    description: string;
+    accesstoken: string;
+    brandName: string;
+    brandAddress: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    customerfacebookid: string;
+    phonenumberwhatsappbusiness: string;
+    nameassociatednumber: string;
+    communicationchannelowner: string;
+    build: (v: Omit<WhatsAppChannel, 'build'>) => IRequestBody;
+}
+
+export interface TwitterChannel {
+    description: string;
+    consumerkey: string;
+    consumersecret: string;
+    accesstoken: string;
+    accesssecret: string;
+    devenvironment: string;
+    communicationchannelowner: string;
+    build: (v: Omit<TwitterChannel, 'build'>) => IRequestBody;
+}
+
+export interface TelegramChannel {
+    description: string;
+    accesstoken: string;
+    communicationchannelowner: string;
+    build: (v: Omit<TelegramChannel, 'build'>) => IRequestBody;
+}
+
+export interface MobileChannel {
+    description: string;
+    build: (v: Omit<MobileChannel, 'build'>) => IRequestBody;
+}
+
+export interface ChatWebChannel {
+    description: string;
+    build: (v: Omit<ChatWebChannel, 'build'>) => IRequestBody;
+}
+
+export interface Channels {
+    facebook: FacebookChannel;
+    instagram: FacebookChannel;
+    instagramDM: FacebookChannel;
+    messenger: FacebookChannel;
+    whatsapp: WhatsAppChannel;
+    telegram: TelegramChannel;
+    twitter: TwitterChannel;
+    twitterDM: TwitterChannel;
+    chatWeb: ChatWebChannel;
+    email: any;
+    phone: any;
+    sms: any;
+    android: MobileChannel;
+    apple: MobileChannel;
+}
+
+export interface MainData {
     email: string;
     password: string;
     confirmpassword: string;
     firstandlastname: string;
     companybusinessname: string;
     mobilephone: string;
-    facebookid: string;
-    googleid: string;
     join_reason: string;
     country: string;
+    countryname: string;
     currency: string;
     doctype: number;
     docnumber: string;
@@ -74,13 +141,14 @@ interface MainData {
     billingcontactmail: string;
     autosendinvoice: boolean;
 
+    facebookid: string;
+    googleid: string;
+
     industry: string;
     companysize: string;
     rolecompany: string;
-}
 
-interface FacebookButtonProps {
-    callback: (userInfo: ReactFacebookLoginInfo | ReactFacebookFailureResponse) => void;
+    channels: Channels;
 }
 
 const defaultListChannels: ListChannels = {
@@ -101,23 +169,17 @@ const defaultListChannels: ListChannels = {
 };
 
 export const SubscriptionContext = createContext<Subscription>({
-    FBButtonStyles: {},
-    limitChannels: 0,
-    commonClasses: {} as any,
     selectedChannels: 0,
-    listchannels: defaultListChannels,
-    mainData: {} as any,
-    requestchannels: [],
+    FBButtonStyles: {},
+    commonClasses: {} as any,
     foreground: undefined,
-    plan: "BASIC",
     step: 0,
     confirmations: 0,
+    listchannels: defaultListChannels,
     setConfirmations: () => {},
     setStep: () => {},
     finishreg: () => {},
     setForeground: () => {},
-    setrequestchannels: () => {},
-    setMainData: () => {},
     addChannel: () => {},
     deleteChannel: () => {},
     resetChannels: () => {},
@@ -176,76 +238,123 @@ const FBButtonStyles: CSSProperties = {
 export const SubscriptionProvider: FC = ({ children }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
-    const history = useHistory();
     const { t } = useTranslation();
-    const match = useRouteMatch<{ token :string }>();
+    const match = useRouteMatch<RouteParams>();
     const [waitSave, setWaitSave] = useState(false);
     const [confirmations, setConfirmations] = useState(0);
-    const [listchannels, setlistchannels] = useState<ListChannels>(defaultListChannels);
     const planData = useSelector(state => state.signup.verifyPlan);
-    const [requestchannels, setrequestchannels] = useState<IRequestBody[]>([]);
+    const [listchannels, setlistchannels] = useState<ListChannels>(defaultListChannels);
     const [foreground, setForeground] = useState<keyof ListChannels | undefined>(undefined);
-    const [mainData, setMainData] = useState<MainData>({
-        email: "",
-        password: "",
-        confirmpassword: "",
-        firstandlastname: "",
-        companybusinessname: "",
-        mobilephone: "",
-        facebookid: "",
-        googleid: "",
-        join_reason: "",
-        country: "",
-        currency: "",
-        doctype: 0,
-        docnumber: "",
-        businessname: "",
-        fiscaladdress: "",
-        billingcontact: "",
-        billingcontactmail: "",
-        autosendinvoice: true,
-        companysize: "",
-        industry: "",
-        rolecompany: "",
-    });
+    const form = useForm<MainData>({
+        defaultValues: {
+            email: "",
+            password: "",
+            confirmpassword: "",
+            firstandlastname: "",
+            companybusinessname: "",
+            mobilephone: "",
+            facebookid: "",
+            googleid: "",
+            join_reason: "",
+            country: "PE",
+            countryname: "PERU",
+            currency: "PEN",
+            doctype: 1,
+            docnumber: "",
+            businessname: "",
+            fiscaladdress: "",
+            billingcontact: "",
+            billingcontactmail: "",
+            autosendinvoice: true,
+            companysize: "",
+            industry: "",
+            rolecompany: "",
+            channels: {},
+        },
+    })
     const [step, setStep] = useState(1);
     const executeResult = useSelector(state => state.signup.insertChannel);
 
     useEffect(() => {
-        if (waitSave) {
-            if (!executeResult.loading && !executeResult.error) {
-                dispatch(showBackdrop(false));
-                setStep(4); // rating
-                // history.push({
-                //     pathname: '/sign-in',
-                //     state: { 
-                //         showSnackbar: true,
-                //         message: t(langKeys.successful_sign_up)
-                //     }
-                // })
-                let msg = t(langKeys.successful_sign_up);
-                if (mainData.googleid || mainData.facebookid) {
-                    msg = t(langKeys.successful_sign_up);
-                }
-                dispatch(showSnackbar({
-                    show: true,
-                    success: true,
-                    message: msg,
-                }));
-                setWaitSave(false);
-            } else if (executeResult.error) {
-                dispatch(showBackdrop(false));
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-                dispatch(showSnackbar({
-                    show: true,
-                    success: false,
-                    message: errormessage,
-                }))
-                // setBackdrop(false)
-                setWaitSave(false);
-            }
+        if (!planData.loading && planData.error) {
+            window.open(paths.SIGNIN, "_self");
         }
-    }, [executeResult, waitSave, dispatch])
+
+        return () => {
+            dispatch(resetInsertChannel());
+        }
+    }, [planData]);
+
+    useEffect(() => {
+        dispatch(verifyPlan(match.params.token));
+    }, [dispatch, match.params.token]);
+
+    // useEffect(() => {
+    //     if (waitSave) {
+    //         if (!executeResult.loading && !executeResult.error) {
+    //             console.log('success', executeResult);
+    //             dispatch(showBackdrop(false));
+    //             setStep(4); // rating
+    //             let msg = t(langKeys.successful_sign_up);
+    //             const googleid = form.getValues('googleid');
+    //             const facebookid = form.getValues('facebookid');
+    //             if (googleid || facebookid) {
+    //                 msg = t(langKeys.successful_sign_up);
+    //             }
+    //             dispatch(showSnackbar({
+    //                 show: true,
+    //                 success: true,
+    //                 message: msg,
+    //             }));
+    //             setWaitSave(false);
+    //         } else if (executeResult.error) {
+    //             console.log('error', executeResult);
+    //             dispatch(showBackdrop(false));
+    //             const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
+    //             dispatch(showSnackbar({
+    //                 show: true,
+    //                 success: false,
+    //                 message: errormessage,
+    //             }))
+    //             setWaitSave(false);
+    //         }
+    //     }
+
+    //     return () => {
+    //         dispatch(resetInsertChannel());
+    //     }
+    // }, [executeResult, waitSave, form.getValues, dispatch])
+
+    useEffect(() => {
+        if (executeResult.loading === true) return;
+        if (executeResult.value && !executeResult.error) {
+            console.log('success', executeResult);
+            dispatch(showBackdrop(false));
+            setStep(4); // rating
+            let msg = t(langKeys.successful_sign_up);
+            const googleid = form.getValues('googleid');
+            const facebookid = form.getValues('facebookid');
+            if (googleid || facebookid) {
+                msg = t(langKeys.successful_sign_up);
+            }
+            dispatch(showSnackbar({
+                show: true,
+                success: true,
+                message: msg,
+            }));
+            setWaitSave(false);
+        } else if (executeResult.error) {
+            console.log('error', executeResult);
+            dispatch(showBackdrop(false));
+            const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
+            dispatch(showSnackbar({
+                show: true,
+                success: false,
+                message: errormessage,
+            }))
+            setWaitSave(false);
+        }
+    }, [executeResult, form.getValues, dispatch])
 
     const deleteChannel = (option: keyof ListChannels) => {
         setlistchannels(prev => {
@@ -293,18 +402,11 @@ export const SubscriptionProvider: FC = ({ children }) => {
             length;
     }, [listchannels]);
 
-    function finishreg(){
-        // requestchannels.length !== confirmations
-        if (requestchannels.length === 0) {
-            dispatch(showSnackbar({
-                message: "Debe completar el/los canal/es",
-                show: true,
-                success: false,
-            }))
-            return
-        }
+    const finishreg = () => form.handleSubmit(onSubmit, onError)()
 
-        let majorfield = {
+    const onSubmit: SubmitHandler<MainData> = (data) => {
+        const { channels, ...mainData } = data;
+        const majorfield = {
             method: "UFN_CREATEZYXMEACCOUNT_INS",
             parameters: {
                 ...mainData,
@@ -324,38 +426,78 @@ export const SubscriptionProvider: FC = ({ children }) => {
                 timezoneoffset: (new Date().getTimezoneOffset() / 60) * -1,
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
             },
-            channellist: requestchannels,
-        }
+            channellist: Object.values(channels).map(
+                function<T extends {build: (v: any) => IRequestBody}>(x: T) {
+                    return x.build(x);
+                }
+            ),
+        };
         dispatch(showBackdrop(true));
         setWaitSave(true);
-        dispatch(executeSubscription(majorfield))
+        dispatch(executeSubscription(majorfield));
+    }
+
+    const onError: SubmitErrorHandler<MainData> = (err) => {
+        dispatch(showSnackbar({
+            message: "Debe completar el/los canal/es",
+            show: true,
+            success: false,
+        }))
     }
 
     return (
         <SubscriptionContext.Provider value={{
-            commonClasses: classes,
-            limitChannels: planData.data[0]?.channelscontracted || 0,
             selectedChannels,
-            listchannels,
-            mainData,
-            requestchannels,
+            commonClasses: classes,
             foreground,
-            plan: match.params.token as PlanType,
             step,
             confirmations,
+            listchannels,
             setConfirmations,
             setStep,
             finishreg,
             setForeground,
-            setrequestchannels,
-            setMainData,
             addChannel,
             deleteChannel,
             resetChannels,
             toggleChannel,
             FBButtonStyles,
         }}>
-            {children}
+            <FormProvider {...form}>
+                {children}
+            </FormProvider>
         </SubscriptionContext.Provider>
     )
+}
+
+interface PlanData {
+    loading: boolean;
+    plan: {
+        limitChannels: number,
+        plan: PlanType,
+        provider: string,
+    } | null
+}
+
+export function usePlanData(): PlanData {
+    const match = useRouteMatch<RouteParams>();
+    const planData = useSelector(state => state.signup.verifyPlan);
+    return useMemo(() => {
+        if (planData.loading) {
+            return {
+                loading: true,
+                plan: null,
+            };
+        }
+
+        return {
+            loading: false,
+            plan: {
+                // ...planData.data[0],
+                limitChannels: planData.data[0]?.channelscontracted || 0,
+                plan: match.params.token as PlanType,
+                provider: planData.data[0]?.providerwhatsapp || "",
+            },
+        };
+    }, [planData, match.params.token]);
 }
