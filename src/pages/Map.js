@@ -92,11 +92,13 @@ const options = {
   zoomControl: true,
 };
 
+const APIKEY_GMAPS = "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4"
+
 export default function Map() {
   
   const {token} = useParams();
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: "AIzaSyCBij6DbsB8SQC_RRKm3-X07RLmvQEnP9w",
+    googleMapsApiKey: APIKEY_GMAPS,
     libraries,
   });
   const [directionData, setDirectionData] = React.useState({
@@ -148,7 +150,7 @@ export default function Map() {
       lng: lng,
     });
 
-    const urltosearch = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyCBij6DbsB8SQC_RRKm3-X07RLmvQEnP9w`;
+    const urltosearch = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${APIKEY_GMAPS}`;
     const response = await fetch(urltosearch, {
         method: 'GET',
     });
@@ -187,7 +189,7 @@ export default function Map() {
     }))
   }
   async function onMapClick(e){
-    const urltosearch = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${e.latLng.lat()},${e.latLng.lng()}&key=AIzaSyCBij6DbsB8SQC_RRKm3-X07RLmvQEnP9w`;
+    const urltosearch = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${e.latLng.lat()},${e.latLng.lng()}&key=${APIKEY_GMAPS}`;
     const response = await fetch(urltosearch, {
         method: 'GET',
     });
