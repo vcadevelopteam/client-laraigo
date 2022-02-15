@@ -452,7 +452,7 @@ const DashboardManagerial: FC = () => {
                 vartmo = seconds < timetoseconds(target_min) ? Math.abs(vartmo) * -1 : vartmo
                 let sign = vartmo > 0 ? "" : "-"
                 vartmo = Math.abs(vartmo)
-                let variacioncolor = vartmo <= 0;
+                let variacioncolor = timetoseconds(target_min) < seconds && timetoseconds(target_max) > seconds
 
                 hh = (Math.floor(vartmo / 3600)) === 0 ? "" : (Math.floor(vartmo / 3600) + "h ")
                 mm = Math.floor((vartmo % 3600) / 60) === 0 ? "" : (Math.floor((vartmo % 3600) / 60) + "m ")
@@ -531,7 +531,7 @@ const DashboardManagerial: FC = () => {
                 vartmo = seconds < timetoseconds(target_min) ? Math.abs(vartmo) * -1 : vartmo
                 let sign = vartmo > 0 ? "" : "-"
                 vartmo = Math.abs(vartmo)
-                let variacioncolor = vartmo <= 0;
+                let variacioncolor = timetoseconds(target_min) < seconds && timetoseconds(target_max) > seconds
 
                 hh = (Math.floor(vartmo / 3600)) === 0 ? "" : (Math.floor(vartmo / 3600) + "h ")
                 mm = Math.floor((vartmo % 3600) / 60) === 0 ? "" : (Math.floor((vartmo % 3600) / 60) + "m ")
@@ -1182,6 +1182,7 @@ const DashboardManagerial: FC = () => {
             dispatch(getCollectionAux(gerencialsummaryseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
         }
     }
+    console.log(data)
     
     return (
         <Fragment>
@@ -1368,7 +1369,6 @@ const DashboardManagerial: FC = () => {
             </div>
             <div style={{ display: 'flex', gap: 16, flexDirection: 'column' }}>
                 <div className={classes.replacerowzyx}>
-                    {console.log(data)}
                     { (resaux.loading && fieldToFilter==="TMO")?
                         (<Box  className={classes.itemCard} style={{display: "flex", alignItems: 'center', justifyContent: "center"}}>
                             <CircularProgress/>
