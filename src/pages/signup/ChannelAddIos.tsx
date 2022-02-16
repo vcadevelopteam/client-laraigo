@@ -115,7 +115,7 @@ export const ChannelAddIos: FC<{ setOpenWarning: (param: any) => void }> = ({ se
                 InputProps={{
                     endAdornment: (
                         <InputAdornment position="end">
-                            <LinkIcon />
+                            {hasFinished ? <LinkIcon color="primary" /> : <LinkOffIcon />}
                         </InputAdornment>
                     )
                 }}

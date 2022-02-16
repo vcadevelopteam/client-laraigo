@@ -1737,7 +1737,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
                 InputProps={{
                     endAdornment: (
                         <InputAdornment position="end">
-                            <LinkIcon />
+                            {hasFinished ? <LinkIcon color="primary" /> : <LinkOffIcon />}
                         </InputAdornment>
                     )
                 }}
