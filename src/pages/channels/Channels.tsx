@@ -23,7 +23,7 @@ export const Channels: FC = () => {
     const executeResult = useSelector(state => state.channel.channelList);
     const mainResult = useSelector(state => state.main);
     const user = useSelector(state => state.login.validateToken.user);
-
+    
     const roledesc = user?.roledesc || "";
 
     const [typeWhatsApp, setTypeWhatsApp] = useState('DIALOG');
@@ -94,8 +94,11 @@ export const Channels: FC = () => {
 
     const checkLimit = () => {
         dispatch(checkPaymentPlan({
-            method: "",
-            parameters: {}
+            method: "UFN_COMMUNICATIONCHANNEL_PAYMENTPLAN_CHECK",
+            parameters: {
+                corpid: (user?.corpid || 0),
+                orgid: (user?.orgid || 0),
+            }
         }));
         setWaitCheck(true);
     }
