@@ -505,14 +505,14 @@ const DashboardProductivity: FC = () => {
             prodcon: "0",
             prodbot: "0",
         });
-        if(prodxHoralvl1){
+        if(prodxHoralvl1 && prodxHoralvl1.length > 0){
             const firstDate = new Date( String(dateRangeCreateDate.startDate));
             const secondDate = new Date( String(dateRangeCreateDate.endDate));
             const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
 
             let diffDays = Math.ceil(Math.abs((firstDate.getTime() - secondDate.getTime()) / oneDay));
             const fullhours = 24 * diffDays
-            const { horalogueo, horaconectado, ticketsasesor, ticketsbot } = prodxHoralvl1;
+            const { horalogueo, horaconectado, ticketsasesor, ticketsbot } = prodxHoralvl1[0];
             const prodlogofi = horalogueo ? (ticketsasesor / horalogueo) : 0;
             const prodconofi = horaconectado ? (ticketsasesor / horaconectado) : 0;
             const prodbotofi = ticketsbot? (ticketsbot/ fullhours):0 ;
