@@ -458,6 +458,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
     const executeRes = useSelector(state => state.main.execute);
 
     const [checkeduser, setCheckeduser] = useState(row?.usercreateoverride || false);
+    const [checkedchannel, setCheckedchannel] = useState(row?.channelcreateoverride || false);
     const [pageSelected, setPageSelected] = useState(0);
     const [waitSave, setWaitSave] = useState(false);
 
@@ -530,6 +531,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
             freewhatsappchannel: row?.freewhatsappchannel||0,
             freewhatsappconversations: row?.freewhatsappconversations||0,
             usercreateoverride: row?.usercreateoverride || false,
+            channelcreateoverride: row?.channelcreateoverride || false,
             vcacomissionperconversation: row?.vcacomissionperconversation || 0,
         }
     });
@@ -571,6 +573,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
         register('freewhatsappchannel', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
         register('freewhatsappconversations');
         register('usercreateoverride');
+        register('channelcreateoverride');
         register('vcacomissionperconversation');
     }, [edit, register]);
 
@@ -910,6 +913,16 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             label={t(langKeys.reportfreeconversations)}
                             value={getValues("freewhatsappconversations").toString()}
                         />
+                    </div>
+                    <div className="row-zyx">
+                        <div className={"col-6"} style={{ paddingBottom: '3px' }}>
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.allowchanneloverride)}</Box>
+                            <FormControlLabel
+                                style={{ paddingLeft: 10 }}
+                                control={<IOSSwitch disabled={edit === false} checked={checkedchannel} onChange={(e) => { setCheckedchannel(e.target.checked); setValue('channelcreateoverride', e.target.checked) }} />}
+                                label={""}
+                            />
+                        </div>
                     </div>
                 </div>}
                 {pageSelected === 3  && <div className={classes.containerDetail}>

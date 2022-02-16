@@ -1557,14 +1557,14 @@ const translation: LangKeys = {
     report_userproductivity_cardavgmin: 'Promedio más bajo',
     report_userproductivity_cardminmin: 'Más bajo',
 
-    report_userproductivity_cardavgmax_tme: 'Asesor con TME más alto',
+    report_userproductivity_cardavgmax_tme: 'Asesor con TME (prom) más alto',
     report_userproductivity_cardmaxmax_tme: 'Ticket con TME más alto',
-    report_userproductivity_cardavgmin_tme: 'Asesor con TME más bajo',
+    report_userproductivity_cardavgmin_tme: 'Asesor con TME (prom) más bajo',
     report_userproductivity_cardminmin_tme: 'Ticket con TME más bajo',
 
-    report_userproductivity_cardavgmax_tmo: 'Asesor con TMO más alto',
+    report_userproductivity_cardavgmax_tmo: 'Asesor con TMO (prom) más alto',
     report_userproductivity_cardmaxmax_tmo: 'Ticket con TMO más alto',
-    report_userproductivity_cardavgmin_tmo: 'Asesor con TMO más bajo',
+    report_userproductivity_cardavgmin_tmo: 'Asesor con TMO (prom) más bajo',
     report_userproductivity_cardminmin_tmo: 'Ticket con TMO más bajo',
 
     report_userproductivity_cardavgmax_tmoagent: 'TMO asesor promedio más alto',
@@ -3015,6 +3015,7 @@ const translation: LangKeys = {
     contractedplanfreewhatsappconversation: 'Cantidad de conversaciones WhatsApp gratis',
     contractedplanchannelotherfee:"PU por canal adicional",
     allowuseroverride:"Permite usuarios sobre el límite",
+    allowchanneloverride:'Permite canales sobre el límite',
 };
 
 const esResource: ResourceLanguage = {

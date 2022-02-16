@@ -2,16 +2,16 @@
 import { FC, useContext, useEffect, useState } from "react";
 import { makeStyles, Breadcrumbs, Button, TextField, IconButton, Typography, InputAdornment } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
-import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon } from '@material-ui/icons';
+import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon, LinkOff as LinkOffIcon } from '@material-ui/icons';
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
-import { FieldEdit, ColorInput } from "components";
+import { FieldEdit } from "components";
 import MuiPhoneNumber from 'material-ui-phone-number';
 import { styled } from '@material-ui/core/styles';
 import { WhatsappColor } from "icons";
-import { useSelector } from "hooks";
 import { MainData, SubscriptionContext } from "./context";
 import { useFormContext } from "react-hook-form";
+import clsx from 'clsx';
 
 const useChannelAddStyles = makeStyles(theme => ({
     centerbutton: {
@@ -67,19 +67,41 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
         commonClasses,
         foreground,
         selectedChannels,
+        submitObservable,
         finishreg,
         setForeground,
         deleteChannel,
     } = useContext(SubscriptionContext);
     const { getValues, setValue, register, unregister, formState: { errors }, trigger } = useFormContext<MainData>();
     const [viewSelected, setViewSelected] = useState("view1");
-    const planData = useSelector(state => state.signup.verifyPlan)
     const [apiKey, setApiKey] = useState("");
     const [hasFinished, setHasFinished] = useState(false);
-    const [coloricon, setcoloricon] = useState("#4AC959");
+    const [submitError, setSubmitError] = useState(false);
     const { t } = useTranslation();
 
     const classes = useChannelAddStyles();
+
+    useEffect(() => {
+        const cb = async () => {
+            const v1 = await trigger('channels.whatsapp.description');
+            const v2 = await trigger('channels.whatsapp.accesstoken');
+            const v3 = await trigger('channels.whatsapp.brandName');
+            const v4 = await trigger('channels.whatsapp.brandAddress');
+            const v5 = await trigger('channels.whatsapp.firstName');
+            const v6 = await trigger('channels.whatsapp.lastName');
+            const v7 = await trigger('channels.whatsapp.email');
+            const v8 = await trigger('channels.whatsapp.phone');
+            const v9 = await trigger('channels.whatsapp.customerfacebookid');
+            const v10 = await trigger('channels.whatsapp.phonenumberwhatsappbusiness');
+            const v11 = await trigger('channels.whatsapp.nameassociatednumber');
+            setSubmitError(!v1 || !v2 || !v3 || !v4 || !v5 || !v6 || !v7 || !v8 || !v9 || !v10 || !v11);
+        }
+
+        submitObservable.addListener(cb);
+        return () => {
+            submitObservable.removeListener(cb);
+        }
+    }, [submitObservable, trigger]);
 
     useEffect(() => {
         const strRequired = (value: string) => {
@@ -103,14 +125,14 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
         }
 
         register('channels.whatsapp.description', { validate: strRequired, value: '' });
-        register('channels.whatsapp.accesstoken', { validate: strRequired, value: '' });
-        register('channels.whatsapp.brandName', { validate: strRequired, value: '' });
-        register('channels.whatsapp.brandAddress', { validate: strRequired, value: '' });
+        register('channels.whatsapp.accesstoken', { value: '' });
+        register('channels.whatsapp.brandName', { value: '' });
+        register('channels.whatsapp.brandAddress', { value: '' });
         register('channels.whatsapp.firstName', { validate: strRequired, value: '' });
         register('channels.whatsapp.lastName', { validate: strRequired, value: '' });
         register('channels.whatsapp.email', { validate: emailRequired, value: '' });
         register('channels.whatsapp.phone', { validate: phoneRequired, value: '' });
-        register('channels.whatsapp.customerfacebookid', { validate: strRequired, value: '' });
+        register('channels.whatsapp.customerfacebookid', { value: '' });
         register('channels.whatsapp.phonenumberwhatsappbusiness', { validate: strRequired, value: '' });
         register('channels.whatsapp.nameassociatednumber', { validate: strRequired, value: '' });
         register('channels.whatsapp.communicationchannelowner', { value: '' });
@@ -307,6 +329,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                             const v9 = await trigger('channels.whatsapp.customerfacebookid');
                             const v10 = await trigger('channels.whatsapp.phonenumberwhatsappbusiness');
                             const v11 = await trigger('channels.whatsapp.nameassociatednumber');
+                            // console.log(v1 , v2 , v3 , v4 , v5 , v6 , v7 , v8 , v9 , v10,v11)
                             if (v1 && v2 && v3 && v4 && v5 && v6 && v7 && v8 && v9 && v10 && v11) {
                                 setView("view1");
                                 setHasFinished(true);
@@ -366,7 +389,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
     }*/
 
     return (
-        <div className={commonClasses.root}>
+        <div className={clsx(commonClasses.root, submitError && commonClasses.rootError)}>
             {!hasFinished && <WhatsappColor className={commonClasses.leadingIcon} />}
             {!hasFinished && <IconButton
                 color="primary"
@@ -408,7 +431,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                 InputProps={{
                     endAdornment: (
                         <InputAdornment position="end">
-                            <LinkIcon />
+                            {hasFinished ? <LinkIcon color="primary" /> : <LinkOffIcon />}
                         </InputAdornment>
                     )
                 }}

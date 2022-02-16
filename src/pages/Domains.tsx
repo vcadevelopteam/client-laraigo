@@ -149,6 +149,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
     const dispatch = useDispatch();
     const user = useSelector(state => state.login.validateToken.user);
     const useradmin = user?.roledesc === "ADMINISTRADOR"
+    const newrow = row===null
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
@@ -389,7 +390,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
                                         />}
                                 </div>
                                 <div className="row-zyx">
-                                    {!useradmin ?
+                                    {(!useradmin||newrow) ?
                                         <FieldSelect
                                             label={t(langKeys.type)}
                                             className="col-6"

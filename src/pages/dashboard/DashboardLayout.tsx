@@ -923,7 +923,7 @@ const LayoutKpi: FC<LayoutKpiProps> = ({ data }) => {
                 animate={false}
                 percent={percent}
                 needleColor="grey"
-            // formatTextValue={() => ``}
+                formatTextValue={() => `${data?.currentvalue}`}
             />
         </ResponsiveContainer>
     );

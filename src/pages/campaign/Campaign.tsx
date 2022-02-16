@@ -199,19 +199,7 @@ export const Campaign: FC = () => {
                 setWaitSave(false);
             }
         }
-        if (waitStart) {
-            if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_transaction) }))
-                fetchData();
-                setWaitStart(false);
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                dispatch(showBackdrop(false));
-                setWaitStart(false);
-            }
-        }
-    }, [executeResult, waitSave, waitStart]);
+    }, [executeResult, waitSave]);
 
     useEffect(() => {
         if (waitStatus) {
@@ -232,7 +220,19 @@ export const Campaign: FC = () => {
                 setWaitStatus(false);
             }
         }
-    }, [auxResult, waitStatus])
+        if (waitStart) {
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_transaction) }))
+                fetchData();
+                setWaitStart(false);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitStart(false);
+            }
+        }
+    }, [auxResult, waitStatus, waitStart])
 
     const handleRegister = () => {
         setViewSelected("view-2");

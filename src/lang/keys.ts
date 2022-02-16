@@ -29,7 +29,7 @@ export const langKeys = {
     billingmail: "billingmail",
     typecredit_15: "typecredit_15",
     typecredit_30: "typecredit_30",
-    showmore: "Show more",
+    showmore: "showmore",
     typecredit_45: "typecredit_45",
     typecredit_60: "typecredit_60",
     typecredit_90: "typecredit_90",
@@ -3015,6 +3015,7 @@ export const langKeys = {
     contractedplanfreewhatsappconversation: 'contractedplanfreewhatsappconversation',
     contractedplanchannelotherfee: 'contractedplanchannelotherfee',
     allowuseroverride:'allowuseroverride',
+    allowchanneloverride:'allowchanneloverride',
 };
 
 export type LangKeys = typeof langKeys;

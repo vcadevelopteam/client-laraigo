@@ -6,7 +6,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { langKeys } from 'lang/keys';
 import { ChromePicker, ColorChangeHandler } from 'react-color';
-import { ArrowDropDown, Close, CloudUpload, DeleteOutline as DeleteOutlineIcon, Link as LinkIcon } from '@material-ui/icons';
+import { ArrowDropDown, Close, CloudUpload, DeleteOutline as DeleteOutlineIcon, Link as LinkIcon, LinkOff as LinkOffIcon } from '@material-ui/icons';
 import { useForm, useFormContext, UseFormReturn } from 'react-hook-form';
 import { IChatWebAdd, IChatWebAddFormField } from '@types';
 import { useDispatch } from 'react-redux';
@@ -100,17 +100,6 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) =
     const [chatBtn, setChatBtn] = useState<File | null>(getValues('interface.iconbutton') as File);
     const [headerBtn, setHeaderBtn] = useState<File | null>(getValues('interface.iconheader') as File);
     const [botBtn, setBotBtn] = useState<File | null>(getValues('interface.iconbot') as File);
-
-    useEffect(() => {
-        const strRequired = (value: string) => {
-            if (!value) {
-                return t(langKeys.field_required);
-            }
-        }
-
-        form.register('interface.chattitle', { validate: strRequired, value: '' });
-        form.register('interface.chatsubtitle', { validate: strRequired, value: '' });
-    }, [form.register, form.unregister]);
 
     const handleChatBtnClick = () => {
         const input = document.getElementById('chatBtnInput');
@@ -1481,10 +1470,11 @@ const useStyles = makeStyles(theme => ({
 
 export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
     const classes = useStyles();
-    const { foreground, setForeground } = useContext(SubscriptionContext);
-    const { getValues, setValue, register, unregister, formState: { errors } } = useFormContext<MainData>();
+    const { foreground, submitObservable, setForeground } = useContext(SubscriptionContext);
+    const { getValues, register, unregister } = useFormContext<MainData>();
     const dispatch = useDispatch();
     const [hasFinished, setHasFinished] = useState(false);
+    const [submitError, setSubmitError] = useState(false);
     const [selectedView, setSelectedView] = useState("view1");
     const [tabIndex, setTabIndes] = useState('0');
     const { t } = useTranslation();
@@ -1584,9 +1574,31 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
         }});
 
         return () => {
-            unregister('channels.chatWeb')
+            unregister('channels.chatWeb');
         }
     }, [register, unregister]);
+
+    useEffect(() => {
+        const strRequired = (value: string) => {
+            if (!value) {
+                return t(langKeys.field_required);
+            }
+        }
+
+        nestedForm.register('interface.chattitle', { validate: strRequired, value: '' });
+        nestedForm.register('interface.chatsubtitle', { validate: strRequired, value: '' });
+        
+        const cb = async () => {
+            const valid = await nestedForm.trigger();
+            console.log(valid, 'aswas')
+            setSubmitError(!valid);
+        }
+
+        submitObservable.addListener(cb);
+        return () => {
+            submitObservable.removeListener(cb);
+        }
+    }, [submitObservable, nestedForm.register, nestedForm.unregister, nestedForm.trigger]);
 
     const setView = (option: "view1" | "view2") => {
         if (option === "view1") {
@@ -1605,6 +1617,7 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
                 loading={insertChannel.loading}
                 integrationId={insertChannel.value?.integrationid}
                 onNext={() => setView("view2")}
+                submitError={submitError}
             />
         );
     }
@@ -1677,35 +1690,17 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
     );
 };
 
-const useFinalStepStyles = makeStyles(theme => ({
-    title: {
-        textAlign: "center",
-        fontWeight: "bold",
-        fontSize: "2em",
-        color: "#7721ad",
-        padding: "20px",
-        marginLeft: "auto",
-        marginRight: "auto",
-        maxWidth: "800px",
-    },
-    button: {
-        padding: 12,
-        fontWeight: 500,
-        fontSize: '14px',
-        textTransform: 'initial',
-        width: "180px"
-    },
-}));
-
 interface ChannelAddEndProps {
     hasFinished: boolean;
     loading: boolean;
     integrationId?: string;
+    submitError: boolean;
     onNext: () => void;
 }
 
 const ChannelAddEnd: FC<ChannelAddEndProps> = ({
     hasFinished,
+    submitError,
     onNext,
     loading,
     integrationId,
@@ -1718,10 +1713,9 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
     } = useContext(SubscriptionContext);
     const { t } = useTranslation();
     const { getValues, setValue, formState: { errors } } = useFormContext<MainData>();
-    // const [hexIconColor, setHexIconColor] = useState("#7721ad");
-
+    
     return (
-        <div className={commonClasses.root}>
+        <div className={clsx(commonClasses.root, submitError && commonClasses.rootError)}>
             {!hasFinished && <ZyxmeMessengerIcon className={commonClasses.leadingIcon} />}
             {!hasFinished && <IconButton
                 color="primary"
@@ -1758,7 +1752,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
                 InputProps={{
                     endAdornment: (
                         <InputAdornment position="end">
-                            <LinkIcon />
+                            {hasFinished ? <LinkIcon color="primary" /> : <LinkOffIcon />}
                         </InputAdornment>
                     )
                 }}

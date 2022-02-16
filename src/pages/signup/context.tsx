@@ -12,6 +12,33 @@ import { FormProvider, SubmitErrorHandler, SubmitHandler, useForm, useWatch } fr
 import paths from 'common/constants/paths';
 import { resetInsertChannel } from 'store/channel/actions';
 
+class SubmitObservable {
+    private listeners: (() => void)[];
+
+    constructor() {
+        this.listeners = [];
+    }
+
+    addListener(run: () => void) {
+        this.listeners.push(run);
+    }
+
+    removeListener(run: () => void) {
+        const i = this.listeners.indexOf(run);
+        if (i === -1) return;
+
+        this.listeners.splice(i, 1);
+    }
+
+    trigger() {
+        for(const runnable of this.listeners) {
+            runnable();
+        }
+    }
+}
+
+const submitObs = new SubmitObservable();
+
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 type PlanType = "BASIC" | "PRO" | "PREMIUM" | "ENTERPRISE" | "ADVANCED";
 interface Subscription {
@@ -30,6 +57,7 @@ interface Subscription {
     addChannel: (option: keyof ListChannels) => void;
     deleteChannel: (option: keyof ListChannels) => void;
     toggleChannel: (option: keyof ListChannels) => void;
+    submitObservable: SubmitObservable;
 }
 
 export interface RouteParams {
@@ -184,6 +212,7 @@ export const SubscriptionContext = createContext<Subscription>({
     deleteChannel: () => {},
     resetChannels: () => {},
     toggleChannel: () => {},
+    submitObservable: new SubmitObservable(),
 });
 
 const useStyles = makeStyles(theme => ({
@@ -195,6 +224,9 @@ const useStyles = makeStyles(theme => ({
         flexDirection: 'column',
         gap: '1.56em',
         position: 'relative',
+    },
+    rootError: {
+        border: '2px solid red',
     },
     leadingIcon: {
         position: 'absolute',
@@ -402,7 +434,10 @@ export const SubscriptionProvider: FC = ({ children }) => {
             length;
     }, [listchannels]);
 
-    const finishreg = () => form.handleSubmit(onSubmit, onError)()
+    const finishreg = () => {
+        form.handleSubmit(onSubmit, onError)();
+        submitObs.trigger();
+    }
 
     const onSubmit: SubmitHandler<MainData> = (data) => {
         const { channels, ...mainData } = data;
@@ -462,6 +497,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
             resetChannels,
             toggleChannel,
             FBButtonStyles,
+            submitObservable: submitObs,
         }}>
             <FormProvider {...form}>
                 {children}

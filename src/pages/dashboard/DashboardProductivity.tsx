@@ -117,6 +117,10 @@ const useStyles = makeStyles((theme: Theme) =>
             fontSize: "1.2em",
             padding: "5px"
         },
+        datafieldfooter: {
+            display: "flex",
+            justifyContent: "space-between"
+        },
         widthhalf: {
             flex: 1
         },
@@ -261,8 +265,9 @@ const DashboardProductivity: FC = () => {
         dataTMRBot: "0m",
         dataTMRAsesor: "0m",
         dataTMRCliente: "0m",
-        tasaabandono: "0m"
+        tasaabandono: "0"
     });
+    const [tasaabandonoperc, setTasaabandonoperc] = useState(0);
     const [dataEncuesta, setDataEncuesta] = useState({
         dataNPS: "0%",
         nps_green: "0%",
@@ -340,7 +345,9 @@ const DashboardProductivity: FC = () => {
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
     const [dataqueue, setdataqueue] = useState<any>([]);
     const [dataLabel, setdataLabel] = useState<any>([]);
+    const [prodxHoralvl0, setprodxHoralvl0] = useState<any>([]);
     const [prodxHoralvl1, setprodxHoralvl1] = useState<any>([]);
+    const [productivitybyhourfull, setproductivitybyhourfull] = useState(0)
     const [prodxHoraDist, setprodxHoraDist] = useState(
         [
             {label:"0 - 3",connected:0, notconnected: 0},
@@ -350,6 +357,11 @@ const DashboardProductivity: FC = () => {
             {label:"13 +", connected:0, notconnected: 0}]
     );
     const [prodxHora, setprodxHora] = useState({
+        prodlog: "0",
+        prodcon: "0",
+        prodbot: "0",
+    });
+    const [prodxHoraLabel, setprodxHoraLabel] = useState({
         prodlog: "0",
         prodcon: "0",
         prodbot: "0",
@@ -505,14 +517,14 @@ const DashboardProductivity: FC = () => {
             prodcon: "0",
             prodbot: "0",
         });
-        if(prodxHoralvl1){
+        if(prodxHoralvl0 && prodxHoralvl0.length > 0){
             const firstDate = new Date( String(dateRangeCreateDate.startDate));
             const secondDate = new Date( String(dateRangeCreateDate.endDate));
             const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
 
             let diffDays = Math.ceil(Math.abs((firstDate.getTime() - secondDate.getTime()) / oneDay));
             const fullhours = 24 * diffDays
-            const { horalogueo, horaconectado, ticketsasesor, ticketsbot } = prodxHoralvl1;
+            const { horalogueo, horaconectado, ticketsasesor, ticketsbot } = prodxHoralvl0[0];
             const prodlogofi = horalogueo ? (ticketsasesor / horalogueo) : 0;
             const prodconofi = horaconectado ? (ticketsasesor / horaconectado) : 0;
             const prodbotofi = ticketsbot? (ticketsbot/ fullhours):0 ;
@@ -523,6 +535,47 @@ const DashboardProductivity: FC = () => {
             });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[prodxHoralvl0])
+    useEffect(() => {
+        setprodxHoraLabel({
+            prodlog: "0",
+            prodcon: "0",
+            prodbot: "0",
+        });
+        if(prodxHoralvl1 && prodxHoralvl1.length > 0){
+            const firstDate = new Date( String(dateRangeCreateDate.startDate));
+            const secondDate = new Date( String(dateRangeCreateDate.endDate));
+            const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+
+            let diffDays = Math.ceil(Math.abs((firstDate.getTime() - secondDate.getTime()) / oneDay));
+            const fullhours = 24 * diffDays
+            
+            let dataacum: any = prodxHoralvl1.reduce((full: any, i: any) => {
+                const productivitylogueo = i.horalogueo ? i.ticketsasesor / i.horalogueo : 0;
+                const productivitybot = i.ticketsbot / fullhours;
+                const productivityconectado = i.horaconectado ? i.ticketsasesor / i.horaconectado : 0;
+                const productivity = i.productivitybyhour ? parseFloat(i.productivitybyhour) : 0;
+
+                full.horalogueotmp += productivity ? ((productivitylogueo / productivity) - 1) * 100 : 0;
+                full.horaconectadotmp += productivity ? ((productivityconectado / (productivity)) - 1) * 100 : 0;
+                full.productivitybyhour += productivity;
+                full.productivitybot += productivity ? ((productivitybot / (productivity)) - 1) * 100 : 0;
+                return full;
+            }, {
+                ticketstotalac: 0,
+                horalogueotmp: 0,
+                horaconectadotmp: 0,
+                productivitybyhour: 0,
+                productivitybot: 0
+            });
+            setproductivitybyhourfull(dataacum.productivitybyhour / prodxHoralvl1.length);
+            setprodxHoraLabel({
+                prodlog: (dataacum.horalogueotmp ? (dataacum.horalogueotmp / prodxHoralvl1.length) : 0).toFixed(),
+                prodcon: (dataacum.horaconectadotmp ? (dataacum.horaconectadotmp / prodxHoralvl1.length) : 0).toFixed(),
+                prodbot: (dataacum.productivitybot ? (dataacum.productivitybot / prodxHoralvl1.length) : 0).toFixed()
+            })
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     },[prodxHoralvl1])
     useEffect(() => {
         setDataSummary({
@@ -530,7 +583,7 @@ const DashboardProductivity: FC = () => {
             dataTMRBot: "0m",
             dataTMRAsesor: "0m",
             dataTMRCliente: "0m",
-            tasaabandono: "0m"
+            tasaabandono: "0"
         })
         settmoDistribution([
             {label:"0 - 5", quantity: 0},
@@ -557,7 +610,7 @@ const DashboardProductivity: FC = () => {
                     dataTMRBot: formattime(timetoseconds(botaveragereplytime)),
                     dataTMRAsesor: formattime(timetoseconds(useraveragereplytime)),
                     dataTMRCliente: formattime(timetoseconds(personaveragereplytime)),
-                    tasaabandono: (ticketsabandonados * 100 / ticketstotal).toFixed(0) + "%"
+                    tasaabandono: (ticketsabandonados * 100 / ticketstotal).toFixed(0)
                 })
                 settmoDistribution([
                     {label:"0 - 5", percentage: (tmoasesorrange0/ticketstmoasesor*100).toFixed(2)},
@@ -860,7 +913,8 @@ const DashboardProductivity: FC = () => {
                 setResTMO(remultiaux.data[0].data)
                 setResTME(remultiaux.data[1].data)
                 setResSummary(remultiaux.data[2].data)
-                setprodxHoralvl1(remultiaux.data[3].data)
+                setTasaabandonoperc((+(remultiaux.data[2].data || [])[0]?.tasaabandonoperc) * 100)
+                setprodxHoralvl0(remultiaux.data[3].data)
                 if(remultiaux.data[4].success){
                     const {horaconectadorange0,horaconectadorange1,horaconectadorange2,horaconectadorange3,horaconectadorange4, horaconectadototal,
                         horalogueorange0, horalogueorange1,  horalogueorange2, horalogueorange3, horalogueorange4, horalogueototal} = remultiaux.data[4].data[0]
@@ -874,6 +928,8 @@ const DashboardProductivity: FC = () => {
                     );
                 }
                 setResEncuesta(remultiaux.data[5].data)
+                setprodxHoralvl1(remultiaux.data[6].data)
+
                 //setprodxHoraDist(remultiaux.data[4].data)
                 //setResLabels(remultiaux.data[6].data)
 
@@ -920,7 +976,8 @@ const DashboardProductivity: FC = () => {
             getdashboardoperativoSummarySel(tosend),
             getdashboardoperativoProdxHoraSel({...tosend,level:0}),
             getdashboardoperativoProdxHoraDistSel(tosend),
-            getdashboardoperativoEncuestaSel(tosend)
+            getdashboardoperativoEncuestaSel(tosend),
+            getdashboardoperativoProdxHoraSel({...tosend,level:1}),
         ]))
         setWaitSave(true)
     }
@@ -1241,7 +1298,7 @@ const DashboardProductivity: FC = () => {
                     >
                         <div className={classes.downloadiconcontainer}>                            
                             <CloudDownloadIcon onClick={()=>downloaddata("TMO")} className={classes.styleicon}/>
-                            <SettingsIcon onClick={()=>{setFieldToFilter("TMO"); setOpenDialogPerRequest(true)}} className={classes.styleicon}/>
+                            <SettingsIcon onClick={()=>{setFieldToFilter("TMO"); setOpenDialogPerRequest(true);setsearchfieldsOnlyOne((prevState) =>({...prevState, min: resTMO[0].target_min, max: resTMO[0].target_max}))}} className={classes.styleicon}/>
                         </div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
@@ -1330,7 +1387,7 @@ const DashboardProductivity: FC = () => {
                     >
                         <div className={classes.downloadiconcontainer}>
                             <CloudDownloadIcon onClick={()=>downloaddata("TME")}  className={classes.styleicon}/>
-                            <SettingsIcon onClick={()=>{setFieldToFilter("TME"); setOpenDialogPerRequest(true)}} className={classes.styleicon}/>
+                            <SettingsIcon onClick={()=>{setFieldToFilter("TME"); setOpenDialogPerRequest(true);setsearchfieldsOnlyOne((prevState) =>({...prevState, min: resTME[0].target_min, max: resTME[0].target_max}))}} className={classes.styleicon}/>
                         </div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
@@ -1461,25 +1518,41 @@ const DashboardProductivity: FC = () => {
                         className={classes.columnCard2}
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.productivitycard1)}</div>
-                        <div className={classes.datafieldquarter}>{prodxHora.prodlog}</div>                    
+                        <div className={classes.datafieldquarter}>{prodxHora.prodlog}</div>
+                        <div className={classes.datafieldfooter}>
+                            <div>% Cumplimiento</div>
+                            <div>{prodxHoraLabel.prodlog} %</div>
+                        </div>
                     </Box>
                     <Box
                         className={classes.columnCard2}
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.productivitycard2)}</div>
-                        <div className={classes.datafieldquarter}>{prodxHora.prodcon}</div>                    
+                        <div className={classes.datafieldquarter}>{prodxHora.prodcon}</div>
+                        <div className={classes.datafieldfooter}>
+                            <div>% Cumplimiento</div>
+                            <div>{prodxHoraLabel.prodcon} %</div>
+                        </div>
                     </Box>
                     <Box
                         className={classes.columnCard2}
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.productivitycard3)}</div>
-                        <div className={classes.datafieldquarter}>{prodxHora.prodbot}</div>                    
+                        <div className={classes.datafieldquarter}>{prodxHora.prodbot}</div>
+                        <div className={classes.datafieldfooter}>
+                            <div>% Cumplimiento</div>
+                            <div>{prodxHoraLabel.prodbot} %</div>
+                        </div>
                     </Box>
                     <Box
                         className={classes.columnCard2}
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.productivitycard4)}</div>
-                        <div className={classes.datafieldquarter}>{dataSummary.tasaabandono}</div>                    
+                        <div className={classes.datafieldquarter}>{dataSummary.tasaabandono} %</div>                    
+                        <div className={classes.datafieldfooter}>
+                            <div>% Cumplimiento</div>
+                            <div>{+dataSummary.tasaabandono - tasaabandonoperc} %</div>
+                        </div> 
                     </Box>
                 </div>
                 <div className={classes.replacerowzyx} >

@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useContext, useEffect, useState } from "react";
-import { makeStyles, Button, Box, IconButton, Typography, InputAdornment } from '@material-ui/core';
-import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon } from '@material-ui/icons';
+import { makeStyles, Button, IconButton, Typography, InputAdornment } from '@material-ui/core';
+import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon, LinkOff as LinkOffIcon } from '@material-ui/icons';
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
-import { ColorInput, FieldEdit, } from "components";
+import { FieldEdit, } from "components";
 import { AndroidColor } from "icons";
 import { MainData, SubscriptionContext } from "./context";
 import { useFormContext } from "react-hook-form";
@@ -29,7 +29,6 @@ export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = (
     const { getValues, setValue, register, unregister, formState: { errors } } = useFormContext<MainData>();
     const [hasFinished, setHasFinished] = useState(false)
     const { t } = useTranslation();
-    const [coloricon, setcoloricon] = useState("#90c900");
 
     useEffect(() => {
         const strRequired = (value: string) => {
@@ -114,7 +113,7 @@ export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = (
                 InputProps={{
                     endAdornment: (
                         <InputAdornment position="end">
-                            <LinkIcon />
+                            {hasFinished ? <LinkIcon color="primary" /> : <LinkOffIcon />}
                         </InputAdornment>
                     )
                 }}

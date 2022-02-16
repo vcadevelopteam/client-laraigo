@@ -952,16 +952,6 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 }
             },
             {
-                Header: t(langKeys.contractedplanfreewhatsappchannel),
-                accessor: 'freewhatsappchannel',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { freewhatsappchannel } = props.cell.row.original;
-                    return formatNumberNoDecimals(freewhatsappchannel || 0);
-                }
-            },
-            {
                 Header: t(langKeys.channelwhatsappfee),
                 accessor: 'channelwhatsappfee',
                 type: 'number',
@@ -972,6 +962,16 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 }
             },
             {
+                Header: t(langKeys.contractedplanfreewhatsappchannel),
+                accessor: 'freewhatsappchannel',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { freewhatsappchannel } = props.cell.row.original;
+                    return formatNumberNoDecimals(freewhatsappchannel || 0);
+                }
+            },
+            {
                 Header: t(langKeys.contractedplanfreewhatsappconversation),
                 accessor: 'whatsappconversationfreequantity',
                 type: 'number',
@@ -979,6 +979,20 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 Cell: (props: any) => {
                     const { whatsappconversationfreequantity } = props.cell.row.original;
                     return formatNumberNoDecimals(whatsappconversationfreequantity || 0);
+                }
+            },
+            {
+                Header: t(langKeys.allowchanneloverride),
+                accessor: 'channelcreateoverride',
+                NoFilter: false,
+                type: 'boolean',
+                sortType: 'basic',
+                editable: true,
+                width: 180,
+                maxWidth: 180,
+                Cell: (props: any) => {
+                    const { channelcreateoverride } = props.cell.row.original;
+                    return channelcreateoverride ? t(langKeys.yes) : "No"
                 }
             },
             {
@@ -1182,6 +1196,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
     )
     const [checkedaux, setCheckedaux] = useState(row?.allowhsm || false);
     const [checkeduser, setCheckeduser] = useState(row?.usercreateoverride || false);
+    const [checkedchannel, setCheckedchannel] = useState(row?.channelcreateoverride || false);
     const [waitSave, setWaitSave] = useState(false);
 
     const arrayBreadContractedPlan = [
@@ -1208,6 +1223,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
             whatsappconversationfreequantity: row?.whatsappconversationfreequantity || 0,
             allowhsm: row?.allowhsm || false,
             usercreateoverride: row?.usercreateoverride || false,
+            channelcreateoverride: row?.channelcreateoverride || false,
             status: row ? row.status : 'ACTIVO',
             type: row ? row.type : '',
             description: row ? row.description : '',
@@ -1235,6 +1251,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
         register('operation');
         register('allowhsm');
         register('usercreateoverride');
+        register('channelcreateoverride');
         register('channelotherfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
         register('description');
         register('plan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -1424,6 +1441,14 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             type="number"
                             className="col-6"
                         />
+                        <div className={"col-6"} style={{ paddingBottom: '3px' }}>
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.allowchanneloverride)}</Box>
+                            <FormControlLabel
+                                style={{ paddingLeft: 10 }}
+                                control={<IOSSwitch checked={checkedchannel} onChange={(e) => { setCheckedchannel(e.target.checked); setValue('channelcreateoverride', e.target.checked) }} />}
+                                label={""}
+                            />
+                        </div>
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
