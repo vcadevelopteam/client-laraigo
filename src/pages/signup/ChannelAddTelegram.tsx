@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useContext, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box, Link, IconButton, Typography, InputAdornment } from '@material-ui/core';
-import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon } from '@material-ui/icons';
+import { makeStyles, Button, IconButton, Typography, InputAdornment } from '@material-ui/core';
+import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon, LinkOff as LinkOffIcon } from '@material-ui/icons';
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
-import { FieldEdit, ColorInput } from "components";
+import { FieldEdit } from "components";
 import { TelegramColor } from "icons";
 import { MainData, SubscriptionContext } from "./context";
 import { useFormContext } from "react-hook-form";
@@ -33,7 +33,6 @@ export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = 
     } = useContext(SubscriptionContext);
     const { getValues, setValue, register, unregister, formState: { errors } } = useFormContext<MainData>();
     const [hasFinished, setHasFinished] = useState(false)
-    const [coloricon, setcoloricon] = useState("#207FDD");
     const { t } = useTranslation();
 
     useEffect(() => {

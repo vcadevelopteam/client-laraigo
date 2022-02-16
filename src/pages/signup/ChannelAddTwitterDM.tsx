@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useContext, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box, IconButton, Link, Typography, InputAdornment } from '@material-ui/core';
-import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon } from '@material-ui/icons';
+import { makeStyles, Breadcrumbs, Button, IconButton, Link, Typography, InputAdornment } from '@material-ui/core';
+import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon, LinkOff as LinkOffIcon } from '@material-ui/icons';
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
-import { FieldEdit, ColorInput } from "components";
+import { FieldEdit } from "components";
 import { TwitterColor } from "icons";
 import { MainData, SubscriptionContext } from "./context";
 import { useFormContext } from "react-hook-form";
@@ -31,7 +31,6 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
     const { getValues, setValue, register, unregister, formState: { errors }, trigger } = useFormContext<MainData>();
     const [hasFinished, setHasFinished] = useState(false);
     const [viewSelected, setViewSelected] = useState("view1");
-    const [coloricon, setcoloricon] = useState("#1D9BF0");
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
 

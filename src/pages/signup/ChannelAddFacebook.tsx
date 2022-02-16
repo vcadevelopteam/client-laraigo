@@ -1,11 +1,11 @@
 import { FC, useContext, useEffect, useState } from "react";
 import { Button, IconButton, InputAdornment, Typography } from '@material-ui/core';
 import { showBackdrop } from 'store/popus/actions';
-import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon } from "@material-ui/icons";
+import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon, LinkOff as LinkOffIcon } from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
 import { FacebookColor } from "icons";
-import { FieldEdit, FieldSelect, ColorInput } from "components";
+import { FieldEdit, FieldSelect } from "components";
 import FacebookLogin from 'react-facebook-login';
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
@@ -29,7 +29,6 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
     const { getValues, setValue, register, unregister, formState: { errors } } = useFormContext<MainData>();
     const [waitSave, setWaitSave] = useState(false);
     const [hasFinished, setHasFinished] = useState(false)
-    const [coloricon, setcoloricon] = useState("#2d88ff");
     const mainResult = useSelector(state => state.channel.channelList)
     const dispatch = useDispatch();
     const { t } = useTranslation();

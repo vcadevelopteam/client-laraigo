@@ -1,11 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useContext, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box, Link, IconButton, Typography, InputAdornment } from '@material-ui/core';
-import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon } from '@material-ui/icons';
+import { makeStyles, Breadcrumbs, Button, Link, IconButton, Typography, InputAdornment } from '@material-ui/core';
+import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon, LinkOff as LinkOffIcon } from '@material-ui/icons';
 import { showBackdrop } from 'store/popus/actions';
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
-import { FieldEdit, ColorInput } from "components";
+import { FieldEdit } from "components";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { TwitterColor } from "icons";
@@ -35,7 +35,6 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
     const [hasFinished, setHasFinished] = useState(false);
     const [viewSelected, setViewSelected] = useState("view1");
     const [waitSave, setWaitSave] = useState(false);
-    const [coloricon, setcoloricon] = useState("#1D9BF0");
     const mainResult = useSelector(state => state.channel.channelList)
     const dispatch = useDispatch();
     const { t } = useTranslation();
