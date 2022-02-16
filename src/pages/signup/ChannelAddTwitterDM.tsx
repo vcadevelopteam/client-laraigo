@@ -39,10 +39,10 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
 
     useEffect(() => {
         const cb = async () => {
-            const v1 = await trigger('channels.twitter.consumerkey');
-            const v2 = await trigger('channels.twitter.consumersecret');
-            const v3 = await trigger('channels.twitter.accesstoken');
-            const v4 = await trigger('channels.twitter.accesssecret');
+            const v1 = await trigger('channels.twitterDM.consumerkey');
+            const v2 = await trigger('channels.twitterDM.consumersecret');
+            const v3 = await trigger('channels.twitterDM.accesstoken');
+            const v4 = await trigger('channels.twitterDM.accesssecret');
             setSubmitError(!v1 || !v2 || !v3 || !v4);
         }
 
