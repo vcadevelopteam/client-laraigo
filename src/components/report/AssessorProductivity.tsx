@@ -134,6 +134,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
     const [openModal, setOpenModal] = useState(false);
     const [view, setView] = useState('GRID');
 
+    const [dataGrid, setdataGrid] = useState<any[]>([])
     const [detailCustomReport, setDetailCustomReport] = useState<{
         loading: boolean;
         data: Dictionary[]
@@ -147,60 +148,50 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
             {
                 Header: t(langKeys.report_userproductivity_user),
                 accessor: 'usr',
-                NoFilter: false,
             },
             {
                 Header: t(langKeys.report_userproductivity_fullname),
                 accessor: 'fullname',
-                NoFilter: false
             },
             ...(isday ? [{
                 Header: t(langKeys.report_userproductivity_hourfirstlogin),
                 accessor: 'hourfirstlogin',
-                NoFilter: false,
             }] : []),
             {
                 Header: t(langKeys.report_userproductivity_totaltickets),
                 accessor: 'totaltickets',
-                NoFilter: false,
                 type: "number",
                 sortType: 'number',
             },
             {
                 Header: t(langKeys.report_userproductivity_closedtickets),
                 accessor: 'closedtickets',
-                NoFilter: false,
                 type: "number",
                 sortType: 'number',
             },
             {
                 Header: t(langKeys.report_userproductivity_asignedtickets),
                 accessor: 'asignedtickets',
-                NoFilter: false,
                 type: "number",
                 sortType: 'number',
             },
             {
                 Header: t(langKeys.report_userproductivity_suspendedtickets),
                 accessor: 'suspendedtickets',
-                NoFilter: false,
                 type: "number",
                 sortType: 'number',
             },
             {
                 Header: t(langKeys.report_userproductivity_avgfirstreplytime),
                 accessor: 'avgfirstreplytime',
-                NoFilter: false
             },
             {
                 Header: t(langKeys.report_userproductivity_maxfirstreplytime),
                 accessor: 'maxfirstreplytime',
-                NoFilter: false
             },
             {
                 Header: t(langKeys.report_userproductivity_minfirstreplytime),
                 accessor: 'minfirstreplytime',
-                NoFilter: false
             },
             // {
             //     Header: t(langKeys.report_userproductivity_avgtotalduration),
@@ -210,51 +201,42 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
             {
                 Header: t(langKeys.report_userproductivity_maxtotalduration),
                 accessor: 'maxtotalduration',
-                NoFilter: false
             },
             {
                 Header: t(langKeys.report_userproductivity_mintotalduration),
                 accessor: 'mintotalduration',
-                NoFilter: false
             },
             {
                 Header: t(langKeys.report_userproductivity_avgtotalasesorduration),
                 accessor: 'avgtotalasesorduration',
-                NoFilter: false
             },
             {
                 Header: t(langKeys.report_userproductivity_maxtotalasesorduration),
                 accessor: 'maxtotalasesorduration',
-                NoFilter: false
             },
             {
                 Header: t(langKeys.report_userproductivity_mintotalasesorduration),
                 accessor: 'mintotalasesorduration',
-                NoFilter: false
             },
             {
                 Header: t(langKeys.report_userproductivity_userconnectedduration),
                 accessor: 'userconnectedduration',
-                NoFilter: false,
                 type: "number",
                 sortType: 'number',
             },
             {
                 Header: t(langKeys.report_userproductivity_userstatus),
                 accessor: 'userstatus',
-                NoFilter: false
             },
             {
                 Header: t(langKeys.report_userproductivity_groups),
                 accessor: 'groups',
-                NoFilter: false
             },
             ...(mainAux.data.length > 0 ?
                 [...desconectedmotives.map((d: any) =>
                 ({
                     Header: d,
                     accessor: d,
-                    NoFilter: false,
                 })
                 )
                 ] : []
@@ -266,6 +248,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
     useEffect(() => {
         if (!mainAux.error && !mainAux.loading && mainAux.key === "UFN_REPORT_USERPRODUCTIVITY_SEL") {
             setDetailCustomReport(mainAux);
+            setdataGrid(mainAux.data.map(x => ({ ...x, ...JSON.parse(x.desconectedtimejson) })))
             let maxminaux = {
                 maxticketsclosed: 0,
                 maxticketsclosedasesor: "",
@@ -628,10 +611,10 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
             {view === "GRID" ? (
                 <TableZyx
                     columns={columns}
-                    data={detailCustomReport.data.map(x => ({ ...x, ...JSON.parse(x.desconectedtimejson) }))}
+                    filterGeneral={false}
+                    data={dataGrid}
                     download={false}
                     loading={detailCustomReport.loading}
-                    filterGeneral={false}
                     register={false}
                     ButtonsElement={() => (
                         <Box width={1} style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
@@ -650,7 +633,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                 variant="contained"
                                 color="primary"
                                 disabled={detailCustomReport.loading}
-                                onClick={() => exportExcel("report" + (new Date().toISOString()), detailCustomReport.data.map(x => ({ ...x, ...JSON.parse(x.desconectedtimejson) })), columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
+                                onClick={() => exportExcel("report" + (new Date().toISOString()), dataGrid, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
                                 startIcon={<DownloadIcon />}
                             >{t(langKeys.download)}
                             </Button>

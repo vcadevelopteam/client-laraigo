@@ -1,16 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useContext, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box, Link, IconButton, Typography, InputAdornment } from '@material-ui/core';
-import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon } from '@material-ui/icons';
+import { makeStyles, Breadcrumbs, Button, Link, IconButton, Typography, InputAdornment } from '@material-ui/core';
+import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon, LinkOff as LinkOffIcon } from '@material-ui/icons';
 import { showBackdrop } from 'store/popus/actions';
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
-import { FieldEdit, ColorInput } from "components";
+import { FieldEdit } from "components";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { TwitterColor } from "icons";
 import { MainData, SubscriptionContext } from "./context";
 import { useFormContext } from "react-hook-form";
+import clsx from 'clsx';
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -27,6 +28,7 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
         commonClasses,
         foreground,
         selectedChannels,
+        submitObservable,
         finishreg,
         setForeground,
         deleteChannel,
@@ -35,11 +37,26 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
     const [hasFinished, setHasFinished] = useState(false);
     const [viewSelected, setViewSelected] = useState("view1");
     const [waitSave, setWaitSave] = useState(false);
-    const [coloricon, setcoloricon] = useState("#1D9BF0");
+    const [submitError, setSubmitError] = useState(false);
     const mainResult = useSelector(state => state.channel.channelList)
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
+
+    useEffect(() => {
+        const cb = async () => {
+            const v1 = await trigger('channels.twitter.consumerkey');
+            const v2 = await trigger('channels.twitter.consumersecret');
+            const v3 = await trigger('channels.twitter.accesstoken');
+            const v4 = await trigger('channels.twitter.accesssecret');
+            setSubmitError(!v1 || !v2 || !v3 || !v4);
+        }
+
+        submitObservable.addListener(cb);
+        return () => {
+            submitObservable.removeListener(cb);
+        }
+    }, [submitObservable, trigger]);
 
     useEffect(() => {
         const strRequired = (value: string) => {
@@ -196,7 +213,7 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
     }
 
     return (
-        <div className={commonClasses.root}>
+        <div className={clsx(commonClasses.root, submitError && commonClasses.rootError)}>
             {!hasFinished && <TwitterColor className={commonClasses.leadingIcon} />}
             {!hasFinished && <IconButton
                 color="primary"
@@ -238,7 +255,7 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
                 InputProps={{
                     endAdornment: (
                         <InputAdornment position="end">
-                            <LinkIcon />
+                            {hasFinished ? <LinkIcon color="primary" /> : <LinkOffIcon />}
                         </InputAdornment>
                     )
                 }}
