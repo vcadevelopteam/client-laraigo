@@ -17,6 +17,8 @@ import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import { Dictionary } from "@types";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import { Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip, BarChart, Legend, Bar, PieChart, Pie, Cell, ComposedChart } from 'recharts';
+import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import SettingsIcon from '@material-ui/icons/Settings';
 
 const COLORS = ['#22b66e', '#b41a1a', '#ffcd56'];
@@ -347,6 +349,7 @@ const DashboardProductivity: FC = () => {
     const [dataLabel, setdataLabel] = useState<any>([]);
     const [prodxHoralvl0, setprodxHoralvl0] = useState<any>([]);
     const [prodxHoralvl1, setprodxHoralvl1] = useState<any>([]);
+    const [productivitybyhourfull, setproductivitybyhourfull] = useState(0)
     const [prodxHoraDist, setprodxHoraDist] = useState(
         [
             {label:"0 - 3",connected:0, notconnected: 0},
@@ -356,6 +359,11 @@ const DashboardProductivity: FC = () => {
             {label:"13 +", connected:0, notconnected: 0}]
     );
     const [prodxHora, setprodxHora] = useState({
+        prodlog: "0",
+        prodcon: "0",
+        prodbot: "0",
+    });
+    const [prodxHoraLabel, setprodxHoraLabel] = useState({
         prodlog: "0",
         prodcon: "0",
         prodbot: "0",
@@ -531,11 +539,11 @@ const DashboardProductivity: FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[prodxHoralvl0])
     useEffect(() => {
-        // setprodxHora({
-        //     prodlog: "0",
-        //     prodcon: "0",
-        //     prodbot: "0",
-        // });
+        setprodxHoraLabel({
+            prodlog: "0",
+            prodcon: "0",
+            prodbot: "0",
+        });
         if(prodxHoralvl1 && prodxHoralvl1.length > 0){
             const firstDate = new Date( String(dateRangeCreateDate.startDate));
             const secondDate = new Date( String(dateRangeCreateDate.endDate));
@@ -544,42 +552,30 @@ const DashboardProductivity: FC = () => {
             let diffDays = Math.ceil(Math.abs((firstDate.getTime() - secondDate.getTime()) / oneDay));
             const fullhours = 24 * diffDays
             
-            // remultiaux.data[6].data.reduce((full, i) => {
-            //     const productivitylogueo = i.horalogueo ? i.ticketsasesor / i.horalogueo : 0;
-            //     const productivitybot = i.ticketsbot / fullhours;
-            //     const productivityconectado = i.horaconectado ? i.ticketsasesor / i.horaconectado : 0;
-            //     const productivity = i.productivitybyhour ? parseFloat(i.productivitybyhour) : 0;
+            let dataacum: any = prodxHoralvl1.reduce((full: any, i: any) => {
+                const productivitylogueo = i.horalogueo ? i.ticketsasesor / i.horalogueo : 0;
+                const productivitybot = i.ticketsbot / fullhours;
+                const productivityconectado = i.horaconectado ? i.ticketsasesor / i.horaconectado : 0;
+                const productivity = i.productivitybyhour ? parseFloat(i.productivitybyhour) : 0;
 
-            //     full.horalogueotmp += productivity ? ((productivitylogueo / productivity) - 1) * 100 : 0;
-            //     full.horaconectadotmp += productivity ? ((productivityconectado / (productivity)) - 1) * 100 : 0;
-            //     full.productivitybyhour += productivity;
-            //     full.productivitybot += productivity ? ((productivitybot / (productivity)) - 1) * 100 : 0;
-            //     console.log(productivity ? ((productivitybot / (productivity)) - 1) * 100 : 0);
-            //     return full;
-            // }, {
-            //     ticketstotalac: 0,
-            //     horalogueotmp: 0,
-            //     horaconectadotmp: 0,
-            //     productivitybyhour: 0,
-            //     productivitybot: 0
-            // });
-            // const { horalogueotmp, horaconectadotmp, productivitybyhour, productivitybot } = ac;
-
-            // productivitybyhourfull = productivitybyhour / r.level1.rows.length;
-            // dataprodlog.textContent = (horalogueotmp ? (horalogueotmp / r.level1.rows.length) : 0).toFixed() + "%";
-            // dataprodcon.textContent = (horaconectadotmp ? (horaconectadotmp / r.level1.rows.length) : 0).toFixed() + "%";
-            // dataprodbot.textContent = (productivitybot ? (productivitybot / r.level1.rows.length) : 0).toFixed() + "%";
-            
-            
-            // const { horalogueo, horaconectado, ticketsasesor, ticketsbot } = prodxHoralvl0[0];
-            // const prodlogofi = horalogueo ? (ticketsasesor / horalogueo) : 0;
-            // const prodconofi = horaconectado ? (ticketsasesor / horaconectado) : 0;
-            // const prodbotofi = ticketsbot? (ticketsbot/ fullhours):0 ;
-            // setprodxHora({
-            //     prodlog: prodlogofi.toFixed(2),
-            //     prodcon: prodconofi.toFixed(2),
-            //     prodbot: prodbotofi.toFixed(2),
-            // });
+                full.horalogueotmp += productivity ? ((productivitylogueo / productivity) - 1) * 100 : 0;
+                full.horaconectadotmp += productivity ? ((productivityconectado / (productivity)) - 1) * 100 : 0;
+                full.productivitybyhour += productivity;
+                full.productivitybot += productivity ? ((productivitybot / (productivity)) - 1) * 100 : 0;
+                return full;
+            }, {
+                ticketstotalac: 0,
+                horalogueotmp: 0,
+                horaconectadotmp: 0,
+                productivitybyhour: 0,
+                productivitybot: 0
+            });
+            setproductivitybyhourfull(dataacum.productivitybyhour / prodxHoralvl1.length);
+            setprodxHoraLabel({
+                prodlog: (dataacum.horalogueotmp ? (dataacum.horalogueotmp / prodxHoralvl1.length) : 0).toFixed(),
+                prodcon: (dataacum.horaconectadotmp ? (dataacum.horaconectadotmp / prodxHoralvl1.length) : 0).toFixed(),
+                prodbot: (dataacum.productivitybot ? (dataacum.productivitybot / prodxHoralvl1.length) : 0).toFixed()
+            })
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[prodxHoralvl1])
@@ -1527,7 +1523,7 @@ const DashboardProductivity: FC = () => {
                         <div className={classes.datafieldquarter}>{prodxHora.prodlog}</div>
                         <div className={classes.datafieldfooter}>
                             <div>% {t(langKeys.compliance)}</div>
-                            <div>{+dataSummary.tasaabandono - tasaabandonoperc} %</div>
+                            <div className={clsx(+prodxHoraLabel.prodlog>0 ? classes.colorgreen : classes.colorred)}>{+prodxHoraLabel.prodlog>0?<ArrowDropUpIcon style={{ height: "15px"}}/>:<ArrowDropDownIcon style={{height: "15px"}}/>}{prodxHoraLabel.prodlog} %</div>
                         </div>
                     </Box>
                     <Box
@@ -1537,7 +1533,7 @@ const DashboardProductivity: FC = () => {
                         <div className={classes.datafieldquarter}>{prodxHora.prodcon}</div>
                         <div className={classes.datafieldfooter}>
                             <div>% {t(langKeys.compliance)}</div>
-                            <div>{+dataSummary.tasaabandono - tasaabandonoperc} %</div>
+                            <div className={clsx(+prodxHoraLabel.prodcon>0 ? classes.colorgreen : classes.colorred)}>{+prodxHoraLabel.prodcon>0?<ArrowDropUpIcon style={{ height: "15px"}}/>:<ArrowDropDownIcon style={{height: "15px"}}/>}{prodxHoraLabel.prodcon} %</div>
                         </div>
                     </Box>
                     <Box
@@ -1547,7 +1543,7 @@ const DashboardProductivity: FC = () => {
                         <div className={classes.datafieldquarter}>{prodxHora.prodbot}</div>
                         <div className={classes.datafieldfooter}>
                             <div>% {t(langKeys.compliance)}</div>
-                            <div>{+dataSummary.tasaabandono - tasaabandonoperc} %</div>
+                            <div className={clsx(+prodxHoraLabel.prodbot>0 ? classes.colorgreen : classes.colorred)}>{+prodxHoraLabel.prodbot>0?<ArrowDropUpIcon style={{ height: "15px"}}/>:<ArrowDropDownIcon style={{height: "15px"}}/>}{prodxHoraLabel.prodbot} %</div>
                         </div>
                     </Box>
                     <Box
@@ -1557,7 +1553,7 @@ const DashboardProductivity: FC = () => {
                         <div className={classes.datafieldquarter}>{dataSummary.tasaabandono} %</div>                    
                         <div className={classes.datafieldfooter}>
                             <div>% {t(langKeys.compliance)}</div>
-                            <div>{+dataSummary.tasaabandono - tasaabandonoperc} %</div>
+                            <div className={clsx(+dataSummary.tasaabandono - tasaabandonoperc>0 ? classes.colorgreen : classes.colorred)}>{+dataSummary.tasaabandono - tasaabandonoperc>0?<ArrowDropUpIcon style={{ height: "15px"}}/>:<ArrowDropDownIcon style={{height: "15px"}}/>}{+dataSummary.tasaabandono - tasaabandonoperc} %</div>
                         </div> 
                     </Box>
                 </div>
