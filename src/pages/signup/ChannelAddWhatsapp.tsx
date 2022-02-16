@@ -11,6 +11,7 @@ import { styled } from '@material-ui/core/styles';
 import { WhatsappColor } from "icons";
 import { MainData, SubscriptionContext } from "./context";
 import { useFormContext } from "react-hook-form";
+import clsx from 'clsx';
 
 const useChannelAddStyles = makeStyles(theme => ({
     centerbutton: {
@@ -66,6 +67,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
         commonClasses,
         foreground,
         selectedChannels,
+        submitObservable,
         finishreg,
         setForeground,
         deleteChannel,
@@ -74,9 +76,32 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
     const [viewSelected, setViewSelected] = useState("view1");
     const [apiKey, setApiKey] = useState("");
     const [hasFinished, setHasFinished] = useState(false);
+    const [submitError, setSubmitError] = useState(false);
     const { t } = useTranslation();
 
     const classes = useChannelAddStyles();
+
+    useEffect(() => {
+        const cb = async () => {
+            const v1 = await trigger('channels.whatsapp.description');
+            const v2 = await trigger('channels.whatsapp.accesstoken');
+            const v3 = await trigger('channels.whatsapp.brandName');
+            const v4 = await trigger('channels.whatsapp.brandAddress');
+            const v5 = await trigger('channels.whatsapp.firstName');
+            const v6 = await trigger('channels.whatsapp.lastName');
+            const v7 = await trigger('channels.whatsapp.email');
+            const v8 = await trigger('channels.whatsapp.phone');
+            const v9 = await trigger('channels.whatsapp.customerfacebookid');
+            const v10 = await trigger('channels.whatsapp.phonenumberwhatsappbusiness');
+            const v11 = await trigger('channels.whatsapp.nameassociatednumber');
+            setSubmitError(!v1 || !v2 || !v3 || !v4 || !v5 || !v6 || !v7 || !v8 || !v9 || !v10 || !v11);
+        }
+
+        submitObservable.addListener(cb);
+        return () => {
+            submitObservable.removeListener(cb);
+        }
+    }, [submitObservable, trigger]);
 
     useEffect(() => {
         const strRequired = (value: string) => {
@@ -363,7 +388,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
     }*/
 
     return (
-        <div className={commonClasses.root}>
+        <div className={clsx(commonClasses.root, submitError && commonClasses.rootError)}>
             {!hasFinished && <WhatsappColor className={commonClasses.leadingIcon} />}
             {!hasFinished && <IconButton
                 color="primary"

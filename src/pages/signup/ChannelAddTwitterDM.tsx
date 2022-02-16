@@ -8,6 +8,7 @@ import { FieldEdit } from "components";
 import { TwitterColor } from "icons";
 import { MainData, SubscriptionContext } from "./context";
 import { useFormContext } from "react-hook-form";
+import clsx from 'clsx';
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -24,15 +25,32 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
         commonClasses,
         foreground,
         selectedChannels,
+        submitObservable,
         finishreg,
         setForeground,
         deleteChannel,
     } = useContext(SubscriptionContext);
     const { getValues, setValue, register, unregister, formState: { errors }, trigger } = useFormContext<MainData>();
     const [hasFinished, setHasFinished] = useState(false);
+    const [submitError, setSubmitError] = useState(false);
     const [viewSelected, setViewSelected] = useState("view1");
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
+
+    useEffect(() => {
+        const cb = async () => {
+            const v1 = await trigger('channels.twitter.consumerkey');
+            const v2 = await trigger('channels.twitter.consumersecret');
+            const v3 = await trigger('channels.twitter.accesstoken');
+            const v4 = await trigger('channels.twitter.accesssecret');
+            setSubmitError(!v1 || !v2 || !v3 || !v4);
+        }
+
+        submitObservable.addListener(cb);
+        return () => {
+            submitObservable.removeListener(cb);
+        }
+    }, [submitObservable, trigger]);
 
     useEffect(() => {
         const strRequired = (value: string) => {
@@ -203,7 +221,7 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
     }
 
     return (
-        <div className={commonClasses.root}>
+        <div className={clsx(commonClasses.root, submitError && commonClasses.rootError)}>
             {!hasFinished && <TwitterColor className={commonClasses.leadingIcon} />}
             {!hasFinished && <IconButton
                 color="primary"
