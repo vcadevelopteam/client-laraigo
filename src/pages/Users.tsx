@@ -134,8 +134,13 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                             p[index] = { ...data, operation: "INSERT" }
                             return p;
                         })
-                    else
-                        updateRecords && updateRecords((p: Dictionary[]) => p.map(x => x?.orgid === row.orgid ? { ...x, ...data, operation: (x.operation || "UPDATE") } : x))
+                    else{
+                        updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
+                            p[index] = { ...data, operation: "UPDATE" }
+                            return p;
+                        })
+                        //updateRecords((p: Dictionary[]) => p.map(x => x?.orgid === row.orgid ? { ...x, ...data, operation: (x.operation || "UPDATE") } : x))
+                    }
                 }
                 setAllIndex((p: number[]) => [...p, { index, allOk }]);
             })()
@@ -229,8 +234,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     });
 
     const onChangeOrganization = (value: Dictionary) => {
-        setValue('orgid', value ? value.orgid : 0);
-        setValue('orgdesc', value ? value.orgdesc : '');
+        setValue('orgid', value?.orgid || 0);
+        setValue('orgdesc', value?.orgdesc || '');
         if (value) {
             setDataSupervisors({ loading: true, data: [] });
             setDataChannels({ loading: true, data: [] });
