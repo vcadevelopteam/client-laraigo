@@ -1523,7 +1523,7 @@ const DashboardProductivity: FC = () => {
                         <div className={classes.datafieldquarter}>{prodxHora.prodlog}</div>
                         <div className={classes.datafieldfooter}>
                             <div>% {t(langKeys.compliance)}</div>
-                            <div className={clsx(+prodxHoraLabel.prodlog>0 ? classes.colorgreen : classes.colorred)}>{+prodxHoraLabel.prodlog>0?<ArrowDropUpIcon style={{ height: "15px"}}/>:<ArrowDropDownIcon style={{height: "15px"}}/>}{prodxHoraLabel.prodlog} %</div>
+                            <div>{+prodxHoraLabel.prodlog>0?<ArrowDropUpIcon style={{color: "green", height: "15px"}}/>:<ArrowDropDownIcon style={{color: "red", height: "15px"}}/>}{prodxHoraLabel.prodlog} %</div>
                         </div>
                     </Box>
                     <Box
@@ -1533,7 +1533,7 @@ const DashboardProductivity: FC = () => {
                         <div className={classes.datafieldquarter}>{prodxHora.prodcon}</div>
                         <div className={classes.datafieldfooter}>
                             <div>% {t(langKeys.compliance)}</div>
-                            <div className={clsx(+prodxHoraLabel.prodcon>0 ? classes.colorgreen : classes.colorred)}>{+prodxHoraLabel.prodcon>0?<ArrowDropUpIcon style={{ height: "15px"}}/>:<ArrowDropDownIcon style={{height: "15px"}}/>}{prodxHoraLabel.prodcon} %</div>
+                            <div>{+prodxHoraLabel.prodcon>0?<ArrowDropUpIcon style={{color: "green", height: "15px"}}/>:<ArrowDropDownIcon style={{color: "red", height: "15px"}}/>}{prodxHoraLabel.prodcon} %</div>
                         </div>
                     </Box>
                     <Box
@@ -1543,7 +1543,7 @@ const DashboardProductivity: FC = () => {
                         <div className={classes.datafieldquarter}>{prodxHora.prodbot}</div>
                         <div className={classes.datafieldfooter}>
                             <div>% {t(langKeys.compliance)}</div>
-                            <div className={clsx(+prodxHoraLabel.prodbot>0 ? classes.colorgreen : classes.colorred)}>{+prodxHoraLabel.prodbot>0?<ArrowDropUpIcon style={{ height: "15px"}}/>:<ArrowDropDownIcon style={{height: "15px"}}/>}{prodxHoraLabel.prodbot} %</div>
+                            <div>{+prodxHoraLabel.prodbot>0?<ArrowDropUpIcon style={{color: "green", height: "15px"}}/>:<ArrowDropDownIcon style={{color: "red", height: "15px"}}/>}{prodxHoraLabel.prodbot} %</div>
                         </div>
                     </Box>
                     <Box
@@ -1553,7 +1553,7 @@ const DashboardProductivity: FC = () => {
                         <div className={classes.datafieldquarter}>{dataSummary.tasaabandono} %</div>                    
                         <div className={classes.datafieldfooter}>
                             <div>% {t(langKeys.compliance)}</div>
-                            <div className={clsx(+dataSummary.tasaabandono - tasaabandonoperc>0 ? classes.colorgreen : classes.colorred)}>{+dataSummary.tasaabandono - tasaabandonoperc>0?<ArrowDropUpIcon style={{ height: "15px"}}/>:<ArrowDropDownIcon style={{height: "15px"}}/>}{+dataSummary.tasaabandono - tasaabandonoperc} %</div>
+                            <div>{+dataSummary.tasaabandono - tasaabandonoperc>0?<ArrowDropUpIcon style={{color: "green", height: "15px"}}/>:<ArrowDropDownIcon style={{color: "red", height: "15px"}}/>}{+dataSummary.tasaabandono - tasaabandonoperc} %</div>
                         </div> 
                     </Box>
                 </div>
