@@ -1625,14 +1625,14 @@ const translation: LangKeys = {
     report_userproductivity_cardavgmin: 'Lowest average',
     report_userproductivity_cardminmin: 'Lower',
 
-    report_userproductivity_cardavgmax_tme: 'Advisor with the highest TME',
+    report_userproductivity_cardavgmax_tme: 'Advisor with the highest TME (avg)',
     report_userproductivity_cardmaxmax_tme: 'Ticket with the highest TME',
-    report_userproductivity_cardavgmin_tme: 'Advisor with the lowest TME',
+    report_userproductivity_cardavgmin_tme: 'Advisor with the lowest TME (avg)',
     report_userproductivity_cardminmin_tme: 'Ticket with the lowest TME',
 
-    report_userproductivity_cardavgmax_tmo: 'Advisor with the highest TMO',
+    report_userproductivity_cardavgmax_tmo: 'Advisor with the highest TMO (avg)',
     report_userproductivity_cardmaxmax_tmo: 'Ticket with the highest TMO',
-    report_userproductivity_cardavgmin_tmo: 'Advisor with the lowest TMO',
+    report_userproductivity_cardavgmin_tmo: 'Advisor with the lowest TMO (avg)',
     report_userproductivity_cardminmin_tmo: 'Ticket with the lowest TMO',
 
     report_userproductivity_cardavgmax_tmoagent: "Highest average agent's TMO",
