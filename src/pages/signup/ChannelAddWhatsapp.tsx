@@ -125,14 +125,14 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
         }
 
         register('channels.whatsapp.description', { validate: strRequired, value: '' });
-        register('channels.whatsapp.accesstoken', { validate: strRequired, value: '' });
-        register('channels.whatsapp.brandName', { validate: strRequired, value: '' });
-        register('channels.whatsapp.brandAddress', { validate: strRequired, value: '' });
+        register('channels.whatsapp.accesstoken', { value: '' });
+        register('channels.whatsapp.brandName', { value: '' });
+        register('channels.whatsapp.brandAddress', { value: '' });
         register('channels.whatsapp.firstName', { validate: strRequired, value: '' });
         register('channels.whatsapp.lastName', { validate: strRequired, value: '' });
         register('channels.whatsapp.email', { validate: emailRequired, value: '' });
         register('channels.whatsapp.phone', { validate: phoneRequired, value: '' });
-        register('channels.whatsapp.customerfacebookid', { validate: strRequired, value: '' });
+        register('channels.whatsapp.customerfacebookid', { value: '' });
         register('channels.whatsapp.phonenumberwhatsappbusiness', { validate: strRequired, value: '' });
         register('channels.whatsapp.nameassociatednumber', { validate: strRequired, value: '' });
         register('channels.whatsapp.communicationchannelowner', { value: '' });
@@ -329,6 +329,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                             const v9 = await trigger('channels.whatsapp.customerfacebookid');
                             const v10 = await trigger('channels.whatsapp.phonenumberwhatsappbusiness');
                             const v11 = await trigger('channels.whatsapp.nameassociatednumber');
+                            console.log(v1 , v2 , v3 , v4 , v5 , v6 , v7 , v8 , v9 , v10,v11)
                             if (v1 && v2 && v3 && v4 && v5 && v6 && v7 && v8 && v9 && v10 && v11) {
                                 setView("view1");
                                 setHasFinished(true);
