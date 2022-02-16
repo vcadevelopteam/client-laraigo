@@ -6,7 +6,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { langKeys } from 'lang/keys';
 import { ChromePicker, ColorChangeHandler } from 'react-color';
-import { ArrowDropDown, Close, CloudUpload, DeleteOutline as DeleteOutlineIcon, Link as LinkIcon } from '@material-ui/icons';
+import { ArrowDropDown, Close, CloudUpload, DeleteOutline as DeleteOutlineIcon, Link as LinkIcon, LinkOff as LinkOffIcon } from '@material-ui/icons';
 import { useForm, useFormContext, UseFormReturn } from 'react-hook-form';
 import { IChatWebAdd, IChatWebAddFormField } from '@types';
 import { useDispatch } from 'react-redux';
@@ -1482,7 +1482,7 @@ const useStyles = makeStyles(theme => ({
 export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
     const classes = useStyles();
     const { foreground, setForeground } = useContext(SubscriptionContext);
-    const { getValues, setValue, register, unregister, formState: { errors } } = useFormContext<MainData>();
+    const { getValues, register, unregister } = useFormContext<MainData>();
     const dispatch = useDispatch();
     const [hasFinished, setHasFinished] = useState(false);
     const [selectedView, setSelectedView] = useState("view1");
@@ -1677,26 +1677,6 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
     );
 };
 
-const useFinalStepStyles = makeStyles(theme => ({
-    title: {
-        textAlign: "center",
-        fontWeight: "bold",
-        fontSize: "2em",
-        color: "#7721ad",
-        padding: "20px",
-        marginLeft: "auto",
-        marginRight: "auto",
-        maxWidth: "800px",
-    },
-    button: {
-        padding: 12,
-        fontWeight: 500,
-        fontSize: '14px',
-        textTransform: 'initial',
-        width: "180px"
-    },
-}));
-
 interface ChannelAddEndProps {
     hasFinished: boolean;
     loading: boolean;
@@ -1718,7 +1698,6 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
     } = useContext(SubscriptionContext);
     const { t } = useTranslation();
     const { getValues, setValue, formState: { errors } } = useFormContext<MainData>();
-    // const [hexIconColor, setHexIconColor] = useState("#7721ad");
 
     return (
         <div className={commonClasses.root}>

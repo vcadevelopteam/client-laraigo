@@ -2,10 +2,10 @@
 import { FC, useContext, useEffect, useState } from "react";
 import { Button, IconButton, InputAdornment, Typography } from '@material-ui/core';
 import { showBackdrop } from 'store/popus/actions';
-import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon } from "@material-ui/icons";
+import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon, LinkOff as LinkOffIcon } from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
-import { FieldEdit, FieldSelect, ColorInput } from "components";
+import { FieldEdit, FieldSelect } from "components";
 import { InstagramColor3 } from "icons";
 import FacebookLogin from 'react-facebook-login';
 import { useSelector } from "hooks";
@@ -27,7 +27,6 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
     const [waitSave, setWaitSave] = useState(false);
     const [hasFinished, setHasFinished] = useState(false)
     const mainResult = useSelector(state => state.channel.channelList)
-    const [coloricon, setcoloricon] = useState("#F56040");
     const dispatch = useDispatch();
     const { t } = useTranslation();
 

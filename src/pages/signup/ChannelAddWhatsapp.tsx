@@ -2,14 +2,13 @@
 import { FC, useContext, useEffect, useState } from "react";
 import { makeStyles, Breadcrumbs, Button, TextField, IconButton, Typography, InputAdornment } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
-import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon } from '@material-ui/icons';
+import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon, LinkOff as LinkOffIcon } from '@material-ui/icons';
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
-import { FieldEdit, ColorInput } from "components";
+import { FieldEdit } from "components";
 import MuiPhoneNumber from 'material-ui-phone-number';
 import { styled } from '@material-ui/core/styles';
 import { WhatsappColor } from "icons";
-import { useSelector } from "hooks";
 import { MainData, SubscriptionContext } from "./context";
 import { useFormContext } from "react-hook-form";
 
@@ -73,10 +72,8 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
     } = useContext(SubscriptionContext);
     const { getValues, setValue, register, unregister, formState: { errors }, trigger } = useFormContext<MainData>();
     const [viewSelected, setViewSelected] = useState("view1");
-    const planData = useSelector(state => state.signup.verifyPlan)
     const [apiKey, setApiKey] = useState("");
     const [hasFinished, setHasFinished] = useState(false);
-    const [coloricon, setcoloricon] = useState("#4AC959");
     const { t } = useTranslation();
 
     const classes = useChannelAddStyles();
