@@ -532,7 +532,7 @@ const UserSettings: FC = () => {
     const [view, setView] = useState('view-1');
 
     function changePlan() {
-        if (user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMIN") {
+        if (user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMINISTRADOR") {
             setView('view-4')
         } else {
             dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.notpermisionforaction) }));
@@ -554,7 +554,7 @@ const UserSettings: FC = () => {
     }, [executeResult])
 
     function cancelSuscription() {
-        if (user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMIN") {
+        if (user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMINISTRADOR") {
             const callback = () => {
                 setWaitSave(true);
                 dispatch(execute(cancelSuscriptionFunction()));

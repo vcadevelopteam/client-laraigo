@@ -398,7 +398,7 @@ const DashboardProductivity: FC = () => {
                 vartmo = seconds < timetoseconds(target_min) ? Math.abs(vartmo) * -1 : vartmo
                 let sign = vartmo > 0 ? "" : "-"
                 vartmo = Math.abs(vartmo)
-                let variacioncolor = vartmo <= 0;
+                let variacioncolor = timetoseconds(target_min) <= seconds && timetoseconds(target_max) >= seconds
 
                 hh = (Math.floor(vartmo / 3600)) === 0 ? "" : (Math.floor(vartmo / 3600) + "h ")
                 mm = Math.floor((vartmo % 3600) / 60) === 0 ? "" : (Math.floor((vartmo % 3600) / 60) + "m ")
@@ -457,7 +457,7 @@ const DashboardProductivity: FC = () => {
                 vartmo = seconds < timetoseconds(target_min) ? Math.abs(vartmo) * -1 : vartmo
                 let sign = vartmo > 0 ? "" : "-"
                 vartmo = Math.abs(vartmo)
-                let variacioncolor = vartmo <= 0;
+                let variacioncolor = timetoseconds(target_min) <= seconds && timetoseconds(target_max) >= seconds
 
                 hh = (Math.floor(vartmo / 3600)) === 0 ? "" : (Math.floor(vartmo / 3600) + "h ")
                 mm = Math.floor((vartmo % 3600) / 60) === 0 ? "" : (Math.floor((vartmo % 3600) / 60) + "m ")
@@ -1241,7 +1241,7 @@ const DashboardProductivity: FC = () => {
                     >
                         <div className={classes.downloadiconcontainer}>                            
                             <CloudDownloadIcon onClick={()=>downloaddata("TMO")} className={classes.styleicon}/>
-                            <SettingsIcon onClick={()=>{setFieldToFilter("TMO"); setOpenDialogPerRequest(true)}} className={classes.styleicon}/>
+                            <SettingsIcon onClick={()=>{setFieldToFilter("TMO"); setOpenDialogPerRequest(true);setsearchfieldsOnlyOne((prevState) =>({...prevState, min: resTMO[0].target_min, max: resTMO[0].target_max}))}} className={classes.styleicon}/>
                         </div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
@@ -1330,7 +1330,7 @@ const DashboardProductivity: FC = () => {
                     >
                         <div className={classes.downloadiconcontainer}>
                             <CloudDownloadIcon onClick={()=>downloaddata("TME")}  className={classes.styleicon}/>
-                            <SettingsIcon onClick={()=>{setFieldToFilter("TME"); setOpenDialogPerRequest(true)}} className={classes.styleicon}/>
+                            <SettingsIcon onClick={()=>{setFieldToFilter("TME"); setOpenDialogPerRequest(true);setsearchfieldsOnlyOne((prevState) =>({...prevState, min: resTME[0].target_min, max: resTME[0].target_max}))}} className={classes.styleicon}/>
                         </div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>

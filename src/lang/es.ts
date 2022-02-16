@@ -561,7 +561,7 @@ const translation: LangKeys = {
     view_table: 'Ver tabla',
 
     status_activo: 'activo',
-    no_reply_use_hsm: 'La conversación está cerrada o bloqueada por estar fuera de la venta de 24 horas.\nEnvíe un HSM para contactar al cliente.',
+    no_reply_use_hsm: 'La conversación está cerrada o bloqueada por estar fuera de la ventana de 24 horas.\nEnvíe un HSM para contactar al cliente.',
     status_inactivo: 'inactivo',
     status_bloqueado: 'bloqueado',
     status_ejecutando: 'ejecutando',
