@@ -1609,6 +1609,7 @@ const translation: LangKeys = {
     report_userproductivity_avgtotalduration: 'TMO AVG',
     report_userproductivity_maxtotalduration: 'TMO MAX',
     report_userproductivity_mintotalduration: 'TMO MIN',
+    compliance: "Compliance",
     report_userproductivity_avgtotalasesorduration: 'TMO agent AVG',
     report_userproductivity_maxtotalasesorduration: 'TMO agent MAX',
     report_userproductivity_mintotalasesorduration: 'TMO agent MIN',

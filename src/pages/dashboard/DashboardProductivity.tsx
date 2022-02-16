@@ -17,6 +17,8 @@ import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import { Dictionary } from "@types";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import { Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip, BarChart, Legend, Bar, PieChart, Pie, Cell, ComposedChart } from 'recharts';
+import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import SettingsIcon from '@material-ui/icons/Settings';
 
 const COLORS = ['#22b66e', '#b41a1a', '#ffcd56'];
@@ -1520,8 +1522,8 @@ const DashboardProductivity: FC = () => {
                         <div className={classes.boxtitlequarter}>{t(langKeys.productivitycard1)}</div>
                         <div className={classes.datafieldquarter}>{prodxHora.prodlog}</div>
                         <div className={classes.datafieldfooter}>
-                            <div>% Cumplimiento</div>
-                            <div>{prodxHoraLabel.prodlog} %</div>
+                            <div>% {t(langKeys.compliance)}</div>
+                            <div>{+prodxHoraLabel.prodlog>0?<ArrowDropUpIcon style={{color: "green", height: "15px"}}/>:<ArrowDropDownIcon style={{color: "red", height: "15px"}}/>}{prodxHoraLabel.prodlog} %</div>
                         </div>
                     </Box>
                     <Box
@@ -1530,8 +1532,8 @@ const DashboardProductivity: FC = () => {
                         <div className={classes.boxtitlequarter}>{t(langKeys.productivitycard2)}</div>
                         <div className={classes.datafieldquarter}>{prodxHora.prodcon}</div>
                         <div className={classes.datafieldfooter}>
-                            <div>% Cumplimiento</div>
-                            <div>{prodxHoraLabel.prodcon} %</div>
+                            <div>% {t(langKeys.compliance)}</div>
+                            <div>{+prodxHoraLabel.prodcon>0?<ArrowDropUpIcon style={{color: "green", height: "15px"}}/>:<ArrowDropDownIcon style={{color: "red", height: "15px"}}/>}{prodxHoraLabel.prodcon} %</div>
                         </div>
                     </Box>
                     <Box
@@ -1540,8 +1542,8 @@ const DashboardProductivity: FC = () => {
                         <div className={classes.boxtitlequarter}>{t(langKeys.productivitycard3)}</div>
                         <div className={classes.datafieldquarter}>{prodxHora.prodbot}</div>
                         <div className={classes.datafieldfooter}>
-                            <div>% Cumplimiento</div>
-                            <div>{prodxHoraLabel.prodbot} %</div>
+                            <div>% {t(langKeys.compliance)}</div>
+                            <div>{+prodxHoraLabel.prodbot>0?<ArrowDropUpIcon style={{color: "green", height: "15px"}}/>:<ArrowDropDownIcon style={{color: "red", height: "15px"}}/>}{prodxHoraLabel.prodbot} %</div>
                         </div>
                     </Box>
                     <Box
@@ -1550,8 +1552,8 @@ const DashboardProductivity: FC = () => {
                         <div className={classes.boxtitlequarter}>{t(langKeys.productivitycard4)}</div>
                         <div className={classes.datafieldquarter}>{dataSummary.tasaabandono} %</div>                    
                         <div className={classes.datafieldfooter}>
-                            <div>% Cumplimiento</div>
-                            <div>{+dataSummary.tasaabandono - tasaabandonoperc} %</div>
+                            <div>% {t(langKeys.compliance)}</div>
+                            <div>{+dataSummary.tasaabandono - tasaabandonoperc>0?<ArrowDropUpIcon style={{color: "green", height: "15px"}}/>:<ArrowDropDownIcon style={{color: "red", height: "15px"}}/>}{+dataSummary.tasaabandono - tasaabandonoperc} %</div>
                         </div> 
                     </Box>
                 </div>
