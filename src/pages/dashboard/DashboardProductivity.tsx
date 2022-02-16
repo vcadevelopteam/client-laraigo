@@ -1526,7 +1526,7 @@ const DashboardProductivity: FC = () => {
                         <div className={classes.boxtitlequarter}>{t(langKeys.productivitycard1)}</div>
                         <div className={classes.datafieldquarter}>{prodxHora.prodlog}</div>
                         <div className={classes.datafieldfooter}>
-                            <div>% Cumplimiento</div>
+                            <div>% {t(langKeys.compliance)}</div>
                             <div>{+dataSummary.tasaabandono - tasaabandonoperc} %</div>
                         </div>
                     </Box>
@@ -1536,7 +1536,7 @@ const DashboardProductivity: FC = () => {
                         <div className={classes.boxtitlequarter}>{t(langKeys.productivitycard2)}</div>
                         <div className={classes.datafieldquarter}>{prodxHora.prodcon}</div>
                         <div className={classes.datafieldfooter}>
-                            <div>% Cumplimiento</div>
+                            <div>% {t(langKeys.compliance)}</div>
                             <div>{+dataSummary.tasaabandono - tasaabandonoperc} %</div>
                         </div>
                     </Box>
@@ -1546,7 +1546,7 @@ const DashboardProductivity: FC = () => {
                         <div className={classes.boxtitlequarter}>{t(langKeys.productivitycard3)}</div>
                         <div className={classes.datafieldquarter}>{prodxHora.prodbot}</div>
                         <div className={classes.datafieldfooter}>
-                            <div>% Cumplimiento</div>
+                            <div>% {t(langKeys.compliance)}</div>
                             <div>{+dataSummary.tasaabandono - tasaabandonoperc} %</div>
                         </div>
                     </Box>
@@ -1556,7 +1556,7 @@ const DashboardProductivity: FC = () => {
                         <div className={classes.boxtitlequarter}>{t(langKeys.productivitycard4)}</div>
                         <div className={classes.datafieldquarter}>{dataSummary.tasaabandono} %</div>                    
                         <div className={classes.datafieldfooter}>
-                            <div>% Cumplimiento</div>
+                            <div>% {t(langKeys.compliance)}</div>
                             <div>{+dataSummary.tasaabandono - tasaabandonoperc} %</div>
                         </div> 
                     </Box>

@@ -1544,6 +1544,7 @@ const translation: LangKeys = {
     report_userproductivity_avgtotalasesorduration: 'TMO asesor promedio',
     report_userproductivity_maxtotalasesorduration: 'TMO asesor máximo',
     report_userproductivity_mintotalasesorduration: 'TMO asesor mínimo',
+    compliance: "Cumplimiento",
     report_userproductivity_userconnectedduration: 'Minutos conectados',
     report_userproductivity_userstatus: 'Estado actual',
     report_userproductivity_groups: 'Grupo de atención',

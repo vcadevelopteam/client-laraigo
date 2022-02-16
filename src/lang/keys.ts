@@ -6,6 +6,7 @@ export const langKeys = {
     variable: "variable",
     dashboard: 'dashboard',
     dashboard_plural: 'dashboard_plural',
+    compliance: "compliance",
     actionplan: 'actionplan',
     organization: 'organization',
     iaservices: 'iaservices',
