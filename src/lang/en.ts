@@ -3026,6 +3026,7 @@ const translation: LangKeys = {
     contractedplanfreewhatsappconversation: 'Amount of free WhatsApp conversations',
     contractedplanchannelotherfee:"UP per additional channel",
     allowuseroverride:"Allow users over limit",
+    allowchanneloverride:"Allow channels over limit",
 };
 
 const enResource: ResourceLanguage = {
