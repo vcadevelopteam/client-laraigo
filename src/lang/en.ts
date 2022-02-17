@@ -3028,6 +3028,7 @@ const translation: LangKeys = {
     contractedplanchannelotherfee:"UP per additional channel",
     allowuseroverride:"Allow users over limit",
     allowchanneloverride:"Allow channels over limit",
+    whatsappguidedownload:'Download: Common questions.PDF',
 };
 
 const enResource: ResourceLanguage = {

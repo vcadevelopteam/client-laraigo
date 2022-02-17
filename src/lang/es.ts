@@ -3017,6 +3017,7 @@ const translation: LangKeys = {
     contractedplanchannelotherfee:"PU por canal adicional",
     allowuseroverride:"Permite usuarios sobre el límite",
     allowchanneloverride:'Permite canales sobre el límite',
+    whatsappguidedownload:'Descarga: Preguntas frecuentes.PDF',
 };
 
 const esResource: ResourceLanguage = {
