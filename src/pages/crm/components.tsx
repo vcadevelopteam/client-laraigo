@@ -131,11 +131,6 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
         onDelete?.(lead);
     };
 
-    const handleCloseLead = () => {
-        setAnchorEl(null);
-        onCloseLead?.(lead);
-    }
-
     const open = Boolean(anchorEl);
     const id = open ? `lead-card-popover-${String(lead)}` : undefined;
 
@@ -369,33 +364,17 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
 }) => {
     const classes = useLeadColumnStyles();
     const edit = useRef(false);
-    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
 
     const handleOnBlur = useCallback((value: string) => {
         edit.current = false;
         titleOnChange?.(value);
     }, [titleOnChange]);
 
-    const handleEdit = useCallback(() => {
-        edit.current = true;
-        setAnchorEl(null);
-    }, []);
-
     // const handleDelete = useCallback(() => {
     //     setAnchorEl(null);
     //     onDelete?.(columnid);
     // }, []);
-
-    const open = Boolean(anchorEl);
-    const id = open ? `lead-column-popover-${title}` : undefined;
 
     return (
         <Box {...boxProps}>

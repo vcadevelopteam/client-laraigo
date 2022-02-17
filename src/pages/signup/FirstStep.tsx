@@ -8,7 +8,6 @@ import FacebookLogin from 'react-facebook-login';
 import { useDispatch } from "react-redux";
 import GoogleLogin from 'react-google-login';
 import { Facebook as FacebookIcon } from "@material-ui/icons";
-import { Dictionary } from "@types";
 import { useSelector } from 'hooks';
 import { apiUrls } from 'common/constants';
 
@@ -309,6 +308,7 @@ const FirstStep: FC = () => {
                         />
                     )}
                 />
+                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid*/}
                 <div style={{ textAlign: "center", padding: "20px" }}>{t(langKeys.tos)}<a style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={openprivacypolicies} rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
                 <Button
                     onClick={async () => {

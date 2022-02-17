@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useContext, useEffect, useState } from "react";
-import { makeStyles, Button, IconButton, Typography, InputAdornment } from '@material-ui/core';
+import { Button, IconButton, Typography, InputAdornment } from '@material-ui/core';
 import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon, LinkOff as LinkOffIcon } from '@material-ui/icons';
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
@@ -8,16 +8,6 @@ import { FieldEdit, } from "components";
 import { IosColor } from "icons";
 import { MainData, SubscriptionContext } from "./context";
 import { useFormContext } from "react-hook-form";
-
-const useChannelAddStyles = makeStyles(theme => ({
-    button: {
-        padding: 12,
-        fontWeight: 500,
-        fontSize: '14px',
-        textTransform: 'initial',
-        width: "180px"
-    },
-}));
 
 export const ChannelAddIos: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
     const {

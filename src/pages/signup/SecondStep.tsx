@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useContext, useEffect, useMemo, useState } from "react";
-import { makeStyles, Button, TextField, Breadcrumbs, Checkbox, CircularProgress } from '@material-ui/core';
+import React, { FC, useContext, useEffect } from "react";
+import { makeStyles, Button, TextField, Breadcrumbs } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
-import { Dictionary, IDomain } from "@types"
+import { IDomain } from "@types"
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { resetMain, getCollectionPublic } from 'store/main/actions';
@@ -15,9 +15,6 @@ import { getValuesFromDomain } from "common/helpers/requestBodies";
 import { getCountryList } from "store/signup/actions";
 import { MainData, SubscriptionContext } from "./context";
 import { Controller, useFormContext } from "react-hook-form";
-import { Autocomplete } from "@material-ui/lab";
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {

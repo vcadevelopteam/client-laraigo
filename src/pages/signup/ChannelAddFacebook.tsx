@@ -33,10 +33,6 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
-    const openprivacypolicies = () => {
-        window.open("/privacy", '_blank');
-    }
-
     useEffect(() => {
         const strRequired = (value: string) => {
             if (!value) {
@@ -77,6 +73,7 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
         return () => {
             unregister('channels.facebook')
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [register, unregister]);
 
     useEffect(() => {
@@ -84,6 +81,7 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
             dispatch(showBackdrop(false));
             setWaitSave(false);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mainResult, waitSave])
 
     const processFacebookCallback = async (r: any) => {
@@ -183,7 +181,7 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
                 error={errors.channels?.facebook?.siteid?.message}
             />
 
-            {getValues('channels.facebook.siteid')?.length || 0 === 0 && mainResult.data.length === 0 ? (
+            {((getValues('channels.facebook.siteid')?.length || 0) === 0) && (mainResult.data.length === 0) ? (
                 <FacebookLogin
                     appId={apiUrls.FACEBOOKAPP}
                     autoLoad={false}

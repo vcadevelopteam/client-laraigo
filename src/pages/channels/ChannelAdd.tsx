@@ -1,11 +1,11 @@
-import React, { FC, useState } from "react";
+import React, { FC } from "react";
 import { Box, makeStyles, Typography, Breadcrumbs, Paper } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router";
 import paths from "common/constants/paths";
-import { AndroidIcon, AppleIcon, CallIcon, EmailIcon, FacebookMessengerIcon, FacebookWallIcon, InstagramIcon, SmsIcon, TelegramIcon, TwitterIcon, WhatsappIcon, ZyxmeMessengerIcon,
+import { CallIcon,
     AndroidColor, EmailColor, FacebookColor, FacebookMessengerColor, InstagramColor, IosColor, SmsColor, TelegramColor, TwitterColor, WebMessengerColor, WhatsappColor
 } from "icons";
 
@@ -180,15 +180,12 @@ export const ChannelAdd: FC = () => {
     ];
 
     const Option: FC<{ option: ChannelOption }> = ({ option }) => {
-        const [color, setColor] = useState('#989898');
 
         return (
             <Paper
                 className={classes.optionContainer}
                 elevation={0}
                 onClick={option.onClick}
-                onMouseOver={() => setColor('white')}
-                onMouseLeave={() => setColor('#989898')}
             >
                 <div style={{ flexGrow: 2, alignItems: 'center', display: 'flex', justifyContent: 'center' }}>
                     {option.icon(classes.icon)}

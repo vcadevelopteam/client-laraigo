@@ -4,7 +4,7 @@ import { useSelector } from "hooks";
 import { CalendarIcon } from "icons";
 import { langKeys } from "lang/keys";
 import { FC, Fragment, useEffect, useState } from "react";
-import { resetMain, getMultiCollection, getMultiCollectionAux, getCollectionAux } from 'store/main/actions';
+import { getMultiCollection, getMultiCollectionAux, getCollectionAux } from 'store/main/actions';
 import { Range } from 'react-date-range';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
@@ -13,13 +13,15 @@ import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import PersonIcon from '@material-ui/icons/Person';
 import ChatIcon from '@material-ui/icons/Chat';
 import AdbIcon from '@material-ui/icons/Adb';
-import { exportExcel, gerencialEncuesta2selData, gerencialEncuesta3selData, gerencialTMEselData } from 'common/helpers';
+import { exportExcel, gerencialEncuesta2selData, gerencialEncuesta3selData, gerencialTMEselData, getDateCleaned } from 'common/helpers';
 import { useTranslation } from 'react-i18next';
-import { gerencialasesoresconectadosbarsel, gerencialconversationsel,gerencialEncuestassel,getdashboardgerencialconverstionxhoursel,gerencialasesoresconectadosbarseldata,gerencialinteractionseldata, gerencialconversationseldata,gerencialencuestasel,gerencialetiquetasseldata, gerencialetiquetassel, gerencialinteractionsel,gerencialsummaryseldata, gerencialsummarysel, gerencialTMEsel, gerencialTMOsel,gerencialTMOselData, getCommChannelLst, getValuesFromDomain } from "common/helpers";
+import { gerencialasesoresconectadosbarsel, gerencialconversationsel,gerencialEncuestassel,getdashboardgerencialconverstionxhoursel,gerencialasesoresconectadosbarseldata,gerencialinteractionseldata, 
+    gerencialconversationseldata,gerencialencuestasel, gerencialinteractionsel,gerencialsummaryseldata, gerencialsummarysel, gerencialTMEsel, gerencialTMOsel,
+    gerencialTMOselData, getCommChannelLst, getValuesFromDomain } from "common/helpers";
 import { useDispatch } from "react-redux";
 import { Dictionary } from "@types";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
-import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
+import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip, PieChart, Pie, Cell } from 'recharts';
 import SettingsIcon from '@material-ui/icons/Settings';
 
 const COLORS = ['#22b66e', '#b41a1a', '#ffcd56'];
@@ -221,7 +223,6 @@ const initialRange = {
     endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
     key: 'selection'
 }
-const format = (date: Date) => date.toISOString().split('T')[0];
 
 const DashboardManagerial: FC = () => {
     const classes = useStyles();
@@ -433,6 +434,25 @@ const DashboardManagerial: FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [resaux,downloaddatafile])
     useEffect(() => {
+        setData({
+            dataTMO: "0s",
+            obj_min: "",
+            obj_max: "< 0m",
+            variaciontxt: "0s",
+            variacioncolor: true,
+            timeMax: "0s",
+            timeMin: "0s",
+            sla: "0%",
+            variacionperccolor: true,
+            variacionperc: 0,
+            tickets_comply: 0,
+            tickets_analyzed: 0,
+            tickets_total: 0,
+        });
+        setDataTMOgraph([
+            { label: t(langKeys.meets), quantity: 0 },
+            { label: t(langKeys.meetsnot), quantity: 0 }
+        ]);
         if (resTMO.length) {
             const { time_avg, tickets_comply, tickets_total, target_max, target_min, time_max, time_min, tickets_analyzed, target_percmax} = resTMO[0];
             let seconds = timetoseconds(time_avg)
@@ -488,31 +508,29 @@ const DashboardManagerial: FC = () => {
                     { label: t(langKeys.meets), quantity: tickets_comply },
                     { label: t(langKeys.meetsnot), quantity: tickets_analyzed - tickets_comply }
                 ]);
-            }else{
-                setData({
-                    dataTMO: "0s",
-                    obj_min: "",
-                    obj_max: "< 0m",
-                    variaciontxt: "0s",
-                    variacioncolor: true,
-                    timeMax: "0s",
-                    timeMin: "0s",
-                    sla: "0%",
-                    variacionperccolor: true,
-                    variacionperc: 0,
-                    tickets_comply: 0,
-                    tickets_analyzed: 0,
-                    tickets_total: 0,
-                })
-                setDataTMOgraph([
-                    { label: t(langKeys.meets), quantity: 0 },
-                    { label: t(langKeys.meetsnot), quantity: 0 }
-                ]);
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [resTMO])
     useEffect(() => {
+        setDataTME({
+            dataTME: "0s",
+            obj_max: "< 0m",
+            variaciontxt: "0s",
+            variacioncolor: true,
+            timeMax: "0s",
+            timeMin: "0s",
+            sla: "0%",
+            variacionperccolor: true,
+            variacionperc: 0,
+            tickets_comply: 0,
+            tickets_analyzed: 0,
+            tickets_total: 0,
+        })
+        setDataTMEgraph([
+            { label: t(langKeys.meets), quantity: 0 },
+            { label: t(langKeys.meetsnot), quantity: 0 }
+        ]);
         if (resTME.length) {
             const { time_avg, tickets_comply, tickets_total, target_max, target_min, time_max, time_min, tickets_analyzed, target_percmax} = resTME[0];
             let seconds = timetoseconds(time_avg)
@@ -566,27 +584,6 @@ const DashboardManagerial: FC = () => {
                 setDataTMEgraph([
                     { label: t(langKeys.meets), quantity: tickets_comply },
                     { label: t(langKeys.meetsnot), quantity: tickets_analyzed - tickets_comply }
-                ]);
-
-
-            }else{
-                setDataTME({
-                    dataTME: "0s",
-                    obj_max: "< 0m",
-                    variaciontxt: "0s",
-                    variacioncolor: true,
-                    timeMax: "0s",
-                    timeMin: "0s",
-                    sla: "0%",
-                    variacionperccolor: true,
-                    variacionperc: 0,
-                    tickets_comply: 0,
-                    tickets_analyzed: 0,
-                    tickets_total: 0,
-                })
-                setDataTMEgraph([
-                    { label: t(langKeys.meets), quantity: 0 },
-                    { label: t(langKeys.meetsnot), quantity: 0 }
                 ]);
             }
         }
@@ -665,8 +662,7 @@ const DashboardManagerial: FC = () => {
             { label: t(langKeys.detractors), quantity: 0 },
             { label: t(langKeys.neutral), quantity: 0 }
         ]);
-        if(data.length){
-
+        if (data.length) {
             const { high, tickets, low, green, medium, total } = data[0]
             const toshow = total ? ((high - low) / total) : 0;
             let variacioncolor = (toshow - green) * 100 >= 0
@@ -708,7 +704,6 @@ const DashboardManagerial: FC = () => {
             { label: t(langKeys.neutral), quantity: 0 }
         ]);
         if(data.length){
-
             const { high, tickets, low, green, medium, total } = data[0]
             const toshow = total ? ((high - low) / total) : 0;
             let variacioncolor = (toshow - green) * 100 >= 0
@@ -748,7 +743,6 @@ const DashboardManagerial: FC = () => {
             { label: t(langKeys.notresolvedfirstcontact), quantity: 0 },
         ]);
         if(data.length){
-
             const { high, tickets, low, green, total } = data[0]
             const toshow = total ? ((high - low) / total) : 0;
             let variacioncolor = (toshow - green) * 100 >= 0
@@ -779,7 +773,7 @@ const DashboardManagerial: FC = () => {
             minavgtickethourdescdate: "",
             minavgtickethourdeschour: "",
         }))
-        if(data.length){
+        if (data.length) {
             let txtmaxavgticketusername = formatname(data[0].maxavgticketusername)
             let txtminavgticketusername = formatname(data[0].minavgticketusername)
             const mm = data[0].maxavgtickethourdesc ? data[0].maxavgtickethourdesc.split(" ") : null;
@@ -805,7 +799,7 @@ const DashboardManagerial: FC = () => {
             minavgticketasesorhourdescdate: "",
             minavgticketasesorhourdeschour: "",
         }))
-        if(data.length){
+        if (data.length) {
             let txtminavgticketusername = formatname(resSummary[0].minavgticketusername)
             let txtmaxavgticketasesorusername = formatname(resSummary[0].maxavgticketasesorusername)
             const mm2 = resSummary[0].maxavgticketasesorhourdesc ? resSummary[0].maxavgticketasesorhourdesc.split(" ") : null;
@@ -837,8 +831,7 @@ const DashboardManagerial: FC = () => {
             { label: t(langKeys.resolved), quantity: 0 },
             { label: t(langKeys.notresolved), quantity: 0 },
         ]);
-        if(data.length){
-
+        if (data.length) {
             const { high, tickets, low, green, total } = data[0]
             const toshow = total ? ((high - low) / total) : 0;
             let variacioncolor = (toshow - green) * 100 >= 0
@@ -900,6 +893,24 @@ const DashboardManagerial: FC = () => {
             fixtotaldetractors: 0,
             fixtotalconversations: 0,
         })
+        setDataNPSgraph([
+            { label: t(langKeys.promoters), quantity: 0 },
+            { label: t(langKeys.detractors), quantity: 0 },
+            { label: t(langKeys.neutral), quantity: 0 }
+        ]);
+        setDataCSATgraph([
+            { label: t(langKeys.satisfied), quantity: 0 },
+            { label: t(langKeys.dissatisfied), quantity: 0 },
+            { label: t(langKeys.neutral), quantity: 0 }
+        ]);
+        setDataFCRgraph([
+            { label: t(langKeys.resolvedfirstcontact), quantity: 0 },
+            { label: t(langKeys.notresolvedfirstcontact), quantity: 0 },
+        ]);
+        setDataFIXgraph([
+            { label: t(langKeys.resolved), quantity: 0 },
+            { label: t(langKeys.notresolved), quantity: 0 },
+        ]);
         if (resEncuesta.length) {
             const { nps_high, total, nps_low, nps_green, nps_medium, nps_total } = resEncuesta[0]
             const { csat_high, csat_low, csat_green, csat_medium, csat_total } = resEncuesta[0];
@@ -968,7 +979,6 @@ const DashboardManagerial: FC = () => {
                 { label: t(langKeys.resolved), quantity: fix_yes },
                 { label: t(langKeys.notresolved), quantity: fix_no },
             ]);
-
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [resEncuesta]);
@@ -989,7 +999,6 @@ const DashboardManagerial: FC = () => {
                 iconconversationsattendedasesor: parseFloat(avgparam) < (ticketscerradosasesor / ticketstotal),
                 iconconversationsattendedbot: parseFloat(avgparam) < (ticketscerradosbot / ticketstotal)
             })
-
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [resDashboard]);
@@ -1006,7 +1015,6 @@ const DashboardManagerial: FC = () => {
                 maxavginteractionsxconversations: avginteraccionesasesor,
                 minvginteractionsxconversations: avginteracionesbot,
             })
-
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [resInteraction]);
@@ -1028,8 +1036,6 @@ const DashboardManagerial: FC = () => {
                 setResInteraction(remultiaux.data[5].data)
                 // setResLabels(remultiaux.data[6].data)
 
-
-
                 const asesoretmp = [...remultiaux.data[6].data];
 
                 setResAsesoreconectadosbar([...Array(24)].map((_, i) => {
@@ -1039,8 +1045,6 @@ const DashboardManagerial: FC = () => {
                     else
                         return { hora: i, asesoresconectados: "0", avgasesoresconectados: "0" }
                 }))
-
-
 
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
@@ -1204,7 +1208,7 @@ const DashboardManagerial: FC = () => {
                         startIcon={<CalendarIcon />}
                         onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
                     >
-                        {format(dateRangeCreateDate.startDate!) + " - " + format(dateRangeCreateDate.endDate!)}
+                        {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
                     </Button>
                 </DateRangePicker>
                 <div className="row-zyx" style={{ marginTop: "15px" }}>

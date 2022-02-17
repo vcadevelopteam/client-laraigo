@@ -146,6 +146,7 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
             dispatch(resetMultiMain());
             dispatch(resetSaveDashboardTemplate());
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [edit, location.state, match.params.id, dispatch]);
 
     useEffect(() => {
@@ -199,6 +200,7 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
             ]));
             reset(JSON.parse(dashboardtemplate.value!.detailjson) as Items);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dashboardtemplate, edit, t, dispatch]);
 
 
@@ -539,6 +541,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
         if (defaultContentType !== undefined || defaultContentType !== null) {
             setContentType(defaultContentType);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [edit, getValues]);
 
     useEffect(() => {
@@ -548,6 +551,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
         return () => {
             unregister(key);
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [register, unregister, t, key]);
 
     useEffect(() => {
@@ -566,6 +570,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
 
             register(`${key}.kpiid`, { validate: mandatoryNumField, value: getValues(`${key}.kpiid`) || 0 });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [contentType, columns, templates]);
 
     useEffect(() => {

@@ -1858,7 +1858,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                     month: rowSelected?.month,
                     corpid: rowSelected?.corpid,
                     orgid: rowSelected?.orgid,
-                    totalize: rowSelected?.orgid == 0 ? 1 : 2,
+                    totalize: rowSelected?.orgid === 0 ? 1 : 2,
                 }));
                 setRowSelect(false);
             }
@@ -2879,7 +2879,6 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
     const [productList, setProductList] = useState<any>([]);
     const [showDiscount, setShowDiscount] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
-    const [invoiceStatus, setInvoiceStatus] = useState(data?.invoicestatus);
 
     const invocesBread = [
         { id: "view-1", name: t(langKeys.billingtitle) },
@@ -2940,7 +2939,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
         }
     }, [multiResult]);
 
-    const { control, handleSubmit, register, trigger, setValue, getValues, formState: { errors } } = useForm<any>({
+    const { control, handleSubmit, register, setValue, getValues, formState: { errors } } = useForm<any>({
         defaultValues: {
             corpid: data?.corpid,
             orgid: data?.orgid,
@@ -2952,7 +2951,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
         }
     });
 
-    const { fields, append: fieldsAppend, remove: fieldRemove } = useFieldArray({
+    const { fields, append: fieldsAppend } = useFieldArray({
         control,
         name: 'productdetail',
     });
@@ -3008,7 +3007,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
     }
 
     const onSubmit = handleSubmit((data) => {
-        if (invoiceStatus === 'ERROR') {
+        if (data?.invoicestatus === 'ERROR') {
             const callback = () => {
                 dispatch(emitInvoice(data));
                 dispatch(showBackdrop(true));
@@ -3518,12 +3517,9 @@ const RegularizeModal: FC<{ data: any, openModal: boolean, setOpenModal: (param:
     
     const { t } = useTranslation();
 
-    const classes = useStyles();
     const culqiResult = useSelector(state => state.culqi.requestRegularizeInvoice);
     const uploadResult = useSelector(state => state.main.uploadFile);
 
-    const [chatButton, setChatButton] = useState<File | string | null>(null);
-    const [chatImgUrl, setChatImgUrl] = useState<string | undefined | null>(null);
     const [waitSave, setWaitSave] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
     const [fileAttachment, setFileAttachment] = useState<File | null>(null);
@@ -3548,9 +3544,6 @@ const RegularizeModal: FC<{ data: any, openModal: boolean, setOpenModal: (param:
         register('invoicepaymentcommentary', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
     }, [register]);
 
-    useEffect(() => {
-        setChatImgUrl(getImgUrl(chatButton));
-    }, [])
 
     useEffect(() => {
         if (waitSave) {
@@ -3568,27 +3561,6 @@ const RegularizeModal: FC<{ data: any, openModal: boolean, setOpenModal: (param:
         }
     }, [culqiResult, waitSave])
 
-    const getImgUrl = (file: File | string | null): string | null => {
-        try {
-            if (!file) {
-                return null;
-            }
-            else {
-                if (typeof file === "string") {
-                    return file;
-                }
-
-                if (typeof file === "object") {
-                    return URL.createObjectURL(file);
-                }
-            }
-
-            return null;
-        } catch (error) {
-            return null;
-        }
-    }
-
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
             dispatch(regularizeInvoice(data));
@@ -3602,33 +3574,6 @@ const RegularizeModal: FC<{ data: any, openModal: boolean, setOpenModal: (param:
             callback
         }))
     });
-
-    const onChangeChatInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-        if (!e.target.files) {
-            return;
-        }
-        else {
-            setValue("invoicereferencefile", String(getImgUrl(e.target.files[0])))
-            setChatButton(e.target.files[0]);
-        }
-    }
-
-    const handleChatButtonClick = () => {
-        const input = document.getElementById('chatBtnInput');
-        input!.click();
-    }
-
-    const handleChatButtonClean = () => {
-        if (!chatButton) {
-            return;
-        }
-        else {
-            const input = document.getElementById('chatBtnInput') as HTMLInputElement;
-            input.value = "";
-            setValue('invoicereferencefile', '');
-            setChatButton(null);
-        }
-    }
 
     const onClickAttachment = useCallback(() => {
         const input = document.getElementById('attachmentInput');
@@ -3864,7 +3809,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                 else {
                     if (corpList) {
                         if (corpList.data) {
-                            var corporationdata = corpList.data.find((x: { corpid: any; }) => x.corpid === data?.row.corpid);
+                            corporationdata = corpList.data.find((x: { corpid: any; }) => x.corpid === data?.row.corpid);
                             
                             setSubmitData(corporationdata);
                             setValue('billbyorg', corporationdata?.billbyorg);
@@ -4597,7 +4542,6 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const user = useSelector(state => state.login.validateToken.user);
     
     const [dataBalance, setDataBalance] = useState<Dictionary[]>([]);
-    const [disableSearch, setdisableSearch] = useState(false);
     const [canRegister, setCanRegister] = useState(false);
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
     const [viewSelected, setViewSelected] = useState("view-1");
@@ -4813,7 +4757,7 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 optionValue="value"
                             />
                             <Button
-                                disabled={mainResult.mainData.loading || disableSearch}
+                                disabled={mainResult.mainData.loading || false}
                                 variant="contained"
                                 color="primary"
                                 style={{ width: 120, backgroundColor: "#55BD84" }}
@@ -5577,13 +5521,9 @@ const Invoice: FC = () => {
 
     const { t } = useTranslation();
 
-    const countryListreq = useSelector(state => state.signup.countryList);
     const multiData = useSelector(state => state.main.multiData);
     const user = useSelector(state => state.login.validateToken.user);
 
-    const [countryList, setcountryList] = useState<any>([]);
-    const [dataPaymentPlan, setdataPaymentPlan] = useState<any>([]);
-    const [dataPlan, setdataPlan] = useState<any>([]);
     const [pageSelected, setPageSelected] = useState(0);
     const [sentfirstinfo, setsentfirstinfo] = useState(false);
 
@@ -5604,16 +5544,8 @@ const Invoice: FC = () => {
     useEffect(() => {
         if(!multiData.loading && sentfirstinfo) {
             setsentfirstinfo(false);
-            setdataPlan(multiData.data[0] && multiData.data[0].success? multiData.data[0].data : []);
-            setdataPaymentPlan(multiData.data[3] && multiData.data[3].success? multiData.data[3].data : []);
         }
     }, [multiData])
-
-    useEffect(() => {
-        if(!countryListreq.loading && countryListreq.data.length){
-            setcountryList(countryListreq.data)
-        }
-    }, [countryListreq])
 
     useEffect(()=>{
         setsentfirstinfo(true)
