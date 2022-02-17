@@ -1,13 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useContext, useEffect, useMemo, useState } from "react";
+import { FC, useContext, useMemo } from "react";
 import { makeStyles, Button, TextField, Breadcrumbs } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
-import { Dictionary } from "@types"
-import { useSelector } from "hooks";
-import MuiPhoneNumber from 'material-ui-phone-number';
-import { styled } from '@material-ui/core/styles';
 import { FieldSelect, FieldView } from "components";
 import { MainData, SubscriptionContext } from "./context";
 import { Controller, useFormContext } from "react-hook-form";
@@ -26,21 +22,7 @@ const useChannelAddStyles = makeStyles(theme => ({
     }
 }));
 
-const CssPhonemui = styled(MuiPhoneNumber)({
-    '& label.Mui-focused': {
-        color: '#7721ad',
-    },
-    '& .MuiInput-underline:after': {
-        borderBottomColor: '#7721ad',
-    },
-    '& .MuiOutlinedInput-root': {
-        '&.Mui-focused fieldset': {
-            borderColor: '#7721ad',
-        },
-    },
-});
-
-const Step2_5: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
+const Step2five: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
     const { setStep } = useContext(SubscriptionContext);
     const { getValues, control, trigger } = useFormContext<MainData>();
     const { t } = useTranslation();
@@ -251,4 +233,4 @@ const Step2_5: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning 
     )
 }
 
-export default Step2_5
+export default Step2five

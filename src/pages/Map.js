@@ -12,6 +12,7 @@ import { useSelector } from 'hooks';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Button, TextField } from '@material-ui/core';
+import { apiUrls } from "common/constants";
 
 import "@reach/combobox/styles.css";
 const useStyles = makeStyles((theme) => ({
@@ -92,13 +93,11 @@ const options = {
   zoomControl: true,
 };
 
-const APIKEY_GMAPS = "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4"
-
 export default function Map() {
   
   const {token} = useParams();
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: APIKEY_GMAPS,
+    googleMapsApiKey: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4" /*"AIzaSyCBij6DbsB8SQC_RRKm3-X07RLmvQEnP9w"*/,
     libraries,
   });
   const [directionData, setDirectionData] = React.useState({
@@ -127,6 +126,7 @@ export default function Map() {
   
   useEffect(() => {
     getLocation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   function getLocation(){
     if(navigator.geolocation){
@@ -150,7 +150,7 @@ export default function Map() {
       lng: lng,
     });
 
-    const urltosearch = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${APIKEY_GMAPS}`;
+    const urltosearch = `${apiUrls.GETGEOCODE}?lat=${lat}&lng=${lng}`;
     const response = await fetch(urltosearch, {
         method: 'GET',
     });
@@ -167,7 +167,6 @@ export default function Map() {
         } catch (e) { }
     }
   }
-  const [selected, setSelected] = React.useState(null);
   
   function cleanDataAddres(r) {
     const street_number = r.find(x => x.types.includes("street_number"));
@@ -189,7 +188,7 @@ export default function Map() {
     }))
   }
   async function onMapClick(e){
-    const urltosearch = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${e.latLng.lat()},${e.latLng.lng()}&key=${APIKEY_GMAPS}`;
+    const urltosearch = `${apiUrls.GETGEOCODE}?lat=${e.latLng.lat()}&lng=${e.latLng.lng()}`;
     const response = await fetch(urltosearch, {
         method: 'GET',
     });
@@ -238,9 +237,6 @@ export default function Map() {
         <Marker
           key={`${marker.lat}-${marker.lng}`}
           position={{ lat: marker.lat, lng: marker.lng }}
-          onClick={() => {
-            setSelected(marker);
-          }}
         />
       </GoogleMap>	  
       <Search panTo={panTo} setMarker={setMarker} directionData={directionData} setDirectionData={setDirectionData} cleanDataAddres={cleanDataAddres} marker={marker}/>
@@ -297,6 +293,7 @@ function Search({ panTo,setMarker,directionData, setDirectionData, cleanDataAddr
       }))
       setValue(directionData.searchLocation)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [directionData.movedmarker]);
 	const handleSelect = async (address) => {
 		setValue(address, false);

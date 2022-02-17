@@ -12,7 +12,7 @@ import AdbIcon from '@material-ui/icons/Adb';
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { Bar, BarChart, CartesianGrid, Cell, ComposedChart, Legend, Line, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { getCollectionAux, getMultiCollection, getMultiCollectionAux, resetMain, resetMainAux, resetMultiMainAux } from "store/main/actions";
+import { getCollectionAux, getMultiCollection, getMultiCollectionAux, resetMainAux, resetMultiMainAux } from "store/main/actions";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 

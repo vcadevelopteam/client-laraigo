@@ -87,13 +87,13 @@ const useSignUpStyles = makeStyles(theme => ({
 export const SignUp: FC = () => {
     return (
         <SubscriptionProvider>
-            <$SignUp />
+            <SignUpFunc />
             <Popus />
         </SubscriptionProvider>
     );
 }
 
-const $SignUp: FC = () => {
+const SignUpFunc: FC = () => {
     const { step, setStep } = useContext(SubscriptionContext);
     const { getValues, reset } = useFormContext();
     const { loading: planDataLoading } = usePlanData();

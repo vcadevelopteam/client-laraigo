@@ -24,7 +24,6 @@ import { useDispatch } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useSelector } from 'hooks';
 import { useTranslation } from 'react-i18next';
-import { CirclePicker } from 'react-color';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {

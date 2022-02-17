@@ -1,10 +1,10 @@
 import { FC, useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { Box, Button, Card, CircularProgress, IconButton, makeStyles, Menu, MenuItem, Tooltip } from "@material-ui/core";
-import { Clear as ClearIcon, SwapHoriz as SwapHorizIcon, MoreVert as MoreVertIcon, Search as SearchIcon } from "@material-ui/icons";
+import { Clear as ClearIcon, MoreVert as MoreVertIcon, Search as SearchIcon } from "@material-ui/icons";
 import { useDispatch } from "react-redux";
-import { deleteDashboardTemplate, getDashboard, getDashboardTemplate, resetDeleteDashboardTemplate, resetGetDashboard, resetGetDashboardTemplate, resetSaveDashboardTemplate, saveDashboardTemplate } from "store/dashboard/actions";
+import { deleteDashboardTemplate, getDashboard, getDashboardTemplate, resetDeleteDashboardTemplate, resetGetDashboard, resetGetDashboardTemplate, resetSaveDashboardTemplate } from "store/dashboard/actions";
 import { useSelector } from "hooks";
-import { DateRangePicker, DialogZyx, TemplateBreadcrumbs, TitleDetail } from "components";
+import { DateRangePicker, DialogZyx, TemplateBreadcrumbs } from "components";
 import { useHistory, useRouteMatch } from "react-router";
 import paths from "common/constants/paths";
 import { langKeys } from "lang/keys";
@@ -88,10 +88,9 @@ const DashboardLayout: FC = () => {
         key: 'selection',
     });
     const tempDaterange = useRef<Range | null>(null);
-    const [canLayoutChange, setCanLayoutChange] = useState(true);
     const mustLoadagain = useRef(false);
 
-    const { register, unregister, formState: { errors }, getValues, setValue, handleSubmit, reset } = useForm<Items>();
+    const { register, unregister, formState: { errors }, getValues, setValue, reset } = useForm<Items>();
 
     useEffect(() => {
         dispatch(getDashboardTemplate(getDashboardTemplateSel(match.params.id)));
@@ -216,6 +215,7 @@ const DashboardLayout: FC = () => {
                 })));
             },
         }))
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dashboardtemplate, match.params.id, dispatch]);
 
     // const onSave = useCallback(() => {
@@ -402,7 +402,7 @@ const DashboardLayout: FC = () => {
                                 detail={layout.detail}
                                 onDetailChange={(d, t) => onDetailChange(d, t, e.i)}
                                 dateRange={dateRange}
-                                onModalOpenhasChanged={v => setCanLayoutChange(!v)}
+                                onModalOpenhasChanged={v => {}}
                                 error={dashboard.value?.[e.i]?.error}
                                 errorcode={dashboard.value?.[e.i]?.errorcode}
                             />
@@ -536,7 +536,6 @@ const LayoutItem: FC<LayoutItemProps> = ({
 }) => {
     const classes = useLayoutItemStyles();
     const { t } = useTranslation();
-    const canChange = detail !== undefined && onDetailChange !== undefined;
     const dataGraph = useMemo<ChartData[] | KpiData>(() => {
         if (error === true || !data) return [];
         if (type !== 'kpi') {
@@ -574,14 +573,6 @@ const LayoutItem: FC<LayoutItemProps> = ({
     //     }, "UPDATE");
     // }, [graph, canChange, key, detail, onDetailChange]);
 
-    const onDelete = useCallback(() => {
-        if (!canChange) return;
-
-        const { [key]: _, ...newDetail } = detail!;
-        onDetailChange!({ ...newDetail }, "DELETE");
-        handleClose();
-    }, [canChange, key, detail, onDetailChange]);
-
     const formatTooltip = (v: any) => {
         if (groupment === "percentage") {
             return `${t(langKeys.percentage)}: ${v}%`;
@@ -618,6 +609,7 @@ const LayoutItem: FC<LayoutItemProps> = ({
             case 'kpi': return <LayoutKpi data={dataGraph as KpiData} />;
             default: return null;
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dataGraph, groupment, type]);
 
     if (error === true && errorcode === "REPORT_NOT_FOUND") {
@@ -967,6 +959,7 @@ const TableModal: FC<TableModalProps> = ({ title, open, rawColumns, dateRange, d
             },
 
         ],
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }), [dateRange, rawColumns]);
 
     useEffect(() => {

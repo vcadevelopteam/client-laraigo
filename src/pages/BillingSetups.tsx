@@ -123,7 +123,6 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const [domainInvoiceProvider, setDomainInvoiceProvider] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
     const [domainPaymentProvider, setDomainPaymentProvider] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
     const [domainPrinting, setDomainPrinting] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
-    const [edit, setEdit] = useState(true);
     const [waitSave, setWaitSave] = useState(false);
 
     const fetchData = () => dispatch(getCollection(getAppsettingInvoiceSel()));
@@ -1070,21 +1069,6 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const handleRegister = () => {
         setViewSelected("view-2");
         setRowSelected({ row: null, edit: true });
-    }
-
-    const handleView = (row: Dictionary) => {
-        setduplicateop(true)
-        const callback = () => {
-            dispatch(execute(billingConfigurationIns({ ...row, operation: 'DUPLICATE', id: 0 })));
-            dispatch(showBackdrop(true));
-            setWaitSave(true);
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_duplicate),
-            callback
-        }))
     }
 
     const handleEdit = (row: Dictionary) => {
@@ -2148,20 +2132,6 @@ const NotificationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
         setRowSelected({ row: null, edit: true });
     }
 
-    const handleView = (row: Dictionary) => {
-        setduplicateop(true)
-        const callback = () => {
-            dispatch(execute(billingNotificationIns({ ...row, operation: 'DUPLICATE', id: 0 })));
-            dispatch(showBackdrop(true));
-            setWaitSave(true);
-        }
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_duplicate),
-            callback
-        }))
-    }
-
     const handleEdit = (row: Dictionary) => {
         setViewSelected("view-2");
         setRowSelected({ row, edit: true });
@@ -2664,21 +2634,6 @@ const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
         setRowSelected({ row: null, edit: true });
     }
 
-    const handleView = (row: Dictionary) => {
-        setduplicateop(true)
-        const callback = () => {
-            dispatch(execute(billingSupportIns({ ...row, operation: 'DUPLICATE', id: 0 })));
-            dispatch(showBackdrop(true));
-            setWaitSave(true);
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_duplicate),
-            callback
-        }))
-    }
-
     const handleEdit = (row: Dictionary) => {
         setViewSelected("view-2");
         setRowSelected({ row, edit: true });
@@ -2976,7 +2931,6 @@ const MessagingCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
 
     const { t } = useTranslation();
 
-    const classes = useStyles();
     const executeResult = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main);
     const memoryTable = useSelector(state => state.main.memoryTable);
@@ -3119,21 +3073,6 @@ const MessagingCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const handleRegister = () => {
         setViewSelected("view-2");
         setRowSelected({ row: null, edit: true });
-    }
-
-    const handleView = (row: Dictionary) => {
-        setduplicateop(true)
-        const callback = () => {
-            dispatch(execute(billingMessagingIns({ ...row, operation: 'DUPLICATE', id: 0 })));
-            dispatch(showBackdrop(true));
-            setWaitSave(true);
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_duplicate),
-            callback
-        }))
     }
 
     const handleEdit = (row: Dictionary) => {

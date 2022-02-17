@@ -1,6 +1,6 @@
 import { FC, useContext, useState } from "react";
-import { Button, Collapse, IconButton, makeStyles, TextareaAutosize, TextField } from "@material-ui/core";
-import { Trans, useTranslation } from "react-i18next";
+import { Button, Collapse, IconButton, makeStyles, TextField } from "@material-ui/core";
+import { Trans } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { SubscriptionContext } from "./context";
 import {
@@ -40,7 +40,6 @@ const useRateStyles = makeStyles(theme => ({
 
 const RateExperience: FC = () => {
     const classes = useRateStyles();
-    const { t } = useTranslation();
     const { commonClasses } = useContext(SubscriptionContext);
     const [rating, setRating] = useState<0 | 1 | 2 | 3>(0);
     const [comment, setComment] = useState("");

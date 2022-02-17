@@ -1,4 +1,4 @@
-import { FC, useContext, useEffect, useMemo, useState } from "react";
+import { FC, useContext, useMemo } from "react";
 import { Breadcrumbs, Button, Link, makeStyles } from "@material-ui/core";
 import { ChannelAddFacebook } from './ChannelAddFacebook'
 import { ChannelAddInstagram } from './ChannelAddInstagram'
@@ -11,16 +11,10 @@ import { ChannelAddTwitterDM } from './ChannelAddTwitterDM'
 import { ChannelAddChatWeb } from './ChannelAddChatWeb'
 import { ChannelAddAndroid } from './ChannelAddAndroid'
 import { ChannelAddIos } from './ChannelAddIos'
-import { Trans, useTranslation } from "react-i18next";
+import { Trans } from "react-i18next";
 import { langKeys } from "lang/keys";
-import { ListChannels, MainData, SubscriptionContext } from "./context";
-import { executeSubscription } from "store/signup/actions";
-import { useDispatch } from "react-redux";
-import { showBackdrop } from "store/popus/actions";
+import { ListChannels, SubscriptionContext } from "./context";
 import { useSelector } from "hooks";
-import { useHistory } from "react-router-dom";
-import { showSnackbar } from "store/popus/actions";
-import { useFormContext, useWatch } from "react-hook-form";
 
 const useLeftSideStyles = makeStyles(theme => ({
     root: {
@@ -90,6 +84,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                     />
                 );
             });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [listchannels, foreground]);
 
     return (

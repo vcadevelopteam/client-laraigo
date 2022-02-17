@@ -102,6 +102,7 @@ const Dashboard: FC = () => {
     useEffect(() => {
         let temparray = allDashboards.filter((el:any)=> String(el.description).toLowerCase().includes(searchValue.toLowerCase()))
         setallDashboardsToShow(temparray)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchValue]);
     useEffect(() => {
         if (dashboardtemplates.loading) return;
@@ -153,6 +154,7 @@ const Dashboard: FC = () => {
                 })));
             },
         }))
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dispatch]);
 
     const goToDashboardLayout = useCallback((dashboardtemplateid: number) => {

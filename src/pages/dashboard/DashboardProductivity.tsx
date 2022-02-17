@@ -4,7 +4,7 @@ import { useSelector } from "hooks";
 import { CalendarIcon } from "icons";
 import { langKeys } from "lang/keys";
 import { FC, Fragment, useEffect, useState } from "react";
-import { resetMain, getMultiCollection, getMultiCollectionAux, getCollectionAux, resetMainAux, resetMultiMainAux } from 'store/main/actions';
+import { getMultiCollection, getMultiCollectionAux, getCollectionAux, resetMainAux, resetMultiMainAux } from 'store/main/actions';
 import { Range } from 'react-date-range';
 import clsx from 'clsx';
 import PersonIcon from '@material-ui/icons/Person';
@@ -348,7 +348,6 @@ const DashboardProductivity: FC = () => {
     const [dataLabel, setdataLabel] = useState<any>([]);
     const [prodxHoralvl0, setprodxHoralvl0] = useState<any>([]);
     const [prodxHoralvl1, setprodxHoralvl1] = useState<any>([]);
-    const [productivitybyhourfull, setproductivitybyhourfull] = useState(0)
     const [prodxHoraDist, setprodxHoraDist] = useState(
         [
             {label:"0 - 3",connected:0, notconnected: 0},
@@ -603,7 +602,6 @@ const DashboardProductivity: FC = () => {
                 productivitybyhour: 0,
                 productivitybot: 0
             });
-            setproductivitybyhourfull(dataacum.productivitybyhour / prodxHoralvl1.length);
             setprodxHoraLabel({
                 prodlog: (dataacum.horalogueotmp ? (dataacum.horalogueotmp / prodxHoralvl1.length) : 0).toFixed(),
                 prodcon: (dataacum.horaconectadotmp ? (dataacum.horaconectadotmp / prodxHoralvl1.length) : 0).toFixed(),
@@ -964,8 +962,8 @@ const DashboardProductivity: FC = () => {
                 setTasaabandonoperc((+(remultiaux.data[2].data || [])[0]?.tasaabandonoperc || 0) * 100)
                 setprodxHoralvl0(remultiaux.data[3].data)
                 if(remultiaux.data[4].success){
-                    const {horaconectadorange0,horaconectadorange1,horaconectadorange2,horaconectadorange3,horaconectadorange4, horaconectadototal,
-                        horalogueorange0, horalogueorange1,  horalogueorange2, horalogueorange3, horalogueorange4, horalogueototal} = remultiaux.data[4].data[0]
+                    const {horaconectadorange0,horaconectadorange1,horaconectadorange2,horaconectadorange3,horaconectadorange4,
+                        horalogueorange0, horalogueorange1,  horalogueorange2, horalogueorange3, horalogueorange4} = remultiaux.data[4].data[0]
                     setprodxHoraDist(
                         [
                             {label:"0 - 3",connected:horaconectadorange0, notconnected: horalogueorange0},

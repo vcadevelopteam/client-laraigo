@@ -74,7 +74,6 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
     } = useContext(SubscriptionContext);
     const { getValues, setValue, register, unregister, formState: { errors }, trigger } = useFormContext<MainData>();
     const [viewSelected, setViewSelected] = useState("view1");
-    const [apiKey, setApiKey] = useState("");
     const [hasFinished, setHasFinished] = useState(false);
     const [submitError, setSubmitError] = useState(false);
     const { t } = useTranslation();
@@ -179,10 +178,6 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
         } 
     }, [foreground, viewSelected]);
 
-    function checkissues() {
-        setViewSelected("view2")
-    }
-
     const setView = (option: "view1" | "view2" | "view3") => {
         if (option === "view1") {
             setViewSelected(option);
@@ -191,12 +186,6 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
             setViewSelected(option);
             setForeground('whatsapp');
         }
-    }
-
-    function setService(value: string, field: string) {
-        setApiKey(value);
-        setValue('channels.whatsapp.accesstoken', value);
-        setValue('channels.whatsapp.communicationchannelowner', "");
     }
 
     if (viewSelected === "view2") {
