@@ -129,23 +129,22 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                 const allOk = await trigger(); //para q valide el formulario
                 const data = getValues();
                 if (allOk) {
-                    if (!row)
-                        updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
-                            p[index] = { ...data, operation: "INSERT" }
-                            return p;
-                        })
-                    else{
-                        updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
-                            p[index] = { ...data, operation: "UPDATE" }
-                            return p;
-                        })
-                        //updateRecords((p: Dictionary[]) => p.map(x => x?.orgid === row.orgid ? { ...x, ...data, operation: (x.operation || "UPDATE") } : x))
-                    }
+                    updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
+                        p[index] = { ...data, operation: p[index].id === 0?"INSERT": "UPDATE" }
+                        return p;
+                    })
                 }
                 setAllIndex((p: number[]) => [...p, { index, allOk }]);
             })()
         }
     }, [triggerSave])
+    
+    function updatefield (field:string, value:any){
+        updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
+            p[index] = { ...p[index], [field]: value }
+            return p;
+        })
+    }
 
     useEffect(() => {//validar la respuesta y asignar la  data a supervisores y canales segun la organización q cambió
         const indexSupervisor = resFromOrg.data.findIndex((x: MultiData) => x.key === ("UFN_USER_SUPERVISOR_LST" + (index + 1)));
@@ -236,6 +235,10 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     const onChangeOrganization = (value: Dictionary) => {
         setValue('orgid', value?.orgid || 0);
         setValue('orgdesc', value?.orgdesc || '');
+        updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
+            p[index] = { ...p[index], orgid: value?.orgid || 0, orgdesc: value?.orgdesc || ''}
+            return p;
+        })
         if (value) {
             setDataSupervisors({ loading: true, data: [] });
             setDataChannels({ loading: true, data: [] });
@@ -256,6 +259,11 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
         setValue('roleid', value ? value.roleid : 0);
         setValue('roledesc', value ? value.roldesc : 0);
         setValue('type', value ? value.type : 0);
+        
+        updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
+            p[index] = { ...p[index], roleid: value?.roleid || 0, roledesc: value?.roldesc || 0, type: value?.type || 0}
+            return p;
+        })
         if (value) {
             setDataApplications({ loading: true, data: [] });
             dispatch(getMultiCollectionAux([
@@ -267,7 +275,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     }
 
     return (
-        <Accordion defaultExpanded={!row} style={{ marginBottom: '8px' }}>
+        <Accordion defaultExpanded={row?.id===0} style={{ marginBottom: '8px' }}>
 
             <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
@@ -309,6 +317,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 onChange={(value) => {
                                     setValue('channels', value.map((o: Dictionary) => o.communicationchannelid).join())
                                     setValue('channelsdesc', value.map((o: Dictionary) => o.description).join())
+                                    updatefield('channels', value.map((o: Dictionary) => o.communicationchannelid).join())
+                                    updatefield('channelsdesc', value.map((o: Dictionary) => o.description).join())
                                 }}
                                 error={errors?.channels?.message}
                                 loading={dataChannels.loading}
@@ -322,7 +332,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 label={t(langKeys.default_organization)}
                                 className={classes.mb2}
                                 valueDefault={row?.bydefault || false}
-                                onChange={(value) => setValue('bydefault', value)} />
+                                onChange={(value) => {setValue('bydefault', value);updatefield('bydefault', value)}} />
                             <FieldSelect
                                 label={t(langKeys.supervisor)}
                                 className={classes.mb2}
@@ -331,6 +341,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 onChange={(value) => {
                                     setValue('supervisor', value ? value.usr : '');
                                     setValue('supervisordesc', value ? value.userdesc : '');
+                                    updatefield('supervisor', value?.usr || '');
+                                    updatefield('supervisordesc', value?.userdesc || '');
                                 }}
                                 error={errors?.supervisor?.message}
                                 data={dataSupervisors.data}
@@ -343,7 +355,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 label={t(langKeys.default_application)}
                                 className={classes.mb2}
                                 valueDefault={row?.redirect || ""}
-                                onChange={(value) => setValue('redirect', value ? value.path : '')}
+                                onChange={(value) => {setValue('redirect', value?.path || '');updatefield('redirect', value?.path || '')}}
                                 error={errors?.redirect?.message}
                                 data={dataApplications.data}
                                 loading={dataApplications.loading}
@@ -355,7 +367,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 label={t(langKeys.group)}
                                 className={classes.mb2}
                                 valueDefault={row?.groups || ""}
-                                onChange={(value) => setValue('groups', value.map((o: Dictionary) => o.domainvalue).join())}
+                                onChange={(value) => {setValue('groups', value.map((o: Dictionary) => o.domainvalue).join());updatefield('groups', value.map((o: Dictionary) => o.domainvalue).join())}}
                                 error={errors?.groups?.message}
                                 loading={dataGroups.loading}
                                 data={dataGroups.data}
@@ -557,7 +569,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
     }, [detailRes]);
 
     const handleRegister = () => {
-        setDataOrganizations(p => [...p, null]);
+        setDataOrganizations(p => [...p, {id:0}]);
     }
     const handleDelete = (row: Dictionary | null, index: number) => {
         if (row && row.operation !== "INSERT") {
