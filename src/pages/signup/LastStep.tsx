@@ -43,9 +43,9 @@ interface LastStepProps {
     setOpenWarning: (param: any) => void;
 }
 
-const Step2_6: FC<LastStepProps> = ({ setOpenWarning }) => {
+const Step2Six: FC<LastStepProps> = ({ setOpenWarning }) => {
     const { setStep } = useContext(SubscriptionContext);
-    const { getValues, setValue, control, trigger, handleSubmit } = useFormContext<MainData>();
+    const { control, trigger } = useFormContext<MainData>();
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
     const dispatch = useDispatch();
@@ -54,8 +54,7 @@ const Step2_6: FC<LastStepProps> = ({ setOpenWarning }) => {
     const [roleList, setroleList] = useState<any>([]);
     const multiResult = useSelector(state => state.main.multiData.data);
     const executeResult = useSelector(state => state.signup.insertChannel);
-    const [isSpecial, setIsSpecial] = useState(false);
-
+    
     useEffect(() => {
         dispatch(getMultiCollectionPublic(["SignUpIndustry", "SignUpCompanySize", "SignUpRoles"]));
     }, []);
@@ -191,4 +190,4 @@ const Step2_6: FC<LastStepProps> = ({ setOpenWarning }) => {
     )
 }
 
-export default Step2_6
+export default Step2Six

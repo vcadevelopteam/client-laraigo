@@ -115,7 +115,6 @@ const ThirdStep: FC = () => {
             label: 'Whatsapp',
             key: 'whatsapp',
             onClick: () => {
-                const type = planData.plan!.provider === "DIALOG" ? "WHATSAPP" : "WHATSAPPSMOOCH";
                 toggleChannel('whatsapp');
             },
             selected: listchannels.whatsapp,

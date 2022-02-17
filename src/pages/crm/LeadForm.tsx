@@ -5,13 +5,16 @@ import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useRouteMatch } from 'react-router';
-import { insLead2, adviserSel, getPaginatedPerson as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSel, insArchiveLead, leadHistorySel, updateLeadTagsIns, getLeadsSel, leadHistoryIns } from 'common/helpers';
+import { insLead2, adviserSel, getPaginatedPerson as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSel, insArchiveLead, leadHistorySel,
+    getLeadsSel, leadHistoryIns } from 'common/helpers';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
-import { archiveLead, getAdvisers, getLead, getLeadActivities, getLeadHistory, getLeadLogNotes, getLeadPhases, markDoneActivity, resetArchiveLead, resetGetLead, resetGetLeadActivities, resetGetLeadHistory, resetGetLeadLogNotes, resetGetLeadPhases, resetMarkDoneActivity, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLeadActivity, saveLeadLogNote, saveLeadWithFiles, updateLeadTags, saveLead as saveLeadAction, resetGetLeadProductsDomain, getLeadProductsDomain, getLeadTagsDomain, resetGetLeadTagsDomain } from 'store/lead/actions';
-import { Dictionary, ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, ICrmLeadHistory, ICrmLeadHistoryIns, ICrmLeadNote, ICrmLeadNoteSave, ICrmLeadProductsSave, ICrmLeadTagsSave, IDomain, IFetchData, IPerson } from '@types';
+import { archiveLead, getAdvisers, getLead, getLeadActivities, getLeadHistory, getLeadLogNotes, getLeadPhases, markDoneActivity, resetArchiveLead, resetGetLead, resetGetLeadActivities, resetGetLeadHistory, 
+    resetGetLeadLogNotes, resetGetLeadPhases, resetMarkDoneActivity, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLeadActivity, saveLeadLogNote, saveLeadWithFiles, saveLead as saveLeadAction, 
+    resetGetLeadProductsDomain, getLeadProductsDomain, getLeadTagsDomain, resetGetLeadTagsDomain } from 'store/lead/actions';
+import { Dictionary, ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, ICrmLeadHistory, ICrmLeadHistoryIns, ICrmLeadNote, ICrmLeadNoteSave, IDomain, IFetchData, IPerson } from '@types';
 import { manageConfirmation, showSnackbar } from 'store/popus/actions';
 import { Rating, Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineSeparator } from '@material-ui/lab';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -26,14 +29,6 @@ import { getCollection, resetMain } from 'store/main/actions';
 import { AntTab } from 'components';
 import { EmailIcon, WhatsappIcon, SmsIcon } from 'icons';
 import { Descendant } from 'slate';
-import { defaultDecorate } from 'slate-react/dist/components/editable';
-
-const tagsOptions = [
-    { title: "Information" },
-    { title: "Design" },
-    { title: "Product" },
-    // crear mas
-];
 
 const urgencyLevels = ['', 'LOW', 'MEDIUM', 'HIGH']
 
@@ -286,6 +281,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             dispatch(resetGetLeadProductsDomain());
             dispatch(resetGetLeadTagsDomain());
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [edit, match.params.id, dispatch]);
 
     useEffect(() => {
@@ -306,6 +302,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             setValue('columnid', phases.data[0].columnid);
             setValue('column_uuid', phases.data[0].column_uuid);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [phases, edit]);
 
     useEffect(() => {
@@ -514,6 +511,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             question: t(langKeys.confirmation_close),
             callback: () => dispatch(archiveLead(insArchiveLead(lead.value!))),
         }))
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [lead, dispatch]);
 
     const handleUpdateLeadTags = useCallback((value: any, action: "NEWTAG" | "REMOVETAG") => {
@@ -547,6 +545,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         ) {
             leadTagsChanges.current = leadTagsChanges.current.filter(x => x.description !== desc)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [lead, edit, match.params.id, dispatch]);
 
     const handleUpdateLeadProducts = useCallback((value: any, action: "NEWPRODUCT" | "REMOVEPRODUCT") => {
@@ -579,6 +578,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         ) {
             leadProductsChanges.current = leadProductsChanges.current.filter(x => x.description !== desc)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [lead, edit, match.params.id, dispatch]);
 
     const iSProcessLoading = useCallback(() => {
@@ -625,6 +625,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         columnid: x.columnid,
         column_uuid: x.column_uuid,
         description: t(x.description.toLowerCase()),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     })), [phases]);
 
     if (edit === true && lead.loading && advisers.loading) {
@@ -1965,6 +1966,7 @@ const FileCollectionPreview: FC<FileCollectionPreviewProps> = ({ files, onCloseF
         }
 
         return children;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const buildStringChildren = useCallback((files: string) => {
@@ -1975,6 +1977,7 @@ const FileCollectionPreview: FC<FileCollectionPreviewProps> = ({ files, onCloseF
 
     const children = useMemo(() => {
         return typeof files === "string" ? buildStringChildren(files) : buildFileChildren(files);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [files]);
     
     return (

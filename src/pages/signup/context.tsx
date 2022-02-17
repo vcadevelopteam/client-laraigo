@@ -8,7 +8,7 @@ import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router-dom';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { executeSubscription, verifyPlan } from 'store/signup/actions';
-import { FormProvider, SubmitErrorHandler, SubmitHandler, useForm, useWatch } from 'react-hook-form';
+import { FormProvider, SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form';
 import paths from 'common/constants/paths';
 import { resetInsertChannel } from 'store/channel/actions';
 
@@ -272,7 +272,6 @@ export const SubscriptionProvider: FC = ({ children }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const match = useRouteMatch<RouteParams>();
-    const [waitSave, setWaitSave] = useState(false);
     const [confirmations, setConfirmations] = useState(0);
     const planData = useSelector(state => state.signup.verifyPlan);
     const [listchannels, setlistchannels] = useState<ListChannels>(defaultListChannels);
@@ -315,6 +314,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
         return () => {
             dispatch(resetInsertChannel());
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [planData]);
 
     useEffect(() => {
@@ -374,7 +374,6 @@ export const SubscriptionProvider: FC = ({ children }) => {
                 success: true,
                 message: msg,
             }));
-            setWaitSave(false);
         } else if (executeResult.error) {
             console.log('error', executeResult);
             dispatch(showBackdrop(false));
@@ -384,8 +383,8 @@ export const SubscriptionProvider: FC = ({ children }) => {
                 success: false,
                 message: errormessage,
             }))
-            setWaitSave(false);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [executeResult, form.getValues, dispatch])
 
     const deleteChannel = (option: keyof ListChannels) => {
@@ -428,10 +427,9 @@ export const SubscriptionProvider: FC = ({ children }) => {
     const resetChannels = () => setlistchannels(defaultListChannels);
 
     const selectedChannels = useMemo(() => {
-        return Object.
-            keys(listchannels).
-            filter(key => listchannels[key as keyof ListChannels] === true).
-            length;
+        return Object.keys(listchannels)
+            .filter(key => listchannels[key as keyof ListChannels] === true)
+            .length;
     }, [listchannels]);
 
     const finishreg = () => {
@@ -468,7 +466,6 @@ export const SubscriptionProvider: FC = ({ children }) => {
             ),
         };
         dispatch(showBackdrop(true));
-        setWaitSave(true);
         dispatch(executeSubscription(majorfield));
     }
 

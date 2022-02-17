@@ -163,6 +163,7 @@ export const ChannelAddInstagram: FC = () => {
                         />
     
                     <div style={{ textAlign: "center", color: "#969ea5", fontStyle: "italic" }}>{t(langKeys.connectinsta4)}</div>
+                    {/* eslint-disable-next-line jsx-a11y/anchor-is-valid*/}
                     <div style={{ textAlign: "center", paddingBottom: "80px", color: "#969ea5" }}><a style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={openprivacypolicies} rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
     
                 </div>

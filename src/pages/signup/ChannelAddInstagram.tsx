@@ -82,10 +82,6 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
         }
     }, [mainResult, waitSave])
 
-    const openprivacypolicies = () => {
-        window.open("/privacy", '_blank');
-    }
-
     const processFacebookCallback = async (r: any) => {
         if (r.status !== "unknown" && !r.error) {
             dispatch(getChannelsListSub(r.accessToken, apiUrls.INSTAGRAMAPP))
@@ -182,7 +178,7 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
                     </div>
                 </div>
             </div> */}
-            {getValues('channels.facebook.siteid')?.length || 0 === 0 && mainResult.data.length === 0 ? (
+            {((getValues('channels.facebook.siteid')?.length || 0) === 0 )&& (mainResult.data.length === 0) ? (
                 <FacebookLogin
                     appId={apiUrls.INSTAGRAMAPP}
                     autoLoad={false}

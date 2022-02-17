@@ -1,4 +1,5 @@
-import { convertLocalDate, getAdviserFilteredUserRol, getCampaignLst, getColumnsSel, getCommChannelLst, getLeadExport, getLeadsSel, getLeadTasgsSel, getPaginatedLead, getValuesFromDomain, insArchiveLead, insColumns, insLead, insLead2, updateColumnsLeads, updateColumnsOrder } from "common/helpers";
+import { convertLocalDate, getAdviserFilteredUserRol, getCampaignLst, getColumnsSel, getCommChannelLst, getLeadExport, getLeadsSel, getLeadTasgsSel, getPaginatedLead, getValuesFromDomain, insArchiveLead, insColumns, 
+  insLead2, updateColumnsLeads, updateColumnsOrder } from "common/helpers";
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
@@ -204,6 +205,7 @@ const CRM: FC = () => {
       getValuesFromDomain('OPORTUNIDADPRODUCTOS'),
       getLeadTasgsSel(),
     ]));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boardFilter, dispatch]);
 
   const onDragEnd = (result:DropResult, columns:dataBackend[], setDataColumn:any) => {
@@ -257,28 +259,6 @@ const CRM: FC = () => {
       }
     }
   };
-
-  const handleEdit = (column_uuid:string, title:string, columns:dataBackend[], setDataColumn:any) => {
-    const index = columns.findIndex(c => c.column_uuid === column_uuid)
-    const column = columns[index];
-    if (column.description === title) {
-      return;
-    }
-    setDataColumn(Object.values({...columns, [index]: {...column, description: title}}));
-
-    if (column.columnid !== 0) {
-      const data = {
-        id: column.column_uuid,
-        description: title,
-        type: 'NINGUNO',
-        status: 'ACTIVO',
-        edit: true,
-        index: column.index,
-        operation: 'EDIT'
-      }
-      dispatch(execute(insColumns(data)));
-    }
-  }
 
   const handleCloseLead = (lead: ICrmLead) => {
     const callback = () => {
@@ -384,6 +364,7 @@ const CRM: FC = () => {
     if (!user) return 0;
     if (user.roledesc === "ASESOR") return user.userid;
     else return otherParams.asesorid || mainMulti.data[2]?.data?.map(d => d.userid).includes(user?.userid) ? (user?.userid || 0) : 0;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [otherParams, user]);
 
   const mainPaginated = useSelector(state => state.main.mainPaginated);
@@ -709,6 +690,7 @@ const CRM: FC = () => {
     const p = new URLSearchParams(location.search);
     p.set('display', display);
     history.push({ search: p.toString() });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [display, history]);
 
   const campaigns = useMemo(() => {
@@ -716,6 +698,7 @@ const CRM: FC = () => {
     return (mainMulti.data[4].data as ICampaignLst[]).sort((a, b) => {
       return a.description.localeCompare(b.description);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mainMulti.data[4]]);
 
   const tags = useMemo(() => {
@@ -723,6 +706,7 @@ const CRM: FC = () => {
     return (mainMulti.data[6].data as any[]).sort((a, b) => {
       return a.tags?.localeCompare(b.tags || '') || 0;
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mainMulti.data[6]]);
 
   const channels = useMemo(() => {
@@ -730,6 +714,7 @@ const CRM: FC = () => {
     return (mainMulti.data[3].data as IChannel[]).sort((a, b) => {
       return a.communicationchanneldesc.localeCompare(b.communicationchanneldesc);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mainMulti.data[3]]);
 
   const filtersElement = useMemo(() => (
@@ -764,6 +749,7 @@ const CRM: FC = () => {
           onChange={(value) => setAllParameters({...allParameters, contact: value})}
       />
     </>
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   ), [user, allParameters, classes, mainMulti, t]);
 
   return (

@@ -38,7 +38,6 @@ const ChannelEdit: FC = () => {
     const dispatch = useDispatch();
     const history = useHistory();
     const location = useLocation();
-    const [enable, setenable] = useState(false);
     const edit = useSelector(state => state.channel.editChannel);
 
     const [name, setName] = useState("");
@@ -54,7 +53,6 @@ const ChannelEdit: FC = () => {
         } else {
             setName(channel.communicationchanneldesc);
             setAuto(true);
-            setenable(true);
             channel.coloricon && setHexIconColor(channel.coloricon);
         }
 

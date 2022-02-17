@@ -1,5 +1,5 @@
-import { IActionCall, IRequestBody, ITransaction } from "@types";
-import { ActivationUserService, CommonService } from "network";
+import { IActionCall, IRequestBody } from "@types";
+import { ActivationUserService } from "network";
 import actionTypes from "./actionTypes";
 
 export const getLocations = (requestBody: IRequestBody): IActionCall => ({
