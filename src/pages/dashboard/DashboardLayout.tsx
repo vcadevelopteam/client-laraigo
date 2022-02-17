@@ -875,7 +875,7 @@ const LayoutPie: FC<LayoutPieProps> = ({ data, tooltipFormatter, ...props }) => 
                         />
                     ))}
                 </Pie>
-                <Legend verticalAlign="bottom" />
+                <Legend layout="vertical" verticalAlign="top" align="right" />
             </PieChart>
         </ResponsiveContainer>
     );
