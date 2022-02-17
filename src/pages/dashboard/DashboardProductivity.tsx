@@ -556,8 +556,8 @@ const DashboardProductivity: FC = () => {
             const secondDate = new Date( String(dateRangeCreateDate.endDate));
             const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
 
-            let diffDays = Math.ceil(Math.abs((firstDate.getTime() - secondDate.getTime()) / oneDay));
-            const fullhours = 24 * diffDays
+            let diffDays = Math.ceil(Math.abs((firstDate.getTime() - secondDate.getTime()) / oneDay)) + 1;
+            const fullhours = 24 * diffDays;
             const { horalogueo, horaconectado, ticketsasesor, ticketsbot } = prodxHoralvl0[0];
             const prodlogofi = horalogueo ? (ticketsasesor / horalogueo) : 0;
             const prodconofi = horaconectado ? (ticketsasesor / horaconectado) : 0;
@@ -581,8 +581,8 @@ const DashboardProductivity: FC = () => {
             const secondDate = new Date( String(dateRangeCreateDate.endDate));
             const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
 
-            let diffDays = Math.ceil(Math.abs((firstDate.getTime() - secondDate.getTime()) / oneDay));
-            const fullhours = 24 * diffDays
+            let diffDays = Math.ceil(Math.abs((firstDate.getTime() - secondDate.getTime()) / oneDay)) + 1;
+            const fullhours = 24 * diffDays;
             
             let dataacum: any = prodxHoralvl1.reduce((full: any, i: any) => {
                 const productivitylogueo = i.horalogueo ? i.ticketsasesor / i.horalogueo : 0;
