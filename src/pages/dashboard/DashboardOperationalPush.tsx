@@ -1,6 +1,6 @@
 import { Box, Button, createStyles, makeStyles, Theme } from "@material-ui/core";
 import { Dictionary } from "@types";
-import { exportExcel, getCommChannelLst, getdashboardPushHSMCATEGORYRANKSel, getdashboardPushHSMCATEGORYRANKSelData, getdashboardPushHSMRANKSel, getdashboardPushHSMRANKSelData, getdashboardPushMENSAJEXDIASel, getdashboardPushMENSAJEXDIASelData, getdashboardPushSUMMARYSel, getdashboardPushSUMMARYSelData, getLabelsSel, getSupervisorsSel, getValuesFromDomain } from "common/helpers";
+import { exportExcel, getCommChannelLst, getdashboardPushHSMCATEGORYRANKSel, getdashboardPushHSMCATEGORYRANKSelData, getdashboardPushHSMRANKSel, getdashboardPushHSMRANKSelData, getdashboardPushMENSAJEXDIASel, getdashboardPushMENSAJEXDIASelData, getdashboardPushSUMMARYSel, getdashboardPushSUMMARYSelData, getDateCleaned, getLabelsSel, getSupervisorsSel, getValuesFromDomain } from "common/helpers";
 import { DateRangePicker, DialogZyx, FieldMultiSelect } from "components";
 import { useSelector } from "hooks";
 import { CalendarIcon } from "icons";
@@ -153,7 +153,6 @@ const initialRange = {
     endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
     key: 'selection'
 }
-const format = (date: Date) => date.toISOString().split('T')[0];
 
 const DashboardOperationalPush: FC = () => {
     const classes = useStyles();
@@ -246,7 +245,6 @@ const DashboardOperationalPush: FC = () => {
             });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-
     }, [dataPushSUMMARYSel])
     useEffect(() => {
         if (waitSave) {
@@ -365,7 +363,7 @@ const DashboardOperationalPush: FC = () => {
                         startIcon={<CalendarIcon />}
                         onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
                     >
-                        {format(dateRangeCreateDate.startDate!) + " - " + format(dateRangeCreateDate.endDate!)}
+                        {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
                     </Button>
                 </DateRangePicker>
                 <div className="row-zyx" style={{ marginTop: "15px" }}>

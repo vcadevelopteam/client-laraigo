@@ -11,7 +11,7 @@ import PersonIcon from '@material-ui/icons/Person';
 import ChatIcon from '@material-ui/icons/Chat';
 import AdbIcon from '@material-ui/icons/Adb';
 import { useTranslation } from "react-i18next";
-import { exportExcel, getCommChannelLst, getdashboardoperativoEncuestaSel,getdashboardoperativoEncuesta3Sel, getdashboardoperativoProdxHoraDistSel, getdashboardoperativoProdxHoraSel, getdashboardoperativoSummarySel,getdashboardoperativoTMEGENERALSeldata, getdashboardoperativoTMEGENERALSel, getdashboardoperativoTMOGENERALSel, getdashboardoperativoTMOGENERALSeldata, getLabelsSel, getSupervisorsSel, getValuesFromDomain, getdashboardoperativoTMOdistseldata, getdashboardoperativoTMEdistseldata, getdashboardoperativoProdxHoraDistSeldata, getdashboardoperativoEncuesta3Seldata, getdashboardoperativoEncuesta2Seldata } from "common/helpers";
+import { exportExcel, getCommChannelLst, getdashboardoperativoEncuestaSel,getdashboardoperativoEncuesta3Sel, getdashboardoperativoProdxHoraDistSel, getdashboardoperativoProdxHoraSel, getdashboardoperativoSummarySel,getdashboardoperativoTMEGENERALSeldata, getdashboardoperativoTMEGENERALSel, getdashboardoperativoTMOGENERALSel, getdashboardoperativoTMOGENERALSeldata, getLabelsSel, getSupervisorsSel, getValuesFromDomain, getdashboardoperativoTMOdistseldata, getdashboardoperativoTMEdistseldata, getdashboardoperativoProdxHoraDistSeldata, getdashboardoperativoEncuesta3Seldata, getdashboardoperativoEncuesta2Seldata, getDateCleaned } from "common/helpers";
 import { useDispatch } from "react-redux";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import { Dictionary } from "@types";
@@ -207,7 +207,6 @@ const initialRange = {
     endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
     key: 'selection'
 }
-const format = (date: Date) => date.toISOString().split('T')[0];
 
 const DashboardProductivity: FC = () => {
     const classes = useStyles();
@@ -392,7 +391,25 @@ const DashboardProductivity: FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mainResult])
     useEffect(() => {
-        
+        setData({
+            dataTMO: "0s",
+            obj_min: "",
+            obj_max: "< 0m",
+            variaciontxt: "0s",
+            variacioncolor: true,
+            timeMax: "0s",
+            timeMin: "0s",
+            sla: "0%",
+            variacionperccolor: true,
+            variacionperc: 0,
+            tickets_comply: 0,
+            tickets_analyzed: 0,
+            tickets_total: 0,
+        });
+        setDataTMOgraph([
+            { label: t(langKeys.meets), quantity: 0 },
+            { label: t(langKeys.meetsnot), quantity: 0 }
+        ]);
         if (resTMO.length) {
             const { time_avg, tickets_comply, tickets_total, target_max, target_min, time_max, time_min, tickets_analyzed, target_percmax} = resTMO[0];
             let seconds = timetoseconds(time_avg)
@@ -453,6 +470,24 @@ const DashboardProductivity: FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [resTMO])
     useEffect(() => {
+        setDataTME({
+            dataTME: "0s",
+            obj_max: "< 0m",
+            variaciontxt: "0s",
+            variacioncolor: true,
+            timeMax: "0s",
+            timeMin: "0s",
+            sla: "0%",
+            variacionperccolor: true,
+            variacionperc: 0,
+            tickets_comply: 0,
+            tickets_analyzed: 0,
+            tickets_total: 0,
+        })
+        setDataTMEgraph([
+            { label: t(langKeys.meets), quantity: 0 },
+            { label: t(langKeys.meetsnot), quantity: 0 }
+        ]);
         if (resTME.length) {
             const { time_avg, tickets_comply, tickets_total, target_max, target_min, time_max, time_min, tickets_analyzed, target_percmax} = resTME[0];
             let seconds = timetoseconds(time_avg)
@@ -507,8 +542,6 @@ const DashboardProductivity: FC = () => {
                     { label: t(langKeys.meets), quantity: tickets_comply },
                     { label: t(langKeys.meetsnot), quantity: tickets_analyzed - tickets_comply }
                 ]);
-
-
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -519,7 +552,7 @@ const DashboardProductivity: FC = () => {
             prodcon: "0",
             prodbot: "0",
         });
-        if(prodxHoralvl0 && prodxHoralvl0.length > 0){
+        if (prodxHoralvl0 && prodxHoralvl0.length > 0) {
             const firstDate = new Date( String(dateRangeCreateDate.startDate));
             const secondDate = new Date( String(dateRangeCreateDate.endDate));
             const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
@@ -544,7 +577,7 @@ const DashboardProductivity: FC = () => {
             prodcon: "0",
             prodbot: "0",
         });
-        if(prodxHoralvl1 && prodxHoralvl1.length > 0){
+        if (prodxHoralvl1 && prodxHoralvl1.length > 0) {
             const firstDate = new Date( String(dateRangeCreateDate.startDate));
             const secondDate = new Date( String(dateRangeCreateDate.endDate));
             const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
@@ -677,6 +710,24 @@ const DashboardProductivity: FC = () => {
             fixtotaldetractors: 0,
             fixtotalconversations: 0,
         })
+        setDataNPSgraph([
+            { label: t(langKeys.promoters), quantity: 0 },
+            { label: t(langKeys.detractors), quantity: 0 },
+            { label: t(langKeys.neutral), quantity: 0 }
+        ]);
+        setDataCSATgraph([
+            { label: t(langKeys.satisfied), quantity: 0 },
+            { label: t(langKeys.dissatisfied), quantity: 0 },
+            { label: t(langKeys.neutral), quantity: 0 }
+        ]);
+        setDataFCRgraph([
+            { label: t(langKeys.resolvedfirstcontact), quantity: 0 },
+            { label: t(langKeys.notresolvedfirstcontact), quantity: 0 },
+        ]);
+        setDataFIXgraph([
+            { label: t(langKeys.resolved), quantity: 0 },
+            { label: t(langKeys.notresolved), quantity: 0 },
+        ]);
         if (resEncuesta.length) {
             const { nps_high, total, nps_low, nps_green, nps_medium, nps_total } = resEncuesta[0]
             const { csat_high, csat_low, csat_green, csat_medium, csat_total } = resEncuesta[0];
@@ -745,7 +796,6 @@ const DashboardProductivity: FC = () => {
                 { label: t(langKeys.resolved), quantity: fix_yes },
                 { label: t(langKeys.notresolved), quantity: fix_no },
             ]);
-
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [resEncuesta]);
@@ -767,8 +817,7 @@ const DashboardProductivity: FC = () => {
             { label: t(langKeys.detractors), quantity: 0 },
             { label: t(langKeys.neutral), quantity: 0 }
         ]);
-        if(data.length){
-
+        if (data.length) {
             const { high, tickets, low, green, medium, total } = data[0]
             const toshow = total ? ((high - low) / total) : 0;
             let variacioncolor = (toshow - green) * 100 >= 0
@@ -809,8 +858,7 @@ const DashboardProductivity: FC = () => {
             { label: t(langKeys.dissatisfied), quantity: 0 },
             { label: t(langKeys.neutral), quantity: 0 }
         ]);
-        if(data.length){
-
+        if (data.length) {
             const { high, tickets, low, green, medium, total } = data[0]
             const toshow = total ? ((high - low) / total) : 0;
             let variacioncolor = (toshow - green) * 100 >= 0
@@ -849,8 +897,7 @@ const DashboardProductivity: FC = () => {
             { label: t(langKeys.resolvedfirstcontact), quantity: 0 },
             { label: t(langKeys.notresolvedfirstcontact), quantity: 0 },
         ]);
-        if(data.length){
-
+        if (data.length) {
             const { high, tickets, low, green, total } = data[0]
             const toshow = total ? ((high - low) / total) : 0;
             let variacioncolor = (toshow - green) * 100 >= 0
@@ -887,8 +934,7 @@ const DashboardProductivity: FC = () => {
             { label: t(langKeys.resolved), quantity: 0 },
             { label: t(langKeys.notresolved), quantity: 0 },
         ]);
-        if(data.length){
-
+        if (data.length) {
             const { high, tickets, low, green, total } = data[0]
             const toshow = total ? ((high - low) / total) : 0;
             let variacioncolor = (toshow - green) * 100 >= 0
@@ -915,7 +961,7 @@ const DashboardProductivity: FC = () => {
                 setResTMO(remultiaux.data[0].data)
                 setResTME(remultiaux.data[1].data)
                 setResSummary(remultiaux.data[2].data)
-                setTasaabandonoperc((+(remultiaux.data[2].data || [])[0]?.tasaabandonoperc) * 100)
+                setTasaabandonoperc((+(remultiaux.data[2].data || [])[0]?.tasaabandonoperc || 0) * 100)
                 setprodxHoralvl0(remultiaux.data[3].data)
                 if(remultiaux.data[4].success){
                     const {horaconectadorange0,horaconectadorange1,horaconectadorange2,horaconectadorange3,horaconectadorange4, horaconectadototal,
@@ -1118,7 +1164,7 @@ const DashboardProductivity: FC = () => {
                         startIcon={<CalendarIcon />}
                         onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
                     >
-                        {format(dateRangeCreateDate.startDate!) + " - " + format(dateRangeCreateDate.endDate!)}
+                        {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
                     </Button>
                 </DateRangePicker>
                 <div className="row-zyx" style={{ marginTop: "15px" }}>
