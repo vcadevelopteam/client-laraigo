@@ -275,7 +275,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     }
 
     return (
-        <Accordion defaultExpanded={!row} style={{ marginBottom: '8px' }}>
+        <Accordion defaultExpanded={row?.id===0} style={{ marginBottom: '8px' }}>
 
             <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
