@@ -16,6 +16,8 @@ import { getCollection, resetAllMain, getMultiCollection, execute } from 'store/
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import { DuplicateIcon } from 'icons';
+import { useHistory } from 'react-router-dom';
+import paths from 'common/constants/paths';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -335,7 +337,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
 }
 
 const SLA: FC = () => {
-    // const history = useHistory();
+    const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
@@ -500,6 +502,17 @@ const SLA: FC = () => {
                 loading={mainResult.mainData.loading}
                 register={true}
                 onClickRow={handleEdit}
+                ButtonsElement={() => (
+                    <Button
+                        disabled={mainResult.mainData.loading}
+                        variant="contained"
+                        type="button"
+                        color="primary"
+                        startIcon={<ClearIcon color="secondary" />}
+                        style={{ backgroundColor: "#FB5F5F" }}
+                        onClick={() => history.push(paths.CONFIGURATION)}
+                    >{t(langKeys.back)}</Button>
+                )}
                 handleRegister={handleRegister}
             // fetchData={fetchData}
             />

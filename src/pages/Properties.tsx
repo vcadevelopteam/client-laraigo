@@ -24,6 +24,8 @@ import { useDispatch } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useSelector } from 'hooks';
 import { useTranslation } from 'react-i18next';
+import { useHistory } from 'react-router-dom';
+import paths from 'common/constants/paths';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -60,6 +62,7 @@ const useStyles = makeStyles((theme) => ({
 
 const IDPROPERTIES = 'IDPROPERTIES';
 const Properties: FC = () => {
+    const history = useHistory();
     const [categoryFilter, setCategoryFilter] = useState('');
     const [levelFilter, setLevelFilter] = useState('');
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
@@ -180,6 +183,14 @@ const Properties: FC = () => {
                 <div style={{ position: 'relative' }}>
                     <Box className={classes.containerHeader} justifyContent='space-between' alignItems='center' mb={1}>
                         <span className={classes.title}>{t(langKeys.property_plural, { count: 2 })}</span>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => history.push(paths.CONFIGURATION)}
+                        >{t(langKeys.back)}</Button>
                     </Box>
                     <div style={{ position: 'absolute', display: 'flex', gap: 16 }}>
                         <FieldSelect

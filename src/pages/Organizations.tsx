@@ -19,6 +19,8 @@ import ClearIcon from '@material-ui/icons/Clear';
 import { Box, Grid, IconButton, InputAdornment, Tabs } from '@material-ui/core';
 import { Close, CloudUpload, Visibility, VisibilityOff } from '@material-ui/icons';
 import { getCountryList } from 'store/signup/actions';
+import { useHistory } from 'react-router-dom';
+import paths from 'common/constants/paths';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -858,6 +860,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
 }
 
 const Organizations: FC = () => {
+    const history = useHistory();
     const dispatch = useDispatch();
     const ressignup = useSelector(state => state.signup.currencyList);
     const { t } = useTranslation();
@@ -998,6 +1001,17 @@ const Organizations: FC = () => {
                 titlemodule={t(langKeys.organization_plural, { count: 2 })}
                 data={mainResult.mainData.data}
                 download={true}
+                ButtonsElement={() => (
+                    <Button
+                        disabled={mainResult.mainData.loading}
+                        variant="contained"
+                        type="button"
+                        color="primary"
+                        startIcon={<ClearIcon color="secondary" />}
+                        style={{ backgroundColor: "#FB5F5F" }}
+                        onClick={() => history.push(paths.CONFIGURATION)}
+                    >{t(langKeys.back)}</Button>
+                )}
                 onClickRow={handleEdit}
                 loading={mainResult.mainData.loading}
                 register={true}

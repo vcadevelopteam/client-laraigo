@@ -25,6 +25,8 @@ import { TreeItem, TreeView } from '@material-ui/lab';
 import { IconButton, Input, InputAdornment, InputLabel } from '@material-ui/core';
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import { DetailTipification } from './Tipifications';
+import { useHistory } from 'react-router-dom';
+import paths from 'common/constants/paths';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -453,7 +455,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
 }
 
 const Quickreplies: FC = () => {
-    // const history = useHistory();
+    const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
@@ -634,15 +636,26 @@ const Quickreplies: FC = () => {
                     handleRegister={handleRegister}
                     onClickRow={handleEdit}
                     ButtonsElement={()=>
-                        <Button
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            style={{ backgroundColor: "#7721ad" }}
-                            onClick={() => setOpenDialog(true)}
-                            startIcon={<AccountTreeIcon color="secondary" />}
-                        >{t(langKeys.opendrilldown)}
-                        </Button>
+                        <>
+                            <Button
+                                disabled={mainResult.mainData.loading}
+                                variant="contained"
+                                type="button"
+                                color="primary"
+                                startIcon={<ClearIcon color="secondary" />}
+                                style={{ backgroundColor: "#FB5F5F" }}
+                                onClick={() => history.push(paths.CONFIGURATION)}
+                            >{t(langKeys.back)}</Button>
+                            <Button
+                                variant="contained"
+                                type="button"
+                                color="primary"
+                                style={{ backgroundColor: "#7721ad" }}
+                                onClick={() => setOpenDialog(true)}
+                                startIcon={<AccountTreeIcon color="secondary" />}
+                            >{t(langKeys.opendrilldown)}
+                            </Button>
+                        </>
                     }
                 />
                 <DialogZyx

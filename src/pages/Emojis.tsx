@@ -16,6 +16,9 @@ import { useSelector } from 'hooks';
 import { Dictionary } from "@types";
 import { Button, Menu, MenuItem, Tooltip } from "@material-ui/core";
 import { manageConfirmation, showBackdrop } from "store/popus/actions";
+import { useHistory } from 'react-router-dom';
+import ClearIcon from '@material-ui/icons/Clear';
+import paths from 'common/constants/paths';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -31,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '22px',
         lineHeight: '48px',
         fontWeight: 'bold',
+        width: "100%",
         height: '48px',
         color: theme.palette.text.primary,
     },
@@ -42,6 +46,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Emojis: FC = () => {
+    const history = useHistory();
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const classes = useStyles();
@@ -120,6 +125,17 @@ const Emojis: FC = () => {
                 <span className={classes.title}>
                     {t(langKeys.emoji_plural)}
                 </span>
+                <div style={{ flexGrow: 1 }}>
+                    <Button
+                        disabled={mainResult.mainData.loading}
+                        variant="contained"
+                        type="button"
+                        color="primary"
+                        startIcon={<ClearIcon color="secondary" />}
+                        style={{ backgroundColor: "#FB5F5F" }}
+                        onClick={() => history.push(paths.CONFIGURATION)}
+                    >{t(langKeys.back)}</Button>
+                </div>
             </Box>
 
             <div className={classes.root}>

@@ -22,6 +22,8 @@ import { IconButton } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import { TreeItem, TreeView } from '@material-ui/lab';
+import { useHistory } from 'react-router-dom';
+import paths from 'common/constants/paths';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -479,7 +481,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
 }
 
 const Tipifications: FC = () => {
-    // const history = useHistory();
+    const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
@@ -679,15 +681,25 @@ const Tipifications: FC = () => {
                     handleTemplate={handleTemplate}
                     handleRegister={handleRegister}
                     ButtonsElement={()=>
-                        <Button
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            style={{ backgroundColor: "#7721ad" }}
-                            onClick={() => setOpenDialog(true)}
-                            startIcon={<AccountTreeIcon color="secondary" />}
-                        >{t(langKeys.opendrilldown)}
-                        </Button>
+                        <>
+                            <Button
+                                variant="contained"
+                                type="button"
+                                color="primary"
+                                startIcon={<ClearIcon color="secondary" />}
+                                style={{ backgroundColor: "#FB5F5F" }}
+                                onClick={() => history.push(paths.CONFIGURATION)}
+                            >{t(langKeys.back)}</Button>
+                            <Button
+                                variant="contained"
+                                type="button"
+                                color="primary"
+                                style={{ backgroundColor: "#7721ad" }}
+                                onClick={() => setOpenDialog(true)}
+                                startIcon={<AccountTreeIcon color="secondary" />}
+                            >{t(langKeys.opendrilldown)}
+                            </Button>
+                        </>
                     }
                 />
                 <DialogZyx

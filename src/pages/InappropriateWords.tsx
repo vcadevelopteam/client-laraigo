@@ -18,6 +18,8 @@ import {
 } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
+import { useHistory } from 'react-router-dom';
+import paths from 'common/constants/paths';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -202,6 +204,7 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
 
 const InappropriateWords: FC = () => {
     // const history = useHistory();
+    const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
@@ -381,6 +384,17 @@ const InappropriateWords: FC = () => {
                     classificationdata: x.classification,
                     statusdesc: (t(`status_${x.status}`.toLowerCase()) || "").toUpperCase()
                 }))}
+                ButtonsElement={() => (
+                    <Button
+                        disabled={mainResult.mainData.loading}
+                        variant="contained"
+                        type="button"
+                        color="primary"
+                        startIcon={<ClearIcon color="secondary" />}
+                        style={{ backgroundColor: "#FB5F5F" }}
+                        onClick={() => history.push(paths.CONFIGURATION)}
+                    >{t(langKeys.back)}</Button>
+                )}
                 download={true}
                 onClickRow={handleEdit}
                 loading={mainResult.mainData.loading}

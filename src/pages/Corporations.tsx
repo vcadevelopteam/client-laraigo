@@ -12,11 +12,13 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
+import { useHistory } from 'react-router-dom';
 import { getCollection, execute, getMultiCollection, resetAllMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import { CommonService } from 'network';
 import { getCountryList } from 'store/signup/actions';
+import paths from 'common/constants/paths';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -42,6 +44,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Corporations: FC = () => {
+    const history = useHistory();
     const user = useSelector(state => state.login.validateToken.user);
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -177,6 +180,17 @@ const Corporations: FC = () => {
                     typedesc: (t(`type_corp_${x.type}`.toLowerCase()) || "").toUpperCase(),
                     statusdesc: (t(`status_${x.status}`.toLowerCase()) || "").toUpperCase()
                 }))}
+                ButtonsElement={() => (
+                    <Button
+                        disabled={mainResult.mainData.loading}
+                        variant="contained"
+                        type="button"
+                        color="primary"
+                        startIcon={<ClearIcon color="secondary" />}
+                        style={{ backgroundColor: "#FB5F5F" }}
+                        onClick={() => history.push(paths.CONFIGURATION)}
+                    >{t(langKeys.back)}</Button>
+                )}
                 download={true}
                 loading={mainResult.mainData.loading}
                 register={['SUPERADMIN'].includes(user?.roledesc || "")}

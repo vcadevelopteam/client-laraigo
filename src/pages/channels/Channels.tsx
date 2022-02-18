@@ -2,6 +2,7 @@
 import TableZyx from 'components/fields/table-simple';
 import { useHistory } from 'react-router-dom';
 import paths from 'common/constants/paths';
+import ClearIcon from '@material-ui/icons/Clear';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { FC, useEffect, useState } from 'react';
@@ -9,6 +10,7 @@ import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import { Dictionary, IChannel } from '@types';
+import Button from '@material-ui/core/Button';
 import React from 'react';
 import { TemplateIcons } from 'components';
 import { getCollection, resetAllMain } from 'store/main/actions';
@@ -201,6 +203,17 @@ export const Channels: FC = () => {
         <TableZyx
             columns={columns}
             titlemodule={t(langKeys.channel_plural, { count: 2 })}
+            ButtonsElement={() => (
+                <Button
+                    disabled={mainResult.mainData.loading}
+                    variant="contained"
+                    type="button"
+                    color="primary"
+                    startIcon={<ClearIcon color="secondary" />}
+                    style={{ backgroundColor: "#FB5F5F" }}
+                    onClick={() => history.push(paths.CONFIGURATION)}
+                >{t(langKeys.back)}</Button>
+            )}
             data={mainResult.mainData.data}
             download={true}
             onClickRow={handleEdit}

@@ -25,6 +25,8 @@ import { dictToArrayKV, extractVariables, isJson } from 'common/helpers';
 import BackupIcon from '@material-ui/icons/Backup';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import InfoIcon from '@material-ui/icons/Info';
+import { useHistory } from 'react-router-dom';
+import paths from 'common/constants/paths';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -115,6 +117,7 @@ const dataLevel: Dictionary = {
 const dataLevelKeys = ['corpid','orgid'];
 
 const IntegrationManager: FC = () => {
+    const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
@@ -238,6 +241,17 @@ const IntegrationManager: FC = () => {
                     ...x,
                     type_translated: (t(`${x.type}`.toLowerCase()) || "").toUpperCase(),
                 }))}
+                ButtonsElement={() => (
+                    <Button
+                        disabled={mainResult.mainData.loading}
+                        variant="contained"
+                        type="button"
+                        color="primary"
+                        startIcon={<ClearIcon color="secondary" />}
+                        style={{ backgroundColor: "#FB5F5F" }}
+                        onClick={() => history.push(paths.CONFIGURATION)}
+                    >{t(langKeys.back)}</Button>
+                )}
                 onClickRow={handleEdit}
                 download={true}
                 loading={mainResult.mainData.loading}
