@@ -237,7 +237,7 @@ export const messengerPagesSuccess = (state: IState, action: IAction): IState =>
 export const messengerPagesFailure = (state: IState, action: IAction): IState => ({
     ...state,
     messengerPages: {
-        ...state.facebookPages,
+        ...state.messengerPages,
         loading: false,
         error: true,
         code: action.payload.code || 'messengerPagesFailure:error',
@@ -247,7 +247,7 @@ export const messengerPagesFailure = (state: IState, action: IAction): IState =>
 
 export const messengerPagesReset = (state: IState): IState => ({
     ...state,
-    facebookPages: initialState.facebookPages,
+    messengerPages: initialState.messengerPages,
 });
 //#endregion
 
