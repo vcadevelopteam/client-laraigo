@@ -168,7 +168,7 @@ export const editChannel = (payload: IRequestBody<IChannel | IChatWebAdd>, chann
 export const resetEditChannel = () => ({type: actionTypes.EDIT_CHANNEL_RESET });
 
 export const getFacebookPages = (accessToken: String, appId: String): IActionCall => ({
-    callAPI: () => ChannelsService.getPagelist(accessToken, appId),
+    callAPI: () => ChannelsService.getPagelistSub(accessToken, appId),
     types: {
         loading: actionTypes.FACEBOOK_PAGES,
         success: actionTypes.FACEBOOK_PAGES_SUCCESS,
@@ -180,7 +180,7 @@ export const getFacebookPages = (accessToken: String, appId: String): IActionCal
 export const resetGetFacebookPages = () => ({type: actionTypes.FACEBOOK_PAGES_RESET });
 
 export const getMessengerPages = (accessToken: String, appId: String): IActionCall => ({
-    callAPI: () => ChannelsService.getPagelist(accessToken, appId),
+    callAPI: () => ChannelsService.getPagelistSub(accessToken, appId),
     types: {
         loading: actionTypes.MESSENGER_PAGES,
         success: actionTypes.MESSENGER_PAGES_SUCCESS,
@@ -192,7 +192,7 @@ export const getMessengerPages = (accessToken: String, appId: String): IActionCa
 export const resetGetMessengerPages = () => ({type: actionTypes.MESSENGER_PAGES_RESET });
 
 export const getInstagramPages = (accessToken: String, appId: String): IActionCall => ({
-    callAPI: () => ChannelsService.getPagelist(accessToken, appId),
+    callAPI: () => ChannelsService.getPagelistSub(accessToken, appId),
     types: {
         loading: actionTypes.INSTAGRAM_PAGES,
         success: actionTypes.INSTAGRAM_PAGES_SUCCESS,
@@ -204,7 +204,7 @@ export const getInstagramPages = (accessToken: String, appId: String): IActionCa
 export const resetGetInstagramPages = () => ({type: actionTypes.INSTAGRAM_PAGES_RESET });
 
 export const getInstagramDMPages = (accessToken: String, appId: String): IActionCall => ({
-    callAPI: () => ChannelsService.getPagelist(accessToken, appId),
+    callAPI: () => ChannelsService.getPagelistSub(accessToken, appId),
     types: {
         loading: actionTypes.INSTAGRAMDM_PAGES,
         success: actionTypes.INSTAGRAMDM_PAGES_SUCCESS,
