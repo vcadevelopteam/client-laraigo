@@ -72,7 +72,7 @@ export const insertChannelFailure = (state: IState, action: IAction): IState => 
         value: undefined,
         loading: false,
         error: true,
-        message: action.payload?.message || "Ocurrio uun error al insertar el canal"
+        message: (action.payload?.channeltype || action.payload?.msg) || "Ocurrio un error al insertar el canal"
     },
 });
 
@@ -97,7 +97,7 @@ export const checkvalidityFailure = (state: IState, action: IAction): IState => 
     ...state,
     loading: false,
     error: true,
-    message: action.payload?.message || "Ocurrio uun error al insertar el canal"
+    message: action.payload?.message || "Ocurrio un error al validar el canal"
 });
 export const checkvalidityReset = (state: IState): IState => ({
     ...state,

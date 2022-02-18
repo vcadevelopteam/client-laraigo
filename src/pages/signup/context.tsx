@@ -440,6 +440,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
         const { channels, ...mainData } = data;
         const majorfield = {
             method: "UFN_CREATEZYXMEACCOUNT_INS",
+            key: "UFN_CREATEZYXMEACCOUNT_INS",
             parameters: {
                 ...mainData,
                 firstname: mainData.firstandlastname,
