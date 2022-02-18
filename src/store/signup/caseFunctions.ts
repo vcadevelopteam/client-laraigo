@@ -70,9 +70,10 @@ export const insertChannelFailure = (state: IState, action: IAction): IState => 
     ...state,
     insertChannel: {
         value: undefined,
+        code: action.payload?.code,
         loading: false,
         error: true,
-        message: (action.payload?.channeltype || action.payload?.msg) || "Ocurrio un error al insertar el canal"
+        message: action.payload?.message
     },
 });
 

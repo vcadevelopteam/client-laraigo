@@ -3029,6 +3029,17 @@ const translation: LangKeys = {
     allowuseroverride:"Allow users over limit",
     allowchanneloverride:"Allow channels over limit",
     whatsappguidedownload:'Download: Common questions.pdf',
+    suscriptionlinkerror: 'Error on channel link! Check the information entered in: ',
+    CHATWEB: 'Chat Web',
+    FACEBOOK: 'Facebook',
+    INSTAGRAM: 'Instagram',
+    INSTAMESSENGER: 'Instagram DM',
+    MESSENGER: 'Messenger',
+    TELEGRAM: 'Telegram',
+    TWITTER: 'Twitter',
+    TWITTERDM: 'Twitter DM',
+    WHATSAPP: 'WhatsApp',
+    WHATSAPPSMOOCH: 'WhatsApp',
 };
 
 const enResource: ResourceLanguage = {
