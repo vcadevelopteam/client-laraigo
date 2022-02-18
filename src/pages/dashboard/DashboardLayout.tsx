@@ -867,7 +867,8 @@ const LayoutPie: FC<LayoutPieProps> = ({ data, tooltipFormatter, ...props }) => 
                         />
                     ))}
                 </Pie>
-                <Legend layout="vertical" verticalAlign="top" align="right" />
+                {/* <Legend layout="vertical" verticalAlign="top" align="right" /> */}
+                <Legend verticalAlign="bottom" />
             </PieChart>
         </ResponsiveContainer>
     );
@@ -906,17 +907,34 @@ const LayoutKpi: FC<LayoutKpiProps> = ({ data }) => {
             : ['#EA4228', '#F5CD19', '#5BE12C'];
     }, [data]);
 
+    const inverted = data.target < data.alertat;
     return (
         <ResponsiveContainer>
-            <GaugeChart
-                arcsLength={gaugeArcs}
-                colors={colors}
-                textColor="black"
-                animate={false}
-                percent={percent}
-                needleColor="grey"
-                formatTextValue={() => `${data?.currentvalue}`}
-            />
+            <div style={{ height: 'inherit', width: 'inherit' }}>
+                <GaugeChart
+                    arcsLength={gaugeArcs}
+                    colors={colors}
+                    textColor="black"
+                    animate={false}
+                    percent={percent}
+                    needleColor="grey"
+                    formatTextValue={() => `${data?.currentvalue}`}
+                />
+                <div style={{ width: '100%', display: 'flex', flexDirection: 'row', gap: 10, justifyContent: 'center' }}>
+                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                        <div style={{ width: 10, height: 10, backgroundColor: colors[0], marginRight: 4 }} />
+                        <span>{inverted ? data.target : data.alertat}</span>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                        <div style={{ width: 10, height: 10, backgroundColor: colors[1], marginRight: 4 }} />
+                        <span>{data.cautionat}</span>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                        <div style={{ width: 10, height: 10, backgroundColor: colors[2], marginRight: 4 }} />
+                        <span>{inverted ? data.alertat : data.target}</span>
+                    </div>
+                </div>
+            </div>
         </ResponsiveContainer>
     );
 }
