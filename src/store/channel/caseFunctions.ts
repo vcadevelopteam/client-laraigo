@@ -172,5 +172,157 @@ export const activateChannelFailure = (state: IState, action: IAction): IState =
 
 export const activateChannelReset = (state: IState): IState => ({
     ...state,
-    activateChannel: initialState.activateChannel,
+    facebookPages: initialState.facebookPages,
 });
+
+//#region FACEBOOK_PAGES
+export const facebookPages = (state: IState): IState => ({
+    ...state,
+    facebookPages: {
+        ...state.facebookPages,
+        loading: true,
+        error: false,
+    },
+});
+
+export const facebookPagesSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    facebookPages: {
+        ...state.facebookPages,
+        data: action.payload.pageData.data || [],
+        count: action.payload.count,
+        loading: false,
+        error: false,
+    },
+});
+
+export const facebookPagesFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    facebookPages: {
+        ...state.facebookPages,
+        loading: false,
+        error: true,
+        code: action.payload.code || 'facebookPagesFailure:error',
+        message: action.payload.message || 'Error al obtener la lista de paginas de facebook',
+    },
+});
+
+export const facebookPagesReset = (state: IState): IState => ({
+    ...state,
+    facebookPages: initialState.facebookPages,
+});
+//#endregion
+
+//#region MESSENGER_PAGES
+export const messengerPages = (state: IState): IState => ({
+    ...state,
+    messengerPages: {
+        ...state.messengerPages,
+        loading: true,
+        error: false,
+    },
+});
+
+export const messengerPagesSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    messengerPages: {
+        ...state.messengerPages,
+        data: action.payload.pageData.data || [],
+        count: action.payload.count,
+        loading: false,
+        error: false,
+    },
+});
+
+export const messengerPagesFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    messengerPages: {
+        ...state.facebookPages,
+        loading: false,
+        error: true,
+        code: action.payload.code || 'messengerPagesFailure:error',
+        message: action.payload.message || 'Error al obtener la lista de paginas de messenger',
+    },
+});
+
+export const messengerPagesReset = (state: IState): IState => ({
+    ...state,
+    facebookPages: initialState.facebookPages,
+});
+//#endregion
+
+//#region INSTAGRAM_PAGES
+export const instagramPages = (state: IState): IState => ({
+    ...state,
+    instagramPages: {
+        ...state.instagramPages,
+        loading: true,
+        error: false,
+    },
+});
+
+export const instagramPagesSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    instagramPages: {
+        ...state.instagramPages,
+        data: action.payload.pageData.data || [],
+        count: action.payload.count,
+        loading: false,
+        error: false,
+    },
+});
+
+export const instagramPagesFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    instagramPages: {
+        ...state.instagramPages,
+        loading: false,
+        error: true,
+        code: action.payload.code || 'messengerPagesFailure:error',
+        message: action.payload.message || 'Error al obtener la lista de paginas de messenger',
+    },
+});
+
+export const instagramPagesReset = (state: IState): IState => ({
+    ...state,
+    instagramPages: initialState.instagramPages,
+});
+//#endregion
+
+//#region INSTAGRAMDM_PAGES
+export const instagramDMPages = (state: IState): IState => ({
+    ...state,
+    instagramDMPages: {
+        ...state.instagramDMPages,
+        loading: true,
+        error: false,
+    },
+});
+
+export const instagramDMPagesSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    instagramDMPages: {
+        ...state.instagramDMPages,
+        data: action.payload.pageData.data || [],
+        count: action.payload.count,
+        loading: false,
+        error: false,
+    },
+});
+
+export const instagramDMPagesFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    instagramDMPages: {
+        ...state.instagramDMPages,
+        loading: false,
+        error: true,
+        code: action.payload.code || 'messengerPagesFailure:error',
+        message: action.payload.message || 'Error al obtener la lista de paginas de messenger',
+    },
+});
+
+export const instagramDMPagesReset = (state: IState): IState => ({
+    ...state,
+    instagramDMPages: initialState.instagramDMPages,
+});
+//#endregion
