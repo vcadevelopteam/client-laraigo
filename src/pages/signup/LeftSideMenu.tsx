@@ -79,7 +79,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                     <GetComponent
                         channel={key as keyof ListChannels}
                         setOpenWarning={setOpenWarning}
-                        key={i}
+                        key={key}
                         display={display}
                     />
                 );
