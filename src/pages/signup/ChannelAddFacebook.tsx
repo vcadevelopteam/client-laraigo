@@ -9,7 +9,7 @@ import { FieldEdit, FieldSelect } from "components";
 import FacebookLogin from 'react-facebook-login';
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { getChannelsListSub } from "store/channel/actions";
+import { getFacebookPages, resetGetFacebookPages } from "store/channel/actions";
 import { apiUrls } from 'common/constants';
 import { MainData, SubscriptionContext } from "./context";
 import { useFormContext } from "react-hook-form";
@@ -29,7 +29,7 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
     const { getValues, setValue, register, unregister, formState: { errors } } = useFormContext<MainData>();
     const [waitSave, setWaitSave] = useState(false);
     const [hasFinished, setHasFinished] = useState(false)
-    const mainResult = useSelector(state => state.channel.channelList)
+    const mainResult = useSelector(state => state.channel.facebookPages)
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
@@ -72,9 +72,10 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
 
         return () => {
             unregister('channels.facebook')
+            dispatch(resetGetFacebookPages());
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [register, unregister]);
+    }, [register, unregister, dispatch]);
 
     useEffect(() => {
         if (waitSave) {
@@ -86,7 +87,7 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
 
     const processFacebookCallback = async (r: any) => {
         if (r.status !== "unknown" && !r.error) {
-            dispatch(getChannelsListSub(r.accessToken, apiUrls.FACEBOOKAPP))
+            dispatch(getFacebookPages(r.accessToken, apiUrls.FACEBOOKAPP))
             dispatch(showBackdrop(true));
             setWaitSave(true);
             setHasFinished(true);

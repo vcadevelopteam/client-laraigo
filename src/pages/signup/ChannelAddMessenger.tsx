@@ -9,7 +9,7 @@ import { FieldEdit, FieldSelect } from "components";
 import FacebookLogin from 'react-facebook-login';
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { getChannelsListSub } from "store/channel/actions";
+import { getMessengerPages, resetGetMessengerPages } from "store/channel/actions";
 import { FacebookMessengerColor } from "icons";
 import { apiUrls } from 'common/constants';
 import { MainData, SubscriptionContext } from "./context";
@@ -30,7 +30,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
     const { getValues, setValue, register, unregister, formState: { errors } } = useFormContext<MainData>();
     const [hasFinished, setHasFinished] = useState(false)
     const [waitSave, setWaitSave] = useState(false);
-    const mainResult = useSelector(state => state.channel.channelList)
+    const mainResult = useSelector(state => state.channel.messengerPages)
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
@@ -72,9 +72,10 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
         })});
 
         return () => {
-            unregister('channels.messenger')
+            unregister('channels.messenger');
+            dispatch(resetGetMessengerPages());
         }
-    }, [register, unregister]);
+    }, [register, unregister, dispatch]);
 
     useEffect(() => {
         if (waitSave) {
@@ -85,7 +86,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
 
     const processFacebookCallback = async (r: any) => {
         if (r.status !== "unknown" && !r.error) {
-            dispatch(getChannelsListSub(r.accessToken, apiUrls.FACEBOOKAPP))
+            dispatch(getMessengerPages(r.accessToken, apiUrls.FACEBOOKAPP))
             dispatch(showBackdrop(true));
             setWaitSave(true);
             setHasFinished(true);

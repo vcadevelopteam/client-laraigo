@@ -10,7 +10,7 @@ import { InstagramColor3 } from "icons";
 import FacebookLogin from 'react-facebook-login';
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { getChannelsListSub } from "store/channel/actions";
+import { getInstagramDMPages, resetGetInstagramDMPages } from "store/channel/actions";
 import { apiUrls } from 'common/constants';
 import { MainData, SubscriptionContext } from "./context";
 import { useFormContext } from "react-hook-form";
@@ -26,7 +26,7 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
     const { getValues, setValue, register, unregister, formState: { errors } } = useFormContext<MainData>();
     const [waitSave, setWaitSave] = useState(false);
     const [hasFinished, setHasFinished] = useState(false)
-    const mainResult = useSelector(state => state.channel.channelList)
+    const mainResult = useSelector(state => state.channel.instagramDMPages)
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
@@ -68,9 +68,10 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
         })});
 
         return () => {
-            unregister('channels.instagramDM')
+            unregister('channels.instagramDM');
+            dispatch(resetGetInstagramDMPages());
         }
-    }, [register, unregister]);
+    }, [register, unregister, dispatch]);
 
     useEffect(() => {
         if (waitSave) {
@@ -81,7 +82,7 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
 
     const processFacebookCallback = async (r: any) => {
         if (r.status !== "unknown" && !r.error) {
-            dispatch(getChannelsListSub(r.accessToken, apiUrls.INSTAGRAMAPP))
+            dispatch(getInstagramDMPages(r.accessToken, apiUrls.INSTAGRAMAPP))
             dispatch(showBackdrop(true));
             setWaitSave(true);
             setHasFinished(true);

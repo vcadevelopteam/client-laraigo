@@ -10,7 +10,7 @@ import { InstagramColor } from "icons";
 import FacebookLogin from 'react-facebook-login';
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { getChannelsListSub } from "store/channel/actions";
+import { getInstagramPages, resetGetInstagramPages } from "store/channel/actions";
 import { apiUrls } from 'common/constants';
 import { MainData, SubscriptionContext } from "./context";
 import { useFormContext } from "react-hook-form";
@@ -29,7 +29,7 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
     const { getValues, setValue, register, unregister, formState: { errors } } = useFormContext<MainData>();
     const [waitSave, setWaitSave] = useState(false);
     const [hasFinished, setHasFinished] = useState(false)
-    const mainResult = useSelector(state => state.channel.channelList)
+    const mainResult = useSelector(state => state.channel.instagramPages)
     const dispatch = useDispatch();
     const { t } = useTranslation();
     
@@ -71,9 +71,10 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
         })});
 
         return () => {
-            unregister('channels.instagram')
+            unregister('channels.instagram');
+            dispatch(resetGetInstagramPages());
         }
-    }, [register, unregister]);
+    }, [register, unregister, dispatch]);
 
     useEffect(() => {
         if (waitSave) {
@@ -84,7 +85,7 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
 
     const processFacebookCallback = async (r: any) => {
         if (r.status !== "unknown" && !r.error) {
-            dispatch(getChannelsListSub(r.accessToken, apiUrls.INSTAGRAMAPP))
+            dispatch(getInstagramPages(r.accessToken, apiUrls.INSTAGRAMAPP))
             dispatch(showBackdrop(true));
             setWaitSave(true);
             setHasFinished(true);
