@@ -93,10 +93,10 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
         }
     }
     function setValueField(value: any) {
-        setValue('channels.instagramDM.communicationchannelsite', value?.id || "");
-        setValue('channels.instagramDM.communicationchannelowner', value?.name || "");
-        setValue('channels.instagramDM.siteid', value?.id || "");
-        setValue('channels.instagramDM.accesstoken', value?.access_token || "");
+        setValue('channels.messenger.communicationchannelsite', value?.id || "");
+        setValue('channels.messenger.communicationchannelowner', value?.name || "");
+        setValue('channels.messenger.siteid', value?.id || "");
+        setValue('channels.messenger.accesstoken', value?.access_token || "");
     }
 
     return (
