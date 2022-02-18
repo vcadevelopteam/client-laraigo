@@ -130,7 +130,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                 const data = getValues();
                 if (allOk) {
                     updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
-                        p[index] = { ...data, operation: p[index].id === 0?"INSERT": "UPDATE" }
+                        p[index] = { ...data, operation: p[index].id === 0 ? "INSERT" : "UPDATE" }
                         return p;
                     })
                 }
@@ -138,8 +138,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
             })()
         }
     }, [triggerSave])
-    
-    function updatefield (field:string, value:any){
+
+    function updatefield(field: string, value: any) {
         updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
             p[index] = { ...p[index], [field]: value }
             return p;
@@ -216,7 +216,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
         setDataOrganizations({ loading: false, data: dataOrganizationsTmp.filter(x => x.orgid === row?.orgid || !preData.some(y => y?.orgid === x.orgid)) });
 
         //forzar a que el select de aplicaciones renderice, por eso se desactivó el triggerOnChangeOnFirst en role
-        if (row) {
+        if (row && row.id !== 0) {
             setDataApplications({ loading: true, data: [] });
             dispatch(getMultiCollectionAux([
                 getApplicationsByRole(row.roleid, index + 1),
@@ -236,7 +236,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
         setValue('orgid', value?.orgid || 0);
         setValue('orgdesc', value?.orgdesc || '');
         updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
-            p[index] = { ...p[index], orgid: value?.orgid || 0, orgdesc: value?.orgdesc || ''}
+            p[index] = { ...p[index], orgid: value?.orgid || 0, orgdesc: value?.orgdesc || '' }
             return p;
         })
         if (value) {
@@ -259,9 +259,9 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
         setValue('roleid', value ? value.roleid : 0);
         setValue('roledesc', value ? value.roldesc : 0);
         setValue('type', value ? value.type : 0);
-        
+
         updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
-            p[index] = { ...p[index], roleid: value?.roleid || 0, roledesc: value?.roldesc || 0, type: value?.type || 0}
+            p[index] = { ...p[index], roleid: value?.roleid || 0, roledesc: value?.roldesc || 0, type: value?.type || 0 }
             return p;
         })
         if (value) {
@@ -275,14 +275,14 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     }
 
     return (
-        <Accordion defaultExpanded={row?.id===0} style={{ marginBottom: '8px' }}>
+        <Accordion defaultExpanded={row?.id === 0} style={{ marginBottom: '8px' }}>
 
             <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel1a-content"
                 id="panel1a-header"
             >
-                <Typography>{(row) ? row.orgdesc : t(langKeys.neworganization)}</Typography>
+                <Typography>{(row?.orgid) ? row.orgdesc : t(langKeys.neworganization)}</Typography>
             </AccordionSummary>
             <AccordionDetails>
                 <form onSubmit={onSubmit} style={{ width: '100%' }}>
@@ -332,7 +332,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 label={t(langKeys.default_organization)}
                                 className={classes.mb2}
                                 valueDefault={row?.bydefault || false}
-                                onChange={(value) => {setValue('bydefault', value);updatefield('bydefault', value)}} />
+                                onChange={(value) => { setValue('bydefault', value); updatefield('bydefault', value) }} />
                             <FieldSelect
                                 label={t(langKeys.supervisor)}
                                 className={classes.mb2}
@@ -355,7 +355,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 label={t(langKeys.default_application)}
                                 className={classes.mb2}
                                 valueDefault={row?.redirect || ""}
-                                onChange={(value) => {setValue('redirect', value?.path || '');updatefield('redirect', value?.path || '')}}
+                                onChange={(value) => { setValue('redirect', value?.path || ''); updatefield('redirect', value?.path || '') }}
                                 error={errors?.redirect?.message}
                                 data={dataApplications.data}
                                 loading={dataApplications.loading}
@@ -367,7 +367,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 label={t(langKeys.group)}
                                 className={classes.mb2}
                                 valueDefault={row?.groups || ""}
-                                onChange={(value) => {setValue('groups', value.map((o: Dictionary) => o.domainvalue).join());updatefield('groups', value.map((o: Dictionary) => o.domainvalue).join())}}
+                                onChange={(value) => { setValue('groups', value.map((o: Dictionary) => o.domainvalue).join()); updatefield('groups', value.map((o: Dictionary) => o.domainvalue).join()) }}
                                 error={errors?.groups?.message}
                                 loading={dataGroups.loading}
                                 data={dataGroups.data}
@@ -569,10 +569,10 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
     }, [detailRes]);
 
     const handleRegister = () => {
-        setDataOrganizations(p => [...p, {id:0}]);
+        setDataOrganizations(p => [...p, { id: 0 }]);
     }
     const handleDelete = (row: Dictionary | null, index: number) => {
-        if (row && row.operation !== "INSERT") {
+        if (row && row.id !== 0 && row.operation !== "INSERT") {
             setOrgsToDelete(p => [...p, { ...row, operation: "DELETE", status: 'ELIMINADO' }]);
         }
         const filterDataOrg = dataOrganizations.filter((x, i) => i !== index)
@@ -662,7 +662,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
             dispatch(getCollectionAux(getOrgUserSel((row?.userid || 0), 0))); //TRAE LAS ORGANIZACIONES ASIGNADAS DEL USUARIO
         }
         if (!row)
-            setDataOrganizations(p => [...p, null]);
+            setDataOrganizations(p => [...p, { id: 0 }]);
     }, [register]);
 
     useEffect(() => {
@@ -908,7 +908,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             <ListItemSkeleton /> :
                             dataOrganizations.map((item, index) => (
                                 <DetailOrgUser
-                                    key={`detail${index}`}
+                                    key={item?.orgid || `detail${index*1000}`}
                                     index={index}
                                     data={{ row: item, edit }}
                                     multiData={multiData}
@@ -1197,26 +1197,26 @@ const Users: FC = () => {
         if (file) {
             let excel: any = await uploadExcel(file, undefined);
             const datainit = array_trimmer(excel);
-            const data = datainit.filter((f: any) =>{
+            const data = datainit.filter((f: any) => {
                 return (f.company === undefined || Object.keys(domains.value?.company?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.company))
-                && (f.doctype === undefined || Object.keys(domains.value?.docTypes?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.doctype))
-                && (f.billinggroup === undefined || Object.keys(domains.value?.billinggroups?.reduce((a: any, d) => ({ ...a, [d.domainid]: `${d.domainid}` }), {})).includes('' + f.billinggroup))
-                && (f.twofactorauthentication === undefined || Object.keys(domains.value?.genericstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.twofactorauthentication))
-                && (f.status === undefined || Object.keys(domains.value?.userstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.status))
-                && (f.pwdchangefirstlogin === undefined || ["true", "false"].includes('' + f.pwdchangefirstlogin))
-                && (f.role === undefined || Object.keys(domains.value?.roles?.reduce((a: any, d) => ({ ...a, [d.roleid]: `${d.roleid}` }), {})).includes('' + f.role))
+                    && (f.doctype === undefined || Object.keys(domains.value?.docTypes?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.doctype))
+                    && (f.billinggroup === undefined || Object.keys(domains.value?.billinggroups?.reduce((a: any, d) => ({ ...a, [d.domainid]: `${d.domainid}` }), {})).includes('' + f.billinggroup))
+                    && (f.twofactorauthentication === undefined || Object.keys(domains.value?.genericstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.twofactorauthentication))
+                    && (f.status === undefined || Object.keys(domains.value?.userstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.status))
+                    && (f.pwdchangefirstlogin === undefined || ["true", "false"].includes('' + f.pwdchangefirstlogin))
+                    && (f.role === undefined || Object.keys(domains.value?.roles?.reduce((a: any, d) => ({ ...a, [d.roleid]: `${d.roleid}` }), {})).includes('' + f.role))
             });
 
-            const messageerrors = datainit.filter((f: any) =>{
+            const messageerrors = datainit.filter((f: any) => {
                 return !(f.company === undefined || Object.keys(domains.value?.company?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.company))
-                || !(f.doctype === undefined || Object.keys(domains.value?.docTypes?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.doctype))
-                || !(f.billinggroup === undefined || Object.keys(domains.value?.billinggroups?.reduce((a: any, d) => ({ ...a, [d.domainid]: `${d.domainid}` }), {})).includes('' + f.billinggroup))
-                || !(f.twofactorauthentication === undefined || Object.keys(domains.value?.genericstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.twofactorauthentication))
-                || !(f.status === undefined || Object.keys(domains.value?.userstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.status))
-                || !(f.pwdchangefirstlogin === undefined || ["true", "false"].includes('' + f.pwdchangefirstlogin))
-                || !(f.role === undefined || Object.keys(domains.value?.roles?.reduce((a: any, d) => ({ ...a, [d.roleid]: `${d.roleid}` }), {})).includes('' + f.role))
-            }).reduce((acc, x) => acc + t(langKeys.error_estructure_user, { email: x.email }) + `\n`,'');
-            
+                    || !(f.doctype === undefined || Object.keys(domains.value?.docTypes?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.doctype))
+                    || !(f.billinggroup === undefined || Object.keys(domains.value?.billinggroups?.reduce((a: any, d) => ({ ...a, [d.domainid]: `${d.domainid}` }), {})).includes('' + f.billinggroup))
+                    || !(f.twofactorauthentication === undefined || Object.keys(domains.value?.genericstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.twofactorauthentication))
+                    || !(f.status === undefined || Object.keys(domains.value?.userstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.status))
+                    || !(f.pwdchangefirstlogin === undefined || ["true", "false"].includes('' + f.pwdchangefirstlogin))
+                    || !(f.role === undefined || Object.keys(domains.value?.roles?.reduce((a: any, d) => ({ ...a, [d.roleid]: `${d.roleid}` }), {})).includes('' + f.role))
+            }).reduce((acc, x) => acc + t(langKeys.error_estructure_user, { email: x.email }) + `\n`, '');
+
             setMessageError(messageerrors)
 
             if (data.length > 0) {
@@ -1269,7 +1269,7 @@ const Users: FC = () => {
                     })
                     setWaitImport(true)
                 }
-            
+
             }
             else {
                 dispatch(showSnackbar({ show: true, success: false, message: messageerrors }));
@@ -1342,9 +1342,11 @@ const Users: FC = () => {
                     dispatch(showBackdrop(false));
                     setWaitCheck(false);
                     if (!(mainAuxResult.data[0].usernumber < mainAuxResult.data[0].userscontracted)) {
-                        dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.userlimit, {
-                            limit: mainAuxResult.data[0].userscontracted
-                        }) }))
+                        dispatch(showSnackbar({
+                            show: true, success: false, message: t(langKeys.userlimit, {
+                                limit: mainAuxResult.data[0].userscontracted
+                            })
+                        }))
                     }
                     else {
                         if (operation === 'REGISTER') {
