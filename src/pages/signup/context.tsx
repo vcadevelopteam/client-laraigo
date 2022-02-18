@@ -359,7 +359,6 @@ export const SubscriptionProvider: FC = ({ children }) => {
     useEffect(() => {
         if (executeResult.loading === true) return;
         if (executeResult.value && !executeResult.error) {
-            console.log('success', executeResult);
             dispatch(showBackdrop(false));
             setStep(4); // rating
             let msg = t(langKeys.successful_sign_up);
@@ -374,9 +373,14 @@ export const SubscriptionProvider: FC = ({ children }) => {
                 message: msg,
             }));
         } else if (executeResult.error) {
-            console.log('error', executeResult);
+            var errormessage = t(executeResult.message || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
+
+            if (executeResult.code) {
+                errormessage = `${t(langKeys.suscriptionlinkerror)}${t(executeResult.code)}`
+            }
+
             dispatch(showBackdrop(false));
-            const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
+            
             dispatch(showSnackbar({
                 show: true,
                 success: false,

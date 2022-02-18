@@ -8,7 +8,7 @@ export interface IState {
     currencyList: IListStatePaginated<Dictionary>;
     countryList: IListStatePaginated<Dictionary>;
     successinsert: Boolean;
-    insertChannel: IObjectState<{ success : boolean, integrationid: string }>;
+    insertChannel: IObjectState<{ success: boolean, code: string, message:string }>;
     verifyPlan: IListStatePaginated<Dictionary>;
     isvalid: Boolean;
     loading: Boolean;

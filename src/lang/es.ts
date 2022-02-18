@@ -3018,6 +3018,17 @@ const translation: LangKeys = {
     allowuseroverride:"Permite usuarios sobre el límite",
     allowchanneloverride:'Permite canales sobre el límite',
     whatsappguidedownload:'Descarga: Preguntas frecuentes.pdf',
+    suscriptionlinkerror: '¡Error vinculando el canal! Verifique los datos ingresados en: ',
+    CHATWEB: 'Chat Web',
+    FACEBOOK: 'Facebook',
+    INSTAGRAM: 'Instagram',
+    INSTAMESSENGER: 'Instagram DM',
+    MESSENGER: 'Messenger',
+    TELEGRAM: 'Telegram',
+    TWITTER: 'Twitter',
+    TWITTERDM: 'Twitter DM',
+    WHATSAPP: 'WhatsApp',
+    WHATSAPPSMOOCH: 'WhatsApp',
 };
 
 const esResource: ResourceLanguage = {

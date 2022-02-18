@@ -3018,6 +3018,17 @@ export const langKeys = {
     allowuseroverride:'allowuseroverride',
     allowchanneloverride:'allowchanneloverride',
     whatsappguidedownload:'whatsappguidedownload',
+    suscriptionlinkerror: 'suscriptionlinkerror',
+    CHATWEB: 'CHATWEB',
+    FACEBOOK: 'FACEBOOK',
+    INSTAGRAM: 'INSTAGRAM',
+    INSTAMESSENGER: 'INSTAMESSENGER',
+    MESSENGER: 'MESSENGER',
+    TELEGRAM: 'TELEGRAM',
+    TWITTER: 'TWITTER',
+    TWITTERDM: 'TWITTERDM',
+    WHATSAPP: 'WHATSAPP',
+    WHATSAPPSMOOCH: 'WHATSAPPSMOOCH',
 };
 
 export type LangKeys = typeof langKeys;
