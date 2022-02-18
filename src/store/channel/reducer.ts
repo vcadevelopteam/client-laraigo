@@ -5,6 +5,12 @@ import actionTypes from "./actionTypes";
 
 export interface IState {
     channelList: IListStatePaginated<Dictionary>;
+
+    facebookPages: IListStatePaginated<any>;
+    messengerPages: IListStatePaginated<any>;
+    instagramPages: IListStatePaginated<any>;
+    instagramDMPages: IListStatePaginated<any>;
+
     successinsert: Boolean;
     insertChannel: IObjectState<{ success : boolean, integrationid: string }>;
     activateChannel: IObjectState<{ success : boolean}>;
@@ -14,6 +20,12 @@ export interface IState {
 
 export const initialState: IState = {
     channelList: initialListPaginatedState,
+
+    facebookPages: initialListPaginatedState,
+    messengerPages: initialListPaginatedState,
+    instagramPages: initialListPaginatedState,
+    instagramDMPages: initialListPaginatedState,
+
     successinsert: false,
     insertChannel: initialObjectState,
     checkPaymentPlan: initialObjectState,
@@ -48,4 +60,24 @@ export default createReducer<IState>(initialState, {
     [actionTypes.ACTIVATECHANNEL_SUCCESS]: caseFUnctions.activateChannelSuccess,
     [actionTypes.ACTIVATECHANNEL_FAILURE]: caseFUnctions.activateChannelFailure,
     [actionTypes.ACTIVATECHANNEL_RESET]: caseFUnctions.activateChannelReset,
+
+    [actionTypes.FACEBOOK_PAGES]: caseFUnctions.facebookPages,
+    [actionTypes.FACEBOOK_PAGES_SUCCESS]: caseFUnctions.facebookPagesSuccess,
+    [actionTypes.FACEBOOK_PAGES_FAILURE]: caseFUnctions.facebookPagesFailure,
+    [actionTypes.FACEBOOK_PAGES_RESET]: caseFUnctions.facebookPagesReset,
+
+    [actionTypes.MESSENGER_PAGES]: caseFUnctions.messengerPages,
+    [actionTypes.MESSENGER_PAGES_SUCCESS]: caseFUnctions.messengerPagesSuccess,
+    [actionTypes.MESSENGER_PAGES_FAILURE]: caseFUnctions.messengerPagesFailure,
+    [actionTypes.MESSENGER_PAGES_RESET]: caseFUnctions.messengerPagesReset,
+
+    [actionTypes.INSTAGRAM_PAGES]: caseFUnctions.instagramPages,
+    [actionTypes.INSTAGRAM_PAGES_SUCCESS]: caseFUnctions.instagramPagesSuccess,
+    [actionTypes.INSTAGRAM_PAGES_FAILURE]: caseFUnctions.instagramPagesFailure,
+    [actionTypes.INSTAGRAM_PAGES_RESET]: caseFUnctions.instagramPagesReset,
+
+    [actionTypes.INSTAGRAMDM_PAGES]: caseFUnctions.instagramDMPages,
+    [actionTypes.INSTAGRAMDM_PAGES_SUCCESS]: caseFUnctions.instagramDMPagesSuccess,
+    [actionTypes.INSTAGRAMDM_PAGES_FAILURE]: caseFUnctions.instagramDMPagesFailure,
+    [actionTypes.INSTAGRAMDM_PAGES_RESET]: caseFUnctions.instagramDMPagesReset,
 });

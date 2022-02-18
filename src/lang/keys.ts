@@ -3017,6 +3017,7 @@ export const langKeys = {
     contractedplanchannelotherfee: 'contractedplanchannelotherfee',
     allowuseroverride:'allowuseroverride',
     allowchanneloverride:'allowchanneloverride',
+    whatsappguidedownload:'whatsappguidedownload',
 };
 
 export type LangKeys = typeof langKeys;
