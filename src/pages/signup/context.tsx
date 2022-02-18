@@ -314,8 +314,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
         return () => {
             dispatch(resetInsertChannel());
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [planData]);
+    }, [planData, dispatch]);
 
     useEffect(() => {
         dispatch(verifyPlan(match.params.token));
@@ -385,7 +384,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
             }))
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [executeResult, form.getValues, dispatch])
+    }, [executeResult, form.getValues, t, dispatch])
 
     const deleteChannel = (option: keyof ListChannels) => {
         setlistchannels(prev => {
