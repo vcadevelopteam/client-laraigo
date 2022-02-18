@@ -58,7 +58,7 @@ const Step2five: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarnin
         <div style={{ marginTop: "auto", marginBottom: "auto", maxHeight: "100%" }}>
             <Breadcrumbs aria-label="breadcrumb">
                 <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
-                    {' <<'}<Trans i18nKey={langKeys.previoustext} />
+                    {'<< '}<Trans i18nKey={langKeys.previoustext} />
                 </Link>
             </Breadcrumbs>
             <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", marginTop: 15 }}>{t(langKeys.signupstep1title25)}</div>

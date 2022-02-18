@@ -78,7 +78,7 @@ const Step2Six: FC<LastStepProps> = ({ setOpenWarning }) => {
                         setOpenWarning(true);
                     }}
                 >
-                    {' <<'}<Trans i18nKey={langKeys.previoustext} />
+                    {'<< '}<Trans i18nKey={langKeys.previoustext} />
                 </Link>
             </Breadcrumbs>
             <div>
