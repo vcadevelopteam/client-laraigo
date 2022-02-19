@@ -11,7 +11,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation, Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, UseFormRegister, UseFormSetValue } from 'react-hook-form';
 import { execute, getCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -29,8 +29,11 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { SearchIcon } from 'icons';
 import { FixedSizeList } from 'react-window';
+import { DndProvider, useDrag, useDrop } from 'react-dnd'
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { Done } from '@material-ui/icons';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import update from 'immutability-helper'
 
 interface RowSelected {
     row: Dictionary | null,
@@ -404,7 +407,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
         }
     });
 
-    const { fields: fieldsColumns, append: columnsAppend, remove: columnRemove } = useFieldArray({
+    const { fields: fieldsColumns, append: columnsAppend, remove: columnRemove, swap, move} = useFieldArray({
         control,
         name: 'columns',
     });
@@ -427,6 +430,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
         setValue("summary", row?.summaries || []);
         trigger("summary");
     }, [])
+    
 
     useEffect(() => {
         if (columnsSelected.length > 0) {
@@ -492,6 +496,19 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
         else
             setDataColumns([]);
     }
+    
+    const moveRow = (dragIndex:any, hoverIndex:any) => {
+        const dragRecord = fieldsColumns[dragIndex]
+        /*update(fieldsColumns, {
+            $splice: [
+                [dragIndex, 1],
+                [hoverIndex, 0, dragRecord],
+            ],
+        })*/
+        swap(hoverIndex,dragIndex)
+        //move(dragIndex,hoverIndex)
+    }
+    
 
     return (
         <>
@@ -562,60 +579,42 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <div className={classes.title}>{t(langKeys.column_plural)}</div>
                         </div>
-                        <TableContainer>
-                            <Table size="small">
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>
-                                            <IconButton
-                                                size="small"
-                                                disabled={mainAuxRes.loading || dataColumns.length === 0}
-                                                onClick={async () => setOpenDialogVariables(true)}
-                                            >
-                                                <AddIcon />
-                                            </IconButton>
-                                        </TableCell>
-                                        <TableCell>{t(langKeys.column)}</TableCell>
-                                        <TableCell>{t(langKeys.description)}</TableCell>
-                                        <TableCell>{t(langKeys.type)}</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {fieldsColumns.map((item: IColumnTemplate, i: number) =>
-                                        <TableRow key={item.id}>
-                                            <TableCell width={30}>
-                                                <div style={{ display: 'flex' }}>
-                                                    <IconButton
-                                                        size="small"
-                                                        onClick={() => columnRemove(i)}
-                                                    >
-                                                        <DeleteIcon style={{ color: '#777777' }} />
-                                                    </IconButton>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell width={230}>
-                                                {item.type === "variable" ? item.description : t(`personalizedreport_${item.description}`)}
-                                            </TableCell>
+                        
+                        <DndProvider backend={HTML5Backend}>
+                            <TableContainer>
+                                <Table size="small">
+                                    <TableHead>
+                                        <TableRow>
                                             <TableCell>
-                                                <FieldEditArray
-                                                    fregister={{
-                                                        ...register(`columns.${i}.alias`, {
-                                                            validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                                        }),
-                                                    }}
-                                                    valueDefault={item.alias}
-                                                    error={errors?.columns?.[i]?.alias?.message}
-                                                    onChange={(value) => setValue(`columns.${i}.alias`, value)}
-                                                />
+                                                <IconButton
+                                                    size="small"
+                                                    disabled={mainAuxRes.loading || dataColumns.length === 0}
+                                                    onClick={async () => setOpenDialogVariables(true)}
+                                                >
+                                                    <AddIcon />
+                                                </IconButton>
                                             </TableCell>
-                                            <TableCell>
-                                                {t(`typepg_${item.type}`)}
-                                            </TableCell>
+                                            <TableCell>{t(langKeys.column)}</TableCell>
+                                            <TableCell>{t(langKeys.description)}</TableCell>
+                                            <TableCell>{t(langKeys.type)}</TableCell>
                                         </TableRow>
-                                    )}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
+                                    </TableHead>
+                                    <TableBody>
+                                        {fieldsColumns.map((item: IColumnTemplate, i: number) =>
+                                            <Row 
+                                                row={item}
+                                                index={i}
+                                                moveRow={moveRow}
+                                                columnRemove={columnRemove}
+                                                register={register}
+                                                errors={errors}
+                                                setValue={setValue}
+                                            />
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </DndProvider>
                     </div>
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                         <div style={{ flex: 1 }} className={classes.containerDetail}>
@@ -855,6 +854,76 @@ export const TemplateIcons: React.FC<{
                 }}><Trans i18nKey={langKeys.delete} /></MenuItem>
             </Menu>
         </div>
+    )
+}
+
+const Row:React.FC<{row:any; index: number; moveRow: (dragIndex:any, hoverIndex:any) => void, columnRemove: (i:number) => void, 
+    register: UseFormRegister<FormFields>, errors: any, setValue: UseFormSetValue<FormFields>}> = ({ row, index, moveRow, columnRemove, register, errors, setValue }) => {
+    
+    const dropRef = React.useRef<any>(null)
+    const dragRef = React.useRef(null)
+    const DND_ITEM_TYPE = 'TableRow'
+    const { t } = useTranslation();
+    const [, drop] = useDrop({
+        accept: DND_ITEM_TYPE,
+        hover(hoveritem: any, monitor) {
+            if (!dropRef.current) {
+              return
+            }
+            const dragIndex = hoveritem.index
+            const hoverIndex = index
+            // Don't replace items with themselves
+            if (dragIndex === hoverIndex) {
+              return
+            }
+            moveRow(dragIndex, hoverIndex)
+        },
+    })
+
+    const [collected, drag, dragPreview] = useDrag(() => ({
+        type: DND_ITEM_TYPE,
+        item: { index },
+        collect: (monitor: any) => ({
+            isDragging: monitor.isDragging(),
+        }),
+    }))
+
+    const opacity = collected.isDragging ? 0 : 1
+
+    dragPreview(drop(dropRef))
+    drag(dragRef) 
+
+    return (
+        <TableRow key={row?.id} ref={dropRef} style={{ opacity }}>
+            <TableCell width={30} ref={dragRef}>
+                <div style={{ display: 'flex' }}>
+                    <IconButton
+                        size="small"
+                        onClick={() => columnRemove(index)}
+                    >
+                        <DeleteIcon style={{ color: '#777777' }} />
+                    </IconButton>
+                </div>
+            </TableCell>
+            <TableCell width={230}>
+                {row?.type === "variable" ? row?.description : t(`personalizedreport_${row?.description}`)}
+            </TableCell>
+            <TableCell>
+                <FieldEditArray
+                    fregister={{
+                        ...register(`columns.${index}.alias`, {
+                            validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                        }),
+                    }}
+                    valueDefault={row?.alias}
+                    error={errors?.columns?.[index]?.alias?.message}
+                    onChange={(value) => setValue(`columns.${index}.alias`, value)}
+                />
+            </TableCell>
+            <TableCell>
+                {t(`typepg_${row?.type}`)}
+            </TableCell>
+        </TableRow>
     )
 }
 
