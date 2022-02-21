@@ -33,6 +33,7 @@ import { DndProvider, useDrag, useDrop } from 'react-dnd'
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { Done } from '@material-ui/icons';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -578,6 +579,8 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                     <TableHead>
                                         <TableRow>
                                             <TableCell>
+                                            </TableCell>
+                                            <TableCell>
                                                 <IconButton
                                                     size="small"
                                                     disabled={mainAuxRes.loading || dataColumns.length === 0}
@@ -913,7 +916,16 @@ const Row:React.FC<{row:any; index: number; moveRow: (dragIndex:any, hoverIndex:
 
     return (
         <TableRow key={row?.id} ref={dropRef} style={{ opacity }}>
-            <TableCell width={30} ref={dragRef}>
+            <TableCell width={20} ref={dragRef} style={{ padding: '0' }}>
+                <div style={{ display: 'flex' }}>
+                    <IconButton
+                        size="small"
+                    >
+                        <DragIndicatorIcon style={{ color: '#777777' }} />
+                    </IconButton>
+                </div>
+            </TableCell>
+            <TableCell width={30}>
                 <div style={{ display: 'flex' }}>
                     <IconButton
                         size="small"
