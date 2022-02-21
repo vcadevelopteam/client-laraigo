@@ -33,7 +33,6 @@ import { DndProvider, useDrag, useDrop } from 'react-dnd'
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { Done } from '@material-ui/icons';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import update from 'immutability-helper'
 
 interface RowSelected {
     row: Dictionary | null,
@@ -407,7 +406,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
         }
     });
 
-    const { fields: fieldsColumns, append: columnsAppend, remove: columnRemove, swap, move} = useFieldArray({
+    const { fields: fieldsColumns, append: columnsAppend, remove: columnRemove, move} = useFieldArray({
         control,
         name: 'columns',
     });
@@ -498,15 +497,8 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
     }
     
     const moveRow = (dragIndex:any, hoverIndex:any) => {
-        const dragRecord = fieldsColumns[dragIndex]
-        /*update(fieldsColumns, {
-            $splice: [
-                [dragIndex, 1],
-                [hoverIndex, 0, dragRecord],
-            ],
-        })*/
-        swap(hoverIndex,dragIndex)
-        //move(dragIndex,hoverIndex)
+        //swap(dragIndex,hoverIndex)
+        move(dragIndex,hoverIndex)
     }
     
 
@@ -866,17 +858,43 @@ const Row:React.FC<{row:any; index: number; moveRow: (dragIndex:any, hoverIndex:
     const { t } = useTranslation();
     const [, drop] = useDrop({
         accept: DND_ITEM_TYPE,
-        hover(hoveritem: any, monitor) {
+        hover(item:any, monitor) {
             if (!dropRef.current) {
               return
             }
-            const dragIndex = hoveritem.index
+            const dragIndex = item.index
             const hoverIndex = index
             // Don't replace items with themselves
             if (dragIndex === hoverIndex) {
               return
             }
+            // Determine rectangle on screen
+            const hoverBoundingRect = dropRef.current.getBoundingClientRect()
+            // Get vertical middle
+            const hoverMiddleY =
+              (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2
+            // Determine mouse position
+            const clientOffset = monitor.getClientOffset()
+            // Get pixels to the top
+            const hoverClientY = (clientOffset?.y||0) - hoverBoundingRect.top
+            // Only perform the move when the mouse has crossed half of the items height
+            // When dragging downwards, only move when the cursor is below 50%
+            // When dragging upwards, only move when the cursor is above 50%
+            // Dragging downwards
+            if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+              return
+            }
+            // Dragging upwards
+            if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+              return
+            }
+            // Time to actually perform the action
             moveRow(dragIndex, hoverIndex)
+            // Note: we're mutating the monitor item here!
+            // Generally it's better to avoid mutations,
+            // but it's good here for the sake of performance
+            // to avoid expensive index searches.
+            item.index = hoverIndex
         },
     })
 
