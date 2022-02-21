@@ -34,6 +34,7 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 import { Done } from '@material-ui/icons';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
+import Tooltip from '@material-ui/core/Tooltip';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -407,7 +408,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
         }
     });
 
-    const { fields: fieldsColumns, append: columnsAppend, remove: columnRemove, move} = useFieldArray({
+    const { fields: fieldsColumns, append: columnsAppend, remove: columnRemove, swap} = useFieldArray({
         control,
         name: 'columns',
     });
@@ -497,8 +498,9 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
             setDataColumns([]);
     }
     
-    const moveRow = (dragIndex:number, hoverIndex:number) => {
-        move(dragIndex,hoverIndex)
+    async function moveRow(dragIndex:number, hoverIndex:number){
+        await swap(dragIndex,hoverIndex)
+        trigger('columns')
     }
 
     return (
@@ -896,6 +898,7 @@ const Row:React.FC<{row:any; index: number; moveRow: (dragIndex:any, hoverIndex:
             // Generally it's better to avoid mutations,
             // but it's good here for the sake of performance
             // to avoid expensive index searches.
+            console.log(item)
             item.index = hoverIndex
         },
         drop: ()=>{
@@ -921,11 +924,13 @@ const Row:React.FC<{row:any; index: number; moveRow: (dragIndex:any, hoverIndex:
         <TableRow key={row?.id} ref={dropRef} style={{ opacity }}>
             <TableCell width={20} ref={dragRef} style={{ padding: '0' }}>
                 <div style={{ display: 'flex' }}>
-                    <IconButton
-                        size="small"
-                    >
-                        <DragIndicatorIcon style={{ color: '#777777' }} />
-                    </IconButton>
+                    <Tooltip title={`${t(langKeys.move)}`}>
+                        <IconButton
+                            size="small"
+                        >
+                            <DragIndicatorIcon style={{ color: '#777777' }} />
+                        </IconButton>
+                    </Tooltip>
                 </div>
             </TableCell>
             <TableCell width={30}>
