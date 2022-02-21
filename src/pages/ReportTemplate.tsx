@@ -31,7 +31,7 @@ import { SearchIcon } from 'icons';
 import { FixedSizeList } from 'react-window';
 import { DndProvider, useDrag, useDrop } from 'react-dnd'
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { Done, SwapVertTwoTone } from '@material-ui/icons';
+import { Done } from '@material-ui/icons';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
 
@@ -602,6 +602,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                 register={register}
                                                 errors={errors}
                                                 setValue={setValue}
+                                                fieldsColumns={fieldsColumns}
                                             />
                                         )}
                                     </TableBody>
@@ -851,7 +852,7 @@ export const TemplateIcons: React.FC<{
 }
 
 const Row:React.FC<{row:any; index: number; moveRow: (dragIndex:any, hoverIndex:any) => void, columnRemove: (i:number) => void, 
-    register: UseFormRegister<FormFields>, errors: any, setValue: UseFormSetValue<FormFields>}> = ({ row, index, moveRow, columnRemove, register, errors, setValue }) => {
+    register: UseFormRegister<FormFields>, errors: any, setValue: UseFormSetValue<FormFields>, fieldsColumns: any}> = ({ row, index, moveRow, columnRemove, register, errors, setValue,fieldsColumns }) => {
     
     const dropRef = React.useRef<any>(null)
     const dragRef = React.useRef(null)
@@ -897,6 +898,9 @@ const Row:React.FC<{row:any; index: number; moveRow: (dragIndex:any, hoverIndex:
             // to avoid expensive index searches.
             item.index = hoverIndex
         },
+        drop: ()=>{
+            setValue('columns',fieldsColumns)
+        }
     })
 
     const [collected, drag, dragPreview] = useDrag(() => ({
