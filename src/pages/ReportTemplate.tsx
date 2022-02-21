@@ -31,7 +31,7 @@ import { SearchIcon } from 'icons';
 import { FixedSizeList } from 'react-window';
 import { DndProvider, useDrag, useDrop } from 'react-dnd'
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { Done } from '@material-ui/icons';
+import { Done, SwapVertTwoTone } from '@material-ui/icons';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
 
@@ -497,11 +497,9 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
             setDataColumns([]);
     }
     
-    const moveRow = (dragIndex:any, hoverIndex:any) => {
-        //swap(dragIndex,hoverIndex)
+    const moveRow = (dragIndex:number, hoverIndex:number) => {
         move(dragIndex,hoverIndex)
     }
-    
 
     return (
         <>
@@ -913,6 +911,7 @@ const Row:React.FC<{row:any; index: number; moveRow: (dragIndex:any, hoverIndex:
 
     dragPreview(drop(dropRef))
     drag(dragRef) 
+    console.log(collected.isDragging)
 
     return (
         <TableRow key={row?.id} ref={dropRef} style={{ opacity }}>
