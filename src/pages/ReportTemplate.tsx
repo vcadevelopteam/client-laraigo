@@ -11,7 +11,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation, Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { useForm, useFieldArray, UseFormRegister, UseFormSetValue } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { execute, getCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -29,7 +29,6 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { SearchIcon } from 'icons';
 import { FixedSizeList } from 'react-window';
-import { useDrag, useDrop } from 'react-dnd'
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { Done } from '@material-ui/icons';
 import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
@@ -698,7 +697,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                         <div style={{ display: 'flex' }}>
                                                             <IconButton
                                                                 size="small"
-                                                                onClick={() => filterRemove(i)}
+                                                                onClick={() => {filterRemove(i)}}
                                                             >
                                                                 <DeleteIcon style={{ color: '#777777' }} />
                                                             </IconButton>
@@ -785,7 +784,10 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                             valueDefault={getValues(`summary.${i}.columnname`)}
                                                             fregister={{
                                                                 ...register(`summary.${i}.columnname`, {
-                                                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                                    validate:{
+                                                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required),
+                                                                        fieldexists: (value: any) => (value && fieldsColumns.map(f => f.columnname).includes(value)) || t(langKeys.columnnotvalid),
+                                                                    }
                                                                 })
                                                             }}
                                                             variant='outlined'
@@ -902,118 +904,6 @@ export const TemplateIcons: React.FC<{
                 }}><Trans i18nKey={langKeys.delete} /></MenuItem>
             </Menu>
         </div>
-    )
-}
-
-const Row:React.FC<{row:any; index: number; moveRow: (dragIndex:any, hoverIndex:any) => void, columnRemove: (i:number) => void, 
-    register: UseFormRegister<FormFields>, errors: any, setValue: UseFormSetValue<FormFields>, fieldsColumns: any,draggableId:string}> = ({ row, index, moveRow, columnRemove, register, errors, setValue,fieldsColumns,draggableId }) => {
-    
-    const dropRef = React.useRef<any>(null)
-    const dragRef = React.useRef(null)
-    const DND_ITEM_TYPE = 'TableRow'
-    const { t } = useTranslation();
-    const [, drop] = useDrop({
-        accept: DND_ITEM_TYPE,
-        hover(item:any, monitor) {
-            if (!dropRef.current) {
-              return
-            }
-            const dragIndex = item.index
-            const hoverIndex = index
-            // Don't replace items with themselves
-            if (dragIndex === hoverIndex) {
-              return
-            }
-            // Determine rectangle on screen
-            const hoverBoundingRect = dropRef.current.getBoundingClientRect()
-            // Get vertical middle
-            const hoverMiddleY =
-              (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2
-            // Determine mouse position
-            const clientOffset = monitor.getClientOffset()
-            // Get pixels to the top
-            const hoverClientY = (clientOffset?.y||0) - hoverBoundingRect.top
-            // Only perform the move when the mouse has crossed half of the items height
-            // When dragging downwards, only move when the cursor is below 50%
-            // When dragging upwards, only move when the cursor is above 50%
-            // Dragging downwards
-            if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-              return
-            }
-            // Dragging upwards
-            if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-              return
-            }
-            // Time to actually perform the action
-            moveRow(dragIndex, hoverIndex)
-            // Note: we're mutating the monitor item here!
-            // Generally it's better to avoid mutations,
-            // but it's good here for the sake of performance
-            // to avoid expensive index searches.
-            console.log(item)
-            item.index = hoverIndex
-        },
-        drop: ()=>{
-            setValue('columns',fieldsColumns)
-        }
-    })
-
-    const [collected, drag, dragPreview] = useDrag(() => ({
-        type: DND_ITEM_TYPE,
-        item: { index },
-        collect: (monitor: any) => ({
-            isDragging: monitor.isDragging(),
-        }),
-    }))
-
-    const opacity = collected.isDragging ? 0 : 1
-
-    dragPreview(drop(dropRef))
-    drag(dragRef) 
-    console.log(collected.isDragging)
-
-    return (
-        <TableRow id={draggableId} ref={dropRef} style={{ opacity }}>
-            <TableCell width={20} ref={dragRef} style={{ padding: '0' }}>
-                <div style={{ display: 'flex' }}>
-                    <Tooltip title={`${t(langKeys.move)}`}>
-                        <IconButton
-                            size="small"
-                        >
-                            <DragIndicatorIcon style={{ color: '#777777' }} />
-                        </IconButton>
-                    </Tooltip>
-                </div>
-            </TableCell>
-            <TableCell width={30}>
-                <div style={{ display: 'flex' }}>
-                    <IconButton
-                        size="small"
-                        onClick={() => columnRemove(index)}
-                    >
-                        <DeleteIcon style={{ color: '#777777' }} />
-                    </IconButton>
-                </div>
-            </TableCell>
-            <TableCell width={230}>
-                {row?.type === "variable" ? row?.description : t(`personalizedreport_${row?.description}`)}
-            </TableCell>
-            <TableCell>
-                <FieldEditArray
-                    fregister={{
-                        ...register(`columns.${index}.alias`, {
-                            validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                        }),
-                    }}
-                    valueDefault={row?.alias}
-                    error={errors?.columns?.[index]?.alias?.message}
-                    onChange={(value) => setValue(`columns.${index}.alias`, value)}
-                />
-            </TableCell>
-            <TableCell>
-                {t(`typepg_${row?.type}`)}
-            </TableCell>
-        </TableRow>
     )
 }
 

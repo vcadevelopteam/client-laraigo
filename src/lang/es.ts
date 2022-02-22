@@ -1563,6 +1563,7 @@ const translation: LangKeys = {
     report_userproductivity_cardavgmin_tme: 'Asesor con TME (prom) más bajo',
     report_userproductivity_cardminmin_tme: 'Ticket con TME más bajo',
     move: 'Mover',
+    columnnotvalid: "Columna no válida",
 
     report_userproductivity_cardavgmax_tmo: 'Asesor con TMO (prom) más alto',
     report_userproductivity_cardmaxmax_tmo: 'Ticket con TMO más alto',

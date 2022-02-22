@@ -1631,6 +1631,7 @@ const translation: LangKeys = {
     report_userproductivity_cardavgmin_tme: 'Advisor with the lowest TME (avg)',
     report_userproductivity_cardminmin_tme: 'Ticket with the lowest TME',
     move: 'Move',
+    columnnotvalid: "Column not valid",
 
     report_userproductivity_cardavgmax_tmo: 'Advisor with the highest TMO (avg)',
     report_userproductivity_cardmaxmax_tmo: 'Ticket with the highest TMO',
