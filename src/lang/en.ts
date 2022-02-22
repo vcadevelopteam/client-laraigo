@@ -284,7 +284,7 @@ const translation: LangKeys = {
 
     newdomain: "New domain",
     newgroupconfig: "New group configuration",
-    newinnapropiateword: "New innapropiate word",
+    newinnapropiateword: "New forbidden word",
     newintelligentmodel: "New intelligent model",
     contactbilling: "Billing contact",
     billingmail: "Email billing contact",

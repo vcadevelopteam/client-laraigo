@@ -166,7 +166,7 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.description)} 
+                            label={t(langKeys.forbiddenWord)} 
                             className="col-12"
                             onChange={(value) => setValue('description', value)}
                             valueDefault={row ? (row.description || "") : ""}

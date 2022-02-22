@@ -810,7 +810,7 @@ const translation: LangKeys = {
     dropusers: "Baja de usuarios",
     newdomain: "Nuevo dominio",
     newgroupconfig: "Nuevo grupo configuración",
-    newinnapropiateword: "Nueva palabra inapropiada",
+    newinnapropiateword: "Nueva palabra prohibida",
     newintelligentmodel: "Nuevo modelo inteligente",
     newproperty: "Nueva propiedad",
     newquickreply: "Nueva respuesta rápida",
