@@ -502,13 +502,13 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                             label={t(langKeys.timezone)}
                             className="col-6"
                             valueDefault={getValues('timezone')}
-                            onChange={(value) => {setValue('timezone', value ? value.code : ''); setValue('timezoneoffset', value ? value.houroffset : '')}}
+                            onChange={(value) => {setValue('timezone', value?.description || ''); setValue('timezoneoffset', value?.houroffset || '')}}
                             error={errors?.timezone?.message}
                             data={timezoneList.map(x=>{return {...x,textimezone: `(UTC ${x.houroffsettext.slice(0,-3)}) ${x.description}`}})}
                             //uset={true}
                             //prefixTranslation="status_"
                             optionDesc="textimezone"
-                            optionValue="code"
+                            optionValue="description"
                         />
                     </div>
                     {getValues('billbyorg') && (
