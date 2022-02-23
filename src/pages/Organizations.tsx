@@ -504,7 +504,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                             valueDefault={getValues('timezone')}
                             onChange={(value) => {setValue('timezone', value?.description || ''); setValue('timezoneoffset', value?.houroffset || '')}}
                             error={errors?.timezone?.message}
-                            data={timezoneList.map(x=>{return {...x,textimezone: `(UTC ${x.houroffsettext.slice(0,-3)}) ${x.description}`}})}
+                            data={timezoneList.map(x=>{return {...x,textimezone: `(${x.houroffsettext}) ${x.description}`}})}
                             //uset={true}
                             //prefixTranslation="status_"
                             optionDesc="textimezone"
