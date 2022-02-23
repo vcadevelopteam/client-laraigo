@@ -1778,7 +1778,7 @@ export const getdashboardoperativoEncuesta3Sel = ({ startdate, enddate, channel,
     method: 'UFN_DASHBOARD_OPERATIVO_ENCUESTA3_SEL',
     key: "UFN_DASHBOARD_OPERATIVO_ENCUESTA3_SEL",
     parameters: {
-        startdate, enddate, channel, group, company, label, question, closedby, target,
+        startdate, enddate, channel, group, company, label, question, closedby, target: target / 100,
         offset: (new Date().getTimezoneOffset() / 60) * -1,
         supervisorid: supervisor
     }
