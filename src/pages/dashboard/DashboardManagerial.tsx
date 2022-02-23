@@ -1291,7 +1291,7 @@ const DashboardManagerial: FC = () => {
                                 label={`${t(langKeys.lowesttime)} (%)`} 
                                 variant="outlined" 
                                 value={searchfieldsOnlyOne.skipdown}
-                                onChange={(e) => setsearchfieldsOnlyOne(prevState =>({...prevState, skipdown: (Number(e.target.value))}))}
+                                onChange={(e) => setsearchfieldsOnlyOne(prevState =>({ ...prevState, skipdown: e.target.value as any }))}
                                 type="number"
                                 className="col-6"
                             />
@@ -1299,7 +1299,7 @@ const DashboardManagerial: FC = () => {
                                 label={`${t(langKeys.higuesttime)} (%)`} 
                                 variant="outlined" 
                                 value={searchfieldsOnlyOne.skipup}
-                                onChange={(e) => setsearchfieldsOnlyOne(prevState =>({...prevState, skipup: (Number(e.target.value))}))}
+                                onChange={(e) => setsearchfieldsOnlyOne(prevState =>({...prevState, skipup: e.target.value as any}))}
                                 className="col-6"
                                 type="number"
                             />
@@ -1339,7 +1339,7 @@ const DashboardManagerial: FC = () => {
                                 type="number"
                                 className="col-12"
                                 value={searchfieldsOnlyOne.target}
-                                onChange={(e) => setsearchfieldsOnlyOne(prevState =>({...prevState, target: (Number(e.target.value))}))}
+                                onChange={(e) => setsearchfieldsOnlyOne(prevState =>({...prevState, target: e.target.value as any}))}
                             />
                         </div>
                     }
@@ -1352,7 +1352,7 @@ const DashboardManagerial: FC = () => {
                                 type="number"
                                 className="col-12"
                                 value={searchfieldsOnlyOne.limit}
-                                onChange={(e) => setsearchfieldsOnlyOne(prevState =>({...prevState, limit: (Number(e.target.value))}))}
+                                onChange={(e) => setsearchfieldsOnlyOne(prevState =>({...prevState, limit: e.target.value as any}))}
                             />
                         </div>
                     }
