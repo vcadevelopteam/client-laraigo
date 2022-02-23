@@ -144,7 +144,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
         }))
     });
     const arrayBread = [
-        { id: "view-1", name: t(langKeys.sla) },
+        { id: "view-1", name: t(langKeys.app_sla) },
         { id: "view-2", name: `${t(langKeys.sla)} ${t(langKeys.detail)}` }
     ];
 
@@ -496,7 +496,7 @@ const SLA: FC = () => {
         return (
             <TableZyx
                 columns={columns}
-                titlemodule={t(langKeys.sla, { count: 2 })}
+                titlemodule={t(langKeys.app_sla, { count: 2 })}
                 data={mainResult.mainData.data}
                 download={true}
                 loading={mainResult.mainData.loading}

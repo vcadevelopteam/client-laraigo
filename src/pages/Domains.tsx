@@ -315,7 +315,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
     });
 
     const arrayBread = [
-        { id: "view-1", name: t(langKeys.domain)},
+        { id: "view-1", name: t(langKeys.domain_plural)},
         { id: "view-2", name: `${t(langKeys.domain)} ${t(langKeys.detail)}` }
     ];
     return (

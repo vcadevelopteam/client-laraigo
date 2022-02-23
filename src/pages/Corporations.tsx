@@ -360,7 +360,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
 
 
     const arrayBread = [
-        { id: "view-1", name: t(langKeys.corporation) },
+        { id: "view-1", name: t(langKeys.corporation_plural) },
         { id: "view-2", name: t(langKeys.corporationdetail) }
     ];
 

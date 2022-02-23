@@ -471,7 +471,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
     }, [executeRes, waitSave])
 
     const arrayBread = [
-        { id: 'view-1', name: t(langKeys.property) },
+        { id: 'view-1', name: t(langKeys.property_plural) },
         { id: 'view-2', name: `${t(langKeys.property)} ${t(langKeys.detail)}` }
     ];
 

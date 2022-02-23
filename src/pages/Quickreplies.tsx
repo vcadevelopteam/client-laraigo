@@ -292,7 +292,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
     }, [multiData])
     
     const arrayBread = [
-        { id: "view-1", name: t(langKeys.quickreply) },
+        { id: "view-1", name: t(langKeys.quickreply_plural) },
         { id: "view-2", name: `${t(langKeys.quickreply)} ${t(langKeys.detail)}` }
     ];
 

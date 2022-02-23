@@ -259,7 +259,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     }
 
     const arrayBread = [
-        { id: "view-1", name: t(langKeys.organization) },
+        { id: "view-1", name: t(langKeys.organization_plural) },
         { id: "view-2", name: t(langKeys.organizationdetail) }
     ];
     const onChangeChatInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {

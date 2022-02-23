@@ -224,7 +224,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
 
     
     const arrayBread = [
-        { id: "view-1", name: t(langKeys.tipification)},
+        { id: "view-1", name: t(langKeys.tipification_plural)},
         { id: "view-2", name: `${t(langKeys.tipification)} ${t(langKeys.detail)}` }
     ];
 
