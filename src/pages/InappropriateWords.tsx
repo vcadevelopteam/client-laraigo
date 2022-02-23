@@ -240,7 +240,7 @@ const InappropriateWords: FC = () => {
                 NoFilter: true,
             },
             {
-                Header: t(langKeys.description),
+                Header: t(langKeys.forbiddenWord),
                 accessor: 'description',
                 NoFilter: true
             },
