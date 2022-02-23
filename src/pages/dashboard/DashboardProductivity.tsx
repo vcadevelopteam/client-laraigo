@@ -1270,7 +1270,7 @@ const DashboardProductivity: FC = () => {
                                 label={`${t(langKeys.lowesttime)} (%)`} 
                                 variant="outlined" 
                                 value={searchfieldsOnlyOne.skipdown}
-                                onChange={(e) => setsearchfieldsOnlyOne(prevState =>({...prevState, skipdown: (Number(e.target.value))}))}
+                                onChange={(e) => setsearchfieldsOnlyOne(prevState =>({...prevState, skipdown: e.target.value as any}))}
                                 type="number"
                                 className="col-6"
                             />
@@ -1278,7 +1278,7 @@ const DashboardProductivity: FC = () => {
                                 label={`${t(langKeys.higuesttime)} (%)`} 
                                 variant="outlined" 
                                 value={searchfieldsOnlyOne.skipup}
-                                onChange={(e) => setsearchfieldsOnlyOne(prevState =>({...prevState, skipup: (Number(e.target.value))}))}
+                                onChange={(e) => setsearchfieldsOnlyOne(prevState =>({...prevState, skipup: e.target.value as any}))}
                                 className="col-6"
                                 type="number"
                             />
@@ -1318,7 +1318,7 @@ const DashboardProductivity: FC = () => {
                                 type="number"
                                 className="col-12"
                                 value={searchfieldsOnlyOne.target}
-                                onChange={(e) => setsearchfieldsOnlyOne(prevState =>({...prevState, target: (Number(e.target.value))}))}
+                                onChange={(e) => setsearchfieldsOnlyOne(prevState =>({...prevState, target: e.target.value as any}))}
                             />
                         </div>
                     }
