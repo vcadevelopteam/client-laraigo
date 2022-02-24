@@ -325,7 +325,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
 
     // const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     
-    const dataKeys = new Set([...dataLevelKeys, ...(row?.fields?.filter((r: FieldType) => r.key)?.map((r: FieldType) => r.id) || [])]);
+    const dataKeys = new Set([...dataLevelKeys, ...(row?.fields?.filter((r: FieldType) => r.key)?.map((r: FieldType) => r.name) || [])]);
 
     const { control, register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm<FormFields>({
         defaultValues: {
@@ -544,7 +544,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
         if (dataLevelKeys.includes(field?.name)) {
             return true;
         }
-        else if (dataKeys.has(field?.id) && !getValues('isnew')) {
+        else if (dataKeys.has(field?.name) && !getValues('isnew')) {
             return true
         }
         return false;
@@ -634,7 +634,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
             } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.integrationmanager).toLocaleLowerCase() })
+                const errormessage = t(langKeys.invalid_data)
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitImport(false);

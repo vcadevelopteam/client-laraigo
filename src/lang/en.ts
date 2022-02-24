@@ -876,6 +876,7 @@ const translation: LangKeys = {
     confirmation_changepassword: "Do you want to change the password?",
     too_many_records: 'Too many records',
     file_incompatbile_with_previous_one: 'File incompatbile with previous one',
+    invalid_data: 'Invalid data',
     pay: 'Pay',
     status_history: 'Status history',
     signupstep1title: 'Sign up in less than a minute!',
@@ -1177,6 +1178,8 @@ const translation: LangKeys = {
     error_excess_users: "The plan change cannot be made because the number of configured users exceeds those supported by the selected plan",
 
     no_records: 'No records',
+
+
 
     dateRangeFilterTitle: 'Filter by date range',
     person_who_modified: 'Person who modified',

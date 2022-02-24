@@ -983,6 +983,7 @@ const translation: LangKeys = {
     file_without_data: 'Archivo sin data',
     too_many_records: 'Demasiados registros',
     file_incompatbile_with_previous_one: 'Archivo incompatible con el anterior',
+    invalid_data: 'Data inválida',
     pay: 'Pagar',
 
     available_columns: 'Columnas disponibles',
