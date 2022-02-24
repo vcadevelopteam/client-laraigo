@@ -1132,6 +1132,8 @@ const translation: LangKeys = {
     error_request_bridge: "50008: Hubo un error, comuniquese con el administrador",
     error_excess_channels: "50009: No se puede realizar el cambio de plan debido a que la cantidad de canales configurados supera a los soportados por el plan seleccionado",
     error_excess_users: "50010: No se puede realizar el cambio de plan debido a que la cantidad de usuarios configurados supera a los soportados por el plan seleccionado",
+    error_channels_limit: "Se alcanzo el maximo número de canales, mejora tu plan para continuar",
+    error_users_limit: "Se alcanzo el maximo número de usuarios({{limit}}), mejora tu plan para continuar",
     error_kpi_sql: 'Query error: {{error}}',
     dateRangeFilterTitle: 'Filtrar por rango de fechas',
 

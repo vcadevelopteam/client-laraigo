@@ -21,6 +21,8 @@ export const langKeys = {
     report_plural: 'report_plural',
     next: "next",
     addchannel: "addchannel",
+    error_channels_limit: "error_channels_limit",
+    error_users_limit: "error_users_limit",
     period: "period",
     boticon: "boticon",
     advisoricon: "advisoricon",
