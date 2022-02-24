@@ -1176,6 +1176,8 @@ const translation: LangKeys = {
     error_kpi_sql: 'Query error: {{error}}',
     error_excess_channels: "The plan change cannot be made because the number of configured channels exceeds those supported by the selected plan",
     error_excess_users: "The plan change cannot be made because the number of configured users exceeds those supported by the selected plan",
+    error_channels_limit: "The maximum number of channels has been reached, upgrade your plan to continue",
+    error_users_limit: "The maximum number of users was reached({{limit}}), upgrade your plan to continue",
 
     no_records: 'No records',
 
@@ -2220,7 +2222,7 @@ const translation: LangKeys = {
     unlock: 'Unlock',
     invoice: 'Invoicing',
     invoice_generation: 'Invoice generation',
-
+    addchannel: "Add channel",
     agreement: 'Agreement',
     agreement_plural: 'Agreements',
     setting: 'Setting',

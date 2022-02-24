@@ -80,6 +80,17 @@ const Properties: FC = () => {
     const { t } = useTranslation();
 
     const dispatch = useDispatch();
+    const arrayBread = [
+        { id: "view-0", name: t(langKeys.configuration_plural) },
+        { id: "view-1", name: t(langKeys.property_plural) },
+    ];
+    function redirectFunc(view:string){
+        if(view ==="view-0"){
+            history.push(paths.CONFIGURATION)
+            return;
+        }
+        setViewSelected(view)
+    }
 
     useEffect(() => {
         if (!mainResult.loading && !mainResult.error) {
@@ -180,6 +191,12 @@ const Properties: FC = () => {
         }
         return (
             <div style={{ width: '100%' }}>
+                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={arrayBread}
+                        handleClick={redirectFunc}
+                    />
+                </div>
                 <div style={{ position: 'relative' }}>
                     <Box className={classes.containerHeader} justifyContent='space-between' alignItems='center' mb={1}>
                         <span className={classes.title}>{t(langKeys.property_plural, { count: 2 })}</span>
@@ -249,7 +266,8 @@ const Properties: FC = () => {
                 data={rowSelected}
                 fetchData={fetchData}
                 multiData={multiResult.data}
-                setViewSelected={setViewSelected}
+                setViewSelected={redirectFunc}
+                arrayBread={arrayBread}
             />
         )
     } else {
@@ -262,9 +280,10 @@ interface DetailPropertyProps {
     fetchData: () => void;
     multiData: MultiData[];
     setViewSelected: (view: string) => void;
+    arrayBread:any;
 }
 
-const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fetchData, multiData, setViewSelected }) => {
+const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fetchData, multiData, setViewSelected, arrayBread }) => {
     const user = useSelector(state => state.login.validateToken.user);
     const [domainTable, setDomainTable] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
     const [waitSave, setWaitSave] = useState(false);
@@ -470,11 +489,6 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
         }
     }, [executeRes, waitSave])
 
-    const arrayBread = [
-        { id: 'view-1', name: t(langKeys.property_plural) },
-        { id: 'view-2', name: `${t(langKeys.property)} ${t(langKeys.detail)}` }
-    ];
-
     function corpChange(corpid: any) {
         //setorgList(unfilteredOrgs.filter(x=>x.corpid===corpid)); 
         setmainaux2loading(true);
@@ -496,8 +510,8 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread}
-                            handleClick={() => { fetchData(); setViewSelected('view-1'); }}
+                            breadcrumbs={[...arrayBread, { id: 'view-2', name: `${t(langKeys.property)} ${t(langKeys.detail)}` }]}
+                            handleClick={setViewSelected}
                         />
                         <TitleDetail
                             title={row ? `${row.propertyname}` : t(langKeys.newproperty)}

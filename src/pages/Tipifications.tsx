@@ -38,6 +38,7 @@ interface DetailTipificationProps {
     externalType?: string;
     externalSaveHandler?: ({...param}?: any) => void;
     externalCancelHandler?: ({...param}?: any) => void;
+    arrayBread?:any;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -132,7 +133,7 @@ const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary}> = ({ dataClassT
     )
 };
 
-export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, externalUse = false, externalType, externalSaveHandler, externalCancelHandler }) => {
+export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, externalUse = false, externalType, externalSaveHandler, externalCancelHandler,arrayBread }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [showAddAction, setShowAddAction] = useState(!!row?.jobplan || false);
@@ -222,12 +223,6 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
         }))
     });
 
-    
-    const arrayBread = [
-        { id: "view-1", name: t(langKeys.tipification_plural)},
-        { id: "view-2", name: `${t(langKeys.tipification)} ${t(langKeys.detail)}` }
-    ];
-
     return (
         <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
@@ -235,7 +230,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                     {!externalUse ?
                     <div>
                         <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread}
+                            breadcrumbs={[...arrayBread,{ id: "view-2", name: `${t(langKeys.tipification)} ${t(langKeys.detail)}` }]}
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
@@ -492,6 +487,17 @@ const Tipifications: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const arrayBread = [
+        { id: "view-0", name: t(langKeys.configuration_plural) },
+        { id: "view-1", name: t(langKeys.classification_plural) },
+    ];
+    function redirectFunc(view:string){
+        if(view ==="view-0"){
+            history.push(paths.CONFIGURATION)
+            return;
+        }
+        setViewSelected(view)
+    }
 
     const columns = React.useMemo(
         () => [
@@ -668,70 +674,80 @@ const Tipifications: FC = () => {
         }
 
         return (
-            <Fragment>
-                <TableZyx
-                    columns={columns}
-                    titlemodule={t(langKeys.tipification, { count: 2 })}
-                    data={mainResult.mainData.data}
-                    loading={mainResult.mainData.loading}
-                    download={true}
-                    register={true}
-                    onClickRow={handleEdit}
-                    importCSV={importCSV}
-                    handleTemplate={handleTemplate}
-                    handleRegister={handleRegister}
-                    ButtonsElement={()=>
-                        <>
-                            <Button
-                                variant="contained"
-                                type="button"
-                                color="primary"
-                                startIcon={<ClearIcon color="secondary" />}
-                                style={{ backgroundColor: "#FB5F5F" }}
-                                onClick={() => history.push(paths.CONFIGURATION)}
-                            >{t(langKeys.back)}</Button>
-                            <Button
-                                variant="contained"
-                                type="button"
-                                color="primary"
-                                style={{ backgroundColor: "#7721ad" }}
-                                onClick={() => setOpenDialog(true)}
-                                startIcon={<AccountTreeIcon color="secondary" />}
-                            >{t(langKeys.opendrilldown)}
-                            </Button>
-                        </>
-                    }
-                />
-                <DialogZyx
-                    open={openDialog}
-                    title={t(langKeys.organizationclass)}
-                    buttonText1={t(langKeys.close)}
-                    //buttonText2={t(langKeys.select)}
-                    handleClickButton1={() => setOpenDialog(false)}
-                    handleClickButton2={() => setOpenDialog(false)}
-                >   
-                <TreeView
-                    className={classes.treeviewroot}
-                    defaultCollapseIcon={<ExpandMoreIcon />}
-                    defaultExpandIcon={<ChevronRightIcon />}
-                >
-                        <TreeItemsFromData
-                            dataClassTotal={mainResult.multiData.data[3] && mainResult.multiData.data[3].success ? mainResult.multiData.data[3].data : []}
-                        />
-                    </TreeView>
-                    <div className="row-zyx">
-                    </div>
-                </DialogZyx>
-            </Fragment>
+            
+            <div style={{width:"100%"}}>
+                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={arrayBread}
+                        handleClick={redirectFunc}
+                    />
+                </div>
+                <Fragment>
+                    <TableZyx
+                        columns={columns}
+                        titlemodule={t(langKeys.tipification, { count: 2 })}
+                        data={mainResult.mainData.data}
+                        loading={mainResult.mainData.loading}
+                        download={true}
+                        register={true}
+                        onClickRow={handleEdit}
+                        importCSV={importCSV}
+                        handleTemplate={handleTemplate}
+                        handleRegister={handleRegister}
+                        ButtonsElement={()=>
+                            <>
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    color="primary"
+                                    startIcon={<ClearIcon color="secondary" />}
+                                    style={{ backgroundColor: "#FB5F5F" }}
+                                    onClick={() => history.push(paths.CONFIGURATION)}
+                                >{t(langKeys.back)}</Button>
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    color="primary"
+                                    style={{ backgroundColor: "#7721ad" }}
+                                    onClick={() => setOpenDialog(true)}
+                                    startIcon={<AccountTreeIcon color="secondary" />}
+                                >{t(langKeys.opendrilldown)}
+                                </Button>
+                            </>
+                        }
+                    />
+                    <DialogZyx
+                        open={openDialog}
+                        title={t(langKeys.organizationclass)}
+                        buttonText1={t(langKeys.close)}
+                        //buttonText2={t(langKeys.select)}
+                        handleClickButton1={() => setOpenDialog(false)}
+                        handleClickButton2={() => setOpenDialog(false)}
+                    >   
+                    <TreeView
+                        className={classes.treeviewroot}
+                        defaultCollapseIcon={<ExpandMoreIcon />}
+                        defaultExpandIcon={<ChevronRightIcon />}
+                    >
+                            <TreeItemsFromData
+                                dataClassTotal={mainResult.multiData.data[3] && mainResult.multiData.data[3].success ? mainResult.multiData.data[3].data : []}
+                            />
+                        </TreeView>
+                        <div className="row-zyx">
+                        </div>
+                    </DialogZyx>
+                </Fragment>
+            </div>
         )
     }
     else if (viewSelected === "view-2") {
         return (
             <DetailTipification
                 data={rowSelected}
-                setViewSelected={setViewSelected}
+                setViewSelected={redirectFunc}
                 multiData={mainResult.multiData.data}
                 fetchData={fetchData}
+                arrayBread={arrayBread}
             />
         )
     } else

@@ -33,7 +33,8 @@ interface DetailInappropriateWordsProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
-    fetchData: () => void
+    fetchData: () => void;
+    arrayBread: any;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -50,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
+const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData,arrayBread }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
@@ -110,18 +111,13 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
         }))
     });
     
-    const arrayBread = [
-        { id: "view-1", name: t(langKeys.inappropriatewords) },
-        { id: "view-2", name: `${t(langKeys.inappropriatewords)} ${t(langKeys.detail)}` }
-    ];
-
     return (
         <div style={{width: '100%'}}>
             <form onSubmit={onSubmit}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread}
+                            breadcrumbs={[...arrayBread,{ id: "view-2", name: `${t(langKeys.inappropriatewords)} ${t(langKeys.detail)}` }]}
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
@@ -214,6 +210,18 @@ const InappropriateWords: FC = () => {
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
     const [waitImport, setWaitImport] = useState(false);
+    
+    const arrayBread = [
+        { id: "view-0", name: t(langKeys.configuration_plural) },
+        { id: "view-1", name: t(langKeys.inappropriatewords) },
+    ];
+    function redirectFunc(view:string){
+        if(view ==="view-0"){
+            history.push(paths.CONFIGURATION)
+            return;
+        }
+        setViewSelected(view)
+    }
 
     const columns = React.useMemo(
         () => [
@@ -375,43 +383,53 @@ const InappropriateWords: FC = () => {
     if (viewSelected === "view-1") {
 
         return (
-            <TableZyx
-                columns={columns}
-                titlemodule={t(langKeys.inappropriatewords, { count: 2 })}
-                data={mainResult.mainData.data.map(x => ({
-                    ...x,
-                    classification: (t(`${x.classification}`.toLowerCase()) || "").toUpperCase(),
-                    classificationdata: x.classification,
-                    statusdesc: (t(`status_${x.status}`.toLowerCase()) || "").toUpperCase()
-                }))}
-                ButtonsElement={() => (
-                    <Button
-                        disabled={mainResult.mainData.loading}
-                        variant="contained"
-                        type="button"
-                        color="primary"
-                        startIcon={<ClearIcon color="secondary" />}
-                        style={{ backgroundColor: "#FB5F5F" }}
-                        onClick={() => history.push(paths.CONFIGURATION)}
-                    >{t(langKeys.back)}</Button>
-                )}
-                download={true}
-                onClickRow={handleEdit}
-                loading={mainResult.mainData.loading}
-                register={true}
-                handleRegister={handleRegister}
-                importCSV={handleUpload}
-                handleTemplate={handleTemplate}
-            />
+            
+            <div style={{width:"100%"}}>
+                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={arrayBread}
+                        handleClick={redirectFunc}
+                    />
+                </div>
+                <TableZyx
+                    columns={columns}
+                    titlemodule={t(langKeys.inappropriatewords, { count: 2 })}
+                    data={mainResult.mainData.data.map(x => ({
+                        ...x,
+                        classification: (t(`${x.classification}`.toLowerCase()) || "").toUpperCase(),
+                        classificationdata: x.classification,
+                        statusdesc: (t(`status_${x.status}`.toLowerCase()) || "").toUpperCase()
+                    }))}
+                    ButtonsElement={() => (
+                        <Button
+                            disabled={mainResult.mainData.loading}
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => history.push(paths.CONFIGURATION)}
+                        >{t(langKeys.back)}</Button>
+                    )}
+                    download={true}
+                    onClickRow={handleEdit}
+                    loading={mainResult.mainData.loading}
+                    register={true}
+                    handleRegister={handleRegister}
+                    importCSV={handleUpload}
+                    handleTemplate={handleTemplate}
+                />
+            </div>
         )
     }
     else if (viewSelected === "view-2") {
         return (
             <DetailInappropriateWords
                 data={rowSelected}
-                setViewSelected={setViewSelected}
+                setViewSelected={redirectFunc}
                 multiData={mainResult.multiData.data}
                 fetchData={fetchData}
+                arrayBread={arrayBread}
             />
         )
     } else

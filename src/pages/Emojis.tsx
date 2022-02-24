@@ -5,6 +5,7 @@ import { langKeys } from "lang/keys";
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import SearchField from "components/fields/SearchField";
+import { TemplateBreadcrumbs } from 'components';
 import { emojis } from "common/constants";
 import { LaraigoAnimalIcon, LaraigoBanderaIcon, LaraigoCaraIcon, LaraigoCarroIcon, LaraigoComidaIcon, LaraigoDeporteIcon, LaraigoFocoIcon, LaraigoHashtagIcon, LaraigoRecienteIcon,LaraigoBlockedIcon } from "icons";
 import Tabs from "@material-ui/core/Tabs/Tabs";
@@ -57,6 +58,18 @@ const Emojis: FC = () => {
     const [getEmojiList, setGetEmojiList] = useState(false);
     const [category, setCategory] = useState('FAVORITES');
     const [searchValue, setSearchValue] = useState('');
+    
+    const arrayBread = [
+        { id: "view-0", name: t(langKeys.configuration_plural) },
+        { id: "view-1", name: t(langKeys.emoji_plural) },
+    ];
+    
+    function redirectFunc(view:string){
+        if(view ==="view-0"){
+            history.push(paths.CONFIGURATION)
+            return;
+        }
+    }
 
     const fetchData = () => {setGetEmojiList(true);dispatch(getCollection(getEmojiAllSel()))};
 
@@ -120,7 +133,12 @@ const Emojis: FC = () => {
 
     return (
         <div className={classes.container}>
-
+            <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
+                <TemplateBreadcrumbs
+                    breadcrumbs={arrayBread}
+                    handleClick={redirectFunc}
+                />
+            </div>
             <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
                 <span className={classes.title}>
                     {t(langKeys.emoji_plural)}

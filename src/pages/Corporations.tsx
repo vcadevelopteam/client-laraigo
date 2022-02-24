@@ -51,6 +51,10 @@ const Corporations: FC = () => {
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.main.execute);
 
+    const arrayBread = [
+        { id: "view-0", name: t(langKeys.configuration_plural) },
+        { id: "view-1", name: t(langKeys.corporation_plural) },
+    ];
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
@@ -168,43 +172,59 @@ const Corporations: FC = () => {
             callback
         }))
     }
+    function redirectFunc(view:string){
+        if(view ==="view-0"){
+            history.push(paths.CONFIGURATION)
+            return;
+        }
+        setViewSelected(view)
+    }
 
     if (viewSelected === "view-1") {
         return (
-            <TableZyx
-                columns={columns}
-                onClickRow={handleEdit}
-                titlemodule={t(langKeys.corporation_plural, { count: 2 })}
-                data={mainResult.mainData.data.map(x => ({
-                    ...x,
-                    typedesc: (t(`type_corp_${x.type}`.toLowerCase()) || "").toUpperCase(),
-                    statusdesc: (t(`status_${x.status}`.toLowerCase()) || "").toUpperCase()
-                }))}
-                ButtonsElement={() => (
-                    <Button
-                        disabled={mainResult.mainData.loading}
-                        variant="contained"
-                        type="button"
-                        color="primary"
-                        startIcon={<ClearIcon color="secondary" />}
-                        style={{ backgroundColor: "#FB5F5F" }}
-                        onClick={() => history.push(paths.CONFIGURATION)}
-                    >{t(langKeys.back)}</Button>
-                )}
-                download={true}
-                loading={mainResult.mainData.loading}
-                register={['SUPERADMIN'].includes(user?.roledesc || "")}
-                handleRegister={handleRegister}
-            />
+            <div style={{width:"100%"}}>
+                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={arrayBread}
+                        handleClick={redirectFunc}
+                    />
+                </div>
+                <TableZyx
+                    columns={columns}
+                    onClickRow={handleEdit}
+                    titlemodule={t(langKeys.corporation_plural, { count: 2 })}
+                    data={mainResult.mainData.data.map(x => ({
+                        ...x,
+                        typedesc: (t(`type_corp_${x.type}`.toLowerCase()) || "").toUpperCase(),
+                        statusdesc: (t(`status_${x.status}`.toLowerCase()) || "").toUpperCase()
+                    }))}
+                    ButtonsElement={() => (
+                        <Button
+                            disabled={mainResult.mainData.loading}
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => history.push(paths.CONFIGURATION)}
+                        >{t(langKeys.back)}</Button>
+                    )}
+                    download={true}
+                    loading={mainResult.mainData.loading}
+                    register={['SUPERADMIN'].includes(user?.roledesc || "")}
+                    handleRegister={handleRegister}
+                />
+            </div>
         )
     }
     else if (viewSelected === "view-2") {
         return (
             <DetailCorporation
                 data={rowSelected}
-                setViewSelected={setViewSelected}
+                setViewSelected={redirectFunc}
                 multiData={mainResult.multiData.data}
                 fetchData={fetchData}
+                arrayBread={arrayBread}
             />
         )
     } else
@@ -216,10 +236,11 @@ interface DetailCorporationProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
-    fetchData: () => void
+    fetchData: () => void;
+    arrayBread: any;
 }
 
-const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
+const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData,arrayBread }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [billbyorg, setbillbyorg] = useState(row?.billbyorg || false);
@@ -299,7 +320,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
         register('sunatcountry', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('credittype', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('paymentmethod', { validate: (value) => user?.roledesc === "SUPERADMIN"? ((value && value.length) || t(langKeys.field_required)) : true });
-        register('paymentplanid');
+        register('paymentplanid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
     }, [register, billbyorg, doctype, getValues, t]);
 
     useEffect(() => {
@@ -358,12 +379,6 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
         }))
     });
 
-
-    const arrayBread = [
-        { id: "view-1", name: t(langKeys.corporation_plural) },
-        { id: "view-2", name: t(langKeys.corporationdetail) }
-    ];
-
     const countries = useMemo(() => {
         if (countryList.loading) return [];
         return countryList.data.sort((a, b) => {
@@ -393,7 +408,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread}
+                            breadcrumbs={[...arrayBread, { id: "view-2", name: t(langKeys.corporationdetail) }]}
                             handleClick={setViewSelected}
                         />
                         <TitleDetail

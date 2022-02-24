@@ -42,6 +42,7 @@ interface DetailQuickreplyProps {
     multiData: MultiData[];
     fetchData: () => void
     fetchMultiData: () => void;
+    arrayBread: any;
 }
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -186,7 +187,7 @@ const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary, setValueTmp: (p1
     )
 };
 
-const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, fetchMultiData }) => {
+const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, fetchMultiData,arrayBread }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [selectedlabel, setselectedlabel] = useState(row ? row.classificationdesc : "")
@@ -290,11 +291,6 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
             setOpenDialog(true);
         }
     }, [multiData])
-    
-    const arrayBread = [
-        { id: "view-1", name: t(langKeys.quickreply_plural) },
-        { id: "view-2", name: `${t(langKeys.quickreply)} ${t(langKeys.detail)}` }
-    ];
 
     return (
         <div style={{ width: '100%' }}>
@@ -302,7 +298,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread}
+                            breadcrumbs={[...arrayBread,{ id: "view-2", name: `${t(langKeys.quickreply)} ${t(langKeys.detail)}` }]}
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
@@ -467,6 +463,17 @@ const Quickreplies: FC = () => {
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
     const [insertexcel, setinsertexcel] = useState(false);
+    const arrayBread = [
+        { id: "view-0", name: t(langKeys.configuration_plural) },
+        { id: "view-1", name: t(langKeys.quickreply_plural) },
+    ];
+    function redirectFunc(view:string){
+        if(view ==="view-0"){
+            history.push(paths.CONFIGURATION)
+            return;
+        }
+        setViewSelected(view)
+    }
 
     const columns = React.useMemo(
         () => [
@@ -623,72 +630,81 @@ const Quickreplies: FC = () => {
     if (viewSelected === "view-1") {
 
         return (
-            <Fragment>
-                <TableZyx
-                    columns={columns}
-                    titlemodule={t(langKeys.quickreplies, { count: 2 })}
-                    data={mainResult.mainData.data}
-                    download={true}
-                    loading={mainResult.mainData.loading}
-                    register={true}
-                    importCSV={importCSV}
-                    handleTemplate={handleTemplate}
-                    handleRegister={handleRegister}
-                    onClickRow={handleEdit}
-                    ButtonsElement={()=>
-                        <>
-                            <Button
-                                disabled={mainResult.mainData.loading}
-                                variant="contained"
-                                type="button"
-                                color="primary"
-                                startIcon={<ClearIcon color="secondary" />}
-                                style={{ backgroundColor: "#FB5F5F" }}
-                                onClick={() => history.push(paths.CONFIGURATION)}
-                            >{t(langKeys.back)}</Button>
-                            <Button
-                                variant="contained"
-                                type="button"
-                                color="primary"
-                                style={{ backgroundColor: "#7721ad" }}
-                                onClick={() => setOpenDialog(true)}
-                                startIcon={<AccountTreeIcon color="secondary" />}
-                            >{t(langKeys.opendrilldown)}
-                            </Button>
-                        </>
-                    }
-                />
-                <DialogZyx
-                    open={openDialog}
-                    title={t(langKeys.organizationclass)}
-                    buttonText1={t(langKeys.close)}
-                    //buttonText2={t(langKeys.select)}
-                    handleClickButton1={() => setOpenDialog(false)}
-                    handleClickButton2={() => setOpenDialog(false)}
-                >   
-                    <TreeView
-                        className={classes.treeviewroot}
-                        defaultCollapseIcon={<ExpandMoreIcon />}
-                        defaultExpandIcon={<ChevronRightIcon />}
-                    >
-                        <TreeItemsFromData2
-                            dataClassTotal={mainResult.multiData.data[1] && mainResult.multiData.data[1].success ? mainResult.multiData.data[1].data : []}
-                        />
-                    </TreeView>
-                    <div className="row-zyx">
-                    </div>
-                </DialogZyx>
-            </Fragment>
+            <div style={{width:"100%"}}>
+                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={arrayBread}
+                        handleClick={redirectFunc}
+                    />
+                </div>
+                <Fragment>
+                    <TableZyx
+                        columns={columns}
+                        titlemodule={t(langKeys.quickreplies, { count: 2 })}
+                        data={mainResult.mainData.data}
+                        download={true}
+                        loading={mainResult.mainData.loading}
+                        register={true}
+                        importCSV={importCSV}
+                        handleTemplate={handleTemplate}
+                        handleRegister={handleRegister}
+                        onClickRow={handleEdit}
+                        ButtonsElement={()=>
+                            <>
+                                <Button
+                                    disabled={mainResult.mainData.loading}
+                                    variant="contained"
+                                    type="button"
+                                    color="primary"
+                                    startIcon={<ClearIcon color="secondary" />}
+                                    style={{ backgroundColor: "#FB5F5F" }}
+                                    onClick={() => history.push(paths.CONFIGURATION)}
+                                >{t(langKeys.back)}</Button>
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    color="primary"
+                                    style={{ backgroundColor: "#7721ad" }}
+                                    onClick={() => setOpenDialog(true)}
+                                    startIcon={<AccountTreeIcon color="secondary" />}
+                                >{t(langKeys.opendrilldown)}
+                                </Button>
+                            </>
+                        }
+                    />
+                    <DialogZyx
+                        open={openDialog}
+                        title={t(langKeys.organizationclass)}
+                        buttonText1={t(langKeys.close)}
+                        //buttonText2={t(langKeys.select)}
+                        handleClickButton1={() => setOpenDialog(false)}
+                        handleClickButton2={() => setOpenDialog(false)}
+                    >   
+                        <TreeView
+                            className={classes.treeviewroot}
+                            defaultCollapseIcon={<ExpandMoreIcon />}
+                            defaultExpandIcon={<ChevronRightIcon />}
+                        >
+                            <TreeItemsFromData2
+                                dataClassTotal={mainResult.multiData.data[1] && mainResult.multiData.data[1].success ? mainResult.multiData.data[1].data : []}
+                            />
+                        </TreeView>
+                        <div className="row-zyx">
+                        </div>
+                    </DialogZyx>
+                </Fragment>
+            </div>
         )
     }
     else if (viewSelected === "view-2") {
         return (
             <DetailQuickreply
                 data={rowSelected}
-                setViewSelected={setViewSelected}
+                setViewSelected={redirectFunc}
                 multiData={mainResult.multiData.data}
                 fetchData={fetchData}
                 fetchMultiData={fetchMultiData}
+                arrayBread={arrayBread}
             />
         )
     } else

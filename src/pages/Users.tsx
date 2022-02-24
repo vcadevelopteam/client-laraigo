@@ -50,7 +50,8 @@ interface DetailProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
-    fetchData?: () => void
+    fetchData?: () => void;
+    arrayBread: any;
 }
 interface ModalProps {
     data: RowSelected;
@@ -537,7 +538,7 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
     )
 }
 
-const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
+const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData,arrayBread }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -719,18 +720,13 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
         value && setOpenDialogStatus(true)
     }
 
-    const arrayBread = [
-        { id: "view-1", name: t(langKeys.user_plural) },
-        { id: "view-2", name: `${t(langKeys.user)} ${t(langKeys.detail)}` }
-    ];
-
     return (
         <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread}
+                            breadcrumbs={[...arrayBread,{ id: "view-2", name: `${t(langKeys.user)} ${t(langKeys.detail)}` }]}
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
@@ -977,6 +973,17 @@ const Users: FC = () => {
     const mainAuxResult = useSelector(state => state.main.mainAux);
     const [messageError, setMessageError] = useState('');
     const [importCount, setImportCount] = useState(0)
+    const arrayBread = [
+        { id: "view-0", name: t(langKeys.configuration_plural) },
+        { id: "view-1", name: t(langKeys.user_plural) },
+    ];
+    function redirectFunc(view:string){
+        if(view ==="view-0"){
+            history.push(paths.CONFIGURATION)
+            return;
+        }
+        setViewSelected(view)
+    }
 
     const columns = React.useMemo(
         () => [
@@ -1376,85 +1383,94 @@ const Users: FC = () => {
         }
 
         return (
-            <TableZyx
-                columns={columns}
-                titlemodule={t(langKeys.user, { count: 2 })}
-                data={dataUsers}
-                download={true}
-                loading={mainResult.loading}
-                register={true}
-                hoverShadow={true}
-                handleRegister={() => checkLimit('REGISTER')}
-                importCSV={(file) => {
-                    setFileToUpload(file);
-                    checkLimit('UPLOAD');
-                }}
-                onClickRow={handleEdit}
-                ButtonsElement={() => (
-                    <>
-                        <Button
-                            disabled={mainResult.loading}
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            startIcon={<ClearIcon color="secondary" />}
-                            style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => history.push(paths.CONFIGURATION)}
-                        >{t(langKeys.back)}</Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            disabled={mainResult.loading}
-                            startIcon={<ListAltIcon color="secondary" />}
-                            onClick={handleTemplateDrop}
-                            style={{ backgroundColor: "#55BD84" }}
-                        >
-                            {`${t(langKeys.template)}  ${t(langKeys.dropusers)}`}
-                        </Button>
+            <div style={{width:"100%"}}>
+                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={arrayBread}
+                        handleClick={redirectFunc}
+                    />
+                </div>
+                <TableZyx
+                    columns={columns}
+                    titlemodule={t(langKeys.user, { count: 2 })}
+                    data={dataUsers}
+                    download={true}
+                    loading={mainResult.loading}
+                    register={true}
+                    hoverShadow={true}
+                    handleRegister={() => checkLimit('REGISTER')}
+                    importCSV={(file) => {
+                        setFileToUpload(file);
+                        checkLimit('UPLOAD');
+                    }}
+                    onClickRow={handleEdit}
+                    ButtonsElement={() => (
                         <>
-                            <input
-                                name="file"
-                                accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv"
-                                id="laraigo-dropusers-csv-file"
-                                type="file"
-                                style={{ display: 'none' }}
-                                onChange={(e) => handleDropUsers(e.target.files)}
-                            />
-                            <label htmlFor="laraigo-dropusers-csv-file">
-                                <Button
-                                    variant="contained"
-                                    component="span"
-                                    color="primary"
-                                    disabled={mainResult.loading}
-                                    startIcon={<ClearIcon color="secondary" />}
-                                    //onClick={handleTemplate}
-                                    style={{ backgroundColor: "#fb5f5f" }}>
-                                    <Trans i18nKey={langKeys.dropusers} />
-                                </Button>
-                            </label>
+                            <Button
+                                disabled={mainResult.loading}
+                                variant="contained"
+                                type="button"
+                                color="primary"
+                                startIcon={<ClearIcon color="secondary" />}
+                                style={{ backgroundColor: "#FB5F5F" }}
+                                onClick={() => history.push(paths.CONFIGURATION)}
+                            >{t(langKeys.back)}</Button>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                disabled={mainResult.loading}
+                                startIcon={<ListAltIcon color="secondary" />}
+                                onClick={handleTemplateDrop}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >
+                                {`${t(langKeys.template)}  ${t(langKeys.dropusers)}`}
+                            </Button>
+                            <>
+                                <input
+                                    name="file"
+                                    accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv"
+                                    id="laraigo-dropusers-csv-file"
+                                    type="file"
+                                    style={{ display: 'none' }}
+                                    onChange={(e) => handleDropUsers(e.target.files)}
+                                />
+                                <label htmlFor="laraigo-dropusers-csv-file">
+                                    <Button
+                                        variant="contained"
+                                        component="span"
+                                        color="primary"
+                                        disabled={mainResult.loading}
+                                        startIcon={<ClearIcon color="secondary" />}
+                                        //onClick={handleTemplate}
+                                        style={{ backgroundColor: "#fb5f5f" }}>
+                                        <Trans i18nKey={langKeys.dropusers} />
+                                    </Button>
+                                </label>
+                            </>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                disabled={mainResult.loading}
+                                startIcon={<ListAltIcon color="secondary" />}
+                                onClick={handleTemplate}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >
+                                {`${t(langKeys.template)}  ${t(langKeys.import)}`}
+                            </Button>
                         </>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            disabled={mainResult.loading}
-                            startIcon={<ListAltIcon color="secondary" />}
-                            onClick={handleTemplate}
-                            style={{ backgroundColor: "#55BD84" }}
-                        >
-                            {`${t(langKeys.template)}  ${t(langKeys.import)}`}
-                        </Button>
-                    </>
-                )}
-            />
+                    )}
+                />
+            </div>
         )
     }
     else
         return (
             <DetailUsers
                 data={rowSelected}
-                setViewSelected={setViewSelected}
+                setViewSelected={redirectFunc}
                 multiData={mainMultiResult.data}
                 fetchData={fetchData}
+                arrayBread={arrayBread}
             />
         )
 }

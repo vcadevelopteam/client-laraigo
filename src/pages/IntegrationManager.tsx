@@ -37,7 +37,8 @@ interface DetailProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
-    fetchData: () => void
+    fetchData: () => void;
+    arrayBread: any;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -126,6 +127,17 @@ const IntegrationManager: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const arrayBread = [
+        { id: "view-0", name: t(langKeys.configuration_plural) },
+        { id: "view-1", name: t(langKeys.integrationmanager_plural) },
+    ];
+    function redirectFunc(view:string){
+        if(view ==="view-0"){
+            history.push(paths.CONFIGURATION)
+            return;
+        }
+        setViewSelected(view)
+    }
 
     const columns = React.useMemo(
         () => [
@@ -234,39 +246,48 @@ const IntegrationManager: FC = () => {
         }
 
         return (
-            <TableZyx
-                columns={columns}
-                titlemodule={t(langKeys.integrationmanager_plural, { count: 2 })}
-                data={mainResult.mainData.data.map(x => ({
-                    ...x,
-                    type_translated: (t(`${x.type}`.toLowerCase()) || "").toUpperCase(),
-                }))}
-                ButtonsElement={() => (
-                    <Button
-                        disabled={mainResult.mainData.loading}
-                        variant="contained"
-                        type="button"
-                        color="primary"
-                        startIcon={<ClearIcon color="secondary" />}
-                        style={{ backgroundColor: "#FB5F5F" }}
-                        onClick={() => history.push(paths.CONFIGURATION)}
-                    >{t(langKeys.back)}</Button>
-                )}
-                onClickRow={handleEdit}
-                download={true}
-                loading={mainResult.mainData.loading}
-                register={true}
-                handleRegister={handleRegister}
-            />
+            <div style={{width:"100%"}}>
+                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={arrayBread}
+                        handleClick={redirectFunc}
+                    />
+                </div>
+                <TableZyx
+                    columns={columns}
+                    titlemodule={t(langKeys.integrationmanager_plural, { count: 2 })}
+                    data={mainResult.mainData.data.map(x => ({
+                        ...x,
+                        type_translated: (t(`${x.type}`.toLowerCase()) || "").toUpperCase(),
+                    }))}
+                    ButtonsElement={() => (
+                        <Button
+                            disabled={mainResult.mainData.loading}
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => history.push(paths.CONFIGURATION)}
+                        >{t(langKeys.back)}</Button>
+                    )}
+                    onClickRow={handleEdit}
+                    download={true}
+                    loading={mainResult.mainData.loading}
+                    register={true}
+                    handleRegister={handleRegister}
+                />
+            </div>
         )
     }
     else
         return (
             <DetailIntegrationManager
                 data={rowSelected}
-                setViewSelected={setViewSelected}
+                setViewSelected={redirectFunc}
                 multiData={mainResult.multiData.data}
                 fetchData={fetchData}
+                arrayBread={arrayBread}
             />
         )
 }
@@ -305,7 +326,7 @@ type FormFields = {
     operation: string
 }
 
-const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
+const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, arrayBread }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
@@ -671,11 +692,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
         }
     }, [executeRes, waitDelete]);
     
-    const arrayBread = [
-        { id: "view-1", name: t(langKeys.integrationmanager) },
-        { id: "view-2", name: t(langKeys.integrationmanagerdetail) }
-    ];
-
     const handleViewTable = () => {
         dispatch(showBackdrop(true));
         dispatch(getCollectionAux(getdataIntegrationManager(getValues('id'))));
@@ -710,7 +726,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread}
+                            breadcrumbs={[...arrayBread, { id: "view-2", name: t(langKeys.integrationmanagerdetail) }]}
                             handleClick={setViewSelected}
                         />
                         <TitleDetail

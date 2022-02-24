@@ -26,7 +26,8 @@ interface RowSelected {
 interface DetailInputValidationProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
-    fetchData: () => void
+    fetchData: () => void;
+    arrayBread:any;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -43,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DetailInputValidation: React.FC<DetailInputValidationProps> = ({ data: { row, edit }, setViewSelected, fetchData }) => {
+const DetailInputValidation: React.FC<DetailInputValidationProps> = ({ data: { row, edit }, setViewSelected, fetchData,arrayBread }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
@@ -96,18 +97,14 @@ const DetailInputValidation: React.FC<DetailInputValidationProps> = ({ data: { r
             callback
         }))
     });
-    
-    const arrayBread = [
-        { id: "view-1", name: t(langKeys.inputvalidation) },
-        { id: "view-2", name: `${t(langKeys.inputvalidation)} ${t(langKeys.detail)}` }
-    ];
+
     return (
         <div style={{width: '100%'}}>
             <form onSubmit={onSubmit}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread}
+                            breadcrumbs={[...arrayBread, { id: "view-2", name: `${t(langKeys.inputvalidation)} ${t(langKeys.detail)}` }]}
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
@@ -168,6 +165,17 @@ const InputValidation: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const arrayBread = [
+        { id: "view-0", name: t(langKeys.configuration_plural) },
+        { id: "view-1", name: t(langKeys.inputvalidation) },
+    ];
+    function redirectFunc(view:string){
+        if(view ==="view-0"){
+            history.push(paths.CONFIGURATION)
+            return;
+        }
+        setViewSelected(view)
+    }
 
     const columns = React.useMemo(
         () => [
@@ -263,36 +271,45 @@ const InputValidation: FC = () => {
     if (viewSelected === "view-1") {
 
         return (
-            <TableZyx
-                columns={columns}
-                titlemodule={t(langKeys.inputvalidation, { count: 2 })}
-                data={mainResult.mainData.data}
-                download={true}
-                ButtonsElement={() => (
-                    <Button
-                        disabled={mainResult.mainData.loading}
-                        variant="contained"
-                        type="button"
-                        color="primary"
-                        startIcon={<ClearIcon color="secondary" />}
-                        style={{ backgroundColor: "#FB5F5F" }}
-                        onClick={() => history.push(paths.CONFIGURATION)}
-                    >{t(langKeys.back)}</Button>
-                )}
-                onClickRow={handleEdit}
-                loading={mainResult.mainData.loading}
-                register={true}
-                handleRegister={handleRegister}
-            // fetchData={fetchData}
-            />
+            <div style={{width:"100%"}}>
+                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={arrayBread}
+                        handleClick={redirectFunc}
+                    />
+                </div>
+                <TableZyx
+                    columns={columns}
+                    titlemodule={t(langKeys.inputvalidation, { count: 2 })}
+                    data={mainResult.mainData.data}
+                    download={true}
+                    ButtonsElement={() => (
+                        <Button
+                            disabled={mainResult.mainData.loading}
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => history.push(paths.CONFIGURATION)}
+                        >{t(langKeys.back)}</Button>
+                    )}
+                    onClickRow={handleEdit}
+                    loading={mainResult.mainData.loading}
+                    register={true}
+                    handleRegister={handleRegister}
+                // fetchData={fetchData}
+                />
+            </div>
         )
     }
     else if (viewSelected === "view-2") {
         return (
             <DetailInputValidation
                 data={rowSelected}
-                setViewSelected={setViewSelected}
+                setViewSelected={redirectFunc}
                 fetchData={fetchData}
+                arrayBread={arrayBread}
             />
         )
     } else

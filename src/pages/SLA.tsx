@@ -31,7 +31,8 @@ interface DetailSLAProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
-    fetchData: () => void
+    fetchData: () => void;
+    arrayBread?: any;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -55,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
+const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData,arrayBread }) => {
     // console.log(edit)
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
@@ -143,18 +144,13 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
             callback
         }))
     });
-    const arrayBread = [
-        { id: "view-1", name: t(langKeys.app_sla) },
-        { id: "view-2", name: `${t(langKeys.sla)} ${t(langKeys.detail)}` }
-    ];
-
     return (
         <div style={{width: '100%'}}>
             <form onSubmit={onSubmit}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread}
+                            breadcrumbs={[...arrayBread, { id: "view-2", name: `${t(langKeys.sla)} ${t(langKeys.detail)}` }]}
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
@@ -346,6 +342,17 @@ const SLA: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const arrayBread = [
+        { id: "view-0", name: t(langKeys.configuration_plural) },
+        { id: "view-1", name: t(langKeys.app_sla) },
+    ];
+    function redirectFunc(view:string){
+        if(view ==="view-0"){
+            history.push(paths.CONFIGURATION)
+            return;
+        }
+        setViewSelected(view)
+    }
 
     const columns = React.useMemo(
         () => [
@@ -494,37 +501,46 @@ const SLA: FC = () => {
     if (viewSelected === "view-1") {
 
         return (
-            <TableZyx
-                columns={columns}
-                titlemodule={t(langKeys.app_sla, { count: 2 })}
-                data={mainResult.mainData.data}
-                download={true}
-                loading={mainResult.mainData.loading}
-                register={true}
-                onClickRow={handleEdit}
-                ButtonsElement={() => (
-                    <Button
-                        disabled={mainResult.mainData.loading}
-                        variant="contained"
-                        type="button"
-                        color="primary"
-                        startIcon={<ClearIcon color="secondary" />}
-                        style={{ backgroundColor: "#FB5F5F" }}
-                        onClick={() => history.push(paths.CONFIGURATION)}
-                    >{t(langKeys.back)}</Button>
-                )}
-                handleRegister={handleRegister}
-            // fetchData={fetchData}
-            />
+            <div style={{width:"100%"}}>
+                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={arrayBread}
+                        handleClick={redirectFunc}
+                    />
+                </div>
+                <TableZyx
+                    columns={columns}
+                    titlemodule={t(langKeys.app_sla, { count: 2 })}
+                    data={mainResult.mainData.data}
+                    download={true}
+                    loading={mainResult.mainData.loading}
+                    register={true}
+                    onClickRow={handleEdit}
+                    ButtonsElement={() => (
+                        <Button
+                            disabled={mainResult.mainData.loading}
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => history.push(paths.CONFIGURATION)}
+                        >{t(langKeys.back)}</Button>
+                    )}
+                    handleRegister={handleRegister}
+                // fetchData={fetchData}
+                />
+            </div>
         )
     }
     else if (viewSelected === "view-2") {
         return (
             <DetailSLA
                 data={rowSelected}
-                setViewSelected={setViewSelected}
+                setViewSelected={redirectFunc}
                 multiData={mainResult.multiData.data}
                 fetchData={fetchData}
+                arrayBread={arrayBread}
             />
         )
     } else

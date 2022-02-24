@@ -21,6 +21,7 @@ import { Close, CloudUpload, Visibility, VisibilityOff } from '@material-ui/icon
 import { getCountryList } from 'store/signup/actions';
 import { useHistory } from 'react-router-dom';
 import paths from 'common/constants/paths';
+import clsx from 'clsx';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -36,6 +37,7 @@ interface DetailOrganizationProps {
     multiData: MultiData[];
     fetchData: () => void,
     dataCurrency: Dictionary[];
+    arrayBread: any;
 }
 const getImgUrl = (file: File | null): string | null => {
     if (!file) return null;
@@ -87,9 +89,12 @@ const useStyles = makeStyles((theme) => ({
         height: '80%',
         width: 'auto',
     },
+    notdisplay: {
+        display: 'none',
+    },
 }));
 
-const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, dataCurrency }) => {
+const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, dataCurrency,arrayBread }) => {
     const countryList = useSelector(state => state.signup.countryList);
     const user = useSelector(state => state.login.validateToken.user);
     const roledesc = user?.roledesc || "";
@@ -157,33 +162,6 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const [headerBtn, setHeaderBtn] = useState<File | null>(getValues("iconadvisor") as File);
     const [botBtn, setBotBtn] = useState<File | null>(getValues("iconclient") as File);
     React.useEffect(() => {
-        const docTypeValidate = (docnum: string): string | undefined => {
-            if (!docnum) {
-                return t(langKeys.field_required);
-            }
-
-            let msg = "";
-            switch (doctype) {
-                case "0": // OTROS o NO DOMICILIARIO
-                    msg = t(langKeys.doctype_others_non_home_error);
-                    return docnum.length > 15 ? msg : undefined;
-                case "1": // DNI
-                    msg = t(langKeys.doctype_dni_error);
-                    return docnum.length !== 8 ? msg : undefined;
-                case "4": // CARNET DE EXTRANJERIA
-                    msg = t(langKeys.doctype_foreigners_card);
-                    return docnum.length > 12 ? msg : undefined;
-                case "6": // REG. UNICO DE CONTRIBUYENTES
-                    msg = t(langKeys.doctype_ruc_error);
-                    return docnum.length !== 11 ? msg : undefined;
-                case "7": // PASAPORTE
-                    msg = t(langKeys.doctype_passport_error);
-                    return docnum.length > 12 ? msg : undefined;
-                case "11": // PART. DE NACIMIENTO-IDENTIDAD
-                default: return t(langKeys.doctype_unknown_error);
-            }
-        }
-
         register('corpid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -191,7 +169,13 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         register('currency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('timezone', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('doctype', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
-        register('docnum', { validate: (value) => getValues('billbyorg') ? docTypeValidate(value) : true });
+        register('docnum', { validate: {
+            needsvalidation: (value:any) => (doctype !== "0")? ((value && value.length) || t(langKeys.field_required)) : true,
+            dnivalidation: (value:any) => (doctype === "1")? ((value && value.length === 8) || t(langKeys.doctype_dni_error)) : true,
+            cevalidation: (value:any) => (doctype === "4")? ((value && value.length === 12) || t(langKeys.doctype_foreigners_card)) : true,
+            rucvalidation: (value:any) => (doctype === "6")? ((value && value.length === 11) || t(langKeys.doctype_ruc_error)) : true,
+            passportvalidation: (value:any) => (doctype === "7")? ((value && value.length === 12) || t(langKeys.doctype_passport_error)) : true,
+        }});
         register('businessname', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('fiscaladdress', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('contact', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
@@ -257,11 +241,6 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         dispatch(uploadFile(fd));
         setWaitSaveUpload(true)
     }
-
-    const arrayBread = [
-        { id: "view-1", name: t(langKeys.organization_plural) },
-        { id: "view-2", name: t(langKeys.organizationdetail) }
-    ];
     const onChangeChatInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         if (!e.target.files) return;
         setChatBtn(e.target.files[0]);
@@ -358,7 +337,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread}
+                            breadcrumbs={[...arrayBread,{ id: "view-2", name: t(langKeys.organizationdetail) }]}
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
@@ -556,13 +535,13 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 />
                                 <FieldEdit
                                     label={t(langKeys.documentnumber)}
-                                    className="col-6"
+                                    className={clsx("col-6", {
+                                       // [classes.notdisplay]: doctype === "0",
+                                    })}
                                     valueDefault={getValues('docnum')}
-                                    onChange={(value) => setValue('docnum', value)}
+                                    onChange={(value:any) => setValue('docnum', value)}
                                     error={errors?.docnum?.message}
                                 />
-                            </div>
-                            <div className="row-zyx">
                                 <FieldEdit
                                     label={t(langKeys.businessname)}
                                     className="col-6"
@@ -870,6 +849,17 @@ const Organizations: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const arrayBread = [
+        { id: "view-0", name: t(langKeys.configuration_plural) },
+        { id: "view-1", name: t(langKeys.organization_plural) },
+    ];
+    function redirectFunc(view:string){
+        if(view ==="view-0"){
+            history.push(paths.CONFIGURATION)
+            return;
+        }
+        setViewSelected(view)
+    }
 
     const columns = React.useMemo(
         () => [
@@ -996,37 +986,46 @@ const Organizations: FC = () => {
     if (viewSelected === "view-1") {
 
         return (
-            <TableZyx
-                columns={columns}
-                titlemodule={t(langKeys.organization_plural, { count: 2 })}
-                data={mainResult.mainData.data}
-                download={true}
-                ButtonsElement={() => (
-                    <Button
-                        disabled={mainResult.mainData.loading}
-                        variant="contained"
-                        type="button"
-                        color="primary"
-                        startIcon={<ClearIcon color="secondary" />}
-                        style={{ backgroundColor: "#FB5F5F" }}
-                        onClick={() => history.push(paths.CONFIGURATION)}
-                    >{t(langKeys.back)}</Button>
-                )}
-                onClickRow={handleEdit}
-                loading={mainResult.mainData.loading}
-                register={true}
-                handleRegister={handleRegister}
-            />
+            <div style={{width:"100%"}}>
+                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={arrayBread}
+                        handleClick={redirectFunc}
+                    />
+                </div>
+                <TableZyx
+                    columns={columns}
+                    titlemodule={t(langKeys.organization_plural, { count: 2 })}
+                    data={mainResult.mainData.data}
+                    download={true}
+                    ButtonsElement={() => (
+                        <Button
+                            disabled={mainResult.mainData.loading}
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => history.push(paths.CONFIGURATION)}
+                        >{t(langKeys.back)}</Button>
+                    )}
+                    onClickRow={handleEdit}
+                    loading={mainResult.mainData.loading}
+                    register={true}
+                    handleRegister={handleRegister}
+                />
+            </div>
         )
     }
     else if (viewSelected === "view-2") {
         return (
             <DetailOrganization
                 data={rowSelected}
-                setViewSelected={setViewSelected}
+                setViewSelected={redirectFunc}
                 multiData={mainResult.multiData.data}
                 fetchData={fetchData}
                 dataCurrency={ressignup.data}
+                arrayBread={arrayBread}
             />
         )
     } else
