@@ -320,7 +320,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
         register('sunatcountry', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('credittype', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('paymentmethod', { validate: (value) => user?.roledesc === "SUPERADMIN"? ((value && value.length) || t(langKeys.field_required)) : true });
-        register('paymentplanid');
+        register('paymentplanid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
     }, [register, billbyorg, doctype, getValues, t]);
 
     useEffect(() => {
