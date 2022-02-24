@@ -21,6 +21,7 @@ import { Close, CloudUpload, Visibility, VisibilityOff } from '@material-ui/icon
 import { getCountryList } from 'store/signup/actions';
 import { useHistory } from 'react-router-dom';
 import paths from 'common/constants/paths';
+import clsx from 'clsx';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -87,6 +88,9 @@ const useStyles = makeStyles((theme) => ({
     img: {
         height: '80%',
         width: 'auto',
+    },
+    notdisplay: {
+        display: 'none',
     },
 }));
 
@@ -158,33 +162,6 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const [headerBtn, setHeaderBtn] = useState<File | null>(getValues("iconadvisor") as File);
     const [botBtn, setBotBtn] = useState<File | null>(getValues("iconclient") as File);
     React.useEffect(() => {
-        const docTypeValidate = (docnum: string): string | undefined => {
-            if (!docnum) {
-                return t(langKeys.field_required);
-            }
-
-            let msg = "";
-            switch (doctype) {
-                case "0": // OTROS o NO DOMICILIARIO
-                    msg = t(langKeys.doctype_others_non_home_error);
-                    return docnum.length > 15 ? msg : undefined;
-                case "1": // DNI
-                    msg = t(langKeys.doctype_dni_error);
-                    return docnum.length !== 8 ? msg : undefined;
-                case "4": // CARNET DE EXTRANJERIA
-                    msg = t(langKeys.doctype_foreigners_card);
-                    return docnum.length > 12 ? msg : undefined;
-                case "6": // REG. UNICO DE CONTRIBUYENTES
-                    msg = t(langKeys.doctype_ruc_error);
-                    return docnum.length !== 11 ? msg : undefined;
-                case "7": // PASAPORTE
-                    msg = t(langKeys.doctype_passport_error);
-                    return docnum.length > 12 ? msg : undefined;
-                case "11": // PART. DE NACIMIENTO-IDENTIDAD
-                default: return t(langKeys.doctype_unknown_error);
-            }
-        }
-
         register('corpid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -192,7 +169,13 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         register('currency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('timezone', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('doctype', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
-        register('docnum', { validate: (value) => getValues('billbyorg') ? docTypeValidate(value) : true });
+        register('docnum', { validate: {
+            needsvalidation: (value:any) => (doctype !== "0")? ((value && value.length) || t(langKeys.field_required)) : true,
+            dnivalidation: (value:any) => (doctype === "1")? ((value && value.length === 8) || t(langKeys.doctype_dni_error)) : true,
+            cevalidation: (value:any) => (doctype === "4")? ((value && value.length === 12) || t(langKeys.doctype_foreigners_card)) : true,
+            rucvalidation: (value:any) => (doctype === "6")? ((value && value.length === 11) || t(langKeys.doctype_ruc_error)) : true,
+            passportvalidation: (value:any) => (doctype === "7")? ((value && value.length === 12) || t(langKeys.doctype_passport_error)) : true,
+        }});
         register('businessname', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('fiscaladdress', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('contact', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
@@ -552,13 +535,13 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 />
                                 <FieldEdit
                                     label={t(langKeys.documentnumber)}
-                                    className="col-6"
+                                    className={clsx("col-6", {
+                                       // [classes.notdisplay]: doctype === "0",
+                                    })}
                                     valueDefault={getValues('docnum')}
-                                    onChange={(value) => setValue('docnum', value)}
+                                    onChange={(value:any) => setValue('docnum', value)}
                                     error={errors?.docnum?.message}
                                 />
-                            </div>
-                            <div className="row-zyx">
                                 <FieldEdit
                                     label={t(langKeys.businessname)}
                                     className="col-6"
