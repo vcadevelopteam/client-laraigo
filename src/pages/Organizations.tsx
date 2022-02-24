@@ -36,6 +36,7 @@ interface DetailOrganizationProps {
     multiData: MultiData[];
     fetchData: () => void,
     dataCurrency: Dictionary[];
+    arrayBread: any;
 }
 const getImgUrl = (file: File | null): string | null => {
     if (!file) return null;
@@ -89,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, dataCurrency }) => {
+const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, dataCurrency,arrayBread }) => {
     const countryList = useSelector(state => state.signup.countryList);
     const user = useSelector(state => state.login.validateToken.user);
     const roledesc = user?.roledesc || "";
@@ -257,11 +258,6 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         dispatch(uploadFile(fd));
         setWaitSaveUpload(true)
     }
-
-    const arrayBread = [
-        { id: "view-1", name: t(langKeys.organization_plural) },
-        { id: "view-2", name: t(langKeys.organizationdetail) }
-    ];
     const onChangeChatInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         if (!e.target.files) return;
         setChatBtn(e.target.files[0]);
@@ -358,7 +354,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread}
+                            breadcrumbs={[...arrayBread,{ id: "view-2", name: t(langKeys.organizationdetail) }]}
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
@@ -870,6 +866,17 @@ const Organizations: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const arrayBread = [
+        { id: "view-0", name: t(langKeys.configuration_plural) },
+        { id: "view-1", name: t(langKeys.organization_plural) },
+    ];
+    function redirectFunc(view:string){
+        if(view ==="view-0"){
+            history.push(paths.CONFIGURATION)
+            return;
+        }
+        setViewSelected(view)
+    }
 
     const columns = React.useMemo(
         () => [
@@ -996,37 +1003,46 @@ const Organizations: FC = () => {
     if (viewSelected === "view-1") {
 
         return (
-            <TableZyx
-                columns={columns}
-                titlemodule={t(langKeys.organization_plural, { count: 2 })}
-                data={mainResult.mainData.data}
-                download={true}
-                ButtonsElement={() => (
-                    <Button
-                        disabled={mainResult.mainData.loading}
-                        variant="contained"
-                        type="button"
-                        color="primary"
-                        startIcon={<ClearIcon color="secondary" />}
-                        style={{ backgroundColor: "#FB5F5F" }}
-                        onClick={() => history.push(paths.CONFIGURATION)}
-                    >{t(langKeys.back)}</Button>
-                )}
-                onClickRow={handleEdit}
-                loading={mainResult.mainData.loading}
-                register={true}
-                handleRegister={handleRegister}
-            />
+            <div style={{width:"100%"}}>
+                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={arrayBread}
+                        handleClick={redirectFunc}
+                    />
+                </div>
+                <TableZyx
+                    columns={columns}
+                    titlemodule={t(langKeys.organization_plural, { count: 2 })}
+                    data={mainResult.mainData.data}
+                    download={true}
+                    ButtonsElement={() => (
+                        <Button
+                            disabled={mainResult.mainData.loading}
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => history.push(paths.CONFIGURATION)}
+                        >{t(langKeys.back)}</Button>
+                    )}
+                    onClickRow={handleEdit}
+                    loading={mainResult.mainData.loading}
+                    register={true}
+                    handleRegister={handleRegister}
+                />
+            </div>
         )
     }
     else if (viewSelected === "view-2") {
         return (
             <DetailOrganization
                 data={rowSelected}
-                setViewSelected={setViewSelected}
+                setViewSelected={redirectFunc}
                 multiData={mainResult.multiData.data}
                 fetchData={fetchData}
                 dataCurrency={ressignup.data}
+                arrayBread={arrayBread}
             />
         )
     } else

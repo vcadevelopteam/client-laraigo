@@ -2137,6 +2137,7 @@ const translation: LangKeys = {
     agreement_plural: 'Acuerdos',
     setting: 'Coniguración',
     setting_plural: 'Configuraciones',
+    addchannel: "Agregar Canal",
     create_custom_report: 'Crear reporte personalizado',
     create_custom_dashboard: 'Crear dashboard personalizado',
     edit_custom_dashboard: 'Editar dashboard personalizado',

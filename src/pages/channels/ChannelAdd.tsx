@@ -1,6 +1,5 @@
 import React, { FC } from "react";
-import { Box, makeStyles, Typography, Breadcrumbs, Paper } from '@material-ui/core';
-import Link from '@material-ui/core/Link';
+import { Box, makeStyles, Typography, Paper } from '@material-ui/core';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router";
@@ -8,6 +7,7 @@ import paths from "common/constants/paths";
 import { CallIcon,
     AndroidColor, EmailColor, FacebookColor, FacebookMessengerColor, InstagramColor, IosColor, SmsColor, TelegramColor, TwitterColor, WebMessengerColor, WhatsappColor
 } from "icons";
+import { TemplateBreadcrumbs } from "components";
 
 interface ChannelOption {
     icon: (className: string) => React.ReactNode;
@@ -92,14 +92,29 @@ export const ChannelAdd: FC = () => {
     const classes = useChannelAddStyles();
     const history = useHistory();
     const location = useLocation<whatsAppData>();
+    const { t } = useTranslation();
 
     const whatsAppData = location.state as whatsAppData | null;
-
-    const { t } = useTranslation();
+    const arrayBread = [
+        { id: "view-0", name: t(langKeys.configuration_plural) },
+        { id: "view-1", name: t(langKeys.channel_plural) },
+        { id: "view-2", name: t(langKeys.addchannel) },
+    ];
 
     if (typeof whatsAppData === 'undefined' || !whatsAppData) {
         console.log(whatsAppData);
         history.push(paths.CHANNELS);
+    }
+    
+    function redirectFunc(view:string){
+        if(view ==="view-0"){
+            history.push(paths.CONFIGURATION)
+            return;
+        }
+        if(view ==="view-1"){
+            history.push(paths.CHANNELS)
+            return;
+        }
     }
 
     const socialMediaOptions: ChannelOption[] = [
@@ -197,11 +212,10 @@ export const ChannelAdd: FC = () => {
         );
     };
     return (<Box className={classes.root}>
-        <Breadcrumbs aria-label="breadcrumb">
-            <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS)}}>
-                {t(langKeys.previoustext)}
-            </Link>
-        </Breadcrumbs>
+        <TemplateBreadcrumbs
+            breadcrumbs={arrayBread}
+            handleClick={redirectFunc}
+        />
         <div className={classes.content}>
             <h2 className={classes.title}>{t(langKeys.channeladdtitle)}</h2>
             <div style={{ height: 29 }} />

@@ -2217,7 +2217,7 @@ const translation: LangKeys = {
     unlock: 'Unlock',
     invoice: 'Invoicing',
     invoice_generation: 'Invoice generation',
-
+    addchannel: "Add channel",
     agreement: 'Agreement',
     agreement_plural: 'Agreements',
     setting: 'Setting',

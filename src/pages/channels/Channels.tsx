@@ -12,7 +12,7 @@ import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/acti
 import { Dictionary, IChannel } from '@types';
 import Button from '@material-ui/core/Button';
 import React from 'react';
-import { TemplateIcons } from 'components';
+import { TemplateBreadcrumbs, TemplateIcons } from 'components';
 import { getCollection, resetAllMain } from 'store/main/actions';
 import { getChannelSel } from 'common/helpers/requestBodies';
 import { checkPaymentPlan, deleteChannel } from 'store/channel/actions';
@@ -33,6 +33,16 @@ export const Channels: FC = () => {
     const [waitCheck, setWaitCheck] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
     const history = useHistory();
+    const arrayBread = [
+        { id: "view-0", name: t(langKeys.configuration_plural) },
+        { id: "view-1", name: t(langKeys.channel_plural) },
+    ];
+    function redirectFunc(view:string){
+        if(view ==="view-0"){
+            history.push(paths.CONFIGURATION)
+            return;
+        }
+    }
 
     const fetchData = () => dispatch(getCollection(getChannelSel(0)));
 
@@ -200,27 +210,35 @@ export const Channels: FC = () => {
     }, [canRegister]);
 
     return (
-        <TableZyx
-            columns={columns}
-            titlemodule={t(langKeys.channel_plural, { count: 2 })}
-            ButtonsElement={() => (
-                <Button
-                    disabled={mainResult.mainData.loading}
-                    variant="contained"
-                    type="button"
-                    color="primary"
-                    startIcon={<ClearIcon color="secondary" />}
-                    style={{ backgroundColor: "#FB5F5F" }}
-                    onClick={() => history.push(paths.CONFIGURATION)}
-                >{t(langKeys.back)}</Button>
-            )}
-            data={mainResult.mainData.data}
-            download={true}
-            onClickRow={handleEdit}
-            loading={mainResult.mainData.loading}
-            register={true}
-            hoverShadow={true}
-            handleRegister={() => checkLimit()}
-        />
+        <div style={{width:"100%"}}>
+            <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
+                <TemplateBreadcrumbs
+                    breadcrumbs={arrayBread}
+                    handleClick={redirectFunc}
+                />
+            </div>
+            <TableZyx
+                columns={columns}
+                titlemodule={t(langKeys.channel_plural, { count: 2 })}
+                ButtonsElement={() => (
+                    <Button
+                        disabled={mainResult.mainData.loading}
+                        variant="contained"
+                        type="button"
+                        color="primary"
+                        startIcon={<ClearIcon color="secondary" />}
+                        style={{ backgroundColor: "#FB5F5F" }}
+                        onClick={() => history.push(paths.CONFIGURATION)}
+                    >{t(langKeys.back)}</Button>
+                )}
+                data={mainResult.mainData.data}
+                download={true}
+                onClickRow={handleEdit}
+                loading={mainResult.mainData.loading}
+                register={true}
+                hoverShadow={true}
+                handleRegister={() => checkLimit()}
+            />
+        </div>
     );
 };

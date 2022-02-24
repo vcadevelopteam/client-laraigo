@@ -34,6 +34,7 @@ interface DetailProps {
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
     fetchData?: () => void;
+    arrayBread: any;
 }
 
 interface ModalProps {
@@ -146,7 +147,7 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, da
     );
 }
 
-const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit }, setViewSelected, multiData, fetchData }) => {
+const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit }, setViewSelected, multiData, fetchData,arrayBread }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const user = useSelector(state => state.login.validateToken.user);
@@ -313,18 +314,13 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
             dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.errorneedvalues) }))
         }
     });
-
-    const arrayBread = [
-        { id: "view-1", name: t(langKeys.domain_plural)},
-        { id: "view-2", name: `${t(langKeys.domain)} ${t(langKeys.detail)}` }
-    ];
     return (
         <div style={{width: "100%"}}>
             <form onSubmit={onSubmit}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread}
+                            breadcrumbs={[...arrayBread,{ id: "view-2", name: `${t(langKeys.domain)} ${t(langKeys.detail)}` }]}
                             handleClick={setViewSelected}
                         />
                     </div>
@@ -486,6 +482,17 @@ const Domains: FC = () => {
     const user = useSelector(state => state.login.validateToken.user);
     const superadmin = user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMINISTRADOR"
 
+    const arrayBread = [
+        { id: "view-0", name: t(langKeys.configuration_plural) },
+        { id: "view-1", name: t(langKeys.domain_plural) },
+    ];
+    function redirectFunc(view:string){
+        if(view ==="view-0"){
+            history.push(paths.CONFIGURATION)
+            return;
+        }
+        setViewSelected(view)
+    }
     const columns = React.useMemo(
         () => [
             {
@@ -610,36 +617,45 @@ const Domains: FC = () => {
         }
 
         return (
-            <TableZyx
-                columns={columns}
-                titlemodule={t(langKeys.domain_plural, { count: 2 })}
-                data={mainResult.mainData.data}
-                download={true}
-                ButtonsElement={() => (
-                    <Button
-                        disabled={mainResult.mainData.loading}
-                        variant="contained"
-                        type="button"
-                        color="primary"
-                        startIcon={<ClearIcon color="secondary" />}
-                        style={{ backgroundColor: "#FB5F5F" }}
-                        onClick={() => history.push(paths.CONFIGURATION)}
-                    >{t(langKeys.back)}</Button>
-                )}
-                onClickRow={handleEdit}
-                loading={mainResult.mainData.loading}
-                register={superadmin}
-                handleRegister={handleRegister}
+            <div style={{width:"100%"}}>
+                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={arrayBread}
+                        handleClick={redirectFunc}
+                    />
+                </div>
+                <TableZyx
+                    columns={columns}
+                    titlemodule={t(langKeys.domain_plural, { count: 2 })}
+                    data={mainResult.mainData.data}
+                    download={true}
+                    ButtonsElement={() => (
+                        <Button
+                            disabled={mainResult.mainData.loading}
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => history.push(paths.CONFIGURATION)}
+                        >{t(langKeys.back)}</Button>
+                    )}
+                    onClickRow={handleEdit}
+                    loading={mainResult.mainData.loading}
+                    register={superadmin}
+                    handleRegister={handleRegister}
             />
+            </div>
         )
     }
     else
         return (
             <DetailDomains
                 data={rowSelected}
-                setViewSelected={setViewSelected}
+                setViewSelected={redirectFunc}
                 multiData={mainResult.multiData.data}
                 fetchData={fetchData}
+                arrayBread={arrayBread}
             />
         )
 }

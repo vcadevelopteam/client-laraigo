@@ -20,6 +20,7 @@ export const langKeys = {
     report: 'report',
     report_plural: 'report_plural',
     next: "next",
+    addchannel: "addchannel",
     period: "period",
     boticon: "boticon",
     advisoricon: "advisoricon",
