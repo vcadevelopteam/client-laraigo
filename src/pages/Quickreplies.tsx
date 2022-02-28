@@ -411,7 +411,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
             <DialogZyx
                 open={openDialog}
                 title={t(langKeys.organizationclass)}
-                buttonText1={t(langKeys.select)}
+                buttonText1={t(langKeys.close)}
                 buttonText2={t(langKeys.register)}
                 handleClickButton1={() => setOpenDialog(false)}
                 handleClickButton2={handleClassificationModal}
