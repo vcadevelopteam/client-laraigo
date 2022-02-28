@@ -805,6 +805,7 @@ const translation: LangKeys = {
     search: 'Buscar',
     refresh: 'Actualizar',
     duplicate: 'Duplicar',
+    clear: "Limpiar",
     label: "Etiqueta",
     newuser: "Nuevo usuario",
     dropusers: "Baja de usuarios",

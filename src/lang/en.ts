@@ -1180,6 +1180,7 @@ const translation: LangKeys = {
     error_users_limit: "The maximum number of users was reached({{limit}}), upgrade your plan to continue",
 
     no_records: 'No records',
+    clear: "Clear",
 
 
 

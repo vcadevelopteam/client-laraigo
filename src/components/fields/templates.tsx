@@ -211,7 +211,7 @@ interface TemplateDialogProps {
     maxWidth?: false | "sm" | "xs" | "md" | "lg" | "xl" | undefined;
 }
 
-export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText1, buttonText2, handleClickButton2, handleClickButton1, title, maxWidth = "sm", button2Type = "button", button1Type = "button", zIndex = 1300 }) => (
+export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText1, buttonText2,buttonText3, handleClickButton2,handleClickButton3, handleClickButton1, title, maxWidth = "sm", button2Type = "button", button1Type = "button", zIndex = 1300 }) => (
     <Dialog
         open={open}
         fullWidth
@@ -231,6 +231,10 @@ export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, butto
                 {!!buttonText2 &&
                     <Button type={button2Type} onClick={(button2Type !== "submit" ? handleClickButton2 : undefined)} color="primary">
                         {buttonText2}
+                    </Button>}
+                {!!buttonText3 &&
+                    <Button onClick={(handleClickButton3)}>
+                        <p style={{color: "red"}}>{buttonText3}</p>
                     </Button>}
             </DialogActions>
         </form>

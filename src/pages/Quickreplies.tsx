@@ -411,10 +411,12 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
             <DialogZyx
                 open={openDialog}
                 title={t(langKeys.organizationclass)}
-                buttonText1={t(langKeys.close)}
+                buttonText1={t(langKeys.select)}
                 buttonText2={t(langKeys.register)}
+                buttonText3={t(langKeys.clear)}
                 handleClickButton1={() => setOpenDialog(false)}
                 handleClickButton2={handleClassificationModal}
+                handleClickButton3={() => {setselectedlabel(""); setValue('classificationid', 0);setOpenDialog(false)}}
                 >
                 <TreeView
                     className={classes.treeviewroot}

@@ -33,6 +33,7 @@ export const langKeys = {
     billingmail: "billingmail",
     typecredit_15: "typecredit_15",
     typecredit_30: "typecredit_30",
+    clear: "clear",
     showmore: "showmore",
     typecredit_45: "typecredit_45",
     move: 'move',
