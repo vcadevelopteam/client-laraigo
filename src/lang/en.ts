@@ -876,6 +876,7 @@ const translation: LangKeys = {
     confirmation_changepassword: "Do you want to change the password?",
     too_many_records: 'Too many records',
     file_incompatbile_with_previous_one: 'File incompatbile with previous one',
+    invalid_data: 'Invalid data',
     pay: 'Pay',
     status_history: 'Status history',
     signupstep1title: 'Sign up in less than a minute!',
@@ -1179,6 +1180,8 @@ const translation: LangKeys = {
     error_users_limit: "The maximum number of users was reached({{limit}}), upgrade your plan to continue",
 
     no_records: 'No records',
+
+
 
     dateRangeFilterTitle: 'Filter by date range',
     person_who_modified: 'Person who modified',

@@ -1200,6 +1200,7 @@ export const langKeys = {
     file_without_data: 'file_without_data',
     too_many_records: 'file_without_data',
     file_incompatbile_with_previous_one: 'file_incompatbile_with_previous_one',
+    invalid_data: 'invalid_data',
 
     tablePageOf: 'tablePageOf',
     tableShowingRecordOf: 'tableShowingRecordOf',
