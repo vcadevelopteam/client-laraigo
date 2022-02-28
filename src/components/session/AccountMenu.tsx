@@ -11,7 +11,7 @@ import { useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import { ManageOrganization, BadgeGo, StatusConnection } from 'components';
-import { disconnectSocket } from "store/inbox/actions";
+import { connectAgentAPI, connectAgentUI, disconnectSocket, emitEvent } from "store/inbox/actions";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -79,6 +79,17 @@ const AccountMenu: FC = () => {
     };
 
     const signOut = () => {
+        
+        dispatch(connectAgentAPI(false))
+        dispatch(connectAgentUI(false))
+        dispatch(emitEvent({
+            event: 'connectAgent',
+            data: {
+                isconnected: false,
+                userid: 0,
+                orgid: 0
+            }
+        }));
         dispatch(logout());
         dispatch(disconnectSocket());
         history.push('/sign-in');
