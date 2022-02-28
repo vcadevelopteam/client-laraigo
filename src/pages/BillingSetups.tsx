@@ -386,7 +386,7 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
         register('invoiceprovider', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('sunaturl', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('token', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('sunatusername', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('sunatusername');
         register('paymentprovider', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('publickey', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('privatekey', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
