@@ -653,7 +653,12 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
         register('lastname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('email', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('doctype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('docnum', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('docnum', { validate: {
+            needsvalidation: (value:any) => ((value && value.length) || t(langKeys.field_required)),
+            dnivalidation: (value:any) => (getValues("doctype") === "DNI")? ((value && value.length === 8) || t(langKeys.doctype_dni_error)) : true,
+            cevalidation: (value:any) => (getValues("doctype") === "CE")? ((value && value.length === 12) || t(langKeys.doctype_foreigners_card)) : true,
+            rucvalidation: (value:any) => (getValues("doctype") === "RUC")? ((value && value.length === 11) || t(langKeys.doctype_ruc_error)) : true,
+        }});
         register('billinggroupid');
         register('description');
         register('twofactorauthentication');
@@ -821,7 +826,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             label={t(langKeys.docType)}
                             className="col-6"
                             valueDefault={row?.doctype || ""}
-                            onChange={(value) => setValue('doctype', value ? value.domainvalue : '')}
+                            onChange={(value) => {setValue('doctype', value?.domainvalue || '')}}
                             error={errors?.doctype?.message}
                             data={dataDocType}
                             optionDesc="domaindesc"
@@ -830,6 +835,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                         <FieldEdit
                             label={t(langKeys.docNumber)}
                             className="col-6"
+                            type="number"
                             valueDefault={row?.docnum || ""}
                             onChange={(value) => setValue('docnum', value)}
                             error={errors?.docnum?.message}
