@@ -133,7 +133,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                 const data = getValues();
                 if (allOk) {
                     updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
-                        p[index] = { ...data, operation: p[index].id === 0 ? "INSERT" : "UPDATE" }
+                        p[index] = { ...data, operation: (p[index].id === 0 || p[index].operation ==="INSERT") ? "INSERT" : "UPDATE" }
                         return p;
                     })
                 }
@@ -708,6 +708,8 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
 
 
     const onSubmit = handleSubmit((data) => {
+        console.log(dataOrganizations)
+        debugger
         if (!row && !data.password) {
             dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.password_required) }));
             return;
@@ -716,8 +718,8 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
             dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.password_required) }));
             return;
         }
-        setAllIndex([])
         setTriggerSave(true)
+        setAllIndex([])
     });
 
     const onChangeStatus = (value: Dictionary) => {
@@ -826,7 +828,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             label={t(langKeys.docType)}
                             className="col-6"
                             valueDefault={row?.doctype || ""}
-                            onChange={(value) => {setValue('doctype', value?.domainvalue || '')}}
+                            onChange={(value) => setValue('doctype', value ? value.domainvalue : '')}
                             error={errors?.doctype?.message}
                             data={dataDocType}
                             optionDesc="domaindesc"
@@ -835,8 +837,8 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                         <FieldEdit
                             label={t(langKeys.docNumber)}
                             className="col-6"
-                            type="number"
                             valueDefault={row?.docnum || ""}
+                            type="number"
                             onChange={(value) => setValue('docnum', value)}
                             error={errors?.docnum?.message}
                         />
