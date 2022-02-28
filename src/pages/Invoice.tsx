@@ -2947,6 +2947,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
             creditnotetype: '',
             creditnotemotive: '',
             creditnotediscount: 0.0,
+            invoicestatus: data?.invoicestatus,
             productdetail: []
         }
     });
