@@ -14,6 +14,7 @@ import { Trans } from 'react-i18next';
 import { DownloadIcon } from 'icons';
 import DomToImage from 'dom-to-image';
 import jsPDF from 'jspdf';
+import IOSSwitch from "components/fields/IOSSwitch";
 
 const useStyles = makeStyles((theme) => ({
     containerPanel: {
@@ -377,6 +378,9 @@ const DialogInteractions: React.FC<{ ticket: Dictionary | null, openModal: boole
                 // rootElementId={el?.current!!}
                 downloadFileName={`ticket-` + ticket?.ticketnum}
             />
+            <div style={{ position: 'absolute', left: 16, bottom: 16 }}>
+                <IOSSwitch checked={false} onChange={(e) => console.log(e.target.value)} name="checkedB" />
+            </div>
             {interactionExtraList.loading ? <SkeletonInteraction /> :
                 <div ref={el} className="scroll-style-go" style={{ display: 'flex', flexDirection: 'column', gap: 8, height: '60vh' }}>
                     {interactionExtraList.data.map((groupInteraction) => (
