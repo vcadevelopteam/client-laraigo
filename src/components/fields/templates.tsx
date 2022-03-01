@@ -863,7 +863,7 @@ export const FieldCheckbox: React.FC<FieldCheckboxProps> = ({ className, onChang
     );
 }
 
-export const AntTab = withStyles((theme) => ({
+export const AntTab = withStyles((theme: any) => ({
     root: {
         textTransform: 'none',
         minWidth: 72,
