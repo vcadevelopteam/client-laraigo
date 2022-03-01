@@ -41,7 +41,7 @@ interface IFile {
     error?: boolean;
 }
 
-const UploaderIcon: React.FC<{ classes: any, type: "image" | "file", setFiles: (param: any) => void }> = ({ classes, setFiles, type }) => {
+const UploaderIcon: React.FC<{ classes: any, type: "image" | "file", setFiles: (param: any) => void, initfile?:any }> = ({ classes, setFiles, type, initfile }) => {
     const [valuefile, setvaluefile] = useState('')
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
@@ -49,6 +49,11 @@ const UploaderIcon: React.FC<{ classes: any, type: "image" | "file", setFiles: (
     const uploadResult = useSelector(state => state.main.uploadFile);
     const [idUpload, setIdUpload] = useState('');
 
+    useEffect(() => {
+        if(initfile){
+            onSelectImage(initfile)
+        }
+    }, [initfile])
     useEffect(() => {
         if (waitSave) {
             if (!uploadResult.loading && !uploadResult.error) {
@@ -65,6 +70,7 @@ const UploaderIcon: React.FC<{ classes: any, type: "image" | "file", setFiles: (
     }, [waitSave, uploadResult, dispatch, setFiles, idUpload])
 
     const onSelectImage = (files: any) => {
+        console.log(files)
         const selectedFile = files[0];
         const idd = new Date().toISOString()
         var fd = new FormData();
@@ -459,6 +465,8 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const [quickRepliesToShow, setquickRepliesToShow] = useState<Dictionary[]>([])
     const [richResponseToShow, setRichResponseToShow] = useState<Dictionary[]>([])
     const [showReply, setShowReply] = useState(true);
+    const [fileimage,setfileimage] = useState<any>(null);
+    
 
     useEffect(() => {
         if (ticketSelected?.status !== "ASIGNADO")
@@ -688,6 +696,15 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                 return triggerReplyMessage()
         }
     }
+    function onPasteTextbar(e:any){
+        console.log(e.clipboardData.getData('Text'));
+        if(e.clipboardData.files.length){
+            console.log(e.clipboardData.files)
+            if(e.clipboardData.files[0].type.includes("image")){
+                setfileimage(e.clipboardData.files)
+            }
+        }
+    }
 
     return (
         <div className={classes.containerResponse}>
@@ -709,6 +726,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                 rows={2}
                                 multiline
                                 inputProps={{ 'aria-label': 'naked' }}
+                                onPaste={onPasteTextbar}
                             />
                             {openDialogHotKey && (
                                 <div style={{
@@ -756,7 +774,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                             <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
                             <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
                             <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite}/>
-                            <UploaderIcon type="image" classes={classes} setFiles={setFiles} />
+                            <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage}/>
                         </div>
                         <div className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(text || files.filter(x => !!x.url).length > 0) })} onClick={triggerReplyMessage}>
                             <SendIcon />
