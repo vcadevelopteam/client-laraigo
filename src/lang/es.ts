@@ -1476,6 +1476,16 @@ const translation: LangKeys = {
     dashboard_operationalpush_summary_status: 'Estado',
     dashboard_operationalpush_summary_answerdate: 'Fecha de respuesta',
 
+    
+    dashboard_operationalpush_application_application: "Aplicación",
+    dashboard_operationalpush_application_hsm: "HSM",
+    dashboard_operationalpush_application_sentdate: "Fecha del mensaje recibido",
+    dashboard_operationalpush_application_clientnumber: "Número",
+    dashboard_operationalpush_application_status: "Estado",
+
+    dashboard_operationalpush_application_tag: "Tag",
+    dashboard_operationalpush_application_quantity: "Cantidad",
+    dashboard_operationalpush_application_channel: "Canal",
     dashboard_operationalpush_categoryrank_hsmcategory: 'Categoría HSM',
     dashboard_operationalpush_categoryrank_hsm: 'HSM',
 

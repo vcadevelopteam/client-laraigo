@@ -1622,6 +1622,15 @@ export const langKeys = {
     dashboard_operationalpush_messageperday_clientnumber: 'dashboard_operationalpush_messageperday_clientnumber',
     dashboard_operationalpush_messageperday_status: 'dashboard_operationalpush_messageperday_status',
 
+    dashboard_operationalpush_application_application: "dashboard_operationalpush_application_application",
+    dashboard_operationalpush_application_hsm: "dashboard_operationalpush_application_hsm",
+    dashboard_operationalpush_application_sentdate: "dashboard_operationalpush_application_sentdate",
+    dashboard_operationalpush_application_clientnumber: "dashboard_operationalpush_application_clientnumber",
+    dashboard_operationalpush_application_status: "dashboard_operationalpush_application_status",
+    dashboard_operationalpush_application_tag: "dashboard_operationalpush_application_tag",
+    dashboard_operationalpush_application_quantity: "dashboard_operationalpush_application_quantity",
+    dashboard_operationalpush_application_channel: "dashboard_operationalpush_application_channel",
+
     report_loginhistory: 'report_loginhistory',
     report_loginhistory_datehour: 'report_loginhistory_datehour',
     report_loginhistory_user: 'report_loginhistory_user',

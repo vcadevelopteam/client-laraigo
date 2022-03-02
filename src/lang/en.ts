@@ -1557,6 +1557,15 @@ const translation: LangKeys = {
     dashboard_operationalpush_messageperday_clientnumber: 'Number',
     dashboard_operationalpush_messageperday_status: 'Status',
     
+    dashboard_operationalpush_application_application: "Application",
+    dashboard_operationalpush_application_hsm: "HSM",
+    dashboard_operationalpush_application_sentdate: "Date of message received",
+    dashboard_operationalpush_application_clientnumber: "Number",
+    dashboard_operationalpush_application_status: "Status",
+    dashboard_operationalpush_application_tag: "Tag",
+    dashboard_operationalpush_application_quantity: "Quantity",
+    dashboard_operationalpush_application_channel: "Channel",
+
     report_loginhistory: 'User login',
     report_loginhistory_datehour: 'Date - Hour',
     report_loginhistory_user: 'User',

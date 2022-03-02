@@ -1,6 +1,6 @@
 import { Box, Button, createStyles, makeStyles, Theme } from "@material-ui/core";
 import { Dictionary } from "@types";
-import { exportExcel, getCommChannelLst, getdashboardPushAppDataSel, getdashboardRankingPushSel, getdashboardPushSUMMARYSelData, getDateCleaned, getLabelsSel, getSupervisorsSel, getValuesFromDomain} from "common/helpers";
+import { exportExcel, getCommChannelLst, getdashboardRankingPushDataSel, getdashboardRankingPushSel, getdashboardPushSUMMARYSelData, getDateCleaned, getLabelsSel, getValuesFromDomain} from "common/helpers";
 import { DateRangePicker, DialogZyx, FieldMultiSelect } from "components";
 import { useSelector } from "hooks";
 import { CalendarIcon } from "icons";
@@ -169,7 +169,6 @@ const DashboardTagRanking: FC = () => {
     const [dataqueue, setdataqueue] = useState<any>([]);
     const [dataprovider, setdataprovider] = useState<any>([]);
     const [datachannels, setdatachannels] = useState<any>([]);
-    const [datasupervisors, setdatasupervisors] = useState<any>([]);
     const [dataLabel, setdataLabel] = useState<any>([]);
     const [datacategoriaHSM, setdatacategoriaHSM] = useState<any>([]);
     const [dataAppRank, setdataAppRank] = useState<any>([]);
@@ -177,7 +176,6 @@ const DashboardTagRanking: FC = () => {
         queue: "",
         provider: "",
         channels: "",
-        supervisor: "",
         label: "",
         categoriaHSM: ""
     });
@@ -190,7 +188,6 @@ const DashboardTagRanking: FC = () => {
             company: searchfields.provider,
             label: searchfields.label,
             category: searchfields.categoriaHSM,
-            supervisor: searchfields.supervisor
         }
         dispatch(showBackdrop(true));
         setOpenDialog(false)
@@ -220,9 +217,8 @@ const DashboardTagRanking: FC = () => {
             setdataqueue(multiData[0] && multiData[0].success ? multiData[0].data : []);
             setdataprovider(multiData[1] && multiData[1].success ? multiData[1].data : []);
             setdatachannels(multiData[2] && multiData[2].success ? multiData[2].data : []);
-            setdatasupervisors(multiData[3] && multiData[3].success ? multiData[3].data : []);
-            setdataLabel(multiData[4] && multiData[4].success ? multiData[4].data : []);
-            setdatacategoriaHSM(multiData[5] && multiData[5].success ? multiData[5].data : []);
+            setdataLabel(multiData[3] && multiData[3].success ? multiData[3].data : []);
+            setdatacategoriaHSM(multiData[4] && multiData[4].success ? multiData[4].data : []);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mainResult])
@@ -231,7 +227,6 @@ const DashboardTagRanking: FC = () => {
             getValuesFromDomain("GRUPOS"),
             getValuesFromDomain("EMPRESA"),
             getCommChannelLst(),
-            getSupervisorsSel(),
             getLabelsSel(),
             getValuesFromDomain("CATEGORIAHSM"),
         ]));
@@ -271,7 +266,6 @@ const DashboardTagRanking: FC = () => {
             company: searchfields.provider,
             label: searchfields.label,
             category: searchfields.categoriaHSM,
-            supervisor: searchfields.supervisor
         }
         setdownloaddatafile(true)
         if (tipeoffilter === "SUMMARY") {
@@ -281,7 +275,7 @@ const DashboardTagRanking: FC = () => {
         }else{
             settitlefile(t(langKeys.numberofHSMShipments));
             setSection('application')
-            dispatch(getCollectionAux(getdashboardPushAppDataSel(tosend)))
+            dispatch(getCollectionAux(getdashboardRankingPushDataSel(tosend)))
         }
     }
     return (
@@ -346,18 +340,6 @@ const DashboardTagRanking: FC = () => {
                 </div>
                 <div className="row-zyx" style={{ marginTop: "15px" }}>
                     <FieldMultiSelect
-                        label={t(langKeys.supervisor)}
-                        className={classes.fieldsfilter}
-                        variant="outlined"
-                        onChange={(value) => { setsearchfields((p) => ({ ...p, supervisor: value.map((o: Dictionary) => o.userid).join() })) }}
-                        valueDefault={searchfields.supervisor}
-                        data={datasupervisors}
-                        optionDesc="userdesc"
-                        optionValue="userid"
-                    />
-                </div>
-                <div className="row-zyx" style={{ marginTop: "15px" }}>
-                    <FieldMultiSelect
                         label={t(langKeys.labels)}
                         className={classes.fieldsfilter}
                         variant="outlined"
@@ -413,7 +395,7 @@ const DashboardTagRanking: FC = () => {
                             <div style={{ height: 240 }}>
                                 <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
                                     <BarChart data={dataAppRank}>
-                                        <XAxis dataKey="application"  label={{ value: `Tags`, position: 'insideBottom', offset:-5 }}/>
+                                        <XAxis dataKey="tag"  label={{ value: `Tags`, position: 'insideBottom', offset:-5 }}/>
                                         <YAxis label={{ value: `${t(langKeys.quantity)}`, angle: -90, position: 'insideLeft' }}/>
                                         <RechartsTooltip />
                                         <Bar dataKey="quantity" fill="#8884d8" >
