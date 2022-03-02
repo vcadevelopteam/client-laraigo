@@ -613,7 +613,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
             firstname: row?.firstname || '',
             lastname: row?.lastname || '',
             password: edit ? (row?.password || '') : "",
-            // usr: row?.usr || '',
+            usr: row?.usr || '',
             email: edit ? (row?.email || '') : "",
             doctype: row?.doctype || '',
             docnum: row?.docnum || '',
@@ -651,7 +651,11 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('firstname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('lastname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('email', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('usr', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('email', { validate: {
+            validation: (value) => (value && value.length) || t(langKeys.field_required) ,
+            isemail: (value)=> (value.includes('.') && value.includes('@')) || t(langKeys.emailverification)
+        }});
         register('doctype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('docnum', { validate: {
             needsvalidation: (value:any) => ((value && value.length) || t(langKeys.field_required)),
@@ -692,7 +696,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
             const callback = () => {
                 dispatch(showBackdrop(true));
                 dispatch(saveUser({
-                    header: insUser({ ...data, usr: data.email, language: t(langKeys.currentlanguage) }),
+                    header: insUser({ ...data, language: t(langKeys.currentlanguage) }),
                     detail: [...dataOrganizations.filter(x => x && x?.operation).map(x => x && insOrgUser(x)), ...orgsToDelete.map(x => insOrgUser(x))]!
                 }, true));
                 setWaitSave(true)
@@ -806,12 +810,21 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={`${t(langKeys.email)} (${t(langKeys.user)})`}
+                            label={`${t(langKeys.user)}`}
+                            className="col-6"
+                            valueDefault={edit ? (row?.usr || "") : ""}
+                            onChange={(value) => setValue('usr', value)}
+                            error={errors?.usr?.message}
+                        />
+                        <FieldEdit
+                            label={`${t(langKeys.email)}`}
                             className="col-6"
                             valueDefault={edit ? (row?.email || "") : ""}
                             onChange={(value) => setValue('email', value)}
                             error={errors?.email?.message}
                         />
+                    </div>
+                    <div className="row-zyx">
                         <FieldSelect
                             label={t(langKeys.company)}
                             className="col-6"
@@ -822,8 +835,6 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
                         />
-                    </div>
-                    <div className="row-zyx">
                         <FieldSelect
                             label={t(langKeys.docType)}
                             className="col-6"
@@ -834,6 +845,9 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
                         />
+                    </div>
+
+                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.docNumber)}
                             className="col-6"
@@ -842,9 +856,6 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             onChange={(value) => setValue('docnum', value)}
                             error={errors?.docnum?.message}
                         />
-                    </div>
-
-                    <div className="row-zyx">
                         <FieldSelect
                             label={t(langKeys.billingGroup)}
                             className="col-6"
@@ -855,6 +866,8 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             optionDesc="domaindesc"
                             optionValue="domainid"
                         />
+                    </div>
+                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.registerCode)}
                             className="col-6"
@@ -862,8 +875,6 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             onChange={(value) => setValue('registercode', value)}
                             error={errors?.registercode?.message}
                         />
-                    </div>
-                    <div className="row-zyx">
                         <FieldSelect
                             label={t(langKeys.twofactorauthentication)}
                             className="col-6"
@@ -876,6 +887,20 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
                         />
+                        <FieldSelect
+                            label={t(langKeys.status)}
+                            className="col-6"
+                            valueDefault={row?.status || "ACTIVO"}
+                            onChange={onChangeStatus}
+                            uset={true}
+                            error={errors?.status?.message}
+                            data={dataStatusUsers}
+                            prefixTranslation="status_"
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
+                    </div>
+                    <div className="row-zyx">
                         <FieldSelect
                             label={t(langKeys.status)}
                             className="col-6"
