@@ -2,11 +2,12 @@
 import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { TemplateBreadcrumbs, DateRangePicker, FieldEdit } from 'components';
+import { TemplateBreadcrumbs, DateRangePicker, FieldEdit, DialogZyx, FieldSelect } from 'components';
 import { Dictionary } from "@types";
 import TableZyx from 'components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import SearchIcon from '@material-ui/icons/Search';
+import AssessmentIcon from '@material-ui/icons/Assessment';
 import Button from '@material-ui/core/Button';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -15,7 +16,9 @@ import { showSnackbar } from 'store/popus/actions';
 import { getCollectionDynamic, resetMainDynamic, exportDynamic, resetExportMainDynamic } from 'store/main/actions';
 import { Range } from 'react-date-range';
 import { getDateCleaned } from 'common/helpers/functions'
-
+import { useForm } from 'react-hook-form';
+import Graphic from 'components/fields/Graphic';
+import ListIcon from '@material-ui/icons/List';
 
 const getArrayBread = (nametmp: string, nameView1: string) => ([
     { id: "view-1", name: nameView1 || "Reports" },
@@ -50,6 +53,14 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+interface SummaryGraphicProps {
+    openModal: boolean;
+    setOpenModal: (value: boolean) => void;
+    setView: (value: string) => void;
+    columns: Dictionary[];
+    getCollection: () => void;
+}
+
 export interface IReport {
     columns: Dictionary[];
     filters: Dictionary[];
@@ -66,6 +77,77 @@ const initialRange = {
     startDate: new Date(new Date().setDate(1)),
     endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
     key: 'selection'
+}
+
+const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal, setView, columns, getCollection }) => {
+    const { t } = useTranslation();
+
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm<any>({
+        defaultValues: {
+            graphictype: 'BAR',
+            column: ''
+        }
+    });
+
+    useEffect(() => {
+        register('graphictype', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('column', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+    }, [register]);
+
+    const handleCancelModal = () => {
+        setOpenModal(false);
+    }
+
+    const handleAcceptModal = handleSubmit((data) => {
+        triggerGraphic(data);
+    });
+
+    const triggerGraphic = (data: any) => {
+        getCollection();
+        setView(`CHART-${data.graphictype}-${data.column}`);
+        setOpenModal(false);
+
+    }
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.graphic_configuration)}
+            button1Type="button"
+            buttonText1={t(langKeys.cancel)}
+            handleClickButton1={handleCancelModal}
+            button2Type="button"
+            buttonText2={t(langKeys.accept)}
+            handleClickButton2={handleAcceptModal}
+        >
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.graphic_type)}
+                    className="col-12"
+                    valueDefault={getValues('graphictype')}
+                    error={errors?.graphictype?.message}
+                    onChange={(value) => setValue('graphictype', value?.key)}
+                    data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }]}
+                    uset={true}
+                    prefixTranslation="graphic_"
+                    optionDesc="value"
+                    optionValue="key"
+                />
+            </div>
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.graphic_view_by)}
+                    className="col-12"
+                    valueDefault={getValues('column')}
+                    error={errors?.column?.message}
+                    onChange={(value) => setValue('column', value?.accessor || '')}
+                    data={columns}
+                    optionDesc="Header"
+                    optionValue="accessor"
+                />
+            </div>
+        </DialogZyx>
+    )
 }
 
 const format = (date: Date) => date.toISOString().split('T')[0];
@@ -129,7 +211,10 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const [dataCleaned, setDataCleaned] = useState<Dictionary[]>([])
-
+    const mainDynamic = useSelector(state => state.main.mainDynamic);
+    const resExportDynamic = useSelector(state => state.main.exportDynamicData);
+    const [showDialogGraphic, setShowDialogGraphic] = useState(false);
+    const [view, setView] = useState('GRID')
     const [filtersDynamic, setFiltersDynamic] = useState<Dictionary>(filters.reduce((acc: Dictionary, item: Dictionary) => ({
         ...acc,
         [item.columnname]: item
@@ -147,8 +232,6 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
         dispatch(resetExportMainDynamic())
     }, [])
 
-    const mainDynamic = useSelector(state => state.main.mainDynamic);
-    const resExportDynamic = useSelector(state => state.main.exportDynamicData);
 
     useEffect(() => {
         if (!resExportDynamic.loading && !resExportDynamic.error && resExportDynamic.url) {
@@ -213,52 +296,101 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
             dispatch(getCollectionDynamic(body));
     }
 
-    return (
-        <div style={{ width: '100%' }}>
-            <TemplateBreadcrumbs
-                breadcrumbs={getArrayBread(description, t(langKeys.report_plural))}
-                handleClick={setViewSelected}
-            />
-            <div className={classes.containerFilters}>
-                <div className={classes.itemFlex}>
-                    {Object.values(filters).map((filter: Dictionary) => (
 
-                        <FilterDynamic
-                            key={filter.columnname}
-                            filter={filter}
-                            setFiltersDynamic={setFiltersDynamic}
-                        />
-                    ))}
-                    <Button
-                        disabled={mainDynamic.loading}
-                        variant="contained"
-                        color="primary"
-                        startIcon={<SearchIcon style={{ color: 'white' }} />}
-                        style={{ backgroundColor: '#55BD84', width: 120 }}
-                        onClick={() => onSearch()}
-                    >
-                        {t(langKeys.search)}
-                    </Button>
+    console.log("view", view)
+    return (
+        <>
+            <div style={{ width: '100%' }}>
+                <TemplateBreadcrumbs
+                    breadcrumbs={getArrayBread(description, t(langKeys.report_plural))}
+                    handleClick={setViewSelected}
+                />
+                <div className={classes.containerFilters}>
+                    <div className={classes.itemFlex}>
+                        {Object.values(filters).map((filter: Dictionary) => (
+
+                            <FilterDynamic
+                                key={filter.columnname}
+                                filter={filter}
+                                setFiltersDynamic={setFiltersDynamic}
+                            />
+                        ))}
+                        <Button
+                            disabled={mainDynamic.loading}
+                            variant="contained"
+                            color="primary"
+                            startIcon={<SearchIcon style={{ color: 'white' }} />}
+                            style={{ backgroundColor: '#55BD84', width: 120 }}
+                            onClick={() => onSearch()}
+                        >
+                            {t(langKeys.search)}
+                        </Button>
+                    </div>
+                    <div className={classes.itemFlex}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            disabled={mainDynamic.loading || !(mainDynamic.data.length > 0)}
+                            onClick={() => setShowDialogGraphic(true)}
+                            startIcon={<AssessmentIcon />}
+                        >
+                            {t(langKeys.graphic_view)}
+                        </Button>
+                        {view === "GRID" && (
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                disabled={resExportDynamic.loading}
+                                onClick={() => onSearch(true)}
+                                startIcon={<DownloadIcon />}
+                            >{t(langKeys.download)}
+                            </Button>
+                        )}
+                        {view !== "GRID" && (
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={() => setView('GRID')}
+                                startIcon={<ListIcon />}
+                            >
+                                {t(langKeys.grid_view)}
+                            </Button>
+                        )}
+                    </div>
                 </div>
-                <div>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        disabled={resExportDynamic.loading}
-                        onClick={() => onSearch(true)}
-                        startIcon={<DownloadIcon />}
-                    >{t(langKeys.download)}
-                    </Button>
-                </div>
+                {view === "GRID" && (
+                    <TableZyx
+                        columns={columnsDynamic}
+                        filterGeneral={false}
+                        data={dataCleaned}
+                        download={false}
+                        loading={mainDynamic.loading}
+                    />
+                )}
+                {view !== "GRID" && (
+                    <Graphic
+                        graphicType={view.split("-")?.[1] || "BAR"}
+                        column={view.split("-")?.[2] || "summary"}
+                        openModal={showDialogGraphic}
+                        setOpenModal={setShowDialogGraphic}
+                        daterange={{}}
+                        setView={setView}
+                        withFilters={false}
+                        withButtons={false}
+                        data={dataCleaned}
+                        loading={mainDynamic.loading}
+                        handlerSearchGraphic={() => null}
+                    />
+                )}
             </div>
-            <TableZyx
+            <SummaryGraphic
+                openModal={showDialogGraphic}
+                setOpenModal={setShowDialogGraphic}
+                setView={setView}
                 columns={columnsDynamic}
-                filterGeneral={false}
-                data={dataCleaned}
-                download={false}
-                loading={mainDynamic.loading}
+                getCollection={onSearch}
             />
-        </div >
+        </>
     )
 
 }
