@@ -56,6 +56,7 @@ const UploaderIcon: React.FC<{ classes: any, type: "image" | "file", setFiles: (
                 setfileimage(null)
             }
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [initfile])
     useEffect(() => {
         if (waitSave) {

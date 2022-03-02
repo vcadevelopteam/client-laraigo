@@ -1390,6 +1390,7 @@ const translation: LangKeys = {
     numberofHSMShipments: 'Number of HSM shipments',
     numberofHSMShipmentstooltip: 'Shows the number of HSMs sent by the different available applications.',
     employeeaplication: 'Employee Application',
+    tagranking: "tag ranking",
     ticket_firstname: 'Name or social name',
     ticket_contact: 'Person who contact',
     ticket_lastname: 'Last name',

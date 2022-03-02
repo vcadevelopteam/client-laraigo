@@ -1624,9 +1624,24 @@ export const getdashboardPushMENSAJEXDIASel = ({ startdate, enddate, channel, gr
     key: "UFN_DASHBOARD_PUSH_MENSAJEXDIA_SEL",
     parameters: { startdate, enddate, channel, group, company, label, category, offset: (new Date().getTimezoneOffset() / 60) * -1, userid: supervisor }
 });
+export const getdashboardRankingPushSel = ({ startdate, enddate, channel, group, company, supervisor }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_GERENCIAL_TAG_SEL',
+    key: "UFN_DASHBOARD_GERENCIAL_TAG_SEL",
+    parameters: { startdate, enddate, channel, group, company, offset: (new Date().getTimezoneOffset() / 60) * -1, userid: supervisor }
+});
+export const getdashboardRankingPushDataSel = ({ startdate, enddate, channel, group, company, supervisor }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_GERENCIAL_TAG_DATA_SEL',
+    key: "UFN_DASHBOARD_GERENCIAL_TAG_DATA_SEL",
+    parameters: { startdate, enddate, channel, group, company, offset: (new Date().getTimezoneOffset() / 60) * -1, userid: supervisor }
+});
 export const getdashboardPushAppSel = ({ startdate, enddate, channel, group, company, label, category, supervisor }: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_PUSH_APPLICATION_SEL',
     key: "UFN_DASHBOARD_PUSH_APPLICATION_SEL",
+    parameters: { startdate, enddate, channel, group, company, label, category, offset: (new Date().getTimezoneOffset() / 60) * -1, userid: supervisor }
+});
+export const getdashboardPushAppDataSel = ({ startdate, enddate, channel, group, company, label, category, supervisor }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_PUSH_APPLICATION_DATA_SEL',
+    key: "UFN_DASHBOARD_PUSH_APPLICATION_DATA_SEL",
     parameters: { startdate, enddate, channel, group, company, label, category, offset: (new Date().getTimezoneOffset() / 60) * -1, userid: supervisor }
 });
 export const getdashboardPushMENSAJEXDIASelData = ({ startdate, enddate, channel, group, company, label, category, supervisor }: Dictionary): IRequestBody => ({

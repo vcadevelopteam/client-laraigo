@@ -1141,7 +1141,7 @@ const DashboardManagerial: FC = () => {
         // eslint-disable-next-line
     },[resaux,waitSaveaux])
     useEffect(() => {
-        if (openDialogPerRequest && fieldToFilter!="TME") {
+        if (openDialogPerRequest && fieldToFilter!=="TME") {
             setsearchfieldsOnlyOne({
                 closedbyasesor: true,  
                 closedbybot:  true,

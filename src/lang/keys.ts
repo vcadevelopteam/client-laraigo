@@ -36,6 +36,7 @@ export const langKeys = {
     failedmessagestooltip: "failedmessagestooltip",
     answeredmessagestooltip: "answeredmessagestooltip",
     closedbyadvisertooltip: "closedbyadvisertooltip",
+    tagranking: "tagranking",
     closedbybottooltip: "closedbybottooltip",
     conversationheatmaptooltip: "conversationheatmaptooltip",
     typecredit_alcontado: "typecredit_alcontado",
