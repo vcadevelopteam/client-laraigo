@@ -23,6 +23,7 @@ interface Organization {
 interface Properties {
     alertTicketNew: boolean | undefined;
     alertMessageIn: boolean | undefined;
+    hide_log_conversation: boolean;
     auto_close: Dictionary;
     auto_close_holding: Dictionary;
 }

@@ -9,7 +9,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent, sendHSM, updatePerson } from 'store/inbox/actions';
+import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent, sendHSM, updatePerson, hideLogInteractions } from 'store/inbox/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { changeStatus, insertClassificationConversation, insLeadPerson } from 'common/helpers';
 import { execute } from 'store/main/actions';
@@ -30,6 +30,7 @@ import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import CloseIcon from '@material-ui/icons/Close';
+import IOSSwitch from "components/fields/IOSSwitch";
 
 const dataPriority = [
     { option: 'HIGH' },
@@ -360,7 +361,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     const agentSelected = useSelector(state => state.inbox.agentSelected);
 
     const reassigningRes = useSelector(state => state.inbox.triggerReassignTicket);
-    
+
     const interactionBaseList = useSelector(state => state.inbox.interactionBaseList);
 
     const { register, handleSubmit, setValue, getValues, trigger, reset, formState: { errors } } = useForm<{
@@ -378,7 +379,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitReassign(false);
-                
+
                 const isAnsweredNew = interactionBaseList.some((x) => x.userid === (getValues('newUserId') || 3) && x.interactiontype !== "LOG");
 
                 dispatch(emitEvent({
@@ -816,6 +817,7 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
 
 const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any) => void }> = ({ classes, setShowSearcher }) => {
     const { t } = useTranslation();
+    const dispatch = useDispatch();
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const handleClose = () => setAnchorEl(null);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
@@ -825,15 +827,26 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     const [typeStatus, setTypeStatus] = useState('');
     const [openModalLead, setOpenModalLead] = useState(false);
     const [openModalHSM, setOpenModalHSM] = useState(false);
+    const [showLogs, setShowLogs] = React.useState(false)
 
     const closeTicket = (newstatus: string) => {
         setOpenModalCloseticket(true);
         setTypeStatus(newstatus);
     };
 
+    const handlerShowLogs = (e: any) => {
+        setShowLogs(e.target.checked);
+        dispatch(hideLogInteractions(e.target.checked))
+    }
+
     return (
         <>
             <div className={classes.containerButtonsChat}>
+                <Tooltip title={t(showLogs ? langKeys.hide_logs : langKeys.show_logs) || ""} arrow placement="top">
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <IOSSwitch checked={showLogs} onChange={handlerShowLogs} name="checkedB" />
+                    </div>
+                </Tooltip>
                 <Tooltip title={t(langKeys.search_ticket) + ""} arrow placement="top">
                     <IconButton onClick={() => setShowSearcher(true)}>
                         <SearchIcon width={24} height={24} fill="#8F92A1" />

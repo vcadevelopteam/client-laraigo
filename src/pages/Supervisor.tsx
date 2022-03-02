@@ -333,7 +333,7 @@ const Supervisor: FC = () => {
         if (multiData?.data[1])
             dispatch(setAgentsToReassign(multiData?.data?.[1].data || []))
     }, [multiData])
-
+    
     useEffect(() => {
         dispatch(setOpenDrawer(false));
         dispatch(getAgents())
