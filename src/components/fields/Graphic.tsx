@@ -89,6 +89,11 @@ const useStyles = makeStyles((theme) => ({
 
 var randomColor = () => Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
 
+interface IColumn {
+    columnname: string;
+    summary: string;
+}
+
 interface IGraphic {
     graphicType: string;
     column: string;
@@ -98,9 +103,11 @@ interface IGraphic {
     setView: (value: string) => void;
     daterange: any;
     handlerSearchGraphic: (value: any, value1: any) => void;
-    row: Dictionary;
+    row?: Dictionary;
     withFilters?: boolean;
     withButtons?: boolean;
+    data?: Dictionary[];
+    loading?: boolean;
 }
 
 const RADIAN = Math.PI / 180;
@@ -116,24 +123,24 @@ export const RenderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadi
     );
 };
 
-const TableResume: FC<{ row: Dictionary; column: string; graphicType: string; data: Dictionary[]; }> = ({ row, column, data, graphicType }) => {
+const TableResume: FC<{ row?: Dictionary; column: string; graphicType: string; data: Dictionary[]; }> = ({ row, column, data, graphicType }) => {
     const { t } = useTranslation();
 
     const columns = React.useMemo(
         () => [
             {
-                Header: t('report_' + row?.origin + '_' + column),
+                Header: row?.origin ? t('report_' + row?.origin + '_' + column) : column,
                 accessor: 'columnname',
                 NoFilter: true,
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
 
                     if (graphicType === "BAR")
-                        return row.columnname;
+                        return row?.columnname;
                     return (
                         <div style={{ display: 'flex', gap: 4 }}>
                             <div style={{ width: 15, height: 15, backgroundColor: row.color }}></div>
-                            {row.columnname}
+                            {row?.columnname}
                         </div>
                     )
                 }
@@ -158,7 +165,6 @@ const TableResume: FC<{ row: Dictionary; column: string; graphicType: string; da
         <div>
             <TableZyx
                 columns={columns}
-                // titlemodule={t(langKeys.personAverageReplyTimexFecha)}
                 data={data}
                 download={false}
                 pageSizeDefault={100}
@@ -169,7 +175,7 @@ const TableResume: FC<{ row: Dictionary; column: string; graphicType: string; da
     )
 }
 
-const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, FiltersElement, row, daterange, handlerSearchGraphic, withFilters = true, withButtons = true }) => {
+const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, FiltersElement, row, daterange, handlerSearchGraphic, withFilters = true, withButtons = true, data, loading }) => {
     const classes = useStyles();
     const { t } = useTranslation();
     const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
@@ -182,17 +188,40 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
     });
     const mainGraphicRes = useSelector(state => state.main.mainGraphic);
     useEffect(() => {
-        if (!mainGraphicRes.loading && !mainGraphicRes.error) {
-            const total = mainGraphicRes.data.reduce((acc, item) => acc + parseInt(item.summary), 0)
-            setDataGraphic(mainGraphicRes.data.sort((a, b) => parseInt(a.summary) < parseInt(b.summary) ? 1 : -1).map(x => ({
-                ...x,
-                columnname: x.columnname?.startsWith('report_') ? t((langKeys as any)[x.columnname]) : (x.columnname === '' ? `(${t(langKeys.in_white)})` : x.columnname),
-                summary: parseInt(x.summary),
-                percentage: parseFloat(((parseInt(x.summary) / total) * 100).toFixed(2)),
-                color: `#${randomColor()}`
-            })));
+        if (data) {
+            if (!loading) {
+                const objectItems = data.reduce((acc, item) => ({
+                    ...acc,
+                    [item[column] || ""]: (acc[item[column] || ""] || 0) + 1
+                }), {})
+    
+                const dataReady = Object.entries(objectItems).map(([key, value]) => ({
+                    columnname: key,
+                    summary: value,
+                }));
+    
+                const total = dataReady.reduce((acc, item) => acc + parseInt(item.summary), 0)
+                setDataGraphic(dataReady.sort((a, b) => parseInt(a.summary) < parseInt(b.summary) ? 1 : -1).map(x => ({
+                    ...x,
+                    columnname: x.columnname?.startsWith('report_') ? t((langKeys as any)[x.columnname]) : (x.columnname === '' ? `(${t(langKeys.in_white)})` : x.columnname),
+                    summary: parseInt(x.summary),
+                    percentage: parseFloat(((parseInt(x.summary) / total) * 100).toFixed(2)),
+                    color: `#${randomColor()}`
+                })));
+            }
+        } else {
+            if (!mainGraphicRes.loading && !mainGraphicRes.error) {
+                const total = mainGraphicRes.data.reduce((acc, item) => acc + parseInt(item.summary), 0)
+                setDataGraphic(mainGraphicRes.data.sort((a, b) => parseInt(a.summary) < parseInt(b.summary) ? 1 : -1).map(x => ({
+                    ...x,
+                    columnname: x.columnname?.startsWith('report_') ? t((langKeys as any)[x.columnname]) : (x.columnname === '' ? `(${t(langKeys.in_white)})` : x.columnname),
+                    summary: parseInt(x.summary),
+                    percentage: parseFloat(((parseInt(x.summary) / total) * 100).toFixed(2)),
+                    color: `#${randomColor()}`
+                })));
+            }
         }
-    }, [mainGraphicRes])
+    }, [mainGraphicRes, data, loading])
 
     return (
         <>
@@ -258,10 +287,12 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                     </div>
                 </Box>
             )}
-            <div style={{ fontWeight: 500, padding: 16 }}>
-                {t(langKeys.graphic_report_of, { report: t('report_' + row?.origin), column: t('report_' + row?.origin + '_' + column) })}
-            </div>
-            {mainGraphicRes.loading ? (
+            {!data && (
+                <div style={{ fontWeight: 500, padding: 16 }}>
+                    {t(langKeys.graphic_report_of, { report: t('report_' + row?.origin), column: t('report_' + row?.origin + '_' + column) })}
+                </div>
+            )}
+            {(loading || mainGraphicRes.loading) ? (
                 <div style={{ flex: 1, height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <CircularProgress />
                 </div>
@@ -283,7 +314,7 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
 
                                 <YAxis />
                                 <ChartTooltip />
-                                <Bar dataKey="summary" fill="#8884d8" textAnchor="end"  stackId="a"  type="monotone" >
+                                <Bar dataKey="summary" fill="#8884d8" textAnchor="end" stackId="a" type="monotone" >
                                     <LabelList dataKey="summary" position="inside" />
                                 </Bar>
                             </BarChart>
