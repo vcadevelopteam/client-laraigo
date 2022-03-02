@@ -156,6 +156,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                     return {
                         Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                         accessor: x.proargnames,
+                        helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help")? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                         type: "number"
                     }
 
@@ -164,6 +165,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                 return {
                     Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                     accessor: x.proargnames,
+                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help")? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                     type: "boolean",
                     Cell: (props: any) => {
                         const column = props.cell.column;
@@ -175,6 +177,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                 return {
                     Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                     accessor: x.proargnames,
+                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help")? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                     type: "date",
                     Cell: (props: any) => {
                         const column = props.cell.column;
@@ -196,6 +199,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                 return {
                     Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                     accessor: x.proargnames,
+                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help")? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                     type: "date",
                     Cell: (props: any) => {
                         const column = props.cell.column;
@@ -221,6 +225,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                 return {
                                     Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                                     accessor: x.proargnames,
+                                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help")? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                                     type: "string",
                                     Cell: (props: any) => {
                                         const { status } = props.cell.row.original;
@@ -231,6 +236,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                 return {
                                     Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                                     accessor: x.proargnames,
+                                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help")? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                                     type: "string"
                                 }
                         }
@@ -238,12 +244,12 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                         return {
                             Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                             accessor: x.proargnames,
+                            helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help")? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                             type: "string"
                         }
                 }
         }
     }), [reportColumns]);
-
 
     useEffect(() => {
         if (!mainPaginated.loading && !mainPaginated.error) {

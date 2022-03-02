@@ -1123,6 +1123,10 @@ const translation: LangKeys = {
     abandonosxAsesor: "Number of Dropouts heat map",
     tasaAbandonosxAsesor: "Percentage of Dropouts heat map",
     oportunidadesxAsesor: "Opportunity quantity heat map",
+    report_productivity_closetype_help: `- Closing completed: Ticket closed satisfactorily.
+- Closing Irrelevant: Ticket closed satisfactorily, without value.
+- Automatic Closing: Ticket closed by closing property.
+- Outside Hours: Ticket closed due to ownership of the day.`,
     tasaOportunidadesxAsesor: "Opportunity rate heat map",
     oportunidadesxAsesortooltip: "Shows the number of opportunities generated per advisor.",
     tasaOportunidadestooltip: "Shows the percentage of opportunities generated with respect to the total number of conversations entered.",
@@ -1382,6 +1386,10 @@ const translation: LangKeys = {
     ticket_estadoconversacion: 'Status',
     ticket_tipocierre: 'Close type',
     ticket_tipification: 'Tipification',
+    ticket_tipification_help: 'Assigned classification.',
+    numberofHSMShipments: 'Number of HSM shipments',
+    numberofHSMShipmentstooltip: 'Shows the number of HSMs sent by the different available applications.',
+    employeeaplication: 'Employee Application',
     ticket_firstname: 'Name or social name',
     ticket_contact: 'Person who contact',
     ticket_lastname: 'Last name',
@@ -1393,6 +1401,7 @@ const translation: LangKeys = {
     ticket_abandoned: 'Abandoned',
     ticket_enquiries: 'Question',
     ticket_labels: 'Tag',
+    ticket_labels_help: 'Tags consulted from left to right from the last consulted to the first, respectively.',
     ticket_tdatime: 'Waiting time before adviser attention',
     ticket_tdatime_help: 'Sum of time when ticket is in holding until the agent give you first answer',
 
@@ -1552,6 +1561,9 @@ const translation: LangKeys = {
     report_loginhistory_user: 'User',
     report_loginhistory_username: 'Username',
     report_loginhistory_status: 'Status',
+    report_loginhistory_status_help: `- Inbox: In receipt tray.
+- Login: Session initiated.
+- Expiration: Session expired.`,
     report_loginhistory_type: 'Type',
 
     report_inputretry: 'Retries',
@@ -1570,12 +1582,14 @@ const translation: LangKeys = {
     report_interaction_ticketmonth: 'Month',
     report_interaction_ticketdatehour: 'Ticket date - Ticket hour',
     report_interaction_interactionid: 'Interaction code',
+    report_interaction_interactionid_help: 'Unique code of each interaction made by the bot, client or advisor.',
     report_interaction_interactiondatehour: 'Interaction date - Interaction hour',
     report_interaction_person: 'Person',
     report_interaction_originalname: 'Original name',
     report_interaction_channel: 'Channel',
     report_interaction_agent: 'Agent',
     report_interaction_intent: 'Intention',
+    report_interaction_intent_help: "It is the path that is identified through the use of AI",
     report_interaction_interactiontype: 'Interaction type',
     report_interaction_interactiontext: 'Text interaction',
     report_interaction_clientnumber: 'Client number',
@@ -1605,8 +1619,10 @@ const translation: LangKeys = {
     report_productivity_firstinteractiondate: 'Date of first interaction',
     report_productivity_firstinteractiontime: 'Hour of first interaction',
     report_productivity_tmo: 'TMO',
+    report_productivity_tmo_help: 'Sum of the real duration + the paused time.',
     report_productivity_tmg: 'TMG',
     report_productivity_suspensiontime: 'Suspension time',
+    report_productivity_suspensiontime_help: 'It is the time suspended by an advisor.',
     report_productivity_avgagentresponse: 'Average agent response',
     report_productivity_firstname: 'Name',
     report_productivity_lastname: 'Last name',
@@ -1614,7 +1630,9 @@ const translation: LangKeys = {
     report_productivity_phone: 'Phone',
     report_productivity_swingingtimes: 'N° Swinging',
     report_productivity_tmoagent: 'TMO agent',
+    report_productivity_tmoagent_help: 'Time it took for the advisor to attend to the ticket since it was received.',
     report_productivity_holdingholdtime: 'Holding hold time',
+    report_productivity_holdingholdtime_help: 'It is the time that a ticket was found in holding, until being referred to an advisor.',
 
     report_tipification: 'Classifications',
     report_tipification_ticket: 'Ticket',

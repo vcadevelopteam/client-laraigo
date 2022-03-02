@@ -325,12 +325,16 @@ const DashboardManagerial: FC = () => {
         fixtotalconversations: 0,
     });
     const [dataDASHBOARD, setDataDASHBOARD] = useState({
+        totalconversations: "",
         avgconversationsattended: "0%",
         maxavgconversationsattendedasesor: "0%",
+        maxavgconversationsattendedasesortotal: "",
         minvgconversationsattendedbot: "0%",
+        minvgconversationsattendedbottotal: "",
         iconconversationsattendedasesor: true,
         iconconversationsattendedbot: true,
-        tasaabandono: "0%"
+        tasaabandono: "0%",
+        abandonados: ""
     });
     const [dataTMOgraph, setDataTMOgraph] = useState([
         { label: t(langKeys.meets), quantity: 0 },
@@ -988,22 +992,30 @@ const DashboardManagerial: FC = () => {
     }, [resEncuesta]);
     useEffect(() => {
         setDataDASHBOARD({
+            totalconversations: "",
             avgconversationsattended: "0%",
             maxavgconversationsattendedasesor: "0%",
+            maxavgconversationsattendedasesortotal: "",
             minvgconversationsattendedbot: "0%",
+            minvgconversationsattendedbottotal: "",
             iconconversationsattendedasesor: true,
             iconconversationsattendedbot: true,
-            tasaabandono: "0%"
+            tasaabandono: "0%",
+            abandonados: ""
         })
         if (resDashboard.length) {
             const { avgparam,ticketscerrados, ticketstotal, ticketscerradosasesor, ticketscerradosbot, ticketsabandonados } = resDashboard[0];
             setDataDASHBOARD({
+                totalconversations: ticketscerrados,
                 avgconversationsattended: ((ticketscerrados * 100) / ticketstotal).toFixed() + "%",
                 maxavgconversationsattendedasesor: ((ticketscerradosasesor * 100) / ticketstotal).toFixed() + "%",
+                maxavgconversationsattendedasesortotal: ticketscerradosasesor,
                 minvgconversationsattendedbot: ((ticketscerradosbot * 100) / ticketstotal).toFixed() + "%",
+                minvgconversationsattendedbottotal: ticketscerradosbot,
                 iconconversationsattendedasesor: parseFloat(avgparam) < (ticketscerradosasesor / ticketstotal),
                 iconconversationsattendedbot: parseFloat(avgparam) < (ticketscerradosbot / ticketstotal),
                 tasaabandono: ((ticketsabandonados * 100) / ticketstotal).toFixed() + "%",
+                abandonados: ticketsabandonados
             })
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -2116,11 +2128,11 @@ const DashboardManagerial: FC = () => {
                         
                         <div style={{display: "flex", justifyContent: "space-between"}}>
                             <div className={classes.boxtitlequarter} style={{width: "80%"}}>{t(langKeys.conversationsattended)}</div>
-                            <div className={classes.boxtitlequarter} style={{marginBottom: "auto",marginTop: "auto",marginRight:5}}>{dataDASHBOARD.avgconversationsattended}</div>
+                            <div className={classes.boxtitlequarter} style={{marginBottom: "auto",marginTop: "auto",marginRight:5}}>{dataDASHBOARD.avgconversationsattended} - {dataDASHBOARD.totalconversations}</div>
                         </div>
                         <div style={{display:"flex",justifyContent:"space-between"}}>
                             <div>
-                                <div className="row-zyx" style={{ paddingTop: "10px", margin: 0 }}>{dataDASHBOARD.maxavgconversationsattendedasesor} </div>
+                                <div className="row-zyx" style={{ paddingTop: "10px", margin: 0 }}>{dataDASHBOARD.maxavgconversationsattendedasesor} - {dataDASHBOARD.maxavgconversationsattendedasesortotal}</div>
                                 <div className="row-zyx" style={{ paddingTop: "0" }}>{t(langKeys.attendedbyasesor)}
                                     <Tooltip title={`${t(langKeys.maxavgconversationsattendedasesortooltip)}`} placement="top-start">
                                         <InfoIcon style={{padding: "5px 0 0 5px"}} />
@@ -2136,7 +2148,7 @@ const DashboardManagerial: FC = () => {
                         
                         <div style={{display:"flex",justifyContent:"space-between"}}>
                             <div>
-                                <div className="row-zyx" style={{ paddingTop: "30px", margin: 0 }}>{dataDASHBOARD.minvgconversationsattendedbot} </div>
+                                <div className="row-zyx" style={{ paddingTop: "30px", margin: 0 }}>{dataDASHBOARD.minvgconversationsattendedbot} - {dataDASHBOARD.minvgconversationsattendedbottotal}</div>
                                 <div className="row-zyx" style={{ paddingTop: "0" }}>{t(langKeys.attendedbybot)}
                                     <Tooltip title={`${t(langKeys.minvgconversationsattendedbottooltip)}`} placement="top-start">
                                         <InfoIcon style={{padding: "5px 0 0 5px"}} />
@@ -2151,7 +2163,7 @@ const DashboardManagerial: FC = () => {
                         </div>
                         <div style={{display:"flex",justifyContent:"space-between"}}>
                             <div>
-                                <div className="row-zyx" style={{ paddingTop: "30px", margin: 0 }}>{dataDASHBOARD.tasaabandono} </div>
+                                <div className="row-zyx" style={{ paddingTop: "30px", margin: 0 }}>{dataDASHBOARD.tasaabandono} - {dataDASHBOARD.abandonados}</div>
                                 <div className="row-zyx" style={{ paddingTop: "0" }}>{t(langKeys.productivitycard4)}
                                 </div>
                             </div>
