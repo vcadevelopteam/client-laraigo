@@ -44,6 +44,7 @@ export interface IState {
     triggerReassignTicket: IBaseState;
     showInfoPanel: boolean;
     userType: "SUPERVISOR" | "AGENT" | null;
+    showLogsOnTicket: boolean;
     wsConnected: boolean;
     userConnected: boolean;
     aNewTicket: boolean | null;
@@ -81,6 +82,7 @@ export const initialState: IState = {
     agentSelected: null,
     aNewTicket: null,
     aNewMessage: null,
+    showLogsOnTicket: false,
     showInfoPanel: false,
     userType: null,
     wsConnected: false,
@@ -215,4 +217,5 @@ export default createReducer<IState>(initialState, {
     [actionTypes.CHANGE_STATUS_TICKET_WS]: caseFunctions.changeStatusTicketWS,
     
     [actionTypes.SHOW_LOG_INTERACTIONS]: caseFunctions.hideLogInteractions,
+    [actionTypes.SET_SHOW_LOGS_ON_TICKET]: caseFunctions.setShowLogsOnTicket,
 });

@@ -619,7 +619,7 @@ export const getDataTicketSuccess = (state: IState, action: IAction): IState => 
         ticketSelected: { ...state.ticketSelected!!, isAnswered: action.payload.data[0].data.some((x: IInteraction) => x.userid === state.agentSelected?.userid && x.interactiontype !== "LOG") },
         interactionBaseList: action.payload.data?.[0]?.data || [],
         interactionList: {
-            data: getGroupInteractions(cleanLogsReassignedTask(action.payload.data[0].data)),
+            data: getGroupInteractions(state.showLogsOnTicket ? action.payload.data[0].data.filter((x: any) => x.interactiontype !== "LOG") : cleanLogsReassignedTask(action.payload.data[0].data)),
             count: action.payload.count,
             loading: false,
             error: false,
@@ -654,6 +654,11 @@ export const hideLogInteractions = (state: IState, action: IAction): IState => (
         loading: false,
         error: false,
     },
+});
+
+export const setShowLogsOnTicket = (state: IState, action: IAction): IState => ({
+    ...state,
+    showLogsOnTicket: action.payload
 });
 
 

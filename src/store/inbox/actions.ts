@@ -275,6 +275,8 @@ export const wsConnect = (payload: any): IActionCall => ({ type: actionTypes.WS_
 
 export const hideLogInteractions = (payload: boolean): IActionCall => ({ type: actionTypes.SHOW_LOG_INTERACTIONS, payload });
 
+export const showLogsOnTicket = (payload: boolean): IActionCall => ({ type: actionTypes.SET_SHOW_LOGS_ON_TICKET, payload });
+
 export const emitEvent = (payload: any): IActionCall => ({ type: actionTypes.EMIT_EVENT, payload });
 
 export const resetForcedDisconnection = (): IActionCall => ({ type: actionTypes.FORCEDDISCONECTION_RESET });
