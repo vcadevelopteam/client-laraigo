@@ -13,7 +13,7 @@ import ItemTicket from 'components/inbox/Ticket'
 import ChatPanel from 'components/inbox/ChatPanel'
 import InfoPanel from 'components/inbox/InfoPanel'
 import DrawerFilter from 'components/inbox/DrawerFilter'
-import { resetGetTickets, getTickets, selectTicket, getDataTicket, setIsFiltering } from 'store/inbox/actions';
+import { resetGetTickets, getTickets, selectTicket, getDataTicket, setIsFiltering, showLogsOnTicket } from 'store/inbox/actions';
 import { useDispatch } from 'react-redux';
 import { ListItemSkeleton } from 'components'
 import { langKeys } from 'lang/keys';
@@ -394,6 +394,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     const ticketFilteredList = useSelector(state => state.inbox.ticketFilteredList);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const isFiltering = useSelector(state => state.inbox.isFiltering);
+    const hideLogs = useSelector(state => state.login.validateToken.user?.properties.hide_log_conversation) || false;
     const [counterTickets, setCounterTickets] = useState({
         assigned: -0,
         paused: -0,
@@ -402,6 +403,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
 
     const setTicketSelected = React.useCallback((ticket: ITicket) => {
         dispatch(selectTicket(ticket))
+        dispatch(showLogsOnTicket(hideLogs))
         dispatch(getDataTicket(ticket, userType === "AGENT"))
     }, [dispatch]);
 

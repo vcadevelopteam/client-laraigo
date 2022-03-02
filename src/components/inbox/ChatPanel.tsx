@@ -821,18 +821,23 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const handleClose = () => setAnchorEl(null);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const hideLogs = useSelector(state => state.login.validateToken.user?.properties.hide_log_conversation) || false;
     const [openModalCloseticket, setOpenModalCloseticket] = useState(false);
     const [openModalReassignticket, setOpenModalReassignticket] = useState(false);
     const [openModalTipification, setOpenModalTipification] = useState(false);
     const [typeStatus, setTypeStatus] = useState('');
     const [openModalLead, setOpenModalLead] = useState(false);
     const [openModalHSM, setOpenModalHSM] = useState(false);
-    const [showLogs, setShowLogs] = React.useState(false)
+    const [showLogs, setShowLogs] = React.useState<boolean>(false)
 
     const closeTicket = (newstatus: string) => {
         setOpenModalCloseticket(true);
         setTypeStatus(newstatus);
     };
+
+    useEffect(() => {
+        setShowLogs(hideLogs);
+    }, [])
 
     const handlerShowLogs = (e: any) => {
         setShowLogs(e.target.checked);
@@ -842,7 +847,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     return (
         <>
             <div className={classes.containerButtonsChat}>
-                <Tooltip title={t(showLogs ? langKeys.hide_logs : langKeys.show_logs) || ""} arrow placement="top">
+                <Tooltip title={t(!showLogs ? langKeys.hide_logs : langKeys.show_logs) || ""} arrow placement="top">
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <IOSSwitch checked={showLogs} onChange={handlerShowLogs} name="checkedB" />
                     </div>
