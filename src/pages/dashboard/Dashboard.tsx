@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux';
 import { default as DashboardManagerial } from './DashboardManagerial';
 import { default as DashboardProductivity } from './DashboardProductivity';
 import { default as DashboardOperationalPush } from './DashboardOperationalPush';
+import { default as DashboardTagRanking } from './DashboardTagRanking';
 import { SearchField, TemplateBreadcrumbs } from 'components';
 import paths from 'common/constants/paths';
 import { useHistory } from 'react-router';
@@ -275,6 +276,24 @@ const Dashboard: FC = () => {
                                 </CardActionArea>
                             </Card>
                         </Grid>}
+                        {t(langKeys.tagranking).toLowerCase().includes(searchValue.toLowerCase()) && <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                            <Card>
+                                <CardActionArea onClick={() => handleSelected("dashboardtagranking")}>
+                                    <CardMedia
+                                        component="img"
+                                        height="140"
+                                        className={classes.media}
+                                        image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/3operativoPush.png'}
+                                        title={t(langKeys.tagranking)}
+                                    />
+                                    <CardContent>
+                                        <Typography gutterBottom variant="h6" component="div">
+                                            {t(langKeys.tagranking)}
+                                        </Typography>
+                                    </CardContent>
+                                </CardActionArea>
+                            </Card>
+                        </Grid>}
                         {allDashboardsToShow.map((e:any, i:number) => (
                             <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }} key={i}>
                                 <DashboardCard
@@ -338,6 +357,20 @@ const Dashboard: FC = () => {
                         handleClick={handleSelected}
                     />
                     <DashboardOperationalPush/>
+                </div>
+            </Fragment>
+        )
+    }    
+    else if(viewSelected === "dashboardtagranking"){
+        return(
+            
+            <Fragment>
+                <div style={{ width: '100%' }}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={[...arrayBread, {id: 'dashboardtagranking', name: t(langKeys.tagranking) }]}
+                        handleClick={handleSelected}
+                    />
+                    <DashboardTagRanking/>
                 </div>
             </Fragment>
         )

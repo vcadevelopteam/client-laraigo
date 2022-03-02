@@ -707,7 +707,8 @@ const Tickets = () => {
             },
             {
                 Header: t(langKeys.ticket_tipocierre),
-                accessor: 'tipocierre'
+                accessor: 'tipocierre',
+                helpText: t(langKeys.report_productivity_closetype_help)
             },
             {
                 Header: t(langKeys.ticket_duracionreal),
@@ -808,6 +809,7 @@ const Tickets = () => {
             },
             {
                 Header: t(langKeys.ticket_classification),
+                helpText: t(langKeys.ticket_tipification_help),
                 accessor: 'tipification'
             },
 
@@ -847,6 +849,7 @@ const Tickets = () => {
             },
             {
                 Header: t(langKeys.ticket_labels),
+                helpText: t(langKeys.ticket_labels_help),
                 accessor: 'labels'
             },
         ],
