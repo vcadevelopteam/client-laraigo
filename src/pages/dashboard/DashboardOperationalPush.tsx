@@ -11,10 +11,12 @@ import ChatIcon from '@material-ui/icons/Chat';
 import AdbIcon from '@material-ui/icons/Adb';
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import { Bar, BarChart, CartesianGrid, Cell, ComposedChart, Legend, Line, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, Cell, ComposedChart, Legend, Line, Pie, PieChart, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis, Label } from "recharts";
 import { getCollectionAux, getMultiCollection, getMultiCollectionAux, resetMainAux, resetMultiMainAux } from "store/main/actions";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import Tooltip from "@material-ui/core/Tooltip"
+import InfoIcon from '@material-ui/icons/Info';
 
 const COLORS = ["#0f8fe5", "#067713", "#296680", "#fc3617", "#e8187a", "#7cfa57", "#cfbace", "#4cd45f", "#fd5055", "#7e1be4", "#bf1490", "#66c6cf", "#011c3d", "#1a9595", "#4ae2c7", "#515496", "#a2aa65", "#df909c", "#3aa343", "#e0606e"];
 
@@ -459,25 +461,41 @@ const DashboardOperationalPush: FC = () => {
                     <Box
                         className={classes.columnCard}
                     >
-                        <div className={classes.boxtitlequarter}>{t(langKeys.sentmessages)}</div>
+                        <div className={classes.boxtitlequarter}>{t(langKeys.sentmessages)}
+                            <Tooltip title={`${t(langKeys.sentmessagestooltip)}`} placement="top-start">
+                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                            </Tooltip>
+                        </div>
                         <div className={classes.datafieldquarter}>{dataSummary.totalMns}</div>                    
                     </Box>
                     <Box
                         className={classes.columnCard}
                     >
-                        <div className={classes.boxtitlequarter}>{t(langKeys.messagessuccessfullydelivered)}</div>
+                        <div className={classes.boxtitlequarter}>{t(langKeys.messagessuccessfullydelivered)}
+                            <Tooltip title={`${t(langKeys.messagessuccessfullydeliveredtooltip)}`} placement="top-start">
+                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                            </Tooltip>
+                        </div>
                         <div className={classes.datafieldquarter}>{dataSummary.successMns}</div>                    
                     </Box>
                     <Box
                         className={classes.columnCard}
                     >
-                        <div className={classes.boxtitlequarter}>{t(langKeys.failedmessages)}</div>
+                        <div className={classes.boxtitlequarter}>{t(langKeys.failedmessages)}
+                            <Tooltip title={`${t(langKeys.failedmessagestooltip)}`} placement="top-start">
+                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                            </Tooltip>
+                        </div>
                         <div className={classes.datafieldquarter}>{dataSummary.failMns}</div>                    
                     </Box>
                     <Box
                         className={classes.columnCard}
                     >
-                        <div className={classes.boxtitlequarter}>{t(langKeys.answeredmessages)}</div>
+                        <div className={classes.boxtitlequarter}>{t(langKeys.answeredmessages)}
+                            <Tooltip title={`${t(langKeys.answeredmessagestooltip)}`} placement="top-start">
+                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                            </Tooltip>
+                        </div>
                         <div className={classes.datafieldquarter}>{dataSummary.attendedMns}</div>                    
                     </Box>
                 </div>
@@ -488,7 +506,11 @@ const DashboardOperationalPush: FC = () => {
                     >
                         <div className={classes.containerFieldsQuarter}>
                             <ChatIcon style={{color:"white",margin: "3px 5px"}}/>
-                            <div className={classes.boxtitle}>{t(langKeys.closedbyadviser)}</div>
+                            <div className={classes.boxtitle}>{t(langKeys.closedbyadviser)}
+                                <Tooltip title={`${t(langKeys.closedbyadvisertooltip)}`} placement="top-start">
+                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                </Tooltip>
+                            </div>
                             <div className={classes.boxtitledata}>{dataSummary.dataAsesor}</div>    
                         </div>            
                     </Box>
@@ -498,7 +520,11 @@ const DashboardOperationalPush: FC = () => {
                     >
                         <div className={classes.containerFieldsQuarter}>
                             <AdbIcon style={{color:"white",margin: "3px 5px"}}/>
-                            <div className={classes.boxtitle}>{t(langKeys.closedbybot)}</div>
+                            <div className={classes.boxtitle}>{t(langKeys.closedbybot)}
+                                <Tooltip title={`${t(langKeys.closedbybottooltip)}`} placement="top-start">
+                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                </Tooltip>
+                            </div>
                             <div className={classes.boxtitledata}>{dataSummary.dataBot}</div>    
                         </div>            
                     </Box>
@@ -514,7 +540,7 @@ const DashboardOperationalPush: FC = () => {
                         <div style={{ height: 240, margin: 'auto' }} >
                             <ResponsiveContainer width="100%" aspect={4.0 / 1.3}>
                                 <PieChart>
-                                    <Tooltip />
+                                    <RechartsTooltip />
                                     <Pie data={dataHSMCATEGORYRANK} dataKey="quantity" nameKey="categoria" cx="50%" cy="50%" innerRadius={40} fill="#8884d8">
                                         {dataHSMCATEGORYRANK.map((entry: any, index: number) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -531,13 +557,20 @@ const DashboardOperationalPush: FC = () => {
                         <div className={classes.downloadiconcontainer}>                            
                             <CloudDownloadIcon onClick={()=>downloaddata("HSMRANK")} className={classes.styleicon}/>
                         </div>
-                        <div className={classes.boxtitle} style={{ width:"100%"}}> Ranking HSM </div>
+                        <div style={{width: "100%"}}> 
+                            <div style={{display: "flex"}}>
+                                <div style={{fontWeight: "bold",fontSize: "1.6em",}}> Ranking HSM </div>
+                                <Tooltip title={`${t(langKeys.rankinghsmtooltip)}`} placement="top-end">
+                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                </Tooltip>
+                            </div>
+                        </div>
                             <div style={{ height: 240 }}>
                                 <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
                                     <BarChart data={dataHSMRANK}>
-                                        <XAxis dataKey="templatename" />
-                                        <YAxis />
-                                        <Tooltip />
+                                        <XAxis dataKey="templatename"  label={{ value: `${t(langKeys.templatename)}`, position: 'insideBottom', offset:-5 }}/>
+                                        <YAxis label={{ value: `${t(langKeys.hsmquantitysimple)}`, angle: -90, position: 'insideLeft' }}/>
+                                        <RechartsTooltip />
                                         <Bar dataKey="quantity" fill="#8884d8" >
                                             {dataHSMRANK.map((entry: any, index: number) => (
                                                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -555,17 +588,30 @@ const DashboardOperationalPush: FC = () => {
                         <div className={classes.downloadiconcontainer}>                            
                             <CloudDownloadIcon onClick={()=>downloaddata("MESSAGEPERDAY")} className={classes.styleicon}/>
                         </div>
-                        <div className={classes.boxtitle} style={{ width:"100%"}}>{t(langKeys.messagesbyday)}</div>
+                        <div style={{width: "100%"}}> 
+                            <div style={{display: "flex"}}>
+                                <div style={{fontWeight: "bold",fontSize: "1.6em",}}>{t(langKeys.messagesbyday)}</div>
+                                <Tooltip title={`${t(langKeys.rankinghsmtooltip)}`} placement="top-end">
+                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                </Tooltip>
+                            </div>
+                        </div>
                             <div style={{ height: 240 }}>
-                                <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
+                                <ResponsiveContainer width="100%" aspect={4.0 / 1.0} >
                                     <ComposedChart
                                         data={dataMENSAJEXDIA}
                                         >
                                         <CartesianGrid stroke="#f5f5f5" />
-                                        <XAxis dataKey="fecha" scale="band" />
-                                        <YAxis />
-                                        <Tooltip />
-                                        <Legend />
+                                        <XAxis dataKey="fecha" scale="band">
+                                            <Label
+                                                value= {`${t(langKeys.day)}`}
+                                                position="insideBottom"
+                                                offset={-5}
+                                            />
+                                        </XAxis>
+                                        <YAxis label={{ value: `${t(langKeys.hsmquantitysimple)}`, angle: -90, position: 'insideLeft' }}/>
+                                        <RechartsTooltip />
+                                        <Legend verticalAlign="top"/>
                                         <Bar dataKey="total" barSize={20} fill="#2499ee" />
                                         <Line type="monotone" dataKey="attended" stroke="#52307c" />
                                         </ComposedChart>

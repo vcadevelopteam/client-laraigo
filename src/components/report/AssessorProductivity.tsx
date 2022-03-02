@@ -25,6 +25,7 @@ import Graphic from "components/fields/Graphic";
 import AssessmentIcon from '@material-ui/icons/Assessment';
 import ListIcon from '@material-ui/icons/List';
 import { Settings } from "@material-ui/icons";
+import InfoIcon from '@material-ui/icons/Info';
 
 interface Assessor {
     row: Dictionary | null;
@@ -452,6 +453,9 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                     <CardContent style={{ paddingBottom: 10 }}>
                                         <Typography variant="h5">
                                             {t(langKeys.report_userproductivity_cardtme)}
+                                            <Tooltip title={`${t(langKeys.tmetooltip)}`} placement="top-start">
+                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            </Tooltip>
                                         </Typography>
                                         <Typography variant="h5" component="div" align="center">
                                             {detailCustomReport.data[0]?.cardavgavgtme}
@@ -505,6 +509,9 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                     <CardContent style={{ paddingBottom: 10 }}>
                                         <Typography variant="h5">
                                             {t(langKeys.report_userproductivity_cardtmo)}
+                                            <Tooltip title={`${t(langKeys.tmotooltip)}`} placement="top-start">
+                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            </Tooltip>
                                         </Typography>
                                         <Typography variant="h5" component="div" align="center">
                                             {detailCustomReport.data[0]?.cardavgavgtmo}

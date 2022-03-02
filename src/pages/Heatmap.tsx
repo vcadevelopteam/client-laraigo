@@ -1071,6 +1071,7 @@ const MainHeatMap: React.FC = () => {
                         pageSizeDefault={50}
                         filterGeneral={false}
                         toolsFooter={false}
+                        helperText={t(langKeys.conversationheatmaptooltip)}
                     />
                 </div>:""
             }
@@ -1085,6 +1086,7 @@ const MainHeatMap: React.FC = () => {
                         pageSizeDefault={50}
                         filterGeneral={false}
                         toolsFooter={false}
+                        helperText={t(langKeys.averageheatmapTMOdatatooltip)}
                     />
                 </div>:""
             }
@@ -1099,6 +1101,7 @@ const MainHeatMap: React.FC = () => {
                         pageSizeDefault={50}
                         filterGeneral={false}
                         toolsFooter={false}
+                        helperText={t(langKeys.heatmapaverageagentTMEtooltip)}
                     />
                 </div>:""
             }
@@ -1113,6 +1116,7 @@ const MainHeatMap: React.FC = () => {
                         pageSizeDefault={50}
                         filterGeneral={false}
                         toolsFooter={false}
+                        helperText={t(langKeys.userAverageReplyTimexFechatooltip)}
                     />
                 </div>:""
             }
@@ -1127,6 +1131,7 @@ const MainHeatMap: React.FC = () => {
                         pageSizeDefault={50}
                         filterGeneral={false}
                         toolsFooter={false}
+                        helperText={t(langKeys.personAverageReplyTimexFechatooltip)}
                     />
                 </div>:""
             }
@@ -1983,6 +1988,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                         pageSizeDefault={50}
                         filterGeneral={false}
                         toolsFooter={false}
+                        helperText={t(langKeys.tasaAbandonosxAsesortooltip)}
                     />
                 </div>:""
             }
@@ -1997,6 +2003,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                         pageSizeDefault={50}
                         filterGeneral={false}
                         toolsFooter={false}
+                        helperText={t(langKeys.oportunidadesxAsesortooltip)}
                     />
                 </div>:""
             }
@@ -2011,6 +2018,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                         pageSizeDefault={50}
                         filterGeneral={false}
                         toolsFooter={false}
+                        helperText={t(langKeys.tasaOportunidadestooltip)}
                     />
                 </div>:""
             }
@@ -2029,6 +2037,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                         pageSizeDefault={50}
                         filterGeneral={false}
                         toolsFooter={false}
+                        helperText={t(langKeys.ventasxAsesortooltip)}
                     />
                 </div>:""
             }
@@ -2043,6 +2052,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                         pageSizeDefault={50}
                         filterGeneral={false}
                         toolsFooter={false}
+                        helperText={t(langKeys.efectividadxAsesortooltip)}
                         ButtonsElement={()=>(
                             <>
                                 <TemplateSwitchYesNo

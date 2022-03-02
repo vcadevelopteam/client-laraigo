@@ -16,10 +16,12 @@ import { useDispatch } from "react-redux";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import { Dictionary } from "@types";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
-import { Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip, BarChart, Legend, Bar, PieChart, Pie, Cell, ComposedChart } from 'recharts';
+import { Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip as RechartsTooltip, BarChart, Legend, Bar, PieChart, Pie, Cell, ComposedChart } from 'recharts';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import SettingsIcon from '@material-ui/icons/Settings';
+import Tooltip from "@material-ui/core/Tooltip"
+import InfoIcon from '@material-ui/icons/Info';
 
 const COLORS = ['#22b66e', '#b41a1a', '#ffcd56'];
 
@@ -222,8 +224,8 @@ const DashboardProductivity: FC = () => {
     const { t } = useTranslation();
     const [searchfieldsOnlyOne, setsearchfieldsOnlyOne] = useState({
         closedbyasesor: true,  
-        closedbybot:  true,
-        closedby: "ASESOR,BOT",
+        closedbybot:  false,
+        closedby: "ASESOR",
         min: "", 
         max: "", 
         target:0, 
@@ -346,6 +348,7 @@ const DashboardProductivity: FC = () => {
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
     const [dataqueue, setdataqueue] = useState<any>([]);
     const [dataLabel, setdataLabel] = useState<any>([]);
+    const [sla, setsla] = useState<any>(null);
     const [prodxHoralvl0, setprodxHoralvl0] = useState<any>([]);
     const [prodxHoralvl1, setprodxHoralvl1] = useState<any>([]);
     const [prodxHoraDist, setprodxHoraDist] = useState(
@@ -959,6 +962,7 @@ const DashboardProductivity: FC = () => {
                 setResTMO(remultiaux.data[0].data)
                 setResTME(remultiaux.data[1].data)
                 setResSummary(remultiaux.data[2].data)
+                setsla(remultiaux.data[2].data[0]?.slajson)
                 setTasaabandonoperc((+(remultiaux.data[2].data || [])[0]?.tasaabandonoperc || 0) * 100)
                 setprodxHoralvl0(remultiaux.data[3].data)
                 if(remultiaux.data[4].success){
@@ -1047,6 +1051,24 @@ const DashboardProductivity: FC = () => {
         }
         // eslint-disable-next-line
     },[mainResult.mainAux,waitSaveAux])
+
+    useEffect(() => {
+        if (openDialogPerRequest && fieldToFilter!="TME") {
+            setsearchfieldsOnlyOne({
+                closedbyasesor: true,  
+                closedbybot:  false,
+                closedby: "ASESOR",
+                min: sla.usertmomin?sla.usertmomin:"00:00:00", 
+                max: sla.usertmo, 
+                target: sla.usertmopercentmax, 
+                skipdown:0, 
+                skipup:0,
+                limit: 5,
+                bd: false
+            })
+        }
+        // eslint-disable-next-line
+    },[openDialogPerRequest,fieldToFilter])
 
 
     useEffect(() => {
@@ -1181,7 +1203,7 @@ const DashboardProductivity: FC = () => {
                     <FieldSelect
                         label={t(langKeys.provider)}
                         className={classes.fieldsfilter}
-                        onChange={(value) => { setsearchfields((p) => ({ ...p, provider: value.domainvalue })) }}
+                        onChange={(value) => { setsearchfields((p) => ({ ...p, provider: value?.domainvalue||"" })) }}
                         valueDefault={searchfields.provider}
                         data={dataprovider}
                         optionDesc="domaindesc"
@@ -1237,33 +1259,6 @@ const DashboardProductivity: FC = () => {
                 handleClickButton2={() => funcsearchoneonly()}
             >
                 <div>
-                    {(fieldToFilter!=="FCR" ) &&
-                        <div className="row-zyx">
-                            <TemplateSwitch
-                                label={t(langKeys.agent)}
-                                valueDefault={searchfieldsOnlyOne.closedbyasesor}
-                                onChange={(value) => {
-                                    let closedby = ""
-                                    if(value && searchfieldsOnlyOne.closedbybot) {closedby="ASESOR,BOT"} else
-                                    if (value) {closedby="ASESOR"} else
-                                    if (searchfieldsOnlyOne.closedbybot) {closedby="BOT"}
-                                    
-                                    setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbyasesor: value, closedby: closedby}))}}
-                                className="col-6"
-                            />
-                            <TemplateSwitch
-                                label="Bot"
-                                className="col-6"
-                                valueDefault={searchfieldsOnlyOne.closedbybot}
-                                onChange={(value) =>{ 
-                                    let closedby = ""
-                                    if(value && searchfieldsOnlyOne.closedbyasesor) {closedby="ASESOR,BOT"} else
-                                    if (value) {closedby="BOT"} else
-                                    if (searchfieldsOnlyOne.closedbyasesor) {closedby="ASESOR"}
-                                    setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value, closedby: closedby}))}}
-                            />
-                        </div>
-                    }
                     {(fieldToFilter==="TMO" || fieldToFilter==="TME" ) &&
                         <div className="row-zyx">
                             <TextField 
@@ -1344,11 +1339,15 @@ const DashboardProductivity: FC = () => {
                     >
                         <div className={classes.downloadiconcontainer}>                            
                             <CloudDownloadIcon onClick={()=>downloaddata("TMO")} className={classes.styleicon}/>
-                            <SettingsIcon onClick={()=>{setFieldToFilter("TMO"); setOpenDialogPerRequest(true);setsearchfieldsOnlyOne((prevState) =>({...prevState, min: resTMO[0].target_min, max: resTMO[0].target_max}))}} className={classes.styleicon}/>
+                            <SettingsIcon onClick={()=>{setFieldToFilter("TMO"); setOpenDialogPerRequest(true)}} className={classes.styleicon}/>
                         </div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
-                                <div className={classes.boxtitle}>TMO</div>
+                                <div className={classes.boxtitle}>TMO
+                                    <Tooltip title={`${t(langKeys.tmotooltip)}`} placement="top-start">
+                                        <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                    </Tooltip>
+                                </div>
                                 <div className={classes.boxtitledata}>{data.dataTMO}</div>
                             </div>
                             <div className={classes.containerFields}>
@@ -1374,7 +1373,7 @@ const DashboardProductivity: FC = () => {
                             })}>
                             <ResponsiveContainer className={classes.itemGraphic}>
                                 <PieChart>
-                                    <Tooltip />
+                                    <RechartsTooltip />
                                     <Pie data={dataTMOgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={40} fill="#8884d8">
                                         {dataTMOgraph.map((entry: any, index: number) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -1433,11 +1432,15 @@ const DashboardProductivity: FC = () => {
                     >
                         <div className={classes.downloadiconcontainer}>
                             <CloudDownloadIcon onClick={()=>downloaddata("TME")}  className={classes.styleicon}/>
-                            <SettingsIcon onClick={()=>{setFieldToFilter("TME"); setOpenDialogPerRequest(true);setsearchfieldsOnlyOne((prevState) =>({...prevState, min: resTME[0].target_min, max: resTME[0].target_max}))}} className={classes.styleicon}/>
+                            <SettingsIcon onClick={()=>{setFieldToFilter("TME"); setOpenDialogPerRequest(true);setsearchfieldsOnlyOne((prevState) =>({...prevState, min: sla.usertme, max: sla.usertmepercentmax}))}} className={classes.styleicon}/>
                         </div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
-                                <div className={classes.boxtitle}>TME</div>
+                                <div className={classes.boxtitle}>TME
+                                    <Tooltip title={`${t(langKeys.tmetooltip)}`} placement="top-start">
+                                        <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                    </Tooltip>
+                                </div>
                                 <div className={classes.boxtitledata}>{dataTME.dataTME}</div>
                             </div>
                             <div className={classes.containerFields}>
@@ -1463,7 +1466,7 @@ const DashboardProductivity: FC = () => {
                             })}>
                             <ResponsiveContainer className={classes.itemGraphic}>
                                 <PieChart>
-                                    <Tooltip />
+                                    <RechartsTooltip />
                                     <Pie data={dataTMEgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={40} fill="#8884d8">
                                         {dataTMEgraph.map((entry: any, index: number) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -1524,7 +1527,11 @@ const DashboardProductivity: FC = () => {
                     >
                         <div className={classes.containerFieldsQuarter}>
                             <ChatIcon style={{color:"white",margin: "3px 5px"}}/>
-                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR</div>
+                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR
+                                <Tooltip title={`${t(langKeys.tmrtooltip)}`} placement="top-start">
+                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                </Tooltip>
+                            </div>
                             <div className={classes.boxtitledata} style={{ padding: 0 }}>{dataSummary.tmrglobal}</div>
                         </div>
                     </Box>
@@ -1534,7 +1541,11 @@ const DashboardProductivity: FC = () => {
                     >
                         <div className={classes.containerFieldsQuarter}>
                             <PersonIcon style={{color:"white",margin: "3px 5px"}}/>
-                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR {t(langKeys.agent)}</div>
+                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR {t(langKeys.agent)}
+                                <Tooltip title={`${t(langKeys.tmratooltip)}`} placement="top-start">
+                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                </Tooltip>
+                            </div>
                             <div className={classes.boxtitledata} style={{ padding: 0 }}>{dataSummary.dataTMRAsesor}</div>
                         </div>
                     </Box>
@@ -1544,7 +1555,11 @@ const DashboardProductivity: FC = () => {
                     >
                         <div className={classes.containerFieldsQuarter}>
                             <AdbIcon style={{color:"white",margin: "3px 5px"}}/>
-                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR Bot</div>
+                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR Bot
+                                <Tooltip title={`${t(langKeys.tmrbtooltip)}`} placement="top-start">
+                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                </Tooltip>
+                            </div>
                             <div className={classes.boxtitledata} style={{ padding: 0 }}>{dataSummary.dataTMRBot}</div>
                         </div>
                     </Box>
@@ -1554,7 +1569,11 @@ const DashboardProductivity: FC = () => {
                     >
                         <div className={classes.containerFieldsQuarter}>
                             <PersonIcon style={{color:"white",margin: "3px 5px"}}/>
-                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR {t(langKeys.client)}</div>
+                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR {t(langKeys.client)}
+                                <Tooltip title={`${t(langKeys.tmrctooltip)}`} placement="top-start">
+                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                </Tooltip>
+                            </div>
                             <div className={classes.boxtitledata} style={{ padding: 0 }}>{dataSummary.dataTMRCliente}</div>
                         </div>
                     </Box>
@@ -1563,7 +1582,11 @@ const DashboardProductivity: FC = () => {
                     <Box
                         className={classes.columnCard2}
                     >
-                        <div className={classes.boxtitlequarter}>{t(langKeys.productivitycard1)}</div>
+                        <div className={classes.boxtitlequarter}>{t(langKeys.productivitycard1)}
+                            <Tooltip title={`${t(langKeys.productivitycard1tooltip)}`} placement="top-start">
+                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                            </Tooltip>
+                        </div>
                         <div className={classes.datafieldquarter}>{prodxHora.prodlog}</div>
                         <div className={classes.datafieldfooter}>
                             <div>% {t(langKeys.compliance)}</div>
@@ -1573,7 +1596,11 @@ const DashboardProductivity: FC = () => {
                     <Box
                         className={classes.columnCard2}
                     >
-                        <div className={classes.boxtitlequarter}>{t(langKeys.productivitycard2)}</div>
+                        <div className={classes.boxtitlequarter}>{t(langKeys.productivitycard2)}
+                            <Tooltip title={`${t(langKeys.productivitycard2tooltip)}`} placement="top-start">
+                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                            </Tooltip>
+                        </div>
                         <div className={classes.datafieldquarter}>{prodxHora.prodcon}</div>
                         <div className={classes.datafieldfooter}>
                             <div>% {t(langKeys.compliance)}</div>
@@ -1583,7 +1610,11 @@ const DashboardProductivity: FC = () => {
                     <Box
                         className={classes.columnCard2}
                     >
-                        <div className={classes.boxtitlequarter}>{t(langKeys.productivitycard3)}</div>
+                        <div className={classes.boxtitlequarter}>{t(langKeys.productivitycard3)}
+                            <Tooltip title={`${t(langKeys.productivitycard3tooltip)}`} placement="top-start">
+                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                            </Tooltip>
+                        </div>
                         <div className={classes.datafieldquarter}>{prodxHora.prodbot}</div>
                         <div className={classes.datafieldfooter}>
                             <div>% {t(langKeys.compliance)}</div>
@@ -1593,7 +1624,11 @@ const DashboardProductivity: FC = () => {
                     <Box
                         className={classes.columnCard2}
                     >
-                        <div className={classes.boxtitlequarter}>{t(langKeys.productivitycard4)}</div>
+                        <div className={classes.boxtitlequarter}>{t(langKeys.automaticClosingrate)}
+                            <Tooltip title={`${t(langKeys.productivitycard4tooltip)}`} placement="top-start">
+                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                            </Tooltip>
+                        </div>
                         <div className={classes.datafieldquarter}>{dataSummary.tasaabandono} %</div>                    
                         <div className={classes.datafieldfooter}>
                             <div>% {t(langKeys.compliance)}</div>
@@ -1606,15 +1641,19 @@ const DashboardProductivity: FC = () => {
                         className={classes.itemCard}
                     >
                         <div className={classes.containertitleboxes}>
-                            <div style={{ fontWeight: "bold", fontSize: "1.6em"}}>{t(langKeys.distributionTMO)}</div>
+                            <div style={{display: "flex"}}> 
+                                <div style={{ fontWeight: "bold", fontSize: "1.6em"}}>{t(langKeys.distributionTMO)}</div>
+                                <Tooltip title={`${t(langKeys.distributionTMOtooltip)}`} placement="top-start">
+                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                </Tooltip>
+                            </div>
                             <CloudDownloadIcon  onClick={()=>downloaddata("TMODistribution")} className={classes.styleicon}/>
                         </div>
                         <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
                             <BarChart data={tmoDistribution}>
-                                <XAxis dataKey="label" />
-                                <YAxis />
-                                <Tooltip />
-                                <Legend />
+                                <XAxis dataKey="label" label={{ value: `${t(langKeys.minute_plural)}`, position: 'insideBottom', offset:-5 }} />
+                                <YAxis domain={[0,100]} label={{ value: `% TMO`, angle: -90, position: 'insideLeft' }}/>
+                                <RechartsTooltip />
                                 <Bar dataKey="percentage" fill="#8884d8" name={`% ${t(langKeys.tmo)}`}>
                                 </Bar>
                             </BarChart>
@@ -1625,15 +1664,19 @@ const DashboardProductivity: FC = () => {
                         className={classes.itemCard}
                     >
                         <div className={classes.containertitleboxes}>
-                            <div style={{ fontWeight: "bold", fontSize: "1.6em"}}>{t(langKeys.distributionTME)}</div>
+                            <div style={{display: "flex"}}> 
+                                <div style={{ fontWeight: "bold", fontSize: "1.6em"}}>{t(langKeys.distributionTME)}</div>
+                                <Tooltip title={`${t(langKeys.distributionTMEtooltip)}`} placement="top-end">
+                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                </Tooltip>
+                            </div>
                             <CloudDownloadIcon onClick={()=>downloaddata("TMEDistribution")} className={classes.styleicon}/>
                         </div>
                         <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
                             <BarChart data={tmeDistribution}>
-                                <XAxis dataKey="label" />
-                                <YAxis />
-                                <Tooltip />
-                                <Legend />
+                                <XAxis dataKey="label" label={{ value: `${t(langKeys.minute_plural)}`, position: 'insideBottom', offset:-5 }} />
+                                <YAxis domain={[0,100]} label={{ value: `% TME`, angle: -90, position: 'insideLeft' }}/>
+                                <RechartsTooltip />
                                 <Bar dataKey="percentage" fill="#8884d8" name={`% ${t(langKeys.tme)}`}/>
                             </BarChart>
                         </ResponsiveContainer>
@@ -1645,7 +1688,12 @@ const DashboardProductivity: FC = () => {
                         className={classes.itemCard}
                     >
                         <div className={classes.containertitleboxes} >
-                            <div  style={{ fontWeight: "bold", fontSize: "1.6em"}}>{t(langKeys.distributionProductivity)}</div>
+                            <div style={{display: "flex"}}> 
+                                <div  style={{ fontWeight: "bold", fontSize: "1.6em"}}>{t(langKeys.distributionProductivity)}</div>
+                                <Tooltip title={`${t(langKeys.distributionProductivitytooltip)}`} placement="top-end">
+                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                </Tooltip>
+                            </div>
                             <CloudDownloadIcon className={classes.styleicon} onClick={()=>downloaddata("prodxHoraDist")} />
                         </div>
                         <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
@@ -1653,12 +1701,13 @@ const DashboardProductivity: FC = () => {
                                 data={prodxHoraDist}
                                 >
                                 <CartesianGrid stroke="#f5f5f5" />
-                                <XAxis dataKey="label" scale="band" />
-                                <YAxis />
-                                <Tooltip />
-                                <Legend />
+                                <XAxis dataKey="label" scale="band"  label={{ value: `${t(langKeys.ticketsxhour)}`, position: 'insideBottom', offset:-5 }} />
+                                <YAxis label={{ value: `${t(langKeys.numberofadvisers)}`, angle: -90, position: 'insideBottomLeft' }}/>
+                                <RechartsTooltip />
                                 <Line type="monotone" dataKey="notconnected" stroke="#52307c" name={t(langKeys.hourlogin)}/>
-                                <Bar dataKey="connected" barSize={20} fill="#2499ee" name={t(langKeys.hourconnected)}/>
+                                {
+                                    //<Bar dataKey="connected" barSize={20} fill="#2499ee" name={t(langKeys.hourconnected)}/>
+                                }
                             </ComposedChart>
                         </ResponsiveContainer>
                         
@@ -1675,7 +1724,11 @@ const DashboardProductivity: FC = () => {
                         </div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
-                                <div className={classes.boxtitle}>NPS</div>
+                                <div className={classes.boxtitle}>NPS
+                                    <Tooltip title={`${t(langKeys.npstooltip)}`} placement="top-start">
+                                        <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                    </Tooltip>
+                                </div>
                                 <div className={classes.boxtitledata}>{dataEncuesta.dataNPS}</div>
                             </div>
                             <div className={classes.containerFields}>
@@ -1701,7 +1754,7 @@ const DashboardProductivity: FC = () => {
                             })}>
                             <ResponsiveContainer className={classes.itemGraphic}>
                                 <PieChart>
-                                    <Tooltip />
+                                    <RechartsTooltip />
                                     <Pie data={dataNPSgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={40} fill="#8884d8">
                                         {dataNPSgraph.map((entry: any, index: number) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -1755,7 +1808,10 @@ const DashboardProductivity: FC = () => {
                         </div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
-                                <div className={classes.boxtitle}>CSAT</div>
+                                <div className={classes.boxtitle}>CSAT
+                                <Tooltip title={`${t(langKeys.csattooltip)}`} placement="top-start">
+                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                </Tooltip></div>
                                 <div className={classes.boxtitledata}>{dataEncuesta.dataCSAT}</div>
                             </div>
                             <div className={classes.containerFields}>
@@ -1781,7 +1837,7 @@ const DashboardProductivity: FC = () => {
                             })}>
                             <ResponsiveContainer className={classes.itemGraphic}>
                                 <PieChart>
-                                    <Tooltip />
+                                    <RechartsTooltip />
                                     <Pie data={dataCSATgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={40} fill="#8884d8">
                                         {dataCSATgraph.map((entry: any, index: number) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -1837,7 +1893,10 @@ const DashboardProductivity: FC = () => {
                         </div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
-                                <div className={classes.boxtitle}>FCR</div>
+                                <div className={classes.boxtitle}>FCR
+                                <Tooltip title={`${t(langKeys.fcrtooltip)}`} placement="top-start">
+                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                </Tooltip></div>
                                 <div className={classes.boxtitledata}>{dataEncuesta.dataFCR}</div>
                             </div>
                             <div className={classes.containerFields}>
@@ -1863,7 +1922,7 @@ const DashboardProductivity: FC = () => {
                             })}>
                             <ResponsiveContainer className={classes.itemGraphic}>
                                 <PieChart>
-                                    <Tooltip />
+                                    <RechartsTooltip />
                                     <Pie data={dataFCRgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={40} fill="#8884d8">
                                         {dataFCRgraph.map((entry: any, index: number) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -1913,7 +1972,10 @@ const DashboardProductivity: FC = () => {
                         </div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
-                                <div className={classes.boxtitle}>FIX</div>
+                                <div className={classes.boxtitle}>FIX
+                                <Tooltip title={`${t(langKeys.fixtooltip)}`} placement="top-start">
+                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                </Tooltip></div>
                                 <div className={classes.boxtitledata}>{dataEncuesta.dataFIX}</div>
                             </div>
                             <div className={classes.containerFields}>
@@ -1939,7 +2001,7 @@ const DashboardProductivity: FC = () => {
                             })}>
                             <ResponsiveContainer className={classes.itemGraphic}>
                                 <PieChart>
-                                    <Tooltip />
+                                    <RechartsTooltip />
                                     <Pie data={dataFIXgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={40} fill="#8884d8">
                                         {dataFIXgraph.map((entry: any, index: number) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

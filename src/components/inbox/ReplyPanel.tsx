@@ -41,7 +41,7 @@ interface IFile {
     error?: boolean;
 }
 
-const UploaderIcon: React.FC<{ classes: any, type: "image" | "file", setFiles: (param: any) => void, initfile?:any }> = ({ classes, setFiles, type, initfile }) => {
+const UploaderIcon: React.FC<{ classes: any, type: "image" | "file", setFiles: (param: any) => void, initfile?:any, setfileimage?: (param:any) => void}> = ({ classes, setFiles, type, initfile, setfileimage }) => {
     const [valuefile, setvaluefile] = useState('')
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
@@ -52,6 +52,9 @@ const UploaderIcon: React.FC<{ classes: any, type: "image" | "file", setFiles: (
     useEffect(() => {
         if(initfile){
             onSelectImage(initfile)
+            if(setfileimage){
+                setfileimage(null)
+            }
         }
     }, [initfile])
     useEffect(() => {
@@ -110,7 +113,7 @@ const ItemFile: React.FC<{ item: IFile, setFiles: (param: any) => void }> = ({ i
         <div key={item.id} style={{ width: 70, height: 70, border: '1px solid #e1e1e1', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             {item.url ?
                 (item.type === 'image' ?
-                    <img alt="loaded" src={item.url} style={{ objectFit: 'cover', width: '100%' }} /> :
+                    <img alt="loaded" src={item.url} style={{ objectFit: 'cover', width: '100%', maxHeight: 70 }} /> :
                     <img width="30" height="30" alt="loaded" src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/1631292621392file-trans.png" />) :
                 <CircularProgress color="inherit" />
             }
@@ -774,7 +777,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                             <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
                             <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
                             <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite}/>
-                            <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage}/>
+                            <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage}/>
                         </div>
                         <div className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(text || files.filter(x => !!x.url).length > 0) })} onClick={triggerReplyMessage}>
                             <SendIcon />

@@ -21,8 +21,10 @@ import { gerencialasesoresconectadosbarsel, gerencialconversationsel,gerencialEn
 import { useDispatch } from "react-redux";
 import { Dictionary } from "@types";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
-import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip, PieChart, Pie, Cell } from 'recharts';
+import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip as RechartsTooltip, PieChart, Pie, Cell, Label } from 'recharts';
+import InfoIcon from '@material-ui/icons/Info';
 import SettingsIcon from '@material-ui/icons/Settings';
+import Tooltip from "@material-ui/core/Tooltip"
 
 const COLORS = ['#22b66e', '#b41a1a', '#ffcd56'];
 
@@ -327,7 +329,8 @@ const DashboardManagerial: FC = () => {
         maxavgconversationsattendedasesor: "0%",
         minvgconversationsattendedbot: "0%",
         iconconversationsattendedasesor: true,
-        iconconversationsattendedbot: true
+        iconconversationsattendedbot: true,
+        tasaabandono: "0%"
     });
     const [dataTMOgraph, setDataTMOgraph] = useState([
         { label: t(langKeys.meets), quantity: 0 },
@@ -383,6 +386,7 @@ const DashboardManagerial: FC = () => {
     const [waitSave, setWaitSave] = useState(false);
     const [bringdataFilters, setbringdataFilters] = useState(false);
     const [waitSaveaux, setWaitSaveaux] = useState(false);
+    const [sla, setsla] = useState<any>(null);
     const [searchfields, setsearchfields] = useState({
         queue: "",
         provider: "",
@@ -988,16 +992,18 @@ const DashboardManagerial: FC = () => {
             maxavgconversationsattendedasesor: "0%",
             minvgconversationsattendedbot: "0%",
             iconconversationsattendedasesor: true,
-            iconconversationsattendedbot: true
+            iconconversationsattendedbot: true,
+            tasaabandono: "0%"
         })
         if (resDashboard.length) {
-            const { avgparam,ticketscerrados, ticketstotal, ticketscerradosasesor, ticketscerradosbot } = resDashboard[0];
+            const { avgparam,ticketscerrados, ticketstotal, ticketscerradosasesor, ticketscerradosbot, ticketsabandonados } = resDashboard[0];
             setDataDASHBOARD({
                 avgconversationsattended: ((ticketscerrados * 100) / ticketstotal).toFixed() + "%",
                 maxavgconversationsattendedasesor: ((ticketscerradosasesor * 100) / ticketstotal).toFixed() + "%",
                 minvgconversationsattendedbot: ((ticketscerradosbot * 100) / ticketstotal).toFixed() + "%",
                 iconconversationsattendedasesor: parseFloat(avgparam) < (ticketscerradosasesor / ticketstotal),
-                iconconversationsattendedbot: parseFloat(avgparam) < (ticketscerradosbot / ticketstotal)
+                iconconversationsattendedbot: parseFloat(avgparam) < (ticketscerradosbot / ticketstotal),
+                tasaabandono: ((ticketsabandonados * 100) / ticketstotal).toFixed() + "%",
             })
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1031,6 +1037,7 @@ const DashboardManagerial: FC = () => {
                 setResTMO(remultiaux.data[0].data)
                 setResTME(remultiaux.data[1].data)
                 setResSummary(remultiaux.data[2].data)
+                setsla(remultiaux.data[2].data[0]?.slajson)
                 setResEncuesta(remultiaux.data[3].data)
                 setResDashboard(remultiaux.data[4].data)
                 setResInteraction(remultiaux.data[5].data)
@@ -1121,6 +1128,23 @@ const DashboardManagerial: FC = () => {
         }
         // eslint-disable-next-line
     },[resaux,waitSaveaux])
+    useEffect(() => {
+        if (openDialogPerRequest && fieldToFilter!="TME") {
+            setsearchfieldsOnlyOne({
+                closedbyasesor: true,  
+                closedbybot:  true,
+                closedby: "ASESOR,BOT",
+                min: sla.totamtmomin?sla.totamtmomin:"00:00:00", 
+                max: sla.totaltmo, 
+                target: sla.totaltmopercentmax, 
+                skipdown:0, 
+                skipup:0,
+                limit: 5,
+                bd: false
+            })
+        }
+        // eslint-disable-next-line
+    },[openDialogPerRequest,fieldToFilter])
 
 
     useEffect(() => {
@@ -1227,7 +1251,7 @@ const DashboardManagerial: FC = () => {
                     <FieldSelect
                         label={t(langKeys.provider)}
                         className={classes.fieldsfilter}
-                        onChange={(value) => { setsearchfields((p) => ({ ...p, provider: value.domainvalue })) }}
+                        onChange={(value) => { setsearchfields((p) => ({ ...p, provider: value?.domainvalue||"" })) }}
                         valueDefault={searchfields.provider}
                         data={dataprovider}
                         optionDesc="domaindesc"
@@ -1268,7 +1292,7 @@ const DashboardManagerial: FC = () => {
                                     if(value && searchfieldsOnlyOne.closedbybot) {closedby="ASESOR,BOT"} else
                                     if (value) {closedby="ASESOR"} else
                                     if (searchfieldsOnlyOne.closedbybot) {closedby="BOT"}
-                                    
+                                    console.log(resTMO)
                                     setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbyasesor: value, closedby: closedby}))}}
                                 className="col-6"
                             />
@@ -1281,7 +1305,12 @@ const DashboardManagerial: FC = () => {
                                     if(value && searchfieldsOnlyOne.closedbyasesor) {closedby="ASESOR,BOT"} else
                                     if (value) {closedby="BOT"} else
                                     if (searchfieldsOnlyOne.closedbyasesor) {closedby="ASESOR"}
-                                    setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value, closedby: closedby}))}}
+                                    if(value){
+                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value,closedby: closedby,min: sla.totamtmomin?sla.totamtmomin:"00:00:00", max: sla.totaltmo, target: sla.totaltmopercentmax}))
+                                    }else{
+                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value, closedby: closedby,min: sla.totamtmomin?sla.usertmomin:"00:00:00", max: sla.usertmo, target: sla.usertmopercentmax}))
+                                    }
+                                }}
                             />
                         </div>
                     }
@@ -1381,11 +1410,15 @@ const DashboardManagerial: FC = () => {
                         >
                             <div className={classes.downloadiconcontainer}>                            
                                 <CloudDownloadIcon onClick={()=>downloaddata("TMO")} className={classes.styleicon}/>
-                                <SettingsIcon onClick={()=>{setFieldToFilter("TMO"); setOpenDialogPerRequest(true);setsearchfieldsOnlyOne((prevState) =>({...prevState, min: resTMO[0].target_min, max: resTMO[0].target_max}))}} className={classes.styleicon}/>
+                                <SettingsIcon onClick={()=>{setFieldToFilter("TMO"); setOpenDialogPerRequest(true)}} className={classes.styleicon}/>
                             </div>
                             <div className={classes.columnCard}>
                                 <div className={classes.containerFieldsTitle}>
-                                    <div className={classes.boxtitle}>TMO</div>
+                                    <div className={classes.boxtitle}>TMO
+                                        <Tooltip title={`${t(langKeys.tmotooltip)}`} placement="top-start">
+                                            <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                        </Tooltip>
+                                    </div>
                                     <div className={classes.boxtitledata}>{data.dataTMO}</div>
                                 </div>
                                 <div className={classes.containerFields}>
@@ -1411,7 +1444,7 @@ const DashboardManagerial: FC = () => {
                                 })}>
                                 <ResponsiveContainer className={classes.itemGraphic}>
                                     <PieChart>
-                                        <Tooltip />
+                                        <RechartsTooltip />
                                         <Pie data={dataTMOgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={40} fill="#8884d8">
                                             {dataTMOgraph.map((entry: any, index: number) => (
                                                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -1471,11 +1504,15 @@ const DashboardManagerial: FC = () => {
                         >
                             <div className={classes.downloadiconcontainer}>
                                 <CloudDownloadIcon onClick={()=>downloaddata("TME")}  className={classes.styleicon}/>
-                                <SettingsIcon onClick={()=>{setFieldToFilter("TME"); setOpenDialogPerRequest(true);setsearchfieldsOnlyOne((prevState) =>({...prevState, min: resTME[0].target_min, max: resTME[0].target_max}))}} className={classes.styleicon}/>
+                                <SettingsIcon onClick={()=>{setFieldToFilter("TME"); setOpenDialogPerRequest(true);setsearchfieldsOnlyOne((prevState) =>({...prevState, min: sla.usertme, max: sla.usertmepercentmax}))}} className={classes.styleicon}/>
                             </div>
                             <div className={classes.columnCard}>
                                 <div className={classes.containerFieldsTitle}>
-                                    <div className={classes.boxtitle}>TME</div>
+                                    <div className={classes.boxtitle}>TME
+                                        <Tooltip title={`${t(langKeys.tmetooltip)}`} placement="top-start">
+                                            <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                        </Tooltip>
+                                    </div>
                                     <div className={classes.boxtitledata}>{dataTME.dataTME}</div>
                                 </div>
                                 <div className={classes.containerFields}>
@@ -1501,7 +1538,7 @@ const DashboardManagerial: FC = () => {
                                 })}>
                                 <ResponsiveContainer className={classes.itemGraphic}>
                                     <PieChart>
-                                        <Tooltip />
+                                        <RechartsTooltip />
                                         <Pie data={dataTMEgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={40} fill="#8884d8">
                                             {dataTMEgraph.map((entry: any, index: number) => (
                                                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -1563,7 +1600,11 @@ const DashboardManagerial: FC = () => {
                     >
                         <div className={classes.containerFieldsQuarter}>
                             <ChatIcon style={{color:"white",margin: "3px 5px"}}/>
-                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR</div>
+                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR
+                                <Tooltip title={`${t(langKeys.tmrtooltip)}`} placement="top-start">
+                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                </Tooltip>
+                            </div>
                             <div className={classes.boxtitledata} style={{ padding: 0 }}>{dataSummary.tmrglobal}</div>
                         </div>
                     </Box>
@@ -1573,7 +1614,11 @@ const DashboardManagerial: FC = () => {
                     >
                         <div className={classes.containerFieldsQuarter}>
                             <PersonIcon style={{color:"white",margin: "3px 5px"}}/>
-                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR {t(langKeys.agent)}</div>
+                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR {t(langKeys.agent)}
+                                <Tooltip title={`${t(langKeys.tmratooltip)}`} placement="top-start">
+                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                </Tooltip>
+                            </div>
                             <div className={classes.boxtitledata} style={{ padding: 0 }}>{dataSummary.dataTMRAsesor}</div>
                         </div>
                     </Box>
@@ -1583,7 +1628,11 @@ const DashboardManagerial: FC = () => {
                     >
                         <div className={classes.containerFieldsQuarter}>
                             <AdbIcon style={{color:"white",margin: "3px 5px"}}/>
-                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR Bot</div>
+                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR Bot
+                                <Tooltip title={`${t(langKeys.tmrbtooltip)}`} placement="top-start">
+                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                </Tooltip>
+                            </div>
                             <div className={classes.boxtitledata} style={{ padding: 0 }}>{dataSummary.dataTMRBot}</div>
                         </div>
                     </Box>
@@ -1593,7 +1642,11 @@ const DashboardManagerial: FC = () => {
                     >
                         <div className={classes.containerFieldsQuarter}>
                             <PersonIcon style={{color:"white",margin: "3px 5px"}}/>
-                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR {t(langKeys.client)}</div>
+                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR {t(langKeys.client)}
+                                <Tooltip title={`${t(langKeys.tmrctooltip)}`} placement="top-start">
+                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                </Tooltip>
+                            </div>
                             <div className={classes.boxtitledata} style={{ padding: 0 }}>{dataSummary.dataTMRCliente}</div>
                         </div>
                     </Box>
@@ -1609,7 +1662,11 @@ const DashboardManagerial: FC = () => {
                         </div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
-                                <div className={classes.boxtitle}>NPS</div>
+                                <div className={classes.boxtitle}>NPS
+                                    <Tooltip title={`${t(langKeys.npstooltip)}`} placement="top-start">
+                                        <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                    </Tooltip>
+                                </div>
                                 <div className={classes.boxtitledata}>{dataEncuesta.dataNPS}</div>
                             </div>
                             <div className={classes.containerFields}>
@@ -1635,7 +1692,7 @@ const DashboardManagerial: FC = () => {
                             })}>
                             <ResponsiveContainer className={classes.itemGraphic}>
                                 <PieChart>
-                                    <Tooltip />
+                                    <RechartsTooltip />
                                     <Pie data={dataNPSgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={40} fill="#8884d8">
                                         {dataNPSgraph.map((entry: any, index: number) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -1689,7 +1746,11 @@ const DashboardManagerial: FC = () => {
                         </div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
-                                <div className={classes.boxtitle}>CSAT</div>
+                                <div className={classes.boxtitle}>CSAT
+                                <Tooltip title={`${t(langKeys.csattooltip)}`} placement="top-start">
+                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                </Tooltip>
+                            </div>
                                 <div className={classes.boxtitledata}>{dataEncuesta.dataCSAT}</div>
                             </div>
                             <div className={classes.containerFields}>
@@ -1715,7 +1776,7 @@ const DashboardManagerial: FC = () => {
                             })}>
                             <ResponsiveContainer className={classes.itemGraphic}>
                                 <PieChart>
-                                    <Tooltip />
+                                    <RechartsTooltip />
                                     <Pie data={dataCSATgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={40} fill="#8884d8">
                                         {dataCSATgraph.map((entry: any, index: number) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -1771,7 +1832,11 @@ const DashboardManagerial: FC = () => {
                         </div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
-                                <div className={classes.boxtitle}>FCR</div>
+                                <div className={classes.boxtitle}>FCR
+                                <Tooltip title={`${t(langKeys.fcrtooltip)}`} placement="top-start">
+                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                </Tooltip>
+                            </div>
                                 <div className={classes.boxtitledata}>{dataEncuesta.dataFCR}</div>
                             </div>
                             <div className={classes.containerFields}>
@@ -1797,7 +1862,7 @@ const DashboardManagerial: FC = () => {
                             })}>
                             <ResponsiveContainer className={classes.itemGraphic}>
                                 <PieChart>
-                                    <Tooltip />
+                                    <RechartsTooltip />
                                     <Pie data={dataFCRgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={40} fill="#8884d8">
                                         {dataFCRgraph.map((entry: any, index: number) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -1847,7 +1912,11 @@ const DashboardManagerial: FC = () => {
                         </div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
-                                <div className={classes.boxtitle}>FIX</div>
+                                <div className={classes.boxtitle}>FIX
+                                <Tooltip title={`${t(langKeys.fixtooltip)}`} placement="top-start">
+                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                </Tooltip>
+                            </div>
                                 <div className={classes.boxtitledata}>{dataEncuesta.dataFIX}</div>
                             </div>
                             <div className={classes.containerFields}>
@@ -1873,7 +1942,7 @@ const DashboardManagerial: FC = () => {
                             })}>
                             <ResponsiveContainer className={classes.itemGraphic}>
                                 <PieChart>
-                                    <Tooltip />
+                                    <RechartsTooltip />
                                     <Pie data={dataFIXgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={40} fill="#8884d8">
                                         {dataFIXgraph.map((entry: any, index: number) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -1923,8 +1992,10 @@ const DashboardManagerial: FC = () => {
                             <CloudDownloadIcon onClick={()=>downloaddata("averageconversationsattendedbyhour")} className={classes.styleicon}/>
                             <SettingsIcon onClick={()=>{setFieldToFilter("averageconversationsattendedbyhour"); setOpenDialogPerRequest(true)}} className={classes.styleicon}/>
                         </div>
-                        <div className={classes.boxtitlequarter}>{dataSummary.avgtickethour}</div>
-                        <div className={classes.boxtitlequarter}>{t(langKeys.averageconversationsattendedbyhour)}</div>
+                        <div style={{display: "flex", justifyContent: "space-between"}}>
+                            <div className={classes.boxtitlequarter} style={{width: "80%"}}>{t(langKeys.averageconversationsattendedbyhour)}</div>
+                            <div className={classes.boxtitlequarter} style={{marginBottom: "auto",marginTop: "auto",marginRight:5}}>{dataSummary.avgtickethour}</div>
+                        </div>
                         <div style={{display: "flex",  width: "100%"}}>
                             <div style={{width: "100%"}}>
                                 <div className="row-zyx" style={{ paddingTop: "10px" }}>
@@ -1932,7 +2003,11 @@ const DashboardManagerial: FC = () => {
                                     <div style={{ width: "50%", textAlign: "end" }}>{dataSummary.maxavgtickethourdescdate}</div>
                                 </div>
                                 <div className="row-zyx" style={{ paddingTop: "0"  }}>
-                                    <div style={{ width: "50%" }}>{t(langKeys.highestvalue)}</div>
+                                    <div style={{ width: "50%" }}>{t(langKeys.highestvalue)}
+                                        <Tooltip title={`${t(langKeys.maxavgtickethourtooltip)}`} placement="top-start">
+                                            <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                        </Tooltip>
+                                    </div>
                                     <div style={{ width: "50%", textAlign: "end" }}>{dataSummary.maxavgtickethourdeschour}</div>
                                 </div>
                             </div>
@@ -1945,7 +2020,11 @@ const DashboardManagerial: FC = () => {
                                     <div style={{ width: "50%", textAlign: "end" }}>{dataSummary.minavgtickethourdescdate}</div>
                                 </div>
                                 <div className="row-zyx" style={{ paddingTop: "0" }}>
-                                    <div style={{ width: "50%" }}>{t(langKeys.lowestvalue)}</div>
+                                    <div style={{ width: "50%" }}>{t(langKeys.lowestvalue)}
+                                        <Tooltip title={`${t(langKeys.minavgtickethourtooltip)}`} placement="top-start">
+                                            <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                        </Tooltip>
+                                    </div>
                                     <div style={{ width: "50%", textAlign: "end" }}>{dataSummary.minavgtickethourdeschour}</div>
                                 </div>
                             </div>
@@ -1960,8 +2039,10 @@ const DashboardManagerial: FC = () => {
                             <CloudDownloadIcon onClick={()=>downloaddata("averageconversationsattendedbytheadvisorbyhour")} className={classes.styleicon}/>
                             <SettingsIcon onClick={()=>{setFieldToFilter("averageconversationsattendedbytheadvisorbyhour"); setOpenDialogPerRequest(true)}} className={classes.styleicon}/>
                         </div>
-                        <div className={classes.boxtitlequarter}>{dataSummary.avgticketasesorhour}</div>
-                        <div className={classes.boxtitlequarter}>{t(langKeys.averageconversationsattendedbytheadvisorbyhour)}</div>
+                        <div style={{display: "flex", justifyContent: "space-between"}}>
+                            <div className={classes.boxtitlequarter} style={{width: "80%"}}>{t(langKeys.averageconversationsattendedbytheadvisorbyhour)}</div>
+                            <div className={classes.boxtitlequarter} style={{marginBottom: "auto",marginTop: "auto",marginRight:5}}>{dataSummary.avgticketasesorhour}</div>
+                        </div>
                         <div style={{display: "flex",  width: "100%"}}>
                             <div style={{width: "100%"}}>
                                 <div className="row-zyx" style={{ paddingTop: "10px" }}>
@@ -1969,7 +2050,11 @@ const DashboardManagerial: FC = () => {
                                     <div style={{ width: "50%", textAlign: "end" }}>{dataSummary.maxavgticketasesorhourdescdate}</div>
                                 </div>
                                 <div className="row-zyx" style={{ paddingTop: "0" }}>
-                                    <div style={{ width: "50%" }}>{t(langKeys.highestvalue)}</div>
+                                    <div style={{ width: "50%" }}>{t(langKeys.highestvalue)}
+                                        <Tooltip title={`${t(langKeys.maxavgticketasesorhourtooltip)}`} placement="top-start">
+                                            <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                        </Tooltip>
+                                    </div>
                                     <div style={{ width: "50%", textAlign: "end" }}>{dataSummary.maxavgticketasesorhourdeschour}</div>
                                 </div>
                             </div>
@@ -1982,7 +2067,11 @@ const DashboardManagerial: FC = () => {
                                     <div style={{ width: "50%", textAlign: "end" }}>{dataSummary.minavgticketasesorhourdescdate}</div>
                                 </div>
                                 <div className="row-zyx" style={{ paddingTop: "0" }}>
-                                    <div style={{ width: "50%" }}>{t(langKeys.lowestvalue)}</div>
+                                    <div style={{ width: "50%" }}>{t(langKeys.lowestvalue)}
+                                        <Tooltip title={`${t(langKeys.minavgticketasesorhourtooltip)}`} placement="top-start">
+                                            <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                        </Tooltip>
+                                    </div>
                                     <div style={{ width: "50%", textAlign: "end" }}>{dataSummary.minavgticketasesorhourdeschour}</div>
                                 </div>
                             </div>
@@ -1992,19 +2081,26 @@ const DashboardManagerial: FC = () => {
                     <Box
                         style={{ backgroundColor: "white", padding: "10px", flex: 4 }}
                     >
-                        <div className={classes.containertitleboxes}>
-                            <div style={{ fontWeight: "bold", fontSize: "1.6em"}}>{dataAsesoreconectadosbar.avgasesoresconectados}</div>
+                        <div className={classes.containertitleboxes} style={{justifyContent: "end"}}>
                             <CloudDownloadIcon onClick={()=>downloaddata("asesoresconectados")} className={classes.styleicon}/>
                         </div>
-                        <div className={classes.boxtitlequarter}>{t(langKeys.averagenumberofadvisersconnectedbyhour)}</div>
+                        <div style={{display: "flex", justifyContent: "space-between"}}>
+                            <div style={{display: "flex"}}> 
+                                <div className={classes.boxtitlequarter}>{t(langKeys.averagenumberofadvisersconnectedbyhour)}</div>
+                                <Tooltip title={`${t(langKeys.averagenumberofadviserstooltip)}`} placement="top-end">
+                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                </Tooltip>
+                            </div>
+                            <div style={{ fontWeight: "bold", fontSize: "1.6em"}}>{dataAsesoreconectadosbar.avgasesoresconectados}</div>
+                        </div>
                         <div style={{ paddingTop: "20px" }}>
                             <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
                                 <LineChart data={resAsesoreconectadosbar}>
                                     <Line type="monotone" dataKey="asesoresconectados" stroke="#8884d8" />
                                     <CartesianGrid stroke="#ccc" />
-                                    <XAxis dataKey="hora" />
-                                    <YAxis />
-                                    <Tooltip />
+                                    <XAxis dataKey="hora"><Label value={` ${t(langKeys.timeofday)} `} offset={-5} position="insideBottom" /></XAxis>
+                                    <YAxis><Label value={` ${t(langKeys.assesor_plural)} `} angle={-90} offset={0} position="insideLeft" /></YAxis>
+                                    <RechartsTooltip />
                                 </LineChart>
                             </ResponsiveContainer>
 
@@ -2017,12 +2113,19 @@ const DashboardManagerial: FC = () => {
                         style={{ backgroundColor: "white", padding: "10px", flex: 1.91 }}
                     >
                         <div className={classes.downloadiconcontainer}><CloudDownloadIcon onClick={()=>downloaddata("averageconversations")} className={classes.styleicon}/></div>
-                        <div className={classes.boxtitlequarter}>{dataDASHBOARD.avgconversationsattended}</div>
-                        <div className={classes.boxtitlequarter}>{t(langKeys.conversationsattended)}</div>
+                        
+                        <div style={{display: "flex", justifyContent: "space-between"}}>
+                            <div className={classes.boxtitlequarter} style={{width: "80%"}}>{t(langKeys.conversationsattended)}</div>
+                            <div className={classes.boxtitlequarter} style={{marginBottom: "auto",marginTop: "auto",marginRight:5}}>{dataDASHBOARD.avgconversationsattended}</div>
+                        </div>
                         <div style={{display:"flex",justifyContent:"space-between"}}>
                             <div>
                                 <div className="row-zyx" style={{ paddingTop: "10px", margin: 0 }}>{dataDASHBOARD.maxavgconversationsattendedasesor} </div>
-                                <div className="row-zyx" style={{ paddingTop: "0" }}>{t(langKeys.attendedbyasesor)}</div>
+                                <div className="row-zyx" style={{ paddingTop: "0" }}>{t(langKeys.attendedbyasesor)}
+                                    <Tooltip title={`${t(langKeys.maxavgconversationsattendedasesortooltip)}`} placement="top-start">
+                                        <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                    </Tooltip>
+                                </div>
                             </div>
                             {
                                 dataDASHBOARD.iconconversationsattendedasesor?
@@ -2034,7 +2137,11 @@ const DashboardManagerial: FC = () => {
                         <div style={{display:"flex",justifyContent:"space-between"}}>
                             <div>
                                 <div className="row-zyx" style={{ paddingTop: "30px", margin: 0 }}>{dataDASHBOARD.minvgconversationsattendedbot} </div>
-                                <div className="row-zyx" style={{ paddingTop: "0" }}>{t(langKeys.attendedbybot)}</div>
+                                <div className="row-zyx" style={{ paddingTop: "0" }}>{t(langKeys.attendedbybot)}
+                                    <Tooltip title={`${t(langKeys.minvgconversationsattendedbottooltip)}`} placement="top-start">
+                                        <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                    </Tooltip>
+                                </div>
                             </div>
                             {
                                 dataDASHBOARD.iconconversationsattendedbot?
@@ -2042,17 +2149,34 @@ const DashboardManagerial: FC = () => {
 
                             }
                         </div>
+                        <div style={{display:"flex",justifyContent:"space-between"}}>
+                            <div>
+                                <div className="row-zyx" style={{ paddingTop: "30px", margin: 0 }}>{dataDASHBOARD.tasaabandono} </div>
+                                <div className="row-zyx" style={{ paddingTop: "0" }}>{t(langKeys.productivitycard4)}
+                                </div>
+                            </div>
+                        </div>
                     </Box>
                     <Box
                         style={{ backgroundColor: "white", padding: "10px", flex: 1.91 }}
                     >
                         <div className={classes.downloadiconcontainer}><CloudDownloadIcon onClick={()=>downloaddata("interaction")} className={classes.styleicon}/></div>
-                        <div className={classes.boxtitlequarter}>{dataInteraction.avginteractionsxconversations}</div>
-                        <div className={classes.boxtitlequarter}>{t(langKeys.averageinteractionbyconversation)}</div>
+                        <div style={{display: "flex", justifyContent: "space-between"}}>
+                            <div className={classes.boxtitlequarter} style={{width: "80%"}}>{t(langKeys.averageinteractionbyconversation)}</div>
+                            <div className={classes.boxtitlequarter} style={{marginBottom: "auto",marginTop: "auto",marginRight:5}}>{dataInteraction.avginteractionsxconversations}</div>
+                        </div>
                         <div className="row-zyx" style={{ paddingTop: "10px", margin: 0 }}>{dataInteraction.maxavginteractionsxconversations} </div>
-                        <div className="row-zyx" style={{ paddingTop: "0" }}>{t(langKeys.agent)}</div>
+                        <div className="row-zyx" style={{ paddingTop: "0" }}>{t(langKeys.agent)}
+                            <Tooltip title={`${t(langKeys.maxavginteractionsxconversationstooltip)}`} placement="top-start">
+                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                            </Tooltip>
+                        </div>
                         <div className="row-zyx" style={{ paddingTop: "30px", margin: 0 }}>{dataInteraction.minvginteractionsxconversations} </div>
-                        <div className="row-zyx" style={{ paddingTop: "0" }}>Bot</div>
+                        <div className="row-zyx" style={{ paddingTop: "0" }}>Bot
+                            <Tooltip title={`${t(langKeys.minvginteractionsxconversationstooltip)}`} placement="top-start">
+                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                            </Tooltip>
+                        </div>
                     </Box>
                     {/* { (resaux.loading && fieldToFilter==="etiqueta")?(<Box  className={classes.itemCard} style={{display: "flex", alignItems: 'center', justifyContent: "center"}}><CircularProgress/> </Box>):
                     (<Box
@@ -2068,7 +2192,7 @@ const DashboardManagerial: FC = () => {
                                 <BarChart data={resLabels}>
                                     <XAxis dataKey="label" />
                                     <YAxis />
-                                    <Tooltip />
+                                    <RechartsTooltip />
                                     <Bar dataKey="quantity" fill="#8884d8" />
                                 </BarChart>
                             </ResponsiveContainer>
