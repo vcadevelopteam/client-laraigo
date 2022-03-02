@@ -432,7 +432,14 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
     if (agentSelected?.userid === data.userid || newticketList.some(x => x.conversationid === data.conversationid)) {
         if (data.newConversation) {
             if (!newticketList.some(x => x.conversationid === data.conversationid)) { // a veces se cruza cuando esta cargando al data
-                newticketList = [...newticketList, { ...data, isAnswered: data.userid === 2 }]
+                newticketList = [
+                    ...newticketList,
+                    {
+                        ...data,
+                        personlastreplydate: data.usertype === "client" ? new Date().toISOString() : null,
+                        firstconversationdate: new Date().toISOString(),
+                        isAnswered: data.userid === 2
+                    }]
             }
         } else {
             newticketList = newticketList.map((x: ITicket) => x.conversationid === data.conversationid ? ({
@@ -500,7 +507,7 @@ export const changeStatusTicketWS = (state: IState, action: IAction): IState => 
     const { agentList: { data }, userType } = state;
 
     if (userType === 'SUPERVISOR') {
-        
+
         newAgentList = data.map(x => x.userid === userid ? {
             ...x,
             countPaused: status === "SUSPENDIDO" ? x.countPaused + 1 : x.countPaused - 1,
