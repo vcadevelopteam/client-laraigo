@@ -60,9 +60,8 @@ const AddNewInteraction = (groupsInteraction: IGroupInteraction[], interaction: 
     return groupsInteraction;
 }
 
-const cleanLogsReassignedTask = (interactions: IInteraction[]) => {
+const cleanLogsReassignedTask = (interactions: IInteraction[], returnHidden: boolean = false) => {
     let validatelog = true;
-    //#region HIDE LOGS, ONLY SHOW LAST LOG
     for (let i = 0; i < interactions.length; i++) {
         if (interactions[i].interactiontext.toLowerCase().includes("balanceo") && validatelog) {
             let countlogconsecutive = 0;
@@ -83,8 +82,7 @@ const cleanLogsReassignedTask = (interactions: IInteraction[]) => {
             validatelog = true;
     }
     //#endregion
-    //interactions = interactions.filter(i => i.interactiontype != "HIDE");
-    return interactions.filter(x => !x.isHide);
+    return returnHidden ? interactions : interactions.filter(x => !x.isHide);
 }
 
 export const getAgents = (state: IState): IState => ({
@@ -648,6 +646,18 @@ export const getDataTicketSuccess = (state: IState, action: IAction): IState => 
 };
 
 
+export const hideLogInteractions = (state: IState, action: IAction): IState => ({
+    ...state,
+    interactionList: {
+        data: getGroupInteractions(action.payload ? state.interactionBaseList.filter(x => x.interactiontype !== "LOG") : cleanLogsReassignedTask(state.interactionBaseList)),
+        count: action.payload.count,
+        loading: false,
+        error: false,
+    },
+});
+
+
+
 export const getDataTicketFailure = (state: IState, action: IAction): IState => ({
     ...state,
     interactionList: {
@@ -680,7 +690,7 @@ export const getInteractionsExtra = (state: IState): IState => ({
 export const getInteractionsExtraSuccess = (state: IState, action: IAction): IState => ({
     ...state,
     interactionExtraList: {
-        data: getGroupInteractions(cleanLogsReassignedTask(action.payload.data || [])),
+        data: getGroupInteractions(cleanLogsReassignedTask(action.payload.data || [], true)),
         count: action.payload.count,
         loading: false,
         error: false,

@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { getInteractions } from 'store/inbox/actions'
-import { Dictionary } from '@types';
+import { Dictionary, IGroupInteraction } from '@types';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import ItemGroupInteraction from './Interaction';
@@ -15,6 +15,7 @@ import { DownloadIcon } from 'icons';
 import DomToImage from 'dom-to-image';
 import jsPDF from 'jspdf';
 import IOSSwitch from "components/fields/IOSSwitch";
+import Tooltip from '@material-ui/core/Tooltip';
 
 const useStyles = makeStyles((theme) => ({
     containerPanel: {
@@ -307,7 +308,9 @@ const DialogInteractions: React.FC<{ ticket: Dictionary | null, openModal: boole
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
+    const [showAllInteraction, setShowAllInteraction] = React.useState(false)
     const interactionExtraList = useSelector(state => state.inbox.interactionExtraList);
+    const [interactionsToShow, setinteractionsToShow] = React.useState<IGroupInteraction[]>([])
     const el = React.useRef<null | HTMLDivElement>(null);
 
     useEffect(() => {
@@ -316,7 +319,6 @@ const DialogInteractions: React.FC<{ ticket: Dictionary | null, openModal: boole
     }, [ticket])
 
     const GenericPdfDownloader: React.FC<{ downloadFileName: string }> = ({ downloadFileName }) => {
-
         const downloadPdfDocument = () => {
             if (el.current) {
                 const gg = document.createElement('div');
@@ -367,6 +369,17 @@ const DialogInteractions: React.FC<{ ticket: Dictionary | null, openModal: boole
         )
     }
 
+    useEffect(() => {
+        if (showAllInteraction) {
+            setinteractionsToShow(interactionExtraList.data)
+        } else {
+            setinteractionsToShow(interactionExtraList.data.map(x => ({
+                ...x,
+                interactions: x.interactions.filter(y => !y.isHide)
+            })))
+        }
+    }, [showAllInteraction, interactionExtraList.loading])
+
     return (
         <DialogZyx
             open={openModal}
@@ -375,15 +388,18 @@ const DialogInteractions: React.FC<{ ticket: Dictionary | null, openModal: boole
             handleClickButton1={() => setOpenModal(false)}
         >
             <GenericPdfDownloader
-                // rootElementId={el?.current!!}
                 downloadFileName={`ticket-` + ticket?.ticketnum}
             />
             <div style={{ position: 'absolute', left: 16, bottom: 16 }}>
-                <IOSSwitch checked={false} onChange={(e) => console.log(e.target.value)} name="checkedB" />
+                <Tooltip title={t(langKeys.show_all) || ""} arrow >
+                    <div>
+                        <IOSSwitch checked={showAllInteraction} onChange={(e) => setShowAllInteraction(e.target.checked)} name="checkedB" />
+                    </div>
+                </Tooltip>
             </div>
             {interactionExtraList.loading ? <SkeletonInteraction /> :
                 <div ref={el} className="scroll-style-go" style={{ display: 'flex', flexDirection: 'column', gap: 8, height: '60vh' }}>
-                    {interactionExtraList.data.map((groupInteraction) => (
+                    {interactionsToShow.map((groupInteraction) => (
                         <ItemGroupInteraction
                             imageClient={ticket?.imageurldef}
                             clientName={ticket?.displayname}

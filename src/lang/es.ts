@@ -25,6 +25,11 @@ const translation: LangKeys = {
     type_service: 'Tipo de Servicio',
     type_service_plural: 'Tipos de Servicio',
 
+    show_logs: 'Mostrar logs',
+    hide_logs: 'Ocultar logs',
+
+    show_all: 'Mostrar todo',
+
     lead: 'Oportunidad',
     lead_plural: 'Oportunidades',
     model: 'Modelo',
