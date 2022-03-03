@@ -1,6 +1,6 @@
 import { Box, Button, createStyles, makeStyles, Theme } from "@material-ui/core";
 import { Dictionary } from "@types";
-import { exportExcel, getCommChannelLst, getdashboardPushHSMCATEGORYRANKSel, getdashboardPushHSMCATEGORYRANKSelData, getdashboardPushHSMRANKSel, getdashboardPushHSMRANKSelData, getdashboardPushMENSAJEXDIASel, getdashboardPushMENSAJEXDIASelData, getdashboardPushSUMMARYSel, getdashboardPushSUMMARYSelData, getDateCleaned, getLabelsSel, getSupervisorsSel, getValuesFromDomain } from "common/helpers";
+import { exportExcel, getCommChannelLst, getdashboardPushAppDataSel, getdashboardPushAppSel, getdashboardPushHSMCATEGORYRANKSel, getdashboardPushHSMCATEGORYRANKSelData, getdashboardPushHSMRANKSel, getdashboardPushHSMRANKSelData, getdashboardPushMENSAJEXDIASel, getdashboardPushMENSAJEXDIASelData, getdashboardPushSUMMARYSel, getdashboardPushSUMMARYSelData, getDateCleaned, getLabelsSel, getSupervisorsSel, getValuesFromDomain } from "common/helpers";
 import { DateRangePicker, DialogZyx, FieldMultiSelect } from "components";
 import { useSelector } from "hooks";
 import { CalendarIcon } from "icons";
@@ -178,6 +178,7 @@ const DashboardOperationalPush: FC = () => {
     const [datacategoriaHSM, setdatacategoriaHSM] = useState<any>([]);
     const [dataHSMCATEGORYRANK, setdataHSMCATEGORYRANK] = useState<any>([]);
     const [dataHSMRANK, setdataHSMRANK] = useState<any>([]);
+    const [dataAppRank, setdataAppRank] = useState<any>([]);
     const [dataPushSUMMARYSel, setdataPushSUMMARYSel] = useState<any>([]);
     const [dataMENSAJEXDIA, setdataMENSAJEXDIA] = useState<any>([]);
     const [dataSummary, setdataSummary] = useState({
@@ -217,6 +218,7 @@ const DashboardOperationalPush: FC = () => {
             getdashboardPushSUMMARYSel(tosend),
             getdashboardPushHSMRANKSel(tosend),
             getdashboardPushMENSAJEXDIASel(tosend),
+            getdashboardPushAppSel(tosend)
         ]))
         setWaitSave(true)
     }
@@ -255,6 +257,7 @@ const DashboardOperationalPush: FC = () => {
                 setdataPushSUMMARYSel(remultiaux.data[1].data)
                 setdataHSMRANK(remultiaux.data[2].data)
                 setdataMENSAJEXDIA(remultiaux.data[3].data)
+                setdataAppRank(remultiaux.data[4].data)
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (remultiaux.error) {
@@ -342,6 +345,10 @@ const DashboardOperationalPush: FC = () => {
             settitlefile(t(langKeys.messagesbyday));
             setSection('messageperday')
             dispatch(getCollectionAux(getdashboardPushMENSAJEXDIASelData(tosend)))
+        }else{
+            settitlefile(t(langKeys.numberofHSMShipments));
+            setSection('application')
+            dispatch(getCollectionAux(getdashboardPushAppDataSel(tosend)))
         }
     }
     return (
@@ -532,6 +539,7 @@ const DashboardOperationalPush: FC = () => {
                 <div className={classes.replacerowzyx} >
                     <Box
                         className={classes.itemCard}
+                        style={{width:"50%"}}
                     >
                         <div className={classes.downloadiconcontainer}>                            
                             <CloudDownloadIcon onClick={()=>downloaddata("CATEGORYRANK")} className={classes.styleicon}/>
@@ -553,6 +561,7 @@ const DashboardOperationalPush: FC = () => {
                     </Box>
                     <Box
                         className={classes.itemCard}
+                        style={{width:"50%"}}
                     >
                         <div className={classes.downloadiconcontainer}>                            
                             <CloudDownloadIcon onClick={()=>downloaddata("HSMRANK")} className={classes.styleicon}/>
@@ -584,6 +593,37 @@ const DashboardOperationalPush: FC = () => {
                 <div className={classes.replacerowzyx}>
                     <Box
                         className={classes.itemCard}
+                        style={{width:"50%"}}
+                    >
+                        <div className={classes.downloadiconcontainer}>                            
+                            <CloudDownloadIcon onClick={()=>downloaddata("aPPHSM")} className={classes.styleicon}/>
+                        </div>
+                        <div style={{width: "100%"}}> 
+                            <div style={{display: "flex"}}>
+                                <div style={{fontWeight: "bold",fontSize: "1.6em",}}> {t(langKeys.numberofHSMShipments)} </div>
+                                <Tooltip title={`${t(langKeys.numberofHSMShipmentstooltip)}`} placement="top-end">
+                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                </Tooltip>
+                            </div>
+                        </div>
+                            <div style={{ height: 240 }}>
+                                <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
+                                    <BarChart data={dataAppRank}>
+                                        <XAxis dataKey="application"  label={{ value: `${t(langKeys.employeeaplication)}`, position: 'insideBottom', offset:-5 }}/>
+                                        <YAxis label={{ value: `${t(langKeys.hsmquantitysimple)}`, angle: -90, position: 'insideLeft' }}/>
+                                        <RechartsTooltip />
+                                        <Bar dataKey="quantity" fill="#8884d8" >
+                                            {dataAppRank.map((entry: any, index: number) => (
+                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                            ))}
+                                        </Bar>
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                    </Box>
+                    <Box
+                        className={classes.itemCard}
+                        style={{width:"50%"}}
                     >
                         <div className={classes.downloadiconcontainer}>                            
                             <CloudDownloadIcon onClick={()=>downloaddata("MESSAGEPERDAY")} className={classes.styleicon}/>

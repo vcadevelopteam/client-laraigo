@@ -573,12 +573,12 @@ const LayoutItem: FC<LayoutItemProps> = ({
     //     }, "UPDATE");
     // }, [graph, canChange, key, detail, onDetailChange]);
 
-    const formatTooltip = (v: any) => {
+    const formatTooltip = (v: any, tot?: any) => {
         if (groupment === "percentage") {
             return `${t(langKeys.percentage)}: ${v}%`;
         }
 
-        return `${t(langKeys.quantity)}: ${v}`;
+        return `${t(langKeys.quantity)}: ${v}\n${t(langKeys.percentage)}: ${v*100/tot}%`;
     }
 
     const renderGraph = useCallback(() => {
@@ -596,6 +596,7 @@ const LayoutItem: FC<LayoutItemProps> = ({
                     <LayoutPie
                         data={dataGraph as ChartData[]}
                         tooltipFormatter={formatTooltip}
+                        tickFormatter={groupment === "percentage" ? v => `${v}%` : undefined}
                     />
                 );
             case 'line':
@@ -715,10 +716,14 @@ interface IData {
 interface LayoutBarProps extends Omit<ResponsiveContainerProps, 'children'> {
     data: IData[];
     tickFormatter?: (value: string, index: number) => string;
-    tooltipFormatter?: (value: any) => string;
+    tooltipFormatter?: (value: any, tot?:any) => string;
 }
 
 const LayoutBar: FC<LayoutBarProps> = ({ data, tickFormatter, tooltipFormatter, ...props }) => {
+    let total=0;
+    if (tickFormatter===undefined){
+        total = data.reduce((a, b) => a + (b.quantity || 0), 0)
+    }
     return (
         <ResponsiveContainer {...props}>
             <BarChart data={data}>
@@ -732,7 +737,7 @@ const LayoutBar: FC<LayoutBarProps> = ({ data, tickFormatter, tooltipFormatter, 
                     dy={5}
                     dx={-5}
                 />
-                <YAxis tickFormatter={tickFormatter} />
+                <YAxis tickFormatter={tickFormatter} padding={{ top: 10 }}/>
                 <ChartTooltip
                     content={({ active, payload, label }) => {
                         if (active && payload && payload.length) {
@@ -741,9 +746,9 @@ const LayoutBar: FC<LayoutBarProps> = ({ data, tickFormatter, tooltipFormatter, 
                                 <Card key={`${label}-${value}`} style={{ padding: '0.85em' }}>
                                     {label && <label>{label}</label>}
                                     {label && <br />}
-                                    <span style={{ color: "#8884d8" }}>
+                                    <span style={{ color: "#8884d8", whiteSpace: "break-spaces" }}>
                                         {
-                                            tooltipFormatter?.(value) ||
+                                            tooltipFormatter?.(value,total) ||
                                             `quantity: ${value}`
                                         }
                                     </span>
@@ -761,7 +766,7 @@ const LayoutBar: FC<LayoutBarProps> = ({ data, tickFormatter, tooltipFormatter, 
                     stackId="a"
                     type="monotone"
                 >
-                    <LabelList dataKey="quantity" position="inside" fill="#fff" />
+                    <LabelList dataKey="quantity" position="top" fill="#000" />
                 </Bar>
             </BarChart>
         </ResponsiveContainer>
@@ -771,10 +776,14 @@ const LayoutBar: FC<LayoutBarProps> = ({ data, tickFormatter, tooltipFormatter, 
 interface LayoutLineProps extends Omit<ResponsiveContainerProps, 'children'> {
     data: IData[];
     tickFormatter?: (value: string, index: number) => string;
-    tooltipFormatter?: (value: any) => string;
+    tooltipFormatter?: (value: any, total?:any) => string;
 }
 
 const LayoutLine: FC<LayoutLineProps> = ({ data, tickFormatter, tooltipFormatter, ...props }) => {
+    let total=0;
+    if (tickFormatter===undefined){
+        total = data.reduce((a, b) => a + (b.quantity || 0), 0)
+    }
     return (
         <ResponsiveContainer {...props}>
             <LineChart data={data}>
@@ -799,9 +808,9 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, tickFormatter, tooltipFormatter
                                 <Card key={`${label}-${value}`} style={{ padding: '0.85em' }}>
                                     {label && <label>{label}</label>}
                                     {label && <br />}
-                                    <span style={{ color: "#8884d8" }}>
+                                    <span style={{ color: "#8884d8", whiteSpace: "break-spaces" }}>
                                         {
-                                            tooltipFormatter?.(value) ||
+                                            tooltipFormatter?.(value,total) ||
                                             `quantity: ${value}`
                                         }
                                     </span>
@@ -819,12 +828,17 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, tickFormatter, tooltipFormatter
 
 interface LayoutPieProps extends Omit<ResponsiveContainerProps, 'children'> {
     data: IData[];
-    tooltipFormatter?: (value: any) => string;
+    tickFormatter?: (value: string, index: number) => string;
+    tooltipFormatter?: (value: any, total?:any) => string;
 }
 
 const PIE_COLORS = ['#22b66e', '#b41a1a', '#ffcd56', '#D32F2F', '#FBC02D', '#757575', '#00BCD4', '#AFB42B', '#8BC34A', '#5D4037', '#607D8B', '#03A9F4', '#303F9F', '#009688', '#388E3C', '#E64A19', '#212121'];
 
-const LayoutPie: FC<LayoutPieProps> = ({ data, tooltipFormatter, ...props }) => {
+const LayoutPie: FC<LayoutPieProps> = ({ data, tooltipFormatter,tickFormatter, ...props }) => {
+    let total=0;
+    if (tickFormatter===undefined){
+        total = data.reduce((a, b) => a + (b.quantity || 0), 0)
+    }
     return (
         <ResponsiveContainer {...props}>
             <PieChart>
@@ -836,9 +850,9 @@ const LayoutPie: FC<LayoutPieProps> = ({ data, tooltipFormatter, ...props }) => 
                                 <Card key={`${label}-${value}`} style={{ padding: '0.85em' }}>
                                     {label && <label>{label}</label>}
                                     {label && <br />}
-                                    <span style={{ color: "#8884d8" }}>
+                                    <span style={{ color: "#8884d8", whiteSpace: "break-spaces" }}>
                                         {
-                                            tooltipFormatter?.(value) ||
+                                            tooltipFormatter?.(value,total) ||
                                             `quantity: ${value}`
                                         }
                                     </span>

@@ -1,5 +1,5 @@
 import { Box, Button, CircularProgress, createStyles, makeStyles, TextField, Theme } from "@material-ui/core";
-import { DateRangePicker, DialogZyx, FieldMultiSelect, FieldSelect, TemplateSwitch } from "components";
+import { DateRangePicker, DialogZyx, FieldMultiSelect, FieldSelect } from "components";
 import { useSelector } from "hooks";
 import { CalendarIcon } from "icons";
 import { langKeys } from "lang/keys";
@@ -16,7 +16,7 @@ import { useDispatch } from "react-redux";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import { Dictionary } from "@types";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
-import { Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip as RechartsTooltip, BarChart, Legend, Bar, PieChart, Pie, Cell, ComposedChart } from 'recharts';
+import { Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip as RechartsTooltip, BarChart, Bar, PieChart, Pie, Cell, ComposedChart } from 'recharts';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -1053,7 +1053,7 @@ const DashboardProductivity: FC = () => {
     },[mainResult.mainAux,waitSaveAux])
 
     useEffect(() => {
-        if (openDialogPerRequest && fieldToFilter!="TME") {
+        if (openDialogPerRequest && fieldToFilter!=="TME") {
             setsearchfieldsOnlyOne({
                 closedbyasesor: true,  
                 closedbybot:  false,

@@ -56,6 +56,7 @@ const UploaderIcon: React.FC<{ classes: any, type: "image" | "file", setFiles: (
                 setfileimage(null)
             }
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [initfile])
     useEffect(() => {
         if (waitSave) {
@@ -700,9 +701,8 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
         }
     }
     function onPasteTextbar(e:any){
-        console.log(e.clipboardData.getData('Text'));
         if(e.clipboardData.files.length){
-            console.log(e.clipboardData.files)
+            e.preventDefault()
             if(e.clipboardData.files[0].type.includes("image")){
                 setfileimage(e.clipboardData.files)
             }

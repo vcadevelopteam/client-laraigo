@@ -16,12 +16,12 @@ import AdbIcon from '@material-ui/icons/Adb';
 import { exportExcel, gerencialEncuesta2selData, gerencialEncuesta3selData, gerencialTMEselData, getDateCleaned } from 'common/helpers';
 import { useTranslation } from 'react-i18next';
 import { gerencialasesoresconectadosbarsel, gerencialconversationsel,gerencialEncuestassel,getdashboardgerencialconverstionxhoursel,gerencialasesoresconectadosbarseldata,gerencialinteractionseldata, 
-    gerencialconversationseldata,gerencialencuestasel, gerencialinteractionsel,gerencialsummaryseldata, gerencialsummarysel, gerencialTMEsel, gerencialTMOsel,
+    gerencialconversationseldata,gerencialencuestasel, gerencialinteractionsel,gerencialsummaryseldata, gerencialsummarysel, gerencialTMEsel, gerencialTMOsel,gerencialchannelsel,
     gerencialTMOselData, getCommChannelLst, getValuesFromDomain } from "common/helpers";
 import { useDispatch } from "react-redux";
 import { Dictionary } from "@types";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
-import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip as RechartsTooltip, PieChart, Pie, Cell, Label } from 'recharts';
+import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip as RechartsTooltip, PieChart, Pie, Cell, Label, BarChart, Bar } from 'recharts';
 import InfoIcon from '@material-ui/icons/Info';
 import SettingsIcon from '@material-ui/icons/Settings';
 import Tooltip from "@material-ui/core/Tooltip"
@@ -325,12 +325,16 @@ const DashboardManagerial: FC = () => {
         fixtotalconversations: 0,
     });
     const [dataDASHBOARD, setDataDASHBOARD] = useState({
+        totalconversations: "",
         avgconversationsattended: "0%",
         maxavgconversationsattendedasesor: "0%",
+        maxavgconversationsattendedasesortotal: "",
         minvgconversationsattendedbot: "0%",
+        minvgconversationsattendedbottotal: "",
         iconconversationsattendedasesor: true,
         iconconversationsattendedbot: true,
-        tasaabandono: "0%"
+        tasaabandono: "0%",
+        abandonados: ""
     });
     const [dataTMOgraph, setDataTMOgraph] = useState([
         { label: t(langKeys.meets), quantity: 0 },
@@ -376,6 +380,7 @@ const DashboardManagerial: FC = () => {
     const [resEncuesta, setResEncuesta] = useState<any>([]);
     const [resDashboard, setResDashboard] = useState<any>([]);
     const [resInteraction, setResInteraction] = useState<any>([]);
+    const [reschannels, setreschannels] = useState<any>([]);
     const [resAsesoreconectadosbar, setResAsesoreconectadosbar] = useState<any>([]);
     // const [resLabels, setResLabels] = useState<any>([]);
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
@@ -988,22 +993,30 @@ const DashboardManagerial: FC = () => {
     }, [resEncuesta]);
     useEffect(() => {
         setDataDASHBOARD({
+            totalconversations: "",
             avgconversationsattended: "0%",
             maxavgconversationsattendedasesor: "0%",
+            maxavgconversationsattendedasesortotal: "",
             minvgconversationsattendedbot: "0%",
+            minvgconversationsattendedbottotal: "",
             iconconversationsattendedasesor: true,
             iconconversationsattendedbot: true,
-            tasaabandono: "0%"
+            tasaabandono: "0%",
+            abandonados: ""
         })
         if (resDashboard.length) {
             const { avgparam,ticketscerrados, ticketstotal, ticketscerradosasesor, ticketscerradosbot, ticketsabandonados } = resDashboard[0];
             setDataDASHBOARD({
+                totalconversations: ticketscerrados,
                 avgconversationsattended: ((ticketscerrados * 100) / ticketstotal).toFixed() + "%",
                 maxavgconversationsattendedasesor: ((ticketscerradosasesor * 100) / ticketstotal).toFixed() + "%",
+                maxavgconversationsattendedasesortotal: ticketscerradosasesor,
                 minvgconversationsattendedbot: ((ticketscerradosbot * 100) / ticketstotal).toFixed() + "%",
+                minvgconversationsattendedbottotal: ticketscerradosbot,
                 iconconversationsattendedasesor: parseFloat(avgparam) < (ticketscerradosasesor / ticketstotal),
                 iconconversationsattendedbot: parseFloat(avgparam) < (ticketscerradosbot / ticketstotal),
                 tasaabandono: ((ticketsabandonados * 100) / ticketstotal).toFixed() + "%",
+                abandonados: ticketsabandonados
             })
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1041,7 +1054,7 @@ const DashboardManagerial: FC = () => {
                 setResEncuesta(remultiaux.data[3].data)
                 setResDashboard(remultiaux.data[4].data)
                 setResInteraction(remultiaux.data[5].data)
-                // setResLabels(remultiaux.data[6].data)
+                setreschannels(remultiaux.data[7].data)
 
                 const asesoretmp = [...remultiaux.data[6].data];
 
@@ -1074,8 +1087,8 @@ const DashboardManagerial: FC = () => {
             gerencialencuestasel({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider }),
             gerencialconversationsel({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider }),
             gerencialinteractionsel({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider }),
-            // gerencialetiquetassel({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider }),
             gerencialasesoresconectadosbarsel({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider }),
+            gerencialchannelsel({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider }),
         ]))
         setWaitSave(true)
     }
@@ -1129,7 +1142,7 @@ const DashboardManagerial: FC = () => {
         // eslint-disable-next-line
     },[resaux,waitSaveaux])
     useEffect(() => {
-        if (openDialogPerRequest && fieldToFilter!="TME") {
+        if (openDialogPerRequest && fieldToFilter!=="TME") {
             setsearchfieldsOnlyOne({
                 closedbyasesor: true,  
                 closedbybot:  true,
@@ -2116,11 +2129,11 @@ const DashboardManagerial: FC = () => {
                         
                         <div style={{display: "flex", justifyContent: "space-between"}}>
                             <div className={classes.boxtitlequarter} style={{width: "80%"}}>{t(langKeys.conversationsattended)}</div>
-                            <div className={classes.boxtitlequarter} style={{marginBottom: "auto",marginTop: "auto",marginRight:5}}>{dataDASHBOARD.avgconversationsattended}</div>
+                            <div className={classes.boxtitlequarter} style={{marginBottom: "auto",marginTop: "auto",marginRight:5}}>{dataDASHBOARD.avgconversationsattended} - {dataDASHBOARD.totalconversations}</div>
                         </div>
                         <div style={{display:"flex",justifyContent:"space-between"}}>
                             <div>
-                                <div className="row-zyx" style={{ paddingTop: "10px", margin: 0 }}>{dataDASHBOARD.maxavgconversationsattendedasesor} </div>
+                                <div className="row-zyx" style={{ paddingTop: "10px", margin: 0 }}>{dataDASHBOARD.maxavgconversationsattendedasesor} - {dataDASHBOARD.maxavgconversationsattendedasesortotal}</div>
                                 <div className="row-zyx" style={{ paddingTop: "0" }}>{t(langKeys.attendedbyasesor)}
                                     <Tooltip title={`${t(langKeys.maxavgconversationsattendedasesortooltip)}`} placement="top-start">
                                         <InfoIcon style={{padding: "5px 0 0 5px"}} />
@@ -2136,7 +2149,7 @@ const DashboardManagerial: FC = () => {
                         
                         <div style={{display:"flex",justifyContent:"space-between"}}>
                             <div>
-                                <div className="row-zyx" style={{ paddingTop: "30px", margin: 0 }}>{dataDASHBOARD.minvgconversationsattendedbot} </div>
+                                <div className="row-zyx" style={{ paddingTop: "30px", margin: 0 }}>{dataDASHBOARD.minvgconversationsattendedbot} - {dataDASHBOARD.minvgconversationsattendedbottotal}</div>
                                 <div className="row-zyx" style={{ paddingTop: "0" }}>{t(langKeys.attendedbybot)}
                                     <Tooltip title={`${t(langKeys.minvgconversationsattendedbottooltip)}`} placement="top-start">
                                         <InfoIcon style={{padding: "5px 0 0 5px"}} />
@@ -2151,12 +2164,46 @@ const DashboardManagerial: FC = () => {
                         </div>
                         <div style={{display:"flex",justifyContent:"space-between"}}>
                             <div>
-                                <div className="row-zyx" style={{ paddingTop: "30px", margin: 0 }}>{dataDASHBOARD.tasaabandono} </div>
+                                <div className="row-zyx" style={{ paddingTop: "30px", margin: 0 }}>{dataDASHBOARD.tasaabandono} - {dataDASHBOARD.abandonados}</div>
                                 <div className="row-zyx" style={{ paddingTop: "0" }}>{t(langKeys.productivitycard4)}
                                 </div>
                             </div>
                         </div>
                     </Box>
+                    <Box
+                        style={{ backgroundColor: "white", padding: "10px", flex: 1.91 }}
+                    >
+                        {/*<div className={classes.downloadiconcontainer}><CloudDownloadIcon onClick={()=>downloaddata("interaction")} className={classes.styleicon}/></div>*/}
+                        <div style={{display: "flex", justifyContent: "space-between"}}>
+                            <div className={classes.boxtitlequarter} style={{width: "80%"}}>{t(langKeys.uniqueclients)}</div>
+                            <div className={classes.boxtitlequarter} style={{marginBottom: "auto",marginTop: "auto",marginRight:5}}>{reschannels.reduce((a:any, b:any) => a + (b.uniques || 0), 0)}</div>
+                        </div>
+                        <br/>
+                        <div className="row-zyx" style={{ paddingTop: "0" }}>
+                            {reschannels.map(((x:any)=>{
+                            let totalchannels = reschannels.reduce((a:any, b:any) => a + (b.uniques || 0), 0)
+                            let width = x.uniques*100/totalchannels
+                            return (
+                            <div key={x.communicationchannelid}>
+                                <div style={{display:"flex", justifyContent: "space-between"}}>
+                                    <div>
+                                        {x.communicationchannel}
+                                    </div>
+                                    <div>
+                                        {x.uniques}
+                                    </div>
+                                </div> 
+                                <div style={{display:"flex"}}>
+                                    <div style={{border: "5px solid #53a6fa", borderRadius: "10px 0 0 10px", width:`${width}%`}}></div>
+                                    <div style={{border: "5px solid lightgrey", borderRadius: "0 10px 10px 0", width:`${100-width}%`}}></div>
+                                </div>
+                                <br/> 
+                            </div>)}
+                            ))}
+                        </div>
+                    </Box>
+                </div>
+                <div className={classes.replacerowzyx}>
                     <Box
                         style={{ backgroundColor: "white", padding: "10px", flex: 1.91 }}
                     >
@@ -2178,27 +2225,35 @@ const DashboardManagerial: FC = () => {
                             </Tooltip>
                         </div>
                     </Box>
-                    {/* { (resaux.loading && fieldToFilter==="etiqueta")?(<Box  className={classes.itemCard} style={{display: "flex", alignItems: 'center', justifyContent: "center"}}><CircularProgress/> </Box>):
-                    (<Box
+                    <Box
                         style={{ backgroundColor: "white", padding: "10px", flex: 4 }}
                     >
-                        <div className={classes.containertitleboxes}>
-                            <div style={{ fontWeight: "bold", fontSize: "1.6em"}}>{t(langKeys.top5labels)}</div>
-                            <CloudDownloadIcon onClick={()=>downloaddata("etiqueta")} className={classes.styleicon}/>
-                            <SettingsIcon onClick={()=>{setFieldToFilter("etiqueta"); setOpenDialogPerRequest(true)}} className={classes.styleicon}/>                            
+                        {/*<div className={classes.containertitleboxes} style={{justifyContent: "end"}}>
+                            <CloudDownloadIcon onClick={()=>downloaddata("asesoresconectados")} className={classes.styleicon}/>
+                            </div>*/}
+                        <div style={{display: "flex", justifyContent: "space-between"}}>
+                            <div style={{display: "flex"}}> 
+                                <div className={classes.boxtitlequarter}>{t(langKeys.numberofconversationsperchannel)}</div>
+                                {/*<Tooltip title={`${t(langKeys.averagenumberofadviserstooltip)}`} placement="top-end">
+                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                </Tooltip>*/}
+                            </div>
+                            <div style={{ fontWeight: "bold", fontSize: "1.6em"}}>{reschannels.reduce((a:any, b:any) => a + (b.tickets || 0), 0)}</div>
                         </div>
                         <div style={{ paddingTop: "20px" }}>
                             <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
-                                <BarChart data={resLabels}>
-                                    <XAxis dataKey="label" />
-                                    <YAxis />
+                                <BarChart data={reschannels}>
+                                    <CartesianGrid stroke="#ccc" />
+                                    <XAxis dataKey="communicationchannel"><Label value={` ${t(langKeys.channel_plural)} `} offset={-5} position="insideBottom" /></XAxis>
+                                    <YAxis><Label value={` ${t(langKeys.conversationquantity)} `} angle={-90}/></YAxis>
                                     <RechartsTooltip />
-                                    <Bar dataKey="quantity" fill="#8884d8" />
+                                    <Bar dataKey="tickets" fill="#8884d8" />
                                 </BarChart>
                             </ResponsiveContainer>
 
                         </div>
-                    </Box>)} */}
+
+                    </Box>
                 </div>
             </div>
         </Fragment>

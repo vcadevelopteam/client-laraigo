@@ -723,7 +723,7 @@ interface SummaryGraphicProps {
     columnsprefix?: string;
 }
 
-const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal, setView, row, daterange, filters, columns, columnsprefix, setColumnGraphic }) => {
+const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal, setView, row, daterange, filters, columns, setColumnGraphic }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
 
