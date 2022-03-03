@@ -1565,6 +1565,7 @@ const translation: LangKeys = {
     dashboard_operationalpush_application_tag: "Tag",
     dashboard_operationalpush_application_quantity: "Quantity",
     dashboard_operationalpush_application_channel: "Channel",
+    week:"Week",
     numberofconversationsperchannel: "Number of conversations per channel",
 
     report_loginhistory: 'User login',

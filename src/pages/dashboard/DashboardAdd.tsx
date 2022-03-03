@@ -94,6 +94,7 @@ const useDashboardAddStyles = makeStyles(theme => ({
 interface Item {
     description: string;
     contentType: string;
+    interval?: string;
     kpiid : number;
     reporttemplateid: number;
     grouping: string;
@@ -547,6 +548,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
     useEffect(() => {
         register(`${key}.description`, { validate: mandatoryStrField, value: getValues(`${key}.description`) || '' });
         register(`${key}.contentType`, { validate: mandatoryContentType, value: getValues(`${key}.contentType`) || '' });
+        register(`${key}.interval`, {value: getValues(`${key}.interval`)});
 
         return () => {
             unregister(key);
@@ -648,6 +650,20 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                 disabled={loading}
                 uset
                 prefixTranslation="dashboard_contentType_"
+            />
+            <FieldSelect
+                className={classes.field}
+                label={t(langKeys.interval)}
+                data={[
+                    {key: "day", desc:t(langKeys.day)},
+                    {key: "week", desc:t(langKeys.week)},
+                    {key: "month", desc:t(langKeys.month)},
+                ]}
+                optionDesc="desc"
+                optionValue="key"
+                valueDefault={getValues(`${key}.interval`)}
+                onChange={(v)=>setValue(`${key}.interval`, v?.key || "")}
+                disabled={loading}
             />
             {contentType === "kpi" && (
                 <FieldSelect

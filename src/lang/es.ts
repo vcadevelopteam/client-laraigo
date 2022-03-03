@@ -1132,6 +1132,7 @@ const translation: LangKeys = {
     channelcharge: "Costo por canales",
     conversationclientwhatcharge: "Costo por conversaciones WA iniciadas por el cliente",
     conversationquantity: "Cantidad de conversaciones",
+    week:"Semana",
     conversationcompanywhatquantity: "Cantidad de conversaciones WA iniciadas por la empresa",
     uniquecontacts: "Contactos Únicos",
     month_01: "Enero",

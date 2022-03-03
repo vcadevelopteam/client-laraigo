@@ -31,6 +31,7 @@ export const langKeys = {
     advisoricon: "advisoricon",
     typecredit: "typecredit",
     error_estructure_user: "error_estructure_user",
+    week:"week",
     sentmessagestooltip: "sentmessagestooltip",
     messagessuccessfullydeliveredtooltip: "messagessuccessfullydeliveredtooltip",
     failedmessagestooltip: "failedmessagestooltip",
