@@ -18,6 +18,7 @@ import leadReducer, { IState as ILead } from './lead/reducer';
 import culqiReducer, { IState as ICulqi } from './culqi/reducer';
 import dashboardReducer, { IState as IDashboard } from './dashboard/reducer';
 import getlocationsReducer, { IState as IGetLocations } from './getlocations/reducer';
+import subscriptionReducer, { IState as ISubscription } from './subscription/reducer';
 
 export interface IRootState {
     ticket: ITicketState;
@@ -36,6 +37,7 @@ export interface IRootState {
     culqi: ICulqi;
     dashboard: IDashboard;
     getlocations: IGetLocations;
+    subscription: ISubscription;
 }
 
 declare global {
@@ -61,6 +63,7 @@ const rootReducer = combineReducers<IRootState>({
     culqi: culqiReducer,
     dashboard: dashboardReducer,
     getlocations: getlocationsReducer,
+    subscription: subscriptionReducer,
 });
 
 export default function configureStore(preloadedState?: IRootState) {

@@ -3104,6 +3104,18 @@ const translation: LangKeys = {
     TWITTERDM: 'Twitter DM',
     WHATSAPP: 'WhatsApp',
     WHATSAPPSMOOCH: 'WhatsApp',
+    recoverpassword1: 'Forgot your password? ',
+    recoverpassword2: 'Recover it',
+    recoverpasswordtitle: 'Password Recovery',
+    recoverpasswordbutton: 'Recover',
+    recoverpasswordconfirmation: 'If the user exists and it has a registered contact mail, instructions for the password recovery procedure will be sent in a mail message. Do you wish to continue?',
+    recoverpassword_usernotfound: 'User not found. Verify your information and try again',
+    recoverpassword_usernotmail: 'Mail not configured or with an incorrect format. Contact the platform administrator',
+    recoverpassword_recoversent: 'The recovery mail was sent',
+    recoverpasswordsubtitle: 'At the end of the process, your user will have to log in with the password indicated in the fields below',
+    recoverpassword_success: 'The password was changed succesfully',
+    recoverpassword_expired: 'Link expired. Retry the recovery process',
+    recoverpassword_finish: 'Process finished. Use this button to go back to the log-in screen.',
 };
 
 const enResource: ResourceLanguage = {

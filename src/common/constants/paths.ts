@@ -132,6 +132,10 @@ const paths = {
     },
     KPIMANAGER: '/kpimanager',
     CHNAGE_PWD_FIRST_LOGIN: '/changePasswordOnFirstLogin',
+    RECOVER_PASSWORD: {
+        path: '/recoverpassword/:token',
+        resolve: (token: string) => `/recoverpassword/${token}`
+    },
 };
 
 export default paths;

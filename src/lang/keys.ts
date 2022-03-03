@@ -3090,6 +3090,18 @@ export const langKeys = {
     TWITTERDM: 'TWITTERDM',
     WHATSAPP: 'WHATSAPP',
     WHATSAPPSMOOCH: 'WHATSAPPSMOOCH',
+    recoverpassword1: 'recoverpassword1',
+    recoverpassword2: 'recoverpassword2',
+    recoverpasswordtitle: 'recoverpasswordtitle',
+    recoverpasswordbutton: 'recoverpasswordbutton',
+    recoverpasswordconfirmation: 'recoverpasswordconfirmation',
+    recoverpassword_usernotfound: 'recoverpassword_usernotfound',
+    recoverpassword_usernotmail: 'recoverpassword_usernotmail',
+    recoverpassword_recoversent: 'recoverpassword_recoversent',
+    recoverpasswordsubtitle: 'recoverpasswordsubtitle',
+    recoverpassword_success: 'recoverpassword_success',
+    recoverpassword_expired: 'recoverpassword_expired',
+    recoverpassword_finish: 'recoverpassword_finish',
 };
 
 export type LangKeys = typeof langKeys;

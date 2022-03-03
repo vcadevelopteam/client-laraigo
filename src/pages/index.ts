@@ -43,5 +43,6 @@ export * from './dashboard';
 export { default as Settings } from './Settings';
 export { default as Privacy } from './Privacy';
 export { default as ActivateUser } from './ActivateUser';
+export { default as RecoverPassword } from './RecoverPassword';
 export * from './crm';
 export { default as ChangePwdFirstLogin } from './ChangePwdFirstLogin';

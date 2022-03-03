@@ -107,4 +107,7 @@ export const apiUrls = {
     BILLINGREGULARIZEINVOICE: `${BASE_URL}/payment/regularizeinvoice`,
     GETEXCHANGERATE: `${BASE_URL}/payment/getexchangerate`,
     BILLINGEMITINVOICE: `${BASE_URL}/payment/emitinvoice`,
+
+    RECOVERPASSWORD: `${BASE_URL}/subscription/recoverpassword`,
+    CHANGEPASSWORD: `${BASE_URL}/subscription/changepassword`,
 };

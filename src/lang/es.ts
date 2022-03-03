@@ -3092,6 +3092,18 @@ const translation: LangKeys = {
     TWITTERDM: 'Twitter DM',
     WHATSAPP: 'WhatsApp',
     WHATSAPPSMOOCH: 'WhatsApp',
+    recoverpassword1: '¿Olvidaste tu contraseña? ',
+    recoverpassword2: 'Recupérala',
+    recoverpasswordtitle: 'Recuperación de Contraseña',
+    recoverpasswordbutton: 'Recuperar',
+    recoverpasswordconfirmation: 'Si el usuario ingresado existe y tiene un correo personal configurado, se le enviara un correo con las instrucciones detallando los pasos para la recuperación de su contraseña. ¿Desea proceder?',
+    recoverpassword_usernotfound: 'Usuario no encontrado. Verificar su información y probar nuevamente',
+    recoverpassword_usernotmail: 'Correo no configurado o con formato inválido. Comunicarse con el administrador de la plataforma',
+    recoverpassword_recoversent: 'Se envio el correo de recuperación',
+    recoverpasswordsubtitle: 'Al finalizar el proceso, su usuario debera iniciar sesión con la contraseña que indicó en los campos inferiores',
+    recoverpassword_success: 'Se realizo el cambio de contraseña exitosamente',
+    recoverpassword_expired: 'Enlace expirado. Reintente el proceso de recuperación',
+    recoverpassword_finish: 'Proceso terminado. Presione el boton para volver a la pantalla de inicio de sesión.',
 };
 
 const esResource: ResourceLanguage = {

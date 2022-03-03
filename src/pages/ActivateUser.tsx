@@ -124,7 +124,7 @@ export const ActivateUser: FC = () => {
                                 type="button"
                                 color="primary"
                                 style={{ backgroundColor: "#7721AD" }}
-                                onClick={() => history.push(paths.SIGNIN)}
+                                onClick={() => window.open(paths.SIGNIN, "_self")}
                             >{t(langKeys.continue)}</Button>
                         </div>
                     </Box>
@@ -145,7 +145,7 @@ export const ActivateUser: FC = () => {
                                 type="button"
                                 color="primary"
                                 style={{ backgroundColor: "#7721AD" }}
-                                onClick={() => history.push(paths.SIGNIN)}
+                                onClick={() => window.open(paths.SIGNIN, "_self")}
                             >{t(langKeys.continue)}</Button>
                         </div>
                     </Box>

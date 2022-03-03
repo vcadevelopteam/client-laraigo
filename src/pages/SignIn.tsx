@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect, Fragment } from 'react'; // we need this to make JSX compile
+import React, { FC, useState, useEffect, Fragment } from 'react'; // we need this to make JSX compile
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -26,11 +26,14 @@ import FacebookLogin from 'react-facebook-login';
 import FacebookIcon from '@material-ui/icons/Facebook';
 import GoogleLogin from 'react-google-login';
 import { connectAgentUI } from 'store/inbox/actions';
-import { showSnackbar } from 'store/popus/actions';
+import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { useLocation } from "react-router-dom";
 import { apiUrls } from 'common/constants';
 import paths from 'common/constants/paths';
 import { LaraigoLogo } from 'icons';
+import { useForm } from 'react-hook-form';
+import { FieldEdit, DialogZyx } from 'components';
+import { recoverPassword } from 'store/subscription/actions';
 
 export const useStyles = makeStyles((theme) => ({
     paper: {
@@ -104,22 +107,27 @@ type IAuth = {
 }
 
 const SignIn = () => {
-    const classes = useStyles();
     const { t } = useTranslation();
-    const location = useLocation();
-
-    const history = useHistory();
 
     const dispatch = useDispatch();
+
+    const classes = useStyles();
+    const history = useHistory();
+    const location = useLocation();
     const resLogin = useSelector(state => state.login.login);
 
     const [dataAuth, setDataAuth] = useState<IAuth>({ username: '', password: '' });
+    const [openModal, setOpenModal] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
     const handleClickShowPassword = () => setShowPassword(!showPassword);
 
     const handleSignUp = () => {
         window.open(paths.SIGNUPBASIC, "_self");
+    }
+
+    const handleRecover = () => {
+        setOpenModal(true);
     }
 
     const handleMouseDownPassword = (event: any) => event.preventDefault();
@@ -154,6 +162,10 @@ const SignIn = () => {
         }
     }
 
+    const onModalSuccess = () => {
+        setOpenModal(false);
+    }
+
     useEffect(() => {
         const ff = location.state || {} as any;
         if (!!ff?.showSnackbar) {
@@ -183,6 +195,11 @@ const SignIn = () => {
                     {/* <img src="./Laraigo-vertical-logo-name.svg" style={{ height: 200 }} alt="logo" /> */}
                     <LaraigoLogo style={{ height: 200 }} />
                     <div className={classes.paper}>
+                        <RecoverModal
+                            openModal={openModal}
+                            setOpenModal={setOpenModal}
+                            onTrigger={onModalSuccess}
+                        />
                         {resLogin.error && (
                             <Alert className={classes.alertheader} variant="filled" severity="error">
                                 {t(resLogin.code || "error_unexpected_error")}
@@ -267,6 +284,10 @@ const SignIn = () => {
                                         <Trans i18nKey={langKeys.newRegisterMessage} />
                                         <span style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={handleSignUp}>{t(langKeys.newRegisterMessage2)}</span>
                                     </p>
+                                    <p>
+                                        <Trans i18nKey={langKeys.recoverpassword1} />
+                                        <span style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={handleRecover}>{t(langKeys.recoverpassword2)}</span>
+                                    </p>
                                 </Grid>
                             </Grid>
                         </form>
@@ -279,6 +300,77 @@ const SignIn = () => {
             </Container>
         </>
         )
+}
+
+const RecoverModal: FC<{ openModal: boolean, setOpenModal: (param: any) => void, onTrigger: () => void }> = ({ openModal, setOpenModal, onTrigger }) => {
+    const dispatch = useDispatch();
+    
+    const { t } = useTranslation();
+
+    const recoverResult = useSelector(state => state.subscription.requestRecoverPassword);
+
+    const [waitSave, setWaitSave] = useState(false);
+
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+        defaultValues: {
+            username: ''
+        }
+    });
+
+    React.useEffect(() => {
+        register('username', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+    }, [register]);
+
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!recoverResult.loading && !recoverResult.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(recoverResult.msg || "success") }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+                onTrigger();
+            }
+            else if (recoverResult.error) {
+                dispatch(showSnackbar({ show: true, success: false, message: t(recoverResult.msg || "error_unexpected_db_error") }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [recoverResult, waitSave])
+
+    const onSubmit = handleSubmit((data) => {
+        const callback = () => {
+            dispatch(recoverPassword(data));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.recoverpasswordconfirmation),
+            callback
+        }))
+    });
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.recoverpasswordtitle)}
+            buttonText1={t(langKeys.cancel)}
+            buttonText2={t(langKeys.recoverpasswordbutton)}
+            handleClickButton1={() => setOpenModal(false)}
+            handleClickButton2={onSubmit}
+            button2Type="submit"
+        >
+            <FieldEdit
+                label={t(langKeys.billingusername)}
+                valueDefault={getValues('username')}
+                error={errors?.username?.message}
+                onChange={(value) => setValue('username', value)}
+                className="col-12"
+            />
+        </DialogZyx>
+    )
 }
 
 export default SignIn;
