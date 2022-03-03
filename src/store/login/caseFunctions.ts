@@ -1,6 +1,7 @@
 import { IAction, IUser } from "@types";
 import { initialState, IState } from "./reducer";
 import { saveAuthorizationToken, removeAuthorizationToken } from "common/helpers";
+import { keys } from "common/constants";
 
 export const login = (state: IState): IState => ({
     ...state,
@@ -14,6 +15,7 @@ export const login = (state: IState): IState => ({
 
 export const loginSuccess = (state: IState, action: IAction): IState => {
     saveAuthorizationToken(action.payload.data.token);
+    localStorage.removeItem(keys.HIDE_LOGS)
     return {
         ...state,
         login: {

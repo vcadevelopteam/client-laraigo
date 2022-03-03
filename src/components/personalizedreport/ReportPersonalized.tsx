@@ -334,7 +334,7 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
                             onClick={() => setShowDialogGraphic(true)}
                             startIcon={<AssessmentIcon />}
                         >
-                            {t(langKeys.graphic_view)}
+                            {view === "GRID" ? t(langKeys.graphic_view) : t(langKeys.configuration)}
                         </Button>
                         {view === "GRID" && (
                             <Button
