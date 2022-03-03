@@ -586,7 +586,7 @@ const translation: LangKeys = {
     'status_not sent': 'no enviado',
 
     graphic_view: 'Vista gráfica',
-    graphic_configuration: 'Configuración de gráfico',
+    graphic_configuration: 'Configuración del gráfico',
     graphic_type: 'Tipo de gráfica',
     graphic_pie: 'Pie',
     graphic_bar: 'Barras',

@@ -13,7 +13,7 @@ import ItemTicket from 'components/inbox/Ticket'
 import ChatPanel from 'components/inbox/ChatPanel'
 import InfoPanel from 'components/inbox/InfoPanel'
 import DrawerFilter from 'components/inbox/DrawerFilter'
-import { resetGetTickets, getTickets, selectTicket, getDataTicket, setIsFiltering, showLogsOnTicket } from 'store/inbox/actions';
+import { resetGetTickets, getTickets, selectTicket, getDataTicket, setIsFiltering, hideLogsOnTicket } from 'store/inbox/actions';
 import { useDispatch } from 'react-redux';
 import { ListItemSkeleton } from 'components'
 import { langKeys } from 'lang/keys';
@@ -403,7 +403,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
 
     const setTicketSelected = React.useCallback((ticket: ITicket) => {
         dispatch(selectTicket(ticket))
-        dispatch(showLogsOnTicket(hideLogs))
+        dispatch(hideLogsOnTicket(hideLogs))
         dispatch(getDataTicket(ticket, userType === "AGENT"))
     }, [dispatch]);
 

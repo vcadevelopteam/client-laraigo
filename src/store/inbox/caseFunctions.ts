@@ -1,7 +1,7 @@
 import { IAction, IInteraction, IGroupInteraction, ITicket, INewMessageParams, IDeleteTicketParams, IConnectAgentParams, Dictionary } from "@types";
 import { initialState, IState } from "./reducer";
 import { toTime24HR, convertLocalDate } from 'common/helpers';
-
+import { keys } from 'common/constants';
 
 const getGroupInteractions = (interactions: IInteraction[]): IGroupInteraction[] => {
 
@@ -620,13 +620,12 @@ export const getDataTicket = (state: IState): IState => ({
 });
 
 export const getDataTicketSuccess = (state: IState, action: IAction): IState => {
-    // console.log("aaa", state.ticketSelected)
     return {
         ...state,
         ticketSelected: { ...state.ticketSelected!!, isAnswered: action.payload.data[0].data.some((x: IInteraction) => x.userid === state.agentSelected?.userid && x.interactiontype !== "LOG") },
         interactionBaseList: action.payload.data?.[0]?.data || [],
         interactionList: {
-            data: getGroupInteractions(state.showLogsOnTicket ? action.payload.data[0].data.filter((x: any) => x.interactiontype !== "LOG") : cleanLogsReassignedTask(action.payload.data[0].data)),
+            data: getGroupInteractions(state.hideLogsOnTicket ? action.payload.data[0].data.filter((x: any) => x.interactiontype !== "LOG") : cleanLogsReassignedTask(action.payload.data[0].data)),
             count: action.payload.count,
             loading: false,
             error: false,
@@ -653,20 +652,27 @@ export const getDataTicketSuccess = (state: IState, action: IAction): IState => 
 };
 
 
-export const hideLogInteractions = (state: IState, action: IAction): IState => ({
-    ...state,
-    interactionList: {
-        data: getGroupInteractions(action.payload ? state.interactionBaseList.filter(x => x.interactiontype !== "LOG") : cleanLogsReassignedTask(state.interactionBaseList)),
-        count: action.payload.count,
-        loading: false,
-        error: false,
-    },
-});
+export const hideLogInteractions = (state: IState, action: IAction): IState => {
+    localStorage.setItem(keys.HIDE_LOGS, action.payload ? "1" : "0");
+    return {
+        ...state,
+        hideLogsOnTicket: action.payload,
+        interactionList: {
+            data: getGroupInteractions(action.payload ? state.interactionBaseList.filter(x => x.interactiontype !== "LOG") : cleanLogsReassignedTask(state.interactionBaseList)),
+            count: action.payload.count,
+            loading: false,
+            error: false,
+        },
+    }
+};
 
-export const setShowLogsOnTicket = (state: IState, action: IAction): IState => ({
-    ...state,
-    showLogsOnTicket: action.payload
-});
+export const setHideLogsOnTicket = (state: IState, action: IAction): IState => {
+    const localHideLogs = localStorage.getItem(keys.HIDE_LOGS);
+    return {
+        ...state,
+        hideLogsOnTicket: !!localHideLogs ? localHideLogs === "1" : action.payload
+    }
+};
 
 
 
