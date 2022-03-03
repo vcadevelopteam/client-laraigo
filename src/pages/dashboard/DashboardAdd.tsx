@@ -94,9 +94,9 @@ const useDashboardAddStyles = makeStyles(theme => ({
 interface Item {
     description: string;
     contentType: string;
-    interval?: string;
     kpiid : number;
     reporttemplateid: number;
+    interval?: string;
     grouping: string;
     graph: string;
     column: string;
@@ -548,7 +548,6 @@ export const LayoutItem: FC<LayoutItemProps> = ({
     useEffect(() => {
         register(`${key}.description`, { validate: mandatoryStrField, value: getValues(`${key}.description`) || '' });
         register(`${key}.contentType`, { validate: mandatoryContentType, value: getValues(`${key}.contentType`) || '' });
-        register(`${key}.interval`, {value: getValues(`${key}.interval`)});
 
         return () => {
             unregister(key);
@@ -564,6 +563,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
             register(`${key}.grouping`, { validate: mandatoryStrField, value: getValues(`${key}.grouping`) || '' });
             register(`${key}.graph`, { validate: mandatoryStrField, value: getValues(`${key}.graph`) || '' });
             register(`${key}.column`, { validate: mandatoryColumn, value: getValues(`${key}.column`) || '' });
+            register(`${key}.interval`, {value: getValues(`${key}.interval`)});
         } else if (contentType === "kpi") {
             unregister(`${key}.reporttemplateid`);
             unregister(`${key}.grouping`);
@@ -651,20 +651,6 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                 uset
                 prefixTranslation="dashboard_contentType_"
             />
-            <FieldSelect
-                className={classes.field}
-                label={t(langKeys.interval)}
-                data={[
-                    {key: "day", desc:t(langKeys.day)},
-                    {key: "week", desc:t(langKeys.week)},
-                    {key: "month", desc:t(langKeys.month)},
-                ]}
-                optionDesc="desc"
-                optionValue="key"
-                valueDefault={getValues(`${key}.interval`)}
-                onChange={(v)=>setValue(`${key}.interval`, v?.key || "")}
-                disabled={loading}
-            />
             {contentType === "kpi" && (
                 <FieldSelect
                     className={classes.field}
@@ -680,6 +666,21 @@ export const LayoutItem: FC<LayoutItemProps> = ({
             )}
             {contentType === "report" && (
                 <>
+                
+                    <FieldSelect
+                        className={classes.field}
+                        label={t(langKeys.interval)}
+                        data={[
+                            {key: "day", desc:t(langKeys.day)},
+                            {key: "week", desc:t(langKeys.week)},
+                            {key: "month", desc:t(langKeys.month)},
+                        ]}
+                        optionDesc="desc"
+                        optionValue="key"
+                        valueDefault={getValues(`${key}.interval`)}
+                        onChange={(v)=>setValue(`${key}.interval`, v?.key || "")}
+                        disabled={loading}
+                    />
                     <FieldSelect
                         className={classes.field}
                         label={t(langKeys.report)}
