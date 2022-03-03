@@ -3129,6 +3129,7 @@ export const langKeys = {
     recoverpassword_success: 'recoverpassword_success',
     recoverpassword_expired: 'recoverpassword_expired',
     recoverpassword_finish: 'recoverpassword_finish',
+    propertyocultarlogconversacion: 'propertyocultarlogconversacion',
 };
 
 export type LangKeys = typeof langKeys;

@@ -3147,6 +3147,7 @@ const translation: LangKeys = {
     recoverpassword_success: 'The password was changed succesfully',
     recoverpassword_expired: 'Link expired. Retry the recovery process',
     recoverpassword_finish: 'Process finished. Use this button to go back to the log-in screen.',
+    propertyocultarlogconversacion: 'Switch used to hide the conversation log',
 };
 
 const enResource: ResourceLanguage = {

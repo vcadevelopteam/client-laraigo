@@ -3136,6 +3136,7 @@ const translation: LangKeys = {
     recoverpassword_success: 'Se realizo el cambio de contraseña exitosamente',
     recoverpassword_expired: 'Enlace expirado. Reintente el proceso de recuperación',
     recoverpassword_finish: 'Proceso terminado. Presione el boton para volver a la pantalla de inicio de sesión.',
+    propertyocultarlogconversacion: 'Switch para ocultar el log de la conversación',
 };
 
 const esResource: ResourceLanguage = {
