@@ -588,7 +588,7 @@ const translation: LangKeys = {
     graphic_view: 'Vista gráfica',
     graphic_configuration: 'Configuración de gráfico',
     graphic_type: 'Tipo de gráfica',
-    graphic_pie: 'Torta',
+    graphic_pie: 'Pie',
     graphic_bar: 'Barras',
     graphic_view_by: 'Visualizar por',
     graphic_report_of: 'Reporte gráfico de {{report}} por {{column}}',
