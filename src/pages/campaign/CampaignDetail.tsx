@@ -320,8 +320,14 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
             }
         }
         if (detaildata.executiontype === 'SCHEDULED') {
-            detaildata.batchjson?.reduce((bda, bdc, i) => {
-                campaignMemberList.filter((cm, j) => j >= bda && j < bda + parseInt(bdc.quantity)).map(cm => cm.batchindex = i);
+            let batchjsontemp = [...(detaildata.batchjson || [])];
+            batchjsontemp = batchjsontemp.map((d: any, i: number) => ({...d, batchindex: i + 1}));
+            setDetaildata({
+                ...detaildata,
+                batchjson: batchjsontemp,
+            });
+            batchjsontemp.reduce((bda, bdc, i) => {
+                campaignMemberList.filter((cm, j) => j >= bda && j < bda + parseInt(bdc.quantity)).map(cm => cm.batchindex = bdc.batchindex);
                 return bda + parseInt(bdc.quantity);
             }, 0);
         }
