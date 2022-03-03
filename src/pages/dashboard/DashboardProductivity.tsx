@@ -637,7 +637,7 @@ const DashboardProductivity: FC = () => {
             {label:"20 - 30", quantity: 0},
             {label:"30 +", quantity: 0}
         ])
-        if (resSummary.length) {
+        if (resSummary?.length) {
             if (resSummary[0] && resSummary[0].ticketstotal !== 0) {
                 const {averagereplytime,botaveragereplytime,useraveragereplytime,personaveragereplytime,tmoasesorrange0, tmoasesorrange1, tmoasesorrange2, tmoasesorrange3, tmoasesorrange4, tmoasesorrange5,
                     tmeasesorrange0, tmeasesorrange1,  tmeasesorrange2, tmeasesorrange3, tmeasesorrange4, tmeasesorrange5,ticketsabandonados,ticketstmeasesor,ticketstmoasesor ,ticketstotal} = resSummary[0]
@@ -962,7 +962,7 @@ const DashboardProductivity: FC = () => {
                 setResTMO(remultiaux.data[0].data)
                 setResTME(remultiaux.data[1].data)
                 setResSummary(remultiaux.data[2].data)
-                setsla(remultiaux.data[2].data[0]?.slajson)
+                setsla(remultiaux.data[2].data?.[0]?.slajson)
                 setTasaabandonoperc((+(remultiaux.data[2].data || [])[0]?.tasaabandonoperc || 0) * 100)
                 setprodxHoralvl0(remultiaux.data[3].data)
                 if(remultiaux.data[4].success){

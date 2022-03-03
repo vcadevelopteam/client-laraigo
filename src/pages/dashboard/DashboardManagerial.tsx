@@ -619,7 +619,7 @@ const DashboardManagerial: FC = () => {
             minavgticketasesorhourdescdate: "",
             minavgticketasesorhourdeschour: "",
         })
-        if (resSummary.length) {
+        if (resSummary?.length) {
             if (resSummary[0] && resSummary[0].ticketstotal !== 0) {
                 let txtmaxavgticketusername = formatname(resSummary[0].maxavgticketusername)
                 let txtminavgticketusername = formatname(resSummary[0].minavgticketusername)
@@ -1050,7 +1050,7 @@ const DashboardManagerial: FC = () => {
                 setResTMO(remultiaux.data[0].data)
                 setResTME(remultiaux.data[1].data)
                 setResSummary(remultiaux.data[2].data)
-                setsla(remultiaux.data[2].data[0]?.slajson)
+                setsla(remultiaux.data[2].data?.[0]?.slajson)
                 setResEncuesta(remultiaux.data[3].data)
                 setResDashboard(remultiaux.data[4].data)
                 setResInteraction(remultiaux.data[5].data)
