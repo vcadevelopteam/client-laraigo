@@ -1475,6 +1475,7 @@ const translation: LangKeys = {
     dashboard_operationalpush_summary_datehour: 'Fecha y Hora',
     dashboard_operationalpush_summary_status: 'Estado',
     dashboard_operationalpush_summary_answerdate: 'Fecha de respuesta',
+    numberofconversationsperchannel: "Cantidad de conversaciones por canal",
 
     
     dashboard_operationalpush_application_application: "Aplicación",
@@ -1482,6 +1483,7 @@ const translation: LangKeys = {
     dashboard_operationalpush_application_sentdate: "Fecha del mensaje recibido",
     dashboard_operationalpush_application_clientnumber: "Número",
     dashboard_operationalpush_application_status: "Estado",
+    uniqueclients: "Clientes únicos",
 
     dashboard_operationalpush_application_tag: "Tag",
     dashboard_operationalpush_application_quantity: "Cantidad",

@@ -1565,12 +1565,14 @@ const translation: LangKeys = {
     dashboard_operationalpush_application_tag: "Tag",
     dashboard_operationalpush_application_quantity: "Quantity",
     dashboard_operationalpush_application_channel: "Channel",
+    numberofconversationsperchannel: "Number of conversations per channel",
 
     report_loginhistory: 'User login',
     report_loginhistory_datehour: 'Date - Hour',
     report_loginhistory_user: 'User',
     report_loginhistory_username: 'Username',
     report_loginhistory_status: 'Status',
+    uniqueclients: "Unique clients",
     report_loginhistory_status_help: `- Inbox: In receipt tray.
 - Login: Session initiated.
 - Expiration: Session expired.`,

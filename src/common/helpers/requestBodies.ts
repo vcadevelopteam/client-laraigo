@@ -1523,6 +1523,18 @@ export const gerencialinteractionseldata = ({ startdate, enddate, channel, group
         offset: (new Date().getTimezoneOffset() / 60) * -1,
     }
 });
+export const gerencialchannelsel = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_GERENCIAL_CHANNEL_SEL',
+    key: "UFN_DASHBOARD_GERENCIAL_CHANNEL_SEL",
+    parameters: {
+        startdate,
+        enddate,
+        channel,
+        group,
+        company,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+});
 export const gerencialetiquetassel = ({ startdate, enddate, channel, group, company, limit = 5 }: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_GERENCIAL_ETIQUETAS_SEL',
     key: "UFN_DASHBOARD_GERENCIAL_ETIQUETAS_SEL",
