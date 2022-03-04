@@ -569,6 +569,11 @@ const translation: LangKeys = {
     next_activity: 'Siguiente actividad',
     nextprogramedactivity: 'Siguiente actividad programada',
 
+    dateactivity: "Fecha actividad",
+    leadactivity: "Actividad",
+    datenote: "Fecha nota",
+    note: "Nota",
+
     username: 'Usuario',
     password: 'Contraseña',
     confirmpassword: 'Confirmar contraseña',

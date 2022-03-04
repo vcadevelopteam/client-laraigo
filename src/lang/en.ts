@@ -1245,7 +1245,10 @@ const translation: LangKeys = {
     no_records: 'No records',
     clear: "Clear",
 
-
+    dateactivity: "Activity date",
+    leadactivity: "Activity",
+    datenote: "Note date",
+    note: "Note",
 
     dateRangeFilterTitle: 'Filter by date range',
     person_who_modified: 'Person who modified',
