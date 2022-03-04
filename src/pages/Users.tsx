@@ -644,6 +644,14 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
         }
     }, [executeRes, waitSave])
 
+    const emailRequired = (value: string) => {
+        if (value.length === 0) {
+            return t(langKeys.field_required) as string;
+        } else if (!/\S+@\S+\.\S+/.test(value)) {
+            return t(langKeys.emailverification) as string;
+        }
+    }
+
     React.useEffect(() => {
         register('type');
         register('id');
@@ -652,10 +660,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
         register('firstname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('lastname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('usr', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('email', { validate: {
-            validation: (value) => (value && value.length) || t(langKeys.field_required) ,
-            isemail: (value)=> (value.includes('.') && value.includes('@')) || t(langKeys.emailverification)
-        }});
+        register('email', { validate: emailRequired, value: '' });
         register('doctype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('docnum', { validate: {
             needsvalidation: (value:any) => ((value && value.length) || t(langKeys.field_required)),

@@ -170,7 +170,8 @@ const variables = [
     'notedescription',
     'asesorname',
     'custom'
-];
+].map(x => ({key: x}));
+
 export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, setGridModal }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -398,7 +399,7 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
                                 trigger(`variables.${i}.variable`)
                             }}
                             error={errors?.variables?.[i]?.variable?.message}
-                            data={variables.map(v => ({key: v}))}
+                            data={variables}
                             uset={true}
                             prefixTranslation="lead_"
                             optionDesc="key"

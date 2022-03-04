@@ -29,6 +29,8 @@ export const langKeys = {
     reportschedulerdetail2: "reportschedulerdetail2",
     to: "to",
     subject: "subject",
+    filter_unique_value: "filter_unique_value",
+    filter_text: "filter_text",
     addchannel: "addchannel",
     error_channels_limit: "error_channels_limit",
     error_users_limit: "error_users_limit",

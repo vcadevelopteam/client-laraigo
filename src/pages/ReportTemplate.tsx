@@ -124,6 +124,7 @@ type IFilter = {
     columnname: string;
     type: string;
     id: any;
+    filter: string;
     join_alias: string;
     join_on: string;
     join_table: string;
@@ -407,7 +408,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
         }
     });
 
-    const { fields: fieldsColumns, append: columnsAppend, remove: columnRemove, move} = useFieldArray({
+    const { fields: fieldsColumns, append: columnsAppend, remove: columnRemove, move } = useFieldArray({
         control,
         name: 'columns',
     });
@@ -430,7 +431,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
         setValue("summary", row?.summaries || []);
         trigger("summary");
     }, [])
-    
+
 
     useEffect(() => {
         if (columnsSelected.length > 0) {
@@ -496,11 +497,11 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
         else
             setDataColumns([]);
     }
-    
-    const handleDrag = (data:any) => {
+
+    const handleDrag = (data: any) => {
         const { source, destination } = data
         if (destination) {
-          move(source.index, destination.index);
+            move(source.index, destination.index);
         }
     };
 
@@ -573,52 +574,52 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <div className={classes.title}>{t(langKeys.column_plural)}</div>
                         </div>
-                        
-                            <TableContainer>
-                                <Table size="small">
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>
-                                            </TableCell>
-                                            <TableCell>
-                                                <IconButton
-                                                    size="small"
-                                                    disabled={mainAuxRes.loading || dataColumns.length === 0}
-                                                    onClick={async () => setOpenDialogVariables(true)}
-                                                >
-                                                    <AddIcon />
-                                                </IconButton>
-                                            </TableCell>
-                                            <TableCell>{t(langKeys.column)}</TableCell>
-                                            <TableCell>{t(langKeys.description)}</TableCell>
-                                            <TableCell>{t(langKeys.type)}</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <DragDropContext onDragEnd={handleDrag}>
-                                        <Droppable droppableId="test-items">
-                                            {(provided:any, snapshot:any) => (
-                                                <TableBody {...provided.droppableProps} ref={provided.innerRef}>
-                                                    {fieldsColumns.map((item: IColumnTemplate, index: number) =>{
-                                                        return (
-                                                            <Draggable
-                                                                key={`item-${index}`}
-                                                                draggableId={`item-${index}`}
-                                                                index={index}
-                                                            >
-                                                                {(provided, snapshot) => (
-                                                                <TableRow 
+
+                        <TableContainer>
+                            <Table size="small">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>
+                                        </TableCell>
+                                        <TableCell>
+                                            <IconButton
+                                                size="small"
+                                                disabled={mainAuxRes.loading || dataColumns.length === 0}
+                                                onClick={async () => setOpenDialogVariables(true)}
+                                            >
+                                                <AddIcon />
+                                            </IconButton>
+                                        </TableCell>
+                                        <TableCell>{t(langKeys.column)}</TableCell>
+                                        <TableCell>{t(langKeys.description)}</TableCell>
+                                        <TableCell>{t(langKeys.type)}</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <DragDropContext onDragEnd={handleDrag}>
+                                    <Droppable droppableId="test-items">
+                                        {(provided: any, snapshot: any) => (
+                                            <TableBody {...provided.droppableProps} ref={provided.innerRef}>
+                                                {fieldsColumns.map((item: IColumnTemplate, index: number) => {
+                                                    return (
+                                                        <Draggable
+                                                            key={`item-${index}`}
+                                                            draggableId={`item-${index}`}
+                                                            index={index}
+                                                        >
+                                                            {(provided, snapshot) => (
+                                                                <TableRow
                                                                     key={`item-${index}`}
                                                                     ref={provided.innerRef}
                                                                     {...provided.draggableProps}
                                                                 >
-                                                                    <TableCell width={20} style={{ padding: '0' }} 
+                                                                    <TableCell width={20} style={{ padding: '0' }}
                                                                         {...provided.dragHandleProps}>
                                                                         <div style={{ display: 'flex' }}>
                                                                             <Tooltip title={`${t(langKeys.move)}`}>
                                                                                 <IconButton
                                                                                     size="small"
                                                                                 >
-                                                                                    <DragIndicatorIcon style={{ color: '#777777' , cursor:'grab'}} />
+                                                                                    <DragIndicatorIcon style={{ color: '#777777', cursor: 'grab' }} />
                                                                                 </IconButton>
                                                                             </Tooltip>
                                                                         </div>
@@ -652,16 +653,17 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                                         {t(`typepg_${item?.type}`)}
                                                                     </TableCell>
                                                                 </TableRow>)}
-                                                            </Draggable>
-                                                        )}
-                                                    )}
-                                                    {provided.placeholder}
-                                                </TableBody>
-                                            )}
-                                        </Droppable>
-                                    </DragDropContext>
-                                </Table>
-                            </TableContainer>
+                                                        </Draggable>
+                                                    )
+                                                }
+                                                )}
+                                                {provided.placeholder}
+                                            </TableBody>
+                                        )}
+                                    </Droppable>
+                                </DragDropContext>
+                            </Table>
+                        </TableContainer>
                     </div>
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                         <div style={{ flex: 1 }} className={classes.containerDetail}>
@@ -679,7 +681,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                         onClick={async () => {
                                                             const haveDataOrigin = await trigger('dataorigin');
                                                             if (haveDataOrigin) {
-                                                                filtersAppend({ columnname: '', type: '', description: '' });
+                                                                filtersAppend({ columnname: '', type: '', description: '', filter: '' });
                                                             }
                                                         }}
                                                     >
@@ -688,16 +690,17 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                 </TableCell>
                                                 <TableCell>{t(langKeys.column)}</TableCell>
                                                 <TableCell>{t(langKeys.type)}</TableCell>
+                                                <TableCell>{t(langKeys.filters)}</TableCell>
                                             </TableRow>
                                         </TableHead>
-                                        <TableBody>
+                                        <TableBody style={{ marginTop: 5 }}>
                                             {fieldsFilters.map((item: IFilter, i: number) =>
                                                 <TableRow key={item.id}>
                                                     <TableCell width={30}>
                                                         <div style={{ display: 'flex' }}>
                                                             <IconButton
                                                                 size="small"
-                                                                onClick={() => {filterRemove(i)}}
+                                                                onClick={() => { filterRemove(i) }}
                                                             >
                                                                 <DeleteIcon style={{ color: '#777777' }} />
                                                             </IconButton>
@@ -715,9 +718,11 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                             variant='outlined'
                                                             onChange={(value) => {
                                                                 setValue(`filters.${i}.columnname`, value?.columnname || '');
-                                                                setValue(`filters.${i}.type`, value?.type || '');
                                                                 setValue(`filters.${i}.description`, value?.description || '');
+
+                                                                setValue(`filters.${i}.type`, value?.type || '');
                                                                 trigger(`filters.${i}.type`);
+
                                                                 setValue(`filters.${i}.join_alias`, value?.join_alias || '');
                                                                 setValue(`filters.${i}.join_on`, value?.join_on || '');
                                                                 setValue(`filters.${i}.join_table`, value?.join_table || '');
@@ -728,8 +733,39 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                             optionValue="columnname"
                                                         />
                                                     </TableCell>
-                                                    <TableCell width={180}>
-                                                        {getValues(`filters.${i}.type`)}
+                                                    <TableCell>
+                                                        <FieldSelect
+                                                            label={t(langKeys.type)}
+                                                            valueDefault={getValues(`filters.${i}.type`)}
+                                                            fregister={{
+                                                                ...register(`filters.${i}.type`, {
+                                                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                                })
+                                                            }}
+                                                            variant='outlined'
+                                                            onChange={(value) => {
+                                                                setValue(`filters.${i}.type`, value?.key || '');
+                                                                trigger(`filters.${i}.type`);
+                                                            }}
+                                                            error={errors?.filters?.[i]?.type?.message}
+                                                            data={[{ key: "text" }, { key: "unique_value" }]}
+                                                            optionDesc="key"
+                                                            uset={true}
+                                                            prefixTranslation="filter_"
+                                                            optionValue="key"
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell style={{ width: 200 }}>
+                                                        {getValues(`filters.${i}.type`) === "text" &&
+                                                            <FieldEditArray
+                                                                fregister={{
+                                                                    ...register(`filters.${i}.filter`),
+                                                                }}
+                                                                valueDefault={item?.filter}
+                                                                error={errors?.filters?.[i]?.filter?.message}
+                                                                onChange={(value) => setValue(`filters.${i}.filter`, value)}
+                                                            />
+                                                        }
                                                     </TableCell>
                                                 </TableRow>
                                             )}
@@ -784,7 +820,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                             valueDefault={getValues(`summary.${i}.columnname`)}
                                                             fregister={{
                                                                 ...register(`summary.${i}.columnname`, {
-                                                                    validate:{
+                                                                    validate: {
                                                                         validate: (value: any) => (value && value.length) || t(langKeys.field_required),
                                                                         fieldexists: (value: any) => (value && fieldsColumns.map(f => f.columnname).includes(value)) || t(langKeys.columnnotvalid),
                                                                     }

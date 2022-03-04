@@ -1297,6 +1297,8 @@ const translation: LangKeys = {
     ticket_firstusergroup: 'Grupo inicial del ticket',
     ticket_ticketgroup: 'Grupo final del ticket',
     ticket_communicationchanneldescription: 'Canal',
+    filter_unique_value: "Valor único",
+    filter_text: "Texto",
     ticket_name: 'Persona',
     ticket_canalpersonareferencia: 'ID Persona canal',
     ticket_fechainicio: 'Fecha de inicio',
