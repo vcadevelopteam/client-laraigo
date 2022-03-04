@@ -85,7 +85,8 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm<any>({
         defaultValues: {
             graphictype: 'BAR',
-            column: ''
+            column: '',
+            columntext: ''
         }
     });
 
@@ -104,7 +105,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
 
     const triggerGraphic = (data: any) => {
         getCollection();
-        setView(`CHART-${data.graphictype}-${data.column}`);
+        setView(`CHART-${data.graphictype}-${data.column}-${data.columntext}`);
         setOpenModal(false);
 
     }
@@ -140,7 +141,10 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
                     className="col-12"
                     valueDefault={getValues('column')}
                     error={errors?.column?.message}
-                    onChange={(value) => setValue('column', value?.accessor || '')}
+                    onChange={(value) => {
+                        setValue('column', value?.accessor || '');
+                        setValue('columntext', value?.Header || '');
+                    }}
                     data={columns}
                     optionDesc="Header"
                     optionValue="accessor"
@@ -296,8 +300,6 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
             dispatch(getCollectionDynamic(body));
     }
 
-
-    console.log("view", view)
     return (
         <>
             <div style={{ width: '100%' }}>
@@ -380,6 +382,7 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
                         data={dataCleaned}
                         loading={mainDynamic.loading}
                         handlerSearchGraphic={() => null}
+                        columnDesc={view.split("-")?.[3] || "summary"}
                     />
                 )}
             </div>
