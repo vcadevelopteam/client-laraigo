@@ -39,6 +39,8 @@ const dataPriority = [
     { option: 'HIGH' },
 ]
 
+const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'dateactivity', 'leadactivity', 'datenote', 'note', 'custom']
+
 const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -51,7 +53,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
     const [bodyMessage, setBodyMessage] = useState('');
     const [bodyCleaned, setBodyCleaned] = useState('');
 
-    const { control, register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<any>({
+    const { control, register, handleSubmit, setValue, getValues, reset, trigger, formState: { errors } } = useForm<any>({
         defaultValues: {
             hsmtemplateid: 0,
             hsmtemplatename: '',
@@ -107,6 +109,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
             setBodyMessage('')
             reset({
                 hsmtemplateid: 0,
+                hsmtemplatename: '',
                 variables: []
             })
             register('hsmtemplateid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
@@ -115,15 +118,12 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
 
     const onSelectTemplate = (value: Dictionary) => {
         if (value) {
-
             setBodyMessage(value.body);
             setValue('hsmtemplateid', value ? value.id : 0);
             setValue('hsmtemplatename', value ? value.name : '');
             setBodyCleaned(value.body);
-
             const variablesList = value.body.match(/({{)(.*?)(}})/g) || [];
             const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
-
             setValue('variables', varaiblesCleaned.map((x: string) => ({ name: x, text: '', type: 'text' })));
         } else {
             setValue('hsmtemplatename', '');
@@ -136,7 +136,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
     const onSubmit = handleSubmit((data) => {
         setBodyCleaned(body => {
             data.variables.forEach((x: Dictionary) => {
-                body = body.replace(`{{${x.name}}}`, x.text)
+                body = body.replace(`{{${x.name}}}`, x.variable !== 'custom' ? (person.data as Dictionary)[x.variable] : x.text)
             })
             return body
         })
@@ -144,15 +144,20 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
             hsmtemplateid: data.hsmtemplateid,
             hsmtemplatename: data.hsmtemplatename,
             communicationchannelid: ticketSelected?.communicationchannelid!!,
-            platformtype: ticketSelected?.communicationchannelsite!!,
             communicationchanneltype: ticketSelected?.communicationchanneltype!!,
+            platformtype: ticketSelected?.communicationchannelsite!!,
+            type: 'HSM',
             shippingreason: "INBOX",
             listmembers: [{
                 personid: person.data?.personid || 0,
                 phone: person.data?.phone!! + "",
                 firstname: person.data?.firstname + "",
                 lastname: person.data?.lastname + "",
-                parameters: data.variables,
+                parameters: data.variables.map((v: any) => ({
+                    type: "text",
+                    text: v.variable !== 'custom' ? (person.data as Dictionary)[v.variable] : v.text,
+                    name: v.name
+                }))
             }]
         }
         dispatch(sendHSM(bb))
@@ -188,18 +193,53 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
             />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
                 {fields.map((item: Dictionary, i) => (
-                    <FieldEditArray
-                        key={item.id}
-                        label={item.name}
-                        fregister={{
-                            ...register(`variables.${i}.text`, {
-                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                            })
-                        }}
-                        valueDefault={item.value}
-                        error={errors?.variables?.[i]?.text?.message}
-                        onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
-                    />
+                    <>
+                        <FieldSelect
+                            key={"var_" + item.id}
+                            fregister={{
+                                ...register(`variables.${i}.variable`, {
+                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                })
+                            }}
+                            label={item.name}
+                            valueDefault={getValues(`variables.${i}.variable`)}
+                            onChange={(value) => {
+                                setValue(`variables.${i}.variable`, value.key)
+                                trigger(`variables.${i}.variable`)
+                            }}
+                            error={errors?.variables?.[i]?.text?.message}
+                            data={variables.map(v => ({ key: v }))}
+                            uset={true}
+                            prefixTranslation=""
+                            optionDesc="key"
+                            optionValue="key"
+                        />
+                        {getValues(`variables.${i}.variable`) === 'custom' &&
+                            <FieldEditArray
+                                key={"custom_" + item.id}
+                                fregister={{
+                                    ...register(`variables.${i}.text`, {
+                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                    })
+                                }}
+                                valueDefault={item.value}
+                                error={errors?.variables?.[i]?.text?.message}
+                                onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
+                            />
+                        }
+                    </>
+                    // <FieldEditArray
+                    //     key={item.id}
+                    //     label={item.name}
+                    //     fregister={{
+                    //         ...register(`variables.${i}.text`, {
+                    //             validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                    //         })
+                    //     }}
+                    //     valueDefault={item.value}
+                    //     error={errors?.variables?.[i]?.text?.message}
+                    //     onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
+                    // />
                 ))}
             </div>
         </DialogZyx>)
