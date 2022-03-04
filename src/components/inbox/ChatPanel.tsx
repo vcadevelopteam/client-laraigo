@@ -39,7 +39,7 @@ const dataPriority = [
     { option: 'HIGH' },
 ]
 
-const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'dateactivity', 'leadactivity', 'datenote', 'note', 'custom']
+const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'dateactivity', 'leadactivity', 'datenote', 'note', 'custom'].map(x => ({key: x}))
 
 const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
     const { t } = useTranslation();
@@ -193,7 +193,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
             />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
                 {fields.map((item: Dictionary, i) => (
-                    <>
+                    <div key={item.id}>
                         <FieldSelect
                             key={"var_" + item.id}
                             fregister={{
@@ -208,7 +208,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
                                 trigger(`variables.${i}.variable`)
                             }}
                             error={errors?.variables?.[i]?.text?.message}
-                            data={variables.map(v => ({ key: v }))}
+                            data={variables}
                             uset={true}
                             prefixTranslation=""
                             optionDesc="key"
@@ -227,7 +227,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
                                 onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
                             />
                         }
-                    </>
+                    </div>
                     // <FieldEditArray
                     //     key={item.id}
                     //     label={item.name}
