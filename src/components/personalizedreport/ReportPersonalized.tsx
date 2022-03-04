@@ -197,7 +197,9 @@ const FilterDynamic: FC<{ filter: Dictionary, setFiltersDynamic: (param: any) =>
             <FieldEdit
                 label={filter.type === "variable" ? filter.description : t(`personalizedreport_${filter.description}`)}
                 variant="outlined"
+                disabled={filter.type_filter === "unique_value"}
                 size="small"
+                valueDefault={filter.type_filter === "unique_value" ? t(langKeys.filter_unique_value) : filter.filter || ""}
                 onChange={(value) => setFiltersDynamic((prev: any) => ({
                     ...prev,
                     [filter.columnname]: {
@@ -221,7 +223,11 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
     const [view, setView] = useState('GRID')
     const [filtersDynamic, setFiltersDynamic] = useState<Dictionary>(filters.reduce((acc: Dictionary, item: Dictionary) => ({
         ...acc,
-        [item.columnname]: item
+        [item.columnname]: {
+            ...item,
+            value: item.filter || "",
+            filter: undefined
+        }
     }), {}));
 
     const columnsDynamic = React.useMemo(
@@ -232,8 +238,8 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
     )
 
     useEffect(() => {
-        dispatch(resetMainDynamic())
-        dispatch(resetExportMainDynamic())
+        dispatch(resetMainDynamic());
+        dispatch(resetExportMainDynamic());
     }, [])
 
 
@@ -310,7 +316,6 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
                 <div className={classes.containerFilters}>
                     <div className={classes.itemFlex}>
                         {Object.values(filters).map((filter: Dictionary) => (
-
                             <FilterDynamic
                                 key={filter.columnname}
                                 filter={filter}
