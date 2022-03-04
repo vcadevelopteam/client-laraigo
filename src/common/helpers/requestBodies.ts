@@ -527,6 +527,23 @@ export const getDomainSel = (domainname: string): IRequestBody => ({
         all: true
     }
 })
+export const getReportSchedulerSel = (id: number): IRequestBody => ({
+    method: "UFN_REPORTSCHEDULER_SEL",
+    key: "UFN_REPORTSCHEDULER_SEL",
+    parameters: {
+        id: id,
+        all: true
+    }
+})
+export const reportSchedulerIns = ({id, title, status, origin, origintype, reportid, reportname, filterjson, frecuency, schedule, datarange, mailto, mailcc, mailsubject, mailbody, operation}: Dictionary): IRequestBody => ({
+    method: "UFN_REPORTSCHEDULER_INS",
+    key: "UFN_REPORTSCHEDULER_INS",
+    parameters: {
+        id, title, status, origin, origintype, reportid, reportname, filterjson, frecuency, schedule, datarange, mailto, mailcc, mailsubject, mailbody, operation, 
+        description: "",
+        type: "",
+    }
+})
 
 export const getDomainValueSel = (domainname: string): IRequestBody => ({
     method: "UFN_DOMAIN_VALUES_SEL",

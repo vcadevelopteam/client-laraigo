@@ -29,6 +29,13 @@ export const routes: RouteConfig[] = [
         icon: (className) => <ReportsIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     {
+        key: paths.REPORTSCHEDULER,
+        description: <Trans i18nKey={langKeys.reportscheduler} count={2} />, // prop:count for plural purposes
+        tooltip: <Trans i18nKey={langKeys.reportscheduler} count={2} />,
+        path: paths.REPORTSCHEDULER,
+        icon: (className) => <ReportsIcon style={{ width: 22, height: 22 }} className={className} />,
+    },
+    {
         key: paths.KPIMANAGER,
         description: <Trans i18nKey={langKeys.kpimanager_plural} />,
         tooltip: <Trans i18nKey={langKeys.kpimanager} />,

@@ -528,6 +528,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
     const { t } = useTranslation();
     const [selectedIndex, setSelectedIndex] = useState(-1);
     const [contentType, setContentType] = useState('');
+    const [graphicType, setgraphicType] = useState('');
     const [columns, setColumns] = useState<ColumnTemplate[]>([]);
 
     useEffect(() => {
@@ -541,6 +542,11 @@ export const LayoutItem: FC<LayoutItemProps> = ({
         const defaultContentType = getValues(`${key}.contentType`);
         if (defaultContentType !== undefined || defaultContentType !== null) {
             setContentType(defaultContentType);
+        }
+
+        const defaultGraphicType = getValues(`${key}.contentType`);
+        if (defaultGraphicType !== undefined || defaultGraphicType !== null) {
+            setgraphicType(defaultGraphicType);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [edit, getValues]);
@@ -666,21 +672,6 @@ export const LayoutItem: FC<LayoutItemProps> = ({
             )}
             {contentType === "report" && (
                 <>
-                
-                    <FieldSelect
-                        className={classes.field}
-                        label={t(langKeys.interval)}
-                        data={[
-                            {key: "day", desc:t(langKeys.day)},
-                            {key: "week", desc:t(langKeys.week)},
-                            {key: "month", desc:t(langKeys.month)},
-                        ]}
-                        optionDesc="desc"
-                        optionValue="key"
-                        valueDefault={getValues(`${key}.interval`)}
-                        onChange={(v)=>setValue(`${key}.interval`, v?.key || "")}
-                        disabled={loading}
-                    />
                     <FieldSelect
                         className={classes.field}
                         label={t(langKeys.report)}
@@ -719,12 +710,29 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                         optionDesc="key"
                         optionValue="key"
                         valueDefault={getValues(`${key}.graph`)}
-                        onChange={(v: typeof graphTypes[number]) => setValue(`${key}.graph`, v?.key || '')}
+                        onChange={(v: typeof graphTypes[number]) => {
+                            setValue(`${key}.graph`, v?.key || '')
+                            setgraphicType(v?.key || '')
+                        }}
                         error={errors[key]?.graph?.message}
                         disabled={loading}
                         uset
                         prefixTranslation="dashboard_chartType_"
                     />
+                    {(graphicType==="bar" || graphicType==="line") && <FieldSelect
+                        className={classes.field}
+                        label={t(langKeys.interval)}
+                        data={[
+                            {key: "day", desc:t(langKeys.day)},
+                            {key: "week", desc:t(langKeys.week)},
+                            {key: "month", desc:t(langKeys.month)},
+                        ]}
+                        optionDesc="desc"
+                        optionValue="key"
+                        valueDefault={getValues(`${key}.interval`)}
+                        onChange={(v)=>setValue(`${key}.interval`, v?.key || "")}
+                        disabled={loading}
+                    />}
                     <FieldSelect
                         className={classes.field}
                         label={t(langKeys.column)}

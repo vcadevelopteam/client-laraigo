@@ -1244,7 +1244,10 @@ const translation: LangKeys = {
     no_records: 'No records',
     clear: "Clear",
 
-
+    dateactivity: "Activity date",
+    leadactivity: "Activity",
+    datenote: "Note date",
+    note: "Note",
 
     dateRangeFilterTitle: 'Filter by date range',
     person_who_modified: 'Person who modified',
@@ -1568,6 +1571,21 @@ const translation: LangKeys = {
     dashboard_operationalpush_application_quantity: "Quantity",
     dashboard_operationalpush_application_channel: "Channel",
     week:"Week",
+    reportscheduler: "Automatic Shipments",
+    reportscheduler_singular: "Automatic Shipment",
+    reportschedulerdetail1: "Report Settings",
+    reportschedulerdetail2: "Shipping configuration",
+    origintype: "Origin type",
+    to: "To",
+    subject: "Subject",
+    periodicity: "Periodicity",
+    shippingschedule: "Shipping schedule",
+    shippingrange: "Shipping range",
+    beforeyesterday: "The day before yesterday",
+    threedaysago: "3 days ago",
+    weekago: "1 week ago",
+    monthago: "1 month ago",
+    yearago: "1 year ago",
     numberofconversationsperchannel: "Number of conversations per channel",
 
     report_loginhistory: 'User login',
