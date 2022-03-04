@@ -543,6 +543,11 @@ export const LayoutItem: FC<LayoutItemProps> = ({
         if (defaultContentType !== undefined || defaultContentType !== null) {
             setContentType(defaultContentType);
         }
+
+        const defaultGraphicType = getValues(`${key}.contentType`);
+        if (defaultGraphicType !== undefined || defaultGraphicType !== null) {
+            setgraphicType(defaultGraphicType);
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [edit, getValues]);
 

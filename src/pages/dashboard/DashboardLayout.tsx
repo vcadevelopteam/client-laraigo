@@ -40,6 +40,7 @@ interface Item {
 interface Items {
     [key: string]: Item;
 }
+const colors=["#8884d8", "#82ca9d", "#d32248", "#1dc1fa", "#2b5ef4", "#7be2aa", "#c58725", "#692f32","#8f97b8", "#57be99"]
 
 const useDashboardLayoutStyles = makeStyles(theme => ({
     root: {
@@ -388,13 +389,15 @@ const DashboardLayout: FC = () => {
             // isDraggable={canLayoutChange && !dashboardtemplate.loading && !dashboard.loading}
             // isResizable={canLayoutChange && !dashboardtemplate.loading && !dashboard.loading}
             >
-                {layout.layout.map(e => (
+                {layout.layout.map(e => {
+                    return(
                     <div key={e.i}>
                         {e.i in layout.detail ? (
                             <LayoutItem
                                 layoutKey={e.i}
                                 title={getChartTitle(e.i)}
                                 data={dashboard.value?.[e.i]?.data}
+                                alldata={dashboard.value?.[e.i]}
                                 columns={dashboard.value?.[e.i]?.columns}
                                 dataorigin={dashboard.value?.[e.i]?.dataorigin}
                                 type={dashboard.value?.[e.i]?.contentType === 'report' ? layout.detail[e.i]!.graph : 'kpi'}
@@ -422,7 +425,7 @@ const DashboardLayout: FC = () => {
                             />
                         )}
                     </div>
-                ))}
+                )})}
             </ReactGridLayout>
         </Box>
     );
@@ -457,6 +460,7 @@ interface LayoutItemProps {
     dataorigin?: string;
     groupment?: string;
     error?: boolean;
+    alldata?: any;
     errorcode?: string; // REPORT_NOT_FOUND | COLUMN_NOT_FOUND
     onDetailChange?: (detail: Items, type: ChangeType) => void;
     onModalOpenhasChanged: (open: boolean) => void;
@@ -531,9 +535,10 @@ const LayoutItem: FC<LayoutItemProps> = ({
     groupment,
     error,
     errorcode,
+    alldata,
     onDetailChange,
     onModalOpenhasChanged,
-}) => {
+}) => {    
     const classes = useLayoutItemStyles();
     const { t } = useTranslation();
     const dataGraph = useMemo<ChartData[] | KpiData>(() => {
@@ -589,6 +594,7 @@ const LayoutItem: FC<LayoutItemProps> = ({
                         data={dataGraph as ChartData[]}
                         tickFormatter={groupment === "percentage" ? v => `${v}%` : undefined}
                         tooltipFormatter={formatTooltip}
+                        alldata={alldata}
                     />
                 );
             case 'pie':
@@ -597,6 +603,7 @@ const LayoutItem: FC<LayoutItemProps> = ({
                         data={dataGraph as ChartData[]}
                         tooltipFormatter={formatTooltip}
                         tickFormatter={groupment === "percentage" ? v => `${v}%` : undefined}
+                        alldata={alldata}
                     />
                 );
             case 'line':
@@ -605,6 +612,7 @@ const LayoutItem: FC<LayoutItemProps> = ({
                         data={dataGraph as ChartData[]}
                         tickFormatter={groupment === "percentage" ? v => `${v}%` : undefined}
                         tooltipFormatter={formatTooltip}
+                        alldata={alldata}
                     />
                 );
             case 'kpi': return <LayoutKpi data={dataGraph as KpiData} />;
@@ -710,23 +718,34 @@ const LayoutItem: FC<LayoutItemProps> = ({
 
 interface IData {
     label: string;
-    quantity: number;
+    quantity: number | Object;
 }
 
 interface LayoutBarProps extends Omit<ResponsiveContainerProps, 'children'> {
     data: IData[];
     tickFormatter?: (value: string, index: number) => string;
     tooltipFormatter?: (value: any, tot?:any) => string;
+    alldata?: any;
 }
 
-const LayoutBar: FC<LayoutBarProps> = ({ data, tickFormatter, tooltipFormatter, ...props }) => {
-    let total=0;
-    if (tickFormatter===undefined){
-        total = data.reduce((a, b) => a + (b.quantity || 0), 0)
+const LayoutBar: FC<LayoutBarProps> = ({ data,alldata, tickFormatter, tooltipFormatter, ...props }) => {
+    const { t } = useTranslation();
+    let total=alldata?.total;
+    let modifieddata=data;
+    let keys: any[]=[]
+    if(alldata?.interval){
+        modifieddata=data.map(x=>{
+            keys= keys.concat(Object.keys(x.quantity))
+            return ({...Object(x.quantity),label:`${t(alldata?.interval)} ${x.label.replace(alldata?.interval,"")}`})
+        })
+        keys.filter((item, index) => keys.indexOf(item) === index)
+        console.log(keys)
+        console.log(modifieddata)
     }
+    
     return (
-        <ResponsiveContainer {...props}>
-            <BarChart data={data}>
+        <ResponsiveContainer width={"100%"} {...props}>
+            <BarChart data={modifieddata}>
                 <XAxis
                     dataKey="label"
                     style={{ fontSize: '0.8em' }}
@@ -738,36 +757,57 @@ const LayoutBar: FC<LayoutBarProps> = ({ data, tickFormatter, tooltipFormatter, 
                     dx={-5}
                 />
                 <YAxis tickFormatter={tickFormatter} padding={{ top: 10 }}/>
-                <ChartTooltip
-                    content={({ active, payload, label }) => {
-                        if (active && payload && payload.length) {
-                            const { value } = payload[0];
-                            return (
-                                <Card key={`${label}-${value}`} style={{ padding: '0.85em' }}>
-                                    {label && <label>{label}</label>}
-                                    {label && <br />}
-                                    <span style={{ color: "#8884d8", whiteSpace: "break-spaces" }}>
-                                        {
-                                            tooltipFormatter?.(value,total) ||
-                                            `quantity: ${value}`
-                                        }
-                                    </span>
-                                </Card>
-                            );
-                        }
+                {alldata?.interval?(
+                    <>
+                        <ChartTooltip />
+                        {keys.map((x,i)=>(
+                            <Bar
+                                dataKey={x}
+                                fill={colors[i]}
+                                textAnchor="end"
+                                key={x}
+                                type="monotone"
+                            >
+                                <LabelList dataKey={x} position="top" fill="#000" />
+                            </Bar>
+                        ))}
+                    </>
+                ):
+                
+                ( 
+                    <>
+                        <ChartTooltip
+                            content={({ active, payload, label }) => {
+                                if (active && payload && payload.length) {
+                                    const { value } = payload[0];
+                                    return (
+                                        <Card key={`${label}-${value}`} style={{ padding: '0.85em' }}>
+                                            {label && <label>{label}</label>}
+                                            {label && <br />}
+                                            <span style={{ color: "#8884d8", whiteSpace: "break-spaces" }}>
+                                                {
+                                                    tooltipFormatter?.(value,total) ||
+                                                    `quantity: ${value}`
+                                                }
+                                            </span>
+                                        </Card>
+                                    );
+                                }
 
-                        return null;
-                    }}
-                />
-                <Bar
-                    dataKey="quantity"
-                    fill="#8884d8"
-                    textAnchor="end"
-                    stackId="a"
-                    type="monotone"
-                >
-                    <LabelList dataKey="quantity" position="top" fill="#000" />
-                </Bar>
+                                return null;
+                            }}
+                        />
+                        <Bar
+                            dataKey="quantity"
+                            fill="#8884d8"
+                            textAnchor="end"
+                            type="monotone"
+                        >
+                            <LabelList dataKey="quantity" position="top" fill="#000" />
+                        </Bar>
+                    </>
+                )
+                }
             </BarChart>
         </ResponsiveContainer>
     );
@@ -777,17 +817,26 @@ interface LayoutLineProps extends Omit<ResponsiveContainerProps, 'children'> {
     data: IData[];
     tickFormatter?: (value: string, index: number) => string;
     tooltipFormatter?: (value: any, total?:any) => string;
+    alldata?:any;
 }
 
-const LayoutLine: FC<LayoutLineProps> = ({ data, tickFormatter, tooltipFormatter, ...props }) => {
-    let total=0;
-    if (tickFormatter===undefined){
-        total = data.reduce((a, b) => a + (b.quantity || 0), 0)
+const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipFormatter, ...props }) => {
+    const { t } = useTranslation();
+    let total=alldata?.total;
+    let modifieddata=data;
+    let keys: any[]=[]
+    if(alldata?.interval){
+        modifieddata=data.map(x=>{
+            keys= keys.concat(Object.keys(x.quantity))
+            return ({...Object(x.quantity),label:`${t(alldata?.interval)} ${x.label.replace(alldata?.interval,"")}`})
+        })
+        keys.filter((item, index) => keys.indexOf(item) === index)
+        console.log(keys)
+        console.log(modifieddata)
     }
     return (
         <ResponsiveContainer {...props}>
-            <LineChart data={data}>
-                <Line type="monotone" dataKey="quantity" stroke="#8884d8" />
+            <LineChart data={modifieddata}>
                 <CartesianGrid stroke="#ccc" />
                 <XAxis
                     dataKey="label"
@@ -800,27 +849,43 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, tickFormatter, tooltipFormatter
                     dx={-5}
                 />
                 <YAxis tickFormatter={tickFormatter} />
-                <ChartTooltip
-                    content={({ active, payload, label }) => {
-                        if (active && payload && payload.length) {
-                            const { value } = payload[0];
-                            return (
-                                <Card key={`${label}-${value}`} style={{ padding: '0.85em' }}>
-                                    {label && <label>{label}</label>}
-                                    {label && <br />}
-                                    <span style={{ color: "#8884d8", whiteSpace: "break-spaces" }}>
-                                        {
-                                            tooltipFormatter?.(value,total) ||
-                                            `quantity: ${value}`
-                                        }
-                                    </span>
-                                </Card>
-                            );
-                        }
+                
+                {alldata?.interval?(
+                    <>
+                        <ChartTooltip />
+                        {keys.map((x,i)=>(
+                            <Line type="monotone" dataKey={x} key={x} stroke={colors[i]} />
+                        ))}
+                    </>
+                ):
+                
+                ( 
+                    <>
+                        <ChartTooltip
+                            content={({ active, payload, label }) => {
+                                if (active && payload && payload.length) {
+                                    const { value } = payload[0];
+                                    return (
+                                        <Card key={`${label}-${value}`} style={{ padding: '0.85em' }}>
+                                            {label && <label>{label}</label>}
+                                            {label && <br />}
+                                            <span style={{ color: "#8884d8", whiteSpace: "break-spaces" }}>
+                                                {
+                                                    tooltipFormatter?.(value,total) ||
+                                                    `quantity: ${value}`
+                                                }
+                                            </span>
+                                        </Card>
+                                    );
+                                }
 
-                        return null;
-                    }}
-                />
+                                return null;
+                            }}
+                        />
+                        <Line type="monotone" dataKey="quantity" stroke="#8884d8" />
+                    </>
+                )
+                }
             </LineChart>
         </ResponsiveContainer>
     );
@@ -830,15 +895,13 @@ interface LayoutPieProps extends Omit<ResponsiveContainerProps, 'children'> {
     data: IData[];
     tickFormatter?: (value: string, index: number) => string;
     tooltipFormatter?: (value: any, total?:any) => string;
+    alldata?:any;
 }
 
 const PIE_COLORS = ['#22b66e', '#b41a1a', '#ffcd56', '#D32F2F', '#FBC02D', '#757575', '#00BCD4', '#AFB42B', '#8BC34A', '#5D4037', '#607D8B', '#03A9F4', '#303F9F', '#009688', '#388E3C', '#E64A19', '#212121'];
 
-const LayoutPie: FC<LayoutPieProps> = ({ data, tooltipFormatter,tickFormatter, ...props }) => {
-    let total=0;
-    if (tickFormatter===undefined){
-        total = data.reduce((a, b) => a + (b.quantity || 0), 0)
-    }
+const LayoutPie: FC<LayoutPieProps> = ({ data,alldata, tooltipFormatter,tickFormatter, ...props }) => {
+    let total=alldata?.total;
     return (
         <ResponsiveContainer {...props}>
             <PieChart>
