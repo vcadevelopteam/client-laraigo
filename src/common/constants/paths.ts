@@ -1,4 +1,5 @@
 const paths = {
+    REPORTSCHEDULER: '/reportscheduler',
     DASHBOARD: '/dashboard',
     DASHBOARD_ADD: '/dashboard/add',
     DASHBOARD_EDIT: {

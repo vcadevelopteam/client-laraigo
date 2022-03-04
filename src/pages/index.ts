@@ -1,4 +1,5 @@
 export { default as Users } from './Users';
+export { default as ReportScheduler } from './ReportScheduler';
 export { default as SignIn } from './SignIn';
 export { default as Properties } from './Properties';
 export { default as Quickreplies } from './Quickreplies';
