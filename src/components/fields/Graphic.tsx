@@ -108,6 +108,7 @@ interface IGraphic {
     withButtons?: boolean;
     data?: Dictionary[];
     loading?: boolean;
+    columnDesc?: string;
 }
 
 const RADIAN = Math.PI / 180;
@@ -123,13 +124,13 @@ export const RenderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadi
     );
 };
 
-const TableResume: FC<{ row?: Dictionary; column: string; graphicType: string; data: Dictionary[]; }> = ({ row, column, data, graphicType }) => {
+const TableResume: FC<{ row?: Dictionary; column: string; graphicType: string; data: Dictionary[]; columnDesc?: string }> = ({ row, column, data, graphicType, columnDesc }) => {
     const { t } = useTranslation();
 
     const columns = React.useMemo(
         () => [
             {
-                Header: row?.origin ? t('report_' + row?.origin + '_' + column) : column,
+                Header: !!columnDesc ? columnDesc : t('report_' + row?.origin + '_' + column),
                 accessor: 'columnname',
                 NoFilter: true,
                 Cell: (props: any) => {
@@ -155,7 +156,11 @@ const TableResume: FC<{ row?: Dictionary; column: string; graphicType: string; d
                 Header: t(langKeys.percentage),
                 accessor: 'percentage',
                 NoFilter: true,
-                type: 'number'
+                type: 'number',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return row.percentage + "%";
+                }
             },
         ],
         []
@@ -175,7 +180,7 @@ const TableResume: FC<{ row?: Dictionary; column: string; graphicType: string; d
     )
 }
 
-const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, FiltersElement, row, daterange, handlerSearchGraphic, withFilters = true, withButtons = true, data, loading }) => {
+const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, FiltersElement, row, daterange, handlerSearchGraphic, withFilters = true, withButtons = true, data, loading, columnDesc }) => {
     const classes = useStyles();
     const { t } = useTranslation();
     const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
@@ -326,6 +331,7 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                             column={column}
                             graphicType={graphicType}
                             data={dataGraphic}
+                            columnDesc={columnDesc}
                         />
                     </div>
                 </div>
@@ -361,6 +367,7 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                             row={row}
                             column={column}
                             graphicType={graphicType}
+                            columnDesc={columnDesc}
                             data={dataGraphic}
                         />
                     </div>
