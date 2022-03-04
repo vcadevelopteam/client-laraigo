@@ -622,6 +622,11 @@ export const langKeys = {
     enterbotname: "enterbotname",
     enterbotapikey: "enterbotapikey",
 
+    dateactivity: "dateactivity",
+    leadactivity: "leadactivity",
+    datenote: "datenote",
+    note: "note",
+
     next_activity: 'next_activity',
     nextprogramedactivity: 'nextprogramedactivity',
 
