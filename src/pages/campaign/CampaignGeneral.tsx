@@ -614,7 +614,7 @@ const ModalCampaignSchedule: React.FC<ModalProps> = ({ openModal, setOpenModal, 
     }
 
     const onSubmit = handleSubmit((data) => {
-        parentSetValue('batchjson', data.batchjson);
+        parentSetValue('batchjson', data.batchjson.map((d: any, i: number) => ({...d, batchindex: i + 1})));
         setOpenModal(false);
     });
 
