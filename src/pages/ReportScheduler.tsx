@@ -1,12 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from 'react';
 import ClearIcon from '@material-ui/icons/Clear';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SaveIcon from '@material-ui/icons/Save';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Typography from '@material-ui/core/Typography';
+import AddIcon from '@material-ui/icons/Add';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import TableZyx from '../components/fields/table-simple';
@@ -430,26 +426,8 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, domainname,
                             optionDesc="desc"
                             optionValue="value"
                         />
-                        {!((origin!=="REPORT") && (origin!=="DASHBOARD")) && (
-                            <FieldSelect
-                                label={t(langKeys.origintype)}
-                                className="col-6"
-                                valueDefault={getValues("origintype")}
-                                onChange={(value) =>{ setValue('origintype', value?.value || '')}}
-                                error={errors?.origintype?.message} 
-                                disabled={(origin!=="REPORT") && (origin!=="DASHBOARD")}
-                                data={[
-                                    {value:"SIMPLE", desc: "Simple"},
-                                    {value:"CUSTOM", desc: t(langKeys.custom)},
-                                ]}
-                                optionDesc="desc"
-                                optionValue="value"
-                            />
-                        )}
-                    </div>
-                    <div className="row-zyx">
-                        <FieldSelect
-                            label={`${t(langKeys.report)}/${t(langKeys.dashboard)}`}
+                        {!((origin!=="REPORT") && (origin!=="DASHBOARD")) && <FieldSelect
+                            label={t(langKeys.report)}
                             className="col-6"
                             valueDefault={row?.reportid || ""}
                             onChange={(value) => setValue('reportid', value?.value || '')}
@@ -458,17 +436,29 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, domainname,
                             data={dataReportSimple}
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
-                        />
+                        />}
                     </div>
-                    <div className="row-zyx">
-                        <div className={classes.subtitle2}>{t(langKeys.filters)}</div>
+                    {(origin && origin !== "CAMPAIGN") &&<div className="row-zyx">
+                        
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <div className={classes.subtitle2}>{t(langKeys.filters)}</div>
+                            <div>
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    color="primary"
+                                    endIcon={<AddIcon style={{ color: "#deac32" }} />}
+                                    style={{ backgroundColor: "#6c757d" }}
+                                >{t(langKeys.addfilter)}
+                                </Button>
+                            </div>
+                        </div>
                         <FieldSelect
                             label={t(langKeys.filter)}
                             className="col-6"
                             valueDefault={getValues('filters')}
                             onChange={(value) => setfilterList((prev) => [...prev,value?.value || ''])}
                             error={errors?.filters?.message}
-                            disabled={(origin!=="report") && (origin!=="dashboard")}
                             data={[]}
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
@@ -480,7 +470,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, domainname,
                             onChange={(value) => setfilterListValues((prev) => [...prev,value?.value || ''])}
                             error={errors?.title?.message}
                         />
-                    </div>
+                    </div>}
                     <div className="row-zyx">
                         <FieldSelect
                             label={t(langKeys.periodicity)}
