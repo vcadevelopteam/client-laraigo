@@ -331,6 +331,14 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         });
     }, [dataDocType, getValues("sunatcountry")]);
 
+    const emailRequired = (value: string) => {
+        if (value.length === 0) {
+            return t(langKeys.field_required) as string;
+        } else if (!/\S+@\S+\.\S+/.test(value)) {
+            return t(langKeys.emailverification) as string;
+        }
+    }
+
     return (
         <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
@@ -615,9 +623,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                             label={t(langKeys.email)} //transformar a multiselect
                                             className="col-6"
                                             fregister={{
-                                                ...register("email", {
-                                                    validate: (value) => (((value && value.length) && (value.includes("@") && value.includes("."))) || t(langKeys.emailverification)) || t(langKeys.field_required)
-                                                })
+                                                ...register("email", { validate: emailRequired, value: '' })
                                             }}
                                             error={errors?.email?.message}
                                             onChange={(value) => setValue('email', value)}
