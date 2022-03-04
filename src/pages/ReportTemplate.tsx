@@ -126,6 +126,7 @@ type IFilter = {
     id: any;
     filter: string;
     join_alias: string;
+    type_filter: string;
     join_on: string;
     join_table: string;
 }
@@ -681,7 +682,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                         onClick={async () => {
                                                             const haveDataOrigin = await trigger('dataorigin');
                                                             if (haveDataOrigin) {
-                                                                filtersAppend({ columnname: '', type: '', description: '', filter: '' });
+                                                                filtersAppend({ columnname: '', type: '', type_filter: '', description: '', filter: '' });
                                                             }
                                                         }}
                                                     >
@@ -719,10 +720,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                             onChange={(value) => {
                                                                 setValue(`filters.${i}.columnname`, value?.columnname || '');
                                                                 setValue(`filters.${i}.description`, value?.description || '');
-
                                                                 setValue(`filters.${i}.type`, value?.type || '');
-                                                                trigger(`filters.${i}.type`);
-
                                                                 setValue(`filters.${i}.join_alias`, value?.join_alias || '');
                                                                 setValue(`filters.${i}.join_on`, value?.join_on || '');
                                                                 setValue(`filters.${i}.join_table`, value?.join_table || '');
@@ -734,34 +732,39 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                         />
                                                     </TableCell>
                                                     <TableCell>
-                                                        <FieldSelect
-                                                            label={t(langKeys.type)}
-                                                            valueDefault={getValues(`filters.${i}.type`)}
-                                                            fregister={{
-                                                                ...register(`filters.${i}.type`, {
-                                                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                                                })
-                                                            }}
-                                                            variant='outlined'
-                                                            onChange={(value) => {
-                                                                setValue(`filters.${i}.type`, value?.key || '');
-                                                                trigger(`filters.${i}.type`);
-                                                            }}
-                                                            error={errors?.filters?.[i]?.type?.message}
-                                                            data={[{ key: "text" }, { key: "unique_value" }]}
-                                                            optionDesc="key"
-                                                            uset={true}
-                                                            prefixTranslation="filter_"
-                                                            optionValue="key"
-                                                        />
+                                                        {!["date", "timestamp without time zone"].includes(getValues(`filters.${i}.type`)) &&
+                                                            <FieldSelect
+                                                                label={t(langKeys.type)}
+                                                                valueDefault={getValues(`filters.${i}.type_filter`)}
+                                                                fregister={{
+                                                                    ...register(`filters.${i}.type_filter`, {
+                                                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                                    })
+                                                                }}
+                                                                variant='outlined'
+                                                                onChange={(value) => {
+                                                                    setValue(`filters.${i}.type_filter`, value?.key || '');
+                                                                    trigger(`filters.${i}.type_filter`);
+
+                                                                    setValue(`filters.${i}.filter`, '');
+                                                                    trigger(`filters.${i}.filter`);
+                                                                }}
+                                                                error={errors?.filters?.[i]?.type_filter?.message}
+                                                                data={[{ key: "text" }, { key: "unique_value" }]}
+                                                                optionDesc="key"
+                                                                uset={true}
+                                                                prefixTranslation="filter_"
+                                                                optionValue="key"
+                                                            />
+                                                        }
                                                     </TableCell>
                                                     <TableCell style={{ width: 200 }}>
-                                                        {getValues(`filters.${i}.type`) === "text" &&
+                                                        {(getValues(`filters.${i}.type_filter`) === "text" && !["date", "timestamp without time zone"].includes(getValues(`filters.${i}.type`))) &&
                                                             <FieldEditArray
                                                                 fregister={{
                                                                     ...register(`filters.${i}.filter`),
                                                                 }}
-                                                                valueDefault={item?.filter}
+                                                                valueDefault={getValues(`filters.${i}.filter`)}
                                                                 error={errors?.filters?.[i]?.filter?.message}
                                                                 onChange={(value) => setValue(`filters.${i}.filter`, value)}
                                                             />
