@@ -23,6 +23,8 @@ export const langKeys = {
     report: 'report',
     report_plural: 'report_plural',
     next: "next",
+    filter_unique_value: "filter_unique_value",
+    filter_text: "filter_text",
     addchannel: "addchannel",
     error_channels_limit: "error_channels_limit",
     error_users_limit: "error_users_limit",

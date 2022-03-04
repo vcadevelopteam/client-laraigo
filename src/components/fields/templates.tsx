@@ -508,6 +508,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
     const [value, setValue] = useState<Dictionary | null>(null);
 
     useEffect(() => {
+        console.log("aaaaaaa")
         if (valueDefault && data.length > 0) {
             const optionfound = data.find((o: Dictionary) => o[optionValue] === valueDefault);
             if (optionfound) {
@@ -519,7 +520,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
             setValue(null);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [valueDefault, data]);
+    }, [data]);
 
     return (
         <div className={className}>
@@ -530,6 +531,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
                 filterSelectedOptions
                 style={style}
                 fullWidth
+                {...fregister}
                 disabled={disabled}
                 value={data?.length > 0 ? value : null}
                 onChange={(_, newValue) => {
@@ -543,7 +545,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
                 size="small"
                 renderInput={(params) => (
                     <TextField
-                        {...fregister}
+                        
                         {...params}
                         label={variant !== "standard" && label}
                         variant={variant}
@@ -581,7 +583,7 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
             setOptionsSelected([]);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [valueDefault, data]);
+    }, [data]);
 
     return (
         <div className={className}>
