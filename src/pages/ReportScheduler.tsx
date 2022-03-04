@@ -59,6 +59,11 @@ const useStyles = makeStyles((theme) => ({
         fontSize: "20px",
         paddingBottom: "10px",
     },
+    subtitle2: {
+        fontWeight: "bold",
+        fontSize: "15px",
+        paddingBottom: "10px",
+    },
     button: {
         marginRight: theme.spacing(2),
     }
@@ -164,11 +169,14 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, domainname,
     const detailRes = useSelector(state => state.main.mainAux);
     const [dataDomain, setdataDomain] = useState<Dictionary[]>([]);
     const [domainToDelete, setDomainToDelete] = useState<Dictionary[]>([]);
+    const [filterList, setfilterList] = useState<Dictionary[]>([]);
+    const [filterListValues, setfilterListValues] = useState<Dictionary[]>([]);
     const [openDialogDomain, setOpenDialogDomain] = useState(false);
     const [origin, setOrigin] = useState('');
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, domainname: "", edit: false });
     const dataDomainStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataDomainType = multiData[0] && multiData[1].success ? (useradmin?multiData[1].data.filter(x=>x.domainvalue === "BOT"):multiData[1].data) : [];
+    const dataReportSimple = multiData[1] && multiData[1].success ? multiData[1].data : [];
+    const dataRanges = multiData[2] && multiData[2].success ? multiData[2].data : [];
 
     const columns = React.useMemo(
         () => [
@@ -406,6 +414,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, domainname,
                         />
                     </div>
                     <div className="row-zyx">
+                        {/* {value:"DASHBOARD", desc: t(langKeys.dashboard)},*/ }
                         <FieldSelect
                             label={t(langKeys.origin)}
                             className="col-6"
@@ -414,7 +423,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, domainname,
                             error={errors?.origin?.message}
                             data={[
                                 {value:"REPORT", desc: t(langKeys.report_plural)},
-                                {value:"DASHBOARD", desc: t(langKeys.dashboard)},
+                               
                                 {value:"TICKET", desc: t(langKeys.ticket_plural)},
                                 {value:"CAMPAIGN", desc: t(langKeys.campaign_plural)},
                             ]}
@@ -446,20 +455,30 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, domainname,
                             onChange={(value) => setValue('reportid', value?.value || '')}
                             error={errors?.reportid?.message}
                             disabled={(origin!=="REPORT") && (origin!=="DASHBOARD")}
-                            data={[]}
-                            optionDesc="desc"
-                            optionValue="value"
+                            data={dataReportSimple}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
                         />
-                        <FieldMultiSelect
-                            label={t(langKeys.filters)}
+                    </div>
+                    <div className="row-zyx">
+                        <div className={classes.subtitle2}>{t(langKeys.filters)}</div>
+                        <FieldSelect
+                            label={t(langKeys.filter)}
                             className="col-6"
                             valueDefault={getValues('filters')}
-                            onChange={(value) => setValue('filters', value.map((o: Dictionary) => o.domainvalue).join())}
+                            onChange={(value) => setfilterList((prev) => [...prev,value?.value || ''])}
                             error={errors?.filters?.message}
                             disabled={(origin!=="report") && (origin!=="dashboard")}
                             data={[]}
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
+                        />
+                        <FieldEdit
+                            label={t(langKeys.value)}
+                            className="col-6"
+                            valueDefault={row?.title || ""}
+                            onChange={(value) => setfilterListValues((prev) => [...prev,value?.value || ''])}
+                            error={errors?.title?.message}
                         />
                     </div>
                     <div className="row-zyx">
@@ -507,16 +526,9 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, domainname,
                             valueDefault={row?.shippingrange || ""}
                             onChange={(value) => setValue('shippingrange', value?.value || '')}
                             error={errors?.shippingrange?.message}
-                            data={[
-                                {value:"YESTERDAY", desc: t(langKeys.yesterday)},
-                                {value:"BEFOREYESTERDAY", desc: t(langKeys.beforeyesterday)},
-                                {value:"3DAYSAGO", desc: t(langKeys.threedaysago)},
-                                {value:"1WEEKAGO", desc: t(langKeys.weekago)},
-                                {value:"1MONTHAGO", desc: t(langKeys.monthago)},
-                                {value:"1YEARAGO", desc: t(langKeys.yearago)},
-                            ]}
-                            optionDesc="desc"
-                            optionValue="value"
+                            data={dataRanges}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
                         />
                     </div>
                 </div>
@@ -646,7 +658,8 @@ const ReportScheduler: FC = () => {
         fetchData();
         dispatch(getMultiCollection([
             getValuesFromDomain("ESTADOGENERICO"),
-            getValuesFromDomain("TIPODOMINIO")
+            getValuesFromDomain("REPORTEAUTOMATICOESTANDAR"),
+            getValuesFromDomain("REPORTEAUTOMATICORANGO"),
         ]));
 
         return () => {

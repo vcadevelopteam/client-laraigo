@@ -29,6 +29,7 @@ export const langKeys = {
     reportschedulerdetail2: "reportschedulerdetail2",
     to: "to",
     subject: "subject",
+    filter: "filter",
     filter_unique_value: "filter_unique_value",
     filter_text: "filter_text",
     addchannel: "addchannel",
