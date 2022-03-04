@@ -136,7 +136,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
     const onSubmit = handleSubmit((data) => {
         setBodyCleaned(body => {
             data.variables.forEach((x: Dictionary) => {
-                body = body.replace(`{{${x.name}}}`, x.text)
+                body = body.replace(`{{${x.name}}}`, x.variable !== 'custom' ? (person.data as Dictionary)[x.variable] : x.text)
             })
             return body
         })
@@ -155,7 +155,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
                 lastname: person.data?.lastname + "",
                 parameters: data.variables.map((v: any) => ({
                     type: "text",
-                    text: v.variable !== 'custom' ? (person as Dictionary)[v.variable] : v.text,
+                    text: v.variable !== 'custom' ? (person.data as Dictionary)[v.variable] : v.text,
                     name: v.name
                 }))
             }]
@@ -204,7 +204,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
                             label={item.name}
                             valueDefault={getValues(`variables.${i}.variable`)}
                             onChange={(value) => {
-                                setValue(`variables.${i}.variable`, ({...value}).key)
+                                setValue(`variables.${i}.variable`, value.key)
                                 trigger(`variables.${i}.variable`)
                             }}
                             error={errors?.variables?.[i]?.text?.message}
