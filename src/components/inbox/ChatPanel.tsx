@@ -39,7 +39,7 @@ const dataPriority = [
     { option: 'HIGH' },
 ]
 
-const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'dateactivity', 'leadactivity', 'datenote', 'note', 'custom'].map(x => ({key: x}))
+const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'custom'].map(x => ({key: x}))
 
 const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
     const { t } = useTranslation();

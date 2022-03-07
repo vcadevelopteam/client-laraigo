@@ -362,7 +362,7 @@ export const connectAgentWS = (state: IState, action: IAction): IState => {
 export const setAgentsToReassign = (state: IState, action: IAction): IState => {
     return {
         ...state,
-        agentToReassignList: action.payload
+        agentToReassignList: state.userType === "AGENT" ? action.payload.filter((x: any) => x.userid !== state.agentSelected?.userid) : action.payload
     };
 }
 
@@ -437,7 +437,7 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
                     {
                         ...data,
                         personlastreplydate: data.usertype === "client" ? new Date().toISOString() : null,
-                        firstconversationdate: new Date().toISOString(),
+                        firstconversationdate: data.firstconversationdate || new Date().toISOString(),
                         isAnswered: data.userid === 2
                     }]
             }
