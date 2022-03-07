@@ -49,6 +49,7 @@ interface DetailReportDesignerProps {
 const dataSummarization = [
     { function: 'total', type: ["double precision", "bigint", "integer", "numeric", "interval"] },
     { function: 'count', type: ["double precision", "boolean", "timestamp without time zone", "character varying", "text", "bigint", "integer", "numeric", "date", "interval", "variable"] },
+    { function: 'count_unique', type: ["double precision", "boolean", "timestamp without time zone", "character varying", "text", "bigint", "integer", "numeric", "date", "interval", "variable"] },
     { function: 'average', type: ["double precision", "bigint", "integer", "numeric", "interval"] },
     { function: 'minimum', type: ["double precision", "bigint", "integer", "numeric", "interval", "timestamp without time zone", "date"] },
     { function: 'maximum', type: ["double precision", "bigint", "integer", "numeric", "interval", "timestamp without time zone", "date"] },
@@ -667,7 +668,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                         </TableContainer>
                     </div>
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                        <div style={{ flex: 1 }} className={classes.containerDetail}>
+                        <div style={{ flex: .55 }} className={classes.containerDetail}>
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <div className={classes.title}>{t(langKeys.filters)}</div>
                             </div>
@@ -778,7 +779,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                             </div>
                         </div>
 
-                        <div style={{ flex: 1 }} className={classes.containerDetail}>
+                        <div style={{ flex: .45 }} className={classes.containerDetail}>
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <div className={classes.title}>{t(langKeys.summarization)}</div>
                             </div>

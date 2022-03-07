@@ -2783,6 +2783,7 @@ export const langKeys = {
 
     function_total: 'function_total',
     function_count: 'function_count',
+    function_count_unique: 'function_count_unique',
     function_average: 'function_average',
     function_minimum: 'function_minimum',
     function_maximum: 'function_maximum',

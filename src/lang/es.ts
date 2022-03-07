@@ -29,6 +29,7 @@ const translation: LangKeys = {
     hide_logs: 'Ocultar logs',
 
     show_all: 'Mostrar todo',
+    function_count_unique: 'Contar únicos',
 
     lead: 'Oportunidad',
     lead_plural: 'Oportunidades',
