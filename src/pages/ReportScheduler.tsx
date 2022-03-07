@@ -159,7 +159,8 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, da
 const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, domainname, edit }, setViewSelected, multiData, fetchData,arrayBread }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-    const [filters, setfilters] = useState<Dictionary[]>(row && row.filterjson ? JSON.parse(row.filterjson) : [])
+    const [filters, setfilters] = useState<any[]>(row?.filterjson ? Object.entries(row.filterjson).reduce((acc,[key,value]) =>{return {"filter": key, "value": value}},[]): [])
+    debugger
     console.log(row)
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
@@ -256,7 +257,9 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, domainname,
             data.mailbody = renderToString(toElement(bodyobject));
             if (data.mailbody === '<div data-reactroot=""><p><span></span></p></div>')
                 return;
-            dispatch(execute(reportSchedulerIns({ ...data, filterjson: JSON.stringify(filters), mailbodyobject: bodyobject })));
+                
+            const filtertosend = filters.length? filters.reduce(x => ({[x.filter]: x.value})): {}
+            dispatch(execute(reportSchedulerIns({ ...data, filterjson: JSON.stringify(filtertosend), mailbodyobject: bodyobject })));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
