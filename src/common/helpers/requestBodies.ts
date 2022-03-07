@@ -535,11 +535,11 @@ export const getReportSchedulerSel = (id: number): IRequestBody => ({
         all: true
     }
 })
-export const reportSchedulerIns = ({id, title, status, origin, origintype, reportid, reportname, filterjson, frecuency, schedule, datarange, mailto, mailcc, mailsubject, mailbody, operation}: Dictionary): IRequestBody => ({
+export const reportSchedulerIns = ({id, title, status, origin, origintype, reportid, reportname, filterjson, frecuency, schedule, datarange, mailto, mailcc, mailsubject, mailbody,mailbodyobject, operation}: Dictionary): IRequestBody => ({
     method: "UFN_REPORTSCHEDULER_INS",
     key: "UFN_REPORTSCHEDULER_INS",
     parameters: {
-        id, title, status, origin, origintype, reportid, reportname, filterjson, frecuency, schedule, datarange, mailto, mailcc, mailsubject, mailbody, operation, 
+        id, title, status, origin, origintype, reportid, reportname, filterjson, frecuency, schedule, datarange, mailto, mailcc, mailsubject, mailbody,mailbodyobject, operation, 
         description: "",
         type: "",
     }

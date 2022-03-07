@@ -528,7 +528,8 @@ export const LayoutItem: FC<LayoutItemProps> = ({
     const { t } = useTranslation();
     const [selectedIndex, setSelectedIndex] = useState(-1);
     const [contentType, setContentType] = useState('');
-    const [graphicType, setgraphicType] = useState('');
+    const [graphicType, setgraphicType] = useState(getValues(`${key}.graph`));
+    console.log(graphicType)
     const [columns, setColumns] = useState<ColumnTemplate[]>([]);
 
     useEffect(() => {
@@ -719,7 +720,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                         uset
                         prefixTranslation="dashboard_chartType_"
                     />
-                    {(graphicType==="bar" || graphicType==="line") && <FieldSelect
+                    {(getValues(`${key}.graph`) === "bar" || getValues(`${key}.graph`) ==="line") && <FieldSelect
                         className={classes.field}
                         label={t(langKeys.interval)}
                         data={[
