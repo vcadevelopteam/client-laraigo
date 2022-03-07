@@ -159,9 +159,7 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, da
 const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, domainname, edit }, setViewSelected, multiData, fetchData,arrayBread }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-    const [filters, setfilters] = useState<any[]>(row?.filterjson ? Object.entries(row.filterjson).reduce((acc,[key,value]) =>{return {"filter": key, "value": value}},[]): [])
-    debugger
-    console.log(row)
+    const [filters, setfilters] = useState<any[]>(row?.filterjson ? Object.entries(row.filterjson).reduce((acc:any,[key,value]) => [...acc, {"filter": key, "value": value} ] ,[]): [])
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
