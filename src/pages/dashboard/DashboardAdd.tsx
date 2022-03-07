@@ -102,6 +102,7 @@ interface Item {
     grouping: string;
     graph: string;
     column: string;
+    summarizationfunction?: string;
 }
 
 interface Items {
@@ -572,6 +573,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
             register(`${key}.grouping`, { validate: mandatoryStrField, value: getValues(`${key}.grouping`) || '' });
             register(`${key}.graph`, { validate: mandatoryStrField, value: getValues(`${key}.graph`) || '' });
             register(`${key}.column`, { validate: mandatoryColumn, value: getValues(`${key}.column`) || '' });
+            register(`${key}.summarizationfunction`);
             register(`${key}.interval`, {value: getValues(`${key}.interval`)});
         } else if (contentType === "kpi") {
             unregister(`${key}.reporttemplateid`);
@@ -764,6 +766,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                         onChange={(v: ColumnTemplate) => {
                             // console.log('column', v);
                             setValue(`${key}.column`, v?.columnname || '');
+                            setValue(`${key}.summarizationfunction`, v?.function || '');
                         }}
                         error={errors[key]?.column?.message}
                         disabled={loading || columns.length === 0}
