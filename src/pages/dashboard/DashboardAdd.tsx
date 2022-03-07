@@ -25,6 +25,7 @@ export interface ReportTemplate {
     reporttemplateid: number;
     status: string;
     type: string;
+    summaryjson: string;
 }
 
 export interface KpiTemplate {
@@ -48,6 +49,7 @@ interface ColumnTemplate {
     join_table: any;
     tablename: string;
     type: string;
+    function?: string;
 }
 
 const ReactGridLayout = WidthProvider(RGL);
@@ -587,7 +589,22 @@ export const LayoutItem: FC<LayoutItemProps> = ({
             setColumns([]);
             return;
         }
-        setColumns(JSON.parse(templates[selectedIndex].columnjson) as ColumnTemplate[]);
+        console.log(JSON.parse(templates[selectedIndex].summaryjson) as ColumnTemplate[])
+        let summary = JSON.parse(templates[selectedIndex].summaryjson).map((x:any)=>{return {
+            alias: `${x.columnname.split(".")[1]} (${x.function})`,
+            columnname: x.columnname,
+            description: x.columnname,
+            descriptionT: x.columnname,
+            disabled: false,
+            join_alias: null,
+            join_on: null,
+            join_table: null,
+            tablename: "",
+            type: x.type,
+            function: x.function
+        }})
+        setColumns(summary.concat(JSON.parse(templates[selectedIndex].columnjson) as ColumnTemplate[]));
+        console.log(columns)
     }, [selectedIndex, templates]);
 
     const mandatoryReportTemplate = (value: number) => {
@@ -698,7 +715,10 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                         optionDesc="key"
                         optionValue="key"
                         valueDefault={getValues(`${key}.grouping`)}
-                        onChange={(v: typeof groupingType[number]) => setValue(`${key}.grouping`, v?.key || '')}
+                        onChange={(v: typeof groupingType[number]) => {
+                            setValue(`${key}.grouping`, v?.key || '')
+                            setValue(`${key}.interval`, "")
+                        }}
                         error={errors[key]?.grouping?.message}
                         disabled={loading}
                         uset
