@@ -539,7 +539,8 @@ export const reportSchedulerIns = ({id, title, status, origin, origintype, repor
     method: "UFN_REPORTSCHEDULER_INS",
     key: "UFN_REPORTSCHEDULER_INS",
     parameters: {
-        id, title, status, origin, origintype, reportid, reportname, filterjson, frecuency, schedule, datarange, mailto, mailcc, mailsubject, mailbody,mailbodyobject, operation, 
+        id, title, status, origin, origintype, reportid, reportname, filterjson, frecuency, schedule, datarange, mailto, mailcc, mailsubject, mailbody, operation, 
+        mailbodyobject:JSON.stringify(mailbodyobject),
         description: "",
         type: "",
     }
