@@ -210,6 +210,7 @@ const InappropriateWords: FC = () => {
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
     const [waitImport, setWaitImport] = useState(false);
+    const [mainData, setMainData] = useState<any>([]);
     
     const arrayBread = [
         { id: "view-0", name: t(langKeys.configuration_plural) },
@@ -380,6 +381,15 @@ const InappropriateWords: FC = () => {
         exportExcel(`${t(langKeys.template)} ${t(langKeys.inappropriatewords)}`, templateMaker(data, header));
     }
 
+    useEffect(() => {
+        setMainData(mainResult.mainData.data.map(x => ({
+            ...x,
+            classification: (t(`${x.classification}`.toLowerCase()) || "").toUpperCase(),
+            classificationdata: x.classification,
+            statusdesc: (t(`status_${x.status}`.toLowerCase()) || "").toUpperCase()
+        })))
+    }, [mainResult.mainData.data])
+
     if (viewSelected === "view-1") {
 
         return (
@@ -394,12 +404,7 @@ const InappropriateWords: FC = () => {
                 <TableZyx
                     columns={columns}
                     titlemodule={t(langKeys.inappropriatewords, { count: 2 })}
-                    data={mainResult.mainData.data.map(x => ({
-                        ...x,
-                        classification: (t(`${x.classification}`.toLowerCase()) || "").toUpperCase(),
-                        classificationdata: x.classification,
-                        statusdesc: (t(`status_${x.status}`.toLowerCase()) || "").toUpperCase()
-                    }))}
+                    data={mainData}
                     ButtonsElement={() => (
                         <Button
                             disabled={mainResult.mainData.loading}

@@ -127,6 +127,7 @@ const IntegrationManager: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const [mainData, setMainData] = useState<any>([]);
     const arrayBread = [
         { id: "view-0", name: t(langKeys.configuration_plural) },
         { id: "view-1", name: t(langKeys.integrationmanager_plural) },
@@ -238,6 +239,13 @@ const IntegrationManager: FC = () => {
             callback
         }))
     }
+    
+    useEffect(() => {
+        setMainData(mainResult.mainData.data.map(x => ({
+            ...x,
+            type_translated: (t(`${x.type}`.toLowerCase()) || "").toUpperCase(),
+        })))
+    }, [mainResult.mainData.data])
 
     if (viewSelected === "view-1") {
 
@@ -256,10 +264,7 @@ const IntegrationManager: FC = () => {
                 <TableZyx
                     columns={columns}
                     titlemodule={t(langKeys.integrationmanager_plural, { count: 2 })}
-                    data={mainResult.mainData.data.map(x => ({
-                        ...x,
-                        type_translated: (t(`${x.type}`.toLowerCase()) || "").toUpperCase(),
-                    }))}
+                    data={mainData}
                     ButtonsElement={() => (
                         <Button
                             disabled={mainResult.mainData.loading}

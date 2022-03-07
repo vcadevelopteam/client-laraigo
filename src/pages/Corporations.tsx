@@ -55,6 +55,7 @@ const Corporations: FC = () => {
         { id: "view-0", name: t(langKeys.configuration_plural) },
         { id: "view-1", name: t(langKeys.corporation_plural) },
     ];
+    const [mainData, setMainData] = useState<any>([]);
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
@@ -143,6 +144,14 @@ const Corporations: FC = () => {
             }
         }
     }, [executeResult, waitSave])
+    
+    useEffect(() => {
+        setMainData(mainResult.mainData.data.map(x => ({
+            ...x,
+            typedesc: (t(`type_corp_${x.type}`.toLowerCase()) || "").toUpperCase(),
+            statusdesc: (t(`status_${x.status}`.toLowerCase()) || "").toUpperCase()
+        })))
+    }, [mainResult.mainData.data])
 
     const handleRegister = () => {
         setViewSelected("view-2");
@@ -191,13 +200,9 @@ const Corporations: FC = () => {
                 </div>
                 <TableZyx
                     columns={columns}
-                    onClickRow={handleEdit}
                     titlemodule={t(langKeys.corporation_plural, { count: 2 })}
-                    data={mainResult.mainData.data.map(x => ({
-                        ...x,
-                        typedesc: (t(`type_corp_${x.type}`.toLowerCase()) || "").toUpperCase(),
-                        statusdesc: (t(`status_${x.status}`.toLowerCase()) || "").toUpperCase()
-                    }))}
+                    onClickRow={handleEdit}
+                    data={mainData}
                     ButtonsElement={() => (
                         <Button
                             disabled={mainResult.mainData.loading}
