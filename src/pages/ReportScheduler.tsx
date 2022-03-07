@@ -1,19 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from 'react';
 import ClearIcon from '@material-ui/icons/Clear';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SaveIcon from '@material-ui/icons/Save';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Typography from '@material-ui/core/Typography';
+import AddIcon from '@material-ui/icons/Add';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import TableZyx from '../components/fields/table-simple';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, FieldView, FieldEdit, FieldSelect, TemplateSwitch, TitleDetail, FieldMultiSelect } from 'components';
-import { getDomainValueSel, getReportSchedulerSel, getValuesFromDomain, insDomain, insDomainvalue } from 'common/helpers';
+import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, FieldView, FieldEdit, FieldSelect, TemplateSwitch, TitleDetail, FieldMultiSelect, RichText } from 'components';
+import { getDomainValueSel, getReportSchedulerSel, getValuesFromDomain, insDomain, reportSchedulerIns } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -23,7 +19,10 @@ import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/acti
 import { useHistory } from 'react-router-dom';
 import paths from 'common/constants/paths';
 import Box from '@material-ui/core/Box';
-import { TextField } from '@material-ui/core';
+import { IconButton, TextField } from '@material-ui/core';
+import DeleteIcon from '@material-ui/icons/Delete';
+import { Descendant } from 'slate';
+import { renderToString, toElement } from 'components/fields/RichText';
 
 interface RowSelected {
     row: Dictionary | null;
@@ -57,6 +56,11 @@ const useStyles = makeStyles((theme) => ({
     subtitle: {
         fontWeight: "bold",
         fontSize: "20px",
+        paddingBottom: "10px",
+    },
+    subtitle2: {
+        fontWeight: "bold",
+        fontSize: "15px",
         paddingBottom: "10px",
     },
     button: {
@@ -155,126 +159,35 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, da
 const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, domainname, edit }, setViewSelected, multiData, fetchData,arrayBread }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-    const user = useSelector(state => state.login.validateToken.user);
-    const useradmin = user?.roledesc === "ADMINISTRADOR"
-    const newrow = row===null
+    const [filters, setfilters] = useState<Dictionary[]>(row && row.filterjson ? JSON.parse(row.filterjson) : [])
+    console.log(row)
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
-    const detailRes = useSelector(state => state.main.mainAux);
-    const [dataDomain, setdataDomain] = useState<Dictionary[]>([]);
-    const [domainToDelete, setDomainToDelete] = useState<Dictionary[]>([]);
-    const [openDialogDomain, setOpenDialogDomain] = useState(false);
-    const [origin, setOrigin] = useState('');
-    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, domainname: "", edit: false });
+    const [origin, setOrigin] = useState(row?.origin || '');
+    const [bodyobject, setBodyobject] = useState<Descendant[]>(row?.bodyobject || [{ "type": "paragraph", "children": [{ "text": row?.body || "" }] }])
     const dataDomainStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataDomainType = multiData[0] && multiData[1].success ? (useradmin?multiData[1].data.filter(x=>x.domainvalue === "BOT"):multiData[1].data) : [];
-
-    const columns = React.useMemo(
-        () => [
-            {
-                accessor: 'domainid',
-                NoFilter: true,
-                isComponent: true,
-                minWidth: 60,
-                width: '1%',
-                Cell: (props: any) => {
-                    if (!edit)
-                        return null;
-                    const row = props.cell.row.original;
-                    return (
-                        <TemplateIcons
-                            viewFunction={() => handleView(row)}
-                            deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
-                        />
-                    )
-                }
-            },
-            {
-                Header: t(langKeys.code),
-                accessor: 'domainvalue',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.description),
-                accessor: 'domaindesc',
-                NoFilter: true
-            },
-            /*{
-                Header: t(langKeys.bydefault),
-                accessor: 'bydefault',
-                NoFilter: true,
-                Cell: (prop: any) => {
-                    const row = prop.cell.row.original;
-                    const val = (row ? (row.bydefault ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative))
-                    return val;
-                }
-            },*/
-            {
-                Header: t(langKeys.organization),
-                accessor: 'organization',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.status),
-                prefixTranslation: 'status_',
-                accessor: 'status',
-                NoFilter: true
-            }
-        ],
-        []
-    );
-
-    useEffect(() => {
-        if (!detailRes.loading && !detailRes.error) {
-            setdataDomain(detailRes.data);
-        }
-    }, [detailRes]);
-
-    const handleRegister = () => {
-        setOpenDialogDomain(true)
-        setRowSelected({ row, domainname, edit: false });
-    }
-
-    const handleDelete = (row: Dictionary) => {
-        if (row && row.operation !== "INSERT") {
-            setDomainToDelete(p => [...p, { ...row, operation: "DELETE", status: 'ELIMINADO' }]);
-        } else {
-            row.operation = 'DELETE';
-        }
-
-        setdataDomain(p => p.filter(x => (row.operation === "DELETE" ? x.operation !== "DELETE" : row.domainid !== x.domainid)));
-    }
-
-    const handleView = (row: Dictionary) => {
-        setOpenDialogDomain(true)
-        setRowSelected({ row, domainname, edit: false })
-    }
-
-    const handleEdit = (row: Dictionary) => {
-        setOpenDialogDomain(true)
-        setRowSelected({ row, domainname, edit: true })
-    }
+    const dataReportSimple = multiData[1] && multiData[1].success ? multiData[1].data : [];
+    const dataRanges = multiData[2] && multiData[2].success ? multiData[2].data : [];
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            id: row?.domainid || 0,
+            id: row?.reportschedulerid || 0,
             title: row?.title || '',
             status: row?.status || 'ACTIVO',
             origin: row?.origin || '',
             origintype: row?.origintype || '',
-            reportid: row?.reportid || '',
+            reportid: row?.reportid || 0,
             reportname: row?.reportname || '',
-            filters: row?.filters || '',
-            periodicity: row?.periodicity || '',
+            filterjson: row?.filterjson || '',
+            frecuency: row?.frecuency || '',
             group: row?.group || "",
-            shippingschedule: row?.shippingschedule || 0,
-            shippingrange: row?.shippingrange || "",
-            to: row?.to || "",
-            cc: row?.cc || "",
-            subject: row?.subject || "",
-            body: row?.body || "",
+            schedule: row?.schedule || 0,
+            datarange: row?.datarange || "",
+            mailto: row?.mailto || "",
+            mailcc: row?.mailcc || "",
+            mailsubject: row?.mailsubject || "",
+            mailbody: row?.mailbody || "",
             operation: row ? "EDIT" : "INSERT",
         }
     });
@@ -301,51 +214,59 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, domainname,
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('origin', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('origintype');
-        register('reportid', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('reportname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('filters', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('periodicity', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('frecuency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('group', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('shippingschedule', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('shippingrange', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('to', { validate: {
+        register('schedule', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('datarange', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('mailto', { validate: {
             validation: (value) => (value && value.length) || t(langKeys.field_required) ,
             isemail: (value)=> (value.includes('.') && value.includes('@')) || t(langKeys.emailverification)
         }});
-        register('cc', { validate: {
+        register('mailcc', { validate: {
             validation: (value) => (value && value.length) || t(langKeys.field_required) ,
             isemail: (value)=> (value.includes('.') && value.includes('@')) || t(langKeys.emailverification)
         }});
-        register('subject', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('body', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('mailsubject', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
 
         dispatch(resetMainAux());
         dispatch(getCollectionAux(getDomainValueSel((row?.domainname || ""))));
     }, [register]);
+    React.useEffect(() => {
+        console.log(errors)
+    }, [errors]);
+
+    function addfilter() {
+        setfilters((p) => [...p, { filter: "", value: "" }])
+    }
+    function deleteitem(i: number) {
+        setfilters(filters.filter((e, index) => index !== i))
+
+    }
+    function setValuefilter(field: string, value: string, i: number) {
+        setfilters((p: Dictionary[]) => p.map((x, index) => index === i ? { ...x, [field]: value } : x))
+    }
 
     const onSubmit = handleSubmit((data) => {
-        const callback = () => {
-            dispatch(showBackdrop(true));
-            dispatch(execute({
-                header: insDomain({ ...data }),
-                detail: [
-                    ...dataDomain.filter(x => !!x.operation).map(x => insDomainvalue({ ...data, ...x, status: data?.status, id: x.domainid ? x.domainid : 0 })),
-                    ...domainToDelete.map(x => insDomainvalue({ ...x, id: x.domainid }))
-                ]
-            }, true));
+        data.mailbody = renderToString(toElement(bodyobject));
+        if (data.mailbody === `<div data-reactroot=""><p><span></span></p></div>`)
+            return
 
-            setWaitSave(true);
+        const callback = () => {
+            data.mailbody = renderToString(toElement(bodyobject));
+            if (data.mailbody === '<div data-reactroot=""><p><span></span></p></div>')
+                return;
+            dispatch(execute(reportSchedulerIns({ ...data, filterjson: JSON.stringify(filters), mailbodyobject: bodyobject })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true)
         }
-        if(!!dataDomain.length){
-            dispatch(manageConfirmation({
-                visible: true,
-                question: t(langKeys.confirmation_save),
-                callback
-            }))
-        }else{
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.errorneedvalues) }))
-        }
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
     });
+    
     return (
         <div style={{width: "100%"}}>
             <form onSubmit={onSubmit}>
@@ -356,7 +277,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, domainname,
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
-                            title={edit ? (row ? `${row.domainname}` : `${t(langKeys.new)} ${t(langKeys.reportscheduler_singular)}`) : `${t(langKeys.new)} ${t(langKeys.reportscheduler_singular)}`}
+                            title={edit ? (row ? `${row.title}` : `${t(langKeys.new)} ${t(langKeys.reportscheduler_singular)}`) : `${t(langKeys.new)} ${t(langKeys.reportscheduler_singular)}`}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -406,6 +327,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, domainname,
                         />
                     </div>
                     <div className="row-zyx">
+                        {/* {value:"DASHBOARD", desc: t(langKeys.dashboard)},*/ }
                         <FieldSelect
                             label={t(langKeys.origin)}
                             className="col-6"
@@ -414,61 +336,73 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, domainname,
                             error={errors?.origin?.message}
                             data={[
                                 {value:"REPORT", desc: t(langKeys.report_plural)},
-                                {value:"DASHBOARD", desc: t(langKeys.dashboard)},
+                               
                                 {value:"TICKET", desc: t(langKeys.ticket_plural)},
                                 {value:"CAMPAIGN", desc: t(langKeys.campaign_plural)},
                             ]}
                             optionDesc="desc"
                             optionValue="value"
                         />
-                        {!((origin!=="REPORT") && (origin!=="DASHBOARD")) && (
-                            <FieldSelect
-                                label={t(langKeys.origintype)}
-                                className="col-6"
-                                valueDefault={getValues("origintype")}
-                                onChange={(value) =>{ setValue('origintype', value?.value || '')}}
-                                error={errors?.origintype?.message} 
-                                disabled={(origin!=="REPORT") && (origin!=="DASHBOARD")}
-                                data={[
-                                    {value:"SIMPLE", desc: "Simple"},
-                                    {value:"CUSTOM", desc: t(langKeys.custom)},
-                                ]}
-                                optionDesc="desc"
-                                optionValue="value"
-                            />
-                        )}
-                    </div>
-                    <div className="row-zyx">
-                        <FieldSelect
-                            label={`${t(langKeys.report)}/${t(langKeys.dashboard)}`}
+                        {!((origin!=="REPORT") && (origin!=="DASHBOARD")) && <FieldSelect
+                            label={t(langKeys.report)}
                             className="col-6"
-                            valueDefault={row?.reportid || ""}
-                            onChange={(value) => setValue('reportid', value?.value || '')}
-                            error={errors?.reportid?.message}
+                            valueDefault={row?.reportname || ""}
+                            onChange={(value) => setValue('reportname', value?.domainvalue || '')}
+                            error={errors?.reportname?.message}
                             disabled={(origin!=="REPORT") && (origin!=="DASHBOARD")}
-                            data={[]}
-                            optionDesc="desc"
-                            optionValue="value"
-                        />
-                        <FieldMultiSelect
-                            label={t(langKeys.filters)}
-                            className="col-6"
-                            valueDefault={getValues('filters')}
-                            onChange={(value) => setValue('filters', value.map((o: Dictionary) => o.domainvalue).join())}
-                            error={errors?.filters?.message}
-                            disabled={(origin!=="report") && (origin!=="dashboard")}
-                            data={[]}
+                            data={dataReportSimple}
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
-                        />
+                        />}
                     </div>
+                    {(origin && origin !== "CAMPAIGN") &&<div className="row-zyx">
+                        
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <div className={classes.subtitle2}>{t(langKeys.filters)}</div>
+                            <div>
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    color="primary"
+                                    endIcon={<AddIcon style={{ color: "#deac32" }} />}
+                                    style={{ backgroundColor: "#6c757d" }}
+                                    onClick={() => addfilter()}
+                                >{t(langKeys.addfilter)}
+                                </Button>
+                            </div>
+                        </div>
+                        {filters.map((x,i)=> (
+                            <div className="row-zyx" key={i}>                                
+                                <FieldSelect
+                                    label={t(langKeys.filter)}
+                                    className="col-5"
+                                    valueDefault={x?.filter || ""}
+                                    onChange={(value) => setValuefilter('filter', value.domainvalue, i)}
+                                    data={[]}
+                                    optionDesc="domaindesc"
+                                    optionValue="domainvalue"
+                                />
+                                <FieldEdit
+                                    label={t(langKeys.value)}
+                                    className="col-6"
+                                    valueDefault={x?.value || ""}
+                                    onChange={(value) => setValuefilter('value', value, i)}
+                                />                                
+                                <div className="col-1" style={{ paddingTop: "15px" }}>
+                                    <IconButton aria-label="delete" onClick={() => deleteitem(i)}>
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </div>
+                            </div>
+                        ))}
+                    </div>}
                     <div className="row-zyx">
                         <FieldSelect
                             label={t(langKeys.periodicity)}
                             className="col-6"
-                            valueDefault={row?.periodicity || ""}
-                            onChange={(value) => setValue('periodicity', value?.value || '')}
-                            error={errors?.periodicity?.message}
+                            valueDefault={getValues("frecuency")}
+                            onChange={(value) => setValue('frecuency', value?.value || '')}
+                            error={errors?.frecuency?.message}
                             data={[
                                 {value:"DAY", desc: t(langKeys.day)},
                                 {value:"WEEK", desc: t(langKeys.week)},
@@ -480,7 +414,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, domainname,
                         <FieldSelect
                             label={t(langKeys.group)}
                             className="col-6"
-                            valueDefault={row?.group || ""}
+                            valueDefault={getValues("group")}
                             onChange={(value) => setValue('group', value?.value || '')}
                             error={errors?.group?.message}
                             data={[
@@ -493,30 +427,50 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, domainname,
                         />
                     </div>
                     <div className="row-zyx">
-                        <FieldEdit
+                        <FieldSelect
                             label={t(langKeys.shippingschedule)}
                             className="col-6"
-                            type="time"
-                            valueDefault={row?.shippingschedule || ""}
-                            onChange={(value) => setValue('shippingschedule', value)}
-                            error={errors?.shippingschedule?.message}
+                            valueDefault={getValues("schedule")}
+                            onChange={(value) => setValue('schedule', value?.value || "")}
+                            error={errors?.schedule?.message}
+                            data={[
+                                {value: "00:00:00", desc: "00:00"},
+                                {value: "01:00:00", desc: "01:00"},
+                                {value: "02:00:00", desc: "02:00"},
+                                {value: "03:00:00", desc: "03:00"},
+                                {value: "04:00:00", desc: "04:00"},
+                                {value: "05:00:00", desc: "05:00"},
+                                {value: "06:00:00", desc: "06:00"},
+                                {value: "07:00:00", desc: "07:00"},
+                                {value: "08:00:00", desc: "08:00"},
+                                {value: "09:00:00", desc: "09:00"},
+                                {value: "10:00:00", desc: "10:00"},
+                                {value: "11:00:00", desc: "11:00"},
+                                {value: "12:00:00", desc: "12:00"},
+                                {value: "13:00:00", desc: "13:00"},
+                                {value: "14:00:00", desc: "14:00"},
+                                {value: "15:00:00", desc: "15:00"},
+                                {value: "16:00:00", desc: "16:00"},
+                                {value: "17:00:00", desc: "17:00"},
+                                {value: "18:00:00", desc: "18:00"},
+                                {value: "19:00:00", desc: "19:00"},
+                                {value: "20:00:00", desc: "20:00"},
+                                {value: "21:00:00", desc: "21:00"},
+                                {value: "22:00:00", desc: "22:00"},
+                                {value: "23:00:00", desc: "23:00"},
+                            ]}
+                            optionDesc="value"
+                            optionValue="desc"
                         />
                         <FieldSelect
                             label={t(langKeys.shippingrange)}
                             className="col-6"
-                            valueDefault={row?.shippingrange || ""}
-                            onChange={(value) => setValue('shippingrange', value?.value || '')}
-                            error={errors?.shippingrange?.message}
-                            data={[
-                                {value:"YESTERDAY", desc: t(langKeys.yesterday)},
-                                {value:"BEFOREYESTERDAY", desc: t(langKeys.beforeyesterday)},
-                                {value:"3DAYSAGO", desc: t(langKeys.threedaysago)},
-                                {value:"1WEEKAGO", desc: t(langKeys.weekago)},
-                                {value:"1MONTHAGO", desc: t(langKeys.monthago)},
-                                {value:"1YEARAGO", desc: t(langKeys.yearago)},
-                            ]}
-                            optionDesc="desc"
-                            optionValue="value"
+                            valueDefault={getValues("datarange")}
+                            onChange={(value) => setValue('datarange', value?.domainvalue || '')}
+                            error={errors?.datarange?.message}
+                            data={dataRanges}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
                         />
                     </div>
                 </div>
@@ -527,50 +481,38 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, domainname,
                             label={t(langKeys.to)}
                             className="col-12"
                             valueDefault={row?.to || ""}
-                            onChange={(value) => setValue('to', value)}
-                            error={errors?.to?.message}
+                            onChange={(value) => setValue('mailto', value)}
+                            error={errors?.mailto?.message}
                         />
                         <FieldEdit
                             label="Cc"
                             className="col-12"
-                            valueDefault={row?.cc || ""}
-                            onChange={(value) => setValue('cc', value)}
-                            error={errors?.cc?.message}
+                            valueDefault={row?.mailcc || ""}
+                            onChange={(value) => setValue('mailcc', value)}
+                            error={errors?.mailcc?.message}
                         />
                         <FieldEdit
                             label={t(langKeys.subject)}
                             className="col-12"
-                            valueDefault={row?.subject || ""}
-                            onChange={(value) => setValue('subject', value)}
-                            error={errors?.subject?.message}
+                            valueDefault={row?.mailsubject || ""}
+                            onChange={(value) => setValue('mailsubject', value)}
+                            error={errors?.mailsubject?.message}
                         />
-                        <div className="col-12">
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">{t(langKeys.body)}</Box>
-                            <TextField
-                                color="primary"
-                                fullWidth
-                                multiline
-                                rows={8}
-                                value={row?.body || ""}
-                                variant={"outlined"}
-                                error={!!errors?.body?.message}
-                                helperText={errors?.body?.message || null}
-                                onChange={(e) => {
-                                    setValue('body', e.target.value);
-                                }}
-                            />
+                        <div className="row-zyx">
+                            <React.Fragment>
+                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.body)}</Box>
+                                <RichText
+                                    value={bodyobject}
+                                    onChange={(value) => {
+                                        setBodyobject(value)
+                                    }}
+                                    spellCheck
+                                />
+                            </React.Fragment>
                         </div>
                     </div>
                 </div>
             </form>
-
-            <DetailValue
-                data={rowSelected}
-                openModal={openDialogDomain}
-                setOpenModal={setOpenDialogDomain}
-                updateRecords={setdataDomain}
-                dataDomain={dataDomain}
-            />
         </div>
     );
 }
@@ -646,7 +588,8 @@ const ReportScheduler: FC = () => {
         fetchData();
         dispatch(getMultiCollection([
             getValuesFromDomain("ESTADOGENERICO"),
-            getValuesFromDomain("TIPODOMINIO")
+            getValuesFromDomain("REPORTEAUTOMATICOESTANDAR"),
+            getValuesFromDomain("REPORTEAUTOMATICORANGO"),
         ]));
 
         return () => {

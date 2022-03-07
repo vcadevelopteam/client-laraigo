@@ -1074,6 +1074,8 @@ const translation: LangKeys = {
     channelotherquantity: "Number of channels not WhatsApp",
     filter_unique_value: "Unique value",
     filter_text: "Text",
+    filter: "Filter",
+    addfilter: "Add filter",
     channelwhatsappquantity: "Number of channels WhatsApp",
     channelcharge: "Cost of channels",
     conversationquantity: "Number of conversations",

@@ -42,6 +42,8 @@ const translation: LangKeys = {
     lastnote: 'Última nota',
     resume: "Resumen",
     emoticons: "Emoticones",
+    filter: "Filtro",
+    addfilter: "Añadir filtro",
     tmo: "TMO",
     tmo_help: 'Tiempo medio de operación',
     analysis_type: 'Tipos de Analisis',
