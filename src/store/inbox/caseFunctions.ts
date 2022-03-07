@@ -362,7 +362,7 @@ export const connectAgentWS = (state: IState, action: IAction): IState => {
 export const setAgentsToReassign = (state: IState, action: IAction): IState => {
     return {
         ...state,
-        agentToReassignList: action.payload
+        agentToReassignList: state.userType === "AGENT" ? action.payload.filter((x: any) => x.userid !== state.agentSelected?.userid) : action.payload
     };
 }
 
