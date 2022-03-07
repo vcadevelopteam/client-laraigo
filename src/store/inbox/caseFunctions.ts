@@ -437,7 +437,7 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
                     {
                         ...data,
                         personlastreplydate: data.usertype === "client" ? new Date().toISOString() : null,
-                        firstconversationdate: new Date().toISOString(),
+                        firstconversationdate: data.firstconversationdate || new Date().toISOString(),
                         isAnswered: data.userid === 2
                     }]
             }
