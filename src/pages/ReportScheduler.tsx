@@ -164,7 +164,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, domainname,
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const [origin, setOrigin] = useState(row?.origin || '');
-    const [bodyobject, setBodyobject] = useState<Descendant[]>(row?.bodyobject || [{ "type": "paragraph", "children": [{ "text": row?.body || "" }] }])
+    const [bodyobject, setBodyobject] = useState<Descendant[]>(row?.mailbodyobject || [{ "type": "paragraph", "children": [{ "text": row?.mailbody || "" }] }])
     const dataDomainStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataReportSimple = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataRanges = multiData[2] && multiData[2].success ? multiData[2].data : [];
