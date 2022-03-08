@@ -9,7 +9,7 @@ import TableZyx from '../components/fields/table-simple';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, FieldView, FieldEdit, FieldSelect, TemplateSwitch, TitleDetail, FieldMultiSelect, RichText } from 'components';
-import { getDomainValueSel, getReportSchedulerSel, getValuesFromDomain, insDomain, reportSchedulerIns } from 'common/helpers';
+import { getDomainValueSel, getReportSchedulerSel, getValuesFromDomain, reportSchedulerIns } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -631,7 +631,7 @@ const ReportScheduler: FC = () => {
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(insDomain({ ...row, operation: 'DELETE', status: 'ELIMINADO' })));
+            dispatch(execute(reportSchedulerIns({ ...row, id: row.reportschedulerid ,operation: 'DELETE', status: 'ELIMINADO' })));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
