@@ -213,7 +213,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, domainname,
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('origin', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('origintype');
-        register('reportname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('reportname', { validate: (value) => (origin!=="REPORT")?(value && value.length) || t(langKeys.field_required):true });
         register('frecuency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('group', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('schedule', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
