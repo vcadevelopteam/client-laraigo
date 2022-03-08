@@ -579,7 +579,7 @@ const DashboardOperationalPush: FC = () => {
                             <div style={{ height: 240 }}>
                                 <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
                                     <BarChart data={dataHSMRANK}>
-                                        <XAxis dataKey="templatename"  label={{ value: `${t(langKeys.templatename)}`, position: 'insideBottom', offset:-5 }}/>
+                                        <XAxis dataKey="templatename"  height={50} label={{ value: `${t(langKeys.templatename)}`, position: 'insideBottom', offset:5 }}/>
                                         <YAxis label={{ value: `${t(langKeys.hsmquantitysimple)}`, angle: -90, position: 'insideLeft' }}/>
                                         <RechartsTooltip />
                                         <Bar dataKey="quantity" fill="#8884d8" >
@@ -611,7 +611,7 @@ const DashboardOperationalPush: FC = () => {
                             <div style={{ height: 240 }}>
                                 <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
                                     <BarChart data={dataAppRank}>
-                                        <XAxis dataKey="application"  label={{ value: `${t(langKeys.employeeaplication)}`, position: 'insideBottom', offset:-5 }}/>
+                                        <XAxis dataKey="application" height={50}  label={{ value: `${t(langKeys.employeeaplication)}`, position: 'insideBottom', offset:5 }}/>
                                         <YAxis label={{ value: `${t(langKeys.hsmquantitysimple)}`, angle: -90, position: 'insideLeft' }}/>
                                         <RechartsTooltip />
                                         <Bar dataKey="quantity" fill="#8884d8" >
@@ -646,11 +646,11 @@ const DashboardOperationalPush: FC = () => {
                                         data={dataMENSAJEXDIA}
                                         >
                                         <CartesianGrid stroke="#f5f5f5" />
-                                        <XAxis dataKey="fecha" scale="band">
+                                        <XAxis height={50} dataKey="fecha" scale="band">
                                             <Label
                                                 value= {`${t(langKeys.day)}`}
                                                 position="insideBottom"
-                                                offset={-5}
+                                                offset={5}
                                             />
                                         </XAxis>
                                         <YAxis label={{ value: `${t(langKeys.hsmquantitysimple)}`, angle: -90, position: 'insideLeft' }}/>

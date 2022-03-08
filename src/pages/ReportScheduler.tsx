@@ -73,6 +73,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
     const dataReportSimple = dataReportSimpleAll.filter(x=>x.origin !== "TICKET") 
     const dataRanges = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const [filterData, setfilterData] = useState(JSON.parse(dataReportSimple.find(x=>(x.reportname===(row?.reportname)))?.filterjson|| "[]").filter((x:any)=>x.type!=="timestamp without time zone"));
+    console.log(row)
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
@@ -86,7 +87,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
             filterjson: row?.filterjson || '',
             frecuency: row?.frecuency || '',
             group: row?.group || "",
-            schedule: row?.schedule || 0,
+            schedule: row?.schedule || "",
             datarange: row?.datarange || "",
             mailto: row?.mailto || "",
             mailcc: row?.mailcc || "",
@@ -120,7 +121,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
         register('origintype');
         register('reportname', { validate: (value) => (origin!=="REPORT")?(value && value.length) || t(langKeys.field_required):true });
         register('frecuency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('group', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        //register('group', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('schedule', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('datarange', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('mailto', { validate: {
@@ -329,7 +330,8 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                             optionDesc="desc"
                             optionValue="value"
                         />
-                        <FieldSelect
+                        {
+                            /*<FieldSelect
                             label={t(langKeys.group)}
                             className="col-6"
                             valueDefault={getValues("group")}
@@ -342,7 +344,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                             ]}
                             optionDesc="desc"
                             optionValue="value"
-                        />
+                        />*/}
                     </div>
                     <div className="row-zyx">
                         <FieldSelect
@@ -377,8 +379,8 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                                 {value: "22:00:00", desc: "22:00"},
                                 {value: "23:00:00", desc: "23:00"},
                             ]}
-                            optionDesc="value"
-                            optionValue="desc"
+                            optionDesc="desc"
+                            optionValue="value"
                         />
                         <FieldSelect
                             label={t(langKeys.shippingrange)}
@@ -398,7 +400,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                         <FieldEdit
                             label={t(langKeys.to)}
                             className="col-12"
-                            valueDefault={row?.to || ""}
+                            valueDefault={row?.mailto || ""}
                             onChange={(value) => setValue('mailto', value)}
                             error={errors?.mailto?.message}
                         />
