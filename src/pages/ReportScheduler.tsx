@@ -73,7 +73,6 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
     const dataReportSimple = dataReportSimpleAll.filter(x=>x.origin !== "TICKET") 
     const dataRanges = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const [filterData, setfilterData] = useState(JSON.parse(dataReportSimple.find(x=>(x.reportname===(row?.reportname)))?.filterjson|| "[]").filter((x:any)=>x.type!=="timestamp without time zone"));
-    console.log(row)
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
@@ -119,7 +118,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('origin', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('origintype');
-        register('reportname', { validate: (value) => (origin!=="REPORT")?(value && value.length) || t(langKeys.field_required):true });
+        register('reportname', { validate: (value) => (origin==="REPORT")?(value && value.length) || t(langKeys.field_required):true });
         register('frecuency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         //register('group', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('schedule', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -159,7 +158,10 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
             if (data.mailbody === '<div data-reactroot=""><p><span></span></p></div>')
                 return;
                 
-            const filtertosend = filters.length? filters.reduce(x => ({[x.filter]: x.value})): {}
+            const filtertosend = filters.reduce((accumulator, element) => {
+                return {...accumulator, [element.filter]: element.value};
+              }, {});
+            
             dispatch(execute(reportSchedulerIns({ ...data, filterjson: JSON.stringify(filtertosend), mailbodyobject: bodyobject })));
             dispatch(showBackdrop(true));
             setWaitSave(true)
@@ -264,6 +266,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                                 setValue('origintype', value?.origintype || '')
                                 setValue('reportid', value?.reportid || 0)
                                 setfilterData(JSON.parse(value?.filterjson || "[]").filter((x:any)=>x.type!=="timestamp without time zone"))
+                                setfilters([])
                             }}
                             error={errors?.reportname?.message}
                             disabled={(origin!=="REPORT") && (origin!=="DASHBOARD")}
