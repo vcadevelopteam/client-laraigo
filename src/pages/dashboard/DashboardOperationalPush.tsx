@@ -559,6 +559,8 @@ const DashboardOperationalPush: FC = () => {
                             </ResponsiveContainer>
                         </div>
                     </Box>
+                </div>
+                <div className={classes.replacerowzyx} >
                     <Box
                         className={classes.itemCard}
                         style={{width:"50%"}}
@@ -621,6 +623,8 @@ const DashboardOperationalPush: FC = () => {
                                 </ResponsiveContainer>
                             </div>
                     </Box>
+                </div>
+                <div className={classes.replacerowzyx} >
                     <Box
                         className={classes.itemCard}
                         style={{width:"50%"}}

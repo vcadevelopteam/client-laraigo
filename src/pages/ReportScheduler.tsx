@@ -261,7 +261,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                             onChange={(value) => {
                                 setValue('reportname', value?.reportname || '')
                                 setValue('origintype', value?.origintype || '')
-                                setValue('reportid', value?.reportid || '')
+                                setValue('reportid', value?.reportid || 0)
                                 setfilterData(JSON.parse(value?.filterjson || "[]").filter((x:any)=>x.type!=="timestamp without time zone"))
                             }}
                             error={errors?.reportname?.message}

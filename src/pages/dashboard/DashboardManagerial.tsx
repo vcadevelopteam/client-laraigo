@@ -2092,7 +2092,7 @@ const DashboardManagerial: FC = () => {
                         </div>
                     </Box>)}
                     <Box
-                        style={{ backgroundColor: "white", padding: "10px", flex: 4 }}
+                        style={{ backgroundColor: "white", padding: "10px", flex: 4 , width: "50%" }}
                     >
                         <div className={classes.containertitleboxes} style={{justifyContent: "end"}}>
                             <CloudDownloadIcon onClick={()=>downloaddata("asesoresconectados")} className={classes.styleicon}/>
@@ -2226,7 +2226,7 @@ const DashboardManagerial: FC = () => {
                         </div>
                     </Box>
                     <Box
-                        style={{ backgroundColor: "white", padding: "10px", flex: 4 }}
+                        style={{ backgroundColor: "white", padding: "10px", flex: 4, width: "50%" }}
                     >
                         {/*<div className={classes.containertitleboxes} style={{justifyContent: "end"}}>
                             <CloudDownloadIcon onClick={()=>downloaddata("asesoresconectados")} className={classes.styleicon}/>
@@ -2241,11 +2241,11 @@ const DashboardManagerial: FC = () => {
                             <div style={{ fontWeight: "bold", fontSize: "1.6em"}}>{reschannels.reduce((a:any, b:any) => a + (b.tickets || 0), 0)}</div>
                         </div>
                         <div style={{ paddingTop: "20px" }}>
-                            <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
+                            <ResponsiveContainer width="100%" aspect={4.0 / 1.0} >
                                 <BarChart data={reschannels}>
                                     <CartesianGrid stroke="#ccc" />
                                     <XAxis dataKey="communicationchannel"><Label value={` ${t(langKeys.channel_plural)} `} offset={-5} position="insideBottom" /></XAxis>
-                                    <YAxis><Label value={` ${t(langKeys.conversationquantity)} `} angle={-90}/></YAxis>
+                                    <YAxis><Label value={` ${t(langKeys.conversationquantity)} `} angle={-90} offset={10} position="insideBottomLeft"/></YAxis>
                                     <RechartsTooltip />
                                     <Bar dataKey="tickets" fill="#8884d8" />
                                 </BarChart>
