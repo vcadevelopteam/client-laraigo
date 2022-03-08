@@ -150,6 +150,11 @@ export const getValuesFromDomain = (domainname: string, keytmp?: any, orgid?: nu
         corpid: corpid || undefined
     }
 });
+export const getReportschedulerreportsSel = () => ({
+    method: "UFN_REPORTSCHEDULER_REPORTSEL",
+    key: "UFN_REPORTSCHEDULER_REPORTSEL",
+    parameters: {}
+});
 // solo devuelve desc y value, no id (USAR ESTE PARA LOS SELECTS SIMPLES DE DOMINIOS)
 export const getValuesFromDomainLight = (domainname: string, keytmp?: any, orgid?: number | null): IRequestBody => ({
     method: "UFN_DOMAIN_LST_VALUES_ONLY_DATA",
