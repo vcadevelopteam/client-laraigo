@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme: Theme) =>
             margin: "0 0 2% 0",
             backgroundColor: 'white',
         },
-        quarterbox: {            
+        quarterbox: {
             textAlign: "center",
             width: "24%",
             margin: "0 1% 2% 0",
@@ -45,52 +45,52 @@ const useStyles = makeStyles((theme: Theme) =>
             backgroundColor: 'white',
             padding: "15px"
         },
-        boxtitle:{
+        boxtitle: {
             fontWeight: "bold",
             fontSize: "1.6em",
             width: "50%"
         },
-        boxtitledata:{
+        boxtitledata: {
             fontSize: "1.6em",
             width: "50%",
             textAlign: "end"
         },
-        boxtitlequarter:{
+        boxtitlequarter: {
             width: "100%",
             textAlign: "center",
             fontWeight: "bold",
             fontSize: "1.5em",
         },
-        maintitle:{
+        maintitle: {
             fontWeight: "bold",
             fontSize: "2em",
             padding: "0 0 20px;"
         },
-        rowstyles:{
-            margin:"0!important"
+        rowstyles: {
+            margin: "0!important"
         },
-        containerFields:{
+        containerFields: {
             border: "black 1px solid",
             margin: "0!important",
             display: "flex",
             padding: "0 15px"
         },
-        label:{
+        label: {
             width: "60%",
             fontSize: "1.2em",
             padding: "5px"
         },
-        datafield:{
+        datafield: {
             fontSize: "1.2em",
             padding: "5px"
         },
-        datafieldquarter:{
+        datafieldquarter: {
             fontSize: "1.2em",
             textAlign: "center",
             width: "100%",
             padding: "5px"
         },
-        containerFieldsQuarter:{
+        containerFieldsQuarter: {
             margin: "0!important",
             display: "flex",
             width: "100%",
@@ -127,6 +127,7 @@ const useStyles = makeStyles((theme: Theme) =>
             display: 'flex',
             height: '100%',
             flex: 1,
+            minHeight: 136,
             padding: theme.spacing(2),
             flexDirection: 'column',
             gap: theme.spacing(1)
@@ -137,10 +138,10 @@ const useStyles = makeStyles((theme: Theme) =>
         dontshow: {
             display: "none"
         },
-        downloadiconcontainer:{
-            width:"100%",display: "flex",justifyContent: "end"
+        downloadiconcontainer: {
+            width: "100%", display: "flex", justifyContent: "end"
         },
-        styleicon:{
+        styleicon: {
             width: "18px",
             height: "18px",
             '&:hover': {
@@ -161,7 +162,7 @@ const DashboardOperationalPush: FC = () => {
     const mainResult = useSelector(state => state.main);
     const remultiaux = useSelector(state => state.main.multiDataAux);
     const resaux = useSelector(state => state.main.mainAux);
-    const [downloaddatafile,setdownloaddatafile]=useState(false);
+    const [downloaddatafile, setdownloaddatafile] = useState(false);
     const [section, setSection] = useState('')
     const [titlefile, settitlefile] = useState('');
     const dispatch = useDispatch();
@@ -201,11 +202,11 @@ const DashboardOperationalPush: FC = () => {
         categoriaHSM: ""
     });
     async function funcsearch() {
-        let tosend = { 
-            startdate: dateRangeCreateDate.startDate, 
-            enddate: dateRangeCreateDate.endDate, 
-            channel: searchfields.channels, 
-            group: searchfields.queue, 
+        let tosend = {
+            startdate: dateRangeCreateDate.startDate,
+            enddate: dateRangeCreateDate.endDate,
+            channel: searchfields.channels,
+            group: searchfields.queue,
             company: searchfields.provider,
             label: searchfields.label,
             category: searchfields.categoriaHSM,
@@ -234,8 +235,8 @@ const DashboardOperationalPush: FC = () => {
             dataBot: "0",
             dataAsesor: "0"
         });
-        if(dataPushSUMMARYSel && dataPushSUMMARYSel.length){
-            const {fail,success,total,attended,bot,asesor} = dataPushSUMMARYSel[0];
+        if (dataPushSUMMARYSel && dataPushSUMMARYSel.length) {
+            const { fail, success, total, attended, bot, asesor } = dataPushSUMMARYSel[0];
             setdataSummary({
                 failMns: fail,
                 dataSuccessMns: (success * 100 / total).toFixed() + " %",
@@ -298,31 +299,38 @@ const DashboardOperationalPush: FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     useEffect(() => {
-        if(downloaddatafile) {
-            if(!resaux.loading){
+        if (downloaddatafile) {
+            if (!resaux.loading) {
                 if (resaux.data.length > 0) {
-                    exportExcel(titlefile, resaux.data, Object.keys(resaux.data[0]).reduce((ac: any[], c: any) => (
+                    const dataToExport = resaux.data.map(x => ({
+                        ...x,
+                        status: x.status === "success" ? t(langKeys.status_SENT) : t(langKeys.failed),
+                    }))
+                    exportExcel(titlefile, dataToExport, Object.keys(resaux.data[0]).reduce((ac: any[], c: any) => (
                         [
                             ...ac,
-                            { Header: t((langKeys as any)[`dashboard_operationalpush_${section}_${c}`]), accessor: c }
+                            {
+                                Header: t((langKeys as any)[`dashboard_operationalpush_${section}_${c}`]),
+                                accessor: c
+                            }
                         ]),
                         []
                     ))
                 }
                 else {
-                    exportExcel(titlefile, [{'': t(langKeys.no_records)}])
+                    exportExcel(titlefile, [{ '': t(langKeys.no_records) }])
                 }
                 setdownloaddatafile(false)
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [resaux,downloaddatafile])
-    async function downloaddata(tipeoffilter:string){
-        let tosend = { 
-            startdate: dateRangeCreateDate.startDate, 
-            enddate: dateRangeCreateDate.endDate, 
-            channel: searchfields.channels, 
-            group: searchfields.queue, 
+    }, [resaux, downloaddatafile])
+    async function downloaddata(tipeoffilter: string) {
+        let tosend = {
+            startdate: dateRangeCreateDate.startDate,
+            enddate: dateRangeCreateDate.endDate,
+            channel: searchfields.channels,
+            group: searchfields.queue,
             company: searchfields.provider,
             label: searchfields.label,
             category: searchfields.categoriaHSM,
@@ -345,7 +353,7 @@ const DashboardOperationalPush: FC = () => {
             settitlefile(t(langKeys.messagesbyday));
             setSection('messageperday')
             dispatch(getCollectionAux(getdashboardPushMENSAJEXDIASelData(tosend)))
-        }else{
+        } else {
             settitlefile(t(langKeys.numberofHSMShipments));
             setSection('application')
             dispatch(getCollectionAux(getdashboardPushAppDataSel(tosend)))
@@ -462,48 +470,48 @@ const DashboardOperationalPush: FC = () => {
             </div>
             <div style={{ display: 'flex', gap: 16, flexDirection: 'column' }}>
                 <div className={classes.replacerowzyx}>
-                    <div className={classes.downloadiconcontainer}>                            
-                        <CloudDownloadIcon onClick={()=>downloaddata("SUMMARY")} className={classes.styleicon}/>
+                    <div className={classes.downloadiconcontainer}>
+                        <CloudDownloadIcon onClick={() => downloaddata("SUMMARY")} className={classes.styleicon} />
                     </div>
                     <Box
                         className={classes.columnCard}
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.sentmessages)}
                             <Tooltip title={`${t(langKeys.sentmessagestooltip)}`} placement="top-start">
-                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                             </Tooltip>
                         </div>
-                        <div className={classes.datafieldquarter}>{dataSummary.totalMns}</div>                    
+                        <div className={classes.datafieldquarter}>{dataSummary.totalMns}</div>
                     </Box>
                     <Box
                         className={classes.columnCard}
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.messagessuccessfullydelivered)}
                             <Tooltip title={`${t(langKeys.messagessuccessfullydeliveredtooltip)}`} placement="top-start">
-                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                             </Tooltip>
                         </div>
-                        <div className={classes.datafieldquarter}>{dataSummary.successMns}</div>                    
+                        <div className={classes.datafieldquarter}>{dataSummary.successMns}</div>
                     </Box>
                     <Box
                         className={classes.columnCard}
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.failedmessages)}
                             <Tooltip title={`${t(langKeys.failedmessagestooltip)}`} placement="top-start">
-                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                             </Tooltip>
                         </div>
-                        <div className={classes.datafieldquarter}>{dataSummary.failMns}</div>                    
+                        <div className={classes.datafieldquarter}>{dataSummary.failMns}</div>
                     </Box>
                     <Box
                         className={classes.columnCard}
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.answeredmessages)}
                             <Tooltip title={`${t(langKeys.answeredmessagestooltip)}`} placement="top-start">
-                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                             </Tooltip>
                         </div>
-                        <div className={classes.datafieldquarter}>{dataSummary.attendedMns}</div>                    
+                        <div className={classes.datafieldquarter}>{dataSummary.attendedMns}</div>
                     </Box>
                 </div>
                 <div className={classes.replacerowzyx}>
@@ -512,41 +520,41 @@ const DashboardOperationalPush: FC = () => {
                         style={{ backgroundColor: "#53a6fa", display: 'flex', flex: 1, gap: 8 }}
                     >
                         <div className={classes.containerFieldsQuarter}>
-                            <ChatIcon style={{color:"white",margin: "3px 5px"}}/>
+                            <ChatIcon style={{ color: "white", margin: "3px 5px" }} />
                             <div className={classes.boxtitle}>{t(langKeys.closedbyadviser)}
                                 <Tooltip title={`${t(langKeys.closedbyadvisertooltip)}`} placement="top-start">
-                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                    <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                 </Tooltip>
                             </div>
-                            <div className={classes.boxtitledata}>{dataSummary.dataAsesor}</div>    
-                        </div>            
+                            <div className={classes.boxtitledata}>{dataSummary.dataAsesor}</div>
+                        </div>
                     </Box>
                     <Box
                         className={classes.itemCard}
                         style={{ backgroundColor: "#fdab29", display: 'flex', flex: 1, gap: 8 }}
                     >
                         <div className={classes.containerFieldsQuarter}>
-                            <AdbIcon style={{color:"white",margin: "3px 5px"}}/>
+                            <AdbIcon style={{ color: "white", margin: "3px 5px" }} />
                             <div className={classes.boxtitle}>{t(langKeys.closedbybot)}
                                 <Tooltip title={`${t(langKeys.closedbybottooltip)}`} placement="top-start">
-                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                    <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                 </Tooltip>
                             </div>
-                            <div className={classes.boxtitledata}>{dataSummary.dataBot}</div>    
-                        </div>            
+                            <div className={classes.boxtitledata}>{dataSummary.dataBot}</div>
+                        </div>
                     </Box>
                 </div>
                 <div className={classes.replacerowzyx} >
                     <Box
                         className={classes.itemCard}
-                        style={{width:"50%"}}
+                        style={{ width: "50%" }}
                     >
-                        <div className={classes.downloadiconcontainer}>                            
-                            <CloudDownloadIcon onClick={()=>downloaddata("CATEGORYRANK")} className={classes.styleicon}/>
+                        <div className={classes.downloadiconcontainer}>
+                            <CloudDownloadIcon onClick={() => downloaddata("CATEGORYRANK")} className={classes.styleicon} />
                         </div>
-                        <div className={classes.boxtitle}  style={{ width:"100%"}}>{t(langKeys.distributionbycategoryHSM)}
+                        <div className={classes.boxtitle} style={{ width: "100%" }}>{t(langKeys.distributionbycategoryHSM)}
                             <Tooltip title={`${t(langKeys.distributionbycategoryHSMtooltip)}`} placement="top-start">
-                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                             </Tooltip>
                         </div>
                         <div style={{ height: 240, margin: 'auto' }} >
@@ -558,7 +566,7 @@ const DashboardOperationalPush: FC = () => {
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
-                                    <Legend verticalAlign="bottom" height={36}/>
+                                    <Legend verticalAlign="bottom" height={36} />
                                 </PieChart>
                             </ResponsiveContainer>
                         </div>
@@ -567,104 +575,104 @@ const DashboardOperationalPush: FC = () => {
                 <div className={classes.replacerowzyx} >
                     <Box
                         className={classes.itemCard}
-                        style={{width:"50%"}}
+                        style={{ width: "50%" }}
                     >
-                        <div className={classes.downloadiconcontainer}>                            
-                            <CloudDownloadIcon onClick={()=>downloaddata("HSMRANK")} className={classes.styleicon}/>
+                        <div className={classes.downloadiconcontainer}>
+                            <CloudDownloadIcon onClick={() => downloaddata("HSMRANK")} className={classes.styleicon} />
                         </div>
-                        <div style={{width: "100%"}}> 
-                            <div style={{display: "flex"}}>
-                                <div style={{fontWeight: "bold",fontSize: "1.6em",}}> Ranking HSM </div>
+                        <div style={{ width: "100%" }}>
+                            <div style={{ display: "flex" }}>
+                                <div style={{ fontWeight: "bold", fontSize: "1.6em", }}> Ranking HSM </div>
                                 <Tooltip title={`${t(langKeys.rankinghsmtooltip)}`} placement="top-end">
-                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                    <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                 </Tooltip>
                             </div>
                         </div>
-                            <div style={{ height: 240 }}>
-                                <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
-                                    <BarChart data={dataHSMRANK}>
-                                        <XAxis dataKey="templatename"  height={50} label={{ value: `${t(langKeys.templatename)}`, position: 'insideBottom', offset:5 }}/>
-                                        <YAxis label={{ value: `${t(langKeys.hsmquantitysimple)}`, angle: -90, position: 'insideLeft' }}/>
-                                        <RechartsTooltip formatter={(value:any, name:any) => [value, t(name)]} />
-                                        <Bar dataKey="quantity" fill="#8884d8" >
-                                            {dataHSMRANK.map((entry: any, index: number) => (
-                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                            ))}
-                                        </Bar>
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            </div>
+                        <div style={{ height: 240 }}>
+                            <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
+                                <BarChart data={dataHSMRANK}>
+                                    <XAxis dataKey="templatename" height={50} label={{ value: `${t(langKeys.templatename)}`, position: 'insideBottom', offset: 5 }} />
+                                    <YAxis label={{ value: `${t(langKeys.hsmquantitysimple)}`, angle: -90, position: 'insideLeft' }} />
+                                    <RechartsTooltip formatter={(value: any, name: any) => [value, t(name)]} />
+                                    <Bar dataKey="quantity" fill="#8884d8" >
+                                        {dataHSMRANK.map((entry: any, index: number) => (
+                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                        ))}
+                                    </Bar>
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
                     </Box>
                 </div>
                 <div className={classes.replacerowzyx}>
                     <Box
                         className={classes.itemCard}
-                        style={{width:"50%"}}
+                        style={{ width: "50%" }}
                     >
-                        <div className={classes.downloadiconcontainer}>                            
-                            <CloudDownloadIcon onClick={()=>downloaddata("aPPHSM")} className={classes.styleicon}/>
+                        <div className={classes.downloadiconcontainer}>
+                            <CloudDownloadIcon onClick={() => downloaddata("aPPHSM")} className={classes.styleicon} />
                         </div>
-                        <div style={{width: "100%"}}> 
-                            <div style={{display: "flex"}}>
-                                <div style={{fontWeight: "bold",fontSize: "1.6em",}}> {t(langKeys.numberofHSMShipments)} </div>
+                        <div style={{ width: "100%" }}>
+                            <div style={{ display: "flex" }}>
+                                <div style={{ fontWeight: "bold", fontSize: "1.6em", }}> {t(langKeys.numberofHSMShipments)} </div>
                                 <Tooltip title={`${t(langKeys.numberofHSMShipmentstooltip)}`} placement="top-end">
-                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                    <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                 </Tooltip>
                             </div>
                         </div>
-                            <div style={{ height: 240 }}>
-                                <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
-                                    <BarChart data={dataAppRank}>
-                                        <XAxis dataKey="application" height={50}  label={{ value: `${t(langKeys.employeeaplication)}`, position: 'insideBottom', offset:5 }}/>
-                                        <YAxis label={{ value: `${t(langKeys.hsmquantitysimple)}`, angle: -90, position: 'insideLeft' }}/>
-                                        <RechartsTooltip formatter={(value:any, name:any) => [value, t(name)]} />
-                                        <Bar dataKey="quantity" fill="#8884d8" >
-                                            {dataAppRank.map((entry: any, index: number) => (
-                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                            ))}
-                                        </Bar>
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            </div>
+                        <div style={{ height: 240 }}>
+                            <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
+                                <BarChart data={dataAppRank}>
+                                    <XAxis dataKey="application" height={50} label={{ value: `${t(langKeys.employeeaplication)}`, position: 'insideBottom', offset: 5 }} />
+                                    <YAxis label={{ value: `${t(langKeys.hsmquantitysimple)}`, angle: -90, position: 'insideLeft' }} />
+                                    <RechartsTooltip formatter={(value: any, name: any) => [value, t(name)]} />
+                                    <Bar dataKey="quantity" fill="#8884d8" >
+                                        {dataAppRank.map((entry: any, index: number) => (
+                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                        ))}
+                                    </Bar>
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
                     </Box>
                 </div>
                 <div className={classes.replacerowzyx} >
                     <Box
                         className={classes.itemCard}
-                        style={{width:"50%"}}
+                        style={{ width: "50%" }}
                     >
-                        <div className={classes.downloadiconcontainer}>                            
-                            <CloudDownloadIcon onClick={()=>downloaddata("MESSAGEPERDAY")} className={classes.styleicon}/>
+                        <div className={classes.downloadiconcontainer}>
+                            <CloudDownloadIcon onClick={() => downloaddata("MESSAGEPERDAY")} className={classes.styleicon} />
                         </div>
-                        <div style={{width: "100%"}}> 
-                            <div style={{display: "flex"}}>
-                                <div style={{fontWeight: "bold",fontSize: "1.6em",}}>{t(langKeys.messagesbyday)}</div>
+                        <div style={{ width: "100%" }}>
+                            <div style={{ display: "flex" }}>
+                                <div style={{ fontWeight: "bold", fontSize: "1.6em", }}>{t(langKeys.messagesbyday)}</div>
                                 <Tooltip title={`${t(langKeys.rankinghsmtooltip)}`} placement="top-end">
-                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                    <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                 </Tooltip>
                             </div>
                         </div>
-                            <div style={{ height: 240 }}>
-                                <ResponsiveContainer width="100%" aspect={4.0 / 1.0} >
-                                    <ComposedChart
-                                        data={dataMENSAJEXDIA}
-                                        >
-                                        <CartesianGrid stroke="#f5f5f5" />
-                                        <XAxis height={50} dataKey="fecha" scale="band">
-                                            <Label
-                                                value= {`${t(langKeys.day)}`}
-                                                position="insideBottom"
-                                                offset={5}
-                                            />
-                                        </XAxis>
-                                        <YAxis label={{ value: `${t(langKeys.hsmquantitysimple)}`, angle: -90, position: 'insideLeft' }}/>
-                                        <RechartsTooltip formatter={(value:any, name:any) => [value, t(name)]} />
-                                        <Legend verticalAlign="top" formatter={(value:any, entry:any) => t(value)}/>
-                                        <Bar dataKey="total" barSize={20} fill="#2499ee" />
-                                        <Line type="monotone" dataKey="attended" stroke="#52307c" />
-                                        </ComposedChart>
-                                </ResponsiveContainer>
-                            </div>
+                        <div style={{ height: 240 }}>
+                            <ResponsiveContainer width="100%" aspect={4.0 / 1.0} >
+                                <ComposedChart
+                                    data={dataMENSAJEXDIA}
+                                >
+                                    <CartesianGrid stroke="#f5f5f5" />
+                                    <XAxis height={50} dataKey="fecha" scale="band">
+                                        <Label
+                                            value={`${t(langKeys.day)}`}
+                                            position="insideBottom"
+                                            offset={5}
+                                        />
+                                    </XAxis>
+                                    <YAxis label={{ value: `${t(langKeys.hsmquantitysimple)}`, angle: -90, position: 'insideLeft' }} />
+                                    <RechartsTooltip formatter={(value: any, name: any) => [value, t(name)]} />
+                                    <Legend verticalAlign="top" formatter={(value: any, entry: any) => t(value)} />
+                                    <Bar dataKey="total" barSize={20} fill="#2499ee" />
+                                    <Line type="monotone" dataKey="attended" stroke="#52307c" />
+                                </ComposedChart>
+                            </ResponsiveContainer>
+                        </div>
                     </Box>
                 </div>
             </div>
