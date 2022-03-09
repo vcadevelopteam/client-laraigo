@@ -9,7 +9,7 @@ import { FC, Fragment, useEffect, useState } from "react";
 import { Range } from 'react-date-range';
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis, CartesianGrid } from "recharts";
 import { getCollectionAux, getMultiCollection, getMultiCollectionAux, resetMainAux, resetMultiMainAux } from "store/main/actions";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
@@ -390,14 +390,20 @@ const DashboardTagRanking: FC = () => {
                                 <div style={{fontWeight: "bold",fontSize: "1.6em",}}> {t(langKeys.tagranking)} </div>
                                 {/*<Tooltip title={`${t(langKeys.numberofHSMShipmentstooltip)}`} placement="top-end">
                                     <InfoIcon style={{padding: "5px 0 0 5px"}} />
+
+                                    
+                                            {dataAppRank?.map((entry: any, index: number) => (
+                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                            ))}
     </Tooltip>*/}
                             </div>
                         </div>
-                            <div style={{ height: 240 }}>
-                                <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
-                                    <BarChart data={dataAppRank}>
-                                        <XAxis dataKey="tag" height={50}   label={{ value: `Tags`, position: 'insideBottom' }}/>
-                                        <YAxis label={{ value: `${t(langKeys.quantity)}`, angle: -90, position: 'insideLeft' }}/>
+                            <div style={{width: "100%"}}>
+                                <ResponsiveContainer width="100%"  aspect={4.0 / 1.0}>
+                                    <BarChart data={dataAppRank} layout="vertical">
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis type="number" height={50} domain={[0, 'dataMax']}  label={{ value: `${t(langKeys.quantity)}`, position: 'insideBottom' }}/>
+                                        <YAxis type="category" width={80} dataKey="tag"  label={{ width:80, value: `Tags`, angle: -90, position: 'insideLeft' }}/>
                                         <RechartsTooltip />
                                         <Bar dataKey="quantity" fill="#8884d8" >
                                             {dataAppRank?.map((entry: any, index: number) => (
