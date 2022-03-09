@@ -42,6 +42,7 @@ export const langKeys = {
     advisoricon: "advisoricon",
     typecredit: "typecredit",
     error_estructure_user: "error_estructure_user",
+    distributionbycategoryHSMtooltip: "distributionbycategoryHSMtooltip",
     week:"week",
     periodicity: "periodicity",
     shippingschedule: "shippingschedule",

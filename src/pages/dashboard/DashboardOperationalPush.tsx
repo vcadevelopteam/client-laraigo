@@ -544,7 +544,11 @@ const DashboardOperationalPush: FC = () => {
                         <div className={classes.downloadiconcontainer}>                            
                             <CloudDownloadIcon onClick={()=>downloaddata("CATEGORYRANK")} className={classes.styleicon}/>
                         </div>
-                        <div className={classes.boxtitle}  style={{ width:"100%"}}>{t(langKeys.distributionbycategoryHSM)}</div>
+                        <div className={classes.boxtitle}  style={{ width:"100%"}}>{t(langKeys.distributionbycategoryHSM)}
+                            <Tooltip title={`${t(langKeys.distributionbycategoryHSMtooltip)}`} placement="top-start">
+                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                            </Tooltip>
+                        </div>
                         <div style={{ height: 240, margin: 'auto' }} >
                             <ResponsiveContainer width="100%" aspect={4.0 / 1.3}>
                                 <PieChart>
@@ -559,6 +563,8 @@ const DashboardOperationalPush: FC = () => {
                             </ResponsiveContainer>
                         </div>
                     </Box>
+                </div>
+                <div className={classes.replacerowzyx} >
                     <Box
                         className={classes.itemCard}
                         style={{width:"50%"}}
@@ -577,9 +583,9 @@ const DashboardOperationalPush: FC = () => {
                             <div style={{ height: 240 }}>
                                 <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
                                     <BarChart data={dataHSMRANK}>
-                                        <XAxis dataKey="templatename"  label={{ value: `${t(langKeys.templatename)}`, position: 'insideBottom', offset:-5 }}/>
+                                        <XAxis dataKey="templatename"  height={50} label={{ value: `${t(langKeys.templatename)}`, position: 'insideBottom', offset:5 }}/>
                                         <YAxis label={{ value: `${t(langKeys.hsmquantitysimple)}`, angle: -90, position: 'insideLeft' }}/>
-                                        <RechartsTooltip />
+                                        <RechartsTooltip formatter={(value:any, name:any) => [value, t(name)]} />
                                         <Bar dataKey="quantity" fill="#8884d8" >
                                             {dataHSMRANK.map((entry: any, index: number) => (
                                                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -609,9 +615,9 @@ const DashboardOperationalPush: FC = () => {
                             <div style={{ height: 240 }}>
                                 <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
                                     <BarChart data={dataAppRank}>
-                                        <XAxis dataKey="application"  label={{ value: `${t(langKeys.employeeaplication)}`, position: 'insideBottom', offset:-5 }}/>
+                                        <XAxis dataKey="application" height={50}  label={{ value: `${t(langKeys.employeeaplication)}`, position: 'insideBottom', offset:5 }}/>
                                         <YAxis label={{ value: `${t(langKeys.hsmquantitysimple)}`, angle: -90, position: 'insideLeft' }}/>
-                                        <RechartsTooltip />
+                                        <RechartsTooltip formatter={(value:any, name:any) => [value, t(name)]} />
                                         <Bar dataKey="quantity" fill="#8884d8" >
                                             {dataAppRank.map((entry: any, index: number) => (
                                                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -621,6 +627,8 @@ const DashboardOperationalPush: FC = () => {
                                 </ResponsiveContainer>
                             </div>
                     </Box>
+                </div>
+                <div className={classes.replacerowzyx} >
                     <Box
                         className={classes.itemCard}
                         style={{width:"50%"}}
@@ -642,16 +650,16 @@ const DashboardOperationalPush: FC = () => {
                                         data={dataMENSAJEXDIA}
                                         >
                                         <CartesianGrid stroke="#f5f5f5" />
-                                        <XAxis dataKey="fecha" scale="band">
+                                        <XAxis height={50} dataKey="fecha" scale="band">
                                             <Label
                                                 value= {`${t(langKeys.day)}`}
                                                 position="insideBottom"
-                                                offset={-5}
+                                                offset={5}
                                             />
                                         </XAxis>
                                         <YAxis label={{ value: `${t(langKeys.hsmquantitysimple)}`, angle: -90, position: 'insideLeft' }}/>
-                                        <RechartsTooltip />
-                                        <Legend verticalAlign="top"/>
+                                        <RechartsTooltip formatter={(value:any, name:any) => [value, t(name)]} />
+                                        <Legend verticalAlign="top" formatter={(value:any, entry:any) => t(value)}/>
                                         <Bar dataKey="total" barSize={20} fill="#2499ee" />
                                         <Line type="monotone" dataKey="attended" stroke="#52307c" />
                                         </ComposedChart>
