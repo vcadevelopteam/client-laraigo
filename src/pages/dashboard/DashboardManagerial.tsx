@@ -1147,9 +1147,9 @@ const DashboardManagerial: FC = () => {
                 closedbyasesor: true,  
                 closedbybot:  true,
                 closedby: "ASESOR,BOT",
-                min: sla.totamtmomin?sla.totamtmomin:"00:00:00", 
-                max: sla.totaltmo, 
-                target: sla.totaltmopercentmax, 
+                min: sla?.totamtmomin?sla.totamtmomin:"00:00:00", 
+                max: sla?.totaltmo, 
+                target: sla?.totaltmopercentmax, 
                 skipdown:0, 
                 skipup:0,
                 limit: 5,
@@ -1517,7 +1517,7 @@ const DashboardManagerial: FC = () => {
                         >
                             <div className={classes.downloadiconcontainer}>
                                 <CloudDownloadIcon onClick={()=>downloaddata("TME")}  className={classes.styleicon}/>
-                                <SettingsIcon onClick={()=>{setFieldToFilter("TME"); setOpenDialogPerRequest(true);setsearchfieldsOnlyOne((prevState) =>({...prevState, min: sla.usertme, max: sla.usertmepercentmax}))}} className={classes.styleicon}/>
+                                <SettingsIcon onClick={()=>{setFieldToFilter("TME"); setOpenDialogPerRequest(true);setsearchfieldsOnlyOne((prevState) =>({...prevState, min: sla?.usertme, max: sla.usertmepercentmax}))}} className={classes.styleicon}/>
                             </div>
                             <div className={classes.columnCard}>
                                 <div className={classes.containerFieldsTitle}>
@@ -2104,7 +2104,8 @@ const DashboardManagerial: FC = () => {
                                     <InfoIcon style={{padding: "5px 0 0 5px"}} />
                                 </Tooltip>
                             </div>
-                            <div style={{ fontWeight: "bold", fontSize: "1.6em"}}>{dataAsesoreconectadosbar.avgasesoresconectados}</div>
+                            {//<div style={{ fontWeight: "bold", fontSize: "1.6em"}}>{dataAsesoreconectadosbar.avgasesoresconectados}</div>
+                            }
                         </div>
                         <div style={{ paddingTop: "20px" }}>
                             <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>

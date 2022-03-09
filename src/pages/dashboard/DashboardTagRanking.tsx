@@ -199,6 +199,7 @@ const DashboardTagRanking: FC = () => {
     useEffect(() => {
         if (waitSave) {
             if (!remultiaux.loading && !remultiaux.error) {
+                console.log(remultiaux.data[0].data)
                 setdataAppRank(remultiaux.data[0].data)
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
@@ -395,7 +396,7 @@ const DashboardTagRanking: FC = () => {
                             <div style={{ height: 240 }}>
                                 <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
                                     <BarChart data={dataAppRank}>
-                                        <XAxis dataKey="tag"  label={{ value: `Tags`, position: 'insideBottom', offset:-5 }}/>
+                                        <XAxis dataKey="tag" height={50}   label={{ value: `Tags`, position: 'insideBottom' }}/>
                                         <YAxis label={{ value: `${t(langKeys.quantity)}`, angle: -90, position: 'insideLeft' }}/>
                                         <RechartsTooltip />
                                         <Bar dataKey="quantity" fill="#8884d8" >
