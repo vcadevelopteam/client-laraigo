@@ -1037,12 +1037,6 @@ const DashboardManagerial: FC = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [resInteraction]);
-    useEffect(() => {
-        setDataAsesoreconectadosbar({
-            avgasesoresconectados: "0"
-        })
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [resAsesoreconectadosbar]);
 
     useEffect(() => {
         if (waitSave) {
@@ -1057,14 +1051,18 @@ const DashboardManagerial: FC = () => {
                 setreschannels(remultiaux.data[7].data)
 
                 const asesoretmp = [...remultiaux.data[6].data];
-
-                setResAsesoreconectadosbar([...Array(24)].map((_, i) => {
+                const arrayconbar = [...Array(24)].map((_, i) => {
                     const hourFound = asesoretmp.find((x: Dictionary) => x.hora === i);
                     if (hourFound)
                         return hourFound
                     else
                         return { hora: i, asesoresconectados: "0", avgasesoresconectados: "0" }
-                }))
+                })
+                setResAsesoreconectadosbar(arrayconbar)
+                let avg= arrayconbar.reduce((acc, x) => acc + Number(x.asesoresconectados),0)/24
+                setDataAsesoreconectadosbar({
+                    avgasesoresconectados: avg.toFixed(2)
+                })
 
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
@@ -2100,12 +2098,11 @@ const DashboardManagerial: FC = () => {
                         <div style={{display: "flex", justifyContent: "space-between"}}>
                             <div style={{display: "flex"}}> 
                                 <div className={classes.boxtitlequarter}>{t(langKeys.averagenumberofadvisersconnectedbyhour)}</div>
-                                <Tooltip title={`${t(langKeys.averagenumberofadviserstooltip)}`} placement="top-end">
+                                <Tooltip title={`${t(langKeys.averagenumberofadviserstooltip)}`}>
                                     <InfoIcon style={{padding: "5px 0 0 5px"}} />
                                 </Tooltip>
                             </div>
-                            {//<div style={{ fontWeight: "bold", fontSize: "1.6em"}}>{dataAsesoreconectadosbar.avgasesoresconectados}</div>
-                            }
+                            <div style={{ fontWeight: "bold", fontSize: "1.6em"}}>{dataAsesoreconectadosbar.avgasesoresconectados}</div>
                         </div>
                         <div style={{ paddingTop: "20px" }}>
                             <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
