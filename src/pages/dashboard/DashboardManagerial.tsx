@@ -1319,7 +1319,7 @@ const DashboardManagerial: FC = () => {
                                     if(value){
                                         setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value,closedby: closedby,min: sla.totamtmomin?sla.totamtmomin:"00:00:00", max: sla.totaltmo, target: sla.totaltmopercentmax}))
                                     }else{
-                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value, closedby: closedby,min: sla.totamtmomin?sla.usertmomin:"00:00:00", max: sla.usertmo, target: sla.usertmopercentmax}))
+                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value, closedby: closedby,min: sla.usertmomin?sla.usertmomin:"00:00:00", max: sla.usertmo, target: sla.usertmopercentmax}))
                                     }
                                 }}
                             />

@@ -31,11 +31,6 @@ export interface FrameProps {
     executeSave: boolean,
 }
 
-const arrayBread = [
-    { id: "view-1", name: "Campaign" },
-    { id: "view-2", name: "Campaign detail" }
-];
-
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
@@ -70,6 +65,12 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
     const [tablevariable, setTableVariable] = useState<any[]>([]);
     
     const [frameProps, setFrameProps] = useState<FrameProps>({executeSave: false, page: 0, checkPage: false, valid: {0: false, 1: false, 2: false}});
+    
+
+    const arrayBread = [
+        { id: "view-1", name: t(langKeys.campaign) },
+        { id: "view-2", name: `${t(langKeys.campaign)} ${t(langKeys.detail)}` }
+    ];
 
     useEffect(() => {
         if (row !== null) {
