@@ -2112,7 +2112,7 @@ const DashboardManagerial: FC = () => {
                                 <LineChart data={resAsesoreconectadosbar}>
                                     <Line type="monotone" dataKey="asesoresconectados" stroke="#8884d8" />
                                     <CartesianGrid stroke="#ccc" />
-                                    <XAxis dataKey="hora"><Label value={` ${t(langKeys.timeofday)} `} offset={-5} position="insideBottom" /></XAxis>
+                                    <XAxis domain={["",""]} type="category" dataKey="hora"><Label value={` ${t(langKeys.timeofday)} `} offset={-5} position="insideBottom" /></XAxis>
                                     <YAxis><Label value={` ${t(langKeys.assesor_plural)} `} angle={-90} offset={0} position="insideLeft" /></YAxis>
                                     <RechartsTooltip />
                                 </LineChart>
@@ -2245,7 +2245,7 @@ const DashboardManagerial: FC = () => {
                             <ResponsiveContainer width="100%" aspect={4.0 / 1.0} >
                                 <BarChart data={reschannels}>
                                     <CartesianGrid stroke="#ccc" />
-                                    <XAxis dataKey="communicationchannel"><Label value={` ${t(langKeys.channel_plural)} `} offset={-5} position="insideBottom" /></XAxis>
+                                    <XAxis domain={["",""]} type="category" dataKey="communicationchannel"><Label value={` ${t(langKeys.channel_plural)} `} offset={-5} position="insideBottom" /></XAxis>
                                     <YAxis><Label value={` ${t(langKeys.conversationquantity)} `} angle={-90} offset={10} position="insideBottomLeft"/></YAxis>
                                     <RechartsTooltip />
                                     <Bar dataKey="tickets" fill="#8884d8" />

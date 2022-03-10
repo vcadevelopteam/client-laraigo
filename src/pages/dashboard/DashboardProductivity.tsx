@@ -1651,7 +1651,7 @@ const DashboardProductivity: FC = () => {
                         </div>
                         <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
                             <BarChart data={tmoDistribution}>
-                                <XAxis dataKey="label" label={{ value: `${t(langKeys.minute_plural)}`, position: 'insideBottom', offset:-5 }} />
+                                <XAxis domain={["",""]} type="category" dataKey="label" label={{ value: `${t(langKeys.minute_plural)}`, position: 'insideBottom', offset:-5 }} />
                                 <YAxis domain={[0,100]} label={{ value: `% TMO`, angle: -90, position: 'insideLeft' }}/>
                                 <RechartsTooltip />
                                 <Bar dataKey="percentage" fill="#8884d8" name={`% ${t(langKeys.tmo)}`}>
@@ -1674,7 +1674,7 @@ const DashboardProductivity: FC = () => {
                         </div>
                         <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
                             <BarChart data={tmeDistribution}>
-                                <XAxis dataKey="label" label={{ value: `${t(langKeys.minute_plural)}`, position: 'insideBottom', offset:-5 }} />
+                                <XAxis domain={["",""]} type="category" dataKey="label" label={{ value: `${t(langKeys.minute_plural)}`, position: 'insideBottom', offset:-5 }} />
                                 <YAxis domain={[0,100]} label={{ value: `% TME`, angle: -90, position: 'insideLeft' }}/>
                                 <RechartsTooltip />
                                 <Bar dataKey="percentage" fill="#8884d8" name={`% ${t(langKeys.tme)}`}/>
@@ -1701,7 +1701,7 @@ const DashboardProductivity: FC = () => {
                                 data={prodxHoraDist}
                                 >
                                 <CartesianGrid stroke="#f5f5f5" />
-                                <XAxis dataKey="label" scale="band"  label={{ value: `${t(langKeys.ticketsxhour)}`, position: 'insideBottom', offset:-5 }} />
+                                <XAxis domain={["",""]} type="category" dataKey="label" scale="band"  label={{ value: `${t(langKeys.ticketsxhour)}`, position: 'insideBottom', offset:-5 }} />
                                 <YAxis label={{ value: `${t(langKeys.numberofadvisers)}`, angle: -90, position: 'insideBottomLeft' }}/>
                                 <RechartsTooltip />
                                 <Line type="monotone" dataKey="notconnected" stroke="#52307c" name={t(langKeys.hourlogin)}/>

@@ -591,7 +591,7 @@ const DashboardOperationalPush: FC = () => {
                         <div style={{ height: 240 }}>
                             <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
                                 <BarChart data={dataHSMRANK}>
-                                    <XAxis dataKey="templatename" height={50} label={{ value: `${t(langKeys.templatename)}`, position: 'insideBottom', offset: 5 }} />
+                                    <XAxis domain={["",""]} type="category" dataKey="templatename" height={50} label={{ value: `${t(langKeys.templatename)}`, position: 'insideBottom', offset: 5 }} />
                                     <YAxis label={{ value: `${t(langKeys.hsmquantitysimple)}`, angle: -90, position: 'insideLeft' }} />
                                     <RechartsTooltip formatter={(value: any, name: any) => [value, t(name)]} />
                                     <Bar dataKey="quantity" fill="#8884d8" >
@@ -623,7 +623,7 @@ const DashboardOperationalPush: FC = () => {
                         <div style={{ height: 240 }}>
                             <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
                                 <BarChart data={dataAppRank}>
-                                    <XAxis dataKey="application" height={50} label={{ value: `${t(langKeys.employeeaplication)}`, position: 'insideBottom', offset: 5 }} />
+                                    <XAxis domain={["",""]} type="category" dataKey="application" height={50} label={{ value: `${t(langKeys.employeeaplication)}`, position: 'insideBottom', offset: 5 }} />
                                     <YAxis label={{ value: `${t(langKeys.hsmquantitysimple)}`, angle: -90, position: 'insideLeft' }} />
                                     <RechartsTooltip formatter={(value: any, name: any) => [value, t(name)]} />
                                     <Bar dataKey="quantity" fill="#8884d8" >
@@ -658,7 +658,7 @@ const DashboardOperationalPush: FC = () => {
                                     data={dataMENSAJEXDIA}
                                 >
                                     <CartesianGrid stroke="#f5f5f5" />
-                                    <XAxis height={50} dataKey="fecha" scale="band">
+                                    <XAxis domain={["",""]} type="category" height={50} dataKey="fecha" scale="band">
                                         <Label
                                             value={`${t(langKeys.day)}`}
                                             position="insideBottom"

@@ -403,7 +403,7 @@ const DashboardTagRanking: FC = () => {
                                     <BarChart data={dataAppRank} layout="vertical">
                                         <CartesianGrid strokeDasharray="3 3" />
                                         <XAxis type="number" height={50} domain={[0, 'dataMax']}  label={{ value: `${t(langKeys.quantity)}`, position: 'insideBottom' }}/>
-                                        <YAxis type="category" width={80} dataKey="tag"  label={{ width:80, value: `Tags`, angle: -90, position: 'insideLeft' }}/>
+                                        <YAxis domain={["",""]} type="category" width={80} dataKey="tag"  label={{ width:80, value: `Tags`, angle: -90, position: 'insideLeft' }}/>
                                         <RechartsTooltip formatter={(value: any, name: any) => [value, t(name)]} />
                                         <Bar dataKey="quantity" fill="#8884d8" >
                                             {dataAppRank?.map((entry: any, index: number) => (
