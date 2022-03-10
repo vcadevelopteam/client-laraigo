@@ -1,10 +1,10 @@
 import { convertLocalDate, getAdviserFilteredUserRol, getCampaignLst, getColumnsSel, getCommChannelLst, getLeadExport, getLeadsSel, getLeadTasgsSel, getPaginatedLead, getValuesFromDomain, insArchiveLead, insColumns, 
-  insLead2, updateColumnsLeads, updateColumnsOrder } from "common/helpers";
+  insLead2, updateColumnsLeads, updateColumnsOrder, uuidv4 } from "common/helpers";
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
-import { DraggableLeadCardContent, DraggableLeadColumn, DroppableLeadColumnList } from "./components";
+import { AddColumnTemplate, DraggableLeadCardContent, DraggableLeadColumn, DroppableLeadColumnList } from "./components";
 import { getMultiCollection, resetAllMain, execute, getCollectionPaginated, exportData } from "store/main/actions";
 import NaturalDragAnimation from "./prueba";
 import paths from "common/constants/paths";
@@ -177,6 +177,9 @@ const CRM: FC = () => {
       }
     }
   },[mainMulti]);
+  useEffect(() => {
+    console.log(dataColumn)
+  },[dataColumn]);
 
   const fetchBoardLeadsWithFilter = useCallback(() => {
     const newParams = new URLSearchParams(location.search);
@@ -299,7 +302,7 @@ const CRM: FC = () => {
   }
 
   // No borrar
-  /*const handleInsert = (title:string, columns:dataBackend[], setDataColumn:any) => {
+  const handleInsert = (title:string, columns:dataBackend[], setDataColumn:any) => {
     const newIndex = columns.length
     const uuid = uuidv4() // from common/helpers
 
@@ -326,7 +329,7 @@ const CRM: FC = () => {
 
     dispatch(execute(insColumns(data)))
     setDataColumn(Object.values({...columns, newColumn}));
-  }*/
+  }
 
   const hanldeDeleteColumn = (column_uuid : string, delete_all:boolean = true) => {
     if (column_uuid === '00000000-0000-0000-0000-000000000000') return;
@@ -859,6 +862,7 @@ const CRM: FC = () => {
                 <Trans i18nKey={langKeys.search} />
             </Button>
           </div>
+          <AddColumnTemplate onSubmit={(columnTitle) =>{ handleInsert(columnTitle,dataColumn, setDataColumn)}} /> 
           <DragDropContext onDragEnd={result => onDragEnd(result, dataColumn, setDataColumn)}>
             <Droppable droppableId="all-columns" direction="horizontal" type="column" >
               {(provided) => (
@@ -869,17 +873,17 @@ const CRM: FC = () => {
                 >
                   {dataColumn.map((column, index) => {
                     return (
-                      // <Draggable draggableId={column.column_uuid} index={index+1} key={column.column_uuid}>
-                      //   { (provided) => (
-                      //     <div
-                      //       {...provided.draggableProps}
-                      //       ref={provided.innerRef}
-                      //     >
+                       <Draggable draggableId={column.column_uuid} index={index+1} key={column.column_uuid}>
+                         { (provided) => (
+                           <div
+                             {...provided.draggableProps}
+                             ref={provided.innerRef}
+                           >
                               <DraggableLeadColumn 
                                 title={t(column.description.toLowerCase())}
                                 key={index+1} 
                                 snapshot={null} 
-                                // provided={provided} 
+                                provided={provided} 
                                 // titleOnChange={(val) =>{handleEdit(column.column_uuid,val,dataColumn, setDataColumn)}}
                                 columnid={column.column_uuid} 
                                 onDelete={hanldeDeleteColumn}
@@ -936,9 +940,9 @@ const CRM: FC = () => {
                                     }}
                                   </Droppable>
                               </DraggableLeadColumn>
-                      //     </div>
-                      //   )}
-                      // </Draggable>
+                           </div>
+                         )}
+                      </Draggable>
                     );
                   })}
                   {provided.placeholder}
@@ -946,7 +950,6 @@ const CRM: FC = () => {
               )}
             </Droppable>
           </DragDropContext>
-          {/* <AddColumnTemplate onSubmit={(columnTitle) =>{ handleInsert(columnTitle,dataColumn, setDataColumn)}} /> */}
           <DialogZyx3Opt
             open={openDialog}
             title={t(langKeys.confirmation)}
