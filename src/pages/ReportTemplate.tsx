@@ -691,7 +691,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                     </IconButton>
                                                 </TableCell>
                                                 <TableCell>{t(langKeys.column)}</TableCell>
-                                                <TableCell>{t(langKeys.type)}</TableCell>
+                                                <TableCell>{t(langKeys.typefilter)}</TableCell>
                                                 <TableCell>{t(langKeys.filters)}</TableCell>
                                             </TableRow>
                                         </TableHead>
@@ -735,7 +735,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                     <TableCell>
                                                         {!["date", "timestamp without time zone"].includes(getValues(`filters.${i}.type`)) &&
                                                             <FieldSelect
-                                                                label={t(langKeys.type)}
+                                                                label={t(langKeys.typefilter)}
                                                                 valueDefault={getValues(`filters.${i}.type_filter`)}
                                                                 fregister={{
                                                                     ...register(`filters.${i}.type_filter`, {

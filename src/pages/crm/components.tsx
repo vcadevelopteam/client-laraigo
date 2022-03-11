@@ -4,11 +4,12 @@ import { Box, BoxProps, Button, IconButton, makeStyles, Popover, TextField } fro
 import { Add, MoreVert as MoreVertIcon } from '@material-ui/icons';
 import { DraggableProvided, DraggableStateSnapshot, DroppableStateSnapshot } from 'react-beautiful-dnd';
 import { langKeys } from 'lang/keys';
-import { Trans } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Rating, Skeleton } from '@material-ui/lab';
 import { useHistory } from 'react-router';
 import paths from 'common/constants/paths';
 import { ICrmLead } from '@types';
+import { FieldSelect } from 'components/fields/templates';
 
 const columnWidth = 275;
 const columnMinHeight = 500;
@@ -548,7 +549,7 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, ...boxP
 }
 
 interface ColumnTemplateProps {
-    onSubmit: (title: string) => void;
+    onSubmit: (title: any) => void;
 }
 
 const useColumnTemplateStyles = makeStyles(theme => ({
@@ -576,13 +577,17 @@ const useColumnTemplateStyles = makeStyles(theme => ({
 const ColumnTemplate: FC<ColumnTemplateProps> = ({ onSubmit }) => {
     const classes = useColumnTemplateStyles();
     const inputClasses = useInputTitleStyles();
-    const [title, setTitle] = useState("");
+    const [data, setdata] = useState({
+        title: "",
+        type: ""
+    });
+    const { t } = useTranslation();
 
     return (
         <div className={classes.root}>
             <div className={classes.titleSection}>
                 <TextField
-                    value={title}
+                    value={data.title}
                     size="small"
                     placeholder="Column title"
                     className={classes.input}
@@ -591,7 +596,24 @@ const ColumnTemplate: FC<ColumnTemplateProps> = ({ onSubmit }) => {
                             input: inputClasses.titleInput,
                         },
                     }}
-                    onChange={e => setTitle(e.target.value)}
+                    onChange={e => setdata((x)=>{return {...x,title: e.target.value}})}
+                />
+                
+                <FieldSelect
+                    label={t(langKeys.type)}
+                    valueDefault={data.type}
+                    onChange={(value) => {
+                        setdata((x)=>{return {...x,title: value?.key|| ""}})
+                    }}
+                    data={[
+                        {key: "QUALIFIED"},
+                        {key: "WON"},
+                        {key: "PROPOSITION"},
+                    ]}
+                    uset={true}
+                    prefixTranslation=""
+                    optionDesc="key"
+                    optionValue="key"
                 />
                 <div style={{ width: 12 }} />
                 <Button
@@ -599,22 +621,13 @@ const ColumnTemplate: FC<ColumnTemplateProps> = ({ onSubmit }) => {
                     color="primary"
                     size="small"
                     className={classes.btn}
-                    onClick={() => onSubmit(title)}
-                    disabled={title.trim().length === 0}
+                    onClick={() => onSubmit(data)}
+                    disabled={data.title.trim().length === 0 || data.type.trim().length === 0}
                 >
                     <Trans i18nKey={langKeys.add} />
                 </Button>
+                
             </div>
-            <div style={{ height: 24 }} />
-            <Skeleton variant="rect" width="100%" height={150} />
-            <div style={{ height: 12 }} />
-            <Skeleton variant="rect" width="100%" height={150} />
-            <div style={{ height: 12 }} />
-            <Skeleton variant="rect" width="100%" height={150} />
-            <div style={{ height: 12 }} />
-            <Skeleton variant="rect" width="100%" height={150} />
-            <div style={{ height: 12 }} />
-            <Skeleton variant="rect" width="100%" height={150} />
         </div>
     );
 }

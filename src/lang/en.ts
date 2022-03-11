@@ -873,6 +873,7 @@ const translation: LangKeys = {
     summarization: 'Summarization',
     select_column_plural: 'Select columns',
     field: 'Field',
+    typefilter: "Type filter",
     missing_header: 'Missing header',
     invalid_parameter: 'Invalid parameter',
     required_fields_missing: 'Required fields are missing',

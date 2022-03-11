@@ -1018,6 +1018,7 @@ const translation: LangKeys = {
     select_column_plural: 'Seleccione columnas',
     field: 'Campo',
     missing_header: 'Falta cabecera',
+    typefilter: "Tipo filtro",
     invalid_parameter: 'Parámetro inválido',
     required_fields_missing: 'Faltan campos obligatorio',
     missing_people: 'Falta registrar personas, debe registrar al menos 1',

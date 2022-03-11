@@ -214,6 +214,9 @@ const CRM: FC = () => {
   
     if (type === 'column') {
       const newColumnOrder = [...columns]
+      if(newColumnOrder[source.index-1].type === newColumnOrder[destination.index-1].type){
+        return;
+      }
       const [removed] = newColumnOrder.splice((source.index-1),1)
       newColumnOrder.splice(destination.index-1, 0, removed)
       setDataColumn(newColumnOrder)
@@ -300,13 +303,14 @@ const CRM: FC = () => {
 
   // No borrar
   /*const handleInsert = (title:string, columns:dataBackend[], setDataColumn:any) => {
+  const handleInsert = (insertdata:any, columns:dataBackend[], setDataColumn:any) => {
     const newIndex = columns.length
     const uuid = uuidv4() // from common/helpers
 
     const data = {
       id: uuid,
-      description: title,
-      type: 'NINGUNO',
+      description: insertdata.title,
+      type: insertdata.type,
       status: 'ACTIVO',
       edit: true,
       index: newIndex,
@@ -316,9 +320,9 @@ const CRM: FC = () => {
     const newColumn = {
       columnid: null,
       column_uuid: uuid,
-      description: title,
+      description: insertdata.title,
       status: 'ACTIVO',
-      type: 'NINGUNO',
+      type: insertdata.type,
       globalid: '',
       index: newIndex,
       items: []
@@ -877,7 +881,7 @@ const CRM: FC = () => {
                       //     >
                               <DraggableLeadColumn 
                                 title={t(column.description.toLowerCase())}
-                                key={index+1} 
+                                key={`DraggableLeadColumn${index+1}`} 
                                 snapshot={null} 
                                 // provided={provided} 
                                 // titleOnChange={(val) =>{handleEdit(column.column_uuid,val,dataColumn, setDataColumn)}}
@@ -898,7 +902,7 @@ const CRM: FC = () => {
                                           {column.items?.map((item, index) => {
                                             return (
                                               <Draggable
-                                                key={item.leadid}
+                                                key={`leaditems${item.leadid}`}
                                                 draggableId={item.leadid.toString()}
                                                 index={index}
                                               >
