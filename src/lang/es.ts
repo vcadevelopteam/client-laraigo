@@ -1508,6 +1508,7 @@ const translation: LangKeys = {
     
     dashboard_operationalpush_application_application: "Aplicación",
     dashboard_operationalpush_application_hsm: "HSM",
+    inbox: "Bandeja de mensajes",
     dashboard_operationalpush_application_sentdate: "Fecha del mensaje recibido",
     dashboard_operationalpush_application_clientnumber: "Número",
     dashboard_operationalpush_application_status: "Estado",

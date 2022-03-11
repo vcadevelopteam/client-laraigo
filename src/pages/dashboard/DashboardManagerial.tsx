@@ -1530,7 +1530,7 @@ const DashboardManagerial: FC = () => {
                         >
                             <div className={classes.downloadiconcontainer}>
                                 <CloudDownloadIcon onClick={()=>downloaddata("TME")}  className={classes.styleicon}/>
-                                <SettingsIcon onClick={()=>{setFieldToFilter("TME"); setOpenDialogPerRequest(true);setsearchfieldsOnlyOne((prevState) =>({...prevState, min: sla?.usertme||"00:00:00", max: sla?.usertme||"00:00:00"}))}} className={classes.styleicon}/>
+                                <SettingsIcon onClick={()=>{setFieldToFilter("TME"); setOpenDialogPerRequest(true);setsearchfieldsOnlyOne((prevState) =>({...prevState, min: "00:00:00", max: sla?.usertme||"00:00:00"}))}} className={classes.styleicon}/>
                             </div>
                             <div className={classes.columnCard}>
                                 <div className={classes.containerFieldsTitle}>

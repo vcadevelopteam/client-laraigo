@@ -479,6 +479,7 @@ export const langKeys = {
     companysize: "companysize",
     roleincompany: "roleincompany",
     eMailInbox: 'eMailInbox',
+    inbox: "inbox",
     productivitybyhour: 'productivitybyhour',
     messageInbox: 'messageInbox',
     supplier: "supplier",

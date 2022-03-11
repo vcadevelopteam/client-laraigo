@@ -616,6 +616,7 @@ const translation: LangKeys = {
     tasaAbandonosxAsesortooltip: "Shows the percentage of conversations abandoned with respect to the total number of conversations entered.",
     socialmediachannel2: "You can select more than one channel at the same time if you consider it necessary at the time of self-registration or manage additional channels after the first registration.",
     averageinteractionbyconversation: "Interaction by conversation",
+    inbox: "Inbox",
     maxavginteractionsxconversationstooltip: "Average advisor interactions x conversation with client.",
     minvginteractionsxconversationstooltip: "Average bot interactions x conversation with the customer.",
     top5labels: "Ranking top 5 labels",
