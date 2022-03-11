@@ -1395,6 +1395,7 @@ const translation: LangKeys = {
     ticket_tipocierre: 'Close type',
     ticket_tipification: 'Tipification',
     ticket_tipification_help: 'Assigned classification.',
+    tagrankingtooltip: "Shows the most consulted options within the conversational flow",
     numberofHSMShipments: 'Number of HSM shipments',
     numberofHSMShipmentstooltip: 'Shows the number of HSMs sent by the different available applications.',
     employeeaplication: 'Employee Application',

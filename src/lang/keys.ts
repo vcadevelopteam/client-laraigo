@@ -22,6 +22,7 @@ export const langKeys = {
     completedesc: 'completedesc',
     report: 'report',
     report_plural: 'report_plural',
+    tagrankingtooltip: "tagrankingtooltip",
     next: "next",
     reportscheduler: "reportscheduler",
     reportscheduler_singular: "reportscheduler_singular",

@@ -90,6 +90,7 @@ export interface ICrmLeadActivitySave {
     feedback: string;
     /**array json type: Descendant[] (RichText) */
     detailjson: string;
+    assigneduser?: number;
 }
 
 export interface ICrmLeadNoteSave {
@@ -127,6 +128,7 @@ export interface IcrmLeadActivity {
 	description: string;
 	duedate: string;
 	assignto: string;
+	assigneduser?: number;
 	type: string;
 	status: "PROGRAMADO" | "REALIZADO" | "ELIMINADO";
     feedback: string | null;
