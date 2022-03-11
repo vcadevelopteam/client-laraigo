@@ -59,10 +59,10 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 		if (!resValidateToken.error && !resValidateToken.loading) {
 			const automaticConnection = resLogin.user?.automaticConnection || false;
 			const fromLogin = !!resLogin.user;
-			const { userid, orgid } = resValidateToken.user!!
-			dispatch(wsConnect({ userid, orgid, usertype: 'PLATFORM', automaticConnection, fromLogin  }));
+			const { userid, orgid, roledesc } = resValidateToken.user!!
+			dispatch(wsConnect({ userid, orgid, usertype: 'PLATFORM', automaticConnection, fromLogin, roledesc  }));
 		}
-	}, [resValidateToken])
+	}, [resValidateToken.loading])
 	
 	if (!existToken) {
 		return <Redirect to={{ pathname: paths.SIGNIN }} />;

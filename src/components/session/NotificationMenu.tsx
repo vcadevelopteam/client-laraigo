@@ -123,13 +123,13 @@ const useNotificationMenuStyles = makeStyles((theme: Theme) =>
 const NotificationMenu: FC<BoxProps> = (boxProps) => {
     const classes = useNotificationMenuStyles();
     const history = useHistory();
-    const { t } = useTranslation();
+    // const { t } = useTranslation();
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
     const resValidateToken = useSelector(state => state.login.validateToken);
 
     const open = Boolean(anchorEl);
-    const notifications = resValidateToken.loading ? [] : resValidateToken.user?.notifications || [];
+    const notifications = resValidateToken.loading ? [] : resValidateToken.notifications || [];
     const notificationCount = notifications.length;
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -149,7 +149,6 @@ const NotificationMenu: FC<BoxProps> = (boxProps) => {
                 aria-haspopup="true"
                 aria-expanded={open ? 'true' : undefined}
                 onClick={handleClick}
-                
             >
                 <div className={classes.rootIcon}>
                     {notificationCount > 0 ?

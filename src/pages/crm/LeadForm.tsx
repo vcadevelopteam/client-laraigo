@@ -33,6 +33,7 @@ import { getCollection, resetMain } from 'store/main/actions';
 import { AntTab } from 'components';
 import { EmailIcon, WhatsappIcon, SmsIcon } from 'icons';
 import { Descendant } from 'slate';
+import { emitEvent } from 'store/inbox/actions';
 
 const urgencyLevels = ['', 'LOW', 'MEDIUM', 'HIGH']
 
@@ -1586,6 +1587,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
     const [domainsTotal, setDomainsTotal] = useState<Dictionary[]>([])
     const [bodyMessage, setBodyMessage] = useState('');
     const [bodyCleaned, setBodyCleaned] = useState('');
+    const [assigntoinitial, setassigntoinitial] = useState(0)
 
     useEffect(() => {
         if (!domains.loading && !domains.error) {
@@ -1597,7 +1599,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
         }
     }, [domains])
 
-    
+
     useEffect(() => {
         dispatch(getCollection(getValuesFromDomain("TIPOACTIVIDADLEAD")));
         return () => {
@@ -1666,9 +1668,10 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
         register('description', { validate: mandatoryStrField });
         register('duedate', { validate: validateDateFormat });
         register('assignto', { validate: mandatoryStrField });
+
         register('type', { validate: mandatoryStrField });
         register('communicationchanneltype');
-        
+
 
     }, [register, t]);
 
@@ -1724,15 +1727,15 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
         registerFormFieldOptions();
         // eslint-disable-next-line react-hooks/exhaustive-deps
 
+        if (activity?.assignto) {
+            setassigntoinitial(activity?.assigneduser || 0)
+        }
 
         if (activity?.type === "automated") {
             register('hsmtemplateid', { validate: (value) => value && value > 0 ? undefined : t(langKeys.field_required) + "" })
             register('communicationchannelid', { validate: (value) => value && value > 0 ? undefined : t(langKeys.field_required) + "" })
             register('communicationchannelid', { validate: (value) => value && value > 0 ? undefined : t(langKeys.field_required) + "" })
-
-            
         } else {
-            
             register('hsmtemplateid', { validate: () => true })
             register('communicationchannelid', { validate: (value) => true })
             register('communicationchannelid', { validate: (value) => true })
@@ -1741,7 +1744,10 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
 
     useEffect(() => {
         if (open === true && userid !== undefined && leadid !== 0 && !activity?.assigneduser) {
-            setValue('assignto', advisers.data.find(e => e.userid === userid)?.firstname || '');
+            const posibleuser = advisers.data.find(e => e.userid === userid);
+            setassigntoinitial(posibleuser?.userid || 0);
+            setValue('assignto', posibleuser?.firstname || '');
+
             setValue('assigneduser', userid);
             refresh(prev => !prev);
         }
@@ -1783,7 +1789,32 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                     })) || []
                 }]
             } : "";
-            //return
+
+
+
+            if (values.leadactivityid === 0 || values.assigneduser !== assigntoinitial) {
+                const supervisorid = advisers.data.find(x => x.userid === values.assigneduser).supervisorid;
+                console.log("carlos", values)
+                const data = {
+                    leadid: lead.value?.leadid || 0,
+                    leadname: lead.value?.description,
+                    description: values.description,
+                    duedate: values.duedate,
+                    assigneduser: values.assigneduser,
+                    userid: values.assigneduser, //quien va a recibir la notificacion
+                    supervisorid,
+                    assignto: values.assignto,
+                    status: "PROGRAMADO",
+                    type: "automated",
+                    feedback: "",
+                    notificationtype: "LEADACTIVITY"
+                }
+                dispatch(emitEvent({
+                    event: 'newNotification',
+                    data
+                }))
+            }
+
             onSubmit?.({
                 ...values,
                 status,

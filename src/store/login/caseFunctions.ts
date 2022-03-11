@@ -71,6 +71,7 @@ export const validateTokenSuccess = (state: IState, action: IAction): IState => 
             loading: false,
             error: false,
             user: action.payload.data,
+            notifications: action.payload.data.notifications
         }
     }
 };
@@ -94,7 +95,13 @@ export const validateTokenReset = (state: IState): IState => ({
 });
 
 
-
+export const newNotification = (state: IState, action: IAction): IState => ({
+    ...state,
+    validateToken: {
+        ...state.validateToken,
+        notifications: [...(state.validateToken?.notifications || []), action.payload]
+    }
+});
 
 
 
