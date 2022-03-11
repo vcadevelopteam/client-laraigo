@@ -508,7 +508,6 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
     const [value, setValue] = useState<Dictionary | null>(null);
 
     useEffect(() => {
-        console.log("aaaaaaa")
         if (valueDefault && data.length > 0) {
             const optionfound = data.find((o: Dictionary) => o[optionValue] === valueDefault);
             if (optionfound) {

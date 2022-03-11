@@ -2529,6 +2529,7 @@ export const langKeys = {
     channellimit: 'channellimit',
     userlimit: 'userlimit',
     type_activitylead_call: 'type_activitylead_call',
+    type_activitylead_automated: 'type_activitylead_automated',
     'type_activitylead_call for demo': 'type_activitylead_call for demo',
     'type_activitylead_email: welcome demo': 'type_activitylead_email: welcome demo',
     'type_activitylead_follow-up quote': 'type_activitylead_follow-up quote',

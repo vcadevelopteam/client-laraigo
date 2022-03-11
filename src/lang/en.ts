@@ -2527,6 +2527,7 @@ const translation: LangKeys = {
     channellimit: 'Reached maximum number of channels, upgrade your plan to continue',
     userlimit: 'Reached maximum number of users({{limit}}), upgrade your plan to continue',
     type_activitylead_call: 'Call',
+    type_activitylead_automated: 'Automate message',
     'type_activitylead_call for demo': 'Call for demo',
     'type_activitylead_email: welcome demo': 'Email: Welcome demo',
     lastuser: 'Last user',

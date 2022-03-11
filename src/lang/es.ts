@@ -31,6 +31,8 @@ const translation: LangKeys = {
     show_all: 'Mostrar todo',
     function_count_unique: 'Contar únicos',
 
+    type_activitylead_automated: 'Automatizar mensaje',
+
     lead: 'Oportunidad',
     lead_plural: 'Oportunidades',
     model: 'Modelo',
