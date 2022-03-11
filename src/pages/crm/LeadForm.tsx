@@ -1603,6 +1603,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             description: activity?.description || "",
             duedate: activity?.duedate || "",
             assignto: activity?.assignto || "",
+            assigneduser: activity?.assigneduser || 0,
             type: activity?.type || "",
             status: activity?.status || "PROGRAMADO",
             username: null,
@@ -1641,6 +1642,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             leadactivityid: 0,
             description: "",
             duedate: "",
+            assigneduser: 0,
             assignto: "",
             type: "NINGUNO",
             status: "PROGRAMADO",
@@ -1661,6 +1663,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             description: activity?.description || "",
             duedate: activity?.duedate || "",
             assignto: activity?.assignto || "",
+            assigneduser: activity?.assigneduser || 0,
             type: activity?.type || "",
             status: activity?.status || "PROGRAMADO",
             username: null,
@@ -1674,8 +1677,9 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
     }, [activity, reset, register]);
 
     useEffect(() => {
-        if (open === true && userid !== undefined && leadid !== 0) {
+        if (open === true && userid !== undefined && leadid !== 0 && !activity?.assigneduser) {
             setValue('assignto', advisers.data.find(e => e.userid === userid)?.firstname || '');
+            setValue('assigneduser', userid);
             refresh(prev => !prev);
         }
     }, [open, userid, leadid, advisers, setValue]);
@@ -1763,11 +1767,14 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                             label={t(langKeys.assignedTo)}
                                             className={classes.field}
                                             data={advisers.data}
-                                            optionDesc="firstname"
+                                            optionDesc="fullname"
                                             optionValue="firstname"
                                             loading={advisers.loading}
                                             valueDefault={getValues('assignto')}
-                                            onChange={v => setValue('assignto', v?.firstname || "")}
+                                            onChange={v => {
+                                                setValue('assignto', v?.firstname || "");
+                                                setValue('assigneduser', v?.userid || 0);
+                                            }}
                                             error={errors?.assignto?.message}
                                         />
                                     </Grid>
