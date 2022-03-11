@@ -1091,27 +1091,30 @@ const DashboardManagerial: FC = () => {
         setWaitSave(true)
     }
     async function funcsearchoneonly() {
-        setOpenDialogPerRequest(false)
-        
-        if(fieldToFilter==="TMO"){
-            setResTMO([])
-            dispatch(getCollectionAux(gerencialTMOsel({ ...searchfieldsOnlyOne,startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })));
+        console.log(searchfieldsOnlyOne.closedby)
+        if(searchfieldsOnlyOne.closedby){
+            setOpenDialogPerRequest(false)
+            
+            if(fieldToFilter==="TMO"){
+                setResTMO([])
+                dispatch(getCollectionAux(gerencialTMOsel({ ...searchfieldsOnlyOne,startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })));
+            }
+            if(fieldToFilter==="TME"){
+                setResTME([])
+                dispatch(getCollectionAux(gerencialTMEsel({ ...searchfieldsOnlyOne,startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+            }
+            if(fieldToFilter==="NPS"||fieldToFilter==="CSAT" || fieldToFilter==="FCR" || fieldToFilter==="FIX"){
+                dispatch(getCollectionAux(gerencialEncuestassel({ ...searchfieldsOnlyOne,question: fieldToFilter,startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+            }
+            if(fieldToFilter==="averageconversationsattendedbyhour" || fieldToFilter==="averageconversationsattendedbytheadvisorbyhour"){
+                dispatch(getCollectionAux(getdashboardgerencialconverstionxhoursel({ ...searchfieldsOnlyOne,startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+            }
+            // if(fieldToFilter==="etiqueta"){
+            //     setResLabels([])
+            //     dispatch(getCollectionAux(gerencialetiquetassel({ ...searchfieldsOnlyOne,startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+            // }
+            setWaitSaveaux(true)
         }
-        if(fieldToFilter==="TME"){
-            setResTME([])
-            dispatch(getCollectionAux(gerencialTMEsel({ ...searchfieldsOnlyOne,startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
-        }
-        if(fieldToFilter==="NPS"||fieldToFilter==="CSAT" || fieldToFilter==="FCR" || fieldToFilter==="FIX"){
-            dispatch(getCollectionAux(gerencialEncuestassel({ ...searchfieldsOnlyOne,question: fieldToFilter,startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
-        }
-        if(fieldToFilter==="averageconversationsattendedbyhour" || fieldToFilter==="averageconversationsattendedbytheadvisorbyhour"){
-            dispatch(getCollectionAux(getdashboardgerencialconverstionxhoursel({ ...searchfieldsOnlyOne,startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
-        }
-        // if(fieldToFilter==="etiqueta"){
-        //     setResLabels([])
-        //     dispatch(getCollectionAux(gerencialetiquetassel({ ...searchfieldsOnlyOne,startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
-        // }
-        setWaitSaveaux(true)
     }
     useEffect(() => {
         if (waitSaveaux) {
@@ -1303,8 +1306,16 @@ const DashboardManagerial: FC = () => {
                                     if(value && searchfieldsOnlyOne.closedbybot) {closedby="ASESOR,BOT"} else
                                     if (value) {closedby="ASESOR"} else
                                     if (searchfieldsOnlyOne.closedbybot) {closedby="BOT"}
-                                    console.log(resTMO)
-                                    setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbyasesor: value, closedby: closedby}))}}
+
+                                    if(closedby==="ASESOR"){
+                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbyasesor: value, closedby: closedby,min: sla?.usertmomin || "00:00:00", max: sla.usertmo, target: sla.usertmopercentmax}))
+                                    }else if(closedby==="ASESOR,BOT"){
+                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbyasesor: value,closedby: closedby,min: sla?.totamtmomin || "00:00:00", max: sla.totaltmo, target: sla.totaltmopercentmax}))
+                                    }
+                                    else{
+                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbyasesor: value,closedby: closedby,min: "00:00:00", max: "00:00:00", target: 0}))
+                                    }
+                                }}
                                 className="col-6"
                             />
                             <TemplateSwitch
@@ -1316,10 +1327,14 @@ const DashboardManagerial: FC = () => {
                                     if(value && searchfieldsOnlyOne.closedbyasesor) {closedby="ASESOR,BOT"} else
                                     if (value) {closedby="BOT"} else
                                     if (searchfieldsOnlyOne.closedbyasesor) {closedby="ASESOR"}
-                                    if(value){
-                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value,closedby: closedby,min: sla.totamtmomin?sla.totamtmomin:"00:00:00", max: sla.totaltmo, target: sla.totaltmopercentmax}))
-                                    }else{
-                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value, closedby: closedby,min: sla.usertmomin?sla.usertmomin:"00:00:00", max: sla.usertmo, target: sla.usertmopercentmax}))
+                                    
+                                    if(closedby==="ASESOR"){
+                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value, closedby: closedby,min: sla?.usertmomin || "00:00:00", max: sla.usertmo, target: sla.usertmopercentmax}))
+                                    }else if(closedby==="ASESOR,BOT"){
+                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value,closedby: closedby,min: sla?.totamtmomin || "00:00:00", max: sla.totaltmo, target: sla.totaltmopercentmax}))
+                                    }
+                                    else{
+                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value,closedby: closedby,min: "00:00:00", max: "00:00:00", target: 0}))
                                     }
                                 }}
                             />
@@ -1515,7 +1530,7 @@ const DashboardManagerial: FC = () => {
                         >
                             <div className={classes.downloadiconcontainer}>
                                 <CloudDownloadIcon onClick={()=>downloaddata("TME")}  className={classes.styleicon}/>
-                                <SettingsIcon onClick={()=>{setFieldToFilter("TME"); setOpenDialogPerRequest(true);setsearchfieldsOnlyOne((prevState) =>({...prevState, min: sla?.usertme, max: sla.usertmepercentmax}))}} className={classes.styleicon}/>
+                                <SettingsIcon onClick={()=>{setFieldToFilter("TME"); setOpenDialogPerRequest(true);setsearchfieldsOnlyOne((prevState) =>({...prevState, min: sla?.usertme||"00:00:00", max: sla?.usertmepercentmax||"00:00:00"}))}} className={classes.styleicon}/>
                             </div>
                             <div className={classes.columnCard}>
                                 <div className={classes.containerFieldsTitle}>
