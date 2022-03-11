@@ -2724,3 +2724,21 @@ export const billingReportConversationWhatsApp = ({ corpid, orgid, year, month }
     key: "UFN_BILLING_REPORT_CONVERSATIONWHATSAPP",
     parameters: { corpid, orgid, year, month }
 })
+
+export const getProductCatalogSel = (id: number = 0, category: string = ''): IRequestBody => ({
+    method: "UFN_PRODUCTCATALOG_SEL",
+    key: "UFN_PRODUCTCATALOG_SEL",
+    parameters: {
+        id: id,
+        category: category,
+        all: true
+    }
+})
+
+export const productCatalogIns = ({id, code, description, category, status, type, imagereference, notes, unitprice, operation }: Dictionary): IRequestBody => ({
+    method: "UFN_PRODUCTCATALOG_INS",
+    key: "UFN_PRODUCTCATALOG_INS",
+    parameters: {
+        id, code, description, category, status, type, imagereference, notes, unitprice, operation
+    }
+})

@@ -3172,6 +3172,13 @@ const translation: LangKeys = {
     recoverpassword_expired: 'Link expired. Retry the recovery process',
     recoverpassword_finish: 'Process finished. Use this button to go back to the log-in screen.',
     propertyocultarlogconversacion: 'Switch used to hide the conversation log',
+    
+    productcatalog: 'Product Catalog',
+    productcatalogcategory: 'Category',
+    productcatalogunitprice: 'Sell Price',
+    productcatalogsingle: 'Product Catalog',
+    productcatalognotes: 'Notes',
+    productcatalogimage: 'Image',
 };
 
 const enResource: ResourceLanguage = {

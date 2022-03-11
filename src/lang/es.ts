@@ -3163,6 +3163,13 @@ const translation: LangKeys = {
     recoverpassword_expired: 'Enlace expirado. Reintente el proceso de recuperación',
     recoverpassword_finish: 'Proceso terminado. Presione el boton para volver a la pantalla de inicio de sesión.',
     propertyocultarlogconversacion: 'Switch para ocultar el log de la conversación',
+
+    productcatalog: 'Catálogo de Productos',
+    productcatalogcategory: 'Categoria',
+    productcatalogunitprice: 'Precio de Venta',
+    productcatalogsingle: 'Catálogo de Producto',
+    productcatalognotes: 'Notas',
+    productcatalogimage: 'Imagen',
 };
 
 const esResource: ResourceLanguage = {
