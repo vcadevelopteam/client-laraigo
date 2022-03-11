@@ -177,9 +177,6 @@ const CRM: FC = () => {
       }
     }
   },[mainMulti]);
-  useEffect(() => {
-    console.log(dataColumn)
-  },[dataColumn]);
 
   const fetchBoardLeadsWithFilter = useCallback(() => {
     const newParams = new URLSearchParams(location.search);
@@ -217,6 +214,7 @@ const CRM: FC = () => {
   
     if (type === 'column') {
       const newColumnOrder = [...columns]
+      if(newColumnOrder[destination.index-1].type !== newColumnOrder[source.index-1].type) return;
       const [removed] = newColumnOrder.splice((source.index-1),1)
       newColumnOrder.splice(destination.index-1, 0, removed)
       setDataColumn(newColumnOrder)
@@ -345,10 +343,8 @@ const CRM: FC = () => {
         const destColumn = columns[0];
         const sourceItems = [...sourceColumn.items!]
         const removed = sourceItems!.splice(0)
-        // console.log('removed', removed)
         const newDestItems = [...destColumn.items!].concat(removed)
         newDestItems.map((item) => item.column_uuid = destColumn.column_uuid)
-        // console.log('newDestItems', newDestItems)
         const destTotalRevenue = newDestItems!.reduce((a,b) => a+ parseFloat(b.expected_revenue), 0)
         newColumn = Object.values({...columns, [sourceIndex]: {...sourceColumn, items: sourceItems}, 0: {...destColumn, total_revenue: destTotalRevenue, items: newDestItems}}) as dataBackend[]
       }
@@ -863,6 +859,12 @@ const CRM: FC = () => {
             </Button>
           </div>
           <AddColumnTemplate onSubmit={(columnTitle) =>{ handleInsert(columnTitle,dataColumn, setDataColumn)}} /> 
+          <div style={{display:"flex"}}>
+            <div style={{width: "569px", display: "flex", justifyContent: "center", margin: "10px"}}>{t(langKeys.new)}</div>
+            <div style={{width: "569px", display: "flex", justifyContent: "center", margin: "10px"}}>{t(langKeys.qualified)}</div>
+            <div style={{width: "569px", display: "flex", justifyContent: "center", margin: "10px"}}>{t(langKeys.proposition)}</div>
+            <div style={{width: "569px", display: "flex", justifyContent: "center", margin: "10px"}}>{t(langKeys.won)}</div>
+          </div>
           <DragDropContext onDragEnd={result => onDragEnd(result, dataColumn, setDataColumn)}>
             <Droppable droppableId="all-columns" direction="horizontal" type="column" >
               {(provided) => (
