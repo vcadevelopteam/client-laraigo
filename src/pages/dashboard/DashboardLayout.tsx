@@ -755,6 +755,7 @@ const LayoutBar: FC<LayoutBarProps> = ({ data,alldata, tickFormatter, tooltipFor
                     height={160}
                     dy={5}
                     dx={-5}
+                    domain={["",""]}
                 />
                 <YAxis tickFormatter={tickFormatter} padding={{ top: 10 }}/>
                 {alldata?.interval?(
@@ -839,6 +840,7 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipF
             <LineChart data={modifieddata}>
                 <CartesianGrid stroke="#ccc" />
                 <XAxis
+                    domain={["",""]}
                     dataKey="label"
                     style={{ fontSize: '0.8em' }}
                     angle={-45}
