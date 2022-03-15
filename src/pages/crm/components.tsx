@@ -2,6 +2,7 @@ import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { Box, BoxProps, Button, IconButton, makeStyles, Popover, TextField } from '@material-ui/core';
 import { Add, MoreVert as MoreVertIcon } from '@material-ui/icons';
+import CloseIcon from '@material-ui/icons/Close';
 import { DraggableProvided, DraggableStateSnapshot, DroppableStateSnapshot } from 'react-beautiful-dnd';
 import { langKeys } from 'lang/keys';
 import { Trans, useTranslation } from 'react-i18next';
@@ -366,16 +367,16 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
     const classes = useLeadColumnStyles();
     const edit = useRef(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-
+    
     const handleOnBlur = useCallback((value: string) => {
         edit.current = false;
         titleOnChange?.(value);
     }, [titleOnChange]);
 
-    // const handleDelete = useCallback(() => {
-    //     setAnchorEl(null);
-    //     onDelete?.(columnid);
-    // }, []);
+    const handleDelete = useCallback(() => {
+        //onDelete?.(columnid);
+    }, []);
+    
 
     return (
         <Box {...boxProps}>
@@ -386,36 +387,9 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
                         edit={edit.current}
                         onBlur={handleOnBlur}
                     />
-                    {/* <IconButton size="small" aria-describedby={id} onClick={handleClick}>
-                        <MoreVertIcon style={{ height: 22, width: 22 }} />
+                    <IconButton size="small" onClick={handleDelete}>
+                        <CloseIcon style={{ height: 22, width: 22 }} />
                     </IconButton>
-                    <Popover
-                        id={id}
-                        open={open}
-                        anchorEl={anchorEl}
-                        onClose={handleClose}
-                        anchorOrigin={{
-                            vertical: 'bottom',
-                            horizontal: 'left',
-                        }}
-                        PaperProps={{
-                            className: classes.popoverPaper,
-                        }}
-                    >
-                        <Button
-                            variant="text"
-                            color="inherit"
-                            fullWidth
-                            type="button"
-                            onClick={handleEdit}
-                            style={{ fontWeight: "normal", textTransform: "uppercase" }}
-                        >
-                            <Trans i18nKey={langKeys.edit} />
-                        </Button>
-                    </Popover>
-                    <IconButton size="small" onClick={onAddCard}>
-                        <Add style={{ height: 22, width: 22 }} />
-                    </IconButton> */}
                 </div>
                 <span className={classes.currency}>S/ {total_revenue?.toLocaleString('en-US') || 0}</span>
                 {children}

@@ -245,12 +245,18 @@ const CRM: FC = () => {
       if (mainMulti.data.length && mainMulti.data[0].key && mainMulti.data[0].key === "UFN_COLUMN_SEL") {
         const columns = (mainMulti.data[0] && mainMulti.data[0].success ? mainMulti.data[0].data : []) as dataBackend[]
         const leads = (mainMulti.data[1] && mainMulti.data[1].success ? mainMulti.data[1].data : []) as ICrmLead[]
-        setDataColumn(
-          columns.map((column) => {
-            column.items = leads.filter( x => x.column_uuid === column.column_uuid);
-            return {...column, total_revenue: (column.items.reduce((a,b) => a + parseFloat(b.expected_revenue), 0))}
-          })
-        )
+        let unordeneddatacolumns = columns.map((column) => {
+          column.items = leads.filter( x => x.column_uuid === column.column_uuid);
+          return {...column, total_revenue: (column.items.reduce((a,b) => a + parseFloat(b.expected_revenue), 0))}
+        })
+        let ordereddata = [...unordeneddatacolumns.filter((x:any)=>x.description==="New"),
+          ...unordeneddatacolumns.filter((x)=>x.type==="QUALIFIED"),
+          ...unordeneddatacolumns.filter((x)=>x.type==="PROPOSITION"),
+          ...unordeneddatacolumns.filter((x)=>x.type==="WON"),
+        ];
+        console.log(unordeneddatacolumns)
+        console.log(ordereddata)
+        setDataColumn(ordereddata)
       }
     }
   },[mainMulti]);
@@ -950,12 +956,9 @@ const CRM: FC = () => {
                   ref={provided.innerRef}
                   style={{display:'flex'}}
                 >
-                  {dataColumn.map((column, index) => {
-                    return (
+                  {dataColumn.map((column, index) => 
                        <DraggablesCategories column={column} index={index} hanldeDeleteColumn={hanldeDeleteColumn} handleDelete={handleDelete} handleCloseLead={handleCloseLead}/>
-                    );
-                  })}
-                  {provided.placeholder}
+                  )}
                 </div>
               )}
             </Droppable>
