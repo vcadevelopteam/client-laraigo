@@ -118,7 +118,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('origin', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('origintype');
-        register('reportname', { validate: (value) => (origin==="REPORT")?(value && value.length) || t(langKeys.field_required):true });
+        register('reportname', { validate: (value) => (getValues("origin") ==="REPORT" || getValues("origin") ==="CAMPAIGN") ? (value && value.length) || t(langKeys.field_required) : true });
         register('frecuency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         //register('group', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('schedule', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -272,6 +272,26 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                             data={dataReportSimple}
                             optionDesc="reportname"
                             optionValue="reportname"
+                        />}
+                        {!((origin!=="CAMPAIGN") && (origin!=="DASHBOARD")) && <FieldSelect
+                            label={t(langKeys.reporttype)}
+                            className="col-6"
+                            valueDefault={getValues("reportname")}
+                            onChange={(value) => {
+                                setValue('reportname', value?.value || '');
+                                setValue('origintype', 'STANDARD');
+                                setValue('reportid', 0);
+                                setfilterData(JSON.parse("[]").filter((x:any)=>x.type!=="timestamp without time zone"))
+                                setfilters([])
+                            }}
+                            error={errors?.reportname?.message}
+                            disabled={(origin!=="CAMPAIGN") && (origin!=="DASHBOARD")}
+                            data={[
+                                {value: "DEFAULT", desc: t(langKeys.defaulttype)},
+                                {value: "PROACTIVE", desc: t(langKeys.proactivetype)},
+                            ]}
+                            optionDesc="desc"
+                            optionValue="value"
                         />}
                     </div>
                     {(filterData.length>0 && origin ) &&<div className="row-zyx">

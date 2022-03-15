@@ -3185,6 +3185,8 @@ export const langKeys = {
     'filter_channelactive':'filter_channelactive',
     'filter_communicationchannel.botenabled':'filter_communicationchannel.botenabled',
     'filter_communicationchannel.communicationchannelcontact':'filter_communicationchannel.communicationchannelcontact',
+    defaulttype: 'defaulttype',
+    proactivetype: 'proactivetype',
 };
 
 export type LangKeys = typeof langKeys;

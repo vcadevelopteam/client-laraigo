@@ -3201,6 +3201,8 @@ const translation: LangKeys = {
     'filter_channelactive':'Channel active',
     'filter_communicationchannel.botenabled':'Communication channel - Bot enabled',
     'filter_communicationchannel.communicationchannelcontact':'Communication channel - Communication channel contact',
+    defaulttype: 'DEFAULT',
+    proactivetype: 'PROACTIVE',
 };
 
 const enResource: ResourceLanguage = {
