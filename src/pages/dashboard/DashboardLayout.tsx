@@ -583,7 +583,7 @@ const LayoutItem: FC<LayoutItemProps> = ({
             return `${t(langKeys.percentage)}: ${v}%`;
         }
 
-        return `${t(langKeys.quantity)}: ${v}\n${t(langKeys.percentage)}: ${v*100/tot}%`;
+        return `${t(langKeys.quantity)}: ${v}\n${t(langKeys.percentage)}: ${(v*100/tot).toFixed(2)}%`;
     }
 
     const renderGraph = useCallback(() => {
