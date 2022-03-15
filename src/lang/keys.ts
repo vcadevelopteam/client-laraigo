@@ -35,6 +35,8 @@ export const langKeys = {
     filter_unique_value: "filter_unique_value",
     filter_text: "filter_text",
     addchannel: "addchannel",
+    displayinterval: "displayinterval",
+    count_unique: "count_unique",
     typefilter: "typefilter",
     error_channels_limit: "error_channels_limit",
     error_users_limit: "error_users_limit",

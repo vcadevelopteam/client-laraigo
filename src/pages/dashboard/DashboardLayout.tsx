@@ -580,7 +580,7 @@ const LayoutItem: FC<LayoutItemProps> = ({
 
     const formatTooltip = (v: any, tot?: any) => {
         if (groupment === "percentage") {
-            return `${t(langKeys.percentage)}: ${v}%`;
+            return `${t(langKeys.percentage)}: ${v.toFixed(2)}%`;
         }
 
         return `${t(langKeys.quantity)}: ${v}\n${t(langKeys.percentage)}: ${(v*100/tot).toFixed(2)}%`;
@@ -592,7 +592,7 @@ const LayoutItem: FC<LayoutItemProps> = ({
                 return (
                     <LayoutBar
                         data={dataGraph as ChartData[]}
-                        tickFormatter={groupment === "percentage" ? v => `${v}%` : undefined}
+                        tickFormatter={groupment === "percentage" ? v => `${Number(v).toFixed(2)}%` : undefined}
                         tooltipFormatter={formatTooltip}
                         alldata={alldata}
                     />
@@ -602,7 +602,7 @@ const LayoutItem: FC<LayoutItemProps> = ({
                     <LayoutPie
                         data={dataGraph as ChartData[]}
                         tooltipFormatter={formatTooltip}
-                        tickFormatter={groupment === "percentage" ? v => `${v}%` : undefined}
+                        tickFormatter={groupment === "percentage" ? v => `${Number(v).toFixed(2)}%` : undefined}
                         alldata={alldata}
                     />
                 );
@@ -610,9 +610,10 @@ const LayoutItem: FC<LayoutItemProps> = ({
                 return (
                     <LayoutLine
                         data={dataGraph as ChartData[]}
-                        tickFormatter={groupment === "percentage" ? v => `${v}%` : undefined}
+                        tickFormatter={groupment === "percentage" ? v => `${Number(v).toFixed(2)}%` : undefined}
                         tooltipFormatter={formatTooltip}
                         alldata={alldata}
+                        grouping={groupment}
                     />
                 );
             case 'kpi': return <LayoutKpi data={dataGraph as KpiData} />;
@@ -735,18 +736,24 @@ const LayoutBar: FC<LayoutBarProps> = ({ data,alldata, tickFormatter, tooltipFor
     let keys: any[]=[]
     if(alldata?.interval){
         modifieddata=data.map(x=>{
-            keys= keys.concat(Object.keys(x.quantity))
+            const localkeys = Object.keys(x.quantity)
+            localkeys.forEach((y)=>{
+                if(!keys.includes(y)){
+                    keys.push(y)
+                }
+            })
             return ({...Object(x.quantity),label:`${t(alldata?.interval)} ${x.label.replace(alldata?.interval,"")}`})
         })
-        keys.filter((item, index) => keys.indexOf(item) === index)
-        console.log(keys)
-        console.log(modifieddata)
+        //console.log(data)
+        //console.log(keys)
+        //console.log(modifieddata)
     }
     
     return (
         <ResponsiveContainer width={"100%"} {...props}>
             <BarChart data={modifieddata}>
                 <XAxis
+                    reversed={alldata?.interval}
                     dataKey="label"
                     style={{ fontSize: '0.8em' }}
                     angle={-45}
@@ -819,21 +826,29 @@ interface LayoutLineProps extends Omit<ResponsiveContainerProps, 'children'> {
     tickFormatter?: (value: string, index: number) => string;
     tooltipFormatter?: (value: any, total?:any) => string;
     alldata?:any;
+    grouping?: string
 }
 
-const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipFormatter, ...props }) => {
+const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipFormatter,grouping, ...props }) => {
     const { t } = useTranslation();
     let total=alldata?.total;
     let modifieddata=data;
     let keys: any[]=[]
     if(alldata?.interval){
-        modifieddata=data.map(x=>{
-            keys= keys.concat(Object.keys(x.quantity))
-            return ({...Object(x.quantity),label:`${t(alldata?.interval)} ${x.label.replace(alldata?.interval,"")}`})
+        console.log(alldata)
+        data.forEach(x=>{
+            const localkeys = Object.keys(x.quantity)
+            localkeys.forEach((y:string)=>{
+                if(!keys.includes(y)){
+                    keys.push(y)
+                }
+            })
         })
-        keys.filter((item, index) => keys.indexOf(item) === index)
-        console.log(keys)
-        console.log(modifieddata)
+        let itemmodel = keys.reduce((acc,x)=>{return {...acc,[x]:0}},{})
+        modifieddata=data.map(x=>{
+
+            return ({...itemmodel,...Object(x.quantity),label:`${t(alldata?.interval)} ${x.label.replace(alldata?.interval,"")}`})
+        })
     }
     return (
         <ResponsiveContainer {...props}>
@@ -841,6 +856,7 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipF
                 <CartesianGrid stroke="#ccc" />
                 <XAxis
                     domain={["",""]}
+                    reversed={alldata?.interval}
                     dataKey="label"
                     style={{ fontSize: '0.8em' }}
                     angle={-45}
@@ -854,9 +870,37 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipF
                 
                 {alldata?.interval?(
                     <>
-                        <ChartTooltip />
+                        <ChartTooltip content={({ active, payload, label }) => {
+                                if (active && payload && payload.length) {
+                                    return (
+                                        <Card key={`${label}-${payload[0].value}`} style={{ padding: '0.85em' }}>
+                                            {label && <label>{label}</label>}
+                                            {label && <br />}
+                                            {payload.map((x:any)=>{
+                                                let value = x.payload[x?.dataKey]
+                                                if(value){
+                                                    return (
+                                                        <>
+                                                            <span key={`${label}-${x.dataKey}-${value}`} style={{ color: x.color, whiteSpace: "break-spaces" }}>
+                                                                {`${x.dataKey}: ${value}${grouping==="percentage"?"%" : ""}`}
+                                                            </span>
+                                                            <br/>
+                                                        </>
+                                                    )
+                                                }
+                                                return null
+                                            })
+
+                                            }
+                                        </Card>
+                                    );
+                                }
+
+                                return null;
+                            }}
+                        />
                         {keys.map((x,i)=>(
-                            <Line type="monotone" dataKey={x} key={x} stroke={colors[i]} />
+                            <Line  type="monotone" dataKey={x} key={x} stroke={colors[i]}  />
                         ))}
                     </>
                 ):

@@ -317,6 +317,7 @@ interface InputProps {
     inputProps?: any;
     InputProps?: Partial<OutlinedInputProps>;
     size?: "small" | "medium" | undefined;
+    width?: number|"string";
 }
 
 interface TemplateAutocompleteProps extends InputProps {
@@ -329,7 +330,7 @@ interface TemplateAutocompleteProps extends InputProps {
     limitTags?: number;
 }
 
-export const FieldEdit: React.FC<InputProps> = ({ label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard" }) => {
+export const FieldEdit: React.FC<InputProps> = ({ width="100%",label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard" }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -344,10 +345,11 @@ export const FieldEdit: React.FC<InputProps> = ({ label, size, className, disabl
             <TextField
                 {...fregister}
                 color="primary"
-                fullWidth
+                fullWidth={width==="100%"}
                 label={variant !== "standard" && label}
                 disabled={disabled}
                 type={type}
+                style={{width: width}}
                 value={value}
                 variant={variant}
                 error={!!error}

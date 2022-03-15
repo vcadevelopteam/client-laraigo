@@ -1049,7 +1049,6 @@ const DashboardManagerial: FC = () => {
                 setResDashboard(remultiaux.data[4].data)
                 setResInteraction(remultiaux.data[5].data)
                 setreschannels(remultiaux.data[7].data)
-
                 const asesoretmp = [...remultiaux.data[6].data];
                 const arrayconbar = [...Array(24)].map((_, i) => {
                     const hourFound = asesoretmp.find((x: Dictionary) => x.hora === i);
@@ -2122,7 +2121,7 @@ const DashboardManagerial: FC = () => {
                         <div style={{ paddingTop: "20px" }}>
                             <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
                                 <LineChart data={resAsesoreconectadosbar}>
-                                    <Line type="monotone" dataKey="asesoresconectados" stroke="#8884d8" />
+                                    <Line type="monotone" dataKey="asesoresconectados" stroke="#8884d8" strokeWidth={2} />
                                     <CartesianGrid stroke="#ccc" />
                                     <XAxis domain={["",""]} type="category" dataKey="hora"><Label value={` ${t(langKeys.timeofday)} `} offset={-5} position="insideBottom" /></XAxis>
                                     <YAxis><Label value={` ${t(langKeys.assesor_plural)} `} angle={-90} offset={0} position="insideLeft" /></YAxis>
@@ -2254,10 +2253,10 @@ const DashboardManagerial: FC = () => {
                             <div style={{ fontWeight: "bold", fontSize: "1.6em"}}>{reschannels.reduce((a:any, b:any) => a + (b.tickets || 0), 0)}</div>
                         </div>
                         <div style={{ paddingTop: "20px" }}>
-                            <ResponsiveContainer width="100%" aspect={4.0 / 1.0} >
+                            <ResponsiveContainer width="100%" aspect={4.0 / 2.0} >
                                 <BarChart data={reschannels}>
                                     <CartesianGrid stroke="#ccc" />
-                                    <XAxis domain={["",""]} type="category" dataKey="communicationchannel"><Label value={` ${t(langKeys.channel_plural)} `} offset={-5} position="insideBottom" /></XAxis>
+                                    <XAxis domain={["",""]} angle={-60} interval={0} textAnchor="end" height={reschannels?.map((x:any)=> x.communicationchannel.length).length>0?Math.max(...reschannels?.map((x:any)=> x.communicationchannel.length))*8:10} type="category" dataKey="communicationchannel"><Label value={` ${t(langKeys.channel_plural)} `} offset={-5} position="insideBottom" /></XAxis>
                                     <YAxis><Label value={` ${t(langKeys.conversationquantity)} `} angle={-90} offset={10} position="insideBottomLeft"/></YAxis>
                                     <RechartsTooltip />
                                     <Bar dataKey="tickets" fill="#8884d8" />
