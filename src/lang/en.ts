@@ -880,6 +880,8 @@ const translation: LangKeys = {
     no_records_valid: 'No valid records',
     reporttype: 'Report type',
     no_type_selected: 'No type selected',
+    addacolumn: "Add a column",
+    columntitle: "Column title",
     rundate: 'Run date',
     total: 'Total',
     success: 'Success',

@@ -4,11 +4,12 @@ import { Box, BoxProps, Button, IconButton, makeStyles, Popover, TextField } fro
 import { Add, MoreVert as MoreVertIcon } from '@material-ui/icons';
 import { DraggableProvided, DraggableStateSnapshot, DroppableStateSnapshot } from 'react-beautiful-dnd';
 import { langKeys } from 'lang/keys';
-import { Trans } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Rating, Skeleton } from '@material-ui/lab';
 import { useHistory } from 'react-router';
 import paths from 'common/constants/paths';
 import { ICrmLead } from '@types';
+import { FieldEdit, FieldSelect } from 'components';
 
 const columnWidth = 275;
 const columnMinHeight = 500;
@@ -453,7 +454,7 @@ export const DroppableLeadColumnList: FC<LeadColumnListProps> = ({ children, sna
 }
 
 interface AddColumnTemplatePops extends Omit<BoxProps, 'onSubmit'> {
-    onSubmit: (title: string) => void;
+    onSubmit: (data: any) => void;
 }
 
 const useAddColumnTemplateStyles = makeStyles(theme => ({
@@ -495,6 +496,7 @@ const useAddColumnTemplateStyles = makeStyles(theme => ({
 export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, ...boxProps }) => {
     const classes = useAddColumnTemplateStyles();
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+    const { t } = useTranslation();
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -507,13 +509,13 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, ...boxP
     const open = Boolean(anchorEl);
     const id = open ? 'crm-add-new-column-popover' : undefined;
 
-    const handleSubmit = (title: string) => {
-        onSubmit(title);
+    const handleSubmit = (data: any) => {
+        onSubmit(data);
         handleClose();
     };
 
     return (
-        <Box {...boxProps}>
+        <Box>
             <div className={classes.root}>
                 <Button
                     color="primary"
@@ -525,7 +527,7 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, ...boxP
                         <Add style={{ height: '75%', width: 'auto' }} color="secondary" />
                     </div>
                     <div style={{ width: 12 }} />
-                    <span>Add a column</span>
+                    <span>{t(langKeys.addacolumn)}</span>
                 </Button>
                 <Popover
                     id={id}
@@ -536,9 +538,6 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, ...boxP
                         vertical: 'top',
                         horizontal: 'left',
                     }}
-                    PaperProps={{
-                        className: classes.popoverRoot,
-                    }}
                 >
                     <ColumnTemplate onSubmit={handleSubmit} />
                 </Popover>
@@ -548,7 +547,7 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, ...boxP
 }
 
 interface ColumnTemplateProps {
-    onSubmit: (title: string) => void;
+    onSubmit: (title: any) => void;
 }
 
 const useColumnTemplateStyles = makeStyles(theme => ({
@@ -561,60 +560,60 @@ const useColumnTemplateStyles = makeStyles(theme => ({
         padding: theme.spacing(2),
     },
     titleSection: {
-        display: 'flex',
-        flexDirection: 'row',
         width: 'inherit',
     },
     btn: {
-        minWidth: 'unset',
-    },
-    input: {
-        flexGrow: 1,
+        width: "100%"
     },
 }));
 
 const ColumnTemplate: FC<ColumnTemplateProps> = ({ onSubmit }) => {
     const classes = useColumnTemplateStyles();
-    const inputClasses = useInputTitleStyles();
     const [title, setTitle] = useState("");
+    const [type, settype] = useState("");
+    const [disabled, setdisabled] = useState(true);
+    const { t } = useTranslation();
 
     return (
         <div className={classes.root}>
             <div className={classes.titleSection}>
-                <TextField
-                    value={title}
-                    size="small"
-                    placeholder="Column title"
-                    className={classes.input}
-                    InputProps={{
-                        classes: {
-                            input: inputClasses.titleInput,
-                        },
-                    }}
-                    onChange={e => setTitle(e.target.value)}
-                />
-                <div style={{ width: 12 }} />
-                <Button
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    className={classes.btn}
-                    onClick={() => onSubmit(title)}
-                    disabled={title.trim().length === 0}
-                >
-                    <Trans i18nKey={langKeys.add} />
-                </Button>
+                <div  style={{padding: "10px 0"}}>
+                    <FieldEdit
+                        label={t(langKeys.columntitle)}
+                        valueDefault={title}
+                        onChange={value =>{setdisabled(value.trim().length === 0 || !type);setTitle(value)}}
+                    />
+                </div>
+                
+                <div  style={{padding: "10px 0"}}>
+                    <FieldSelect
+                        label={`${t(langKeys.type)}`}
+                        size="small"
+                        valueDefault={type}
+                        onChange={e =>{ setdisabled(!(e?.type) || title.trim().length === 0); settype(e?.type||"")}}
+                        data={[
+                            {type: "QUALIFIED", desc: t(langKeys.qualified)},
+                            {type: "PROPOSITION", desc: t(langKeys.proposition)},
+                            {type: "WON", desc: t(langKeys.won)},
+                        ]}
+                        optionDesc="desc"
+                        optionValue="type"
+                    />
+                </div>
+                
+                <div  style={{padding: "10px 0", width: "100%"}}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        className={classes.btn}
+                        onClick={() => onSubmit({title: title, type:type})}
+                        disabled={disabled}
+                    >
+                        <Trans i18nKey={langKeys.add} />
+                    </Button>
+                </div>
             </div>
-            <div style={{ height: 24 }} />
-            <Skeleton variant="rect" width="100%" height={150} />
-            <div style={{ height: 12 }} />
-            <Skeleton variant="rect" width="100%" height={150} />
-            <div style={{ height: 12 }} />
-            <Skeleton variant="rect" width="100%" height={150} />
-            <div style={{ height: 12 }} />
-            <Skeleton variant="rect" width="100%" height={150} />
-            <div style={{ height: 12 }} />
-            <Skeleton variant="rect" width="100%" height={150} />
         </div>
     );
 }

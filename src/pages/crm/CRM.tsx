@@ -89,6 +89,83 @@ interface IBoardFilter {
   asesorid: number;
 }
 
+const DraggablesCategories : FC<{column:any, index:number, hanldeDeleteColumn:(a:string)=>void, handleDelete:(lead: ICrmLead)=>void, handleCloseLead:(lead: ICrmLead)=>void}> = ({column, 
+  index, hanldeDeleteColumn, handleDelete, handleCloseLead }) => {
+    const { t } = useTranslation();
+  return (
+    <Draggable draggableId={column.column_uuid} index={index+1} key={column.column_uuid}>
+      { (provided) => (
+        <div
+          {...provided.draggableProps}
+          ref={provided.innerRef}
+        >
+          <DraggableLeadColumn 
+            title={t(column.description.toLowerCase())}
+            key={index+1} 
+            snapshot={null} 
+            provided={provided} 
+            // titleOnChange={(val) =>{handleEdit(column.column_uuid,val,dataColumn, setDataColumn)}}
+            columnid={column.column_uuid} 
+            onDelete={hanldeDeleteColumn}
+            total_revenue={column.total_revenue!}
+            // onAddCard={() => history.push(paths.CRM_ADD_LEAD.resolve(column.columnid, column.column_uuid))}
+          >
+              <Droppable droppableId={column.column_uuid} type="task">
+                {(provided, snapshot) => {
+                  return (
+                    <div
+                      {...provided.droppableProps}
+                      ref={provided.innerRef}
+                      style={{ overflow: 'hidden', width: '100%' }}
+                    >
+                      <DroppableLeadColumnList snapshot={snapshot} itemCount={column.items?.length || 0}>
+                      {column.items?.map((item:any, index:any) => {
+                        return (
+                          <Draggable
+                            key={item.leadid}
+                            draggableId={item.leadid.toString()}
+                            index={index}
+                          >
+                            {(provided, snapshot) => {
+                              return(
+                                <NaturalDragAnimation
+                                  style={provided.draggableProps.style}
+                                  snapshot={snapshot}
+                                >
+                                  {(style:any) => (
+                                    <div
+                                      ref={provided.innerRef}
+                                      {...provided.draggableProps}
+                                      {...provided.dragHandleProps}
+                                      style={{width: '100%', ...style}}
+                                    >
+                                      <DraggableLeadCardContent
+                                        lead={item}
+                                        snapshot={snapshot}
+                                        onDelete={handleDelete}
+                                        onCloseLead={handleCloseLead}
+                                      />
+                                    </div>
+                                  )}
+                                </NaturalDragAnimation>
+                              )
+                            }}
+                          </Draggable>
+                        );
+                      })}
+                      </DroppableLeadColumnList>
+                      {provided.placeholder}
+                    </div>
+                  );
+                }}
+              </Droppable>
+          </DraggableLeadColumn>
+        </div>
+      )}
+  </Draggable>
+  )
+}
+
 const CRM: FC = () => {
   const user = useSelector(state => state.login.validateToken.user);
   const history = useHistory();
@@ -300,14 +377,14 @@ const CRM: FC = () => {
   }
 
   // No borrar
-  const handleInsert = (title:string, columns:dataBackend[], setDataColumn:any) => {
+  const handleInsert = (infa:any, columns:dataBackend[], setDataColumn:any) => {
     const newIndex = columns.length
     const uuid = uuidv4() // from common/helpers
 
     const data = {
       id: uuid,
-      description: title,
-      type: 'NINGUNO',
+      description: infa.title,
+      type: infa.type,
       status: 'ACTIVO',
       edit: true,
       index: newIndex,
@@ -317,9 +394,9 @@ const CRM: FC = () => {
     const newColumn = {
       columnid: null,
       column_uuid: uuid,
-      description: title,
+      description: infa.title,
       status: 'ACTIVO',
-      type: 'NINGUNO',
+      type: infa.type,
       globalid: '',
       index: newIndex,
       items: []
@@ -858,12 +935,12 @@ const CRM: FC = () => {
                 <Trans i18nKey={langKeys.search} />
             </Button>
           </div>
-          <AddColumnTemplate onSubmit={(columnTitle) =>{ handleInsert(columnTitle,dataColumn, setDataColumn)}} /> 
-          <div style={{display:"flex"}}>
-            <div style={{width: "569px", display: "flex", justifyContent: "center", margin: "10px"}}>{t(langKeys.new)}</div>
-            <div style={{width: "569px", display: "flex", justifyContent: "center", margin: "10px"}}>{t(langKeys.qualified)}</div>
-            <div style={{width: "569px", display: "flex", justifyContent: "center", margin: "10px"}}>{t(langKeys.proposition)}</div>
-            <div style={{width: "569px", display: "flex", justifyContent: "center", margin: "10px"}}>{t(langKeys.won)}</div>
+          <AddColumnTemplate onSubmit={(data) =>{ handleInsert(data,dataColumn, setDataColumn)}} /> 
+          <div style={{display:"flex", color: "white", paddingTop: 10, fontSize: "1.6em", fontWeight: "bold"}}>
+            <div style={{minWidth: 275, maxWidth: 275, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 8px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.new)}</div>
+            <div style={{minWidth: 275*dataColumn.filter((x:any)=>x.type==="QUALIFIED").length, maxWidth: 275*dataColumn.filter((x:any)=>x.type==="QUALIFIED").length, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 8px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.qualified)}</div>
+            <div style={{minWidth: 275*dataColumn.filter((x:any)=>x.type==="PROPOSITION").length, maxWidth: 275*dataColumn.filter((x:any)=>x.type==="PROPOSITION").length, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 8px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.proposition)}</div>
+            <div style={{minWidth: 275*dataColumn.filter((x:any)=>x.type==="WON").length, maxWidth: 275*dataColumn.filter((x:any)=>x.type==="WON").length, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 8px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.won)}</div>
           </div>
           <DragDropContext onDragEnd={result => onDragEnd(result, dataColumn, setDataColumn)}>
             <Droppable droppableId="all-columns" direction="horizontal" type="column" >
@@ -875,76 +952,7 @@ const CRM: FC = () => {
                 >
                   {dataColumn.map((column, index) => {
                     return (
-                       <Draggable draggableId={column.column_uuid} index={index+1} key={column.column_uuid}>
-                         { (provided) => (
-                           <div
-                             {...provided.draggableProps}
-                             ref={provided.innerRef}
-                           >
-                              <DraggableLeadColumn 
-                                title={t(column.description.toLowerCase())}
-                                key={index+1} 
-                                snapshot={null} 
-                                provided={provided} 
-                                // titleOnChange={(val) =>{handleEdit(column.column_uuid,val,dataColumn, setDataColumn)}}
-                                columnid={column.column_uuid} 
-                                onDelete={hanldeDeleteColumn}
-                                total_revenue={column.total_revenue!}
-                                // onAddCard={() => history.push(paths.CRM_ADD_LEAD.resolve(column.columnid, column.column_uuid))}
-                              >
-                                  <Droppable droppableId={column.column_uuid} type="task">
-                                    {(provided, snapshot) => {
-                                      return (
-                                        <div
-                                          {...provided.droppableProps}
-                                          ref={provided.innerRef}
-                                          style={{ overflow: 'hidden', width: '100%' }}
-                                        >
-                                          <DroppableLeadColumnList snapshot={snapshot} itemCount={column.items?.length || 0}>
-                                          {column.items?.map((item, index) => {
-                                            return (
-                                              <Draggable
-                                                key={item.leadid}
-                                                draggableId={item.leadid.toString()}
-                                                index={index}
-                                              >
-                                                {(provided, snapshot) => {
-                                                  return(
-                                                    <NaturalDragAnimation
-                                                      style={provided.draggableProps.style}
-                                                      snapshot={snapshot}
-                                                    >
-                                                      {(style:any) => (
-                                                        <div
-                                                          ref={provided.innerRef}
-                                                          {...provided.draggableProps}
-                                                          {...provided.dragHandleProps}
-                                                          style={{width: '100%', ...style}}
-                                                        >
-                                                          <DraggableLeadCardContent
-                                                            lead={item}
-                                                            snapshot={snapshot}
-                                                            onDelete={handleDelete}
-                                                            onCloseLead={handleCloseLead}
-                                                          />
-                                                        </div>
-                                                      )}
-                                                    </NaturalDragAnimation>
-                                                  )
-                                                }}
-                                              </Draggable>
-                                            );
-                                          })}
-                                          </DroppableLeadColumnList>
-                                          {provided.placeholder}
-                                        </div>
-                                      );
-                                    }}
-                                  </Droppable>
-                              </DraggableLeadColumn>
-                           </div>
-                         )}
-                      </Draggable>
+                       <DraggablesCategories column={column} index={index} hanldeDeleteColumn={hanldeDeleteColumn} handleDelete={handleDelete} handleCloseLead={handleCloseLead}/>
                     );
                   })}
                   {provided.placeholder}
