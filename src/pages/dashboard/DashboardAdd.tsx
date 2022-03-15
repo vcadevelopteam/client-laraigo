@@ -591,7 +591,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
         }
         let summary = JSON.parse(templates[selectedIndex].summaryjson).map((x:any)=>{return {
             alias: `${t(x.columnname.split(".")[1])} (${t(x.function)})`,
-            columnname: x.columnname,
+            columnname: `${x.columnname}${x.function}`,
             description: x.columnname,
             descriptionT: x.columnname,
             disabled: false,
@@ -602,6 +602,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
             type: x.type,
             function: x.function
         }})
+        console.log(summary)
         setColumns(summary.concat(JSON.parse(templates[selectedIndex].columnjson) as ColumnTemplate[]));
         console.log(summary.concat(JSON.parse(templates[selectedIndex].columnjson) as ColumnTemplate[]))
         console.log(getValues(`${key}.column`))
@@ -760,9 +761,14 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                         data={columns}
                         optionDesc="alias"
                         optionValue="columnname"
-                        valueDefault={getValues(`${key}.column`)}
+                        valueDefault={`${getValues(`${key}.column`)}${getValues(`${key}.summarizationfunction`)|| ''}`}
                         onChange={(v: ColumnTemplate) => {
-                            setValue(`${key}.column`, v?.columnname || '');
+                            if(v?.function){
+                                setValue(`${key}.column`, v?.columnname?.replace(`${v?.function}`,''));
+                            }
+                            else{
+                                setValue(`${key}.column`, v?.columnname||'');
+                            }
                             setValue(`${key}.summarizationfunction`, v?.function || '');
                         }}
                         error={errors[key]?.column?.message}
