@@ -27,9 +27,9 @@ const APIS_URL = {
         CULQIKEY: 'pk_test_041501e753dcb2f9'
     },
     LOCAL: {
-        API: 'http://localhost:6065/api',
-        // API: 'https://apix.laraigo.com/api',
-        // WS: 'http://localhost:7070',
+        // API: 'http://localhost:6065/api',
+        API: 'https://apix.laraigo.com/api',
+//        WS: 'http://localhost:7070',
         WS: 'https://socket.laraigo.com',
         CHATFLOW: 'https://localhost:4200',
         FACEBOOKAPP: '367176075182579',

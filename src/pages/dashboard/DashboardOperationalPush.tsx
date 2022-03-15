@@ -258,7 +258,7 @@ const DashboardOperationalPush: FC = () => {
                 setdataPushSUMMARYSel(remultiaux.data[1].data)
                 setdataHSMRANK(remultiaux.data[2].data)
                 setdataMENSAJEXDIA(remultiaux.data[3].data)
-                setdataAppRank(remultiaux.data[4].data)
+                setdataAppRank(remultiaux.data[4].data.map(x=>{ return ({...x, application: t((x.application).toLowerCase())})}))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (remultiaux.error) {

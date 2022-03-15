@@ -2,6 +2,7 @@ import io from 'socket.io-client';
 import { apiUrls } from 'common/constants';
 import { Middleware, Dispatch } from 'redux';
 import typesInbox from 'store/inbox/actionTypes';
+import typesLogin from 'store/login/actionTypes';
 
 const eventsListeners = [
     { event: 'deleteTicket', type: typesInbox.DELETE_TICKET },
@@ -11,6 +12,7 @@ const eventsListeners = [
     { event: 'personSawChat', type: typesInbox.PERSON_SAW_CHAT, extra: {} },
     { event: 'forceddisconnect', type: typesInbox.FORCEDDISCONECTION },
     { event: 'changeStatusTicket', type: typesInbox.CHANGE_STATUS_TICKET_WS },
+    { event: 'newNotification', type: typesLogin.NEW_NOTIFICATION },
 ]
 
 const socket = io(apiUrls.WS_URL, {

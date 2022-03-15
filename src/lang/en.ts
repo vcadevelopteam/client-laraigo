@@ -1397,6 +1397,7 @@ const translation: LangKeys = {
     ticket_tipocierre: 'Close type',
     ticket_tipification: 'Tipification',
     ticket_tipification_help: 'Assigned classification.',
+    tagrankingtooltip: "Shows the most consulted options within the conversational flow",
     numberofHSMShipments: 'Number of HSM shipments',
     numberofHSMShipmentstooltip: 'Shows the number of HSMs sent by the different available applications.',
     employeeaplication: 'Employee Application',
@@ -2528,6 +2529,7 @@ const translation: LangKeys = {
     channellimit: 'Reached maximum number of channels, upgrade your plan to continue',
     userlimit: 'Reached maximum number of users({{limit}}), upgrade your plan to continue',
     type_activitylead_call: 'Call',
+    type_activitylead_automated: 'Automate message',
     'type_activitylead_call for demo': 'Call for demo',
     'type_activitylead_email: welcome demo': 'Email: Welcome demo',
     lastuser: 'Last user',
@@ -3174,6 +3176,13 @@ const translation: LangKeys = {
     recoverpassword_expired: 'Link expired. Retry the recovery process',
     recoverpassword_finish: 'Process finished. Use this button to go back to the log-in screen.',
     propertyocultarlogconversacion: 'Switch used to hide the conversation log',
+    
+    productcatalog: 'Product Catalog',
+    productcatalogcategory: 'Category',
+    productcatalogunitprice: 'Sell Price',
+    productcatalogsingle: 'Product Catalog',
+    productcatalognotes: 'Notes',
+    productcatalogimage: 'Image',
 };
 
 const enResource: ResourceLanguage = {

@@ -13,6 +13,8 @@ import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, X
 import { getCollectionAux, getMultiCollection, getMultiCollectionAux, resetMainAux, resetMultiMainAux } from "store/main/actions";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import Tooltip from "@material-ui/core/Tooltip"
+import InfoIcon from '@material-ui/icons/Info';
 
 const COLORS = ["#0f8fe5", "#067713", "#296680", "#fc3617", "#e8187a", "#7cfa57", "#cfbace", "#4cd45f", "#fd5055", "#7e1be4", "#bf1490", "#66c6cf", "#011c3d", "#1a9595", "#4ae2c7", "#515496", "#a2aa65", "#df909c", "#3aa343", "#e0606e"];
 
@@ -388,14 +390,9 @@ const DashboardTagRanking: FC = () => {
                         <div style={{width: "100%"}}> 
                             <div style={{display: "flex"}}>
                                 <div style={{fontWeight: "bold",fontSize: "1.6em",}}> {t(langKeys.tagranking)} </div>
-                                {/*<Tooltip title={`${t(langKeys.numberofHSMShipmentstooltip)}`} placement="top-end">
+                                <Tooltip title={`${t(langKeys.tagrankingtooltip)}`} placement="top-end">
                                     <InfoIcon style={{padding: "5px 0 0 5px"}} />
-
-                                    
-                                            {dataAppRank?.map((entry: any, index: number) => (
-                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                            ))}
-    </Tooltip>*/}
+                                </Tooltip>
                             </div>
                         </div>
                             <div style={{width: "100%"}}>

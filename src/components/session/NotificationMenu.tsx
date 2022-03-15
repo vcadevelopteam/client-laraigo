@@ -6,6 +6,10 @@ import { BellNotificationIcon } from "icons";
 import { FC, MouseEventHandler, useState } from "react";
 import { useHistory } from "react-router";
 import clsx from 'clsx';
+import Avatar from '@material-ui/core/Avatar';
+import Tooltip from '@material-ui/core/Tooltip';
+import { langKeys } from "lang/keys";
+import { useTranslation } from 'react-i18next';
 
 const StyledBadge = styled(Badge)<BadgeProps>(() => ({
     '& .MuiBadge-badge': {
@@ -19,7 +23,7 @@ const StyledBadge = styled(Badge)<BadgeProps>(() => ({
 }));
 
 const useNotificaionStyles = makeStyles((theme: Theme) =>
-  createStyles({
+    createStyles({
         root: {
             padding: theme.spacing(1),
             backgroundColor: 'inherit',
@@ -27,8 +31,8 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
             flexDirection: 'column',
             alignItems: 'flex-start',
             textAlign: 'start',
-            width: 270,
-            maxWidth: 270,
+            width: 300,
+            maxWidth: 300,
         },
         row: {
             display: 'flex',
@@ -45,6 +49,7 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
         },
         textOneLine: {
             flexGrow: 1,
+            lineHeight: 1.1,
             overflow: 'hidden',
         },
         description: {
@@ -56,31 +61,45 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
 interface NotificaionMenuItemProps {
     title: React.ReactNode;
     description: React.ReactNode;
+    // notification: LeadActivityNotification,
+    image: string;
+    user: string;
     date: React.ReactNode;
     onClick?: MouseEventHandler<HTMLLIElement>;
 }
 
-const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description, date, onClick }) => {
+const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description, date, onClick, user, image }) => {
     const classes = useNotificaionStyles();
 
     return (
         <MenuItem button className={classes.root} onClick={onClick}>
-            <div className={classes.row}>
-                <div className={classes.textOneLine}>
-                    <span className={classes.title}>{title}</span>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center', width: '100%' }}>
+                <div>
+                    <Tooltip title={user}>
+                        <Avatar style={{ width: 30, height: 30, fontSize: 18 }} >
+                            {user?.split(" ").reduce((acc, item) => acc + (acc.length < 2 ? item.substring(0, 1).toUpperCase() : ""), "")}
+                        </Avatar>
+                    </Tooltip>
                 </div>
-                <div style={{ width: 12 }} />
-                <span className={classes.date}>{date}</span>
-            </div>
-            <div className={clsx(classes.description, classes.textOneLine)}>
-                <span>{description}</span>
+                <div style={{ flex: 1 }}>
+                    <div className={classes.row}>
+                        <div className={classes.textOneLine}>
+                            <span className={classes.title}>{title}</span>
+                        </div>
+                        <div style={{ width: 12 }} />
+                        <span className={classes.date}>{date}</span>
+                    </div>
+                    <div className={clsx(classes.description, classes.textOneLine)}>
+                        <span>{description}</span>
+                    </div>
+                </div>
             </div>
         </MenuItem>
     );
 }
 
 const useNotificationMenuStyles = makeStyles((theme: Theme) =>
-  createStyles({
+    createStyles({
         rootIcon: {
             position: 'relative',
             display: 'flex',
@@ -104,20 +123,20 @@ const useNotificationMenuStyles = makeStyles((theme: Theme) =>
 const NotificationMenu: FC<BoxProps> = (boxProps) => {
     const classes = useNotificationMenuStyles();
     const history = useHistory();
-
+    // const { t } = useTranslation();
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
     const resValidateToken = useSelector(state => state.login.validateToken);
 
     const open = Boolean(anchorEl);
-    const notifications = resValidateToken.loading ? [] : resValidateToken.user?.notifications || [];
+    const notifications = resValidateToken.loading ? [] : resValidateToken.notifications || [];
     const notificationCount = notifications.length;
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         if (notificationCount === 0) return;
         setAnchorEl(event.currentTarget);
     };
-  
+
     const handleClose = () => {
         setAnchorEl(null);
     };
@@ -133,31 +152,37 @@ const NotificationMenu: FC<BoxProps> = (boxProps) => {
             >
                 <div className={classes.rootIcon}>
                     {notificationCount > 0 ?
-                    (
-                        <StyledBadge badgeContent={notificationCount} color="secondary">
-                            <BellNotificationIcon />
-                        </StyledBadge>
-                    ) :
-                    <BellNotificationIcon />}
+                        (
+                            <StyledBadge badgeContent={notificationCount} color="secondary">
+                                <BellNotificationIcon />
+                            </StyledBadge>
+                        ) :
+                        <BellNotificationIcon />}
                 </div>
             </IconButton>
             <Menu
                 id="notification-list-menu-popover"
                 anchorEl={anchorEl}
                 open={open}
+                getContentAnchorEl={null}
+                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+                transformOrigin={{ vertical: "top", horizontal: "center" }}
                 onClose={handleClose}
                 className={classes.menu}
                 MenuListProps={{
                     'aria-labelledby': 'lock-button',
                     role: 'listbox',
                 }}
-            >         
+            >
+                <div style={{ fontWeight: 'bold', marginLeft: 10, fontSize: 20 }}>{"Notifications"}</div>
                 {notifications.map((e, i) => {
                     if (e.notificationtype === "LEADACTIVITY") {
                         const not = e as LeadActivityNotification;
                         return (
                             <NotificaionMenuItem
                                 key={i}
+                                user={not.assignto}
+                                image={""}
                                 title={not.description}
                                 description={not.leadname}
                                 date={formatDate(not.duedate)}
@@ -168,7 +193,7 @@ const NotificationMenu: FC<BoxProps> = (boxProps) => {
                             />
                         );
                     }
-                
+
                     return <div style={{ display: 'none' }} />;
                 })}
             </Menu>

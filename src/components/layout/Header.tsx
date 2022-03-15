@@ -48,8 +48,8 @@ const Header = ({ classes }: IProps) => {
                 <div style={{ width: 73, display: openDrawer ? 'none' : 'block' }} />
                 <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                        <NotificationMenu />
                         <AccountMenu />
+                        <NotificationMenu />
                     </div>
                 </div>
             </Toolbar>

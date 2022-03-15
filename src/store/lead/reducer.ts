@@ -1,4 +1,4 @@
-import { ICrmColumn, ICrmLead, IcrmLeadActivity, ICrmLeadHistory, ICrmLeadNote, IDomain, IListState, IObjectState, IProcessState } from "@types";
+import { Dictionary, ICrmColumn, ICrmLead, IcrmLeadActivity, ICrmLeadHistory, ICrmLeadNote, IDomain, IListState, IObjectState, IProcessState } from "@types";
 import { createReducer, initialDisplayState, initialListState, initialObjectState, initialProccessState } from "common/helpers";
 import * as caseFUnctions from './caseFunctions';
 import actionTypes from "./actionTypes";
@@ -7,6 +7,8 @@ export interface IState {
     lead: IObjectState<ICrmLead>;
     saveLead: IProcessState;
     advisers: IListState<any>;
+    leadTemplates: IListState<Dictionary>;
+    leadChannels: IListState<Dictionary>;
     leadPhases: IListState<ICrmColumn>;
     leadActivities: IListState<IcrmLeadActivity>;
     leadLogNotes: IListState<ICrmLeadNote>;
@@ -27,6 +29,8 @@ export const initialState: IState = {
     advisers: initialListState,
     leadPhases: initialListState,
     leadActivities: initialListState,
+    leadTemplates: initialListState,
+    leadChannels: initialListState,
     leadLogNotes: initialListState,
     saveLeadActivity: initialProccessState,
     saveLeadNote: initialProccessState,
@@ -112,4 +116,14 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_LEAD_TAGS_DOMAIN_SUCCESS]: caseFUnctions.getLeadTagsDomainSuccess,
     [actionTypes.GET_LEAD_TAGS_DOMAIN_FAILURE]: caseFUnctions.getLeadTagsDomainFailure,
     [actionTypes.GET_LEAD_TAGS_DOMAIN_RESET]: caseFUnctions.getLeadTagsDomainReset,
+
+    [actionTypes.GET_LEAD_TEMPLATES]: caseFUnctions.getLeadTemplates,
+    [actionTypes.GET_LEAD_TEMPLATES_SUCCESS]: caseFUnctions.getLeadTemplatesSuccess,
+    [actionTypes.GET_LEAD_TEMPLATES_FAILURE]: caseFUnctions.getLeadTemplatesFailure,
+    [actionTypes.GET_LEAD_TEMPLATES_RESET]: caseFUnctions.getLeadTemplatesReset,
+
+    [actionTypes.GET_LEAD_CHANNELS]: caseFUnctions.getLeadChannels,
+    [actionTypes.GET_LEAD_CHANNELS_SUCCESS]: caseFUnctions.getLeadChannelsSuccess,
+    [actionTypes.GET_LEAD_CHANNELS_FAILURE]: caseFUnctions.getLeadChannelsFailure,
+    [actionTypes.GET_LEAD_CHANNELS_RESET]: caseFUnctions.getLeadChannelsReset,
 });

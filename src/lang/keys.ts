@@ -22,6 +22,7 @@ export const langKeys = {
     completedesc: 'completedesc',
     report: 'report',
     report_plural: 'report_plural',
+    tagrankingtooltip: "tagrankingtooltip",
     next: "next",
     reportscheduler: "reportscheduler",
     reportscheduler_singular: "reportscheduler_singular",
@@ -2530,6 +2531,7 @@ export const langKeys = {
     channellimit: 'channellimit',
     userlimit: 'userlimit',
     type_activitylead_call: 'type_activitylead_call',
+    type_activitylead_automated: 'type_activitylead_automated',
     'type_activitylead_call for demo': 'type_activitylead_call for demo',
     'type_activitylead_email: welcome demo': 'type_activitylead_email: welcome demo',
     'type_activitylead_follow-up quote': 'type_activitylead_follow-up quote',
@@ -3158,6 +3160,13 @@ export const langKeys = {
     recoverpassword_expired: 'recoverpassword_expired',
     recoverpassword_finish: 'recoverpassword_finish',
     propertyocultarlogconversacion: 'propertyocultarlogconversacion',
+
+    productcatalog: 'productcatalog',
+    productcatalogcategory: 'productcatalogcategory',
+    productcatalogunitprice: 'productcatalogunitprice',
+    productcatalogsingle: 'productcatalogsingle',
+    productcatalognotes: 'productcatalognotes',
+    productcatalogimage: 'productcatalogimage',
 };
 
 export type LangKeys = typeof langKeys;
