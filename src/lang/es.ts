@@ -620,7 +620,7 @@ const translation: LangKeys = {
     weekago: "Hace 1 semana",
     monthago: "Hace 1 mes",
     yearago: "Hace 1 año ",
-    shippingrange: "Rango de Envío",
+    shippingrange: "Rango de Envío de Información",
 
     status_activo: 'activo',
     no_reply_use_hsm: 'La conversación está cerrada o bloqueada por estar fuera de la ventana de 24 horas.\nEnvíe un HSM para contactar al cliente.',
@@ -3168,6 +3168,22 @@ const translation: LangKeys = {
     recoverpassword_expired: 'Enlace expirado. Reintente el proceso de recuperación',
     recoverpassword_finish: 'Proceso terminado. Presione el boton para volver a la pantalla de inicio de sesión.',
     propertyocultarlogconversacion: 'Switch para ocultar el log de la conversación',
+    validation250char: 'El máximo número de caracteres es 250',
+    sent_plural: 'Enviados',
+    datarange_1MONTHAGO: '1 MES ATRAS',
+    datarange_1WEEKAGO: '1 SEMANA ATRAS',
+    datarange_1YEARAGO: '1 AÑO ATRAS',
+    datarange_3DAYSAGO: '3 DIAS ATRAS',
+    datarange_BEFOREYESTERDAY: 'ANTES DE AYER',
+    datarange_YESTERDAY: 'AYER',
+    filter_p_channel: 'CANAL',
+    filter_p_usergroup: 'GRUPO USUARIO',
+    filter_p_lastuserid: 'ID DE ULTIMO USUARIO',
+    filter_p_campaignid: 'ID DE CAMPAÑA',
+    filter_p_userstatus: 'ESTATUS USUARIO',
+    filter_p_bot: 'BOT',
+    filter_p_hours: 'HORAS',
+    filter_p_asesorid: 'ID DE ASESOR',
 };
 
 const esResource: ResourceLanguage = {

@@ -3161,6 +3161,22 @@ export const langKeys = {
     recoverpassword_expired: 'recoverpassword_expired',
     recoverpassword_finish: 'recoverpassword_finish',
     propertyocultarlogconversacion: 'propertyocultarlogconversacion',
+    validation250char: 'validation250char',
+    sent_plural: 'sent_plural',
+    datarange_1MONTHAGO: 'datarange_1MONTHAGO',
+    datarange_1WEEKAGO: 'datarange_1WEEKAGO',
+    datarange_1YEARAGO: 'datarange_1YEARAGO',
+    datarange_3DAYSAGO: 'datarange_3DAYSAGO',
+    datarange_BEFOREYESTERDAY: 'datarange_BEFOREYESTERDAY',
+    datarange_YESTERDAY: 'datarange_YESTERDAY',
+    filter_p_channel: 'filter_p_channel',
+    filter_p_usergroup: 'filter_p_usergroup',
+    filter_p_lastuserid: 'filter_p_lastuserid',
+    filter_p_campaignid: 'filter_p_campaignid',
+    filter_p_userstatus: 'filter_p_userstatus',
+    filter_p_bot: 'filter_p_bot',
+    filter_p_hours: 'filter_p_hours',
+    filter_p_asesorid: 'filter_p_asesorid',
 };
 
 export type LangKeys = typeof langKeys;

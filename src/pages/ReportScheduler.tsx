@@ -128,8 +128,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
             isemail: (value)=> (value.includes('.') && value.includes('@')) || t(langKeys.emailverification)
         }});
         register('mailcc', { validate: {
-            validation: (value) => (value && value.length) || t(langKeys.field_required) ,
-            isemail: (value)=> (value.includes('.') && value.includes('@')) || t(langKeys.emailverification)
+            isemail: (value)=> ((value) ? (value.includes('.') && value.includes('@')) : true) || t(langKeys.emailverification)
         }});
         register('mailsubject', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
 
@@ -303,6 +302,8 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                                     data={filterData}
                                     optionDesc="columnname"
                                     optionValue="columnname"
+                                    uset={true}
+                                    prefixTranslation="filter_"
                                 />
                                 <FieldEdit
                                     label={t(langKeys.value)}
@@ -394,6 +395,8 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                             data={dataRanges}
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
+                            uset={true}
+                            prefixTranslation="datarange_"
                         />
                     </div>
                 </div>
@@ -497,7 +500,7 @@ const ReportScheduler: FC = () => {
                 }
             },
             {
-                Header: `${t(langKeys.report_plural)}/${t(langKeys.dashboard_plural)}  ${t(langKeys.sent)}`,
+                Header: `${t(langKeys.report_plural)} ${t(langKeys.sent_plural)}`,
                 accessor: 'reportname',
                 NoFilter: true
             },

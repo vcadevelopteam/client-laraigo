@@ -1805,7 +1805,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
     const dataCorpList = dataPlan.data[2] && dataPlan.data[2].success? dataPlan.data[2].data : [];
     const dataOrgList = dataPlan.data[1] && dataPlan.data[1].success? dataPlan.data[1].data : [];
     const executeRes = useSelector(state => state.main.execute);
-    const mainResult = useSelector(state => state.main);
+    const mainResult = useSelector(state => state.main.mainData);
     const memoryTable = useSelector(state => state.main.memoryTable);
     const user = useSelector(state => state.login.validateToken.user);
 
@@ -1910,8 +1910,15 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
     }, [executeRes, waitRefresh])
 
     useEffect(() => {
-        if (!mainResult.mainData.loading && !mainResult.mainData.error) {
-            setDataInvoice(mainResult.mainData.data);
+        if (!mainResult.loading && !mainResult.error) {
+            setDataInvoice(mainResult.data.map(x => ({
+                ...x,
+                paymentstatuscolumn: t(x.paymentstatus),
+                hasreportcolumn: x.hasreport ? t(langKeys.toreport) : t(langKeys.none),
+                docnumbercolumn: (x.serie && x.correlative) ? (x.serie + '-' + x.correlative.toString().padStart(8, '0')) : 'X000-00000000',
+                urlxmlcolumn: x.urlxml ? t(langKeys.xmldocumentopen) : t(langKeys.pendingpayment),
+                urlcdrcolumn: x.urlcdr ? t(langKeys.cdrdocumentopen) : t(langKeys.pendingpayment),
+            })))
         }
     }, [mainResult])
 
@@ -1971,15 +1978,11 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
             },
             {
                 Header: t(langKeys.paymentstatus),
-                accessor: 'paymentstatus',
-                Cell: (props: any) => {
-                    const { paymentstatus } = props.cell.row.original;
-                    return t(paymentstatus);
-                }
+                accessor: 'paymentstatuscolumn',
             },
             {
                 Header: t(langKeys.gotoreport),
-                accessor: 'invoiceid',
+                accessor: 'hasreportcolumn',
                 Cell: (props: any) => {
                     const selectedrow = props.cell.row.original;
                     const hasreport = selectedrow?.hasreport;
@@ -1999,7 +2002,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
             },
             {
                 Header: t(langKeys.billingvoucher),
-                accessor: 'docnumber',
+                accessor: 'docnumbercolumn',
                 Cell: (props: any) => {
                     const urlpdf = props.cell.row.original.urlpdf;
                     const docnumber = (props.cell.row.original.serie ? props.cell.row.original.serie : 'X000') + '-' + (props.cell.row.original.correlative ? props.cell.row.original.correlative.toString().padStart(8, '0') : '00000000');
@@ -2018,7 +2021,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
             },
             {
                 Header: t(langKeys.xmldocument),
-                accessor: 'urlxml',
+                accessor: 'urlxmlcolumn',
                 Cell: (props: any) => {
                     const urlxml = props.cell.row.original.urlxml;
                     return (
@@ -2036,7 +2039,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
             },
             {
                 Header: t(langKeys.cdrdocument),
-                accessor: 'urlcdr',
+                accessor: 'urlcdrcolumn',
                 Cell: (props: any) => {
                     const urlcdr = props.cell.row.original.urlcdr;
                     return (
@@ -2127,7 +2130,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                                 optionValue="value"
                             />
                             <Button
-                                disabled={mainResult.mainData.loading || disableSearch}
+                                disabled={mainResult.loading || disableSearch}
                                 variant="contained"
                                 color="primary"
                                 style={{ width: 120, backgroundColor: "#55BD84" }}
@@ -2136,7 +2139,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                             >{t(langKeys.search)}
                             </Button>
                             {user?.roledesc === "SUPERADMIN" && <Button
-                                disabled={mainResult.mainData.loading || disableSearch}
+                                disabled={mainResult.loading || disableSearch}
                                 variant="contained"
                                 color="primary"
                                 style={{ width: 120, backgroundColor: "#55BD84" }}
@@ -2148,7 +2151,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                     )}
                     data={dataInvoice}
                     filterGeneral={false}
-                    loading={mainResult.mainData.loading}
+                    loading={mainResult.loading}
                     download={true}
                     register={false}
                     pageSizeDefault={IDPAYMENTS === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
@@ -2425,7 +2428,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const dataCorpList = dataPlan.data[2] && dataPlan.data[2].success? dataPlan.data[2].data : [];
     const dataOrgList = dataPlan.data[1] && dataPlan.data[1].success? dataPlan.data[1].data : [];
     const executeRes = useSelector(state => state.main.execute);
-    const mainResult = useSelector(state => state.main);
+    const mainResult = useSelector(state => state.main.mainData);
     const memoryTable = useSelector(state => state.main.memoryTable);
     const user = useSelector(state => state.login.validateToken.user);
 
@@ -2454,6 +2457,23 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const dataPayment = [{ value: "PENDING", description: t(langKeys.PENDING) }, { value: "PAID", description: t(langKeys.PAID) }, { value:"NONE", description: t(langKeys.NONE) }]
 
     const fetchData = () => dispatch(getCollection(selInvoice(dataMain)));
+
+    const getDocumentType = (documenttype: string) => {
+        switch (documenttype) {
+            case '0':
+                return 'billingfield_billingno';
+            case '1':
+                return 'billingfield_billingdni';
+            case '4':
+                return 'billingfield_billingextra';
+            case '6':
+                return 'billingfield_billingruc';
+            case '7':
+                return 'billingfield_billingpass';
+            default:
+                return 'pendingpayment';
+        }
+    }
 
     useEffect(() => {
         fetchData()
@@ -2486,8 +2506,17 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     }, [executeRes, waitSave])
 
     useEffect(() => {
-        if (!mainResult.mainData.loading && !mainResult.mainData.error) {
-            setDataInvoice(mainResult.mainData.data);
+        if (!mainResult.loading && !mainResult.error) {
+            setDataInvoice(mainResult.data.map(x => ({
+                ...x,
+                receiverdoctypecolumn: t(getDocumentType(x.receiverdoctype)),
+                receiverdocnumcolumn: x.receiverdocnum ? x.receiverdocnum : t(langKeys.pendingpayment),
+                receiverbusinessnamecolumn: x.receiverbusinessname ? x.receiverbusinessname : t(langKeys.pendingpayment),
+                invoicestatuscolumn: t(x.invoicestatus),
+                paymentstatuscolumn: t(x.paymentstatus),
+                invoicetypecolumn: t(getInvoiceType(x.invoicetype)),
+                seriecolumn: (x.serie && x.correlative) ? (x.serie + '-' + x.correlative.toString().padStart(8, '0')) : null,
+            })))
         }
     }, [mainResult])
 
@@ -2538,99 +2567,34 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             },
             {
                 Header: t(langKeys.billingclienttype),
-                accessor: 'receiverdoctype',
-                Cell: (props: any) => {
-                    const receiverdoctype = props.cell.row.original.receiverdoctype;
-                    var documenttype = '';
-                    switch (receiverdoctype) {
-                        case '0':
-                            documenttype = 'billingfield_billingno';
-                            break;
-                        case '1':
-                            documenttype = 'billingfield_billingdni';
-                            break;
-                        case '4':
-                            documenttype = 'billingfield_billingextra';
-                            break;
-                        case '6':
-                            documenttype = 'billingfield_billingruc';
-                            break;
-                        case '7':
-                            documenttype = 'billingfield_billingpass';
-                            break;
-                        default:
-                            documenttype = 'pendingpayment';
-                            break;
-                    }
-                    return t(documenttype);
-                }
+                accessor: 'receiverdoctypecolumn',
             },
             {
                 Header: t(langKeys.documentnumber),
-                accessor: 'receiverdocnum',
-                Cell: (props: any) => {
-                    const receiverdocnum = props.cell.row.original.receiverdocnum;
-                    return (
-                        <Fragment>
-                            <div>
-                                { receiverdocnum ?
-                                    <span style={{ display: "block" }}>{receiverdocnum}</span>
-                                    :
-                                    <span style={{ display: "block" }}>{t(langKeys.pendingpayment)}</span>
-                                }
-                            </div>
-                        </Fragment>
-                    )
-                }
+                accessor: 'receiverdocnumcolumn',
             },
             {
                 Header: t(langKeys.businessname),
-                accessor: 'receiverbusinessname',
-                Cell: (props: any) => {
-                    const receiverbusinessname = props.cell.row.original.receiverbusinessname;
-                    return (
-                        <Fragment>
-                            <div>
-                                { receiverbusinessname ?
-                                    <span style={{ display: "block" }}>{receiverbusinessname}</span>
-                                    :
-                                    <span style={{ display: "block" }}>{t(langKeys.pendingpayment)}</span>
-                                }
-                            </div>
-                        </Fragment>
-                    )
-                }
+                accessor: 'receiverbusinessnamecolumn',
             },
             {
                 Header: t(langKeys.invoicestatus),
-                accessor: 'invoicestatus',
-                Cell: (props: any) => {
-                    const { invoicestatus } = props.cell.row.original;
-                    return t(invoicestatus);
-                }
+                accessor: 'invoicestatuscolumn',
             },
             {
                 Header: t(langKeys.paymentstatus),
-                accessor: 'paymentstatus',
-                Cell: (props: any) => {
-                    const { paymentstatus } = props.cell.row.original;
-                    return t(paymentstatus);
-                }
+                accessor: 'paymentstatuscolumn',
             },
             {
                 Header: t(langKeys.documenttype),
-                accessor: 'invoicetype',
-                Cell: (props: any) => {
-                    const { invoicetype } = props.cell.row.original;
-                    return <span style={{ display: "block" }}>{t(getInvoiceType(invoicetype))}</span>;
-                }
+                accessor: 'invoicetypecolumn',
             },
             {
                 Header: t(langKeys.billingvoucher),
-                accessor: 'serie',
+                accessor: 'seriecolumn',
                 Cell: (props: any) => {
                     const urlpdf = props.cell.row.original.urlpdf;
-                    const docnumber = (props.cell.row.original.serie ? props.cell.row.original.serie : 'X000') + '-' + (props.cell.row.original.correlative ? props.cell.row.original.correlative.toString().padStart(8, '0') : '00000000');
+                    const docnumber = (props.cell.row.original.serie && props.cell.row.original.correlative) ? (props.cell.row.original.serie + '-' + props.cell.row.original.correlative.toString().padStart(8, '0')) : null;
                     return (
                         <Fragment>
                             <div>
@@ -2647,13 +2611,17 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             {
                 Header: t(langKeys.invoicedate),
                 accessor: 'invoicedate',
+                Cell: (props: any) => {
+                    const { invoicedate } = props.cell.row.original;
+                    return (invoicedate || null);
+                }
             },
             {
                 Header: t(langKeys.expirationdate),
                 accessor: 'expirationdate',
                 Cell: (props: any) => {
                     const { expirationdate } = props.cell.row.original;
-                    return (expirationdate || t(langKeys.none));
+                    return (expirationdate || null);
                 }
             },
             {
@@ -2819,7 +2787,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             optionValue="value"
                         />
                         <Button
-                            disabled={mainResult.mainData.loading || disableSearch}
+                            disabled={mainResult.loading || disableSearch}
                             variant="contained"
                             color="primary"
                             style={{ width: 120, backgroundColor: "#55BD84" }}
@@ -2832,7 +2800,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 data={dataInvoice}
                 filterGeneral={false}
                 download={true}
-                loading={mainResult.mainData.loading}
+                loading={mainResult.loading}
                 register={true}
                 handleRegister={handleRegister}
                 registertext={langKeys.generateinvoice}
@@ -3916,7 +3884,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
             clientcountry: '',
             clientmail: '',
             clientcredittype: '',
-            invoicecreatedate: new Date().toISOString().split('T')[0],
+            invoicecreatedate: new Date(new Date().setHours(new Date().getHours() - 5)).toISOString().split('T')[0],
             invoiceduedate: '',
             invoicecurrency: 'USD',
             invoicetotalamount: 0.00,
@@ -4442,7 +4410,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                                         label={''}
                                                         fregister={{
                                                             ...register(`productdetail.${i}.productdescription`, {
-                                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                                validate: (value: any) => (value && value.length && value.length <= 250) || (value.length < 250 ? t(langKeys.field_required) : t(langKeys.validation250char))
                                                             })
                                                         }}
                                                         valueDefault={getValues(`productdetail.${i}.productdescription`)}
@@ -4538,7 +4506,7 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const classes = useStyles();
     const dataCorpList = dataPlan.data[2] && dataPlan.data[2].success? dataPlan.data[2].data : [];
     const dataOrgList = dataPlan.data[1] && dataPlan.data[1].success? dataPlan.data[1].data : [];
-    const mainResult = useSelector(state => state.main);
+    const mainResult = useSelector(state => state.main.mainData);
     const memoryTable = useSelector(state => state.main.memoryTable);
     const user = useSelector(state => state.login.validateToken.user);
     
@@ -4589,8 +4557,16 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     }
 
     useEffect(() => {
-        if (!mainResult.mainData.loading && !mainResult.mainData.error) {
-            setDataBalance(mainResult.mainData.data);
+        if (!mainResult.loading && !mainResult.error) {
+            setDataBalance(mainResult.data.map(x => ({
+                ...x,
+                typecolumn: t(x.type),
+                descriptioncolumn: x.description ? x.description : t(langKeys.none),
+                operationtypecolumn: t(x.operationtype),
+                messagetemplatedesccolumn: x.messagetemplatedesc ? x.messagetemplatedesc : t(langKeys.none),
+                documenttypecolumn: t(getInvoiceType(x.invoicetype)),
+                documentnumbercolumn: (x.serie && x.correlative) ? (x.serie + '-' + x.correlative.toString().padStart(8, '0')) : 'X000-00000000',
+            })))
         }
     }, [mainResult])
 
@@ -4627,19 +4603,11 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             },
             {
                 Header: t(langKeys.transactionmessagetype),
-                accessor: 'type',
-                Cell: (props: any) => {
-                    const { type } = props.cell.row.original;
-                    return t(type);
-                }
+                accessor: 'typecolumn',
             },
             {
                 Header: t(langKeys.transactionreference),
-                accessor: 'description',
-                Cell: (props: any) => {
-                    const { description } = props.cell.row.original;
-                    return (description || t(langKeys.none));
-                }
+                accessor: 'descriptioncolumn',
             },
             {
                 Header: t(langKeys.amount),
@@ -4648,7 +4616,7 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { amount } = props.cell.row.original;
-                    return formatNumberFourDecimals(amount || 0);
+                    return formatNumber(amount || 0);
                 }
             },
             {
@@ -4658,36 +4626,24 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 sortType: 'number',
                 Cell: (props: any) => {
                     const { balance } = props.cell.row.original;
-                    return formatNumberFourDecimals(balance || 0);
+                    return formatNumber(balance || 0);
                 }
             },
             {
                 Header: t(langKeys.transactionoperationtype),
-                accessor: 'operationtype',
-                Cell: (props: any) => {
-                    const { operationtype } = props.cell.row.original;
-                    return t(operationtype);
-                }
+                accessor: 'operationtypecolumn',
             },
             {
                 Header: t(langKeys.template),
-                accessor: 'messagetemplatedesc',
-                Cell: (props: any) => {
-                    const { messagetemplatedesc } = props.cell.row.original;
-                    return (messagetemplatedesc || t(langKeys.none));
-                }
+                accessor: 'messagetemplatedesccolumn',
             },
             {
                 Header: t(langKeys.documenttype),
-                accessor: 'documenttype',
-                Cell: (props: any) => {
-                    const invoicetype = props.cell.row.original.invoicetype;
-                    return t(getInvoiceType(invoicetype));
-                }
+                accessor: 'documenttypecolumn',
             },
             {
                 Header: t(langKeys.billingvoucher),
-                accessor: 'documentnumber',
+                accessor: 'documentnumbercolumn',
                 Cell: (props: any) => {
                     const urlpdf = props.cell.row.original.urlpdf;
                     const docnumber = (props.cell.row.original.serie ? props.cell.row.original.serie : 'X000') + '-' + (props.cell.row.original.correlative ? props.cell.row.original.correlative.toString().padStart(8, '0') : '00000000');
@@ -4758,7 +4714,7 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 optionValue="value"
                             />
                             <Button
-                                disabled={mainResult.mainData.loading || false}
+                                disabled={mainResult.loading || false}
                                 variant="contained"
                                 color="primary"
                                 style={{ width: 120, backgroundColor: "#55BD84" }}
@@ -4770,7 +4726,7 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                     )}
                     data={dataBalance}
                     filterGeneral={false}
-                    loading={mainResult.mainData.loading}
+                    loading={mainResult.loading}
                     download={true}
                     register={canRegister}
                     handleRegister={handleRegister}
