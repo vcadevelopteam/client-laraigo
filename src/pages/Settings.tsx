@@ -570,6 +570,46 @@ const Settings: FC = () => {
                         <Grid container direction="column">
                             <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                                 <ItemTile
+                                    title={<Trans i18nKey={langKeys.quickreply} count={2} />}
+                                    subtitle={<SubtitleText value={value?.num_quickreply} i18nKey={langKeys.quickreply} />}
+                                    icon={<QuickReplyIcon fill="inherit" stroke="inherit" />}
+                                    helpText={
+                                        <HelpText
+                                            i18nKey={langKeys.manageQuickReply}
+                                            count={2}
+                                            onClick={() => history.push(paths.QUICKREPLIES)}
+                                        />
+                                    }
+                                    m={2}
+                                />
+                            </Grid>
+                        </Grid> 
+                    </Grid> 
+
+                    <Grid item xs={12} sm={12} md={12} lg={6} xl={6}>
+                        <Grid container direction="column">
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                <ItemTile
+                                    title={<Trans i18nKey={langKeys.classification} count={2} />}
+                                    subtitle={<SubtitleText value={value?.num_classification} i18nKey={langKeys.classification} />}
+                                    icon={<ClassificationIcon fill="inherit" stroke="inherit" />}
+                                    helpText={
+                                        <HelpText
+                                            i18nKey={langKeys.manageClassification}
+                                            count={2}
+                                            onClick={() => history.push(paths.TIPIFICATIONS)}
+                                        />
+                                    }
+                                    m={2}
+                                />
+                            </Grid>  
+                        </Grid> 
+                    </Grid>
+                    
+                    <Grid item xs={12} sm={12} md={12} lg={6} xl={6}>
+                        <Grid container direction="column">
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                <ItemTile
                                     title={<Trans i18nKey={langKeys.domain} count={2} />}
                                     subtitle={<SubtitleText value={value?.num_domain} i18nKey={langKeys.domain} />}
                                     icon={<DomainsIcon fill="inherit" stroke="inherit" />}
@@ -585,6 +625,7 @@ const Settings: FC = () => {
                             </Grid>
                         </Grid>
                     </Grid>
+
                     <Grid item xs={12} sm={12} md={12} lg={6} xl={6}>
                         <Grid container direction="column">
                             <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
@@ -597,6 +638,26 @@ const Settings: FC = () => {
                                             i18nKey={langKeys.manageRestrictedEmoji}
                                             count={2}
                                             onClick={() => history.push(paths.EMOJIS)}
+                                        />
+                                    }
+                                    m={2}
+                                />
+                            </Grid>
+                        </Grid>
+                    </Grid>
+
+                    <Grid item xs={12} sm={12} md={12} lg={6} xl={6}>
+                        <Grid container direction="column">
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                <ItemTile
+                                    title={<Trans i18nKey={langKeys.integration} count={2} />}
+                                    subtitle={<SubtitleText value={value?.num_integrations} i18nKey={langKeys.integration} />}
+                                    icon={<IntegrationIcon fill="inherit" stroke="inherit" />}
+                                    helpText={
+                                        <HelpText
+                                            i18nKey={langKeys.manageIntegration}
+                                            count={2}
+                                            onClick={() => history.push(paths.INTEGRATIONMANAGER)}
                                         />
                                     }
                                     m={2}
