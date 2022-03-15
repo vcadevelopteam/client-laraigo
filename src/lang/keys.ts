@@ -1103,6 +1103,7 @@ export const langKeys = {
     newmessagetemplate: 'newmessagetemplate',
     messagetemplate: 'messagetemplate',
     messagetemplate_plural: 'messagetemplate_plural',
+    messagetemplateid: 'messagetemplateid',
     communicationtemplate: 'communicationtemplate',
     creationdate: 'creationdate',
     messagetype: 'messagetype',
