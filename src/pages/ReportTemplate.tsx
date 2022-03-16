@@ -821,6 +821,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                     <TableCell>
                                                         <FieldSelect
                                                             label={t(langKeys.column)}
+                                                            multiline={true}
                                                             valueDefault={getValues(`summary.${i}.columnname`)}
                                                             fregister={{
                                                                 ...register(`summary.${i}.columnname`, {

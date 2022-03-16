@@ -328,6 +328,7 @@ interface TemplateAutocompleteProps extends InputProps {
     triggerOnChangeOnFirst?: boolean;
     readOnly?: boolean;
     limitTags?: number;
+    multiline?: boolean;
 }
 
 export const FieldEdit: React.FC<InputProps> = ({ width="100%",label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard" }) => {
@@ -505,7 +506,7 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     return <TelegramIcon style={{ color, width, height }} />
 }
 
-export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false }) => {
+export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({multiline=false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false }) => {
     const { t } = useTranslation();
     const [value, setValue] = useState<Dictionary | null>(null);
 
@@ -550,6 +551,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
                         {...params}
                         label={variant !== "standard" && label}
                         variant={variant}
+                        multiline={multiline}
                         helperText={error || null}
                         error={!!error}
                         InputProps={{
