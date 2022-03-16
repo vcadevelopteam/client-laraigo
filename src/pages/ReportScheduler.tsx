@@ -73,6 +73,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
     const dataReportSimple = dataReportSimpleAll.filter(x=>x.origin !== "TICKET") 
     const dataRanges = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const [filterData, setfilterData] = useState(JSON.parse(dataReportSimple.find(x=>(x.reportname===(row?.reportname)))?.filterjson|| "[]").filter((x:any)=>x.type!=="timestamp without time zone"));
+    const [showError, setShowError] = useState(false);
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
@@ -149,8 +150,12 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
 
     const onSubmit = handleSubmit((data) => {
         data.mailbody = renderToString(toElement(bodyobject));
-        if (data.mailbody === `<div data-reactroot=""><p><span></span></p></div>`)
+        if (data.mailbody === `<div data-reactroot=""><p><span></span></p></div>`) {
+            setShowError(true);
             return
+        }
+
+        setShowError(false);
 
         const callback = () => {
             data.mailbody = renderToString(toElement(bodyobject));
@@ -193,7 +198,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
                             onClick={() => setViewSelected("view-1")}>
-                            {t(langKeys.back)}
+                            {t(langKeys.cancel)}
                         </Button>
                         {edit &&
                             <Button
@@ -272,6 +277,8 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                             data={dataReportSimple}
                             optionDesc="reportname"
                             optionValue="reportname"
+                            uset={true}
+                            prefixTranslation=""
                         />}
                         {!((origin!=="CAMPAIGN") && (origin!=="DASHBOARD")) && <FieldSelect
                             label={t(langKeys.reporttype)}
@@ -456,6 +463,13 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                                 />
                             </React.Fragment>
                         </div>
+                        <FieldEdit
+                            label={''}
+                            className="col-12"
+                            valueDefault={''}
+                            error={showError ? t(langKeys.field_required) : ''}
+                            disabled={true}
+                        />
                     </div>
                 </div>
             </form>
@@ -522,7 +536,11 @@ const ReportScheduler: FC = () => {
             {
                 Header: `${t(langKeys.report_plural)} ${t(langKeys.sent_plural)}`,
                 accessor: 'reportname',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const { reportname } = props.cell.row.original;
+                    return (t(`${reportname}`.toLowerCase()) || "").toUpperCase()
+                }
             },
         ],
         []

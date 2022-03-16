@@ -3188,6 +3188,16 @@ export const langKeys = {
     'filter_communicationchannel.communicationchannelcontact':'filter_communicationchannel.communicationchannelcontact',
     defaulttype: 'defaulttype',
     proactivetype: 'proactivetype',
+    inputretry: 'inputretry',
+    interaction: 'interaction',
+    productivityhours: 'productivityhours',
+    userconexion: 'userconexion',
+    'filter_conversation.wtapersonsympathetic':'filter_conversation.wtapersonsympathetic',
+    'filter_firstuser.lasthistorystatus':'filter_firstuser.lasthistorystatus',
+    'filter_firstuser.name':'filter_firstuser.name',
+    'filter_firstuser.pwdchangefirstlogin':'filter_conversation.pwdchangefirstlogin',
+    'filter_conversation.wnluuserjoy':'filter_conversation.wnluuserjoy',
+    'filter_conversation.wtauserconfident':'filter_conversation.wtauserconfident',
 };
 
 export type LangKeys = typeof langKeys;

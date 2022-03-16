@@ -3193,8 +3193,18 @@ const translation: LangKeys = {
     'filter_channelactive':'Canal activo',
     'filter_communicationchannel.botenabled':'Canal de comunicación - Bot habilitado',
     'filter_communicationchannel.communicationchannelcontact':'Canal de comunicación - Contacto canal de comunicación',
-    defaulttype: 'PREDETERMINADO',
-    proactivetype: 'PROACTIVO',
+    defaulttype: 'Predeterminado',
+    proactivetype: 'Proactivo',
+    inputretry: 'Reintentos',
+    interaction: 'Interacciones',
+    productivityhours: 'Productividad horas',
+    userconexion: 'Conexión de usuario',
+    'filter_conversation.wtapersonsympathetic':'Conversación - Persona comprensiva',
+    'filter_firstuser.lasthistorystatus':'Primer usuario - Ultimo estado',
+    'filter_firstuser.name':'Primer usuario - Nombre',
+    'filter_firstuser.pwdchangefirstlogin':'Conversación - Cambiar password en primer login',
+    'filter_conversation.wnluuserjoy':'Conversación - Alegría',
+    'filter_conversation.wtauserconfident':'Conversación - Confianza',
 };
 
 const esResource: ResourceLanguage = {

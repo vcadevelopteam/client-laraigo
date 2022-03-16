@@ -4200,7 +4200,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             loading={corpList.loading}
                             onChange={(value) => { onCorpChange(value); }}
                             className="col-6"
-                            valueDefault={getValues('corpid')}
+                            valueDefault={data?.row?.corpid ? data?.row?.corpid : getValues('corpid')}
                             data={corpList.data}
                             optionDesc="description"
                             optionValue="corpid"
@@ -4211,7 +4211,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             loading={orgList.loading}
                             onChange={(value) => { onOrgChange(value); }}
                             className="col-6"
-                            valueDefault={getValues('orgid')}
+                            valueDefault={data?.row?.orgid ? data?.row?.orgid : getValues('orgid')}
                             data={orgList.data}
                             optionDesc="orgdesc"
                             optionValue="orgid"
@@ -4288,7 +4288,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                 label={t(langKeys.credittype)}
                                 loading={creditTypeList.loading}
                                 onChange={(value) => { setValue('clientcredittype', value?.domainvalue); onCreditTypeChange(value?.domainvalue); }}
-                                valueDefault={getValues('clientcredittype')}
+                                valueDefault={data?.row?.credittype ? data?.row?.credittype : getValues('clientcredittype')}
                                 data={creditTypeList.data}
                                 optionDesc="domainvalue"
                                 optionValue="domainvalue"

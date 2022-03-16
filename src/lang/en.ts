@@ -3202,8 +3202,18 @@ const translation: LangKeys = {
     'filter_channelactive':'Channel active',
     'filter_communicationchannel.botenabled':'Communication channel - Bot enabled',
     'filter_communicationchannel.communicationchannelcontact':'Communication channel - Communication channel contact',
-    defaulttype: 'DEFAULT',
-    proactivetype: 'PROACTIVE',
+    defaulttype: 'Default',
+    proactivetype: 'Proactive',
+    inputretry: 'Retries',
+    interaction: 'Interactions',
+    productivityhours: 'Productivity hours',
+    userconexion: 'User connection',
+    'filter_conversation.wtapersonsympathetic':'Conversation - Person sympathetic',
+    'filter_firstuser.lasthistorystatus':'First user - Last status',
+    'filter_firstuser.name':'First user - Name',
+    'filter_firstuser.pwdchangefirstlogin':'Conversation - Change password on login',
+    'filter_conversation.wnluuserjoy':'Conversation - Joy',
+    'filter_conversation.wtauserconfident':'Conversation - Confident',
 };
 
 const enResource: ResourceLanguage = {
