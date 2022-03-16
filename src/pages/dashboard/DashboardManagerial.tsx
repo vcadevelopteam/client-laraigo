@@ -630,8 +630,8 @@ const DashboardManagerial: FC = () => {
                 const mm2 = resSummary[0].maxavgticketasesorhourdesc ? resSummary[0].maxavgticketasesorhourdesc.split(" ") : null;
                 const mm3 = resSummary[0].minavgticketasesorhourdesc ? resSummary[0].minavgticketasesorhourdesc.split(" ") : null;
                 setDataSummary({
-                    tmrglobal: formattime(timetoseconds(resSummary[0].averagereplytime) + timetoseconds(resSummary[0].useraveragereplytime) / 2),
-                    dataTMRBot: formattime(timetoseconds(resSummary[0].averagereplytime)),
+                    tmrglobal: formattime(timetoseconds(resSummary[0].averagereplytime)),
+                    dataTMRBot: formattime(timetoseconds(resSummary[0].botaveragereplytime)),
                     dataTMRAsesor: formattime(timetoseconds(resSummary[0].useraveragereplytime)),
                     dataTMRCliente: formattime(timetoseconds(resSummary[0].personaveragereplytime)),
                     maxavgtickethour: `${resSummary[0].maxavgtickethour}(${txtmaxavgticketusername})`,
