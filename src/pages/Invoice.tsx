@@ -3933,7 +3933,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
         setValue('clientmail', data?.contactemail || '');
         setValue('clientcredittype', data?.credittype || '');
         setValue('autosendinvoice', data?.autosendinvoice);
-
+        
         if (data?.credittype) {
             var dueDate = new Date(getValues('invoicecreatedate'));
 
@@ -3986,6 +3986,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
         trigger('clientmail');
         trigger('clientcredittype');
         trigger('autosendinvoice');
+        trigger('invoicecreatedate');
         trigger('invoiceduedate');
     }
 
