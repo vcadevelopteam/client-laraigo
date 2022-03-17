@@ -13,7 +13,7 @@ import { Dictionary, MultiData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, getMultiCollection, execute, resetAllMain, setMemoryTable, uploadFile } from 'store/main/actions';
+import { getCollection, getMultiCollection, execute, resetAllMain, setMemoryTable, cleanMemoryTable, uploadFile } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { Search as SearchIcon, FileCopy, GetApp, Close } from '@material-ui/icons';
 import { IconButton, CircularProgress } from '@material-ui/core';
@@ -105,6 +105,7 @@ const ProductCatalog: FC = () => {
         }))
         
         return () => {
+            dispatch(cleanMemoryTable());
             dispatch(resetAllMain());
         };
     }, []);
