@@ -3198,6 +3198,13 @@ export const langKeys = {
     'filter_firstuser.pwdchangefirstlogin':'filter_conversation.pwdchangefirstlogin',
     'filter_conversation.wnluuserjoy':'filter_conversation.wnluuserjoy',
     'filter_conversation.wtauserconfident':'filter_conversation.wtauserconfident',
+    vcacomissionperhsm: 'vcacomissionperhsm',
+    culqiurlcardcreate: 'culqiurlcardcreate',
+    culqiurlclient: 'culqiurlclient',
+    culqiurltoken: 'culqiurltoken',
+    culqiurlcharge: 'culqiurlcharge',
+    culqiurlcardget: 'culqiurlcardget',
+    culqiurlcarddelete: 'culqiurlcarddelete',
 };
 
 export type LangKeys = typeof langKeys;

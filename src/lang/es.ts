@@ -3205,6 +3205,13 @@ const translation: LangKeys = {
     'filter_firstuser.pwdchangefirstlogin':'Conversación - Cambiar password en primer login',
     'filter_conversation.wnluuserjoy':'Conversación - Alegría',
     'filter_conversation.wtauserconfident':'Conversación - Confianza',
+    vcacomissionperhsm: 'Comisión VCA por Envió HSM',
+    culqiurlcardcreate: 'URL API Crear Tarjeta',
+    culqiurlclient: 'URL API Crear cliente',
+    culqiurltoken: 'URL API Crear Token',
+    culqiurlcharge: 'URL API Crear Cargo',
+    culqiurlcardget: 'URL API Consultar Tarjeta',
+    culqiurlcarddelete: 'URL API Eliminar Tarjeta',
 };
 
 const esResource: ResourceLanguage = {
