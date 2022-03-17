@@ -460,6 +460,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                                         setBodyobject(value)
                                     }}
                                     spellCheck
+                                    onlyurl={true}
                                 />
                             </React.Fragment>
                         </div>
