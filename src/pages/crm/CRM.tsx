@@ -89,8 +89,8 @@ interface IBoardFilter {
   asesorid: number;
 }
 
-const DraggablesCategories : FC<{column:any, index:number, hanldeDeleteColumn:(a:string)=>void, handleDelete:(lead: ICrmLead)=>void, handleCloseLead:(lead: ICrmLead)=>void}> = ({column, 
-  index, hanldeDeleteColumn, handleDelete, handleCloseLead }) => {
+const DraggablesCategories : FC<{column:any,deletable:boolean, index:number, hanldeDeleteColumn:(a:string)=>void, handleDelete:(lead: ICrmLead)=>void, handleCloseLead:(lead: ICrmLead)=>void}> = ({column, 
+  index, hanldeDeleteColumn, handleDelete, handleCloseLead, deletable }) => {
     const { t } = useTranslation();
   return (
     <Draggable draggableId={column.column_uuid} index={index+1} key={column.column_uuid}>
@@ -106,6 +106,7 @@ const DraggablesCategories : FC<{column:any, index:number, hanldeDeleteColumn:(a
             provided={provided} 
             // titleOnChange={(val) =>{handleEdit(column.column_uuid,val,dataColumn, setDataColumn)}}
             columnid={column.column_uuid} 
+            deletable={deletable}
             onDelete={hanldeDeleteColumn}
             total_revenue={column.total_revenue!}
             // onAddCard={() => history.push(paths.CRM_ADD_LEAD.resolve(column.columnid, column.column_uuid))}
@@ -249,7 +250,7 @@ const CRM: FC = () => {
           column.items = leads.filter( x => x.column_uuid === column.column_uuid);
           return {...column, total_revenue: (column.items.reduce((a,b) => a + parseFloat(b.expected_revenue), 0))}
         })
-        let ordereddata = [...unordeneddatacolumns.filter((x:any)=>x.description==="New"),
+        let ordereddata = [...unordeneddatacolumns.filter((x:any)=>x.type==="NEW"),
           ...unordeneddatacolumns.filter((x)=>x.type==="QUALIFIED"),
           ...unordeneddatacolumns.filter((x)=>x.type==="PROPOSITION"),
           ...unordeneddatacolumns.filter((x)=>x.type==="WON"),
@@ -407,9 +408,14 @@ const CRM: FC = () => {
       index: newIndex,
       items: []
     }
-
+    let unordeneddatacolumns = Object.values({...columns, newColumn})
+    let ordereddata = [...unordeneddatacolumns.filter((x:any)=>x.type==="NEW"),
+      ...unordeneddatacolumns.filter((x:any)=>x.type==="QUALIFIED"),
+      ...unordeneddatacolumns.filter((x:any)=>x.type==="PROPOSITION"),
+      ...unordeneddatacolumns.filter((x:any)=>x.type==="WON"),
+    ];
     dispatch(execute(insColumns(data)))
-    setDataColumn(Object.values({...columns, newColumn}));
+    setDataColumn(Object.values(ordereddata));
   }
 
   const hanldeDeleteColumn = (column_uuid : string, delete_all:boolean = true) => {
@@ -943,10 +949,10 @@ const CRM: FC = () => {
           </div>
           <AddColumnTemplate onSubmit={(data) =>{ handleInsert(data,dataColumn, setDataColumn)}} /> 
           <div style={{display:"flex", color: "white", paddingTop: 10, fontSize: "1.6em", fontWeight: "bold"}}>
-            <div style={{minWidth: 275, maxWidth: 275, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 8px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.new)}</div>
-            <div style={{minWidth: 275*dataColumn.filter((x:any)=>x.type==="QUALIFIED").length, maxWidth: 275*dataColumn.filter((x:any)=>x.type==="QUALIFIED").length, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 8px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.qualified)}</div>
-            <div style={{minWidth: 275*dataColumn.filter((x:any)=>x.type==="PROPOSITION").length, maxWidth: 275*dataColumn.filter((x:any)=>x.type==="PROPOSITION").length, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 8px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.proposition)}</div>
-            <div style={{minWidth: 275*dataColumn.filter((x:any)=>x.type==="WON").length, maxWidth: 275*dataColumn.filter((x:any)=>x.type==="WON").length, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 8px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.won)}</div>
+            <div style={{minWidth: 280, maxWidth: 280, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.new)}</div>
+            <div style={{minWidth: 280*dataColumn.filter((x:any)=>x.type==="QUALIFIED").length, maxWidth: 280*dataColumn.filter((x:any)=>x.type==="QUALIFIED").length, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.qualified)}</div>
+            <div style={{minWidth: 280*dataColumn.filter((x:any)=>x.type==="PROPOSITION").length, maxWidth: 280*dataColumn.filter((x:any)=>x.type==="PROPOSITION").length, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.proposition)}</div>
+            <div style={{minWidth: 280*dataColumn.filter((x:any)=>x.type==="WON").length, maxWidth: 280*dataColumn.filter((x:any)=>x.type==="WON").length, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.won)}</div>
           </div>
           <DragDropContext onDragEnd={result => onDragEnd(result, dataColumn, setDataColumn)}>
             <Droppable droppableId="all-columns" direction="horizontal" type="column" >
@@ -957,7 +963,7 @@ const CRM: FC = () => {
                   style={{display:'flex'}}
                 >
                   {dataColumn.map((column, index) => 
-                       <DraggablesCategories column={column} index={index} hanldeDeleteColumn={hanldeDeleteColumn} handleDelete={handleDelete} handleCloseLead={handleCloseLead}/>
+                       <DraggablesCategories deletable={dataColumn.filter((x:any)=>x.type===column.type).length >1} column={column} index={index} hanldeDeleteColumn={hanldeDeleteColumn} handleDelete={handleDelete} handleCloseLead={handleCloseLead}/>
                   )}
                 </div>
               )}

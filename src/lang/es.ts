@@ -314,11 +314,8 @@ const translation: LangKeys = {
     averageconversationsattendedbytheadvisorbyhour: "Promedio conversaciones atendidas del asesor por hora",
     averagenumberofadvisersconnectedbyhour: "Promedio de asesores conectados por hora",
     conversationsattended: "Conversaciones atendidas",
-<<<<<<< HEAD
     columntitle: "Título de la columna",
-=======
     tagrankingtooltip: "Muestra las opciones más consultadas dentro del flujo conversacional",
->>>>>>> d474b99961c952ad8e5c97619d6db7992e218f45
     averageinteractionbyconversation: "Interacciones por Conversación",
     maxavginteractionsxconversationstooltip: "Promedio de interacciones x conversación del asesor con el cliente.",
     minvginteractionsxconversationstooltip: "Promedio de interacciones x conversación del bot con el cliente.",

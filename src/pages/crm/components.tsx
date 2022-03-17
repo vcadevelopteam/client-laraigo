@@ -311,6 +311,7 @@ interface LeadColumnProps extends Omit<BoxProps, 'title'> {
     provided?: DraggableProvided;
     columnid: string;
     total_revenue: number;
+    deletable: boolean;
 }
 
 const useLeadColumnStyles = makeStyles(theme => ({
@@ -362,6 +363,7 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
     titleOnChange,
     onDelete,
     onAddCard,
+    deletable,
     ...boxProps
 }) => {
     const classes = useLeadColumnStyles();
@@ -374,7 +376,7 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
     }, [titleOnChange]);
 
     const handleDelete = useCallback(() => {
-        //onDelete?.(columnid);
+        onDelete?.(columnid);
     }, []);
     
 
@@ -387,9 +389,9 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
                         edit={edit.current}
                         onBlur={handleOnBlur}
                     />
-                    <IconButton size="small" onClick={handleDelete}>
+                    {deletable && <IconButton size="small" onClick={handleDelete}>
                         <CloseIcon style={{ height: 22, width: 22 }} />
-                    </IconButton>
+                    </IconButton>}
                 </div>
                 <span className={classes.currency}>S/ {total_revenue?.toLocaleString('en-US') || 0}</span>
                 {children}
