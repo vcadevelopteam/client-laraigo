@@ -330,7 +330,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                                     optionDesc="columnname"
                                     optionValue="columnname"
                                     uset={true}
-                                    prefixTranslation="filter_"
+                                    prefixTranslation="personalizedreport_"
                                 />
                                 <FieldEdit
                                     label={t(langKeys.value)}
