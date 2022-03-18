@@ -905,20 +905,6 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             optionValue="domainvalue"
                         />
                     </div>
-                    <div className="row-zyx">
-                        <FieldSelect
-                            label={t(langKeys.status)}
-                            className="col-6"
-                            valueDefault={row?.status || "ACTIVO"}
-                            onChange={onChangeStatus}
-                            uset={true}
-                            error={errors?.status?.message}
-                            data={dataStatusUsers}
-                            prefixTranslation="status_"
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                        />
-                    </div>
                 </div>
             </form>
 
