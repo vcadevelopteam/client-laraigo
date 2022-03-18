@@ -1,5 +1,5 @@
-import { FC, useContext, useMemo } from "react";
-import { Breadcrumbs, Button, Link, makeStyles } from "@material-ui/core";
+import { FC, useContext, useMemo, useState } from "react";
+import { Breadcrumbs, Button, Link, makeStyles, TextField } from "@material-ui/core";
 import { ChannelAddFacebook } from './ChannelAddFacebook'
 import { ChannelAddInstagram } from './ChannelAddInstagram'
 import { ChannelAddInstagramDM } from './ChannelAddInstagramDM'
@@ -11,10 +11,12 @@ import { ChannelAddTwitterDM } from './ChannelAddTwitterDM'
 import { ChannelAddChatWeb } from './ChannelAddChatWeb'
 import { ChannelAddAndroid } from './ChannelAddAndroid'
 import { ChannelAddIos } from './ChannelAddIos'
-import { Trans } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
-import { ListChannels, SubscriptionContext } from "./context";
+import { ListChannels, SubscriptionContext, MainData } from "./context";
 import { useSelector } from "hooks";
+import { Controller, useFormContext } from "react-hook-form";
+import { FieldSelect } from "components";
 
 const useLeftSideStyles = makeStyles(theme => ({
     root: {
@@ -42,16 +44,33 @@ interface LeftSideProps {
 }
 
 export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
+    const { t } = useTranslation();
+    const [currentView, setCurrentView] = useState("view-1");
+    const { getValues, control, trigger } = useFormContext<MainData>();
     const classes = useLeftSideStyles();
     const {
         foreground,
         listchannels,
         selectedChannels,
         finishreg,
+        onCheckFunc,
         commonClasses,
     } = useContext(SubscriptionContext);  
     const executeResult = useSelector(state => state.signup.insertChannel);
-
+    const datamonth = useMemo(() => ([
+        { id: 1, desc: "01" },
+        { id: 2, desc: "02" },
+        { id: 3, desc: "03" },
+        { id: 4, desc: "04" },
+        { id: 5, desc: "05" },
+        { id: 6, desc: "06" },
+        { id: 7, desc: "07" },
+        { id: 8, desc: "08" },
+        { id: 9, desc: "09" },
+        { id:10, desc: "10" },
+        { id:11, desc: "11" },
+        { id:12, desc: "12" },
+    ]), [t]);
     const channels = useMemo(() => {
         if (listchannels === undefined) {
             return null;
@@ -89,36 +108,272 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
 
     return (
         <div className={classes.root}>
-            {!foreground && (
-                <Breadcrumbs aria-label="breadcrumb" style={{ marginBottom: '1em' }}>
-                    <Link
-                        color="textSecondary"
-                        href="/"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            setOpenWarning(true);
+            {currentView==="view-1"?(<>
+                {!foreground && (
+                    <Breadcrumbs aria-label="breadcrumb" style={{ marginBottom: '1em' }}>
+                        <Link
+                            color="textSecondary"
+                            href="/"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                setOpenWarning(true);
+                            }}
+                        >
+                            {'<< '}<Trans i18nKey={langKeys.previoustext} />
+                        </Link>
+                    </Breadcrumbs>
+                )}
+                {!foreground && <h1 className={classes.title}>Canal seleccionado</h1>}
+                <div className={classes.channelList}>
+                    {channels}
+                </div>
+                {(!foreground && selectedChannels >= 1) && (
+                    <>
+                        <div style={{ textAlign: "center", padding: "20px" }}>{t(langKeys.finishregmessage)}</div>
+                        <Button
+                            onClick={(e)=>{
+                                e.preventDefault();
+                                onCheckFunc(()=>setCurrentView("view-2"))
+                            }}
+                            className={commonClasses.button}
+                            style={{ marginTop: '3em' }}
+                            variant="contained"
+                            color="primary"
+                            disabled={executeResult.loading}
+                        >
+                            <Trans i18nKey={langKeys.addpaymentmethod} />
+                        </Button>
+                    </>
+                )}
+            </>):(
+                <>
+                    <Breadcrumbs aria-label="breadcrumb" style={{ marginBottom: '1em' }}>
+                        <Link
+                            color="textSecondary"
+                            href="/"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                setOpenWarning(true);
+                            }}
+                        >
+                            {'<< '}<Trans i18nKey={langKeys.previoustext} />
+                        </Link>
+                    </Breadcrumbs>
+                    <h1 className={classes.title}>{t(langKeys.addpaymentmethod)}</h1>
+                    <div style={{ padding: "20px" }}>{t(langKeys.addpaymentmethodsub)}</div>
+                    <Controller
+                        name="firstname"
+                        control={control}
+                        rules={{
+                            validate: (value) => {
+                                if (value.length === 0) {
+                                    return t(langKeys.field_required) as string;
+                                }
+                            }
                         }}
-                    >
-                        {'<< '}<Trans i18nKey={langKeys.previoustext} />
-                    </Link>
-                </Breadcrumbs>
-            )}
-            {!foreground && <h1 className={classes.title}>Canal seleccionado</h1>}
-            <div className={classes.channelList}>
-                {channels}
-            </div>
-            {(!foreground && selectedChannels > 1) && (
-                <Button
-                    onClick={finishreg}
-                    className={commonClasses.button}
-                    style={{ marginTop: '3em' }}
-                    variant="contained"
-                    color="primary"
-                    disabled={executeResult.loading}
-                >
-                    <Trans i18nKey={langKeys.next} />
-                </Button>
-            )}
+                        render={({ field, formState: { errors } }) => (
+                            <TextField
+                                {...field}
+                                variant="outlined"
+                                margin="normal"
+                                fullWidth
+                                size="small"
+                                label={t(langKeys.firstname)}
+                                error={!!errors.firstname}
+                                helperText={errors.firstname?.message}
+                            />
+                        )}
+                    />
+                    <Controller
+                        name="lastname"
+                        control={control}
+                        rules={{
+                            validate: (value) => {
+                                if (value.length === 0) {
+                                    return t(langKeys.field_required) as string;
+                                }
+                            }
+                        }}
+                        render={({ field, formState: { errors } }) => (
+                            <TextField
+                                {...field}
+                                variant="outlined"
+                                margin="normal"
+                                fullWidth
+                                size="small"
+                                label={t(langKeys.lastname)}
+                                error={!!errors.lastname}
+                                helperText={errors.lastname?.message}
+                            />
+                        )}
+                    />
+                    <Controller
+                        name="pmemail"
+                        control={control}
+                        rules={{
+                            validate: (value) => {
+                                if (value.length === 0) {
+                                    return t(langKeys.field_required) as string;
+                                } else if (!/\S+@\S+\.\S+/.test(value)) {
+                                    return t(langKeys.emailverification) as string;
+                                }
+                            }
+                        }}
+                        render={({ field, formState: { errors } }) => (
+                            <TextField
+                                {...field}
+                                variant="outlined"
+                                margin="normal"
+                                fullWidth
+                                size="small"
+                                label={t(langKeys.email)}
+                                error={!!errors.pmemail}
+                                helperText={errors.pmemail?.message}
+                            />
+                        )}
+                    />
+                    
+                    <h3 >{t(langKeys.creditcard)}</h3>
+                    <div style={{display:"flex"}}>
+                        <img src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{padding: 5}}></img>
+                        <img src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{padding: 5}}></img>
+                        <img src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{padding: 5}}></img>
+                        <img src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{padding: 5}}></img>
+                        
+                    </div>
+                    <div style={{display: "flex",width:"100%"}} >
+                        <div style={{width:"50%"}} >
+                            <Controller
+                                name="creditcard"
+                                control={control}
+                                rules={{
+                                    validate: (value) => {
+                                        if (value.length === 0) {
+                                            return t(langKeys.field_required) as string;
+                                        } else if (value.length!==16) {
+                                            return t(langKeys.creditcardvalidate) as string;
+                                        }
+                                    }
+                                }}
+                                render={({ field, formState: { errors } }) => (
+                                    <TextField
+                                        {...field}
+                                        variant="outlined"
+                                        margin="normal"
+                                        fullWidth
+                                        type="number"
+                                        size="small"
+                                        label={t(langKeys.creditcard)}
+                                        error={!!errors.creditcard}
+                                        helperText={errors.creditcard?.message}
+                                    />
+                                )}
+                            />
+                            
+                            <div style={{ padding: "20px" }}>{t(langKeys.dueDate)}</div>
+                            <div style={{display:"flex"}}>
+                                <Controller
+                                    name="mm"
+                                    control={control}
+                                    rules={{
+                                        validate: (value) => {
+                                            if (value === null || value === undefined) {
+                                                return t(langKeys.field_required) as string;
+                                            }
+                                        }
+                                    }}
+                                    render={({ field: { onChange }, formState: { errors } }) => (
+                                        <FieldSelect
+                                            onChange={(data: typeof datamonth[number]) => {
+                                                onChange(data?.id || "");
+                                            }}
+                                            variant="outlined"
+                                            style={{ marginTop: 8, marginRight: 5 }}
+                                            className="col-6"
+                                            valueDefault={getValues('mm')}
+                                            label={"MM"}
+                                            error={errors.mm?.message}
+                                            data={datamonth}
+                                            optionDesc="desc"
+                                            optionValue="id"
+                                        />
+                                    )}
+                                />
+                                <Controller
+                                    name="yyyy"
+                                    control={control}
+                                    rules={{
+                                        validate: (value) => {
+                                            if (value.length === 0) {
+                                                return t(langKeys.field_required) as string;
+                                            } else if (value.length!==4) {
+                                                return t(langKeys.field_required) as string;
+                                            }
+                                        }
+                                    }}
+                                    render={({ field, formState: { errors } }) => (
+                                        <TextField
+                                            {...field}
+                                            variant="outlined"
+                                            margin="normal"
+                                            fullWidth
+                                            className="col-6"
+                                            style={{ marginTop: 8 }}
+                                            type="number"
+                                            size="small"
+                                            label={"yyyy"}
+                                            error={!!errors.yyyy}
+                                            helperText={errors.yyyy?.message}
+                                        />
+                                    )}
+                                />
+                            </div>
+                            
+                            <Controller
+                                name="securitycode"
+                                control={control}
+                                rules={{
+                                    validate: (value) => {
+                                        if (value.length === 0) {
+                                            return t(langKeys.field_required) as string;
+                                        }
+                                    }
+                                }}
+                                render={({ field, formState: { errors } }) => (
+                                    <TextField
+                                        {...field}
+                                        variant="outlined"
+                                        margin="normal"
+                                        fullWidth
+                                        type="password"
+                                        size="small"
+                                        label={t(langKeys.securitycode)}
+                                        error={!!errors.securitycode}
+                                        helperText={errors.securitycode?.message}
+                                    />
+                                )}
+                            /> 
+                        </div>   
+                        <div style={{width:"50%"}} >
+                            <div style={{ textAlign: "center", padding: "20px", border: "1px solid #7721ad", borderRadius: "15px", margin: "10px" }}>{t(langKeys.finishregwarn)}</div>
+                        </div>                
+                    </div>
+                    <Button
+                            onClick={(e)=>{
+                                e.preventDefault();
+                                finishreg()
+                            }}
+                            className={commonClasses.button}
+                            style={{ marginTop: '3em' }}
+                            variant="contained"
+                            color="primary"
+                            disabled={executeResult.loading}
+                        >
+                            <Trans i18nKey={langKeys.finishreg} />
+                    </Button>
+                </>
+            )
+            }
         </div>
     );
 }

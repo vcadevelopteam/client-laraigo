@@ -32,10 +32,19 @@ const translation: LangKeys = {
 
     model: 'Model',
     model_plural: 'Models',
-
+    tossub1: "Consider that registration of a",
+    securitycode: "Security code",
+    finishregwarn: "To validate the data entered on the card, a charge of S/ 0.5 or its equivalent in dollars will be made to the card entered, an amount that will be refunded immediately.",
+    creditcard: "Credit card",
+    tossub2: "will be required as the final step of creating your account.",
+    
+    addpaymentmethod: "Add payment method",
+    addpaymentmethodsub: "Contact information for billing submission:",
+    creditcardvalidate: "Please insert a valid card number",
     analysis_type: 'Analysis Type',
     analysis_type_plural: 'Analysis Types',
     resume: "Resume",
+    finishregmessage: "To end the subscription you must add the payment method, contact information and save it",
     report_name: 'Report name',
     quickresponse: "Quick response",
     advance_search: 'Advance search',

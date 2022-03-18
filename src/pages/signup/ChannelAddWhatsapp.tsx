@@ -446,7 +446,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                     </div>
                 </div>
             </div> */}
-            {!hasFinished ? (
+            {!hasFinished && (
                 <Button
                     onClick={() => setView("view2")}
                     className={commonClasses.button}
@@ -454,15 +454,6 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                     color="primary"
                 >
                     <Trans i18nKey={langKeys.next} />
-                </Button>
-            ) : selectedChannels === 1 && (
-                <Button
-                    onClick={finishreg}
-                    className={commonClasses.button}
-                    variant="contained"
-                    color="primary"
-                >
-                    <Trans i18nKey={langKeys.finishreg} />
                 </Button>
             )}
         </div>

@@ -179,7 +179,7 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
                     </div>
                 </div>
             </div> */}
-            {((getValues('channels.instagram.siteid')?.length || 0) === 0 )&& (mainResult.data.length === 0) ? (
+            {((getValues('channels.instagram.siteid')?.length || 0) === 0 )&& (mainResult.data.length === 0) && (
                 <FacebookLogin
                     appId={apiUrls.INSTAGRAMAPP}
                     autoLoad={false}
@@ -198,16 +198,6 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
                     }}
                     isDisabled={mainResult.loading}
                 />
-            ) : selectedChannels === 1 && (
-                <Button
-                    onClick={finishreg}
-                    className={commonClasses.button}
-                    disabled={mainResult.loading}
-                    variant="contained"
-                    color="primary"
-                >
-                    <Trans i18nKey={langKeys.finishreg} />
-                </Button>
             )}
         </div>
     );

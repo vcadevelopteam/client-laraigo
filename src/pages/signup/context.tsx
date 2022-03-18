@@ -52,6 +52,7 @@ interface Subscription {
     setConfirmations: SetState<number>;
     setStep: SetState<number>;
     finishreg: () => void;
+    onCheckFunc: (altf:any) => void;
     setForeground: SetState<keyof ListChannels | undefined>;
     resetChannels: () => void;
     addChannel: (option: keyof ListChannels) => void;
@@ -177,6 +178,13 @@ export interface MainData {
     rolecompany: string;
 
     channels: Channels;
+    firstname: string;
+    lastname: string;
+    pmemail: string;
+    creditcard: string;
+    mm: number;
+    yyyy: string;
+    securitycode: string;
 }
 
 const defaultListChannels: ListChannels = {
@@ -207,6 +215,7 @@ export const SubscriptionContext = createContext<Subscription>({
     setConfirmations: () => {},
     setStep: () => {},
     finishreg: () => {},
+    onCheckFunc: (altf:any) => {},
     setForeground: () => {},
     addChannel: () => {},
     deleteChannel: () => {},
@@ -439,6 +448,10 @@ export const SubscriptionProvider: FC = ({ children }) => {
         form.handleSubmit(onSubmit, onError)();
         submitObs.trigger();
     }
+    const onCheckFunc = (altfunc?: any) => {
+        form.handleSubmit(altfunc, onError)();
+        submitObs.trigger();
+    }
 
     const onSubmit: SubmitHandler<MainData> = (data) => {
         const { channels, ...mainData } = data;
@@ -492,6 +505,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
             setConfirmations,
             setStep,
             finishreg,
+            onCheckFunc,
             setForeground,
             addChannel,
             deleteChannel,
