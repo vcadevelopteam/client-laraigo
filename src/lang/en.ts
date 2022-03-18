@@ -673,6 +673,11 @@ const translation: LangKeys = {
     variance: 'Variance',
     last_update: 'Last update',
 
+    calendar: 'Calendar',
+    calendar_detail: 'Calendar detail',
+    calendar_plural: 'Calendars',
+    newcalendar: 'New calendar',
+
     supplier: "Supplier",
     id: 'Id',
     newmessagetemplate: 'New Message Template',

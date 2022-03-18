@@ -835,6 +835,12 @@ export const langKeys = {
     variance: 'variance',
     last_update: 'last_update',
 
+    calendar: 'calendar',
+    calendar_detail: 'calendar_detail',
+    calendar_plural: 'calendar_plural',
+    newcalendar: 'newcalendar',
+
+
     no_reply_use_hsm: 'no_reply_use_hsm',
 
     active: 'active',

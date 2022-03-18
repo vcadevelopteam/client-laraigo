@@ -917,6 +917,11 @@ const translation: LangKeys = {
     variance: 'Variación',
     last_update: 'Última actualización',
 
+    calendar: 'Calendario',
+    calendar_detail: 'Detalle calendario',
+    calendar_plural: 'Calendarios',
+    newcalendar: 'Nuevo calendario',
+
     id: 'Id',
     newmessagetemplate: 'Nueva plantilla de comunicación',
     messagetemplate: 'Plantilla de comunicación',

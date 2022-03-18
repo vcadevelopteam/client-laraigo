@@ -42,6 +42,13 @@ export const routes: RouteConfig[] = [
         path: paths.KPIMANAGER,
         icon: (className) => <DashboardIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
     },
+    {
+        key: paths.CALENDAR,
+        description: <Trans i18nKey={langKeys.calendar_plural} />,
+        tooltip: <Trans i18nKey={langKeys.calendar} />,
+        path: paths.CALENDAR,
+        icon: (className) => <DashboardIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
+    },
     // {
     //     key: paths.REPORTDESIGNER,
     //     description: <Trans i18nKey={langKeys.report_designer} count={2} />, // prop:count for plural purposes

@@ -132,6 +132,7 @@ const paths = {
         resolve: (leadId: string | number) => `/crm/leads/${leadId}`,
     },
     KPIMANAGER: '/kpimanager',
+    CALENDAR: '/calendar',
     CHNAGE_PWD_FIRST_LOGIN: '/changePasswordOnFirstLogin',
     RECOVER_PASSWORD: {
         path: '/recoverpassword/:token',
