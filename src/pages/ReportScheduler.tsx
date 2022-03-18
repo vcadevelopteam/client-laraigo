@@ -540,7 +540,7 @@ const ReportScheduler: FC = () => {
                 NoFilter: true,
                 Cell: (props: any) => {
                     const { reportname, origin } = props.cell.row.original;
-                    return (t(`${reportname ? reportname : origin}`.toLowerCase()) || "").toUpperCase()
+                    return (t(`${reportname ? (origin === "CAMPAIGN" ? `${origin}_${reportname}` : reportname) : origin}`.toLowerCase()) || "").toUpperCase()
                 }
             },
         ],

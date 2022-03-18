@@ -3189,6 +3189,8 @@ export const langKeys = {
     filterreport_productivity: 'filterreport_productivity',
     filterreport_tipification: 'filterreport_tipification',
     filterreport_recordhsmreport: 'filterreport_recordhsmreport',
+    campaign_default: 'campaign_default',
+    campaign_proactive: 'campaign_proactive',
 };
 
 export type LangKeys = typeof langKeys;

@@ -3196,6 +3196,8 @@ const translation: LangKeys = {
     filterreport_productivity: 'Productividad de asesores',
     filterreport_tipification: 'Clasificaciones',
     filterreport_recordhsmreport: 'Reporte historial de envíos',
+    campaign_default: 'CAMPAÑA/PREDETERMINADO',
+    campaign_proactive: 'CAMPAÑA/PROACTIVO',
 };
 
 const esResource: ResourceLanguage = {

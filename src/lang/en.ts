@@ -3205,6 +3205,8 @@ const translation: LangKeys = {
     filterreport_productivity: 'Agent productivity',
     filterreport_tipification: 'Classifications',
     filterreport_recordhsmreport: 'Shipment history report',
+    campaign_default: 'CAMPAIGN/DEFAULT',
+    campaign_proactive: 'CAMPAIGN/PROACTIVE',
 };
 
 const enResource: ResourceLanguage = {
