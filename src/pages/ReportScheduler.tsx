@@ -539,8 +539,8 @@ const ReportScheduler: FC = () => {
                 accessor: 'reportname',
                 NoFilter: true,
                 Cell: (props: any) => {
-                    const { reportname } = props.cell.row.original;
-                    return (t(`${reportname}`.toLowerCase()) || "").toUpperCase()
+                    const { reportname, origin } = props.cell.row.original;
+                    return (t(`${reportname ? reportname : origin}`.toLowerCase()) || "").toUpperCase()
                 }
             },
         ],
