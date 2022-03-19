@@ -70,6 +70,13 @@ export const routes: RouteConfig[] = [
         path: paths.CRM,
         icon: (className) => <CRMIcon style={{ width: 22, height: 26 }} className={className} />,
     },
+    {
+        key: paths.AUTOMATIZATIONRULES,
+        description: <Trans i18nKey={langKeys.automatizationrules} count={2} />,
+        tooltip: <Trans i18nKey={langKeys.automatizationrules} count={2} />,
+        path: paths.AUTOMATIZATIONRULES,
+        icon: (className) => <CRMIcon style={{ width: 22, height: 26 }} className={className} />,
+    },
     // {
     //     key: paths.EMAIL_INBOX,
     //     description: <Trans i18nKey={langKeys.eMailInbox} />,

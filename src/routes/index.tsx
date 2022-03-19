@@ -21,6 +21,7 @@ import { getAccessToken } from 'common/helpers';
 import { Redirect } from 'react-router-dom';
 import { logout, validateToken } from 'store/login/actions';
 import { useDispatch } from 'react-redux';
+import AutomatizationRules from "pages/AutomatizationRules";
 
 const useStyles = makeStyles((theme) => ({
 	main: {
@@ -326,6 +327,9 @@ const RouterApp: FC = () => {
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CONFIGURATION}>
 					<Layout mainClasses={classes.main}><Settings /></Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.AUTOMATIZATIONRULES}>
+					<Layout mainClasses={classes.main}><AutomatizationRules /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CRM}>
 					<Layout mainClasses={classes.main}><CRM /></Layout>

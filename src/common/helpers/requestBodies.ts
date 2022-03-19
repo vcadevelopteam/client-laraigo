@@ -555,8 +555,16 @@ export const getDomainValueSel = (domainname: string): IRequestBody => ({
     method: "UFN_DOMAIN_VALUES_SEL",
     key: "UFN_DOMAIN_VALUES_SEL",
     parameters: {
-        domainname: domainname,
+        id: domainname,
         all: true
+    }
+})
+export const getAutomatizationRulesSel = (id: number): IRequestBody => ({
+    method: "UFN_LEADAUTOMATIZATIONRULES_SEL",
+    key: "UFN_LEADAUTOMATIZATIONRULES_SEL",
+    parameters: {
+        id,
+        all: id===0
     }
 })
 

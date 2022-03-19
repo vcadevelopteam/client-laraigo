@@ -34,6 +34,8 @@ const translation: LangKeys = {
     model_plural: 'Models',
     tossub1: "Consider that registration of a",
     securitycode: "Security code",
+    automatizationrule: "Automatization rule",
+    automatizationrules: "Automatization rules",
     finishregwarn: "To validate the data entered on the card, a charge of S/ 0.5 or its equivalent in dollars will be made to the card entered, an amount that will be refunded immediately.",
     creditcard: "Credit card",
     tossub2: "will be required as the final step of creating your account.",
