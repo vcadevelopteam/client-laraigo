@@ -921,6 +921,9 @@ const translation: LangKeys = {
     calendar_detail: 'Detalle calendario',
     calendar_plural: 'Calendarios',
     newcalendar: 'Nuevo calendario',
+    location: 'Ubicación',
+    duration: 'Duración',
+    notificationtype: 'Tipo de notificación',
 
     id: 'Id',
     newmessagetemplate: 'Nueva plantilla de comunicación',
@@ -1018,6 +1021,7 @@ const translation: LangKeys = {
     bdexternal: 'Base externa',
     date: 'Fecha',
     hour: 'Hora',
+    hour_plural: 'Horas',
     clean: 'Limpiar',
     column: 'Columna',
     function: 'Función',

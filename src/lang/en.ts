@@ -677,6 +677,9 @@ const translation: LangKeys = {
     calendar_detail: 'Calendar detail',
     calendar_plural: 'Calendars',
     newcalendar: 'New calendar',
+    location: 'Location',
+    duration: 'Duration',
+    notificationtype: 'Notification type',
 
     supplier: "Supplier",
     id: 'Id',
@@ -873,6 +876,7 @@ const translation: LangKeys = {
     bdexternal: 'External data',
     date: 'Date',
     hour: 'Hour',
+    hour_plural: 'Hours',
     clean: 'Clean',
     column: 'Column',
     function: 'Function',

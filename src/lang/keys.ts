@@ -839,6 +839,9 @@ export const langKeys = {
     calendar_detail: 'calendar_detail',
     calendar_plural: 'calendar_plural',
     newcalendar: 'newcalendar',
+    location: 'location',
+    duration: 'duration',
+    notificationtype: 'notificationtype',
 
 
     no_reply_use_hsm: 'no_reply_use_hsm',
@@ -1261,6 +1264,7 @@ export const langKeys = {
     bdexternal: 'bdexternal',
     date: 'date',
     hour: 'hour',
+    hour_plural: 'hour_plural',
     clean: 'clean',
     column: 'column',
     function: 'function',

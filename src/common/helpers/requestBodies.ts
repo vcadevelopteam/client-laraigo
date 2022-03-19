@@ -2724,3 +2724,36 @@ export const billingReportConversationWhatsApp = ({ corpid, orgid, year, month }
     key: "UFN_BILLING_REPORT_CONVERSATIONWHATSAPP",
     parameters: { corpid, orgid, year, month }
 })
+
+export const selCalendar = (id: number = 0) => ({
+    method: "UFN_CALENDARYEVENT_SEL",
+    key: "UFN_CALENDARYEVENT_SEL",
+    parameters: {
+        id,
+        all: id === 0,
+    },
+});
+
+export const insCalendar = ({
+    id = 0, description, status, type,
+    code, name, locationtype, location, eventlink, color, notificationtype, messagetemplateid,
+    daterange, daysduration, daystype, startdate, enddate,
+    timeduration, timeunit,
+    availability,
+    timebeforeeventduration, timebeforeeventunit, timeaftereventduration, timeaftereventunit,
+    increments,
+    operation
+}: Dictionary): IRequestBody => ({
+    method: "UFN_CALENDARYEVENT_INS",
+    key: "UFN_CALENDARYEVENT_INS",
+    parameters: {
+        id, description, status, type,
+        code, name, locationtype, location, eventlink, color, notificationtype, messagetemplateid,
+        daterange, daysduration, daystype, startdate, enddate,
+        timeduration, timeunit,
+        availability: JSON.stringify(availability),
+        timebeforeeventduration, timebeforeeventunit, timeaftereventduration, timeaftereventunit,
+        increments,
+        operation
+    }
+});

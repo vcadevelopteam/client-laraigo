@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldEditMulti } from 'components';
-import { calcKPIManager, convertLocalDate, dictToArrayKV, getDateCleaned, getDateToday, getFirstDayMonth, getLastDayMonth, getValuesFromDomain, insKPIManager, selKPIManager, selKPIManagerHistory } from 'common/helpers';
+import { calcKPIManager, convertLocalDate, dictToArrayKV, getDateCleaned, getDateToday, getFirstDayMonth, getLastDayMonth, getValuesFromDomain, insCalendar, insKPIManager, selCalendar, selKPIManager, selKPIManagerHistory } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -840,22 +840,10 @@ const Calendar: FC = () => {
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
     const [waitDuplicate, setWaitDuplicate] = useState(false);
-    const [waitCalc, setWaitCalc] = useState(false);
     const [dataGrid, setDataGrid] = useState<any[]>([]);
 
     useEffect(() => {
-        setDataGrid(mainResult.mainData.data.map(d => (
-            {
-                ...d,
-                updatedate: convertLocalDate(d.updatedate).toLocaleString(undefined, {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                    hour: "numeric",
-                    minute: "numeric",
-                    second: "numeric"
-                })
-        })))
+        setDataGrid(mainResult.mainData.data)
     }, [mainResult.mainData.data])
 
     const columns = React.useMemo(
@@ -876,55 +864,48 @@ const Calendar: FC = () => {
                             onDuplicate={() => {
                                 handleDuplicate(row);
                             }}
-                            onCalc={() => {
-                                handleCalc(row)
-                            }}
                         />
                     )
                 }
             },
             {
-                Header: t(langKeys.kpiname),
-                accessor: 'kpiname',
-                NoFilter: true,
+                Header: t(langKeys.code),
+                accessor: 'code',
             },
             {
-                Header: t(langKeys.description),
-                accessor: 'description',
-                NoFilter: true,
+                Header: t(langKeys.name),
+                accessor: 'name',
             },
             {
-                Header: t(langKeys.current_value),
-                accessor: 'currentvalue',
-                type: 'number',
-                NoFilter: true,
+                Header: t(langKeys.location),
+                accessor: 'location',
             },
             {
-                Header: t(langKeys.target),
-                accessor: 'target',
-                type: 'number',
-                NoFilter: true,
-            },
-            {
-                Header: t(langKeys.last_update),
-                accessor: 'updatedate',
-                NoFilter: true,
+                Header: t(langKeys.duration),
+                accessor: 'duration',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (<div>{row.timeduration} {t((langKeys as any)[`${row.timeunit?.toLowerCase()}${row.timeduration > 1 ? '_plural' : ''}`])}</div>)
+                }
             },
             {
                 Header: t(langKeys.status),
                 accessor: 'status',
-                NoFilter: true,
                 prefixTranslation: 'status_',
                 Cell: (props: any) => {
                     const { status } = props.cell.row.original;
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
                 }
             },
+            {
+                Header: t(langKeys.notificationtype),
+                accessor: 'notificationtype',
+            },
         ],
         []
     );
 
-    const fetchData = () => dispatch(getCollection(selKPIManager(0)));
+    const fetchData = () => dispatch(getCollection(selCalendar(0)));
 
     useEffect(() => {
         fetchData();
@@ -944,7 +925,7 @@ const Calendar: FC = () => {
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.kpimanager_plural).toLocaleLowerCase() })
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.calendar_plural).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
@@ -964,7 +945,7 @@ const Calendar: FC = () => {
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(insKPIManager({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.id })));
+            dispatch(execute(insCalendar({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.id })));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -979,26 +960,31 @@ const Calendar: FC = () => {
     const handleDuplicate = (row: Dictionary) => {
         setViewSelected("view-2");
         setRowSelected({ row: {
-            kpiname: row.kpiname,
             description: row.description,
             status: row.status,
             type: row.type,
-            sqlselect: row.sqlselect,
-            sqlwhere: row.sqlwhere,
-            target: row.target,
-            cautionat: row.cautionat,
-            alertat: row.alertat,
-            taskperiod: row.taskperiod,
-            taskinterval: row.taskinterval,
-            taskstartdate: row.taskstartdate,
+            name: row.name,
+            locationtype: row.locationtype,
+            location: row.location,
+            eventlink: row.eventlink,
+            color: row.color,
+            notificationtype: row.notificationtype,
+            messagetemplateid: row.messagetemplateid,
+            daterange: row.daterange,
+            daysduration: row.daysduration,
+            daystype: row.daystype,
+            startdate: row.startdate,
+            enddate: row.enddate,
+            timeduration: row.timeduration,
+            timeunit: row.timeunit,
+            availability: row.availability,
+            timebeforeeventduration: row.timebeforeeventduration,
+            timebeforeeventunit: row.timebeforeeventunit,
+            timeaftereventduration: row.timeaftereventduration,
+            timeaftereventunit: row.timeaftereventunit,
+            increments: row.increments,
         }, edit: true });
     }
-
-    const handleCalc = (row: Dictionary) => {
-        dispatch(execute(calcKPIManager(row?.id)));
-        dispatch(showBackdrop(true));
-        setWaitCalc(true);
-    };
 
     useEffect(() => {
         if (waitDuplicate) {
@@ -1008,7 +994,7 @@ const Calendar: FC = () => {
                 dispatch(showBackdrop(false));
                 setWaitDuplicate(false);
             } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.kpimanager_plural).toLocaleLowerCase() })
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.calendar_plural).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitDuplicate(false);
@@ -1016,33 +1002,12 @@ const Calendar: FC = () => {
         }
     }, [executeResult, waitDuplicate])
 
-    useEffect(() => {
-        if (waitCalc) {
-            if (!executeResult.loading && !executeResult.error && executeResult.data) {
-                if (executeResult.data[0].p_success) {
-                    fetchData && fetchData();
-                }
-                else {
-                    const errormessage = t(langKeys.error_kpi_sql, { error: executeResult.data[0].p_error })
-                    dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                }
-                dispatch(showBackdrop(false));
-                setWaitCalc(false);
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.kpimanager_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                dispatch(showBackdrop(false));
-                setWaitCalc(false);
-            }
-        }
-    }, [executeResult, waitCalc])
-
     if (viewSelected === "view-1") {
         return (
             <TableZyx
                 onClickRow={handleEdit}
                 columns={columns}
-                titlemodule={t(langKeys.kpimanager_plural, { count: 2 })}
+                titlemodule={t(langKeys.calendar_plural, { count: 2 })}
                 data={dataGrid}
                 download={true}
                 loading={mainResult.mainData.loading}
