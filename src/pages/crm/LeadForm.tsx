@@ -565,7 +565,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
 
         const desc = String(typeof value === "object" ? value?.domaindesc || '-' : value);
         const productAlreadyHasChange = leadProductsChanges.current.some(x => x.description === desc);
-        const previousProductsIncludeDesc = lead.value.leadproduct.includes(desc);
+        const previousProductsIncludeDesc = lead.value.leadproduct?.includes(desc);
 
         if (
             (!previousProductsIncludeDesc && !productAlreadyHasChange) ||

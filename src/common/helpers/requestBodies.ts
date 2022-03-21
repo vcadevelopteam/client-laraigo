@@ -1983,6 +1983,26 @@ export const getAutomatizationRulesSel = (id: number): IRequestBody => ({
     }
 })
 
+export const insAutomatizationRules = ({  id, description, status, type, columnid, communicationchannelid, messagetemplateid, messagetemplateparameters, shippingtype, xdays, schedule, tags, products, operation}: Dictionary): IRequestBody => ({
+    method: 'UFN_LEADAUTOMATIZATIONRULES_INS',
+    key: "UFN_LEADAUTOMATIZATIONRULES_INS",
+    parameters: {
+        id,
+        description,
+        status,
+        type,
+        columnid,
+        communicationchannelid,
+        messagetemplateid,
+        messagetemplateparameters,
+        shippingtype,
+        xdays,
+        schedule,
+        tags,
+        products,
+        operation,
+    }
+});
 export const insColumns = ({ id, description, type, status, edit, index, operation, delete_all = false }: Dictionary): IRequestBody => ({
     method: 'UFN_COLUMN_INS',
     key: "UFN_COLUMN_INS",

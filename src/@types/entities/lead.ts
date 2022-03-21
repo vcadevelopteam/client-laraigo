@@ -106,6 +106,23 @@ export interface ICrmLeadActivitySave {
     hsmtemplatename?: string;
     variables?: any[]
 }
+export interface AutomatizationRuleSave {
+	id: number,
+    operation: string,
+    description: string,
+    communicationchannelid: number,
+    columnid: number,
+    shippingtype: string,
+    xdays: string,
+    status: string,
+    type: string,
+    schedule: string,
+    tags: string,
+    products: string,
+    messagetemplateid: number,
+    hsmtemplatename: string,
+    variables?: any[],
+}
 
 export interface ICrmLeadNoteSave {
     leadid: number;
