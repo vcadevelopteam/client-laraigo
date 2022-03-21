@@ -3221,6 +3221,7 @@ const translation: LangKeys = {
     culqiurlcharge: 'URL API Crear Cargo',
     culqiurlcardget: 'URL API Consultar Tarjeta',
     culqiurlcarddelete: 'URL API Eliminar Tarjeta',
+    error_auth_error: '5001: Error de autenticación',
 };
 
 const esResource: ResourceLanguage = {

@@ -3214,6 +3214,7 @@ export const langKeys = {
     culqiurlcharge: 'culqiurlcharge',
     culqiurlcardget: 'culqiurlcardget',
     culqiurlcarddelete: 'culqiurlcarddelete',
+    error_auth_error: 'error_auth_error',
 };
 
 export type LangKeys = typeof langKeys;

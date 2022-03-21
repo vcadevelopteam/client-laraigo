@@ -3230,6 +3230,7 @@ const translation: LangKeys = {
     culqiurlcharge: 'Create Charge API URL',
     culqiurlcardget: 'View Card API URL',
     culqiurlcarddelete: 'Delete Card API URL',
+    error_auth_error: '5001: Authentication error',
 };
 
 const enResource: ResourceLanguage = {
