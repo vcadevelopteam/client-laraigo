@@ -1974,6 +1974,14 @@ export const getLeadsSel = (params: ICrmLeadSel): IRequestBody => ({
         all: params.id === 0,
     }
 })
+export const getAutomatizationRulesSel = (id: number): IRequestBody => ({
+    method: "UFN_LEADAUTOMATIZATIONRULES_SEL",
+    key: "UFN_LEADAUTOMATIZATIONRULES_SEL",
+    parameters: {
+        id,
+        all: id===0
+    }
+})
 
 export const insColumns = ({ id, description, type, status, edit, index, operation, delete_all = false }: Dictionary): IRequestBody => ({
     method: 'UFN_COLUMN_INS',

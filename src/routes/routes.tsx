@@ -71,6 +71,13 @@ export const routes: RouteConfig[] = [
         icon: (className) => <CRMIcon style={{ width: 22, height: 26 }} className={className} />,
     },
     {
+        key: paths.AUTOMATIZATIONRULES,
+        description: <Trans i18nKey={langKeys.automatizationrules} count={2} />,
+        tooltip: <Trans i18nKey={langKeys.automatizationrules} count={2} />,
+        path: paths.AUTOMATIZATIONRULES,
+        icon: (className) => <CRMIcon style={{ width: 22, height: 26 }} className={className} />,
+    },
+    {
         key: paths.PRODUCTCATALOG,
         description: <Trans i18nKey={langKeys.productcatalog} count={2} />,
         tooltip: <Trans i18nKey={langKeys.productcatalog} count={2} />,

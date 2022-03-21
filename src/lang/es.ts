@@ -469,6 +469,8 @@ const translation: LangKeys = {
     interval: 'Intervalo',
     finishreg: "FINALIZAR REGISTRO",    
     validnumber: "Por favor inserte un número válido",
+    automatizationrules: "Reglas de automatización",
+    automatizationrule: "Regla de automatización",
     supportplan:"Plan de Soporte",
     default_credentials: "Credenciales predeterminadas",
     private_mail: "Usar correo privado",

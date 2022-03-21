@@ -27,6 +27,8 @@ export const langKeys = {
     reportscheduler: "reportscheduler",
     reportscheduler_singular: "reportscheduler_singular",
     reportschedulerdetail1: "reportschedulerdetail1",
+    automatizationrules: "automatizationrules",
+    automatizationrule: "automatizationrule",
     reportschedulerdetail2: "reportschedulerdetail2",
     to: "to",
     subject: "subject",

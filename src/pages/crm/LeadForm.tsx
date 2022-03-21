@@ -1,23 +1,19 @@
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, IconButton, Checkbox, Tabs, Avatar, Paper, InputAdornment } from '@material-ui/core';
-import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, PhoneFieldEdit, RadioGroudFieldEdit, TitleDetail, AntTabPanel, FieldMultiSelect, RichText, CurrencyFieldEdit, FieldEditArray } from 'components';
+import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, PhoneFieldEdit, RadioGroudFieldEdit, TitleDetail, AntTabPanel, FieldMultiSelect, RichText, CurrencyFieldEdit } from 'components';
 import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useRouteMatch } from 'react-router';
-import {
-    insLead2, adviserSel, getPaginatedPerson as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSel, insArchiveLead, leadHistorySel,
-    getLeadsSel, leadHistoryIns
-} from 'common/helpers';
+import { insLead2, adviserSel, getPaginatedPerson as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSel, insArchiveLead, leadHistorySel,
+    getLeadsSel, leadHistoryIns } from 'common/helpers';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
-import {
-    archiveLead, getAdvisers, getLead, getLeadActivities, getLeadHistory, getLeadLogNotes, getLeadPhases, markDoneActivity, resetArchiveLead, resetGetLead, resetGetLeadActivities, resetGetLeadHistory,
-    resetGetLeadLogNotes, resetGetLeadPhases, resetMarkDoneActivity, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLeadActivity, saveLeadLogNote, saveLeadWithFiles, saveLead as saveLeadAction,
-    resetGetLeadProductsDomain, getLeadProductsDomain, getLeadTagsDomain, resetGetLeadTagsDomain, getLeadTemplates, resetGetLeadTemplates, getLeadChannels, resetGetLeadChannels
-} from 'store/lead/actions';
+import { archiveLead, getAdvisers, getLead, getLeadActivities, getLeadHistory, getLeadLogNotes, getLeadPhases, markDoneActivity, resetArchiveLead, resetGetLead, resetGetLeadActivities, resetGetLeadHistory, 
+    resetGetLeadLogNotes, resetGetLeadPhases, resetMarkDoneActivity, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLeadActivity, saveLeadLogNote, saveLeadWithFiles, saveLead as saveLeadAction, 
+    resetGetLeadProductsDomain, getLeadProductsDomain, getLeadTagsDomain, resetGetLeadTagsDomain } from 'store/lead/actions';
 import { Dictionary, ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, ICrmLeadHistory, ICrmLeadHistoryIns, ICrmLeadNote, ICrmLeadNoteSave, IDomain, IFetchData, IPerson } from '@types';
 import { manageConfirmation, showSnackbar } from 'store/popus/actions';
 import { Rating, Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineSeparator } from '@material-ui/lab';
@@ -28,16 +24,13 @@ import { Add, AttachFile, Clear, Close, GetApp, Create, Done, FileCopy, Info, Mo
 import { getPersonListPaginated, resetGetPersonListPaginated } from 'store/person/actions';
 import clsx from 'clsx';
 import { AccessTime as AccessTimeIcon, Archive as ArchiveIcon, Flag as FlagIcon, Cancel as CancelIcon, Note as NoteIcon, LocalOffer as LocalOfferIcon, LowPriority as LowPriorityIcon, Star as StarIcon, History as HistoryIcon, TrackChanges as TrackChangesIcon } from '@material-ui/icons';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { getCollection, resetMain } from 'store/main/actions';
 import { AntTab } from 'components';
 import { EmailIcon, WhatsappIcon, SmsIcon } from 'icons';
 import { Descendant } from 'slate';
-import { emitEvent } from 'store/inbox/actions';
 
 const urgencyLevels = ['', 'LOW', 'MEDIUM', 'HIGH']
-
-const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'custom'].map(x => ({ key: x }))
 
 const useLeadFormStyles = makeStyles(theme => ({
     root: {
@@ -179,17 +172,15 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
 
     const registerFormFieldOptions = useCallback(() => {
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('expected_revenue', {
-            validate: (value): any => {
-                if (!value || value.length === 0) {
-                    return t(langKeys.field_required);
-                } else if (Number(value) < 0) {
-                    return t(langKeys.field_nonnegative);
-                }
-
-                return undefined;
+        register('expected_revenue', { validate: (value): any => {
+            if (!value || value.length === 0) {
+                return t(langKeys.field_required);
+            } else if (Number(value) < 0) {
+                return t(langKeys.field_nonnegative);
             }
-        });
+            
+            return undefined;
+        }});
         register('date_deadline', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('tags', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('personcommunicationchannel', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -232,7 +223,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 notes[i].media = urls.join(',');
                             }
                         }
-
+        
                         return {
                             header: insLead2(data, data.operation),
                             detail: [
@@ -275,8 +266,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         dispatch(getLeadPhases(getColumnsSel(0, true)));
         dispatch(getLeadProductsDomain(getValuesFromDomain('OPORTUNIDADPRODUCTOS')));
         dispatch(getLeadTagsDomain(getValuesFromDomain('OPORTUNIDADETIQUETAS')));
-        dispatch(getLeadTemplates());
-        dispatch(getLeadChannels());
 
         return () => {
             dispatch(resetGetLead());
@@ -291,7 +280,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             dispatch(resetGetLeadHistory());
             dispatch(resetGetLeadProductsDomain());
             dispatch(resetGetLeadTagsDomain());
-            dispatch(resetGetLeadChannels());
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [edit, match.params.id, dispatch]);
@@ -551,7 +539,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             if (historyBody) {
                 historyBody.type = action;
             }
-        } else if (
+        } else  if (
             (action === "REMOVETAG" && !previousTagsIncludeDesc && tagsAlreadyHasChange) ||
             (action === "NEWTAG" && previousTagsIncludeDesc && tagsAlreadyHasChange)
         ) {
@@ -584,7 +572,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             if (historyBody) {
                 historyBody.type = action;
             }
-        } else if (
+        } else  if (
             (action === "REMOVEPRODUCT" && !previousProductsIncludeDesc && productAlreadyHasChange) ||
             (action === "NEWPRODUCT" && previousProductsIncludeDesc && productAlreadyHasChange)
         ) {
@@ -629,7 +617,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         if (wonIndex !== -1 && phases.data[lostIndex].columnid === lead.value.columnid) {
             return true;
         }
-
+        
         return false;
     }, [lead, phases]);
 
@@ -771,7 +759,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     label={t(langKeys.tags)}
                                     className={classes.field}
                                     valueDefault={getValues('tags')}
-                                    onChange={(value: ({ domaindesc: string } | string)[], value2: { action: "create-option" | "remove-option" | "select-option", option: { option: string } }) => {
+                                    onChange={(value: ({domaindesc: string} | string)[], value2: {action: "create-option" | "remove-option" | "select-option", option: {option: string}}) => {
                                         const tags = value.map((o: any) => o.domaindesc || o).join();
                                         setValue('tags', tags);
 
@@ -805,7 +793,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     label={t(langKeys.product, { count: 2 })}
                                     className={classes.field}
                                     valueDefault={getValues('leadproduct')}
-                                    onChange={(v, value2: { action: "remove-option" | "select-option", option: { option: any } }) => {
+                                    onChange={(v, value2: {action: "remove-option" | "select-option", option: {option: any}}) => {
                                         // console.log(value2);
                                         const products = v?.map((o: Dictionary) => o['domainvalue']).join(',') || '';
                                         setValue('leadproduct', products);
@@ -1190,7 +1178,7 @@ interface TabPanelLogNoteProps {
     notes: ICrmLeadNote[];
     leadId: number;
     onSubmit?: (newNote: ICrmLeadNoteSave) => void;
-    AdditionalButtons?: () => JSX.Element | null;
+    AdditionalButtons?: () => JSX.Element |null;
 }
 
 export const TabPanelLogNote: FC<TabPanelLogNoteProps> = ({ notes, loading, readOnly, leadId, onSubmit, AdditionalButtons }) => {
@@ -1577,28 +1565,9 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
     const mustCloseOnSubmit = useRef<boolean>(true);
     const saveActivity = useSelector(state => state.lead.saveLeadActivity);
     const advisers = useSelector(state => state.lead.advisers);
-    const lead = useSelector(state => state.lead.lead);
-
-    const templates = useSelector(state => state.lead.leadTemplates);
-    const channels = useSelector(state => state.lead.leadChannels);
     const domains = useSelector(state => state.main.mainData);
     const [detail, setDetail] = useState<Descendant[]>(initialValue);
     const [, refresh] = useState(false);
-    const [domainsTotal, setDomainsTotal] = useState<Dictionary[]>([])
-    const [bodyMessage, setBodyMessage] = useState('');
-    const [bodyCleaned, setBodyCleaned] = useState('');
-    const [assigntoinitial, setassigntoinitial] = useState(0)
-
-    useEffect(() => {
-        if (!domains.loading && !domains.error) {
-            setDomainsTotal([
-                ...domains.data, {
-                    domaindesc: 'automated',
-                    domainvalue: 'automated'
-                }])
-        }
-    }, [domains])
-
 
     useEffect(() => {
         dispatch(getCollection(getValuesFromDomain("TIPOACTIVIDADLEAD")));
@@ -1627,7 +1596,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [saveActivity, leadid, open, dispatch]);
 
-    const { getValues, trigger, setValue, control, formState: { errors }, reset, handleSubmit, register } = useForm<ICrmLeadActivitySave>({
+    const { getValues, setValue, formState: { errors }, reset, handleSubmit, register } = useForm<ICrmLeadActivitySave>({
         defaultValues: {
             leadid: leadid,
             leadactivityid: activity?.leadactivityid || 0,
@@ -1641,16 +1610,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             operation: activity ? "UPDATE" : "INSERT",
             feedback: '',
             detailjson: JSON.stringify(initialValue),
-
-            hsmtemplateid: 0,
-            hsmtemplatename: '',
-            variables: []
         },
-    });
-
-    const { fields } = useFieldArray({
-        control,
-        name: 'variables',
     });
 
     const registerFormFieldOptions = useCallback(() => {
@@ -1668,11 +1628,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
         register('description', { validate: mandatoryStrField });
         register('duedate', { validate: validateDateFormat });
         register('assignto', { validate: mandatoryStrField });
-
         register('type', { validate: mandatoryStrField });
-        register('communicationchanneltype');
-
-
     }, [register, t]);
 
     useEffect(() => {
@@ -1694,10 +1650,6 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             operation: "INSERT",
             feedback: '',
             detailjson: JSON.stringify(initialValue),
-
-            hsmtemplateid: 0,
-            hsmtemplatename: '',
-            variables: []
         });
         registerFormFieldOptions();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1718,36 +1670,15 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             operation: activity ? "UPDATE" : "INSERT",
             feedback: '',
             detailjson: activity?.detailjson || JSON.stringify(initialValue),
-
-            hsmtemplateid: 0,
-            hsmtemplatename: '',
-            variables: []
         });
 
         registerFormFieldOptions();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-
-        if (activity?.assignto) {
-            setassigntoinitial(activity?.assigneduser || 0)
-        }
-
-        if (activity?.type === "automated") {
-            register('hsmtemplateid', { validate: (value) => value && value > 0 ? undefined : t(langKeys.field_required) + "" })
-            register('communicationchannelid', { validate: (value) => value && value > 0 ? undefined : t(langKeys.field_required) + "" })
-            register('communicationchannelid', { validate: (value) => value && value > 0 ? undefined : t(langKeys.field_required) + "" })
-        } else {
-            register('hsmtemplateid', { validate: () => true })
-            register('communicationchannelid', { validate: (value) => true })
-            register('communicationchannelid', { validate: (value) => true })
-        }
     }, [activity, reset, register]);
 
     useEffect(() => {
         if (open === true && userid !== undefined && leadid !== 0 && !activity?.assigneduser) {
-            const posibleuser = advisers.data.find(e => e.userid === userid);
-            setassigntoinitial(posibleuser?.userid || 0);
-            setValue('assignto', posibleuser?.firstname || '');
-
+            setValue('assignto', advisers.data.find(e => e.userid === userid)?.firstname || '');
             setValue('assigneduser', userid);
             refresh(prev => !prev);
         }
@@ -1761,65 +1692,11 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             // const month = dueate.toLocaleDateString("en-US", { month: '2-digit' });
             // const year = dueate.toLocaleDateString("en-US", { year: 'numeric' });
             // const time = dueate.toLocaleDateString("en-US", { hour: '2-digit', minute: '2-digit' });
-            if (values.type === "automated") {
-                setBodyCleaned(body => {
-                    values?.variables?.forEach((x: Dictionary) => {
-                        body = body.replace(`{{${x.name}}}`, x.variable !== 'custom' ? (lead.value as Dictionary)[x.variable] : x.text)
-                    })
-                    return body
-                })
-            }
-            const bb = values.type === "automated" ? {
-                hsmtemplateid: values.hsmtemplateid,
-                hsmtemplatename: values.hsmtemplatename,
-                communicationchannelid: values?.communicationchannelid!!,
-                communicationchanneltype: values?.communicationchanneltype!!,
-                platformtype: "",
-                type: 'HSM',
-                shippingreason: "LEAD",
-                listmembers: [{
-                    personid: lead.value?.personid || 0,
-                    phone: lead.value?.phone + "",
-                    firstname: lead.value?.firstname + "",
-                    lastname: lead.value?.lastname + "",
-                    parameters: values.variables?.map((v: any) => ({
-                        type: "text",
-                        text: v.variable !== 'custom' ? (lead.value as Dictionary)[v.variable] : v.text,
-                        name: v.name
-                    })) || []
-                }]
-            } : "";
-
-
-
-            if (values.leadactivityid === 0 || values.assigneduser !== assigntoinitial) {
-                const supervisorid = advisers.data.find(x => x.userid === values.assigneduser).supervisorid;
-                console.log("carlos", values)
-                const data = {
-                    leadid: lead.value?.leadid || 0,
-                    leadname: lead.value?.description,
-                    description: values.description,
-                    duedate: values.duedate,
-                    assigneduser: values.assigneduser,
-                    userid: values.assigneduser, //quien va a recibir la notificacion
-                    supervisorid,
-                    assignto: values.assignto,
-                    status: "PROGRAMADO",
-                    type: "automated",
-                    feedback: "",
-                    notificationtype: "LEADACTIVITY"
-                }
-                dispatch(emitEvent({
-                    event: 'newNotification',
-                    data
-                }))
-            }
-
+            
             onSubmit?.({
                 ...values,
                 status,
                 detailjson: JSON.stringify(detail),
-                sendhsm: values.type === "automated" ? JSON.stringify(bb) : "",
                 // duedate: dueate.toUTCString()
                 // duedate: `${year}-${month}-${day}T${time.split(",")[1]}`,
             });
@@ -1831,23 +1708,6 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
         })();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [detail, handleSubmit, dispatch]);
-
-    const onSelectTemplate = (value: Dictionary) => {
-        if (value) {
-            setBodyMessage(value.body);
-            setValue('hsmtemplateid', value ? value.id : 0);
-            setValue('hsmtemplatename', value ? value.name : '');
-            setBodyCleaned(value.body);
-            const variablesList = value.body.match(/({{)(.*?)(}})/g) || [];
-            const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
-            setValue('variables', varaiblesCleaned.map((x: string) => ({ name: x, text: '', type: 'text' })));
-        } else {
-            setValue('hsmtemplatename', '');
-            setValue('variables', []);
-            setBodyMessage('');
-            setValue('hsmtemplateid', 0);
-        }
-    }
 
     return (
         <Modal
@@ -1869,23 +1729,13 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                             uset
                                             label={t(langKeys.activityType)}
                                             className={classes.field}
-                                            data={domainsTotal}
+                                            data={domains.data}
                                             prefixTranslation="type_activitylead_"
                                             optionDesc="domainvalue"
                                             optionValue="domainvalue"
                                             loading={domains.loading}
                                             valueDefault={getValues('type')}
-                                            onChange={(v: IDomain) => {
-                                                setValue('type', v?.domainvalue || "");
-                                                trigger('type');
-                                                if ((v?.domainvalue || "") === "automated") {
-                                                    console.log('auttt')
-                                                    register('hsmtemplateid', { validate: (value) => value && value > 0 ? t(langKeys.field_required) + "" : undefined })
-                                                } else {
-                                                    console.log('xxxxxxxxx')
-                                                    register('hsmtemplateid', { validate: () => true })
-                                                }
-                                            }}
+                                            onChange={(v: IDomain) => setValue('type', v?.domainvalue || "")}
                                             error={errors?.type?.message}
                                         />
                                     </Grid>
@@ -1898,46 +1748,6 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                             error={errors?.description?.message}
                                         />
                                     </Grid>
-                                    {getValues('type') === "automated" &&
-                                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ borderTop: '1px solid #e1e1e1', paddingTop: 8, marginTop: 8 }}>
-                                            <FieldSelect
-                                                label={t(langKeys.channel)}
-                                                className={classes.field}
-                                                valueDefault={getValues('communicationchannelid')}
-                                                onChange={value => {
-                                                    setValue('communicationchannelid', value?.communicationchannelid || 0);
-                                                    setValue('communicationchanneltype', value?.type || "");
-                                                }}
-                                                error={errors?.communicationchannelid?.message}
-                                                data={channels.data}
-                                                optionDesc="communicationchanneldesc"
-                                                optionValue="communicationchannelid"
-                                            />
-                                        </Grid>
-                                    }
-                                    {getValues('type') === "automated" &&
-                                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                            <FieldSelect
-                                                label={t(langKeys.hsm_template)}
-                                                className={classes.field}
-                                                valueDefault={getValues('hsmtemplateid')}
-                                                onChange={onSelectTemplate}
-                                                error={errors?.hsmtemplateid?.message}
-                                                data={templates.data}
-                                                optionDesc="name"
-                                                optionValue="id"
-                                            />
-                                        </Grid>
-                                    }
-                                    {getValues('type') === "automated" &&
-                                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                            <FieldView
-                                                className={classes.field}
-                                                label={t(langKeys.message)}
-                                                value={bodyMessage}
-                                            />
-                                        </Grid>
-                                    }
                                 </Grid>
                             </Grid>
                             <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
@@ -1950,7 +1760,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                             valueDefault={(getValues('duedate') as string)?.replace(' ', 'T')?.substring(0, 16)}
                                             onChange={(value) => setValue('duedate', value)}
                                             error={errors?.duedate?.message}
-                                        />
+                                        /> 
                                     </Grid>
                                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                                         <FieldSelect
@@ -1968,50 +1778,6 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                             error={errors?.assignto?.message}
                                         />
                                     </Grid>
-
-                                    {getValues('type') === "automated" &&
-                                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ borderTop: '1px solid #e1e1e1', paddingTop: 8, marginTop: 8 }}>
-                                            {fields.map((item: Dictionary, i) => (
-                                                <div key={item.id}>
-                                                    <FieldSelect
-                                                        key={"var_" + item.id}
-                                                        fregister={{
-                                                            ...register(`variables.${i}.variable`, {
-                                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                                            })
-                                                        }}
-                                                        className={classes.field}
-                                                        label={item.name}
-                                                        valueDefault={getValues(`variables.${i}.variable`)}
-                                                        onChange={(value) => {
-                                                            setValue(`variables.${i}.variable`, value.key)
-                                                            trigger(`variables.${i}.variable`)
-                                                        }}
-                                                        error={errors?.variables?.[i]?.text?.message}
-                                                        data={variables}
-                                                        uset={true}
-                                                        prefixTranslation=""
-                                                        optionDesc="key"
-                                                        optionValue="key"
-                                                    />
-                                                    {getValues(`variables.${i}.variable`) === 'custom' &&
-                                                        <FieldEditArray
-                                                            key={"custom_" + item.id}
-                                                            fregister={{
-                                                                ...register(`variables.${i}.text`, {
-                                                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                                                })
-                                                            }}
-                                                            className={classes.field}
-                                                            valueDefault={item.value}
-                                                            error={errors?.variables?.[i]?.text?.message}
-                                                            onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
-                                                        />
-                                                    }
-                                                </div>
-                                            ))}
-                                        </Grid>
-                                    }
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -2164,7 +1930,7 @@ const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
                     <div className={classes.filename}>
                         {getFileName()}
                     </div>
-                    {getFileExt().toUpperCase()}
+                        {getFileExt().toUpperCase()}
                 </div>
             </div>
             <div style={{ width: '0.5em' }} />
@@ -2220,7 +1986,7 @@ const FileCollectionPreview: FC<FileCollectionPreviewProps> = ({ files, onCloseF
         return typeof files === "string" ? buildStringChildren(files) : buildFileChildren(files);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [files]);
-
+    
     return (
         <div style={{ display: 'flex', flexDirection: 'row', gap: '1em' }}>
             {children}
@@ -2263,7 +2029,7 @@ const MarkDoneModal: FC<MarkDoneModalProps> = ({ open, onClose, onSubmit, onNext
 
     useEffect(() => {
         if (open !== true) return;
-
+        
         if (markDoneProcess.loading) return;
         if (markDoneProcess.error) {
             const errormessage = t(markDoneProcess.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
@@ -2312,7 +2078,7 @@ const MarkDoneModal: FC<MarkDoneModalProps> = ({ open, onClose, onSubmit, onNext
                         color="primary"
                         className={classes.footerBtn}
                         disabled={markDoneProcess.loading}
-                        onClick={() => {
+                        onClick={() =>{
                             mustNext.current = true;
                             onSubmit(feedback, "DONE & NEXT");
                         }}
