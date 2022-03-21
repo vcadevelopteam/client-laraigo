@@ -2755,7 +2755,6 @@ export const billingReportConversationWhatsApp = ({ corpid, orgid, year, month }
 
 export const getProductCatalogSel = (id: number = 0, category: string = ''): IRequestBody => ({
     method: "UFN_PRODUCTCATALOG_SEL",
-    key: "UFN_PRODUCTCATALOG_SEL",
     parameters: {
         id: id,
         category: category,

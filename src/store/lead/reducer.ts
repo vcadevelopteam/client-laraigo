@@ -3,6 +3,17 @@ import { createReducer, initialDisplayState, initialListState, initialObjectStat
 import * as caseFUnctions from './caseFunctions';
 import actionTypes from "./actionTypes";
 
+export interface IProduct {
+    corpid: Number,
+    orgid: Number,
+    productcatalogid: Number,
+    code: String,
+    description: String,
+    category: String,
+    status: String,
+    unitprice: Number
+}
+
 export interface IState {
     lead: IObjectState<ICrmLead>;
     saveLead: IProcessState;
@@ -19,7 +30,7 @@ export interface IState {
     markDoneActivity: IProcessState;
     leadHistory: IListState<ICrmLeadHistory>;
     updateLeadTags: IProcessState;
-    leadProductsDomain: IListState<IDomain>;
+    leadProductsDomain: IListState<IProduct>;
     leadTagsDomain: IListState<IDomain>;
 }
 

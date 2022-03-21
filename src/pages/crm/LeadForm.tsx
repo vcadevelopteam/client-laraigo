@@ -16,7 +16,7 @@ import { useSelector } from 'hooks';
 import {
     archiveLead, getAdvisers, getLead, getLeadActivities, getLeadHistory, getLeadLogNotes, getLeadPhases, markDoneActivity, resetArchiveLead, resetGetLead, resetGetLeadActivities, resetGetLeadHistory,
     resetGetLeadLogNotes, resetGetLeadPhases, resetMarkDoneActivity, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLeadActivity, saveLeadLogNote, saveLeadWithFiles, saveLead as saveLeadAction,
-    resetGetLeadProductsDomain, getLeadProductsDomain, getLeadTagsDomain, resetGetLeadTagsDomain, getLeadTemplates, resetGetLeadTemplates, getLeadChannels, resetGetLeadChannels
+    resetGetLeadProductsDomain, getLeadProductsDomain, getLeadTagsDomain,resetGetLeadTagsDomain, getLeadTemplates, resetGetLeadTemplates, getLeadChannels, resetGetLeadChannels
 } from 'store/lead/actions';
 import { Dictionary, ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, ICrmLeadHistory, ICrmLeadHistoryIns, ICrmLeadNote, ICrmLeadNoteSave, IDomain, IFetchData, IPerson } from '@types';
 import { manageConfirmation, showSnackbar } from 'store/popus/actions';
@@ -273,7 +273,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         dispatch(getAdvisers(adviserSel()));
         // dispatch(getLeadPhases(getValuesFromDomain("ESTADOSOPORTUNIDAD")));
         dispatch(getLeadPhases(getColumnsSel(0, true)));
-        dispatch(getLeadProductsDomain(getProductCatalogSel()));
+        dispatch(getLeadProductsDomain());
         dispatch(getLeadTagsDomain(getValuesFromDomain('OPORTUNIDADETIQUETAS')));
         dispatch(getLeadTemplates());
         dispatch(getLeadChannels());
@@ -533,7 +533,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         const tagsAlreadyHasChange = leadTagsChanges.current.some(x => x.description === desc);
         const previousTagsIncludeDesc = lead.value.tags.includes(desc);
 
-        // console.log('handleUpdateLeadTags:', action, previousTagsIncludeDesc, tagsAlreadyHasChange);
         if (
             (!previousTagsIncludeDesc && !tagsAlreadyHasChange) ||
             (action === "REMOVETAG" && previousTagsIncludeDesc && !tagsAlreadyHasChange)
@@ -806,7 +805,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     className={classes.field}
                                     valueDefault={getValues('leadproduct')}
                                     onChange={(v, value2: { action: "remove-option" | "select-option", option: { option: any } }) => {
-                                        // console.log(value2);
                                         const products = v?.map((o: Dictionary) => o['productcatalogid']).join(',') || '';
                                         setValue('leadproduct', products);
 
@@ -1794,7 +1792,6 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
 
             if (values.leadactivityid === 0 || values.assigneduser !== assigntoinitial) {
                 const supervisorid = advisers.data.find(x => x.userid === values.assigneduser).supervisorid;
-                console.log("carlos", values)
                 const data = {
                     leadid: lead.value?.leadid || 0,
                     leadname: lead.value?.description,
@@ -1879,10 +1876,8 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                                 setValue('type', v?.domainvalue || "");
                                                 trigger('type');
                                                 if ((v?.domainvalue || "") === "automated") {
-                                                    console.log('auttt')
                                                     register('hsmtemplateid', { validate: (value) => value && value > 0 ? t(langKeys.field_required) + "" : undefined })
                                                 } else {
-                                                    console.log('xxxxxxxxx')
                                                     register('hsmtemplateid', { validate: () => true })
                                                 }
                                             }}

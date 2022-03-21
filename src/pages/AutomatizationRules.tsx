@@ -311,8 +311,8 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
                             label={t(langKeys.tags)}
                             className="col-6"
                             valueDefault={getValues('tags')}
-                            onChange={(value: ({domaindesc: string} | string)[], value2: {action: "create-option" | "remove-option" | "select-option", option: {option: string}}) => {
-                                const tags = value.map((o: any) => o.domaindesc || o).join();
+                            onChange={(value: ({domaindesc: string} | string)[]) => {
+                                const tags = value.map((o: any) => o.domaindesc || o).join(',');
                                 setValue('tags', tags);
                             }}
                             error={errors?.tags?.message}
@@ -325,8 +325,8 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
                             label={t(langKeys.product_plural)}
                             className="col-6"
                             valueDefault={getValues('products')}
-                            onChange={(value: ({domaindesc: string} | string)[], value2: {action: "create-option" | "remove-option" | "select-option", option: {option: string}}) => {
-                                const products = value.map((o: any) => o.productcatalogid || o).join();
+                            onChange={(value: ({domaindesc: string} | string)[]) => {
+                                const products = value.map((o: any) => o.productcatalogid || o).join(',');
                                 setValue('products', products);
                             }}
                             error={errors?.products?.message}

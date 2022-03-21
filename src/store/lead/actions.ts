@@ -1,5 +1,5 @@
 import { IActionCall, ICrmLeadNoteSave, IRequestBody, ITransaction } from "@types";
-import { getCommChannelLst, getMessageTemplateLst } from "common/helpers";
+import { getCommChannelLst, getMessageTemplateLst, getProductCatalogSel } from "common/helpers";
 import { CommonService } from "network";
 import actionTypes from "./actionTypes";
 
@@ -202,8 +202,8 @@ export const updateLeadTags = (body: IRequestBody): IActionCall => ({
 
 export const resetUpdateLeadTags = (): IActionCall => ({type: actionTypes.UPDATE_LEAD_TAGS_RESET});
 
-export const getLeadProductsDomain = (body: IRequestBody): IActionCall => ({
-    callAPI: () => CommonService.main(body),
+export const getLeadProductsDomain = (): IActionCall => ({
+    callAPI: () => CommonService.main(getProductCatalogSel()),
     types: {
         loading: actionTypes.GET_LEAD_PRODUCTS_DOMAIN,
         success: actionTypes.GET_LEAD_PRODUCTS_DOMAIN_SUCCESS,
