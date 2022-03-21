@@ -11,6 +11,7 @@ export const getChannelsListSub = (accessToken: String, appId: String): IActionC
     },
     type: null,
 });
+
 export const executeSubscription = (requestBody: IRequestBody): IActionCall => ({
     callAPI: () => ChannelsService.execSub(requestBody),
     types: {
@@ -20,6 +21,7 @@ export const executeSubscription = (requestBody: IRequestBody): IActionCall => (
     },
     type: null,
 });
+
 export const validatechannels = (requestBody: IRequestBody): IActionCall => ({
     callAPI: () => ChannelsService.valChannels(requestBody),
     types: {
@@ -29,6 +31,7 @@ export const validatechannels = (requestBody: IRequestBody): IActionCall => ({
     },
     type: null,
 });
+
 export const executeCheckNewUser = (requestBody: IRequestBody): IActionCall => ({
     callAPI: () => ChannelsService.validateNewUser(requestBody),
     types: {
@@ -38,6 +41,7 @@ export const executeCheckNewUser = (requestBody: IRequestBody): IActionCall => (
     },
     type: null,
 });
+
 export const verifyPlan = (accessToken: String): IActionCall => ({
     callAPI: () => ChannelsService.vrfplan(accessToken),
     types: {
@@ -47,6 +51,7 @@ export const verifyPlan = (accessToken: String): IActionCall => ({
     },
     type: null,
 });
+
 export const resetGetChannelsListSub = (): IActionCall => ({type: actionTypes.PAGELIST_RESET});
 
 export const getCurrencyList = (): IActionCall => ({
@@ -58,6 +63,7 @@ export const getCurrencyList = (): IActionCall => ({
     },
     type: null,
 });
+
 export const getCountryList = (): IActionCall => ({
     callAPI: () => ChannelsService.getCountryList(),
     types: {
@@ -67,6 +73,3 @@ export const getCountryList = (): IActionCall => ({
     },
     type: null,
 });
-
-
-

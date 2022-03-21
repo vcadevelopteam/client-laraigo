@@ -315,7 +315,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
         },
     })
     const [step, setStep] = useState(1);
-    const executeResult = useSelector(state => state.signup.insertChannel);
+    const executeResult = useSelector(state => state.signup.valChannelsChannel);
 
     useEffect(() => {
         if (!planData.loading && planData.error) {
