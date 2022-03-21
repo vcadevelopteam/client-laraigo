@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router-dom';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { executeSubscription, verifyPlan } from 'store/signup/actions';
+import { executeSubscription,validatechannels, verifyPlan } from 'store/signup/actions';
 import { FormProvider, SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form';
 import paths from 'common/constants/paths';
 import { resetInsertChannel } from 'store/channel/actions';
@@ -52,6 +52,7 @@ interface Subscription {
     setConfirmations: SetState<number>;
     setStep: SetState<number>;
     finishreg: () => void;
+    valchannels: () => void;
     onCheckFunc: (altf:any) => void;
     setForeground: SetState<keyof ListChannels | undefined>;
     resetChannels: () => void;
@@ -215,6 +216,7 @@ export const SubscriptionContext = createContext<Subscription>({
     setConfirmations: () => {},
     setStep: () => {},
     finishreg: () => {},
+    valchannels: () => {},
     onCheckFunc: (altf:any) => {},
     setForeground: () => {},
     addChannel: () => {},
@@ -448,11 +450,46 @@ export const SubscriptionProvider: FC = ({ children }) => {
         form.handleSubmit(onSubmit, onError)();
         submitObs.trigger();
     }
+    const valchannels = () => {
+        form.handleSubmit(onVal, onError)();
+    }
     const onCheckFunc = (altfunc?: any) => {
         form.handleSubmit(altfunc, onError)();
         submitObs.trigger();
     }
 
+    const onVal: SubmitHandler<MainData> = (data) => {
+        const { channels, ...mainData } = data;
+        const majorfield = {
+            method: "UFN_CREATEZYXMEACCOUNT_INS",
+            key: "UFN_CREATEZYXMEACCOUNT_INS",
+            parameters: {
+                ...mainData,
+                firstname: mainData.firstandlastname,
+                lastname: "",
+                username: mainData.email,
+                contactemail: mainData.billingcontactmail,
+                contact: mainData.billingcontact,
+                organizationname: mainData.companybusinessname,
+                phone: mainData.mobilephone,
+                industry: mainData.industry,
+                companysize: mainData.companysize,
+                rolecompany: mainData.rolecompany,
+                paymentplanid: planData.data[0].paymentplanid,
+                paymentplan: planData.data[0].plan,
+                sunatcountry: mainData.country,
+                timezoneoffset: (new Date().getTimezoneOffset() / 60) * -1,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            },
+            channellist: Object.values(channels).map(
+                function<T extends {build: (v: any) => IRequestBody}>(x: T) {
+                    return x.build(x);
+                }
+            ),
+        };
+        dispatch(showBackdrop(true));
+        dispatch(validatechannels(majorfield));
+    }
     const onSubmit: SubmitHandler<MainData> = (data) => {
         const { channels, ...mainData } = data;
         const majorfield = {
@@ -505,6 +542,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
             setConfirmations,
             setStep,
             finishreg,
+            valchannels,
             onCheckFunc,
             setForeground,
             addChannel,

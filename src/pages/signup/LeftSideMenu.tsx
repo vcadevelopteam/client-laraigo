@@ -1,4 +1,4 @@
-import { FC, useContext, useMemo, useState } from "react";
+import { FC, useContext, useEffect, useMemo, useState } from "react";
 import { Breadcrumbs, Button, Link, makeStyles, TextField } from "@material-ui/core";
 import { ChannelAddFacebook } from './ChannelAddFacebook'
 import { ChannelAddInstagram } from './ChannelAddInstagram'
@@ -46,14 +46,16 @@ interface LeftSideProps {
 export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
     const { t } = useTranslation();
     const [currentView, setCurrentView] = useState("view-1");
+    const [waitSave, setWaitSave] = useState(false);
     const { getValues, control, trigger } = useFormContext<MainData>();
+    const selectorValchannel = useSelector(state => state.signup.valChannelsChannel);
     const classes = useLeftSideStyles();
     const {
         foreground,
         listchannels,
         selectedChannels,
         finishreg,
-        onCheckFunc,
+        valchannels,
         commonClasses,
     } = useContext(SubscriptionContext);  
     const executeResult = useSelector(state => state.signup.insertChannel);
@@ -71,6 +73,20 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
         { id:11, desc: "11" },
         { id:12, desc: "12" },
     ]), [t]);
+    useEffect(() => {
+      if(waitSave){
+          if(!selectorValchannel.loading){
+            if(!selectorValchannel.error){
+                setWaitSave(false)
+                setCurrentView("view-2")
+            }else{
+                console.log(selectorValchannel)
+                setWaitSave(false)
+            }
+          }
+      }
+    }, [selectorValchannel])
+    
     const channels = useMemo(() => {
         if (listchannels === undefined) {
             return null;
@@ -133,7 +149,9 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                         <Button
                             onClick={(e)=>{
                                 e.preventDefault();
-                                onCheckFunc(()=>setCurrentView("view-2"))
+                                setWaitSave(true)
+                                valchannels()
+                                
                             }}
                             className={commonClasses.button}
                             style={{ marginTop: '3em' }}

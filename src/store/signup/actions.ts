@@ -20,6 +20,15 @@ export const executeSubscription = (requestBody: IRequestBody): IActionCall => (
     },
     type: null,
 });
+export const validatechannels = (requestBody: IRequestBody): IActionCall => ({
+    callAPI: () => ChannelsService.valChannels(requestBody),
+    types: {
+        loading: actionTypes.VALCHANNELS,
+        success: actionTypes.VALCHANNELS_SUCCESS,
+        failure: actionTypes.VALCHANNELS_FAILURE,
+    },
+    type: null,
+});
 export const executeCheckNewUser = (requestBody: IRequestBody): IActionCall => ({
     callAPI: () => ChannelsService.validateNewUser(requestBody),
     types: {

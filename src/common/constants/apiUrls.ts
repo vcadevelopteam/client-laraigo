@@ -1,4 +1,4 @@
-const ENV = "DEVELOP";
+const ENV = "LOCAL";
 
 const APIS_URL = {
     DEVELOP: {
@@ -88,6 +88,7 @@ export const apiUrls = {
     INSERT_CHANNEL: `${BASE_URL}/channel/insertchannel`,
     ACTIVATE_CHANNEL: `${BASE_URL}/channel/activatechannel`,
     EXEC_SUB: `${BASE_URL}/subscription/createsubscription`,
+    VALIDATE_CHANNELS: `${BASE_URL}/subscription/validatechannels`,
     VALIDATE_NEW_USER: `${BASE_URL}/subscription/validateusername`,
     CURRENCYLIST: `${BASE_URL}/subscription/currencylist`,
     COUNTRYLIST: `${BASE_URL}/subscription/countrylist`,

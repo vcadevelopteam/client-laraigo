@@ -22,8 +22,6 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
     const {
         commonClasses,
         FBButtonStyles,
-        selectedChannels,
-        finishreg,
         deleteChannel,
     } = useContext(SubscriptionContext);
     const { getValues, setValue, register, unregister, formState: { errors } } = useFormContext<MainData>();

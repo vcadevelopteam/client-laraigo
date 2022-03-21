@@ -12,8 +12,6 @@ import { useFormContext } from "react-hook-form";
 export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
     const {
         commonClasses,
-        selectedChannels,
-        finishreg,
         deleteChannel,
     } = useContext(SubscriptionContext);
     const { getValues, setValue, register, unregister, formState: { errors } } = useFormContext<MainData>();
