@@ -7,7 +7,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useRouteMatch } from 'react-router';
 import {
     insLead2, adviserSel, getPaginatedPerson as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSel, insArchiveLead, leadHistorySel,
-    getLeadsSel, leadHistoryIns
+    getLeadsSel, leadHistoryIns, getProductCatalogSel
 } from 'common/helpers';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
@@ -273,7 +273,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         dispatch(getAdvisers(adviserSel()));
         // dispatch(getLeadPhases(getValuesFromDomain("ESTADOSOPORTUNIDAD")));
         dispatch(getLeadPhases(getColumnsSel(0, true)));
-        dispatch(getLeadProductsDomain(getValuesFromDomain('OPORTUNIDADPRODUCTOS')));
+        dispatch(getLeadProductsDomain(getProductCatalogSel()));
         dispatch(getLeadTagsDomain(getValuesFromDomain('OPORTUNIDADETIQUETAS')));
         dispatch(getLeadTemplates());
         dispatch(getLeadChannels());
@@ -807,7 +807,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     valueDefault={getValues('leadproduct')}
                                     onChange={(v, value2: { action: "remove-option" | "select-option", option: { option: any } }) => {
                                         // console.log(value2);
-                                        const products = v?.map((o: Dictionary) => o['domainvalue']).join(',') || '';
+                                        const products = v?.map((o: Dictionary) => o['productcatalogid']).join(',') || '';
                                         setValue('leadproduct', products);
 
                                         handleUpdateLeadProducts(
@@ -817,8 +817,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     }}
                                     data={leadProductsDomain.data}
                                     loading={leadProductsDomain.loading}
-                                    optionDesc="domaindesc"
-                                    optionValue="domainvalue"
+                                    optionDesc="description"
+                                    optionValue="productcatalogid"
                                     error={errors?.leadproduct?.message}
                                 />
                             </Grid>
