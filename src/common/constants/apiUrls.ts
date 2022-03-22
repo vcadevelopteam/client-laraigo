@@ -88,7 +88,6 @@ export const apiUrls = {
     INSERT_CHANNEL: `${BASE_URL}/channel/insertchannel`,
     ACTIVATE_CHANNEL: `${BASE_URL}/channel/activatechannel`,
     EXEC_SUB: `${BASE_URL}/subscription/createsubscription`,
-    VALIDATE_CHANNELS: `${BASE_URL}/subscription/validatechannels`,
     VALIDATE_NEW_USER: `${BASE_URL}/subscription/validateusername`,
     CURRENCYLIST: `${BASE_URL}/subscription/currencylist`,
     COUNTRYLIST: `${BASE_URL}/subscription/countrylist`,
@@ -111,4 +110,6 @@ export const apiUrls = {
 
     RECOVERPASSWORD: `${BASE_URL}/subscription/recoverpassword`,
     CHANGEPASSWORD: `${BASE_URL}/subscription/changepassword`,
+    
+    VALIDATE_CHANNELS: `${BASE_URL}/subscription/validatechannels`,
 };

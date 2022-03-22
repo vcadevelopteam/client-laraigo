@@ -68,3 +68,39 @@ export const changePasswordReset = (state: IState): IState => ({
     ...state,
     requestChangePassword: initialState.requestChangePassword
 })
+
+export const validateChannels = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestValidateChannels: {
+        ...state.requestValidateChannels,
+        error: false,
+        loading: true,
+    }
+})
+
+export const validateChannelsFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestValidateChannels: {
+        ...state.requestValidateChannels,
+        error: true,
+        loading: false,
+        code: action?.payload?.code,
+        msg: action?.payload?.msg,
+    }
+})
+
+export const validateChannelsSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestValidateChannels: {
+        ...state.requestValidateChannels,
+        error: action?.payload?.success === false,
+        loading: false,
+        code: action?.payload?.code,
+        msg: action?.payload?.msg,
+    }
+})
+
+export const validateChannelsReset = (state: IState): IState => ({
+    ...state,
+    requestValidateChannels: initialState.requestValidateChannels
+})

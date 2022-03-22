@@ -18,11 +18,13 @@ export interface IRequest extends ITemplate {
 export interface IState {
     requestRecoverPassword: IRequest;
     requestChangePassword: IRequest;
+    requestValidateChannels: IRequest;
 }
 
 export const initialState: IState = {
     requestRecoverPassword: { ...initialCommon, data: null, loading: false, error: false },
     requestChangePassword: { ...initialCommon, data: null, loading: false, error: false },
+    requestValidateChannels: { ...initialCommon, data: null, loading: false, error: false },
 };
 
 export default createReducer<IState>(initialState, {
@@ -34,4 +36,8 @@ export default createReducer<IState>(initialState, {
     [actionTypes.CHANGE_PASSWORD_FAILURE]: caseFUnctions.changePasswordFailure,
     [actionTypes.CHANGE_PASSWORD_SUCCESS]: caseFUnctions.changePasswordSuccess,
     [actionTypes.CHANGE_PASSWORD_RESET]: caseFUnctions.changePasswordReset,
+    [actionTypes.VALIDATE_CHANNELS]: caseFUnctions.validateChannels,
+    [actionTypes.VALIDATE_CHANNELS_FAILURE]: caseFUnctions.validateChannelsFailure,
+    [actionTypes.VALIDATE_CHANNELS_SUCCESS]: caseFUnctions.validateChannelsSuccess,
+    [actionTypes.VALIDATE_CHANNELS_RESET]: caseFUnctions.validateChannelsReset,
 });

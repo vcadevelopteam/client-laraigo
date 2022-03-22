@@ -7,7 +7,8 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router-dom';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { executeSubscription,validatechannels, verifyPlan } from 'store/signup/actions';
+import { executeSubscription, verifyPlan } from 'store/signup/actions';
+import { validateChannels } from 'store/subscription/actions';
 import { FormProvider, SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form';
 import paths from 'common/constants/paths';
 import { resetInsertChannel } from 'store/channel/actions';
@@ -287,6 +288,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
     const planData = useSelector(state => state.signup.verifyPlan);
     const [listchannels, setlistchannels] = useState<ListChannels>(defaultListChannels);
     const [foreground, setForeground] = useState<keyof ListChannels | undefined>(undefined);
+    const [validateBool, setValidateBool] = useState(false);
     const form = useForm<MainData>({
         defaultValues: {
             email: "",
@@ -315,7 +317,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
         },
     })
     const [step, setStep] = useState(1);
-    const executeResult = useSelector(state => state.signup.valChannelsChannel);
+    const executeResult = useSelector(state => state.subscription.requestValidateChannels);
 
     useEffect(() => {
         if (!planData.loading && planData.error) {
@@ -368,38 +370,42 @@ export const SubscriptionProvider: FC = ({ children }) => {
     // }, [executeResult, waitSave, form.getValues, dispatch])
 
     useEffect(() => {
-        if (executeResult.loading === true) return;
-        if (executeResult.value && !executeResult.error) {
-            dispatch(showBackdrop(false));
-            setStep(4); // rating
-            let msg = t(langKeys.successful_sign_up);
-            const googleid = form.getValues('googleid');
-            const facebookid = form.getValues('facebookid');
-            if (googleid || facebookid) {
-                msg = t(langKeys.successful_sign_up);
-            }
-            dispatch(showSnackbar({
-                show: true,
-                success: true,
-                message: msg,
-            }));
-        } else if (executeResult.error) {
-            var errormessage = t(executeResult.message || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
+        if (validateBool) {
+            console.log(JSON.stringify(executeResult));
+            if (executeResult.loading === true) return;
+            setValidateBool(false);
+            if (!executeResult.error) {
+                dispatch(showBackdrop(false));
+                setStep(4); // rating
+                let msg = t(langKeys.successful_sign_up);
+                const googleid = form.getValues('googleid');
+                const facebookid = form.getValues('facebookid');
+                if (googleid || facebookid) {
+                    msg = t(langKeys.successful_sign_up);
+                }
+                dispatch(showSnackbar({
+                    show: true,
+                    success: true,
+                    message: msg,
+                }));
+            } else if (executeResult.error) {
+                var errormessage = t(executeResult.message || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
+    
+                if (executeResult.code) {
+                    errormessage = `${t(langKeys.suscriptionlinkerror)}${t(executeResult.code)}`
+                }
 
-            if (executeResult.code) {
-                errormessage = `${t(langKeys.suscriptionlinkerror)}${t(executeResult.code)}`
+                dispatch(showBackdrop(false));
+                
+                dispatch(showSnackbar({
+                    show: true,
+                    success: false,
+                    message: errormessage,
+                }))
             }
-
-            dispatch(showBackdrop(false));
-            
-            dispatch(showSnackbar({
-                show: true,
-                success: false,
-                message: errormessage,
-            }))
+            // eslint-disable-next-line react-hooks/exhaustive-deps
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [executeResult, form.getValues, t, dispatch])
+    }, [executeResult, form.getValues, t, dispatch, validateBool])
 
     const deleteChannel = (option: keyof ListChannels) => {
         setlistchannels(prev => {
@@ -488,7 +494,8 @@ export const SubscriptionProvider: FC = ({ children }) => {
             ),
         };
         dispatch(showBackdrop(true));
-        dispatch(validatechannels(majorfield));
+        dispatch(validateChannels(majorfield));
+        setValidateBool(true);
     }
     const onSubmit: SubmitHandler<MainData> = (data) => {
         const { channels, ...mainData } = data;
