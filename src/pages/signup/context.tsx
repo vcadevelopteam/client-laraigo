@@ -183,6 +183,8 @@ export interface MainData {
     firstname: string;
     lastname: string;
     pmemail: string;
+    firstnamecard: string;
+    lastnamecard: string;
     creditcard: string;
     mm: number;
     yyyy: string;
@@ -313,11 +315,19 @@ export const SubscriptionProvider: FC = ({ children }) => {
             companysize: "",
             industry: "",
             rolecompany: "",
+            pmemail: "",
+            firstnamecard: "",
+            lastnamecard: "",
+            creditcard: "",
+            mm: 0,
+            yyyy: "",
+            securitycode: "",
             channels: {},
         },
     })
     const [step, setStep] = useState(1);
-    const executeResult = useSelector(state => state.subscription.requestValidateChannels);
+    const executeResultValidation = useSelector(state => state.subscription.requestValidateChannels);
+    const executeResult = useSelector(state => state.signup.insertChannel);
 
     useEffect(() => {
         if (!planData.loading && planData.error) {
@@ -333,79 +343,63 @@ export const SubscriptionProvider: FC = ({ children }) => {
         dispatch(verifyPlan(match.params.token));
     }, [dispatch, match.params.token]);
 
-    // useEffect(() => {
-    //     if (waitSave) {
-    //         if (!executeResult.loading && !executeResult.error) {
-    //             console.log('success', executeResult);
-    //             dispatch(showBackdrop(false));
-    //             setStep(4); // rating
-    //             let msg = t(langKeys.successful_sign_up);
-    //             const googleid = form.getValues('googleid');
-    //             const facebookid = form.getValues('facebookid');
-    //             if (googleid || facebookid) {
-    //                 msg = t(langKeys.successful_sign_up);
-    //             }
-    //             dispatch(showSnackbar({
-    //                 show: true,
-    //                 success: true,
-    //                 message: msg,
-    //             }));
-    //             setWaitSave(false);
-    //         } else if (executeResult.error) {
-    //             console.log('error', executeResult);
-    //             dispatch(showBackdrop(false));
-    //             const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-    //             dispatch(showSnackbar({
-    //                 show: true,
-    //                 success: false,
-    //                 message: errormessage,
-    //             }))
-    //             setWaitSave(false);
-    //         }
-    //     }
+    useEffect(() => {
+        if (executeResult.loading === true) return;
+        if (executeResult.value && !executeResult.error) {
+            dispatch(showBackdrop(false));
+            setStep(4); // rating
+            let msg = t(langKeys.successful_sign_up);
+            const googleid = form.getValues('googleid');
+            const facebookid = form.getValues('facebookid');
+            if (googleid || facebookid) {
+                msg = t(langKeys.successful_sign_up);
+            }
+            dispatch(showSnackbar({
+                show: true,
+                success: true,
+                message: msg,
+            }));
+        } else if (executeResult.error) {
+            var errormessage = t(executeResult.message || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
 
-    //     return () => {
-    //         dispatch(resetInsertChannel());
-    //     }
-    // }, [executeResult, waitSave, form.getValues, dispatch])
+            if (executeResult.code) {
+                errormessage = `${t(langKeys.suscriptionlinkerror)}${t(executeResult.code)}`
+            }
+
+            dispatch(showBackdrop(false));
+            
+            dispatch(showSnackbar({
+                show: true,
+                success: false,
+                message: errormessage,
+            }))
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [executeResult, form.getValues, t, dispatch])
 
     useEffect(() => {
         if (validateBool) {
-            console.log(JSON.stringify(executeResult));
-            if (executeResult.loading === true) return;
+            if (executeResultValidation.loading === true) return;
             setValidateBool(false);
-            if (!executeResult.error) {
-                dispatch(showBackdrop(false));
-                setStep(4); // rating
-                let msg = t(langKeys.successful_sign_up);
-                const googleid = form.getValues('googleid');
-                const facebookid = form.getValues('facebookid');
-                if (googleid || facebookid) {
-                    msg = t(langKeys.successful_sign_up);
-                }
-                dispatch(showSnackbar({
-                    show: true,
-                    success: true,
-                    message: msg,
-                }));
-            } else if (executeResult.error) {
-                var errormessage = t(executeResult.message || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
+            if (executeResultValidation.error) {
+                var errormessage = t(executeResultValidation.message || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
     
-                if (executeResult.code) {
-                    errormessage = `${t(langKeys.suscriptionlinkerror)}${t(executeResult.code)}`
+                if (executeResultValidation.code) {
+                    errormessage = `${t(langKeys.suscriptionlinkerror)}${t(executeResultValidation.code)}`
                 }
-
-                dispatch(showBackdrop(false));
                 
                 dispatch(showSnackbar({
                     show: true,
                     success: false,
                     message: errormessage,
                 }))
+            }else{
+                dispatch(showBackdrop(false));
             }
+
             // eslint-disable-next-line react-hooks/exhaustive-deps
         }
-    }, [executeResult, form.getValues, t, dispatch, validateBool])
+    }, [executeResultValidation, validateBool])
 
     const deleteChannel = (option: keyof ListChannels) => {
         setlistchannels(prev => {
@@ -466,6 +460,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
 
     const onVal: SubmitHandler<MainData> = (data) => {
         const { channels, ...mainData } = data;
+        let partialchannels = Object.values(channels)
         const majorfield = {
             method: "UFN_CREATEZYXMEACCOUNT_INS",
             key: "UFN_CREATEZYXMEACCOUNT_INS",
@@ -487,7 +482,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
                 timezoneoffset: (new Date().getTimezoneOffset() / 60) * -1,
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
             },
-            channellist: Object.values(channels).map(
+            channellist: partialchannels.map(
                 function<T extends {build: (v: any) => IRequestBody}>(x: T) {
                     return x.build(x);
                 }
@@ -503,6 +498,15 @@ export const SubscriptionProvider: FC = ({ children }) => {
         const majorfield = {
             method: "UFN_CREATEZYXMEACCOUNT_INS",
             key: "UFN_CREATEZYXMEACCOUNT_INS",
+            card:{
+                firstname: mainData.firstnamecard,
+                lastname: mainData.lastnamecard,
+                mail: mainData.pmemail,
+                cardnumber: mainData.creditcard,
+                expirationmonth: String(mainData.mm),
+                expirationyear: mainData.yyyy,
+                securitycode: mainData.securitycode,
+            },
             parameters: {
                 ...mainData,
                 firstname: mainData.firstandlastname,

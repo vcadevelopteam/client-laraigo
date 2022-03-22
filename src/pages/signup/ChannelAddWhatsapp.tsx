@@ -66,9 +66,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
     const {
         commonClasses,
         foreground,
-        selectedChannels,
         submitObservable,
-        finishreg,
         setForeground,
         deleteChannel,
     } = useContext(SubscriptionContext);

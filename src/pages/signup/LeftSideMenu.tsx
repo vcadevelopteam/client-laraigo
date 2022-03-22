@@ -48,7 +48,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
     const [currentView, setCurrentView] = useState("view-1");
     const [waitSave, setWaitSave] = useState(false);
     const { getValues, control, trigger } = useFormContext<MainData>();
-    const selectorValchannel = useSelector(state => state.signup.valChannelsChannel);
+    const executeResultValidation = useSelector(state => state.subscription.requestValidateChannels);
     const classes = useLeftSideStyles();
     const {
         foreground,
@@ -75,17 +75,17 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
     ]), [t]);
     useEffect(() => {
       if(waitSave){
-          if(!selectorValchannel.loading){
-            if(!selectorValchannel.error){
+          if(!executeResultValidation.loading){
+            if(!executeResultValidation.error){
                 setWaitSave(false)
                 setCurrentView("view-2")
             }else{
-                console.log(selectorValchannel)
+                console.log(executeResultValidation)
                 setWaitSave(false)
             }
           }
       }
-    }, [selectorValchannel])
+    }, [executeResultValidation])
     
     const channels = useMemo(() => {
         if (listchannels === undefined) {
@@ -121,6 +121,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
             });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [listchannels, foreground]);
+    
 
     return (
         <div className={classes.root}>
@@ -180,7 +181,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                     <h1 className={classes.title}>{t(langKeys.addpaymentmethod)}</h1>
                     <div style={{ padding: "20px" }}>{t(langKeys.addpaymentmethodsub)}</div>
                     <Controller
-                        name="firstname"
+                        name="firstnamecard"
                         control={control}
                         rules={{
                             validate: (value) => {
@@ -197,17 +198,17 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                 fullWidth
                                 size="small"
                                 label={t(langKeys.firstname)}
-                                error={!!errors.firstname}
-                                helperText={errors.firstname?.message}
+                                error={!!errors.firstnamecard}
+                                helperText={errors.firstnamecard?.message}
                             />
                         )}
                     />
                     <Controller
-                        name="lastname"
+                        name="lastnamecard"
                         control={control}
                         rules={{
                             validate: (value) => {
-                                if (value.length === 0) {
+                                if (value?.length === 0) {
                                     return t(langKeys.field_required) as string;
                                 }
                             }
@@ -220,8 +221,8 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                 fullWidth
                                 size="small"
                                 label={t(langKeys.lastname)}
-                                error={!!errors.lastname}
-                                helperText={errors.lastname?.message}
+                                error={!!errors.lastnamecard}
+                                helperText={errors.lastnamecard?.message}
                             />
                         )}
                     />
@@ -230,7 +231,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                         control={control}
                         rules={{
                             validate: (value) => {
-                                if (value.length === 0) {
+                                if (value?.length === 0) {
                                     return t(langKeys.field_required) as string;
                                 } else if (!/\S+@\S+\.\S+/.test(value)) {
                                     return t(langKeys.emailverification) as string;
@@ -266,9 +267,9 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                 control={control}
                                 rules={{
                                     validate: (value) => {
-                                        if (value.length === 0) {
+                                        if (value?.length === 0) {
                                             return t(langKeys.field_required) as string;
-                                        } else if (value.length!==16) {
+                                        } else if (value?.length!==16) {
                                             return t(langKeys.creditcardvalidate) as string;
                                         }
                                     }
@@ -322,9 +323,9 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                     control={control}
                                     rules={{
                                         validate: (value) => {
-                                            if (value.length === 0) {
+                                            if (value?.length === 0) {
                                                 return t(langKeys.field_required) as string;
-                                            } else if (value.length!==4) {
+                                            } else if (value?.length!==4) {
                                                 return t(langKeys.field_required) as string;
                                             }
                                         }
@@ -352,7 +353,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                 control={control}
                                 rules={{
                                     validate: (value) => {
-                                        if (value.length === 0) {
+                                        if (value?.length === 0) {
                                             return t(langKeys.field_required) as string;
                                         }
                                     }
