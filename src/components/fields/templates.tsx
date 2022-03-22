@@ -522,7 +522,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({multiline=fals
             setValue(null);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [data]);
+    }, [data, valueDefault]);
 
     return (
         <div className={className}>

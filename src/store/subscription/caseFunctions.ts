@@ -60,7 +60,7 @@ export const changePasswordSuccess = (state: IState, action: IAction): IState =>
         ...state.requestChangePassword,
         error: action?.payload?.success === false,
         loading: false,
-        msg: action?.payload?.msg || 'error_unexpected_error',
+        msg: action?.payload?.msg,
     }
 })
 
