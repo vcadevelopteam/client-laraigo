@@ -106,7 +106,6 @@ export const RecoverPassword: FC = () => {
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
-            console.log(JSON.stringify(data));
             dispatch(changePassword(data));
             dispatch(showBackdrop(true));
             setWaitSave(true)
@@ -121,7 +120,6 @@ export const RecoverPassword: FC = () => {
 
     useEffect(() => {
         if (waitSave) {
-            console.log(JSON.stringify(changeResponse));
             if (!changeResponse.loading && !changeResponse.error) {
                 dispatch(showSnackbar({ show: true, success: true, message: t(changeResponse.msg || langKeys.successful_register) }))
                 setWaitSave(false);
