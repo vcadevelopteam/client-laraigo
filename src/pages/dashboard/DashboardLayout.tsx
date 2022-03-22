@@ -782,7 +782,7 @@ const LayoutBar: FC<LayoutBarProps> = ({ data,alldata, tickFormatter, tooltipFor
                                                     return (
                                                         <>
                                                             <span key={`${label}-${x.dataKey}-${value}`} style={{ color: x.color, whiteSpace: "break-spaces" }}>
-                                                                {`${x.dataKey}: ${value}${grouping==="percentage"?"%" : ""}`}
+                                                                {`${x.dataKey}: ${grouping==="percentage"?`${value}%` : `${value} / ${(value*100/total).toFixed(2)}%`}`}
                                                             </span>
                                                             <br/>
                                                         </>
@@ -801,6 +801,7 @@ const LayoutBar: FC<LayoutBarProps> = ({ data,alldata, tickFormatter, tooltipFor
                         />
                         {keys.map((x,i)=>(
                             <Bar
+                                isAnimationActive={false}
                                 dataKey={x}
                                 fill={colors[i]}
                                 textAnchor="end"
@@ -837,6 +838,7 @@ const LayoutBar: FC<LayoutBarProps> = ({ data,alldata, tickFormatter, tooltipFor
                             }}
                         />
                         <Bar
+                            isAnimationActive={false}
                             dataKey="quantity"
                             fill="#8884d8"
                             textAnchor="end"
@@ -913,7 +915,7 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipF
                                                     return (
                                                         <>
                                                             <span key={`${label}-${x.dataKey}-${value}`} style={{ color: x.color, whiteSpace: "break-spaces" }}>
-                                                                {`${x.dataKey}: ${value}${grouping==="percentage"?"%" : ""}`}
+                                                                {`${x.dataKey}: ${grouping==="percentage"?`${value}%` : `${value} / ${(value*100/total).toFixed(2)}%`}`}
                                                             </span>
                                                             <br/>
                                                         </>
@@ -959,7 +961,7 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipF
                                 return null;
                             }}
                         />
-                        <Line type="monotone" dataKey="quantity" stroke="#8884d8" />
+                        <Line isAnimationActive={false} type="monotone" dataKey="quantity" stroke="#8884d8"><LabelList dataKey="quantity" position="top" fill="#000" /></Line>
                     </>
                 )
                 }
