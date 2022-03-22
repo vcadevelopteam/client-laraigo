@@ -36,6 +36,7 @@ export const langKeys = {
     automatizationrules: "automatizationrules",
     creditcard: "creditcard",
     creditcardvalidate: "creditcardvalidate",
+    validationphone: "validationphone",
     securitycode: "securitycode",
     finishregwarn: "finishregwarn",
     addfilter: "addfilter",
