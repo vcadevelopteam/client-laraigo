@@ -90,6 +90,7 @@ interface RichTextProps extends Omit<BoxProps, 'onChange'> {
     value: Descendant[];
     error?: string;
     onChange: (value: Descendant[]) => void;
+    onlyurl?: boolean;
 }
 
 interface RenderElementProps {
@@ -118,7 +119,7 @@ const useRichTextStyles = makeStyles(theme => ({
 }));
 
 /**TODO: Validar que la URL de la imagen sea valida en el boton de insertar imagen */
-const RichText: FC<RichTextProps> = ({ value, onChange, placeholder, spellCheck, error, ...boxProps })=> {
+const RichText: FC<RichTextProps> = ({ value, onChange, placeholder, spellCheck, error, onlyurl="false", ...boxProps })=> {
     const classes = useRichTextStyles();
     // Create a Slate editor object that won't change across renders.
     const editor = useMemo(() => withImages(withHistory(withReact(createEditor()))), []);
@@ -155,9 +156,13 @@ const RichText: FC<RichTextProps> = ({ value, onChange, placeholder, spellCheck,
                     <BlockButton format="bulleted-list">
                         <FormatListBulletedIcon />
                     </BlockButton>
-                    <InsertImageButton>
+                    {onlyurl?<OnlyURLInsertImageButton>
                         <InsertPhotoIcon />
-                    </InsertImageButton>
+                    </OnlyURLInsertImageButton>:
+                        <InsertImageButton>
+                            <InsertPhotoIcon />
+                        </InsertImageButton>
+                    }
                     {upload.loading && (
                         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                             <CircularProgress size={24} />
@@ -342,6 +347,116 @@ const useInsertImageButtonStyles = makeStyles(theme => ({
         gap: 8,
     },
 }));
+
+const OnlyURLInsertImageButton: FC = ({ children }) => {
+    const editor = useSlateStatic();
+    const dispatch = useDispatch();
+    const { t } = useTranslation();
+    const classes = useInsertImageButtonStyles();
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [url, setUrl] = useState('');
+    const [tabIndex, setTabIndex] = useState(0);
+    const [waitUploadFile, setWaitUploadFile] = useState(false);
+    const upload = useSelector(state => state.main.uploadFile);
+    const open = Boolean(anchorEl);
+
+    useEffect(() => {
+        return () => {
+            dispatch(resetUploadFile());
+        };
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (waitUploadFile) {
+            if (upload.loading) return;
+            if (upload.error) {
+                const message = t(upload.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
+                dispatch(showSnackbar({
+                    message,
+                    show: true,
+                    success: false,
+                }));
+                setWaitUploadFile(false);
+            } else if (upload.url && upload.url.length > 0) {
+                insertImage(editor, upload.url);
+                dispatch(resetUploadFile());
+                setWaitUploadFile(false);
+            }
+        }
+    }, [waitUploadFile, upload, editor, t, dispatch]);
+
+    const clearUrl = useCallback(() => setUrl(''), []);
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const addNewUrlImage = useCallback(() => {
+        if (url.length > 0 && isUrl(url)) {
+            insertImage(editor, url);
+            clearUrl();
+        }
+    }, [url, editor, clearUrl]);
+
+    return (
+        <div>
+            <IconButton
+                aria-controls="insert-image-button-rich-text-popup"
+                aria-haspopup="true"
+                aria-expanded={open ? 'true' : undefined}
+                onMouseDown={event => {
+                    event.preventDefault();
+                    handleClick(event);
+                }}
+            >
+                {children}
+            </IconButton>
+            <Menu
+                id="insert-image-button-rich-text-popup"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                MenuListProps={{
+                    'aria-labelledby': 'basic-button',
+                }}
+            >
+                <div className={classes.rootPopup}>
+                    <div role="tabpanel" className={clsx(classes.rootTab, tabIndex !== 0 && classes.hidden)}>
+                        <TextField
+                            placeholder={t(langKeys.enterTheUrl)}
+                            value={url}
+                            onChange={e => setUrl(e.target.value)}
+                            autoFocus
+                            disabled={waitUploadFile || upload.loading}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton size="small" onClick={clearUrl}>
+                                            <CloseIcon />
+                                        </IconButton>
+                                    </InputAdornment>
+                                )
+                            }}
+                        />
+                        <Button
+                            type="button"
+                            color="primary"
+                            variant="contained"
+                            size="small"
+                            disabled={waitUploadFile || upload.loading}
+                            onClick={addNewUrlImage}
+                        >
+                            <Trans i18nKey={langKeys.accept} />
+                        </Button>
+                    </div>
+                </div>
+            </Menu>
+        </div>
+    );
+}
 
 const InsertImageButton: FC = ({ children }) => {
     const editor = useSlateStatic();

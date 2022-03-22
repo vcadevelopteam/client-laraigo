@@ -595,6 +595,7 @@ const LayoutItem: FC<LayoutItemProps> = ({
                         tickFormatter={groupment === "percentage" ? v => `${Number(v).toFixed(2)}%` : undefined}
                         tooltipFormatter={formatTooltip}
                         alldata={alldata}
+                        grouping={groupment}
                     />
                 );
             case 'pie':
@@ -727,9 +728,10 @@ interface LayoutBarProps extends Omit<ResponsiveContainerProps, 'children'> {
     tickFormatter?: (value: string, index: number) => string;
     tooltipFormatter?: (value: any, tot?:any) => string;
     alldata?: any;
+    grouping?: string;
 }
 
-const LayoutBar: FC<LayoutBarProps> = ({ data,alldata, tickFormatter, tooltipFormatter, ...props }) => {
+const LayoutBar: FC<LayoutBarProps> = ({ data,alldata, tickFormatter, tooltipFormatter,grouping, ...props }) => {
     const { t } = useTranslation();
     let total=alldata?.total;
     let modifieddata=data;
@@ -767,9 +769,39 @@ const LayoutBar: FC<LayoutBarProps> = ({ data,alldata, tickFormatter, tooltipFor
                 <YAxis tickFormatter={tickFormatter} padding={{ top: 10 }}/>
                 {alldata?.interval?(
                     <>
-                        <ChartTooltip />
+                        
+                        <ChartTooltip content={({ active, payload, label }) => {
+                                if (active && payload && payload.length) {
+                                    return (
+                                        <Card key={`${label}-${payload[0].value}`} style={{ padding: '0.85em' }}>
+                                            {label && <label>{label}</label>}
+                                            {label && <br />}
+                                            {payload.map((x:any)=>{
+                                                let value = x.payload[x?.dataKey]
+                                                if(value){
+                                                    return (
+                                                        <>
+                                                            <span key={`${label}-${x.dataKey}-${value}`} style={{ color: x.color, whiteSpace: "break-spaces" }}>
+                                                                {`${x.dataKey}: ${grouping==="percentage"?`${value}%` : `${value} / ${(value*100/total).toFixed(2)}%`}`}
+                                                            </span>
+                                                            <br/>
+                                                        </>
+                                                    )
+                                                }
+                                                return null
+                                            })
+
+                                            }
+                                        </Card>
+                                    );
+                                }
+
+                                return null;
+                            }}
+                        />
                         {keys.map((x,i)=>(
                             <Bar
+                                isAnimationActive={false}
                                 dataKey={x}
                                 fill={colors[i]}
                                 textAnchor="end"
@@ -806,6 +838,7 @@ const LayoutBar: FC<LayoutBarProps> = ({ data,alldata, tickFormatter, tooltipFor
                             }}
                         />
                         <Bar
+                            isAnimationActive={false}
                             dataKey="quantity"
                             fill="#8884d8"
                             textAnchor="end"
@@ -882,7 +915,7 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipF
                                                     return (
                                                         <>
                                                             <span key={`${label}-${x.dataKey}-${value}`} style={{ color: x.color, whiteSpace: "break-spaces" }}>
-                                                                {`${x.dataKey}: ${value}${grouping==="percentage"?"%" : ""}`}
+                                                                {`${x.dataKey}: ${grouping==="percentage"?`${value}%` : `${value} / ${(value*100/total).toFixed(2)}%`}`}
                                                             </span>
                                                             <br/>
                                                         </>
@@ -928,7 +961,7 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipF
                                 return null;
                             }}
                         />
-                        <Line type="monotone" dataKey="quantity" stroke="#8884d8" />
+                        <Line isAnimationActive={false} type="monotone" dataKey="quantity" stroke="#8884d8"><LabelList dataKey="quantity" position="top" fill="#000" /></Line>
                     </>
                 )
                 }
