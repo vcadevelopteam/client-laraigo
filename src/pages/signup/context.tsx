@@ -394,6 +394,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
                     message: errormessage,
                 }))
             }else{
+                console.log(form.getValues())
                 dispatch(showBackdrop(false));
             }
 
@@ -459,7 +460,9 @@ export const SubscriptionProvider: FC = ({ children }) => {
     }
 
     const onVal: SubmitHandler<MainData> = (data) => {
+        console.log(form.getValues())
         const { channels, ...mainData } = data;
+        console.log(channels)
         let partialchannels = Object.values(channels)
         const majorfield = {
             method: "UFN_CREATEZYXMEACCOUNT_INS",
