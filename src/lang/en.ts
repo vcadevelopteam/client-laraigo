@@ -1603,7 +1603,7 @@ const translation: LangKeys = {
     report_loginhistory_user: 'User',
     report_loginhistory_username: 'Username',
     report_loginhistory_status: 'Status',
-    uniqueclients: "Unique clients",
+    uniqueclients: "Unique contacts",
     report_loginhistory_status_help: `- Inbox: In receipt tray.
 - Login: Session initiated.
 - Expiration: Session expired.`,

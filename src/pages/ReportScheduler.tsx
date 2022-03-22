@@ -72,7 +72,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
     const dataReportSimpleAll = multiData[1] && multiData[1].success ? multiData[1].data: [];
     const dataReportSimple = dataReportSimpleAll.filter(x=>x.origin !== "TICKET") 
     const dataRanges = multiData[2] && multiData[2].success ? multiData[2].data : [];
-    const [filterData, setfilterData] = useState(JSON.parse(dataReportSimple.find(x=>(x.reportname===(row?.reportname)))?.filterjson|| "[]").filter((x:any)=>x.type!=="timestamp without time zone"));
+    const [filterData, setfilterData] = useState(origin==="TICKET"?JSON.parse(dataReportSimpleAll.filter(x=>x.origin==="TICKET")?.[0].filterjson|| "[]"):JSON.parse(dataReportSimple.find(x=>(x.reportname===(row?.reportname)))?.filterjson|| "[]").filter((x:any)=>x.type!=="timestamp without time zone"));
     const [showError, setShowError] = useState(false);
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
@@ -301,7 +301,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                             optionValue="value"
                         />}
                     </div>
-                    {(filterData.length>0 && origin ) &&<div className="row-zyx">
+                    {(origin==="TICKET" ) &&<div className="row-zyx">
                         
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <div className={classes.subtitle2}>{t(langKeys.filters)}</div>
