@@ -347,7 +347,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
         if (executeResult.loading === true) return;
         if (executeResult.value && !executeResult.error) {
             dispatch(showBackdrop(false));
-            setStep(4); // rating
+            setStep(4);
             let msg = t(langKeys.successful_sign_up);
             const googleid = form.getValues('googleid');
             const facebookid = form.getValues('facebookid');
@@ -362,10 +362,6 @@ export const SubscriptionProvider: FC = ({ children }) => {
         } else if (executeResult.error) {
             var errormessage = t(executeResult.message || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
 
-            if (executeResult.code) {
-                errormessage = `${t(langKeys.suscriptionlinkerror)}${t(executeResult.code)}`
-            }
-
             dispatch(showBackdrop(false));
             
             dispatch(showSnackbar({
@@ -374,13 +370,16 @@ export const SubscriptionProvider: FC = ({ children }) => {
                 message: errormessage,
             }))
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [executeResult, form.getValues, t, dispatch])
 
     useEffect(() => {
         if (validateBool) {
-            if (executeResultValidation.loading === true) return;
+            if (executeResultValidation.loading === true) {
+                return;
+            }
+
             setValidateBool(false);
+
             if (executeResultValidation.error) {
                 var errormessage = t(executeResultValidation.message || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
     
@@ -388,17 +387,15 @@ export const SubscriptionProvider: FC = ({ children }) => {
                     errormessage = `${t(langKeys.suscriptionlinkerror)}${t(executeResultValidation.code)}`
                 }
                 
+                dispatch(showBackdrop(false));
                 dispatch(showSnackbar({
+                    message: errormessage,
                     show: true,
                     success: false,
-                    message: errormessage,
-                }))
-            }else{
-                console.log(form.getValues())
+                }));
+            } else {
                 dispatch(showBackdrop(false));
             }
-
-            // eslint-disable-next-line react-hooks/exhaustive-deps
         }
     }, [executeResultValidation, validateBool])
 
@@ -460,10 +457,10 @@ export const SubscriptionProvider: FC = ({ children }) => {
     }
 
     const onVal: SubmitHandler<MainData> = (data) => {
-        console.log(form.getValues())
         const { channels, ...mainData } = data;
-        console.log(channels)
-        let partialchannels = Object.values(channels)
+
+        let partialchannels = Object.values(channels);
+
         const majorfield = {
             method: "UFN_CREATEZYXMEACCOUNT_INS",
             key: "UFN_CREATEZYXMEACCOUNT_INS",
@@ -495,6 +492,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
         dispatch(validateChannels(majorfield));
         setValidateBool(true);
     }
+    
     const onSubmit: SubmitHandler<MainData> = (data) => {
         const { channels, ...mainData } = data;
         debugger

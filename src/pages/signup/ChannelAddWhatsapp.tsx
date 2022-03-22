@@ -316,7 +316,6 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                             const v9 = await trigger('channels.whatsapp.customerfacebookid');
                             const v10 = await trigger('channels.whatsapp.phonenumberwhatsappbusiness');
                             const v11 = await trigger('channels.whatsapp.nameassociatednumber');
-                            // console.log(v1 , v2 , v3 , v4 , v5 , v6 , v7 , v8 , v9 , v10,v11)
                             if (v1 && v2 && v3 && v4 && v5 && v6 && v7 && v8 && v9 && v10 && v11) {
                                 setView("view1");
                                 setHasFinished(true);

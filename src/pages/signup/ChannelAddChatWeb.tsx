@@ -1590,7 +1590,6 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
         
         const cb = async () => {
             const valid = await nestedForm.trigger();
-            console.log(valid, 'aswas')
             setSubmitError(!valid);
         }
 

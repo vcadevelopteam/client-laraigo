@@ -163,7 +163,6 @@ const SecondStep: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarni
                     control={control}
                     rules={{
                         validate: (value) => {
-                            console.log(value)
                             if (value.length === 0) {
                                 return t(langKeys.field_required) as string;
                             }else if(value.length<10){

@@ -144,7 +144,6 @@ const SignUpFunc: FC = () => {
         setOpenWarning(false);
     };
     const handleClose2 = () => {
-        console.log(step)
         if (step === 2) {
             setDefaultMainData()
         } else if (step === 4) {
