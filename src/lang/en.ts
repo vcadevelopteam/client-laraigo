@@ -3261,6 +3261,10 @@ const translation: LangKeys = {
     filterreport_recordhsmreport: 'Shipment history report',
     campaign_default: 'CAMPAIGN/DEFAULT',
     campaign_proactive: 'CAMPAIGN/PROACTIVE',
+    error_facebook_pages: 'Could not get Facebook pages',
+    recoverpassword_missingconfiguration: 'Could not retrieve sending configuration',
+    recoverpassword_sendfailure: 'Could not send the recovery mail',
+    validateuser_mismatch: 'User data does not match',
 };
 
 const enResource: ResourceLanguage = {

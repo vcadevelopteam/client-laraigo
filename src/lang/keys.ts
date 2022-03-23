@@ -3245,6 +3245,10 @@ export const langKeys = {
     filterreport_recordhsmreport: 'filterreport_recordhsmreport',
     campaign_default: 'campaign_default',
     campaign_proactive: 'campaign_proactive',
+    error_facebook_pages: 'error_facebook_pages',
+    recoverpassword_missingconfiguration: 'recoverpassword_missingconfiguration',
+    recoverpassword_sendfailure: 'recoverpassword_sendfailure',
+    validateuser_mismatch: 'validateuser_mismatch',
 };
 
 export type LangKeys = typeof langKeys;

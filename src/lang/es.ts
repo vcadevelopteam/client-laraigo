@@ -3252,6 +3252,10 @@ const translation: LangKeys = {
     filterreport_recordhsmreport: 'Reporte historial de envíos',
     campaign_default: 'CAMPAÑA/PREDETERMINADO',
     campaign_proactive: 'CAMPAÑA/PROACTIVO',
+    error_facebook_pages: 'Error al obtener las paginas enlazadas',
+    recoverpassword_missingconfiguration: 'Error al obtener la configuración de envío',
+    recoverpassword_sendfailure: 'Error al enviar el correo de recuperación',
+    validateuser_mismatch: 'Datos del usuario inválidos',
 };
 
 const esResource: ResourceLanguage = {
