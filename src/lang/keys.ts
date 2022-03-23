@@ -31,6 +31,8 @@ export const langKeys = {
     to: "to",
     subject: "subject",
     addfilter: "addfilter",
+    eventcode: "eventcode",
+    eventname: "eventname",
     filter: "filter",
     filter_unique_value: "filter_unique_value",
     filter_text: "filter_text",

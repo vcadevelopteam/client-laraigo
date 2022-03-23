@@ -2726,8 +2726,8 @@ export const billingReportConversationWhatsApp = ({ corpid, orgid, year, month }
 })
 
 export const selCalendar = (id: number = 0) => ({
-    method: "UFN_CALENDARYEVENT_SEL",
-    key: "UFN_CALENDARYEVENT_SEL",
+    method: "UFN_CALENDAREVENT_SEL",
+    key: "UFN_CALENDAREVENT_SEL",
     parameters: {
         id,
         all: id === 0,

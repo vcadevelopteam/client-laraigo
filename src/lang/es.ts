@@ -275,6 +275,8 @@ const translation: LangKeys = {
     totalsatisfied: "Total Satisfecho",
     totaldissatisfied: "Total Insatisfecho",
     totalconversations: "Total Conversaciones",
+    eventcode: "Código de Evento",
+    eventname: "Nombre de evento",
     sla: 'Acuerdo de nivel de servicio',
     communicationchanneldesc: 'Nombre canal',
     stablishfilters: "Establecer filtros",

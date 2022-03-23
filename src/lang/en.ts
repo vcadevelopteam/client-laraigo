@@ -862,6 +862,8 @@ const translation: LangKeys = {
     reason_sales: "Sales",
     reason_marketing: "Marketing",
     reason_customerservice: "Customer service",
+    eventcode: "Event code",
+    eventname: "Event name",
     campaign_plural: 'Campaigns',
     newcampaign: 'New campaign',
     startdate: 'Start date',
