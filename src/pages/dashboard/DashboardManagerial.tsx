@@ -21,7 +21,7 @@ import { gerencialasesoresconectadosbarsel, gerencialconversationsel,gerencialEn
 import { useDispatch } from "react-redux";
 import { Dictionary } from "@types";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
-import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip as RechartsTooltip, PieChart, Pie, Cell, Label, BarChart, Bar } from 'recharts';
+import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip as RechartsTooltip, PieChart, Pie, Cell, Label, BarChart, Bar, LabelList } from 'recharts';
 import InfoIcon from '@material-ui/icons/Info';
 import SettingsIcon from '@material-ui/icons/Settings';
 import Tooltip from "@material-ui/core/Tooltip"
@@ -1006,12 +1006,15 @@ const DashboardManagerial: FC = () => {
         })
         if (resDashboard.length) {
             const { avgparam,ticketscerrados, ticketstotal, ticketscerradosasesor, ticketscerradosbot, ticketsabandonados } = resDashboard[0];
+            let avgconversationsattended = ((ticketscerrados * 100) / ticketstotal).toFixed()
+            let maxavgconversationsattendedasesor = ((ticketscerradosasesor * 100) / ticketstotal).toFixed()
+            let minvgconversationsattendedbot = ((ticketscerradosbot * 100) / ticketstotal).toFixed()
             setDataDASHBOARD({
                 totalconversations: ticketscerrados,
-                avgconversationsattended: ((ticketscerrados * 100) / ticketstotal).toFixed() + "%",
-                maxavgconversationsattendedasesor: ((ticketscerradosasesor * 100) / ticketstotal).toFixed() + "%",
+                avgconversationsattended: avgconversationsattended==="0"?avgconversationsattended:(avgconversationsattended + "%"),
+                maxavgconversationsattendedasesor:  maxavgconversationsattendedasesor==="0"?maxavgconversationsattendedasesor:(maxavgconversationsattendedasesor + "%"),
                 maxavgconversationsattendedasesortotal: ticketscerradosasesor,
-                minvgconversationsattendedbot: ((ticketscerradosbot * 100) / ticketstotal).toFixed() + "%",
+                minvgconversationsattendedbot:  minvgconversationsattendedbot==="0"?minvgconversationsattendedbot:(minvgconversationsattendedbot + "%"),
                 minvgconversationsattendedbottotal: ticketscerradosbot,
                 iconconversationsattendedasesor: parseFloat(avgparam) < (ticketscerradosasesor / ticketstotal),
                 iconconversationsattendedbot: parseFloat(avgparam) < (ticketscerradosbot / ticketstotal),
@@ -1302,6 +1305,7 @@ const DashboardManagerial: FC = () => {
                                 valueDefault={searchfieldsOnlyOne.closedbyasesor}
                                 onChange={(value) => {
                                     let closedby = ""
+                                    let target=fieldToFilter==="TMO"?sla.totaltmopercentmax:sla.usertmepercentmax
                                     if(value && searchfieldsOnlyOne.closedbybot) {closedby="ASESOR,BOT"} else
                                     if (value) {closedby="ASESOR"} else
                                     if (searchfieldsOnlyOne.closedbybot) {closedby="BOT"}
@@ -1309,7 +1313,7 @@ const DashboardManagerial: FC = () => {
                                     if(closedby==="ASESOR"){
                                         setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbyasesor: value, closedby: closedby,min: sla?.usertmomin || "00:00:00", max: sla.usertmo, target: sla.usertmopercentmax}))
                                     }else if(closedby==="ASESOR,BOT"){
-                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbyasesor: value,closedby: closedby,min: sla?.totamtmomin || "00:00:00", max: sla.totaltmo, target: sla.totaltmopercentmax}))
+                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbyasesor: value,closedby: closedby,min: sla?.totamtmomin || "00:00:00", max: sla.totaltmo, target: target}))
                                     }
                                     else{
                                         setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbyasesor: value,closedby: closedby,min: "00:00:00", max: "00:00:00", target: 0}))
@@ -1323,6 +1327,7 @@ const DashboardManagerial: FC = () => {
                                 valueDefault={searchfieldsOnlyOne.closedbybot}
                                 onChange={(value) =>{ 
                                     let closedby = ""
+                                    let target=fieldToFilter==="TMO"?sla.totaltmopercentmax:sla.usertmepercentmax
                                     if(value && searchfieldsOnlyOne.closedbyasesor) {closedby="ASESOR,BOT"} else
                                     if (value) {closedby="BOT"} else
                                     if (searchfieldsOnlyOne.closedbyasesor) {closedby="ASESOR"}
@@ -1330,7 +1335,7 @@ const DashboardManagerial: FC = () => {
                                     if(closedby==="ASESOR"){
                                         setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value, closedby: closedby,min: sla?.usertmomin || "00:00:00", max: sla.usertmo, target: sla.usertmopercentmax}))
                                     }else if(closedby==="ASESOR,BOT"){
-                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value,closedby: closedby,min: sla?.totamtmomin || "00:00:00", max: sla.totaltmo, target: sla.totaltmopercentmax}))
+                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value,closedby: closedby,min: sla?.totamtmomin || "00:00:00", max: sla.totaltmo, target: target}))
                                     }
                                     else{
                                         setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value,closedby: closedby,min: "00:00:00", max: "00:00:00", target: 0}))
@@ -1529,7 +1534,7 @@ const DashboardManagerial: FC = () => {
                         >
                             <div className={classes.downloadiconcontainer}>
                                 <CloudDownloadIcon onClick={()=>downloaddata("TME")}  className={classes.styleicon}/>
-                                <SettingsIcon onClick={()=>{setFieldToFilter("TME"); setOpenDialogPerRequest(true);setsearchfieldsOnlyOne((prevState) =>({...prevState, min: "00:00:00", max: sla?.usertme||"00:00:00"}))}} className={classes.styleicon}/>
+                                <SettingsIcon onClick={()=>{setFieldToFilter("TME"); setOpenDialogPerRequest(true);setsearchfieldsOnlyOne((prevState) =>({...prevState, min: "00:00:00",target:sla.usertmepercentmax, max: sla?.usertme||"00:00:00"}))}} className={classes.styleicon}/>
                             </div>
                             <div className={classes.columnCard}>
                                 <div className={classes.containerFieldsTitle}>
@@ -2259,7 +2264,9 @@ const DashboardManagerial: FC = () => {
                                     <XAxis domain={["",""]} angle={-60} interval={0} textAnchor="end" height={reschannels?.map((x:any)=> x.communicationchannel.length).length>0?Math.max(...reschannels?.map((x:any)=> x.communicationchannel.length))*8:10} type="category" dataKey="communicationchannel"><Label value={` ${t(langKeys.channel_plural)} `} offset={-5} position="insideBottom" /></XAxis>
                                     <YAxis><Label value={` ${t(langKeys.conversationquantity)} `} angle={-90} offset={10} position="insideBottomLeft"/></YAxis>
                                     <RechartsTooltip />
-                                    <Bar dataKey="tickets" fill="#8884d8" />
+                                    <Bar dataKey="tickets" fill="#8884d8">
+                                        <LabelList dataKey="tickets" position="top" fill="#000" />
+                                    </Bar>
                                 </BarChart>
                             </ResponsiveContainer>
 
