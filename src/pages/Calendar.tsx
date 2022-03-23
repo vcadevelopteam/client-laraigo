@@ -15,7 +15,7 @@ import { useForm } from 'react-hook-form';
 import { getCollection, getMultiCollection, execute, resetAllMain, getCollectionAux, getCollectionAux2, resetMainAux, resetMainAux2 } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
-import { Box, FormControlLabel, IconButton, ListItemIcon, Menu, MenuItem, Radio, RadioGroup, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, Typography } from '@material-ui/core';
+import { Box, Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel, IconButton, ListItemIcon, Menu, MenuItem, Radio, RadioGroup, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, Typography } from '@material-ui/core';
 import { Range } from 'react-date-range';
 import { DateRangePicker } from 'components';
 import { CalendarIcon, DuplicateIcon } from 'icons';
@@ -27,6 +27,7 @@ import UpdateIcon from '@material-ui/icons/Update';
 import { Descendant } from 'slate';
 import { renderToString, toElement } from 'components/fields/RichText';
 import { ColorChangeHandler } from 'react-color';
+import clsx from 'clsx';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -77,6 +78,45 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: 4,
         color: 'rgb(143, 146, 161)'
     },
+    formControl: {
+      margin: theme.spacing(3),
+    },
+    icon: {
+      borderRadius: 3,
+      width: 16,
+      height: 16,
+      boxShadow: 'inset 0 0 0 1px rgba(16,22,26,.2), inset 0 -1px 0 rgba(16,22,26,.1)',
+      backgroundColor: '#f5f8fa',
+      backgroundImage: 'linear-gradient(180deg,hsla(0,0%,100%,.8),hsla(0,0%,100%,0))',
+      '$root.Mui-focusVisible &': {
+        outline: '2px auto rgba(19,124,189,.6)',
+        outlineOffset: 2,
+      },
+      'input:hover ~ &': {
+        backgroundColor: '#ebf1f5',
+      },
+      'input:disabled ~ &': {
+        boxShadow: 'none',
+        background: 'rgba(206,217,224,.5)',
+      },
+    },
+    checkedIcon: {
+      backgroundColor: '#137cbd',
+      backgroundImage: 'linear-gradient(180deg,hsla(0,0%,100%,.1),hsla(0,0%,100%,0))',
+      '&:before': {
+        display: 'block',
+        width: 16,
+        height: 16,
+        backgroundImage:
+          "url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath" +
+          " fill-rule='evenodd' clip-rule='evenodd' d='M12 5c-.28 0-.53.11-.71.29L7 9.59l-2.29-2.3a1.003 " +
+          "1.003 0 00-1.42 1.42l3 3c.18.18.43.29.71.29s.53-.11.71-.29l5-5A1.003 1.003 0 0012 5z' fill='%23fff'/%3E%3C/svg%3E\")",
+        content: '""',
+      },
+      'input:hover ~ &': {
+        backgroundColor: '#106ba3',
+      },
+    },
 }));
 
 const dataPeriod: Dictionary = {
@@ -103,9 +143,21 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     const [dateinterval, setdateinterval] = React.useState('daysintothefuture');
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
+    const [state, setState] = React.useState({
+        sun: false,
+        mon: true,
+        tue: true,
+        wed: true,
+        thu: true,
+        fri: true,
+        sat: false,
+    });
 
     const handleChange = (event:any) => {
       setdateinterval(event.target.value);
+    };
+    const handleChangeAvailability = (event:any) => {
+        setState({ ...state, [event.target.name]: event.target.checked });
     };
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
@@ -122,12 +174,14 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
             notificationtype: row?.notificationtype || "",
             notificationtemplate: row?.notificationtemplate || "",
             daysintothefuture: row?.daysintothefuture || 0,
+            quantity: row?.quantity || 0,
             operation: operation==="DUPLICATE"? "INSERT":operation,
         }
     });
     
     React.useEffect(() => {
         register('eventcode', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('quantity', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
         register('eventname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('location', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -167,6 +221,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         { id: "view-1", name: t(langKeys.calendar)},
         { id: "view-2", name: t(langKeys.calendar_detail) }
     ];
+    const { sun,mon,tue,wed,thu,fri,sat } = state;
     return (
         <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
@@ -320,28 +375,139 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                             </>
                                         )}
                                         <div style={{display:"flex", margin: "auto"}}>{t(langKeys.daysintothefuture)}</div></div>} />
-                                        <FormControlLabel value="withinadaterange" control={<Radio color="primary"/>} label={<div style={{display:"flex", margin: "auto"}}>{dateinterval==="withinadaterange" && (
-                                            <>
-                                                <DateRangePicker
-                                                    open={openDateRangeCreateDateModal}
-                                                    setOpen={setOpenDateRangeCreateDateModal}
-                                                    range={dateRangeCreateDate}
-                                                    onSelect={setDateRangeCreateDate}
-                                                >
-                                                    <Button
-                                                        className={classes.itemDate}
-                                                        startIcon={<CalendarIcon />}
-                                                        onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
+                                        <FormControlLabel value="withinadaterange" control={<Radio color="primary"/>} label={
+                                        <div style={{display:"flex", margin: "auto"}}>
+                                            <div style={{display:"flex", margin: "auto", paddingRight:8}}>{t(langKeys.withinadaterange)}  </div>
+                                            {dateinterval==="withinadaterange" && (
+                                                <>
+                                                    <DateRangePicker
+                                                        open={openDateRangeCreateDateModal}
+                                                        setOpen={setOpenDateRangeCreateDateModal}
+                                                        range={dateRangeCreateDate}
+                                                        onSelect={setDateRangeCreateDate}
                                                     >
-                                                        {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
-                                                    </Button>
-                                                </DateRangePicker>
-                                            </>
-                                        )}
-                                        <div style={{display:"flex", margin: "auto", paddingLeft:10}}>{t(langKeys.withinadaterange)}</div></div>} />
+                                                        <Button
+                                                            className={classes.itemDate}
+                                                            startIcon={<CalendarIcon />}
+                                                            onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
+                                                        >
+                                                            {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
+                                                        </Button>
+                                                    </DateRangePicker>
+                                                </>
+                                            )}
+                                        </div>} />
                                         <FormControlLabel value="indefinetly" control={<Radio color="primary"/>} label={t(langKeys.indefinetly)} />
                                     </RadioGroup>
                                 </React.Fragment>
+                            </div>
+                        </div>
+                        <div className="row-zyx" >
+                            <div className="col-4" style={{padding: 5}}>
+                                <Box fontWeight={500} lineHeight="18px" fontSize={16} mb={1} color="textPrimary">{t(langKeys.duration)}</Box>
+                                <div className="row-zyx" >
+                                    <FieldEdit
+                                        label={t(langKeys.quantity)}
+                                        className="col-6"
+                                        valueDefault={getValues('quantity')}
+                                        onChange={(value) => setValue('quantity', value)}
+                                        error={errors?.quantity?.message}
+                                    />
+                                    <FieldSelect
+                                        label={t(langKeys.unitofmeasure)}
+                                        className="col-6"
+                                        valueDefault={row?.notificationtemplate || ""}
+                                        onChange={(value) => setValue('notificationtemplate', (value?.val||""))}
+                                        error={errors?.notificationtemplate?.message}
+                                        data={[{desc: "MM",val: "MM"},{desc: "HH",val: "HH"}]}
+                                        optionDesc="desc"
+                                        optionValue="val"
+                                    />
+                                </div>
+                            </div>
+                            <div className="col-4" style={{padding: 5}}>
+                                <Box fontWeight={500} lineHeight="18px" fontSize={16} mb={1} color="textPrimary">{t(langKeys.settimebeforetheevent)}</Box>
+                                <div className="row-zyx" >
+                                    <FieldEdit
+                                        label={t(langKeys.quantity)}
+                                        className="col-6"
+                                        valueDefault={getValues('quantity')}
+                                        onChange={(value) => setValue('quantity', value)}
+                                        error={errors?.quantity?.message}
+                                    />
+                                    <FieldSelect
+                                        label={t(langKeys.unitofmeasure)}
+                                        className="col-6"
+                                        valueDefault={row?.notificationtemplate || ""}
+                                        onChange={(value) => setValue('notificationtemplate', (value?.val||""))}
+                                        error={errors?.notificationtemplate?.message}
+                                        data={[{desc: "MM",val: "MM"},{desc: "HH",val: "HH"}]}
+                                        optionDesc="desc"
+                                        optionValue="val"
+                                    />
+                                </div>
+                            </div>
+                            <div className="col-4" style={{padding: 5}}>
+                                <Box fontWeight={500} lineHeight="18px" fontSize={16} mb={1} color="textPrimary">{t(langKeys.settimeaftertheevent)}</Box>
+                                <div className="row-zyx" >
+                                    <FieldEdit
+                                        label={t(langKeys.quantity)}
+                                        className="col-6"
+                                        valueDefault={getValues('quantity')}
+                                        onChange={(value) => setValue('quantity', value)}
+                                        error={errors?.quantity?.message}
+                                    />
+                                    <FieldSelect
+                                        label={t(langKeys.unitofmeasure)}
+                                        className="col-6"
+                                        valueDefault={row?.notificationtemplate || ""}
+                                        onChange={(value) => setValue('notificationtemplate', (value?.val||""))}
+                                        error={errors?.notificationtemplate?.message}
+                                        data={[{desc: "MM",val: "MM"},{desc: "HH",val: "HH"}]}
+                                        optionDesc="desc"
+                                        optionValue="val"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className="row-zyx">
+                            <Box fontWeight={500} lineHeight="18px" fontSize={20} mb={1} color="textPrimary">{t(langKeys.availability)}</Box>
+                            <div>
+                                <FormControl component="fieldset" className={classes.formControl}>
+                                    <FormGroup>
+                                    <FormControlLabel
+                                        control={<Checkbox color="primary" checked={sun} onChange={handleChangeAvailability} name="sun" />}
+                                        label={<>
+                                            <div style={{display:"flex", margin: "auto",fontWeight:"bold"}}>{t(langKeys.sunday)}</div>
+                                        </>}
+                                    />
+                                    <FormControlLabel
+                                        control={<Checkbox color="primary" checked={mon} onChange={handleChangeAvailability} name="mon" />}
+                                        label={t(langKeys.monday)}
+                                    />
+                                    <FormControlLabel
+                                        control={<Checkbox color="primary" checked={tue} onChange={handleChangeAvailability} name="tue" />}
+                                        label={t(langKeys.tuesday)}
+                                    />
+                                    <FormControlLabel
+                                        control={<Checkbox color="primary" checked={wed} onChange={handleChangeAvailability} name="wed" />}
+                                        label={t(langKeys.wednesday)}
+                                    />
+                                    <FormControlLabel
+                                        control={<Checkbox color="primary" checked={thu} onChange={handleChangeAvailability} name="thu" />}
+                                        label={t(langKeys.thursday)}
+                                    />
+                                    <FormControlLabel
+                                        control={<Checkbox color="primary" checked={fri} onChange={handleChangeAvailability} name="fri" />}
+                                        label={t(langKeys.friday)}
+                                    />
+                                    <FormControlLabel
+                                        control={<Checkbox color="primary" checked={sat} onChange={handleChangeAvailability} name="sat" />}
+                                        label={t(langKeys.saturday)}
+                                    />
+                                    </FormGroup>
+                                </FormControl>
                             </div>
                         </div>
                     </div>
