@@ -91,6 +91,7 @@ export const langKeys = {
     ventasxAsesortooltip: "ventasxAsesortooltip",
     numberofadvisers: "numberofadvisers",
     rankinghsmtooltip: "rankinghsmtooltip",
+    hsmperdaytooltip: "hsmperdaytooltip",
     templatename: "templatename",
     automaticClosingrate: "automaticClosingrate",
     productivitycard1tooltip: "productivitycard1tooltip",
