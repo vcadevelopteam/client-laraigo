@@ -325,16 +325,16 @@ const DashboardManagerial: FC = () => {
         fixtotalconversations: 0,
     });
     const [dataDASHBOARD, setDataDASHBOARD] = useState({
-        totalconversations: "",
+        totalconversations: "0",
         avgconversationsattended: "0%",
         maxavgconversationsattendedasesor: "0%",
-        maxavgconversationsattendedasesortotal: "",
+        maxavgconversationsattendedasesortotal: "0",
         minvgconversationsattendedbot: "0%",
-        minvgconversationsattendedbottotal: "",
+        minvgconversationsattendedbottotal: "0",
         iconconversationsattendedasesor: true,
         iconconversationsattendedbot: true,
         tasaabandono: "0%",
-        abandonados: ""
+        abandonados: "0"
     });
     const [dataTMOgraph, setDataTMOgraph] = useState([
         { label: t(langKeys.meets), quantity: 0 },
@@ -993,16 +993,16 @@ const DashboardManagerial: FC = () => {
     }, [resEncuesta]);
     useEffect(() => {
         setDataDASHBOARD({
-            totalconversations: "",
+            totalconversations: "0",
             avgconversationsattended: "0%",
             maxavgconversationsattendedasesor: "0%",
-            maxavgconversationsattendedasesortotal: "",
+            maxavgconversationsattendedasesortotal: "0",
             minvgconversationsattendedbot: "0%",
-            minvgconversationsattendedbottotal: "",
+            minvgconversationsattendedbottotal: "0",
             iconconversationsattendedasesor: true,
             iconconversationsattendedbot: true,
             tasaabandono: "0%",
-            abandonados: ""
+            abandonados: "0"
         })
         if (resDashboard.length) {
             const { avgparam,ticketscerrados, ticketstotal, ticketscerradosasesor, ticketscerradosbot, ticketsabandonados } = resDashboard[0];
@@ -1010,12 +1010,12 @@ const DashboardManagerial: FC = () => {
             let maxavgconversationsattendedasesor = ((ticketscerradosasesor * 100) / ticketstotal).toFixed()
             let minvgconversationsattendedbot = ((ticketscerradosbot * 100) / ticketstotal).toFixed()
             setDataDASHBOARD({
-                totalconversations: ticketscerrados,
-                avgconversationsattended: avgconversationsattended==="0"?avgconversationsattended:(avgconversationsattended + "%"),
-                maxavgconversationsattendedasesor:  maxavgconversationsattendedasesor==="0"?maxavgconversationsattendedasesor:(maxavgconversationsattendedasesor + "%"),
-                maxavgconversationsattendedasesortotal: ticketscerradosasesor,
-                minvgconversationsattendedbot:  minvgconversationsattendedbot==="0"?minvgconversationsattendedbot:(minvgconversationsattendedbot + "%"),
-                minvgconversationsattendedbottotal: ticketscerradosbot,
+                totalconversations: ticketscerrados===""?"0":ticketscerrados,
+                avgconversationsattended: avgconversationsattended + "%",
+                maxavgconversationsattendedasesor:  maxavgconversationsattendedasesor + "%",
+                maxavgconversationsattendedasesortotal: ticketscerradosasesor===""?"0":ticketscerradosasesor,
+                minvgconversationsattendedbot:  minvgconversationsattendedbot + "%",
+                minvgconversationsattendedbottotal: ticketscerradosbot===""?"0":ticketscerradosbot,
                 iconconversationsattendedasesor: parseFloat(avgparam) < (ticketscerradosasesor / ticketstotal),
                 iconconversationsattendedbot: parseFloat(avgparam) < (ticketscerradosbot / ticketstotal),
                 tasaabandono: ((ticketsabandonados * 100) / ticketstotal).toFixed() + "%",
@@ -1534,7 +1534,7 @@ const DashboardManagerial: FC = () => {
                         >
                             <div className={classes.downloadiconcontainer}>
                                 <CloudDownloadIcon onClick={()=>downloaddata("TME")}  className={classes.styleicon}/>
-                                <SettingsIcon onClick={()=>{setFieldToFilter("TME"); setOpenDialogPerRequest(true);setsearchfieldsOnlyOne((prevState) =>({...prevState, min: "00:00:00",target:sla.usertmepercentmax, max: sla?.usertme||"00:00:00"}))}} className={classes.styleicon}/>
+                                <SettingsIcon onClick={()=>{setFieldToFilter("TME"); setOpenDialogPerRequest(true);setsearchfieldsOnlyOne((prevState) =>({...prevState, min: "00:00:00",target:sla?.usertmepercentmax, max: sla?.usertme||"00:00:00"}))}} className={classes.styleicon}/>
                             </div>
                             <div className={classes.columnCard}>
                                 <div className={classes.containerFieldsTitle}>
