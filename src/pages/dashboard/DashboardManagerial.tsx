@@ -1305,18 +1305,20 @@ const DashboardManagerial: FC = () => {
                                 valueDefault={searchfieldsOnlyOne.closedbyasesor}
                                 onChange={(value) => {
                                     let closedby = ""
-                                    let target=fieldToFilter==="TMO"?sla.totaltmopercentmax:sla.usertmepercentmax
                                     if(value && searchfieldsOnlyOne.closedbybot) {closedby="ASESOR,BOT"} else
                                     if (value) {closedby="ASESOR"} else
                                     if (searchfieldsOnlyOne.closedbybot) {closedby="BOT"}
-
-                                    if(closedby==="ASESOR"){
-                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbyasesor: value, closedby: closedby,min: sla?.usertmomin || "00:00:00", max: sla.usertmo, target: sla.usertmopercentmax}))
-                                    }else if(closedby==="ASESOR,BOT"){
-                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbyasesor: value,closedby: closedby,min: sla?.totamtmomin || "00:00:00", max: sla.totaltmo, target: target}))
-                                    }
-                                    else{
-                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbyasesor: value,closedby: closedby,min: "00:00:00", max: "00:00:00", target: 0}))
+                                    if(fieldToFilter==="TMO"){
+                                        if(closedby==="ASESOR"){
+                                            setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbyasesor: value, closedby: closedby,min: sla?.usertmomin || "00:00:00", max: sla.usertmo, target: sla.usertmopercentmax}))
+                                        }else if(closedby==="ASESOR,BOT"){
+                                            setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbyasesor: value,closedby: closedby,min: sla?.totamtmomin || "00:00:00", max: sla.totaltmo, target: sla?.totaltmopercentmax}))
+                                        }
+                                        else{
+                                            setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbyasesor: value,closedby: closedby,min: "00:00:00", max: "00:00:00", target: 0}))
+                                        }
+                                    }else{
+                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbyasesor: value, closedby: closedby,min: "00:00:00", max: sla.usertme, target: sla.usertmepercentmax}))
                                     }
                                 }}
                                 className="col-6"
@@ -1327,18 +1329,20 @@ const DashboardManagerial: FC = () => {
                                 valueDefault={searchfieldsOnlyOne.closedbybot}
                                 onChange={(value) =>{ 
                                     let closedby = ""
-                                    let target=fieldToFilter==="TMO"?sla.totaltmopercentmax:sla.usertmepercentmax
                                     if(value && searchfieldsOnlyOne.closedbyasesor) {closedby="ASESOR,BOT"} else
                                     if (value) {closedby="BOT"} else
                                     if (searchfieldsOnlyOne.closedbyasesor) {closedby="ASESOR"}
-                                    
-                                    if(closedby==="ASESOR"){
-                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value, closedby: closedby,min: sla?.usertmomin || "00:00:00", max: sla.usertmo, target: sla.usertmopercentmax}))
-                                    }else if(closedby==="ASESOR,BOT"){
-                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value,closedby: closedby,min: sla?.totamtmomin || "00:00:00", max: sla.totaltmo, target: target}))
-                                    }
-                                    else{
-                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value,closedby: closedby,min: "00:00:00", max: "00:00:00", target: 0}))
+                                    if(fieldToFilter==="TMO"){
+                                        if(closedby==="ASESOR"){
+                                            setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value, closedby: closedby,min: sla?.usertmomin || "00:00:00", max: sla.usertmo, target: sla.usertmopercentmax}))
+                                        }else if(closedby==="ASESOR,BOT"){
+                                            setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value,closedby: closedby,min: sla?.totamtmomin || "00:00:00", max: sla.totaltmo, target: sla?.totaltmopercentmax}))
+                                        }
+                                        else{
+                                            setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value,closedby: closedby,min: "00:00:00", max: "00:00:00", target: 0}))
+                                        }
+                                    }else{
+                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value, closedby: closedby,min: "00:00:00", max: sla.usertme, target: sla.usertmepercentmax}))
                                     }
                                 }}
                             />
