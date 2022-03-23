@@ -181,7 +181,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
                     </div>
                 </div>
             </div> */}
-            {((getValues('channels.messenger.siteid')?.length || 0) === 0) && (mainResult.data.length === 0) ? (
+            {((getValues('channels.messenger.siteid')?.length || 0) === 0) && (mainResult.data.length === 0) && (
                 <FacebookLogin
                     appId={apiUrls.FACEBOOKAPP}
                     autoLoad={false}
@@ -201,16 +201,6 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
                     }}
                     isDisabled={mainResult.loading}
                 />
-            ) : selectedChannels === 1 && (
-                <Button
-                    onClick={finishreg}
-                    className={commonClasses.button}
-                    variant="contained"
-                    color="primary"
-                    disabled={mainResult.loading}
-                >
-                    <Trans i18nKey={langKeys.finishreg} />
-                </Button>
             )}
         </div>
     );

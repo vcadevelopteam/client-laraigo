@@ -119,6 +119,13 @@ const SignUpFunc: FC = () => {
             billingcontact: "",
             billingcontactmail: "",
             autosendinvoice: true,
+            pmemail: "",
+            firstnamecard: "",
+            lastnamecard: "",
+            creditcard: "",
+            mm: 0,
+            yyyy: "",
+            securitycode: "",
         });
     }
     function setDefaultMainData2() {

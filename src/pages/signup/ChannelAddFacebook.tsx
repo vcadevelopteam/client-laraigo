@@ -22,8 +22,6 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
     const {
         commonClasses,
         FBButtonStyles,
-        selectedChannels,
-        finishreg,
         deleteChannel,
     } = useContext(SubscriptionContext);
     const { getValues, setValue, register, unregister, formState: { errors } } = useFormContext<MainData>();
@@ -182,7 +180,7 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
                 error={errors.channels?.facebook?.siteid?.message}
             />
 
-            {((getValues('channels.facebook.siteid')?.length || 0) === 0) && (mainResult.data.length === 0) ? (
+            {((getValues('channels.facebook.siteid')?.length || 0) === 0) && (mainResult.data.length === 0) && (
                 <FacebookLogin
                     appId={apiUrls.FACEBOOKAPP}
                     autoLoad={false}
@@ -202,16 +200,6 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
                     }}
                     isDisabled={mainResult.loading}
                 />
-            ) : selectedChannels === 1 && (
-                <Button
-                    onClick={finishreg}
-                    className={commonClasses.button}
-                    variant="contained"
-                    color="primary"
-                    disabled={mainResult.loading}
-                >
-                    <Trans i18nKey={langKeys.finishreg} />
-                </Button>
             )}
         </div>
     );

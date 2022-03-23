@@ -310,6 +310,7 @@ const FirstStep: FC = () => {
                 />
                 {/* eslint-disable-next-line jsx-a11y/anchor-is-valid*/}
                 <div style={{ textAlign: "center", padding: "20px" }}>{t(langKeys.tos)}<a style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={openprivacypolicies} rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
+                <div style={{ textAlign: "center", padding: "20px" }}>{t(langKeys.tossub1)} <a style={{ fontWeight: 'bold', color: '#6F1FA1'}} rel="noopener noreferrer">{t(langKeys.creditcard)}</a> {t(langKeys.tossub2)}</div>
                 <Button
                     onClick={async () => {
                         const valid = await trigger();

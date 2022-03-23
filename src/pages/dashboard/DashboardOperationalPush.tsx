@@ -647,7 +647,7 @@ const DashboardOperationalPush: FC = () => {
                         <div style={{ width: "100%" }}>
                             <div style={{ display: "flex" }}>
                                 <div style={{ fontWeight: "bold", fontSize: "1.6em", }}>{t(langKeys.messagesbyday)}</div>
-                                <Tooltip title={`${t(langKeys.rankinghsmtooltip)}`} placement="top-end">
+                                <Tooltip title={`${t(langKeys.hsmperdaytooltip)}`} placement="top-end">
                                     <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                 </Tooltip>
                             </div>

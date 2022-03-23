@@ -110,4 +110,6 @@ export const apiUrls = {
 
     RECOVERPASSWORD: `${BASE_URL}/subscription/recoverpassword`,
     CHANGEPASSWORD: `${BASE_URL}/subscription/changepassword`,
+    
+    VALIDATE_CHANNELS: `${BASE_URL}/subscription/validatechannels`,
 };

@@ -161,6 +161,15 @@ const SecondStep: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarni
                 <Controller
                     name="mobilephone"
                     control={control}
+                    rules={{
+                        validate: (value) => {
+                            if (value.length === 0) {
+                                return t(langKeys.field_required) as string;
+                            }else if(value.length<10){
+                                return t(langKeys.validationphone) as string;
+                            }
+                        }
+                    }}
                     render={({ field, formState: { errors } }) => (
                         <CssPhonemui
                             {...field}

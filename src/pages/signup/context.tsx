@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router-dom';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { executeSubscription, verifyPlan } from 'store/signup/actions';
+import { validateChannels } from 'store/subscription/actions';
 import { FormProvider, SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form';
 import paths from 'common/constants/paths';
 import { resetInsertChannel } from 'store/channel/actions';
@@ -52,6 +53,8 @@ interface Subscription {
     setConfirmations: SetState<number>;
     setStep: SetState<number>;
     finishreg: () => void;
+    valchannels: () => void;
+    onCheckFunc: (altf:any) => void;
     setForeground: SetState<keyof ListChannels | undefined>;
     resetChannels: () => void;
     addChannel: (option: keyof ListChannels) => void;
@@ -177,6 +180,15 @@ export interface MainData {
     rolecompany: string;
 
     channels: Channels;
+    firstname: string;
+    lastname: string;
+    pmemail: string;
+    firstnamecard: string;
+    lastnamecard: string;
+    creditcard: string;
+    mm: number;
+    yyyy: string;
+    securitycode: string;
 }
 
 const defaultListChannels: ListChannels = {
@@ -207,6 +219,8 @@ export const SubscriptionContext = createContext<Subscription>({
     setConfirmations: () => {},
     setStep: () => {},
     finishreg: () => {},
+    valchannels: () => {},
+    onCheckFunc: (altf:any) => {},
     setForeground: () => {},
     addChannel: () => {},
     deleteChannel: () => {},
@@ -276,6 +290,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
     const planData = useSelector(state => state.signup.verifyPlan);
     const [listchannels, setlistchannels] = useState<ListChannels>(defaultListChannels);
     const [foreground, setForeground] = useState<keyof ListChannels | undefined>(undefined);
+    const [validateBool, setValidateBool] = useState(false);
     const form = useForm<MainData>({
         defaultValues: {
             email: "",
@@ -300,10 +315,18 @@ export const SubscriptionProvider: FC = ({ children }) => {
             companysize: "",
             industry: "",
             rolecompany: "",
+            pmemail: "",
+            firstnamecard: "",
+            lastnamecard: "",
+            creditcard: "",
+            mm: 0,
+            yyyy: "",
+            securitycode: "",
             channels: {},
         },
     })
     const [step, setStep] = useState(1);
+    const executeResultValidation = useSelector(state => state.subscription.requestValidateChannels);
     const executeResult = useSelector(state => state.signup.insertChannel);
 
     useEffect(() => {
@@ -320,47 +343,11 @@ export const SubscriptionProvider: FC = ({ children }) => {
         dispatch(verifyPlan(match.params.token));
     }, [dispatch, match.params.token]);
 
-    // useEffect(() => {
-    //     if (waitSave) {
-    //         if (!executeResult.loading && !executeResult.error) {
-    //             console.log('success', executeResult);
-    //             dispatch(showBackdrop(false));
-    //             setStep(4); // rating
-    //             let msg = t(langKeys.successful_sign_up);
-    //             const googleid = form.getValues('googleid');
-    //             const facebookid = form.getValues('facebookid');
-    //             if (googleid || facebookid) {
-    //                 msg = t(langKeys.successful_sign_up);
-    //             }
-    //             dispatch(showSnackbar({
-    //                 show: true,
-    //                 success: true,
-    //                 message: msg,
-    //             }));
-    //             setWaitSave(false);
-    //         } else if (executeResult.error) {
-    //             console.log('error', executeResult);
-    //             dispatch(showBackdrop(false));
-    //             const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-    //             dispatch(showSnackbar({
-    //                 show: true,
-    //                 success: false,
-    //                 message: errormessage,
-    //             }))
-    //             setWaitSave(false);
-    //         }
-    //     }
-
-    //     return () => {
-    //         dispatch(resetInsertChannel());
-    //     }
-    // }, [executeResult, waitSave, form.getValues, dispatch])
-
     useEffect(() => {
         if (executeResult.loading === true) return;
         if (executeResult.value && !executeResult.error) {
             dispatch(showBackdrop(false));
-            setStep(4); // rating
+            setStep(4);
             let msg = t(langKeys.successful_sign_up);
             const googleid = form.getValues('googleid');
             const facebookid = form.getValues('facebookid');
@@ -375,10 +362,6 @@ export const SubscriptionProvider: FC = ({ children }) => {
         } else if (executeResult.error) {
             var errormessage = t(executeResult.message || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
 
-            if (executeResult.code) {
-                errormessage = `${t(langKeys.suscriptionlinkerror)}${t(executeResult.code)}`
-            }
-
             dispatch(showBackdrop(false));
             
             dispatch(showSnackbar({
@@ -387,8 +370,34 @@ export const SubscriptionProvider: FC = ({ children }) => {
                 message: errormessage,
             }))
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [executeResult, form.getValues, t, dispatch])
+
+    useEffect(() => {
+        if (validateBool) {
+            if (executeResultValidation.loading === true) {
+                return;
+            }
+
+            setValidateBool(false);
+
+            if (executeResultValidation.error) {
+                var errormessage = t(executeResultValidation.message || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
+    
+                if (executeResultValidation.code) {
+                    errormessage = `${t(langKeys.suscriptionlinkerror)}${t(executeResultValidation.code)}`
+                }
+                
+                dispatch(showBackdrop(false));
+                dispatch(showSnackbar({
+                    message: errormessage,
+                    show: true,
+                    success: false,
+                }));
+            } else {
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [executeResultValidation, validateBool])
 
     const deleteChannel = (option: keyof ListChannels) => {
         setlistchannels(prev => {
@@ -439,12 +448,66 @@ export const SubscriptionProvider: FC = ({ children }) => {
         form.handleSubmit(onSubmit, onError)();
         submitObs.trigger();
     }
+    const valchannels = () => {
+        form.handleSubmit(onVal, onError)();
+    }
+    const onCheckFunc = (altfunc?: any) => {
+        form.handleSubmit(altfunc, onError)();
+        submitObs.trigger();
+    }
 
-    const onSubmit: SubmitHandler<MainData> = (data) => {
+    const onVal: SubmitHandler<MainData> = (data) => {
         const { channels, ...mainData } = data;
+
+        let partialchannels = Object.values(channels);
+
         const majorfield = {
             method: "UFN_CREATEZYXMEACCOUNT_INS",
             key: "UFN_CREATEZYXMEACCOUNT_INS",
+            parameters: {
+                ...mainData,
+                firstname: mainData.firstandlastname,
+                lastname: "",
+                username: mainData.email,
+                contactemail: mainData.billingcontactmail,
+                contact: mainData.billingcontact,
+                organizationname: mainData.companybusinessname,
+                phone: mainData.mobilephone,
+                industry: mainData.industry,
+                companysize: mainData.companysize,
+                rolecompany: mainData.rolecompany,
+                paymentplanid: planData.data[0].paymentplanid,
+                paymentplan: planData.data[0].plan,
+                sunatcountry: mainData.country,
+                timezoneoffset: (new Date().getTimezoneOffset() / 60) * -1,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            },
+            channellist: partialchannels.map(
+                function<T extends {build: (v: any) => IRequestBody}>(x: T) {
+                    return x.build(x);
+                }
+            ),
+        };
+        dispatch(showBackdrop(true));
+        dispatch(validateChannels(majorfield));
+        setValidateBool(true);
+    }
+    
+    const onSubmit: SubmitHandler<MainData> = (data) => {
+        const { channels, ...mainData } = data;
+        debugger
+        const majorfield = {
+            method: "UFN_CREATEZYXMEACCOUNT_INS",
+            key: "UFN_CREATEZYXMEACCOUNT_INS",
+            card:{
+                firstname: mainData.firstnamecard,
+                lastname: mainData.lastnamecard,
+                mail: mainData.pmemail,
+                cardnumber: mainData.creditcard,
+                expirationmonth: String(mainData.mm),
+                expirationyear: mainData.yyyy,
+                securitycode: mainData.securitycode,
+            },
             parameters: {
                 ...mainData,
                 firstname: mainData.firstandlastname,
@@ -492,6 +555,8 @@ export const SubscriptionProvider: FC = ({ children }) => {
             setConfirmations,
             setStep,
             finishreg,
+            valchannels,
+            onCheckFunc,
             setForeground,
             addChannel,
             deleteChannel,
