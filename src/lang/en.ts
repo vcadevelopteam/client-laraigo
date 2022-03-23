@@ -1610,8 +1610,11 @@ const translation: LangKeys = {
     threedaysago: "3 days ago",
     weekago: "1 week ago",
     monthago: "1 month ago",
+    indefinetly: "Indefinetly",
     yearago: "1 year ago",
     numberofconversationsperchannel: "Number of conversations per channel",
+    daysintothefuture: "Days into the future",
+    withinadaterange: "Within a date range",
 
     report_loginhistory: 'User login',
     report_loginhistory_datehour: 'Date - Hour',

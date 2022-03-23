@@ -30,6 +30,9 @@ const translation: LangKeys = {
 
     show_all: 'Mostrar todo',
     function_count_unique: 'Contar únicos',
+    indefinetly: "Indefinido",
+    daysintothefuture: "Días en el futuro",
+    withinadaterange: "Rango de fechas",
 
     lead: 'Oportunidad',
     lead_plural: 'Oportunidades',

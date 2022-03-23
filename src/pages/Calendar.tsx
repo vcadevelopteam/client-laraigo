@@ -70,6 +70,13 @@ const useStyles = makeStyles((theme) => ({
         flexWrap: 'wrap',
         width: 'inherit',
     },
+    itemDate: {
+        minHeight: 40,
+        height: 40,
+        border: '1px solid #bfbfc0',
+        borderRadius: 4,
+        color: 'rgb(143, 146, 161)'
+    },
 }));
 
 const dataPeriod: Dictionary = {
@@ -78,6 +85,11 @@ const dataPeriod: Dictionary = {
     DAY: 'day',
     MONTH: 'month'
 };
+const initialRange = {
+    startDate: new Date(new Date().setDate(1)),
+    endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+    key: 'selection'
+}
 
 const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation }, setViewSelected, multiData, fetchData }) => {
     const user = useSelector(state => state.login.validateToken.user);
@@ -88,7 +100,9 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     const [bodyobject, setBodyobject] = useState<Descendant[]>(row?.mailbodyobject || [{ "type": "paragraph", "children": [{ "text": row?.mailbody || "" }] }])
     const [color, setColor] = useState(row?.color||"#aa53e0");
     const [tabIndex, setTabIndex] = useState(0);
-    const [dateinterval, setdateinterval] = React.useState('female');
+    const [dateinterval, setdateinterval] = React.useState('daysintothefuture');
+    const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
+    const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
 
     const handleChange = (event:any) => {
       setdateinterval(event.target.value);
@@ -107,7 +121,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
             status: row?.status || "ACTIVO",
             notificationtype: row?.notificationtype || "",
             notificationtemplate: row?.notificationtemplate || "",
-
+            daysintothefuture: row?.daysintothefuture || 0,
             operation: operation==="DUPLICATE"? "INSERT":operation,
         }
     });
@@ -119,6 +133,9 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('notificationtype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('notificationtemplate', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        if(dateinterval==="daysintothefuture"){
+            register('daysintothefuture', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        }
     }, [register]);
 
     const handleColorChange: ColorChangeHandler = (e) => {
@@ -289,10 +306,40 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                             <div className="col-6">
                                 <React.Fragment>
                                     <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.dateinterval)}</Box>
-                                    <RadioGroup aria-label="gender" name="gender1" value={dateinterval} onChange={handleChange}>
-                                        <FormControlLabel value="female" control={<Radio color="primary"/>} label="Female" />
-                                        <FormControlLabel value="male" control={<Radio color="primary"/>} label="Male" />
-                                        <FormControlLabel value="other" control={<Radio color="primary"/>} label="Other" />
+                                    <RadioGroup aria-label="dateinterval" name="dateinterval1" value={dateinterval} onChange={handleChange}>
+                                        <FormControlLabel value="daysintothefuture" control={<Radio color="primary"/>} label={<div style={{display:"flex", margin: "auto"}}>{dateinterval==="daysintothefuture" && (
+                                            <>
+                                                <FieldEdit
+                                                    width={50}
+                                                    valueDefault={getValues('daysintothefuture')}
+                                                    type="number"
+                                                    size="small"
+                                                    onChange={(value) => setValue('daysintothefuture', value)}
+                                                    error={errors?.daysintothefuture?.message}
+                                                />
+                                            </>
+                                        )}
+                                        <div style={{display:"flex", margin: "auto"}}>{t(langKeys.daysintothefuture)}</div></div>} />
+                                        <FormControlLabel value="withinadaterange" control={<Radio color="primary"/>} label={<div style={{display:"flex", margin: "auto"}}>{dateinterval==="withinadaterange" && (
+                                            <>
+                                                <DateRangePicker
+                                                    open={openDateRangeCreateDateModal}
+                                                    setOpen={setOpenDateRangeCreateDateModal}
+                                                    range={dateRangeCreateDate}
+                                                    onSelect={setDateRangeCreateDate}
+                                                >
+                                                    <Button
+                                                        className={classes.itemDate}
+                                                        startIcon={<CalendarIcon />}
+                                                        onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
+                                                    >
+                                                        {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
+                                                    </Button>
+                                                </DateRangePicker>
+                                            </>
+                                        )}
+                                        <div style={{display:"flex", margin: "auto", paddingLeft:10}}>{t(langKeys.withinadaterange)}</div></div>} />
+                                        <FormControlLabel value="indefinetly" control={<Radio color="primary"/>} label={t(langKeys.indefinetly)} />
                                     </RadioGroup>
                                 </React.Fragment>
                             </div>
