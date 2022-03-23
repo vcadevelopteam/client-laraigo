@@ -91,6 +91,7 @@ interface RichTextProps extends Omit<BoxProps, 'onChange'> {
     error?: string;
     onChange: (value: Descendant[]) => void;
     onlyurl?: boolean;
+    image?: Boolean;
 }
 
 interface RenderElementProps {
@@ -119,7 +120,7 @@ const useRichTextStyles = makeStyles(theme => ({
 }));
 
 /**TODO: Validar que la URL de la imagen sea valida en el boton de insertar imagen */
-const RichText: FC<RichTextProps> = ({ value, onChange, placeholder, spellCheck, error, onlyurl="false", ...boxProps })=> {
+const RichText: FC<RichTextProps> = ({ value, onChange, placeholder,image=true, spellCheck, error, onlyurl=false, ...boxProps })=> {
     const classes = useRichTextStyles();
     // Create a Slate editor object that won't change across renders.
     const editor = useMemo(() => withImages(withHistory(withReact(createEditor()))), []);
@@ -156,12 +157,18 @@ const RichText: FC<RichTextProps> = ({ value, onChange, placeholder, spellCheck,
                     <BlockButton format="bulleted-list">
                         <FormatListBulletedIcon />
                     </BlockButton>
-                    {onlyurl?<OnlyURLInsertImageButton>
-                        <InsertPhotoIcon />
-                    </OnlyURLInsertImageButton>:
-                        <InsertImageButton>
-                            <InsertPhotoIcon />
-                        </InsertImageButton>
+                    {image &&
+                    <>
+                        {
+                            onlyurl?
+                            <OnlyURLInsertImageButton>
+                                <InsertPhotoIcon />
+                            </OnlyURLInsertImageButton>:
+                            <InsertImageButton>
+                                <InsertPhotoIcon />
+                            </InsertImageButton>
+                        }
+                    </>
                     }
                     {upload.loading && (
                         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 8 }}>

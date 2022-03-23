@@ -25,6 +25,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import DeleteIcon from '@material-ui/icons/Delete';
 import UpdateIcon from '@material-ui/icons/Update';
 import { Descendant } from 'slate';
+import { renderToString, toElement } from 'components/fields/RichText';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -68,7 +69,6 @@ const dataPeriod: Dictionary = {
     DAY: 'day',
     MONTH: 'month'
 };
-const initialValue: Descendant[] = [{ type: "paragraph", children: [{ text: "" }] }];
 
 const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation }, setViewSelected, multiData, fetchData }) => {
     const user = useSelector(state => state.login.validateToken.user);
@@ -76,8 +76,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     const [waitSave, setWaitSave] = useState(false);
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const [pageSelected, setPageSelected] = useState(0);
-    const [description, setDescription] = useState<Descendant[]>(initialValue);
+    const [bodyobject, setBodyobject] = useState<Descendant[]>(row?.mailbodyobject || [{ "type": "paragraph", "children": [{ "text": row?.mailbody || "" }] }])
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
 
@@ -87,6 +86,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
             eventcode: row?.eventcode||0,
             eventname: row?.eventname||"",
             location: row?.location||"",
+            mailbody: row?.mailbody || "",
 
             operation: operation==="DUPLICATE"? "INSERT":operation,
         }
@@ -101,6 +101,11 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     const onSubmit = handleSubmit((data) => {
         console.log(data)
         const callback = () => {
+            data.mailbody = renderToString(toElement(bodyobject));
+            if (data.mailbody === '<div data-reactroot=""><p><span></span></p></div>')
+                return;
+                
+            //dispatch(execute(reportSchedulerIns({ ...data, filterjson: JSON.stringify(filtertosend), mailbodyobject: bodyobject })));
             //dispatch(execute(insKPIManager(data)));
             dispatch(showBackdrop(true));
             setWaitSave(true)
@@ -159,13 +164,19 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                             onChange={(value) => setValue('location', value)}
                             error={errors?.location?.message}
                         />
-                        <RichText
-                            value={description}
-                            onChange={setDescription}
-                            placeholder="Escribe algo"
-                            className={classes.richTextfield}
-                            spellCheck
-                        />
+                    </div>
+                    <div className="row-zyx">
+                        <React.Fragment>
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.description)}</Box>
+                            <RichText
+                                value={bodyobject}
+                                onChange={(value) => {
+                                    setBodyobject(value)
+                                }}
+                                spellCheck
+                                image={false}
+                            />
+                        </React.Fragment>
                     </div>
                 </div>
             </form>
