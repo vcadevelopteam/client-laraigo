@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldEditMulti, RichText } from 'components';
+import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldEditMulti, RichText, ColorInput, AntTabPanel } from 'components';
 import { calcKPIManager, convertLocalDate, dictToArrayKV, getDateCleaned, getDateToday, getFirstDayMonth, getLastDayMonth, getValuesFromDomain, insCalendar, insKPIManager, selCalendar, selKPIManager, selKPIManagerHistory } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -15,7 +15,7 @@ import { useForm } from 'react-hook-form';
 import { getCollection, getMultiCollection, execute, resetAllMain, getCollectionAux, getCollectionAux2, resetMainAux, resetMainAux2 } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
-import { Box, IconButton, ListItemIcon, Menu, MenuItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, Typography } from '@material-ui/core';
+import { Box, FormControlLabel, IconButton, ListItemIcon, Menu, MenuItem, Radio, RadioGroup, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, Typography } from '@material-ui/core';
 import { Range } from 'react-date-range';
 import { DateRangePicker } from 'components';
 import { CalendarIcon, DuplicateIcon } from 'icons';
@@ -26,6 +26,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import UpdateIcon from '@material-ui/icons/Update';
 import { Descendant } from 'slate';
 import { renderToString, toElement } from 'components/fields/RichText';
+import { ColorChangeHandler } from 'react-color';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -61,6 +62,14 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(1),
         minHeight: 150,
     },
+    tabs: {
+        color: '#989898',
+        backgroundColor: 'white',
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        width: 'inherit',
+    },
 }));
 
 const dataPeriod: Dictionary = {
@@ -77,6 +86,13 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const [bodyobject, setBodyobject] = useState<Descendant[]>(row?.mailbodyobject || [{ "type": "paragraph", "children": [{ "text": row?.mailbody || "" }] }])
+    const [color, setColor] = useState(row?.color||"#aa53e0");
+    const [tabIndex, setTabIndex] = useState(0);
+    const [dateinterval, setdateinterval] = React.useState('female');
+
+    const handleChange = (event:any) => {
+      setdateinterval(event.target.value);
+    };
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
 
@@ -87,6 +103,10 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
             eventname: row?.eventname||"",
             location: row?.location||"",
             mailbody: row?.mailbody || "",
+            color: row?.color || "#aa53e0",
+            status: row?.status || "ACTIVO",
+            notificationtype: row?.notificationtype || "",
+            notificationtemplate: row?.notificationtemplate || "",
 
             operation: operation==="DUPLICATE"? "INSERT":operation,
         }
@@ -96,7 +116,15 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         register('eventcode', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
         register('eventname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('location', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('notificationtype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('notificationtemplate', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     }, [register]);
+
+    const handleColorChange: ColorChangeHandler = (e) => {
+        setColor(e.hex);
+        setValue('color', e.hex);
+    }
 
     const onSubmit = handleSubmit((data) => {
         console.log(data)
@@ -138,47 +166,139 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                         />
                     </div>
                 </div>
-                <div className={classes.containerDetail}>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.eventcode)}
-                            className="col-6"
-                            type="number"
-                            valueDefault={getValues('eventcode')}
-                            onChange={(value) => setValue('eventcode', value)}
-                            error={errors?.eventcode?.message}
-                        />
-                        <FieldEdit
-                            label={t(langKeys.eventname)}
-                            className="col-6"
-                            valueDefault={getValues('eventname')}
-                            onChange={(value) => setValue('eventname', value)}
-                            error={errors?.eventname?.message}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.location)}
-                            className="col-6"
-                            valueDefault={getValues('location')}
-                            onChange={(value) => setValue('location', value)}
-                            error={errors?.location?.message}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <React.Fragment>
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.description)}</Box>
-                            <RichText
-                                value={bodyobject}
-                                onChange={(value) => {
-                                    setBodyobject(value)
-                                }}
-                                spellCheck
-                                image={false}
+                <Tabs
+                    value={tabIndex}
+                    onChange={(_, i) => setTabIndex(i)}
+                    className={classes.tabs}
+                    textColor="primary"
+                    indicatorColor="primary"
+                    variant="fullWidth"
+                >
+                    <AntTab
+                        label={(
+                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                <Trans i18nKey={langKeys.generalinformation} count={2} />
+                            </div>
+                        )}
+                    />
+                    <AntTab
+                        label={(
+                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                <Trans i18nKey={langKeys.schedule} count={2} />
+                            </div>
+                        )}
+                    />
+                </Tabs>
+                
+                <AntTabPanel index={0} currentIndex={tabIndex}>
+                    <div className={classes.containerDetail}>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                label={t(langKeys.eventcode)}
+                                className="col-6"
+                                type="number"
+                                valueDefault={getValues('eventcode')}
+                                onChange={(value) => setValue('eventcode', value)}
+                                error={errors?.eventcode?.message}
                             />
-                        </React.Fragment>
+                            <FieldEdit
+                                label={t(langKeys.eventname)}
+                                className="col-6"
+                                valueDefault={getValues('eventname')}
+                                onChange={(value) => setValue('eventname', value)}
+                                error={errors?.eventname?.message}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                label={t(langKeys.location)}
+                                className="col-6"
+                                valueDefault={getValues('location')}
+                                onChange={(value) => setValue('location', value)}
+                                error={errors?.location?.message}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <React.Fragment>
+                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.description)}</Box>
+                                <RichText
+                                    value={bodyobject}
+                                    onChange={(value) => {
+                                        setBodyobject(value)
+                                    }}
+                                    spellCheck
+                                    image={false}
+                                />
+                            </React.Fragment>
+                        </div>
+                        <div className="row-zyx" >
+                            <FieldView
+                                label={t(langKeys.eventlink)}
+                                className="col-6"
+                                value={"eventlink"}
+                            />
+                            <a className='col-6' href="https://example.com">{t(langKeys.seeagendapage)}</a>
+                        </div>
+                        <div className="row-zyx" >
+                            <div className="col-6">
+                                <React.Fragment>
+                                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.color)}</Box>
+                                    <ColorInput hex={color} onChange={handleColorChange} />
+                                </React.Fragment>
+                            </div>
+                            <FieldSelect
+                                label={t(langKeys.status)}
+                                className="col-6"
+                                valueDefault={row?.status || "ACTIVO"}
+                                onChange={(value) => setValue('status', (value?value.domainvalue:""))}
+                                error={errors?.status?.message}
+                                data={dataStatus}
+                                uset={true}
+                                prefixTranslation="status_"
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                            />
+                        </div>
+                        <div className="row-zyx" >
+                            <FieldSelect
+                                label={t(langKeys.notificationtype)}
+                                className="col-6"
+                                valueDefault={row?.notificationtype || ""}
+                                onChange={(value) => setValue('notificationtype', (value?.val||""))}
+                                error={errors?.notificationtype?.message}
+                                data={[{desc: "HSM",val: "HSM"},{desc: t(langKeys.email),val: "EMAIL"}]}
+                                optionDesc="desc"
+                                optionValue="val"
+                            />
+                            <FieldSelect
+                                label={t(langKeys.notificationtemplate)}
+                                className="col-6"
+                                valueDefault={row?.notificationtemplate || ""}
+                                onChange={(value) => setValue('notificationtemplate', (value?.val||""))}
+                                error={errors?.notificationtemplate?.message}
+                                data={[{desc: "HSM",val: "HSM"},{desc: t(langKeys.email),val: "EMAIL"}]}
+                                optionDesc="desc"
+                                optionValue="val"
+                            />
+                        </div>
                     </div>
-                </div>
+                </AntTabPanel>
+                <AntTabPanel index={1} currentIndex={tabIndex}>
+                    <div className={classes.containerDetail}>
+                        <div className="row-zyx" >
+                            <div className="col-6">
+                                <React.Fragment>
+                                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.dateinterval)}</Box>
+                                    <RadioGroup aria-label="gender" name="gender1" value={dateinterval} onChange={handleChange}>
+                                        <FormControlLabel value="female" control={<Radio color="primary"/>} label="Female" />
+                                        <FormControlLabel value="male" control={<Radio color="primary"/>} label="Male" />
+                                        <FormControlLabel value="other" control={<Radio color="primary"/>} label="Other" />
+                                    </RadioGroup>
+                                </React.Fragment>
+                            </div>
+                        </div>
+                    </div>
+                </AntTabPanel>
             </form>
         </div>
     );

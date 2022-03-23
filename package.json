@@ -96,6 +96,7 @@
         "@types/emoji-mart": "^3.0.5",
         "@types/file-saver": "^2.0.3",
         "@types/material-ui-phone-number": "^2.2.1",
+        "@types/react-beautiful-dnd": "^13.1.2",
         "@types/react-color": "^3.0.5",
         "@types/react-date-range": "^1.1.6",
         "@types/react-facebook-login": "^4.1.4",
@@ -106,7 +107,6 @@
         "@types/react-table": "^7.7.2",
         "@types/react-virtualized-auto-sizer": "^1.0.1",
         "@types/react-window": "^1.8.5",
-        "@types/react-beautiful-dnd": "^13.1.2",
         "@types/socket.io": "^3.0.2",
         "gh-pages": "^3.2.3"
     }
