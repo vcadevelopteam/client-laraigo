@@ -245,6 +245,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                             onChange={(value) =>{ 
                                 setOrigin(value?.value || '');
                                 setValue('origin', value?.value || '')
+                                setfilterData([])
                                 if(value?.value==="TICKET"){
                                     setfilterData(JSON.parse(dataReportSimpleAll.filter(x=>x.origin==="TICKET")?.[0].filterjson|| "[]"))
                                 }
@@ -301,7 +302,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                             optionValue="value"
                         />}
                     </div>
-                    {(origin==="TICKET" ) &&<div className="row-zyx">
+                    {((filterData && filters) && (filterData.length > 0)) &&<div className="row-zyx">
                         
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <div className={classes.subtitle2}>{t(langKeys.filters)}</div>
