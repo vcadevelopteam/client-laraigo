@@ -530,6 +530,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
                 filterSelectedOptions
                 style={style}
                 fullWidth
+                {...fregister}
                 disabled={disabled}
                 value={data?.length > 0 ? value : null}
                 onChange={(_, newValue) => {
@@ -543,7 +544,6 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
                 size="small"
                 renderInput={(params) => (
                     <TextField
-                        {...fregister}
                         {...params}
                         label={variant !== "standard" && label}
                         variant={variant}

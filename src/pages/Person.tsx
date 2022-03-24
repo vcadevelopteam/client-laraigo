@@ -92,7 +92,7 @@ const format = (datex: Date) => new Date(datex.setHours(10)).toISOString().subst
 
 const selectionKey = 'personid';
 
-const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'dateactivity', 'leadactivity', 'datenote', 'note', 'custom']
+const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'dateactivity', 'leadactivity', 'datenote', 'note', 'custom'].map(x => ({key: x}))
 
 interface DialogSendTemplateProps {
     setOpenModal: (param: any) => void;
@@ -289,7 +289,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
             }
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
                 {fields.map((item: Dictionary, i) => (
-                    <>
+                    <div key={item.id}>
                         <FieldSelect
                             key={"var_" + item.id}
                             fregister={{
@@ -304,7 +304,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
                                 trigger(`variables.${i}.variable`)
                             }}
                             error={errors?.variables?.[i]?.text?.message}
-                            data={variables.map(v => ({ key: v }))}
+                            data={variables}
                             uset={true}
                             prefixTranslation=""
                             optionDesc="key"
@@ -323,7 +323,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
                                 onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
                             />
                         }
-                    </>
+                    </div>
                 ))}
             </div>
         </DialogZyx>)
