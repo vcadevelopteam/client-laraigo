@@ -11,7 +11,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { useForm } from 'react-hook-form';
+import { useFieldArray, useForm, useFormContext } from 'react-hook-form';
 import { getCollection, getMultiCollection, execute, resetAllMain, getCollectionAux, getCollectionAux2, resetMainAux, resetMainAux2 } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -20,7 +20,7 @@ import { Range } from 'react-date-range';
 import { DateRangePicker } from 'components';
 import { CalendarIcon, DuplicateIcon } from 'icons';
 import GaugeChart from 'react-gauge-chart'
-import {Search as SearchIcon }  from '@material-ui/icons';
+import {ContactSupportOutlined, Search as SearchIcon }  from '@material-ui/icons';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import DeleteIcon from '@material-ui/icons/Delete';
 import UpdateIcon from '@material-ui/icons/Update';
@@ -31,7 +31,54 @@ import clsx from 'clsx';
 import AddIcon from '@material-ui/icons/Add';
 
 const hours = [
-    
+    {desc: "00:00", value: "00:00:00"},
+    {desc: "00:30", value: "00:30:00"},
+    {desc: "01:00", value: "01:00:00"},
+    {desc: "01:30", value: "01:30:00"},
+    {desc: "02:00", value: "02:00:00"},
+    {desc: "02:30", value: "02:30:00"},
+    {desc: "03:00", value: "03:00:00"},
+    {desc: "03:30", value: "03:30:00"},
+    {desc: "04:00", value: "04:00:00"},
+    {desc: "04:30", value: "04:30:00"},
+    {desc: "05:00", value: "05:00:00"},
+    {desc: "05:30", value: "05:30:00"},
+    {desc: "06:00", value: "06:00:00"},
+    {desc: "06:30", value: "06:30:00"},
+    {desc: "07:00", value: "07:00:00"},
+    {desc: "07:30", value: "07:30:00"},
+    {desc: "08:00", value: "08:00:00"},
+    {desc: "08:30", value: "08:30:00"},
+    {desc: "09:00", value: "09:00:00"},
+    {desc: "09:30", value: "09:30:00"},
+    {desc: "10:00", value: "10:00:00"},
+    {desc: "10:30", value: "10:30:00"},
+    {desc: "11:00", value: "11:00:00"},
+    {desc: "11:30", value: "11:30:00"},
+    {desc: "12:00", value: "12:00:00"},
+    {desc: "12:30", value: "12:30:00"},
+    {desc: "13:00", value: "13:00:00"},
+    {desc: "13:30", value: "13:30:00"},
+    {desc: "14:00", value: "14:00:00"},
+    {desc: "14:30", value: "14:30:00"},
+    {desc: "15:00", value: "15:00:00"},
+    {desc: "15:30", value: "15:30:00"},
+    {desc: "16:00", value: "16:00:00"},
+    {desc: "16:30", value: "16:30:00"},
+    {desc: "17:00", value: "17:00:00"},
+    {desc: "17:30", value: "17:30:00"},
+    {desc: "18:00", value: "18:00:00"},
+    {desc: "18:30", value: "18:30:00"},
+    {desc: "19:00", value: "19:00:00"},
+    {desc: "19:30", value: "19:30:00"},
+    {desc: "20:00", value: "20:00:00"},
+    {desc: "20:30", value: "20:30:00"},
+    {desc: "21:00", value: "21:00:00"},
+    {desc: "21:30", value: "21:30:00"},
+    {desc: "22:00", value: "22:00:00"},
+    {desc: "22:30", value: "22:30:00"},
+    {desc: "23:00", value: "23:00:00"},
+    {desc: "23:30", value: "23:30:00"},
 ]
 interface RowSelected {
     row: Dictionary | null,
@@ -46,6 +93,28 @@ interface DetailCalendarProps {
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
     fetchData: (id?: number) => void;
+}
+
+type IIntervals = {
+    start:string,
+    end:string,
+    dow:number
+}
+
+type FormFields = {
+    id: number,
+    eventcode: number,
+    eventname: string,
+    location: string,
+    mailbody: string,
+    color: string,
+    status: string,
+    notificationtype: string,
+    notificationtemplate: string,
+    daysintothefuture: number,
+    quantity: number,
+    operation: string,
+    intervals: IIntervals[],
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -138,6 +207,89 @@ const initialRange = {
     key: 'selection'
 }
 
+interface LabelDaysProps {
+    flag: Boolean;
+    fieldsIntervals: any;
+    errors: any;
+    intervalsAppend: (interval: IIntervals) => void;
+    intervalsRemove: (index: number) => void;
+}
+
+const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,intervalsAppend,intervalsRemove})=>{
+    const { register,setValue } = useFormContext();
+    const { t } = useTranslation();
+    return (
+        <div style={{display:"flex", width: "100%"}}>
+            <div style={{display:"flex", margin: "auto",marginLeft: 0,fontWeight:"bold"}}>{t(langKeys.sunday)}</div>
+            {flag &&
+                <>
+                    {(fieldsIntervals.filter((x:any)=>x.dow===0).length)?
+                        (<div style={{ marginLeft: 50, width:"100%" }}>
+                            {fieldsIntervals.map((x:any,i:number) =>{
+                                if (x.dow!==0) return null
+                                return (
+                                <div className="row-zyx" style={{margin:0}} key={`sun${i}`}>                                
+                                    <FieldSelect
+                                        fregister={{
+                                            ...register(`intervals.${i}.start`, {
+                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                            }),
+                                        }}
+                                        className="col-5nomargin"
+                                        valueDefault={x?.start}
+                                        error={errors?.intervals?.[i]?.start?.message}
+                                        style={{pointerEvents: "auto"}}                                                                            
+                                        onChange={(value) => setValue(`intervals.${i}.start`, value?.value)}
+                                        data={hours}
+                                        optionDesc="desc"
+                                        optionValue="value"
+                                    />                               
+                                    <FieldSelect
+                                        fregister={{
+                                            ...register(`intervals.${i}.end`, {
+                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                            }),
+                                        }}
+                                        className="col-5nomargin"
+                                        valueDefault={x?.end}
+                                        error={errors?.intervals?.[i]?.end?.message}
+                                        style={{pointerEvents: "auto"}}                                                                            
+                                        onChange={(value) => setValue(`intervals.${i}.end`, value?.value)}
+                                        data={hours}
+                                        optionDesc="desc"
+                                        optionValue="value"
+                                    />                                                          
+                                    <div style={{ width: "16.6%" }}>
+                                        <IconButton style={{pointerEvents: "auto"}} aria-label="delete" onClick={(e) =>{e.preventDefault();intervalsRemove(i)}}>
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </div>
+                                </div>)
+                            })}
+                        </div>):
+                        <div style={{ display: 'flex', margin: 'auto' }}>
+                            {t(langKeys.notavailable)}
+                        </div>
+                        }
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <div>
+                            <Button
+                                variant="contained"
+                                type="button"
+                                color="primary"
+                                endIcon={<AddIcon style={{ color: "#deac32" }} />}
+                                style={{ backgroundColor: "#6c757d", pointerEvents: "auto"  }}
+                                onClick={() => intervalsAppend({start:"00:00:00",end:"23:30:00",dow:0})}
+                                >{t(langKeys.newinterval)}
+                            </Button>
+                        </div>
+                    </div>
+                </>
+            }
+        </div>
+    )
+}
+
 const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation }, setViewSelected, multiData, fetchData }) => {
     const user = useSelector(state => state.login.validateToken.user);
     const classes = useStyles();
@@ -159,7 +311,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         fri: true,
         sat: false,
     });
-    const [intervals, setIntervals] = React.useState({
+    const [intervals, setIntervals] = React.useState<{sun: any[],mon: any[],tue: any[],wed: any[],thu: any[],fri: any[],sat: any[]}>({
         sun: [],
         mon: [],
         tue: [],
@@ -167,18 +319,19 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         thu: [],
         fri: [],
         sat: [],
-    });
+    })
 
     const handleChange = (event:any) => {
       setdateinterval(event.target.value);
     };
+
     const handleChangeAvailability = (event:any) => {
         setState({ ...state, [event.target.name]: event.target.checked });
     };
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
 
-    const { register, reset, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+    const { control, register, reset, handleSubmit, setValue, getValues, formState: { errors } } = useForm<FormFields>({
         defaultValues: {
             id: row?.id || 0,
             eventcode: row?.eventcode||0,
@@ -192,19 +345,25 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
             daysintothefuture: row?.daysintothefuture || 0,
             quantity: row?.quantity || 0,
             operation: operation==="DUPLICATE"? "INSERT":operation,
+            intervals: row?.intervals || [],
         }
+    });
+
+    const { fields: fieldsIntervals, append: intervalsAppend, remove: intervalsRemove } = useFieldArray({
+        control,
+        name: 'intervals',
     });
     
     React.useEffect(() => {
-        register('eventcode', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('quantity', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('eventname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('location', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('notificationtype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('notificationtemplate', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('eventcode', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
+        register('quantity', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
+        register('eventname', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
+        register('location', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
+        register('status', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
+        register('notificationtype', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
+        register('notificationtemplate', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         if(dateinterval==="daysintothefuture"){
-            register('daysintothefuture', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+            register('daysintothefuture', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
         }
     }, [register]);
 
@@ -214,6 +373,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     }
 
     const onSubmit = handleSubmit((data) => {
+        console.log("submitted")
+        /*
         console.log(data)
         const callback = () => {
             data.mailbody = renderToString(toElement(bodyobject));
@@ -230,7 +391,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
             visible: true,
             question: t(langKeys.confirmation_save),
             callback
-        }))
+        }))*/
     });
 
     const arrayBread = [
@@ -253,6 +414,18 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                             title={row?.id ? `${row.name}` : t(langKeys.newcalendar)}
                         />
                     </div>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            type="submit"
+                            startIcon={<SaveIcon color="secondary" />}
+                            style={{ backgroundColor: "#55BD84" }}>
+                            {t(langKeys.save)}
+                        </Button>
+                    </div>
+                    
                 </div>
                 <Tabs
                     value={tabIndex}
@@ -498,35 +671,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                             label: classes.root,
                                         }}
                                         control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={sun} onChange={handleChangeAvailability} name="sun" />}
-                                        label={
-                                            <div style={{display:"flex", width: "100%"}}>
-                                                <div style={{display:"flex", margin: "auto",marginLeft: 0,fontWeight:"bold"}}>{t(langKeys.sunday)}</div>
-                                                {sun &&
-                                                    <>
-                                                        {(intervals.sun.length)?<></>:
-                                                            <div style={{ display: 'flex', margin: 'auto' }}>
-                                                                {t(langKeys.notavailable)}
-                                                            </div>
-
-                                                        }
-                                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                                            <div>
-                                                                <Button
-                                                                    variant="contained"
-                                                                    type="button"
-                                                                    color="primary"
-                                                                    endIcon={<AddIcon style={{ color: "#deac32" }} />}
-                                                                    style={{ backgroundColor: "#6c757d" }}
-                                                                    //onClick={() => addfilter()}
-                                                                >{t(langKeys.newinterval)}
-                                                                </Button>
-                                                            </div>
-                                                        </div>
-                                                    </>
-                                                }
-                                            </div>
-                                        }
-                                    />
+                                        label={<LabelDays flag={sun} fieldsIntervals={fieldsIntervals} errors={errors} intervalsAppend={intervalsAppend} intervalsRemove={intervalsRemove} />} />
                                     <FormControlLabel
                                         control={<Checkbox color="primary" checked={mon} onChange={handleChangeAvailability} name="mon" />}
                                         label={<>
