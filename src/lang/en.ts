@@ -1608,6 +1608,7 @@ const translation: LangKeys = {
     shippingrange: "Information Shipping Range",
     beforeyesterday: "The day before yesterday",
     threedaysago: "3 days ago",
+    notavailable: "Not available",
     weekago: "1 week ago",
     monthago: "1 month ago",
     indefinetly: "Indefinetly",
@@ -1616,6 +1617,7 @@ const translation: LangKeys = {
     daysintothefuture: "Days into the future",
     withinadaterange: "Within a date range",
     unitofmeasure: "Unit of measure",
+    newinterval: "New interval",
 
     report_loginhistory: 'User login',
     availability: "Availability",

@@ -28,7 +28,11 @@ import { Descendant } from 'slate';
 import { renderToString, toElement } from 'components/fields/RichText';
 import { ColorChangeHandler } from 'react-color';
 import clsx from 'clsx';
+import AddIcon from '@material-ui/icons/Add';
 
+const hours = [
+    
+]
 interface RowSelected {
     row: Dictionary | null,
     operation: string
@@ -49,6 +53,9 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(2),
         padding: theme.spacing(2),
         background: '#fff',
+    },
+    root:{
+        width:"100%",
     },
     button: {
         padding: 12,
@@ -151,6 +158,15 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         thu: true,
         fri: true,
         sat: false,
+    });
+    const [intervals, setIntervals] = React.useState({
+        sun: [],
+        mon: [],
+        tue: [],
+        wed: [],
+        thu: [],
+        fri: [],
+        sat: [],
     });
 
     const handleChange = (event:any) => {
@@ -474,37 +490,78 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                         <div className="row-zyx">
                             <Box fontWeight={500} lineHeight="18px" fontSize={20} mb={1} color="textPrimary">{t(langKeys.availability)}</Box>
                             <div>
-                                <FormControl component="fieldset" className={classes.formControl}>
+                                <FormControl component="fieldset" className={classes.formControl} style={{width:"100%"}}>
                                     <FormGroup>
                                     <FormControlLabel
-                                        control={<Checkbox color="primary" checked={sun} onChange={handleChangeAvailability} name="sun" />}
-                                        label={<>
-                                            <div style={{display:"flex", margin: "auto",fontWeight:"bold"}}>{t(langKeys.sunday)}</div>
-                                        </>}
+                                        style={{ pointerEvents: "none" }}
+                                        classes={{
+                                            label: classes.root,
+                                        }}
+                                        control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={sun} onChange={handleChangeAvailability} name="sun" />}
+                                        label={
+                                            <div style={{display:"flex", width: "100%"}}>
+                                                <div style={{display:"flex", margin: "auto",marginLeft: 0,fontWeight:"bold"}}>{t(langKeys.sunday)}</div>
+                                                {sun &&
+                                                    <>
+                                                        {(intervals.sun.length)?<></>:
+                                                            <div style={{ display: 'flex', margin: 'auto' }}>
+                                                                {t(langKeys.notavailable)}
+                                                            </div>
+
+                                                        }
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                            <div>
+                                                                <Button
+                                                                    variant="contained"
+                                                                    type="button"
+                                                                    color="primary"
+                                                                    endIcon={<AddIcon style={{ color: "#deac32" }} />}
+                                                                    style={{ backgroundColor: "#6c757d" }}
+                                                                    //onClick={() => addfilter()}
+                                                                >{t(langKeys.newinterval)}
+                                                                </Button>
+                                                            </div>
+                                                        </div>
+                                                    </>
+                                                }
+                                            </div>
+                                        }
                                     />
                                     <FormControlLabel
                                         control={<Checkbox color="primary" checked={mon} onChange={handleChangeAvailability} name="mon" />}
-                                        label={t(langKeys.monday)}
+                                        label={<>
+                                            <div style={{display:"flex", margin: "auto",fontWeight:"bold"}}>{t(langKeys.monday)}</div>
+                                        </>}
                                     />
                                     <FormControlLabel
                                         control={<Checkbox color="primary" checked={tue} onChange={handleChangeAvailability} name="tue" />}
-                                        label={t(langKeys.tuesday)}
+                                        label={<>
+                                            <div style={{display:"flex", margin: "auto",fontWeight:"bold"}}>{t(langKeys.tuesday)}</div>
+                                        </>}
                                     />
                                     <FormControlLabel
                                         control={<Checkbox color="primary" checked={wed} onChange={handleChangeAvailability} name="wed" />}
-                                        label={t(langKeys.wednesday)}
+                                        label={<>
+                                            <div style={{display:"flex", margin: "auto",fontWeight:"bold"}}>{t(langKeys.wednesday)}</div>
+                                        </>}
                                     />
                                     <FormControlLabel
                                         control={<Checkbox color="primary" checked={thu} onChange={handleChangeAvailability} name="thu" />}
-                                        label={t(langKeys.thursday)}
+                                        label={<>
+                                            <div style={{display:"flex", margin: "auto",fontWeight:"bold"}}>{t(langKeys.thursday)}</div>
+                                        </>}
                                     />
                                     <FormControlLabel
                                         control={<Checkbox color="primary" checked={fri} onChange={handleChangeAvailability} name="fri" />}
-                                        label={t(langKeys.friday)}
+                                        label={<>
+                                            <div style={{display:"flex", margin: "auto",fontWeight:"bold"}}>{t(langKeys.friday)}</div>
+                                        </>}
                                     />
                                     <FormControlLabel
                                         control={<Checkbox color="primary" checked={sat} onChange={handleChangeAvailability} name="sat" />}
-                                        label={t(langKeys.saturday)}
+                                        label={<>
+                                            <div style={{display:"flex", margin: "auto",fontWeight:"bold"}}>{t(langKeys.saturday)}</div>
+                                        </>}
                                     />
                                     </FormGroup>
                                 </FormControl>
