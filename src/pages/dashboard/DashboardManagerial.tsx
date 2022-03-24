@@ -2187,6 +2187,9 @@ const DashboardManagerial: FC = () => {
                             <div>
                                 <div className="row-zyx" style={{ paddingTop: "30px", margin: 0 }}>{dataDASHBOARD.tasaabandono} - {dataDASHBOARD.abandonados}</div>
                                 <div className="row-zyx" style={{ paddingTop: "0" }}>{t(langKeys.productivitycard4)}
+                                    <Tooltip title={`${t(langKeys.dropoutrate)}`} placement="top-start">
+                                        <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                    </Tooltip>
                                 </div>
                             </div>
                         </div>
