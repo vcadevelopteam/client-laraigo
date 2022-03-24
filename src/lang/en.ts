@@ -1649,6 +1649,13 @@ const translation: LangKeys = {
     report_interaction_agent: 'Agent',
     report_interaction_intent: 'Intention',
     report_interaction_intent_help: "It is the path that is identified through the use of AI",
+    report_interaction_interactiontype_help: 
+    `Text: Response entered by the client
+    Postback: Response given by the bot
+    File: Attachment sent
+    Image: Attached image sent
+    Interactivelist: Options displayed by the WhatsApp interactive list
+    Carousel: Carousel used by the Chatweb/Messenger channel`,
     report_interaction_interactiontype: 'Interaction type',
     report_interaction_interactiontext: 'Text interaction',
     report_interaction_clientnumber: 'Client number',
@@ -1679,15 +1686,20 @@ const translation: LangKeys = {
     report_productivity_firstinteractiontime: 'Hour of first interaction',
     report_productivity_tmo: 'TMO',
     report_productivity_tmo_help: 'Sum of the real duration + the paused time.',
+    report_productivity_firstinteractiondate_help: "Date of first question/answer/comment exchange by advisor/bot/client",
+    report_productivity_firstinteractiontime_help: "Hour of first question/answer/comment exchange by advisor/bot/client",
     report_productivity_tmg: 'TMG',
     report_productivity_suspensiontime: 'Suspension time',
     report_productivity_suspensiontime_help: 'It is the time suspended by an advisor.',
     report_productivity_avgagentresponse: 'Average agent response',
     report_productivity_firstname: 'Name',
     report_productivity_lastname: 'Last name',
+    report_productivity_derivationtime_help: "Hour in which the user selects the option to be assisted by an advisor.",
+    report_productivity_derivationdate_help: "Date on which the user selects the option to be assisted by an advisor.",
     report_productivity_email: 'Mail',
     report_productivity_phone: 'Phone',
     report_productivity_swingingtimes: 'N° Swinging',
+    report_productivity_swingingtimes_help: "Number of times that the ticket jumps from the tray of one advisor to another because it has not been given attention",
     report_productivity_tmoagent: 'TMO agent',
     report_productivity_tmoagent_help: 'Time it took for the advisor to attend to the ticket since it was received.',
     report_productivity_holdingholdtime: 'Holding hold time',
