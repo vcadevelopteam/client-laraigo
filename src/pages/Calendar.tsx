@@ -209,24 +209,28 @@ const initialRange = {
 
 interface LabelDaysProps {
     flag: Boolean;
-    fieldsIntervals: any;
-    errors: any;
+    fieldsIntervals?: any;
+    errors?: any;
     intervalsAppend: (interval: IIntervals) => void;
     intervalsRemove: (index: number) => void;
+    register: any;
+    setValue: (value: any,value2:any) => void;
+    dow: number;
+    labelName: string;
 }
 
-const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,intervalsAppend,intervalsRemove})=>{
-    const { register,setValue } = useFormContext();
+const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,intervalsAppend,intervalsRemove,register,setValue,dow,labelName})=>{
     const { t } = useTranslation();
     return (
-        <div style={{display:"flex", width: "100%"}}>
-            <div style={{display:"flex", margin: "auto",marginLeft: 0,fontWeight:"bold"}}>{t(langKeys.sunday)}</div>
+        <>
+        <div style={{display:"flex", width: "100%",paddingTop:5, marginRight:10}}>
+            <div style={{display:"flex", margin: "auto",marginLeft: 0,fontWeight:"bold", width:100}}>{labelName}</div>
             {flag &&
                 <>
-                    {(fieldsIntervals.filter((x:any)=>x.dow===0).length)?
+                    {(fieldsIntervals?.filter((x:any)=>x.dow===dow).length)?
                         (<div style={{ marginLeft: 50, width:"100%" }}>
                             {fieldsIntervals.map((x:any,i:number) =>{
-                                if (x.dow!==0) return null
+                                if (x.dow!==dow) return null
                                 return (
                                 <div className="row-zyx" style={{margin:0}} key={`sun${i}`}>                                
                                     <FieldSelect
@@ -278,8 +282,8 @@ const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,interva
                                 type="button"
                                 color="primary"
                                 endIcon={<AddIcon style={{ color: "#deac32" }} />}
-                                style={{ backgroundColor: "#6c757d", pointerEvents: "auto"  }}
-                                onClick={() => intervalsAppend({start:"00:00:00",end:"23:30:00",dow:0})}
+                                style={{ backgroundColor: "#6c757d", pointerEvents: "auto",width:150  }}
+                                onClick={() => intervalsAppend({start:"00:00:00",end:"23:30:00",dow:dow})}
                                 >{t(langKeys.newinterval)}
                             </Button>
                         </div>
@@ -287,6 +291,8 @@ const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,interva
                 </>
             }
         </div>
+        <div style={{width:"100%", border: "lightgrey 1px solid"}}></div>
+        </>
     )
 }
 
@@ -667,46 +673,114 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                     <FormGroup>
                                     <FormControlLabel
                                         style={{ pointerEvents: "none" }}
-                                        classes={{
-                                            label: classes.root,
-                                        }}
+                                        classes={{label: classes.root}}
                                         control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={sun} onChange={handleChangeAvailability} name="sun" />}
-                                        label={<LabelDays flag={sun} fieldsIntervals={fieldsIntervals} errors={errors} intervalsAppend={intervalsAppend} intervalsRemove={intervalsRemove} />} />
+                                        label={<LabelDays 
+                                            flag={sun} 
+                                            fieldsIntervals={fieldsIntervals} 
+                                            errors={errors} 
+                                            intervalsAppend={intervalsAppend} 
+                                            intervalsRemove={intervalsRemove} 
+                                            register={register} 
+                                            setValue={setValue} 
+                                            dow={0} 
+                                            labelName={t(langKeys.sunday)}
+                                        />} />
                                     <FormControlLabel
-                                        control={<Checkbox color="primary" checked={mon} onChange={handleChangeAvailability} name="mon" />}
-                                        label={<>
-                                            <div style={{display:"flex", margin: "auto",fontWeight:"bold"}}>{t(langKeys.monday)}</div>
-                                        </>}
+                                        style={{ pointerEvents: "none" }}
+                                        classes={{label: classes.root}}
+                                        control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={mon} onChange={handleChangeAvailability} name="mon" />}
+                                        label={<LabelDays 
+                                            flag={mon} 
+                                            fieldsIntervals={fieldsIntervals} 
+                                            errors={errors} 
+                                            intervalsAppend={intervalsAppend} 
+                                            intervalsRemove={intervalsRemove} 
+                                            register={register} 
+                                            setValue={setValue} 
+                                            dow={1} 
+                                            labelName={t(langKeys.monday)}
+                                        />}
                                     />
                                     <FormControlLabel
-                                        control={<Checkbox color="primary" checked={tue} onChange={handleChangeAvailability} name="tue" />}
-                                        label={<>
-                                            <div style={{display:"flex", margin: "auto",fontWeight:"bold"}}>{t(langKeys.tuesday)}</div>
-                                        </>}
+                                        style={{ pointerEvents: "none" }}
+                                        classes={{label: classes.root}}
+                                        control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={tue} onChange={handleChangeAvailability} name="tue" />}
+                                        label={<LabelDays 
+                                            flag={tue} 
+                                            fieldsIntervals={fieldsIntervals} 
+                                            errors={errors} 
+                                            intervalsAppend={intervalsAppend} 
+                                            intervalsRemove={intervalsRemove} 
+                                            register={register} 
+                                            setValue={setValue} 
+                                            dow={2} 
+                                            labelName={t(langKeys.tuesday)}
+                                        />}
                                     />
                                     <FormControlLabel
-                                        control={<Checkbox color="primary" checked={wed} onChange={handleChangeAvailability} name="wed" />}
-                                        label={<>
-                                            <div style={{display:"flex", margin: "auto",fontWeight:"bold"}}>{t(langKeys.wednesday)}</div>
-                                        </>}
+                                        style={{ pointerEvents: "none" }}
+                                        classes={{label: classes.root}}
+                                        control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={wed} onChange={handleChangeAvailability} name="wed" />}
+                                        label={<LabelDays 
+                                            flag={wed} 
+                                            fieldsIntervals={fieldsIntervals} 
+                                            errors={errors} 
+                                            intervalsAppend={intervalsAppend} 
+                                            intervalsRemove={intervalsRemove} 
+                                            register={register} 
+                                            setValue={setValue} 
+                                            dow={3} 
+                                            labelName={t(langKeys.wednesday)}
+                                        />}
                                     />
                                     <FormControlLabel
-                                        control={<Checkbox color="primary" checked={thu} onChange={handleChangeAvailability} name="thu" />}
-                                        label={<>
-                                            <div style={{display:"flex", margin: "auto",fontWeight:"bold"}}>{t(langKeys.thursday)}</div>
-                                        </>}
+                                        style={{ pointerEvents: "none" }}
+                                        classes={{label: classes.root}}
+                                        control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={thu} onChange={handleChangeAvailability} name="thu" />}
+                                        label={<LabelDays 
+                                            flag={thu} 
+                                            fieldsIntervals={fieldsIntervals} 
+                                            errors={errors} 
+                                            intervalsAppend={intervalsAppend} 
+                                            intervalsRemove={intervalsRemove} 
+                                            register={register} 
+                                            setValue={setValue} 
+                                            dow={4} 
+                                            labelName={t(langKeys.thursday)}
+                                        />}
                                     />
                                     <FormControlLabel
-                                        control={<Checkbox color="primary" checked={fri} onChange={handleChangeAvailability} name="fri" />}
-                                        label={<>
-                                            <div style={{display:"flex", margin: "auto",fontWeight:"bold"}}>{t(langKeys.friday)}</div>
-                                        </>}
+                                        style={{ pointerEvents: "none" }}
+                                        classes={{label: classes.root}}
+                                        control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={fri} onChange={handleChangeAvailability} name="fri" />}
+                                        label={<LabelDays 
+                                            flag={fri} 
+                                            fieldsIntervals={fieldsIntervals} 
+                                            errors={errors} 
+                                            intervalsAppend={intervalsAppend} 
+                                            intervalsRemove={intervalsRemove} 
+                                            register={register} 
+                                            setValue={setValue} 
+                                            dow={5} 
+                                            labelName={t(langKeys.friday)}
+                                        />}
                                     />
                                     <FormControlLabel
-                                        control={<Checkbox color="primary" checked={sat} onChange={handleChangeAvailability} name="sat" />}
-                                        label={<>
-                                            <div style={{display:"flex", margin: "auto",fontWeight:"bold"}}>{t(langKeys.saturday)}</div>
-                                        </>}
+                                        style={{ pointerEvents: "none" }}
+                                        classes={{label: classes.root}}
+                                        control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={sat} onChange={handleChangeAvailability} name="sat" />}
+                                        label={<LabelDays 
+                                            flag={sun} 
+                                            fieldsIntervals={fieldsIntervals} 
+                                            errors={errors} 
+                                            intervalsAppend={intervalsAppend} 
+                                            intervalsRemove={intervalsRemove} 
+                                            register={register} 
+                                            setValue={setValue} 
+                                            dow={6} 
+                                            labelName={t(langKeys.saturday)}
+                                        />}
                                     />
                                     </FormGroup>
                                 </FormControl>
