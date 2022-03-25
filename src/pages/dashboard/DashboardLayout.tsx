@@ -913,24 +913,29 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipF
     let reversed=false
     if(alldata?.interval){
         reversed=true
-        data.forEach(x=>{
+        modifieddata=data.map(x=>{
             const localkeys = Object.keys(x.quantity)
-            localkeys.forEach((y:string)=>{
+            localkeys.forEach((y)=>{
                 if(!keys.includes(y)){
                     keys.push(y)
                 }
             })
-        })
-        let itemmodel = keys.reduce((acc,x)=>{return {...acc,[x]:0}},{})
-        modifieddata=data.map(x=>{
-
-            return ({...itemmodel,...Object(x.quantity),label:`${t(alldata?.interval)} ${x.label.replace(alldata?.interval,"")}`})
+            return ({...Object(x.quantity),label:`${t(alldata?.interval)} ${x.label.replace(alldata?.interval,"")}`})
         })
     }else{
         let listlabels= data.map(x=>x.label)[0]
-        if(listlabels.includes("day") || listlabels.includes("month") || listlabels.includes("week")){
+        if (listlabels.includes("-")) {
             reversed=true
-            modifieddata=data.map(x=>({...x,label:x.label.replace("day",`${t("day")} `).replace("month",`${t("month")} `).replace("week",`${t("week")} `)}))
+            modifieddata=data.map(x=>{
+                let newlabel = x.label.replace("day","")
+                let month = newlabel.slice(0,newlabel.indexOf("-"))
+                newlabel = newlabel.replace(`${month}-`, `${t(months[Number(month)-1])} `)
+                return ({...x,label:newlabel, color:monthColor[Number(month)-1]})
+            })
+        }
+        if(listlabels.includes("month") || listlabels.includes("week")){
+            reversed=true
+            modifieddata=data.map(x=>({...x,label:x.label.replace("month",`${t("month")} `).replace("week",`${t("week")} `)}))
         }
         
     }
@@ -1051,21 +1056,7 @@ interface LayoutPieProps extends Omit<ResponsiveContainerProps, 'children'> {
 const PIE_COLORS = ['#22b66e', '#b41a1a', '#ffcd56', '#D32F2F', '#FBC02D', '#757575', '#00BCD4', '#AFB42B', '#8BC34A', '#5D4037', '#607D8B', '#03A9F4', '#303F9F', '#009688', '#388E3C', '#E64A19', '#212121'];
 
 const LayoutPie: FC<LayoutPieProps> = ({ data,alldata, tooltipFormatter,tickFormatter, ...props }) => {
-    const { t } = useTranslation();
     let total=alldata?.total;
-    let modifieddata=data;
-    let listlabels= data.map(x=>x.label)[0]
-    if (listlabels.includes("-")) {
-        modifieddata=data.map(x=>{
-            let newlabel = x.label.replace("day","")
-            let month = newlabel.slice(0,newlabel.indexOf("-"))
-            newlabel = newlabel.replace(`${month}-`, `${t(months[Number(month)-1])} `)
-            return ({...x,label:newlabel, color:monthColor[Number(month)-1]})
-        })
-    }
-    if(listlabels.includes("month") || listlabels.includes("week")){
-        modifieddata=data.map(x=>({...x,label:x.label.replace("month",`${t("month")} `).replace("week",`${t("week")} `)}))
-    }
     return (
         <ResponsiveContainer {...props}>
             <PieChart>
@@ -1091,7 +1082,7 @@ const LayoutPie: FC<LayoutPieProps> = ({ data,alldata, tooltipFormatter,tickForm
                     }}
                 />
                 <Pie
-                    data={modifieddata}
+                    data={data}
                     dataKey="quantity"
                     nameKey="label"
                     cx="50%"
@@ -1101,7 +1092,7 @@ const LayoutPie: FC<LayoutPieProps> = ({ data,alldata, tooltipFormatter,tickForm
                     labelLine={false}
                     label={RenderCustomizedLabel}
                 >
-                    {modifieddata.map((_, i) => (
+                    {data.map((_, i) => (
                         <Cell
                             key={`cell-${i}`}
                             fill={PIE_COLORS[i % PIE_COLORS.length]}
