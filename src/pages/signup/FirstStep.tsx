@@ -15,6 +15,17 @@ import { executeCheckNewUser } from "store/signup/actions";
 import { MainData, SubscriptionContext } from "./context";
 import { showSnackbar } from "store/popus/actions";
 import { Controller, useFormContext } from "react-hook-form";
+
+function validatePassword(password: string) {
+    var strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
+
+    if (password) {
+        return strongRegex.exec(password);
+    }
+
+    return null
+}
+
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
         padding: 12,
@@ -235,10 +246,15 @@ const FirstStep: FC = () => {
                     rules={{ validate: (value) => {
                         if (value.length === 0) {
                             return t(langKeys.field_required) as string;
-                        } else if (value !== getValues('confirmpassword')) {
-                            return t(langKeys.passwordsmustbeequal) as string;
-                        }
+                        } else {
+                            if (validatePassword(value) === null) {
+                                return t(langKeys.password_strongvalidation) as string;
+                            }
 
+                            if (value !== getValues('confirmpassword')) {
+                                return t(langKeys.passwordsmustbeequal) as string;
+                            }
+                        }
                     }}}
                     render={({ field, formState: { errors } }) => (
                         <TextField

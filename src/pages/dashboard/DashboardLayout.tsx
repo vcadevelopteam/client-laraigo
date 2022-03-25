@@ -736,7 +736,9 @@ const LayoutBar: FC<LayoutBarProps> = ({ data,alldata, tickFormatter, tooltipFor
     let total=alldata?.total;
     let modifieddata=data;
     let keys: any[]=[]
+    let reversed=false
     if(alldata?.interval){
+        reversed=true
         modifieddata=data.map(x=>{
             const localkeys = Object.keys(x.quantity)
             localkeys.forEach((y)=>{
@@ -746,16 +748,20 @@ const LayoutBar: FC<LayoutBarProps> = ({ data,alldata, tickFormatter, tooltipFor
             })
             return ({...Object(x.quantity),label:`${t(alldata?.interval)} ${x.label.replace(alldata?.interval,"")}`})
         })
-        //console.log(data)
-        //console.log(keys)
-        //console.log(modifieddata)
+    }else{
+        let listlabels= data.map(x=>x.label)[0]
+        if(listlabels.includes("day") || listlabels.includes("month") || listlabels.includes("week")){
+            reversed=true
+            modifieddata=data.map(x=>({...x,label:x.label.replace("day",`${t("day")} `).replace("month",`${t("month")} `).replace("week",`${t("week")} `)}))
+        }
+        
     }
     
     return (
         <ResponsiveContainer width={"100%"} {...props}>
-            <BarChart data={modifieddata}>
+            <BarChart data={modifieddata} margin={{ top: 20, right: 10, bottom: 5, left: 10 }}>
                 <XAxis
-                    reversed={alldata?.interval}
+                    reversed={reversed}
                     dataKey="label"
                     style={{ fontSize: '0.8em' }}
                     angle={-45}
@@ -771,26 +777,47 @@ const LayoutBar: FC<LayoutBarProps> = ({ data,alldata, tickFormatter, tooltipFor
                     <>
                         
                         <ChartTooltip content={({ active, payload, label }) => {
+                                let partialtotal=0;
                                 if (active && payload && payload.length) {
+                                    let partialtotal=payload.reduce((acc,x)=>acc+Number(x.value),0);
                                     return (
                                         <Card key={`${label}-${payload[0].value}`} style={{ padding: '0.85em' }}>
                                             {label && <label>{label}</label>}
                                             {label && <br />}
                                             {payload.map((x:any)=>{
                                                 let value = x.payload[x?.dataKey]
-                                                if(value){
-                                                    return (
-                                                        <>
-                                                            <span key={`${label}-${x.dataKey}-${value}`} style={{ color: x.color, whiteSpace: "break-spaces" }}>
-                                                                {`${x.dataKey}: ${grouping==="percentage"?`${value}%` : `${value} / ${(value*100/total).toFixed(2)}%`}`}
-                                                            </span>
-                                                            <br/>
-                                                        </>
-                                                    )
+                                                if(grouping==="percentage"){
+                                                    if(value){
+                                                        return (
+                                                            <>
+                                                                <span key={`${label}-${x.dataKey}-${value}`} style={{ color: x.color, whiteSpace: "break-spaces" }}>
+                                                                    {`${x.dataKey}: ${value}%`}
+                                                                </span>
+                                                                <br/>
+                                                            </>
+                                                        )
+                                                    }
+                                                }else{
+                                                    if(value){
+                                                        return (
+                                                            <>
+                                                                <span key={`${label}-${x.dataKey}-${value}`} style={{ color: x.color, whiteSpace: "break-spaces" }}>
+                                                                    {`${x.dataKey}: ${value} / ${(value*100/partialtotal).toFixed(2)}%` }
+                                                                </span>
+                                                                <br/>
+                                                            </>
+                                                        )
+                                                    }
                                                 }
                                                 return null
-                                            })
-
+                                            })}
+                                            {grouping!=="percentage" && 
+                                                <>
+                                                    <span style={{ whiteSpace: "break-spaces" }}>
+                                                        {`${t(langKeys.percentage)}: ${(partialtotal*100/total).toFixed(2)}%` }
+                                                    </span>
+                                                    <br/>
+                                                </>
                                             }
                                         </Card>
                                     );
@@ -867,8 +894,9 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipF
     let total=alldata?.total;
     let modifieddata=data;
     let keys: any[]=[]
+    let reversed=false
     if(alldata?.interval){
-        console.log(alldata)
+        reversed=true
         data.forEach(x=>{
             const localkeys = Object.keys(x.quantity)
             localkeys.forEach((y:string)=>{
@@ -882,14 +910,21 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipF
 
             return ({...itemmodel,...Object(x.quantity),label:`${t(alldata?.interval)} ${x.label.replace(alldata?.interval,"")}`})
         })
+    }else{
+        let listlabels= data.map(x=>x.label)[0]
+        if(listlabels.includes("day") || listlabels.includes("month") || listlabels.includes("week")){
+            reversed=true
+            modifieddata=data.map(x=>({...x,label:x.label.replace("day",`${t("day")} `).replace("month",`${t("month")} `).replace("week",`${t("week")} `)}))
+        }
+        
     }
     return (
         <ResponsiveContainer {...props}>
-            <LineChart data={modifieddata}>
+            <LineChart data={modifieddata} margin={{ top: 20, right: 10, bottom: 5, left: 10 }}>
                 <CartesianGrid stroke="#ccc" />
                 <XAxis
                     domain={["",""]}
-                    reversed={alldata?.interval}
+                    reversed={reversed}
                     dataKey="label"
                     style={{ fontSize: '0.8em' }}
                     angle={-45}
@@ -904,26 +939,46 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipF
                 {alldata?.interval?(
                     <>
                         <ChartTooltip content={({ active, payload, label }) => {
-                                if (active && payload && payload.length) {
+                            if (active && payload && payload.length) {
+                                    let partialtotal=payload.reduce((acc,x)=>acc+Number(x.value),0);
                                     return (
                                         <Card key={`${label}-${payload[0].value}`} style={{ padding: '0.85em' }}>
                                             {label && <label>{label}</label>}
                                             {label && <br />}
                                             {payload.map((x:any)=>{
                                                 let value = x.payload[x?.dataKey]
-                                                if(value){
-                                                    return (
-                                                        <>
-                                                            <span key={`${label}-${x.dataKey}-${value}`} style={{ color: x.color, whiteSpace: "break-spaces" }}>
-                                                                {`${x.dataKey}: ${grouping==="percentage"?`${value}%` : `${value} / ${(value*100/total).toFixed(2)}%`}`}
-                                                            </span>
-                                                            <br/>
-                                                        </>
-                                                    )
+                                                if(grouping==="percentage"){
+                                                    if(value){
+                                                        return (
+                                                            <>
+                                                                <span key={`${label}-${x.dataKey}-${value}`} style={{ color: x.color, whiteSpace: "break-spaces" }}>
+                                                                    {`${x.dataKey}: ${value}%`}
+                                                                </span>
+                                                                <br/>
+                                                            </>
+                                                        )
+                                                    }
+                                                }else{
+                                                    if(value){
+                                                        return (
+                                                            <>
+                                                                <span key={`${label}-${x.dataKey}-${value}`} style={{ color: x.color, whiteSpace: "break-spaces" }}>
+                                                                    {`${x.dataKey}: ${value} / ${(value*100/partialtotal).toFixed(2)}%` }
+                                                                </span>
+                                                                <br/>
+                                                            </>
+                                                        )
+                                                    }
                                                 }
                                                 return null
-                                            })
-
+                                            })}
+                                            {grouping!=="percentage" && 
+                                                <>
+                                                    <span style={{ whiteSpace: "break-spaces" }}>
+                                                        {`${t(langKeys.percentage)}: ${(partialtotal*100/total).toFixed(2)}%` }
+                                                    </span>
+                                                    <br/>
+                                                </>
                                             }
                                         </Card>
                                     );
