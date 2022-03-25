@@ -28,6 +28,7 @@ import { Descendant } from 'slate';
 import { renderToString, toElement } from 'components/fields/RichText';
 import { ColorChangeHandler } from 'react-color';
 import clsx from 'clsx';
+import Schedule from 'components/fields/Calendar';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -257,6 +258,13 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                         label={(
                             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                                 <Trans i18nKey={langKeys.schedule} count={2} />
+                            </div>
+                        )}
+                    />
+                    <AntTab
+                        label={(
+                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                Calendario test
                             </div>
                         )}
                     />
@@ -511,6 +519,9 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                             </div>
                         </div>
                     </div>
+                </AntTabPanel>
+                <AntTabPanel index={2} currentIndex={tabIndex}>
+                    <Schedule />
                 </AntTabPanel>
             </form>
         </div>

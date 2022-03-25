@@ -102,7 +102,6 @@ export const ChannelAdd: FC = () => {
     ];
 
     if (typeof whatsAppData === 'undefined' || !whatsAppData) {
-        console.log(whatsAppData);
         history.push(paths.CHANNELS);
     }
     

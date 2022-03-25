@@ -12,8 +12,6 @@ import { useFormContext } from "react-hook-form";
 export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
     const {
         commonClasses,
-        selectedChannels,
-        finishreg,
         deleteChannel,
     } = useContext(SubscriptionContext);
     const { getValues, setValue, register, unregister, formState: { errors } } = useFormContext<MainData>();
@@ -129,16 +127,6 @@ export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = (
                     </div>
                 </div>
             </div> */}
-            {selectedChannels === 1 && (
-                <Button
-                    onClick={finishreg}
-                    className={commonClasses.button}
-                    variant="contained"
-                    color="primary"
-                >
-                    <Trans i18nKey={langKeys.finishreg} />
-                </Button>
-            )}
         </div>
     )
 }

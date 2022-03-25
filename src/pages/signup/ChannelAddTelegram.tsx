@@ -145,16 +145,6 @@ export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = 
                     </div>
                 </div>
             </div> */}
-            {selectedChannels === 1 && (
-                <Button
-                    onClick={finishreg}
-                    className={commonClasses.button}
-                    variant="contained"
-                    color="primary"
-                >
-                    <Trans i18nKey={langKeys.finishreg} />
-                </Button>
-            )}
         </div>
     );
 }

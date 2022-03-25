@@ -21,7 +21,7 @@ import { gerencialasesoresconectadosbarsel, gerencialconversationsel,gerencialEn
 import { useDispatch } from "react-redux";
 import { Dictionary } from "@types";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
-import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip as RechartsTooltip, PieChart, Pie, Cell, Label, BarChart, Bar } from 'recharts';
+import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip as RechartsTooltip, PieChart, Pie, Cell, Label, BarChart, Bar, LabelList } from 'recharts';
 import InfoIcon from '@material-ui/icons/Info';
 import SettingsIcon from '@material-ui/icons/Settings';
 import Tooltip from "@material-ui/core/Tooltip"
@@ -325,16 +325,16 @@ const DashboardManagerial: FC = () => {
         fixtotalconversations: 0,
     });
     const [dataDASHBOARD, setDataDASHBOARD] = useState({
-        totalconversations: "",
+        totalconversations: "0",
         avgconversationsattended: "0%",
         maxavgconversationsattendedasesor: "0%",
-        maxavgconversationsattendedasesortotal: "",
+        maxavgconversationsattendedasesortotal: "0",
         minvgconversationsattendedbot: "0%",
-        minvgconversationsattendedbottotal: "",
+        minvgconversationsattendedbottotal: "0",
         iconconversationsattendedasesor: true,
         iconconversationsattendedbot: true,
         tasaabandono: "0%",
-        abandonados: ""
+        abandonados: "0"
     });
     const [dataTMOgraph, setDataTMOgraph] = useState([
         { label: t(langKeys.meets), quantity: 0 },
@@ -993,26 +993,29 @@ const DashboardManagerial: FC = () => {
     }, [resEncuesta]);
     useEffect(() => {
         setDataDASHBOARD({
-            totalconversations: "",
+            totalconversations: "0",
             avgconversationsattended: "0%",
             maxavgconversationsattendedasesor: "0%",
-            maxavgconversationsattendedasesortotal: "",
+            maxavgconversationsattendedasesortotal: "0",
             minvgconversationsattendedbot: "0%",
-            minvgconversationsattendedbottotal: "",
+            minvgconversationsattendedbottotal: "0",
             iconconversationsattendedasesor: true,
             iconconversationsattendedbot: true,
             tasaabandono: "0%",
-            abandonados: ""
+            abandonados: "0"
         })
         if (resDashboard.length) {
             const { avgparam,ticketscerrados, ticketstotal, ticketscerradosasesor, ticketscerradosbot, ticketsabandonados } = resDashboard[0];
+            let avgconversationsattended = ((ticketscerrados * 100) / ticketstotal).toFixed()
+            let maxavgconversationsattendedasesor = ((ticketscerradosasesor * 100) / ticketstotal).toFixed()
+            let minvgconversationsattendedbot = ((ticketscerradosbot * 100) / ticketstotal).toFixed()
             setDataDASHBOARD({
-                totalconversations: ticketscerrados,
-                avgconversationsattended: ((ticketscerrados * 100) / ticketstotal).toFixed() + "%",
-                maxavgconversationsattendedasesor: ((ticketscerradosasesor * 100) / ticketstotal).toFixed() + "%",
-                maxavgconversationsattendedasesortotal: ticketscerradosasesor,
-                minvgconversationsattendedbot: ((ticketscerradosbot * 100) / ticketstotal).toFixed() + "%",
-                minvgconversationsattendedbottotal: ticketscerradosbot,
+                totalconversations: ticketscerrados===""?"0":ticketscerrados,
+                avgconversationsattended: avgconversationsattended + "%",
+                maxavgconversationsattendedasesor:  maxavgconversationsattendedasesor + "%",
+                maxavgconversationsattendedasesortotal: ticketscerradosasesor===""?"0":ticketscerradosasesor,
+                minvgconversationsattendedbot:  minvgconversationsattendedbot + "%",
+                minvgconversationsattendedbottotal: ticketscerradosbot===""?"0":ticketscerradosbot,
                 iconconversationsattendedasesor: parseFloat(avgparam) < (ticketscerradosasesor / ticketstotal),
                 iconconversationsattendedbot: parseFloat(avgparam) < (ticketscerradosbot / ticketstotal),
                 tasaabandono: ((ticketsabandonados * 100) / ticketstotal).toFixed() + "%",
@@ -1090,7 +1093,9 @@ const DashboardManagerial: FC = () => {
         setWaitSave(true)
     }
     async function funcsearchoneonly() {
-        console.log(searchfieldsOnlyOne.closedby)
+        if(!searchfieldsOnlyOne.closedbybot && !searchfieldsOnlyOne.closedbyasesor){
+            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.choosebotorasesor) }))
+        }
         if(searchfieldsOnlyOne.closedby){
             setOpenDialogPerRequest(false)
             
@@ -1305,14 +1310,17 @@ const DashboardManagerial: FC = () => {
                                     if(value && searchfieldsOnlyOne.closedbybot) {closedby="ASESOR,BOT"} else
                                     if (value) {closedby="ASESOR"} else
                                     if (searchfieldsOnlyOne.closedbybot) {closedby="BOT"}
-
-                                    if(closedby==="ASESOR"){
-                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbyasesor: value, closedby: closedby,min: sla?.usertmomin || "00:00:00", max: sla.usertmo, target: sla.usertmopercentmax}))
-                                    }else if(closedby==="ASESOR,BOT"){
-                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbyasesor: value,closedby: closedby,min: sla?.totamtmomin || "00:00:00", max: sla.totaltmo, target: sla.totaltmopercentmax}))
-                                    }
-                                    else{
-                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbyasesor: value,closedby: closedby,min: "00:00:00", max: "00:00:00", target: 0}))
+                                    if(fieldToFilter==="TMO"){
+                                        if(closedby==="ASESOR"){
+                                            setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbyasesor: value, closedby: closedby,min: sla?.usertmomin || "00:00:00", max: sla.usertmo, target: sla.usertmopercentmax}))
+                                        }else if(closedby==="ASESOR,BOT"){
+                                            setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbyasesor: value,closedby: closedby,min: sla?.totamtmomin || "00:00:00", max: sla.totaltmo, target: sla?.totaltmopercentmax}))
+                                        }
+                                        else{
+                                            setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbyasesor: value,closedby: closedby,min: "00:00:00", max: "00:00:00", target: 0}))
+                                        }
+                                    }else{
+                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbyasesor: value, closedby: closedby,min: "00:00:00", max: sla.usertme, target: sla.usertmepercentmax}))
                                     }
                                 }}
                                 className="col-6"
@@ -1326,14 +1334,17 @@ const DashboardManagerial: FC = () => {
                                     if(value && searchfieldsOnlyOne.closedbyasesor) {closedby="ASESOR,BOT"} else
                                     if (value) {closedby="BOT"} else
                                     if (searchfieldsOnlyOne.closedbyasesor) {closedby="ASESOR"}
-                                    
-                                    if(closedby==="ASESOR"){
-                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value, closedby: closedby,min: sla?.usertmomin || "00:00:00", max: sla.usertmo, target: sla.usertmopercentmax}))
-                                    }else if(closedby==="ASESOR,BOT"){
-                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value,closedby: closedby,min: sla?.totamtmomin || "00:00:00", max: sla.totaltmo, target: sla.totaltmopercentmax}))
-                                    }
-                                    else{
-                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value,closedby: closedby,min: "00:00:00", max: "00:00:00", target: 0}))
+                                    if(fieldToFilter==="TMO"){
+                                        if(closedby==="ASESOR"){
+                                            setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value, closedby: closedby,min: sla?.usertmomin || "00:00:00", max: sla.usertmo, target: sla.usertmopercentmax}))
+                                        }else if(closedby==="ASESOR,BOT"){
+                                            setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value,closedby: closedby,min: sla?.totamtmomin || "00:00:00", max: sla.totaltmo, target: sla?.totaltmopercentmax}))
+                                        }
+                                        else{
+                                            setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value,closedby: closedby,min: "00:00:00", max: "00:00:00", target: 0}))
+                                        }
+                                    }else{
+                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value, closedby: closedby,min: "00:00:00", max: sla.usertme, target: sla.usertmepercentmax}))
                                     }
                                 }}
                             />
@@ -1529,7 +1540,7 @@ const DashboardManagerial: FC = () => {
                         >
                             <div className={classes.downloadiconcontainer}>
                                 <CloudDownloadIcon onClick={()=>downloaddata("TME")}  className={classes.styleicon}/>
-                                <SettingsIcon onClick={()=>{setFieldToFilter("TME"); setOpenDialogPerRequest(true);setsearchfieldsOnlyOne((prevState) =>({...prevState, min: "00:00:00", max: sla?.usertme||"00:00:00"}))}} className={classes.styleicon}/>
+                                <SettingsIcon onClick={()=>{setFieldToFilter("TME"); setOpenDialogPerRequest(true);setsearchfieldsOnlyOne((prevState) =>({...prevState, min: "00:00:00",target:sla?.usertmepercentmax, max: sla?.usertme||"00:00:00"}))}} className={classes.styleicon}/>
                             </div>
                             <div className={classes.columnCard}>
                                 <div className={classes.containerFieldsTitle}>
@@ -2178,6 +2189,9 @@ const DashboardManagerial: FC = () => {
                             <div>
                                 <div className="row-zyx" style={{ paddingTop: "30px", margin: 0 }}>{dataDASHBOARD.tasaabandono} - {dataDASHBOARD.abandonados}</div>
                                 <div className="row-zyx" style={{ paddingTop: "0" }}>{t(langKeys.productivitycard4)}
+                                    <Tooltip title={`${t(langKeys.dropoutrate)}`} placement="top-start">
+                                        <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                    </Tooltip>
                                 </div>
                             </div>
                         </div>
@@ -2254,12 +2268,14 @@ const DashboardManagerial: FC = () => {
                         </div>
                         <div style={{ paddingTop: "20px" }}>
                             <ResponsiveContainer width="100%" aspect={4.0 / 2.0} >
-                                <BarChart data={reschannels}>
+                                <BarChart data={reschannels} margin={{ top: 20, right: 5, bottom: 5, left: 5 }}>
                                     <CartesianGrid stroke="#ccc" />
                                     <XAxis domain={["",""]} angle={-60} interval={0} textAnchor="end" height={reschannels?.map((x:any)=> x.communicationchannel.length).length>0?Math.max(...reschannels?.map((x:any)=> x.communicationchannel.length))*8:10} type="category" dataKey="communicationchannel"><Label value={` ${t(langKeys.channel_plural)} `} offset={-5} position="insideBottom" /></XAxis>
-                                    <YAxis><Label value={` ${t(langKeys.conversationquantity)} `} angle={-90} offset={10} position="insideBottomLeft"/></YAxis>
+                                    <YAxis ><Label value={` ${t(langKeys.conversationquantity)} `} angle={-90} offset={10} position="insideBottomLeft"/></YAxis>
                                     <RechartsTooltip />
-                                    <Bar dataKey="tickets" fill="#8884d8" />
+                                    <Bar dataKey="tickets" fill="#8884d8" isAnimationActive={false}>
+                                        <LabelList dataKey="tickets" position="top" fill="#000" />
+                                    </Bar>
                                 </BarChart>
                             </ResponsiveContainer>
 

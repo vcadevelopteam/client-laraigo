@@ -19,6 +19,9 @@ export function activateChannel(requestBody: IRequestBody ) {
 export function execSub(requestBody: IRequestBody ) {
     return APIManager.post(apiUrls.EXEC_SUB, { data: requestBody }, true);
 }
+export function valChannels(requestBody: IRequestBody ) {
+    return APIManager.post(apiUrls.VALIDATE_CHANNELS, { data: requestBody }, true);
+}
 export function validateNewUser(requestBody: IRequestBody ) {
     return APIManager.post(apiUrls.VALIDATE_NEW_USER, { data: requestBody }, true);
 }

@@ -589,8 +589,9 @@ export const LayoutItem: FC<LayoutItemProps> = ({
             setColumns([]);
             return;
         }
+        let columnas= JSON.parse(templates[selectedIndex].columnjson) as ColumnTemplate[]
         let summary = JSON.parse(templates[selectedIndex].summaryjson).map((x:any)=>{return {
-            alias: `${t(x.columnname.split(".")[1])} (${t(x.function)})`,
+            alias: `${t(langKeys.summarization)} - ${columnas?.find(y => y.columnname === x.columnname)?.alias} (${t(x.function)})`,
             columnname: `${x.columnname}${x.function}`,
             description: x.columnname,
             descriptionT: x.columnname,
@@ -603,8 +604,8 @@ export const LayoutItem: FC<LayoutItemProps> = ({
             function: x.function
         }})
         console.log(summary)
-        setColumns(summary.concat(JSON.parse(templates[selectedIndex].columnjson) as ColumnTemplate[]));
-        console.log(summary.concat(JSON.parse(templates[selectedIndex].columnjson) as ColumnTemplate[]))
+        setColumns(summary.concat(columnas));
+        console.log(summary.concat(columnas))
         console.log(getValues(`${key}.column`))
     }, [selectedIndex, templates]);
 
@@ -763,8 +764,9 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                         optionValue="columnname"
                         valueDefault={`${getValues(`${key}.column`)}${getValues(`${key}.summarizationfunction`)|| ''}`}
                         onChange={(v: ColumnTemplate) => {
+                            console.log(v?.columnname?.slice(0,-(v?.function?.length||0)))
                             if(v?.function){
-                                setValue(`${key}.column`, v?.columnname?.replace(`${v?.function}`,''));
+                                setValue(`${key}.column`, v?.columnname?.slice(0,-(v?.function?.length||0)));
                             }
                             else{
                                 setValue(`${key}.column`, v?.columnname||'');

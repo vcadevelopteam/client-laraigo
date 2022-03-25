@@ -9,6 +9,7 @@ export interface IState {
     countryList: IListStatePaginated<Dictionary>;
     successinsert: Boolean;
     insertChannel: IObjectState<{ success: boolean, code: string, message:string }>;
+    valChannelsChannel: IObjectState<{ success: boolean, code: string, message:string }>;
     verifyPlan: IListStatePaginated<Dictionary>;
     isvalid: Boolean;
     loading: Boolean;
@@ -22,6 +23,7 @@ export const initialState: IState = {
     countryList: initialListPaginatedState,
     successinsert: false,
     insertChannel: initialObjectState,
+    valChannelsChannel: initialObjectState,
     verifyPlan: initialListPaginatedState,
     isvalid: false,
     loading: false,
@@ -38,6 +40,10 @@ export default createReducer<IState>(initialState, {
     [actionTypes.SIGNUP_SUCCESS]: caseFUnctions.insertChannelSuccess,
     [actionTypes.SIGNUP_FAILURE]: caseFUnctions.insertChannelFailure,
     [actionTypes.SIGNUP_RESET]: caseFUnctions.insertChannelReset,
+    [actionTypes.VALCHANNELS]: caseFUnctions.valChannelsChannel,
+    [actionTypes.VALCHANNELS_FAILURE]: caseFUnctions.valChannelsChannelSuccess,
+    [actionTypes.VALCHANNELS_SUCCESS]: caseFUnctions.valChannelsChannelFailure,
+    [actionTypes.VALCHANNELS_RESET]: caseFUnctions.valChannelsChannelReset,
     [actionTypes.ISVALID]: caseFUnctions.checkvalidity,
     [actionTypes.ISVALID_SUCCESS]: caseFUnctions.checkvaliditySuccess,
     [actionTypes.ISVALID_FAILURE]: caseFUnctions.checkvalidityFailure,

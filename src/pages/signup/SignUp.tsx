@@ -119,6 +119,13 @@ const SignUpFunc: FC = () => {
             billingcontact: "",
             billingcontactmail: "",
             autosendinvoice: true,
+            pmemail: "",
+            firstnamecard: "",
+            lastnamecard: "",
+            creditcard: "",
+            mm: 0,
+            yyyy: "",
+            securitycode: "",
         });
     }
     function setDefaultMainData2() {
@@ -137,10 +144,12 @@ const SignUpFunc: FC = () => {
         setOpenWarning(false);
     };
     const handleClose2 = () => {
+        debugger
         if (step === 2) {
             setDefaultMainData()
+            setStep(step - 1)
         } else if (step === 4) {
-            // setrequestchannels([])
+            setStep(step - 1)
         } else if (step === 3) {
             setStep(2.5)
         } else if (step === 2.5) {
