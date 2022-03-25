@@ -1320,7 +1320,12 @@ const DashboardManagerial: FC = () => {
                                             setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbyasesor: value,closedby: closedby,min: "00:00:00", max: "00:00:00", target: 0}))
                                         }
                                     }else{
-                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbyasesor: value, closedby: closedby,min: "00:00:00", max: sla.usertme, target: sla.usertmepercentmax}))
+                                        if(closedby===""){
+                                            setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbyasesor: value,closedby: closedby,min: "00:00:00", max: "00:00:00", target: 0}))
+                                        }else{
+
+                                            setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbyasesor: value, closedby: closedby,min: "00:00:00", max: sla.usertme, target: sla.usertmepercentmax}))
+                                        }
                                     }
                                 }}
                                 className="col-6"
@@ -1344,7 +1349,11 @@ const DashboardManagerial: FC = () => {
                                             setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value,closedby: closedby,min: "00:00:00", max: "00:00:00", target: 0}))
                                         }
                                     }else{
-                                        setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value, closedby: closedby,min: "00:00:00", max: sla.usertme, target: sla.usertmepercentmax}))
+                                        if(closedby===""){
+                                            setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbyasesor: value,closedby: closedby,min: "00:00:00", max: "00:00:00", target: 0}))
+                                        }else{
+                                            setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value, closedby: closedby,min: "00:00:00", max: sla.usertme, target: sla.usertmepercentmax}))
+                                        }
                                     }
                                 }}
                             />
