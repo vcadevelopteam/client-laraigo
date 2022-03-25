@@ -1584,6 +1584,12 @@ const translation: LangKeys = {
     report_interaction_agent: 'Asesor',
     report_interaction_intent: 'Intención',
     report_interaction_intent_help: 'Es el camino que se identifica mediante el uso de IA',
+    report_interaction_interactiontype_help:` Respuesta ingresada por el cliente
+    Postback: Respuesta otorgada por el bot
+    File: Archivo adjunto enviado
+    Image: Imagen adjunta enviada
+    Interactivelist: Opciones mostradas por el listado interactivo de Whatsapp
+    Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     report_interaction_interactiontype: 'Tipo de interacción',
     report_interaction_interactiontext: 'Texto de interacción',
     report_interaction_clientnumber: 'Número de cliente',
@@ -1616,6 +1622,8 @@ const translation: LangKeys = {
     report_productivity_firstinteractiontime: 'Hora de primera interacción',
     report_productivity_tmo: 'TMO',
     report_productivity_tmo_help: 'Sumatoria de la duración real + el tiempo pausado.',
+    report_productivity_firstinteractiondate_help: "Fecha del primer intercambio de pregunta/respuesta/comentario por parte del asesor/bot/cliente",
+    report_productivity_firstinteractiontime_help: "Hora del primer intercambio de pregunta/respuesta/comentario por parte del asesor/bot/cliente",
     report_productivity_tmg: 'TMG',
     report_productivity_suspensiontime: 'Tiempo de suspensión',
     report_productivity_suspensiontime_help: 'Es el tiempo suspendido por un asesor.',
@@ -1626,6 +1634,9 @@ const translation: LangKeys = {
     report_productivity_email: 'Correo',
     report_productivity_phone: 'Teléfono',
     report_productivity_swingingtimes: 'N° Balanceo',
+    report_productivity_derivationtime_help: "Hora en la que el usuario selecciona la opción ser atendido por un asesor",
+    report_productivity_derivationdate_help: "Fecha en la que el usuario selecciona la opción ser atendido por un asesor.",
+    report_productivity_swingingtimes_help: "Cantidad de veces que el ticket salta de la bandeja de un asesor a otro porque no se le ha brindado atención",
     report_productivity_tmoagent: 'TMO asesor',
     report_productivity_tmoagent_help: 'Tiempo que demoró el asesor en atender el ticket desde que fue recibido.',
     report_productivity_holdingholdtime: 'Tiempo de espera en holding',
@@ -3256,6 +3267,7 @@ const translation: LangKeys = {
     filterreport_recordhsmreport: 'Reporte historial de envíos',
     campaign_default: 'CAMPAÑA/PREDETERMINADO',
     campaign_proactive: 'CAMPAÑA/PROACTIVO',
+    password_strongvalidation: 'Tu contraseña no es lo bastante segura, debe tener minimo 8 caracteres y contener: caracter especial, mayúscula, minúscula y número',
 };
 
 const esResource: ResourceLanguage = {
