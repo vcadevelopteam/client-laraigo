@@ -1344,7 +1344,7 @@ const DashboardProductivity: FC = () => {
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>TMO
-                                    <Tooltip title={`${t(langKeys.tmotooltip)}`} placement="top-start">
+                                    <Tooltip title={`${t(langKeys.tmotooltipproductivity)}`} placement="top-start">
                                         <InfoIcon style={{padding: "5px 0 0 5px"}} />
                                     </Tooltip>
                                 </div>
@@ -1704,7 +1704,7 @@ const DashboardProductivity: FC = () => {
                                 <XAxis domain={["",""]} type="category" dataKey="label" scale="band"  label={{ value: `${t(langKeys.ticketsxhour)}`, position: 'insideBottom', offset:-5 }} />
                                 <YAxis label={{ value: `${t(langKeys.numberofadvisers)}`, angle: -90, position: 'insideBottomLeft' }}/>
                                 <RechartsTooltip />
-                                <Line type="monotone" dataKey="notconnected" stroke="#52307c" name={t(langKeys.hourlogin)}/>
+                                <Line type="monotone" dataKey="notconnected" stroke="#52307c" name={t(langKeys.advisorquantity)}/>
                                 {
                                     //<Bar dataKey="connected" barSize={20} fill="#2499ee" name={t(langKeys.hourconnected)}/>
                                 }
