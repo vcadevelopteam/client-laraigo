@@ -116,6 +116,7 @@ const Step2five: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarnin
                             label={t(langKeys.docNumber)}
                             error={!!errors.docnumber}
                             helperText={errors.docnumber?.message}
+                            type="number"
                         />
                     )}
                 />

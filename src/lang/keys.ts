@@ -3255,6 +3255,7 @@ export const langKeys = {
     filterreport_recordhsmreport: 'filterreport_recordhsmreport',
     campaign_default: 'campaign_default',
     campaign_proactive: 'campaign_proactive',
+    password_strongvalidation: 'password_strongvalidation',
 };
 
 export type LangKeys = typeof langKeys;

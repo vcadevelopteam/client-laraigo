@@ -3277,6 +3277,7 @@ const translation: LangKeys = {
     filterreport_recordhsmreport: 'Shipment history report',
     campaign_default: 'CAMPAIGN/DEFAULT',
     campaign_proactive: 'CAMPAIGN/PROACTIVE',
+    password_strongvalidation: 'Your password is not safe enough, it must contain at least the following: special character, uppercase, lowercase and number',
 };
 
 const enResource: ResourceLanguage = {

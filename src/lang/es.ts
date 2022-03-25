@@ -3267,6 +3267,7 @@ const translation: LangKeys = {
     filterreport_recordhsmreport: 'Reporte historial de envíos',
     campaign_default: 'CAMPAÑA/PREDETERMINADO',
     campaign_proactive: 'CAMPAÑA/PROACTIVO',
+    password_strongvalidation: 'Tu contraseña no es lo bastante segura, debe tener minimo 8 caracteres y contener: caracter especial, mayúscula, minúscula y número',
 };
 
 const esResource: ResourceLanguage = {
