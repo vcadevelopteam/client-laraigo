@@ -505,7 +505,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
                 firstname: mainData.firstnamecard,
                 lastname: mainData.lastnamecard,
                 mail: mainData.pmemail,
-                cardnumber: mainData.creditcard,
+                cardnumber: mainData.creditcard.replace(/[^0-9]/g, ''),
                 expirationmonth: String(mainData.mm),
                 expirationyear: mainData.yyyy,
                 securitycode: mainData.securitycode,
