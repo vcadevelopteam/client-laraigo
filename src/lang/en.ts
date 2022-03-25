@@ -3051,7 +3051,7 @@ const translation: LangKeys = {
     dashboard_chartType_bar: 'Bar chart',
     dashboard_chartType_line: 'Line chart',
     enterDashboardDescription: 'Enter dashboard description',
-    moreOptions: 'More options',
+    moreOptions: 'View more',
 
     reportfreeconversations: 'WhatsApp free conversations',
     userinitiatedconversations: 'WhatsApp user-initiated conversations',
