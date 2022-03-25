@@ -28,7 +28,7 @@ import { Descendant } from 'slate';
 import { renderToString, toElement } from 'components/fields/RichText';
 import { ColorChangeHandler } from 'react-color';
 import clsx from 'clsx';
-import Schedule from 'components/fields/Calendar';
+import Schedule from 'components/fields/Schedule';
 import AddIcon from '@material-ui/icons/Add';
 
 const hours = [
@@ -1035,16 +1035,24 @@ const Calendar: FC = () => {
 
     if (viewSelected === "view-1") {
         return (
-            <TableZyx
-                onClickRow={handleEdit}
-                columns={columns}
-                titlemodule={t(langKeys.calendar_plural, { count: 2 })}
-                data={dataGrid}
-                download={true}
-                loading={mainResult.mainData.loading}
-                register={true}
-                handleRegister={handleRegister}
-            />
+            <div>
+                <div>
+                    <TableZyx
+                        onClickRow={handleEdit}
+                        columns={columns}
+                        titlemodule={t(langKeys.calendar_plural, { count: 2 })}
+                        data={dataGrid}
+                        download={true}
+                        loading={mainResult.mainData.loading}
+                        register={true}
+                        handleRegister={handleRegister}
+                    />
+                </div>
+                <div style={{marginTop: 20}}>
+                    <Schedule />
+
+                </div>
+            </div>
         )
     }
     else if (viewSelected === "view-2") {
