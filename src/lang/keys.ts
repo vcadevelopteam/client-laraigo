@@ -3249,6 +3249,12 @@ export const langKeys = {
     recoverpassword_missingconfiguration: 'recoverpassword_missingconfiguration',
     recoverpassword_sendfailure: 'recoverpassword_sendfailure',
     validateuser_mismatch: 'validateuser_mismatch',
+    billingreportitem: 'billingreportitem',
+    billingreportquantity: 'billingreportquantity',
+    billingreportrate: 'billingreportrate',
+    billingreporttaxableamount: 'billingreporttaxableamount',
+    billingreporttaxableiva: 'billingreporttaxableiva',
+    billingreportamount: 'billingreportamount',
 };
 
 export type LangKeys = typeof langKeys;

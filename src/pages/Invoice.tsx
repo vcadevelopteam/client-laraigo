@@ -87,6 +87,18 @@ function formatNumber(num: number) {
     return "0.00"
 }
 
+function getTaxableAmount(igv: number, num: number) {
+    if (num && igv)
+        return (num / (igv + 1)).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+    return "0.00"
+}
+
+function getIgv(igv: number, num: number) {
+    if (num && igv)
+        return (num - (num / (igv + 1))).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+    return "0.00"
+}
+
 function formatNumberFourDecimals(num: number) {
     if (num)
         return num.toFixed(4).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1')
@@ -351,7 +363,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 style={{width: 140}}
                                 valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||0}))}
+                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc || 0}))}
                                 data={dataYears}
                                 optionDesc="desc"
                                 optionValue="desc"
@@ -373,7 +385,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.corpid}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,corpid:value?.corpid||0,orgid:0}))}
+                                onChange={(value) => setdataMain(prev=>({...prev,corpid:value?.corpid || 0,orgid:0}))}
                                 data={dataCorpList}
                                 optionDesc="description"
                                 optionValue="corpid"
@@ -384,7 +396,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.orgid}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,orgid:value?.orgid||0}))}
+                                onChange={(value) => setdataMain(prev=>({...prev,orgid:value?.orgid || 0}))}
                                 data={dataOrgList.filter((e:any)=>{return e.corpid===dataMain.corpid})}
                                 optionDesc="orgdesc"
                                 optionValue="orgid"
@@ -453,12 +465,13 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const dataPaymentPlanList = dataPlan.data[3] && dataPlan.data[3].success? dataPlan.data[3].data : []
-    const dataPlanList = dataPlan.data[0] && dataPlan.data[0].success? dataPlan.data[0].data : []
+    const dataPaymentPlanList = dataPlan.data[3] && dataPlan.data[3].success? dataPlan.data[3].data : [];
+    const dataPlanList = dataPlan.data[0] && dataPlan.data[0].success? dataPlan.data[0].data : [];
     const executeRes = useSelector(state => state.main.execute);
 
     const [checkeduser, setCheckeduser] = useState(row?.usercreateoverride || false);
     const [checkedchannel, setCheckedchannel] = useState(row?.channelcreateoverride || false);
+    const [canEdit, setCanEdit] = useState(false);
     const [pageSelected, setPageSelected] = useState(0);
     const [waitSave, setWaitSave] = useState(false);
 
@@ -466,73 +479,78 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
         { id: "view-1", name: t(langKeys.costperperiod) },
         { id: "view-2", name: t(langKeys.costperperioddetail) }
     ];
-
-    if (row?.year !== new Date().getFullYear() || row?.month !== new Date().getMonth() + 1) {
-        edit = false;
-    }
+    
+    useEffect(() => {
+        if (row?.invoicestatus && row?.paymentstatus) {
+            if (row?.invoicestatus !== "INVOICED" && row?.paymentstatus !== "PAID") {
+                setCanEdit(true);
+            }
+        }
+    }, [])
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {            
-            corpid: row?.corpid||0,
-            orgid: row?.orgid||0,
-            corpdesc: row?.corpdesc||"",
-            orgdesc: row?.orgdesc||"",
-            year: row?.year ||new Date().getFullYear(),
-            month: row?.month ||new Date().getMonth() + 1,
+            corpid: row?.corpid || 0,
+            orgid: row?.orgid || 0,
+            corpdesc: row?.corpdesc || "",
+            orgdesc: row?.orgdesc || "",
+            year: row?.year || new Date().getFullYear(),
+            month: row?.month || new Date().getMonth() + 1,
             billingplan: row?.billingplan || "",
             supportplan: row?.supportplan || "",
-            basicfee: row?.basicfee||0,
-            userfreequantity: row?.userfreequantity||0,
-            useradditionalfee : row?.useradditionalfee ||0,
-            supervisorquantity: row?.supervisorquantity||0,
-            asesorquantity: row?.asesorquantity||0,
-            userquantity: row?.userquantity||0,
-            useradditionalcharge: row?.useradditionalcharge||0,
-            channelfreequantity: row?.channelfreequantity||0,
-            channelwhatsappfee: row?.channelwhatsappfee||0,
-            channelwhatsappquantity: row?.channelwhatsappquantity||0,
-            channelwhatsappcharge: row?.channelwhatsappcharge||0,
-            channelotherfee: row?.channelotherfee||0,
-            channelotherquantity: row?.channelotherquantity||0,
-            channelothercharge: row?.channelothercharge||0,
-            channelcharge: row?.channelcharge||0,
-            clientfreequantity: row?.clientfreequantity||0,
-            clientquantity: row?.clientquantity||0,
-            clientadditionalfee: row?.clientadditionalfee||0,
-            clientadditionalcharge: row?.clientadditionalcharge||0,
-            conversationquantity: row?.conversationquantity||0,
-            conversationcompanywhatquantity: row?.conversationcompanywhatquantity||0,
-            conversationcompanywhatfee: row?.conversationcompanywhatfee||0,
-            conversationcompanywhatcharge: row?.conversationcompanywhatcharge||0,
-            conversationclientwhatquantity: row?.conversationclientwhatquantity||0,
-            conversationclientwhatfee: row?.conversationclientwhatfee||0,
-            conversationclientwhatcharge: row?.conversationclientwhatcharge||0,
-            conversationwhatcharge: row?.conversationwhatcharge||0,
-            interactionquantity: row?.interactionquantity||0,
-            supportbasicfee: row?.supportbasicfee||0,
-            additionalservicename1: row?.additionalservicename1||"",
-            additionalservicefee1: row?.additionalservicefee1||0,
-            additionalservicename2: row?.additionalservicename2||"",
-            additionalservicefee2: row?.additionalservicefee2||0,
-            additionalservicename3: row?.additionalservicename3||"",
-            additionalservicefee3: row?.additionalservicefee3||0,
-            force: row?.force||true,
-            totalcharge: row?.totalcharge||0,
-            conversationclientwhatfreequantity: row?.conversationclientwhatfreequantity||0,
-            conversationcompanywhatfreequantity: row?.conversationcompanywhatfreequantity||0,
-            unitpricepersms: row?.unitpricepersms||0,
-            vcacomissionpersms: row?.vcacomissionpersms||0,
-            smsquantity: row?.smsquantity||0,
-            smscost: row?.smscost||0,
-            unitepricepermail: row?.unitepricepermail||0,
-            vcacomissionpermail: row?.vcacomissionpermail||0,
-            mailquantity: row?.mailquantity||0,
-            mailcost: row?.mailcost||0,
-            freewhatsappchannel: row?.freewhatsappchannel||0,
-            freewhatsappconversations: row?.freewhatsappconversations||0,
+            basicfee: row?.basicfee || 0,
+            userfreequantity: row?.userfreequantity || 0,
+            useradditionalfee : row?.useradditionalfee || 0,
+            supervisorquantity: row?.supervisorquantity || 0,
+            asesorquantity: row?.asesorquantity || 0,
+            userquantity: row?.userquantity || 0,
+            useradditionalcharge: row?.useradditionalcharge || 0,
+            channelfreequantity: row?.channelfreequantity || 0,
+            channelwhatsappfee: row?.channelwhatsappfee || 0,
+            channelwhatsappquantity: row?.channelwhatsappquantity || 0,
+            channelwhatsappcharge: row?.channelwhatsappcharge || 0,
+            channelotherfee: row?.channelotherfee || 0,
+            channelotherquantity: row?.channelotherquantity || 0,
+            channelothercharge: row?.channelothercharge || 0,
+            channelcharge: row?.channelcharge || 0,
+            clientfreequantity: row?.clientfreequantity || 0,
+            clientquantity: row?.clientquantity || 0,
+            clientadditionalfee: row?.clientadditionalfee || 0,
+            clientadditionalcharge: row?.clientadditionalcharge || 0,
+            conversationquantity: row?.conversationquantity || 0,
+            conversationcompanywhatquantity: row?.conversationcompanywhatquantity || 0,
+            conversationcompanywhatfee: row?.conversationcompanywhatfee || 0,
+            conversationcompanywhatcharge: row?.conversationcompanywhatcharge || 0,
+            conversationclientwhatquantity: row?.conversationclientwhatquantity || 0,
+            conversationclientwhatfee: row?.conversationclientwhatfee || 0,
+            conversationclientwhatcharge: row?.conversationclientwhatcharge || 0,
+            conversationwhatcharge: row?.conversationwhatcharge || 0,
+            interactionquantity: row?.interactionquantity || 0,
+            supportbasicfee: row?.supportbasicfee || 0,
+            additionalservicename1: row?.additionalservicename1 || "",
+            additionalservicefee1: row?.additionalservicefee1 || 0,
+            additionalservicename2: row?.additionalservicename2 || "",
+            additionalservicefee2: row?.additionalservicefee2 || 0,
+            additionalservicename3: row?.additionalservicename3 || "",
+            additionalservicefee3: row?.additionalservicefee3 || 0,
+            force: row?.force || true,
+            totalcharge: row?.totalcharge || 0,
+            conversationclientwhatfreequantity: row?.conversationclientwhatfreequantity || 0,
+            conversationcompanywhatfreequantity: row?.conversationcompanywhatfreequantity || 0,
+            unitpricepersms: row?.unitpricepersms || 0,
+            vcacomissionpersms: row?.vcacomissionpersms || 0,
+            smsquantity: row?.smsquantity || 0,
+            smscost: row?.smscost || 0,
+            unitepricepermail: row?.unitepricepermail || 0,
+            vcacomissionpermail: row?.vcacomissionpermail || 0,
+            mailquantity: row?.mailquantity || 0,
+            mailcost: row?.mailcost || 0,
+            freewhatsappchannel: row?.freewhatsappchannel || 0,
+            freewhatsappconversations: row?.freewhatsappconversations || 0,
             usercreateoverride: row?.usercreateoverride || false,
             channelcreateoverride: row?.channelcreateoverride || false,
             vcacomissionperconversation: row?.vcacomissionperconversation || 0,
+            vcacomissionperhsm: row?.vcacomissionperhsm || 0,
         }
     });
 
@@ -575,6 +593,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
         register('usercreateoverride');
         register('channelcreateoverride');
         register('vcacomissionperconversation');
+        register('vcacomissionperhsm', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
     }, [edit, register]);
 
     useEffect(() => {
@@ -629,7 +648,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             style={{ backgroundColor: "#FB5F5F" }}
                             onClick={() => { setViewSelected("view-1"); fetchData(); }}
                         >{t(langKeys.back)}</Button>
-                        {edit &&
+                        {canEdit &&
                             <Button
                                 className={classes.button}
                                 variant="contained"
@@ -684,7 +703,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         />
                     </div>
                     <div className="row-zyx">
-                        { edit ? <FieldSelect
+                        {canEdit ? <FieldSelect
                             label={t(langKeys.contractedplan)}
                             className="col-6"
                             valueDefault={getValues("billingplan")}
@@ -701,7 +720,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             value={getValues("billingplan")}
                             />
                         }
-                        { edit ? <FieldSelect
+                        {canEdit ? <FieldSelect
                             label={t(langKeys.contractedsupportplan)}
                             className="col-6"
                             valueDefault={getValues("supportplan")}
@@ -721,7 +740,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         
                     </div>
                     <div className="row-zyx">
-                        { edit ? <FieldEdit
+                        {canEdit ? <FieldEdit
                             label={t(langKeys.costbasedonthecontractedplan)}
                             onChange={(value) => setValue('basicfee', value)}
                             valueDefault={getValues('basicfee')}
@@ -736,7 +755,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             value={getValues('basicfee')}
                             />
                         }
-                        { edit ? <FieldEdit
+                        {canEdit ? <FieldEdit
                             label={t(langKeys.costbasedonthesupportplan)}
                             onChange={(value) => setValue('supportbasicfee', value)}
                             valueDefault={getValues('supportbasicfee')}
@@ -762,7 +781,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                 </div>}
                 {pageSelected === 1 && <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        { edit ? <FieldEdit
+                        {canEdit ? <FieldEdit
                             label={t(langKeys.numberofagentshired)}
                             onChange={(value) => setValue('userfreequantity', value)}
                             valueDefault={getValues('userfreequantity')}
@@ -795,7 +814,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         />
                     </div>
                     <div className="row-zyx">
-                        { edit ? <FieldEdit
+                        {canEdit ? <FieldEdit
                             label={t(langKeys.useradditionalfee)}
                             onChange={(value) => setValue('useradditionalfee', value)}
                             valueDefault={getValues('useradditionalfee')}
@@ -821,7 +840,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.allowuseroverride)}</Box>
                             <FormControlLabel
                                 style={{ paddingLeft: 10 }}
-                                control={<IOSSwitch disabled={edit === false} checked={checkeduser} onChange={(e) => { setCheckeduser(e.target.checked); setValue('usercreateoverride', e.target.checked) }} />}
+                                control={<IOSSwitch disabled={canEdit === false} checked={checkeduser} onChange={(e) => { setCheckeduser(e.target.checked); setValue('usercreateoverride', e.target.checked) }} />}
                                 label={""}
                             />
                         </div>
@@ -829,7 +848,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                 </div>}
                 {pageSelected === 2  && <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        { edit ? <FieldEdit
+                        {canEdit ? <FieldEdit
                             label={t(langKeys.channelfreequantity)}
                             onChange={(value) => setValue('channelfreequantity', value)}
                             valueDefault={getValues('channelfreequantity')}
@@ -843,7 +862,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                                 value={getValues('channelfreequantity')}
                             />
                         }
-                        { edit ? <FieldEdit
+                        {canEdit ? <FieldEdit
                             label={t(langKeys.contractedplanchannelotherfee)}
                             onChange={(value) => setValue('channelotherfee', value)}
                             valueDefault={getValues('channelotherfee')}
@@ -860,7 +879,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         }
                     </div>
                     <div className="row-zyx">
-                    { edit ? <FieldEdit
+                        {canEdit ? <FieldEdit
                             label={t(langKeys.contractedplanfreewhatsappchannel)}
                             onChange={(value) => setValue('freewhatsappchannel', value)}
                             valueDefault={getValues('freewhatsappchannel')}
@@ -874,7 +893,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             value={getValues("freewhatsappchannel").toString()}
                         />
                         }
-                        { edit ? <FieldEdit
+                        {canEdit ? <FieldEdit
                             label={t(langKeys.channelwhatsappfee)}
                             onChange={(value) => setValue('channelwhatsappfee', value)}
                             valueDefault={getValues('channelwhatsappfee')}
@@ -919,7 +938,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.allowchanneloverride)}</Box>
                             <FormControlLabel
                                 style={{ paddingLeft: 10 }}
-                                control={<IOSSwitch disabled={edit === false} checked={checkedchannel} onChange={(e) => { setCheckedchannel(e.target.checked); setValue('channelcreateoverride', e.target.checked) }} />}
+                                control={<IOSSwitch disabled={canEdit === false} checked={checkedchannel} onChange={(e) => { setCheckedchannel(e.target.checked); setValue('channelcreateoverride', e.target.checked) }} />}
                                 label={""}
                             />
                         </div>
@@ -953,11 +972,6 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                     <div className="row-zyx">
                         <FieldView
                             className="col-6"
-                            label={t(langKeys.conversationclientwhatfee)}
-                            value={formatNumberFourDecimals(getValues("conversationclientwhatfee") || 0)}
-                        />
-                        <FieldView
-                            className="col-6"
                             label={t(langKeys.conversationclientwhatcharge)}
                             value={formatNumber(getValues("conversationclientwhatcharge") || 0)}
                         />
@@ -977,21 +991,25 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                     <div className="row-zyx">
                         <FieldView
                             className="col-6"
-                            label={t(langKeys.conversationcompanywhatfee)}
-                            value={formatNumberFourDecimals(getValues("conversationcompanywhatfee") || 0)}
-                        />
-                        <FieldView
-                            className="col-6"
                             label={t(langKeys.conversationcompanywhatcharge)}
                             value={formatNumber(getValues("conversationcompanywhatcharge") || 0)}
                         />
                     </div>
                     <div className="row-zyx">
-                        <FieldView
+                        {canEdit && <FieldEdit
+                            label={t(langKeys.vcacomissionperhsm)}
+                            onChange={(value) => setValue('vcacomissionperhsm', value)}
+                            valueDefault={getValues('vcacomissionperhsm')}
+                            error={errors?.vcacomissionperhsm?.message}
+                            type="number"
                             className="col-6"
-                            label={t(langKeys.billingvcacomission)}
-                            value={formatNumberFourDecimals(getValues("vcacomissionperconversation") || 0)}
-                        />
+                            inputProps={{ step: "any" }}
+                        />}
+                        {!canEdit && <FieldView
+                            className="col-6"
+                            label={t(langKeys.vcacomissionperhsm)}
+                            value={formatNumberFourDecimals(getValues('vcacomissionperhsm') || 0)}
+                        />}
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationwhatcharge)}
@@ -1001,7 +1019,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                 </div>}
                 {pageSelected === 4  && <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        { edit ? <FieldEdit
+                        {canEdit ? <FieldEdit
                             label={t(langKeys.clientfreequantity)}
                             onChange={(value) => setValue('clientfreequantity', value)}
                             valueDefault={getValues('clientfreequantity')}
@@ -1022,7 +1040,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         />
                     </div>
                     <div className="row-zyx">
-                        { edit ? <FieldEdit
+                        {canEdit ? <FieldEdit
                             label={t(langKeys.clientadditionalfee)}
                             onChange={(value) => setValue('clientadditionalfee', value)}
                             valueDefault={getValues('clientadditionalfee')}
@@ -1046,7 +1064,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                 </div>}
                 {pageSelected === 5  && <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        { edit ? <FieldEdit
+                        {canEdit ? <FieldEdit
                             label={t(langKeys.unitpricepersms)}
                             onChange={(value) => setValue('unitpricepersms', value)}
                             valueDefault={getValues('unitpricepersms')}
@@ -1061,7 +1079,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                                 value={formatNumberFourDecimals(getValues("unitpricepersms") || 0)}
                             />
                         }
-                        { edit ? <FieldEdit
+                        {canEdit ? <FieldEdit
                             label={t(langKeys.vcacomissionpersms)}
                             onChange={(value) => setValue('vcacomissionpersms', value)}
                             valueDefault={getValues('vcacomissionpersms')}
@@ -1090,7 +1108,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         />
                     </div>
                     <div className="row-zyx">
-                        { edit ? <FieldEdit
+                        {canEdit ? <FieldEdit
                             label={t(langKeys.unitepricepermail)}
                             onChange={(value) => setValue('unitepricepermail', value)}
                             valueDefault={getValues('unitepricepermail')}
@@ -1105,7 +1123,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                                 value={formatNumberFourDecimals(getValues("unitepricepermail") || 0)}
                             />
                         }
-                        { edit ? <FieldEdit
+                        {canEdit ? <FieldEdit
                             label={t(langKeys.vcacomissionpermail)}
                             onChange={(value) => setValue('vcacomissionpermail', value)}
                             valueDefault={getValues('vcacomissionpermail')}
@@ -1136,7 +1154,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                 </div>}
                 {pageSelected === 6  && <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        { edit ? <FieldEdit
+                        {canEdit ? <FieldEdit
                             label={`${t(langKeys.additionalservicename)} 1`}
                             onChange={(value) => setValue('additionalservicename1', value)}
                             valueDefault={getValues('additionalservicename1')}
@@ -1149,7 +1167,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                                 value={getValues("additionalservicename1")}
                             />
                         }
-                        { edit ? <FieldEdit
+                        {canEdit ? <FieldEdit
                             label={`${t(langKeys.additionalservicefee)} 1`}
                             onChange={(value) => setValue('additionalservicefee1', value)}
                             valueDefault={getValues('additionalservicefee1')}
@@ -1166,7 +1184,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         }
                     </div>
                     <div className="row-zyx">
-                        { edit ? <FieldEdit
+                        {canEdit ? <FieldEdit
                             label={`${t(langKeys.additionalservicename)} 2`}
                             onChange={(value) => setValue('additionalservicename2', value)}
                             valueDefault={getValues('additionalservicename2')}
@@ -1179,7 +1197,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                                 value={getValues("additionalservicename2")}
                             />
                         }
-                        { edit ? <FieldEdit
+                        {canEdit ? <FieldEdit
                             label={`${t(langKeys.additionalservicefee)} 2`}
                             onChange={(value) => setValue('additionalservicefee2', value)}
                             valueDefault={getValues('additionalservicefee2')}
@@ -1196,7 +1214,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         }
                     </div>
                     <div className="row-zyx">
-                        { edit ? <FieldEdit
+                        {canEdit ? <FieldEdit
                             label={`${t(langKeys.additionalservicename)} 3`}
                             onChange={(value) => setValue('additionalservicename3', value)}
                             valueDefault={getValues('additionalservicename3')}
@@ -1209,7 +1227,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                                 value={getValues("additionalservicename3")}
                             />
                         }
-                        { edit ? <FieldEdit
+                        {canEdit ? <FieldEdit
                             label={`${t(langKeys.additionalservicefee)} 3`}
                             onChange={(value) => setValue('additionalservicefee3', value)}
                             valueDefault={getValues('additionalservicefee3')}
@@ -1451,7 +1469,7 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                         className={classes.fieldsfilter}
                         valueDefault={dataMain.corpid}
                         variant="outlined"
-                        onChange={(value) => setdataMain(prev=>({...prev,corpid:value?.corpid||0,orgid:0}))}
+                        onChange={(value) => setdataMain(prev=>({...prev,corpid:value?.corpid || 0,orgid:0}))}
                         data={dataCorpList}
                         optionDesc="description"
                         optionValue="corpid"
@@ -1462,7 +1480,7 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                         className={classes.fieldsfilter}
                         valueDefault={dataMain.orgid}
                         variant="outlined"
-                        onChange={(value) => setdataMain(prev=>({...prev,orgid:value?.orgid||0}))}
+                        onChange={(value) => setdataMain(prev=>({...prev,orgid:value?.orgid || 0}))}
                         data={dataOrgList.filter((e:any)=>{return e.corpid===dataMain.corpid})}
                         optionDesc="orgdesc"
                         optionValue="orgid"
@@ -1472,7 +1490,7 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                         className={classes.fieldsfilter}
                         valueDefault={dataMain.totalize}
                         variant="outlined"
-                        onChange={(value) => setdataMain(prev=>({...prev,totalize:value?.value||0}))}
+                        onChange={(value) => setdataMain(prev=>({...prev,totalize:value?.value || 0}))}
                         data={datatotalize}
                         optionDesc="description"
                         optionValue="value"
@@ -1561,27 +1579,25 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                             <Table aria-label="customized table">
                                 <TableHead>
                                 <TableRow>
-                                    <StyledTableCell>Item</StyledTableCell>
-                                    <StyledTableCell align="right">{t(langKeys.quantity)}</StyledTableCell>
-                                    <StyledTableCell align="right">{t(langKeys.unitaryprice)}</StyledTableCell>
-                                    <StyledTableCell align="right">{t(langKeys.amount)}</StyledTableCell>
+                                    <StyledTableCell align="left">{t(langKeys.billingreportitem)}</StyledTableCell>
+                                    <StyledTableCell align="right">{t(langKeys.billingreportquantity)}</StyledTableCell>
+                                    <StyledTableCell align="right">{t(langKeys.billingreportrate)}</StyledTableCell>
+                                    <StyledTableCell align="right">{t(langKeys.billingreporttaxableamount)}</StyledTableCell>
+                                    <StyledTableCell align="right">{t(langKeys.billingreporttaxableiva)}</StyledTableCell>
+                                    <StyledTableCell align="right">{t(langKeys.billingreportamount)}</StyledTableCell>
                                 </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     <StyledTableRow>
-                                        <StyledTableCell >
-                                            <b>{t(langKeys.basecost)}</b>
-                                        </StyledTableCell>
-                                        <StyledTableCell >
-                                        </StyledTableCell>
-                                        <StyledTableCell >
-                                        </StyledTableCell>
-                                        <StyledTableCell  align="right">
-                                        $ {datareport.basicfee?formatNumber(datareport.basicfee):"0.00"}
-                                        </StyledTableCell>
+                                        <StyledTableCell><b>{t(langKeys.basecost)}</b></StyledTableCell>
+                                        <StyledTableCell></StyledTableCell>
+                                        <StyledTableCell></StyledTableCell>
+                                        <StyledTableCell align="right">${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.basicfee || 0) : formatNumber(datareport.basicfee)}</StyledTableCell>
+                                        <StyledTableCell align="right">${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.basicfee || 0) : "0.00"}</StyledTableCell>
+                                        <StyledTableCell align="right">${datareport.basicfee ? formatNumber(datareport.basicfee || 0) : "0.00"}</StyledTableCell>
                                     </StyledTableRow>
                                     <StyledTableRow>
-                                        <StyledTableCell >
+                                        <StyledTableCell>
                                             <div><b>{t(langKeys.agents_plural)}</b></div>
                                             <div>{t(langKeys.contracted)}</div>
                                             <div>{t(langKeys.additional)}</div>
@@ -1594,12 +1610,22 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>$ {formatNumber(datareport.useradditionalfee || 0)}</div>
+                                            <div>${formatNumber(datareport.useradditionalfee || 0)}</div>
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.useradditionalcharge || 0) : formatNumber(datareport.useradditionalcharge)}</div>
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.useradditionalcharge || 0) : "0.00"}</div>
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>                                            
-                                            <div>$ {formatNumber(datareport.useradditionalcharge || 0)}</div>
+                                            <div>${formatNumber(datareport.useradditionalcharge || 0)}</div>
                                         </StyledTableCell>
                                     </StyledTableRow>
                                     <StyledTableRow>
@@ -1624,20 +1650,36 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>$ {formatNumber(datareport.channelwhatsappfee || 0)}</div>
-                                            <div>$ {formatNumber(datareport.channelotherfee || 0)}</div>
+                                            <div>${formatNumber(datareport.channelwhatsappfee || 0)}</div>
+                                            <div>${formatNumber(datareport.channelotherfee || 0)}</div>
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>$ {formatNumber(datareport.channelwhatsappcharge || 0)}</div>
-                                            <div>$ {formatNumber(datareport.channelothercharge || 0)}</div>
+                                            <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.channelwhatsappcharge || 0) : formatNumber(datareport.channelwhatsappcharge)}</div>
+                                            <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.channelothercharge || 0) : formatNumber(datareport.channelothercharge)}</div>
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.channelwhatsappcharge || 0) : "0.00"}</div>
+                                            <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.channelothercharge || 0) : "0.00"}</div>
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div>${formatNumber(datareport.channelwhatsappcharge || 0)}</div>
+                                            <div>${formatNumber(datareport.channelothercharge || 0)}</div>
                                         </StyledTableCell>
                                     </StyledTableRow>
                                     <StyledTableRow>
-                                        <StyledTableCell >
+                                        <StyledTableCell>
                                             <div><b>{t(langKeys.billingreportconversations)}</b></div>
                                             <div>{t(langKeys.reportfreeconversations)}</div>
                                             <div>{t(langKeys.userinitiatedconversations)}</div>
@@ -1658,12 +1700,24 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>$ {formatNumber(datareport.conversationclientwhatcharge || 0)}</div>
-                                            <div>$ {formatNumber(datareport.conversationcompanywhatcharge || 0)}</div>
+                                            <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.conversationclientwhatcharge || 0) : formatNumber(datareport.conversationclientwhatcharge)}</div>
+                                            <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.conversationcompanywhatcharge || 0) : formatNumber(datareport.conversationcompanywhatcharge)}</div>
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.conversationclientwhatcharge || 0) : "0.00"}</div>
+                                            <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.conversationcompanywhatcharge || 0) : "0.00"}</div>
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div>${formatNumber(datareport.conversationclientwhatcharge || 0)}</div>
+                                            <div>${formatNumber(datareport.conversationcompanywhatcharge || 0)}</div>
                                         </StyledTableCell>
                                     </StyledTableRow>
                                     <StyledTableRow>
-                                        <StyledTableCell >
+                                        <StyledTableCell>
                                             <div><b>{t(langKeys.billingreportmessaging)}</b></div>
                                             <div>{t(langKeys.billingreportsms)}</div>
                                             <div>{t(langKeys.billingreportmail)}</div>
@@ -1675,17 +1729,27 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>$ {formatNumber((datareport.unitpricepersms || 0) + (datareport.vcacomissionpersms || 0))}</div>
-                                            <div>$ {formatNumber((datareport.unitepricepermail || 0) + (datareport.vcacomissionpermail || 0))}</div>
+                                            <div>${formatNumber((datareport.unitpricepersms || 0) + (datareport.vcacomissionpersms || 0))}</div>
+                                            <div>${formatNumber((datareport.unitepricepermail || 0) + (datareport.vcacomissionpermail || 0))}</div>
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>$ {formatNumber(datareport.smscost || 0)}</div>
-                                            <div>$ {formatNumber(datareport.mailcost || 0)}</div>
+                                            <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.smscost || 0) : formatNumber(datareport.smscost)}</div>
+                                            <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.mailcost || 0) : formatNumber(datareport.mailcost)}</div>
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.smscost || 0) : "0.00"}</div>
+                                            <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.mailcost || 0) : "0.00"}</div>
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div>${formatNumber(datareport.smscost || 0)}</div>
+                                            <div>${formatNumber(datareport.mailcost || 0)}</div>
                                         </StyledTableCell>
                                     </StyledTableRow>
                                     <StyledTableRow>
-                                        <StyledTableCell >
+                                        <StyledTableCell>
                                             <div><b>{t(langKeys.billingreportcontacts)}</b></div>
                                             <div>{t(langKeys.freecontacts)}</div>
                                             <div>{t(langKeys.billingreporttotalcontacts)}</div>
@@ -1701,26 +1765,34 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>$ {formatNumber(datareport.clientadditionalfee || 0)}</div>
+                                            <div>${formatNumber(datareport.clientadditionalfee || 0)}</div>
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>$ {formatNumber(datareport.clientadditionalcharge || 0)}</div>
+                                            <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.clientadditionalcharge || 0) : formatNumber(datareport.clientadditionalcharge)}</div>
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv, datareport.clientadditionalcharge) : "0.00"}</div>
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div>${formatNumber(datareport.clientadditionalcharge || 0)}</div>
                                         </StyledTableCell>
                                     </StyledTableRow>
                                     <StyledTableRow>
-                                        <StyledTableCell >
-                                            <b>{t(langKeys.supportplan)} {datareport.supportplan}</b>
-                                        </StyledTableCell>
-                                        <StyledTableCell >
-                                        </StyledTableCell>
-                                        <StyledTableCell >
-                                        </StyledTableCell>
-                                        <StyledTableCell  align="right">
-                                            $ {formatNumber(datareport.supportbasicfee || 0)}
-                                        </StyledTableCell>
+                                        <StyledTableCell><b>{t(langKeys.supportplan)} {datareport.supportplan}</b></StyledTableCell>
+                                        <StyledTableCell></StyledTableCell>
+                                        <StyledTableCell></StyledTableCell>
+                                        <StyledTableCell align="right">${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv, datareport.supportbasicfee) : formatNumber(datareport.supportbasicfee)}</StyledTableCell>
+                                        <StyledTableCell align="right">${datareport.sunatcountry === "PE" ? getIgv(datareport.igv, datareport.supportbasicfee) : "0.00"}</StyledTableCell>
+                                        <StyledTableCell align="right">${formatNumber(datareport.supportbasicfee)}</StyledTableCell>
                                     </StyledTableRow>
                                     <StyledTableRow>
                                         <StyledTableCell>
@@ -1728,26 +1800,42 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                                             {datareport.additionalservicefee2 ? <div className={clsx({[classes.transparent]: datareport.additionalservicename2 === ""})}>{datareport.additionalservicename2 === "" ? <div style={{color:"transparent"}}>.</div> : datareport.additionalservicename2}</div> : <div style={{color:"transparent"}}>.</div>}
                                             {datareport.additionalservicefee3 ? <div className={clsx({[classes.transparent]: datareport.additionalservicename3 === ""})}>{datareport.additionalservicename3 === "" ? <div style={{color:"transparent"}}>.</div> : datareport.additionalservicename3}</div> : <div style={{color:"transparent"}}>.</div>}
                                         </StyledTableCell>
-                                        <StyledTableCell >
+                                        <StyledTableCell>
                                         </StyledTableCell>
-                                        <StyledTableCell >
+                                        <StyledTableCell>
                                         </StyledTableCell>
-                                        <StyledTableCell  align="right">
-                                            {datareport.additionalservicefee1 ? <div>$ {formatNumber(datareport.additionalservicefee1 || 0)}</div> : <div style={{color:"transparent"}}>.</div>}
-                                            {datareport.additionalservicefee2 ? <div>$ {formatNumber(datareport.additionalservicefee2 || 0)}</div> : <div style={{color:"transparent"}}>.</div>}
-                                            {datareport.additionalservicefee3 ? <div>$ {formatNumber(datareport.additionalservicefee3 || 0)}</div> : <div style={{color:"transparent"}}>.</div>}
+                                        <StyledTableCell align="right">
+                                            {datareport.additionalservicefee1 ? <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.additionalservicefee1 || 0) : formatNumber(datareport.additionalservicefee1)}</div> : <div style={{color:"transparent"}}>.</div>}
+                                            {datareport.additionalservicefee2 ? <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.additionalservicefee2 || 0) : formatNumber(datareport.additionalservicefee2)}</div> : <div style={{color:"transparent"}}>.</div>}
+                                            {datareport.additionalservicefee3 ? <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.additionalservicefee3 || 0) : formatNumber(datareport.additionalservicefee3)}</div> : <div style={{color:"transparent"}}>.</div>}
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            {datareport.additionalservicefee1 ? <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv, datareport.additionalservicefee1) : "0.00"}</div> : <div style={{color:"transparent"}}>.</div>}
+                                            {datareport.additionalservicefee2 ? <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv, datareport.additionalservicefee2) : "0.00"}</div> : <div style={{color:"transparent"}}>.</div>}
+                                            {datareport.additionalservicefee3 ? <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv, datareport.additionalservicefee3) : "0.00"}</div> : <div style={{color:"transparent"}}>.</div>}
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            {datareport.additionalservicefee1 ? <div>${formatNumber(datareport.additionalservicefee1 || 0)}</div> : <div style={{color:"transparent"}}>.</div>}
+                                            {datareport.additionalservicefee2 ? <div>${formatNumber(datareport.additionalservicefee2 || 0)}</div> : <div style={{color:"transparent"}}>.</div>}
+                                            {datareport.additionalservicefee3 ? <div>${formatNumber(datareport.additionalservicefee3 || 0)}</div> : <div style={{color:"transparent"}}>.</div>}
                                         </StyledTableCell>
                                     </StyledTableRow>
                                     <StyledTableRow>
-                                        <StyledTableCell >
+                                        <StyledTableCell>
                                             <b>{t(langKeys.periodamount)}</b>
                                         </StyledTableCell>
-                                        <StyledTableCell >
+                                        <StyledTableCell>
                                         </StyledTableCell>
-                                        <StyledTableCell >
+                                        <StyledTableCell>
                                         </StyledTableCell>
-                                        <StyledTableCell  align="right">
-                                        $ {formatNumber(datareport.totalcharge || 0)}
+                                        <StyledTableCell align="right">
+                                        ${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.totalcharge || 0) : formatNumber(datareport.totalcharge)}
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                        ${datareport.sunatcountry === "PE" ? getIgv(datareport.igv, datareport.totalcharge) : "0.00"}
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                        ${formatNumber(datareport.totalcharge || 0)}
                                         </StyledTableCell>
                                     </StyledTableRow>
                                 </TableBody>
@@ -2071,7 +2159,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                                 style={{width: 140}}
                                 valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||0}))}
+                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc || 0}))}
                                 data={dataYears}
                                 optionDesc="desc"
                                 optionValue="desc"
@@ -2093,7 +2181,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.corpid}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,corpid:value?.corpid||0,orgid:0}))}
+                                onChange={(value) => setdataMain(prev=>({...prev,corpid:value?.corpid || 0,orgid:0}))}
                                 data={dataCorpList}
                                 optionDesc="description"
                                 optionValue="corpid"
@@ -2104,7 +2192,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.orgid}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,orgid:value?.orgid||0}))}
+                                onChange={(value) => setdataMain(prev=>({...prev,orgid:value?.orgid || 0}))}
                                 data={dataOrgList.filter((e:any)=>{return e.corpid===dataMain.corpid})}
                                 optionDesc="orgdesc"
                                 optionValue="orgid"
@@ -2114,7 +2202,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.currency}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,currency:value?.value||''}))}
+                                onChange={(value) => setdataMain(prev=>({...prev,currency:value?.value || ''}))}
                                 data={dataCurrency}
                                 optionDesc="description"
                                 optionValue="value"
@@ -2124,7 +2212,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.paymentstatus}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,paymentstatus:value?.value||''}))}
+                                onChange={(value) => setdataMain(prev=>({...prev,paymentstatus:value?.value || ''}))}
                                 data={dataPayment}
                                 optionDesc="description"
                                 optionValue="value"
@@ -2138,15 +2226,6 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                                 onClick={search}
                             >{t(langKeys.search)}
                             </Button>
-                            {user?.roledesc === "SUPERADMIN" && <Button
-                                disabled={mainResult.loading || disableSearch}
-                                variant="contained"
-                                color="primary"
-                                style={{ width: 120, backgroundColor: "#55BD84" }}
-                                startIcon={<RefreshIcon style={{ color: 'white' }} />}
-                                onClick={refreshAll}
-                            >{t(langKeys.refresh)}
-                            </Button>}
                         </div>
                     )}
                     data={dataInvoice}
@@ -2728,7 +2807,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             style={{width: 140}}
                             valueDefault={dataMain.year}
                             variant="outlined"
-                            onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||0}))}
+                            onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc || 0}))}
                             data={dataYears}
                             optionDesc="desc"
                             optionValue="desc"
@@ -2750,7 +2829,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             className={classes.fieldsfilter}
                             valueDefault={dataMain.corpid}
                             variant="outlined"
-                            onChange={(value) => setdataMain(prev=>({...prev,corpid:value?.corpid||0,orgid:0}))}
+                            onChange={(value) => setdataMain(prev=>({...prev,corpid:value?.corpid || 0,orgid:0}))}
                             data={dataCorpList}
                             optionDesc="description"
                             optionValue="corpid"
@@ -2761,7 +2840,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             className={classes.fieldsfilter}
                             valueDefault={dataMain.orgid}
                             variant="outlined"
-                            onChange={(value) => setdataMain(prev=>({...prev,orgid:value?.orgid||0}))}
+                            onChange={(value) => setdataMain(prev=>({...prev,orgid:value?.orgid || 0}))}
                             data={dataOrgList.filter((e:any)=>{return e.corpid===dataMain.corpid})}
                             optionDesc="orgdesc"
                             optionValue="orgid"
@@ -2771,7 +2850,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             className={classes.fieldsfilter}
                             valueDefault={dataMain.currency}
                             variant="outlined"
-                            onChange={(value) => setdataMain(prev=>({...prev,currency:value?.value||''}))}
+                            onChange={(value) => setdataMain(prev=>({...prev,currency:value?.value || ''}))}
                             data={dataCurrency}
                             optionDesc="description"
                             optionValue="value"
@@ -2781,7 +2860,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             className={classes.fieldsfilter}
                             valueDefault={dataMain.paymentstatus}
                             variant="outlined"
-                            onChange={(value) => setdataMain(prev=>({...prev,paymentstatus:value?.value||''}))}
+                            onChange={(value) => setdataMain(prev=>({...prev,paymentstatus:value?.value || ''}))}
                             data={dataPayment}
                             optionDesc="description"
                             optionValue="value"

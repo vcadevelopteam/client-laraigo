@@ -3265,6 +3265,12 @@ const translation: LangKeys = {
     recoverpassword_missingconfiguration: 'Could not retrieve sending configuration',
     recoverpassword_sendfailure: 'Could not send the recovery mail',
     validateuser_mismatch: 'User data does not match',
+    billingreportitem: 'ITEM',
+    billingreportquantity: 'QUANTITY',
+    billingreportrate: 'RATE',
+    billingreporttaxableamount: 'TAXABLE AMOUNT',
+    billingreporttaxableiva: 'IVA',
+    billingreportamount: 'AMOUNT',
 };
 
 const enResource: ResourceLanguage = {

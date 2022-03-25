@@ -3256,6 +3256,12 @@ const translation: LangKeys = {
     recoverpassword_missingconfiguration: 'Error al obtener la configuración de envío',
     recoverpassword_sendfailure: 'Error al enviar el correo de recuperación',
     validateuser_mismatch: 'Datos del usuario inválidos',
+    billingreportitem: 'ITEM',
+    billingreportquantity: 'CANTIDAD',
+    billingreportrate: 'PU',
+    billingreporttaxableamount: 'BASE IMPONIBLE',
+    billingreporttaxableiva: 'IGV',
+    billingreportamount: 'MONTO',
 };
 
 const esResource: ResourceLanguage = {
