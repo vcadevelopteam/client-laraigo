@@ -1051,7 +1051,21 @@ interface LayoutPieProps extends Omit<ResponsiveContainerProps, 'children'> {
 const PIE_COLORS = ['#22b66e', '#b41a1a', '#ffcd56', '#D32F2F', '#FBC02D', '#757575', '#00BCD4', '#AFB42B', '#8BC34A', '#5D4037', '#607D8B', '#03A9F4', '#303F9F', '#009688', '#388E3C', '#E64A19', '#212121'];
 
 const LayoutPie: FC<LayoutPieProps> = ({ data,alldata, tooltipFormatter,tickFormatter, ...props }) => {
+    const { t } = useTranslation();
     let total=alldata?.total;
+    let modifieddata=data;
+    let listlabels= data.map(x=>x.label)[0]
+    if (listlabels.includes("-")) {
+        modifieddata=data.map(x=>{
+            let newlabel = x.label.replace("day","")
+            let month = newlabel.slice(0,newlabel.indexOf("-"))
+            newlabel = newlabel.replace(`${month}-`, `${t(months[Number(month)-1])} `)
+            return ({...x,label:newlabel, color:monthColor[Number(month)-1]})
+        })
+    }
+    if(listlabels.includes("month") || listlabels.includes("week")){
+        modifieddata=data.map(x=>({...x,label:x.label.replace("month",`${t("month")} `).replace("week",`${t("week")} `)}))
+    }
     return (
         <ResponsiveContainer {...props}>
             <PieChart>
@@ -1077,7 +1091,7 @@ const LayoutPie: FC<LayoutPieProps> = ({ data,alldata, tooltipFormatter,tickForm
                     }}
                 />
                 <Pie
-                    data={data}
+                    data={modifieddata}
                     dataKey="quantity"
                     nameKey="label"
                     cx="50%"
@@ -1087,7 +1101,7 @@ const LayoutPie: FC<LayoutPieProps> = ({ data,alldata, tooltipFormatter,tickForm
                     labelLine={false}
                     label={RenderCustomizedLabel}
                 >
-                    {data.map((_, i) => (
+                    {modifieddata.map((_, i) => (
                         <Cell
                             key={`cell-${i}`}
                             fill={PIE_COLORS[i % PIE_COLORS.length]}
