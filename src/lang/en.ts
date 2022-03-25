@@ -1613,6 +1613,7 @@ const translation: LangKeys = {
     monthago: "1 month ago",
     yearago: "1 year ago",
     numberofconversationsperchannel: "Number of conversations per channel",
+    choosebotorasesor: "You must select at least one option “Advisor” or “Bot”.",
 
     report_loginhistory: 'User login',
     report_loginhistory_datehour: 'Date - Hour',

@@ -32,6 +32,7 @@ const translation: LangKeys = {
     function_count_unique: 'Contar únicos',
 
     lead: 'Oportunidad',
+    choosebotorasesor: "Debe seleccionar al menos una opción “Asesor” o “Bot”.",
     lead_plural: 'Oportunidades',
     model: 'Modelo',
     quickresponse: "Respuesta rápida",

@@ -31,6 +31,7 @@ export const langKeys = {
     reportschedulerdetail2: "reportschedulerdetail2",
     to: "to",
     subject: "subject",
+    choosebotorasesor: "choosebotorasesor",
     tossub1: "tossub1",
     tossub2: "tossub2",
     automatizationrules: "automatizationrules",
