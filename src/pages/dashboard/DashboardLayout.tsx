@@ -913,14 +913,18 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipF
     let reversed=false
     if(alldata?.interval){
         reversed=true
-        modifieddata=data.map(x=>{
+        data.forEach(x=>{
             const localkeys = Object.keys(x.quantity)
-            localkeys.forEach((y)=>{
+            localkeys.forEach((y:string)=>{
                 if(!keys.includes(y)){
                     keys.push(y)
                 }
             })
-            return ({...Object(x.quantity),label:`${t(alldata?.interval)} ${x.label.replace(alldata?.interval,"")}`})
+        })
+        let itemmodel = keys.reduce((acc,x)=>{return {...acc,[x]:0}},{})
+        modifieddata=data.map(x=>{
+
+            return ({...itemmodel,...Object(x.quantity),label:`${t(alldata?.interval)} ${x.label.replace(alldata?.interval,"")}`})
         })
     }else{
         let listlabels= data.map(x=>x.label)[0]
@@ -1009,7 +1013,8 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipF
                             }}
                         />
                         {keys.map((x,i)=>(
-                            <Line  type="monotone" dataKey={x} key={x} stroke={colors[i]}  />
+                            <Line  type="monotone" dataKey={x} key={x} stroke={colors[i]} >
+                            </Line>
                         ))}
                     </>
                 ):
@@ -1037,7 +1042,13 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipF
                                 return null;
                             }}
                         />
-                        <Line isAnimationActive={false} type="monotone" dataKey="quantity" stroke="#8884d8"><LabelList dataKey="quantity" position="top" fill="#000" /></Line>
+                        <Line isAnimationActive={false} type="monotone" dataKey="quantity" stroke="#8884d8">
+                            
+                            {modifieddata.map((entry: any, index: number) => (
+                                <Cell key={`cell-${index}`} stroke={entry?.color||"#8884d8"} />
+                            ))}
+                            <LabelList dataKey="quantity" position="top" fill="#000" />
+                        </Line>
                     </>
                 )
                 }
