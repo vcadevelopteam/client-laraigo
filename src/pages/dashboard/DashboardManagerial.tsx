@@ -1093,7 +1093,9 @@ const DashboardManagerial: FC = () => {
         setWaitSave(true)
     }
     async function funcsearchoneonly() {
-        console.log(searchfieldsOnlyOne.closedby)
+        if(!searchfieldsOnlyOne.closedbybot && !searchfieldsOnlyOne.closedbyasesor){
+            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.choosebotorasesor) }))
+        }
         if(searchfieldsOnlyOne.closedby){
             setOpenDialogPerRequest(false)
             
