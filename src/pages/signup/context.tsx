@@ -61,6 +61,7 @@ interface Subscription {
     deleteChannel: (option: keyof ListChannels) => void;
     toggleChannel: (option: keyof ListChannels) => void;
     submitObservable: SubmitObservable;
+    form: any;
 }
 
 export interface RouteParams {
@@ -227,6 +228,7 @@ export const SubscriptionContext = createContext<Subscription>({
     resetChannels: () => {},
     toggleChannel: () => {},
     submitObservable: new SubmitObservable(),
+    form: {},
 });
 
 const useStyles = makeStyles(theme => ({
@@ -564,6 +566,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
             toggleChannel,
             FBButtonStyles,
             submitObservable: submitObs,
+            form
         }}>
             <FormProvider {...form}>
                 {children}

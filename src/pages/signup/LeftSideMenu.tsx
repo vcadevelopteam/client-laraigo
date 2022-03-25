@@ -47,7 +47,8 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
     const { t } = useTranslation();
     const [currentView, setCurrentView] = useState("view-1");
     const [waitSave, setWaitSave] = useState(false);
-    const { getValues, control, trigger } = useFormContext<MainData>();
+    const [icon, setIcon] = useState(<></>);
+    const { getValues, control, trigger, setValue } = useFormContext<MainData>();
     const executeResultValidation = useSelector(state => state.subscription.requestValidateChannels);
     const classes = useLeftSideStyles();
     const {
@@ -57,6 +58,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
         finishreg,
         valchannels,
         commonClasses,
+        form
     } = useContext(SubscriptionContext);  
     const executeResult = useSelector(state => state.signup.insertChannel);
     const datamonth = useMemo(() => ([
@@ -86,6 +88,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
           }
       }
     }, [executeResultValidation])
+
     
     const channels = useMemo(() => {
         if (listchannels === undefined) {
@@ -286,6 +289,22 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                     label={t(langKeys.creditcard)}
                                     error={!!errors.creditcard}
                                     helperText={errors.creditcard?.message}
+                                    onInput={(e:any) => {
+                                        if(e.target.value.slice(0,3)==="411"){
+                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{padding: 5}}></img>)
+                                        }else if(e.target.value.slice(0,3)==="511"){
+                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{padding: 5}}></img>)
+                                        }else if(e.target.value.slice(0,2)==="37"){
+                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{padding: 5}}></img>)
+                                        }else if(e.target.value.slice(0,3)==="360"){
+                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{padding: 5}}></img>)
+                                        }else{
+                                            setIcon(<></>)
+                                        }
+                                    }}
+                                    InputProps={{
+                                        endAdornment: icon
+                                    }}
                                 />
                             )}
                         />
@@ -347,6 +366,9 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                         label={"yyyy"}
                                         error={!!errors.yyyy}
                                         helperText={errors.yyyy?.message}
+                                        inputProps={{
+                                            maxLength: 4
+                                        }}
                                     />
                                 )}
                             />
@@ -374,6 +396,9 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                     label={t(langKeys.securitycode)}
                                     error={!!errors.securitycode}
                                     helperText={errors.securitycode?.message}
+                                    inputProps={{
+                                        maxLength: 3
+                                    }}
                                 />
                             )}
                         /> 
