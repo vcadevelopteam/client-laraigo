@@ -47,7 +47,9 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
     const { t } = useTranslation();
     const [currentView, setCurrentView] = useState("view-1");
     const [waitSave, setWaitSave] = useState(false);
-    const { getValues, control, trigger } = useFormContext<MainData>();
+    const [limitnumbers, setlimitnumbers] = useState(16);
+    const [icon, setIcon] = useState(<></>);
+    const { getValues, control, trigger, setValue } = useFormContext<MainData>();
     const executeResultValidation = useSelector(state => state.subscription.requestValidateChannels);
     const classes = useLeftSideStyles();
     const {
@@ -57,6 +59,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
         finishreg,
         valchannels,
         commonClasses,
+        form
     } = useContext(SubscriptionContext);  
     const executeResult = useSelector(state => state.signup.insertChannel);
     const datamonth = useMemo(() => ([
@@ -86,6 +89,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
           }
       }
     }, [executeResultValidation])
+
     
     const channels = useMemo(() => {
         if (listchannels === undefined) {
@@ -281,11 +285,44 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                     variant="outlined"
                                     margin="normal"
                                     fullWidth
-                                    type="number"
                                     size="small"
                                     label={t(langKeys.creditcard)}
                                     error={!!errors.creditcard}
                                     helperText={errors.creditcard?.message}
+                                    onChange={(e) =>{
+                                        let val = e.target.value.replace(/[^0-9]/g, '');
+                                        let spaces = Math.floor(val.length/4)
+                                        let partialvalue = val.slice(0,4)
+                                        for(let i=1;i<=spaces;i++){
+                                            partialvalue += " " + val.slice(i*4,(i+1)*4)
+                                        }
+                                        setValue("creditcard",partialvalue.trim())
+                                    }}
+                                    onInput={(e:any) => {
+                                        if(e.target.value.slice(0,1)==="4"){
+                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{padding: 5}}></img>)
+                                            setlimitnumbers(19)
+                                        }else if(e.target.value.slice(0,2)==="51"||e.target.value.slice(0,2)==="55"){
+                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{padding: 5}}></img>)
+                                            setlimitnumbers(19)
+                                        }else if(e.target.value.slice(0,2)==="37"||e.target.value.slice(0,2)==="34"){
+                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{padding: 5}}></img>)
+                                            setlimitnumbers(18)
+                                        }else if(e.target.value.slice(0,3)==="36"||e.target.value.slice(0,2)==="38"||e.target.value.slice(0,2)==="300"||e.target.value.slice(0,2)==="305"){
+                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{padding: 5}}></img>)
+                                            setlimitnumbers(17)
+                                        }else{
+                                            setIcon(<></>)
+                                            setlimitnumbers(16)
+                                        }
+                                    }}
+                                    InputProps={{
+                                        endAdornment: icon,
+                                    }}
+                                    inputProps={{
+                                        maxLength: limitnumbers
+                                    }}
+
                                 />
                             )}
                         />
@@ -347,6 +384,9 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                         label={"yyyy"}
                                         error={!!errors.yyyy}
                                         helperText={errors.yyyy?.message}
+                                        inputProps={{
+                                            maxLength: 4
+                                        }}
                                     />
                                 )}
                             />
@@ -374,6 +414,9 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                     label={t(langKeys.securitycode)}
                                     error={!!errors.securitycode}
                                     helperText={errors.securitycode?.message}
+                                    inputProps={{
+                                        maxLength: 3
+                                    }}
                                 />
                             )}
                         /> 
