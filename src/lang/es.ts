@@ -1585,12 +1585,12 @@ const translation: LangKeys = {
     report_interaction_agent: 'Asesor',
     report_interaction_intent: 'Intención',
     report_interaction_intent_help: 'Es el camino que se identifica mediante el uso de IA',
-    report_interaction_interactiontype_help:` Respuesta ingresada por el cliente
-    Postback: Respuesta otorgada por el bot
-    File: Archivo adjunto enviado
-    Image: Imagen adjunta enviada
-    Interactivelist: Opciones mostradas por el listado interactivo de Whatsapp
-    Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
+    report_interaction_interactiontype_help:`Respuesta ingresada por el cliente
+Postback: Respuesta otorgada por el bot
+File: Archivo adjunto enviado
+Image: Imagen adjunta enviada
+Interactivelist: Opciones mostradas por el listado interactivo de Whatsapp
+Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     report_interaction_interactiontype: 'Tipo de interacción',
     report_interaction_interactiontext: 'Texto de interacción',
     report_interaction_clientnumber: 'Número de cliente',
