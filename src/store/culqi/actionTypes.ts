@@ -48,6 +48,21 @@ const actionType = {
     EMIT_INVOICE_FAILURE: 'culqi/EMIT_INVOICE_FAILURE',
     EMIT_INVOICE_SUCCESS: 'culqi/EMIT_INVOICE_SUCCESS',
     EMIT_INVOICE_RESET: 'culqi/EMIT_INVOICE_RESET',
+
+    CARD_CREATE: 'subscription/CARD_CREATE',
+    CARD_CREATE_FAILURE: 'subscription/CARD_CREATE_FAILURE',
+    CARD_CREATE_RESET: 'subscription/CARD_CREATE_RESET',
+    CARD_CREATE_SUCCESS: 'subscription/CARD_CREATE_SUCCESS',
+
+    CARD_DELETE: 'subscription/CARD_DELETE',
+    CARD_DELETE_FAILURE: 'subscription/CARD_DELETE_FAILURE',
+    CARD_DELETE_RESET: 'subscription/CARD_DELETE_RESET',
+    CARD_DELETE_SUCCESS: 'subscription/CARD_DELETE_SUCCESS',
+
+    CARD_GET: 'subscription/CARD_GET',
+    CARD_GET_FAILURE: 'subscription/CARD_GET_FAILURE',
+    CARD_GET_RESET: 'subscription/CARD_GET_RESET',
+    CARD_GET_SUCCESS: 'subscription/CARD_GET_SUCCESS',
 };
 
 export default actionType;

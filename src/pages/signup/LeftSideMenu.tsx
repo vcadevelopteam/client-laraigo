@@ -263,8 +263,8 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                     <img src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{padding: 5}}></img>
                     <img src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{padding: 5}}></img>
                 </div>
-                <div style={{display: "flex",width:"100%"}} >
-                    <div style={{width:"50%"}} >
+                <div style={{display: "flex",width:"100%"}}>
+                    <div style={{width:"50%"}}>
                         <Controller
                             name="creditcard"
                             control={control}
@@ -273,7 +273,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                     if (currentView === "view-2") {
                                         if (value?.length === 0) {
                                             return t(langKeys.field_required) as string;
-                                        } else if (value?.length!==16) {
+                                        } else if (value?.length!==limitnumbers) {
                                             return t(langKeys.creditcardvalidate) as string;
                                         }
                                     }
@@ -296,7 +296,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                         for(let i=1;i<=spaces;i++){
                                             partialvalue += " " + val.slice(i*4,(i+1)*4)
                                         }
-                                        setValue("creditcard",partialvalue.trim())
+                                        setValue("creditcard", partialvalue.trim());
                                     }}
                                     onInput={(e:any) => {
                                         if(e.target.value.slice(0,1)==="4"){
@@ -322,7 +322,6 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                     inputProps={{
                                         maxLength: limitnumbers
                                     }}
-
                                 />
                             )}
                         />
@@ -346,7 +345,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                             onChange(data?.id || "");
                                         }}
                                         variant="outlined"
-                                        style={{ marginTop: 8, marginRight: 5 }}
+                                        style={{ marginTop: 8, marginRight: 10 }}
                                         className="col-6"
                                         valueDefault={getValues('mm')}
                                         label={"MM"}
@@ -381,7 +380,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                         style={{ marginTop: 8 }}
                                         type="number"
                                         size="small"
-                                        label={"yyyy"}
+                                        label={"YYYY"}
                                         error={!!errors.yyyy}
                                         helperText={errors.yyyy?.message}
                                         inputProps={{

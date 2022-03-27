@@ -2619,10 +2619,10 @@ export const billingMessagingIns = ({ year, month, id, pricepersms, vcacomission
     parameters: { year, month, id, pricepersms, vcacomissionpersms, pricepermail, vcacomissionpermail, description, status, type, operation }
 })
 
-export const invoiceRefreshTest = (year: number, month: number, corpid: number): IRequestBody => ({
-    method: "UFN_INVOICE_REFRESHTEST",
-    key: "UFN_INVOICE_REFRESHTEST",
-    parameters: { year, month, corpid },
+export const invoiceRefresh = ({ corpid, orgid, invoiceid, year, month }: Dictionary): IRequestBody => ({
+    method: "UFN_INVOICE_REFRESH",
+    key: "UFN_INVOICE_REFRESH",
+    parameters: { corpid, orgid, invoiceid, year, month },
 });
 
 export const getAdviserFilteredUserRol = (): IRequestBody => ({
@@ -2732,3 +2732,30 @@ export const billingReportConversationWhatsApp = ({ corpid, orgid, year, month }
     key: "UFN_BILLING_REPORT_CONVERSATIONWHATSAPP",
     parameters: { corpid, orgid, year, month }
 })
+
+export const listPaymentCard = ({ corpid, orgid, id }: Dictionary) => ({
+    method: "UFN_PAYMENTCARD_LST",
+    key: "UFN_PAYMENTCARD_LST",
+    parameters: { corpid, orgid, id },
+});
+
+export const paymentCardInsert = ({ corpid, orgid, paymentcardid, cardnumber, cardcode, firstname, lastname, mail, favorite, clientcode, status, type, username }: Dictionary) => ({
+    method: "UFN_PAYMENTCARD_INS",
+    key: "UFN_PAYMENTCARD_INS",
+    parameters: {
+        corpid,
+        orgid,
+        id: paymentcardid || 0,
+        cardnumber,
+        cardcode,
+        firstname,
+        lastname,
+        mail,
+        favorite,
+        clientcode,
+        status,
+        type,
+        username,
+        operation: paymentcardid ? 'UPDATE' : 'INSERT',
+    },
+});
