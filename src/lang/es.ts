@@ -32,6 +32,7 @@ const translation: LangKeys = {
     function_count_unique: 'Contar únicos',
 
     lead: 'Oportunidad',
+    choosebotorasesor: "Debe seleccionar al menos una opción “Asesor” o “Bot”.",
     lead_plural: 'Oportunidades',
     model: 'Modelo',
     quickresponse: "Respuesta rápida",
@@ -254,8 +255,8 @@ const translation: LangKeys = {
     pollssent: "Encuestas {{survey}} enviadas",
     pollsanswered: "Encuestas {{survey}} respondidas",
     apikey: 'API Key',
-    attendedbyasesor: "Atendidas x asesor",
-    attendedbybot: "Atendidas x bot",
+    attendedbyasesor: "Atendidas por asesor",
+    attendedbybot: "Atendidas por bot",
     queue: "Cola",
     provider: 'Proveedor',
     resolvedfirstcontact: "Resuelto en 1er contacto",
@@ -1584,12 +1585,12 @@ const translation: LangKeys = {
     report_interaction_agent: 'Asesor',
     report_interaction_intent: 'Intención',
     report_interaction_intent_help: 'Es el camino que se identifica mediante el uso de IA',
-    report_interaction_interactiontype_help:` Respuesta ingresada por el cliente
-    Postback: Respuesta otorgada por el bot
-    File: Archivo adjunto enviado
-    Image: Imagen adjunta enviada
-    Interactivelist: Opciones mostradas por el listado interactivo de Whatsapp
-    Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
+    report_interaction_interactiontype_help:`Text: Respuesta ingresada por el cliente
+Postback: Respuesta otorgada por el bot
+File: Archivo adjunto enviado
+Image: Imagen adjunta enviada
+Interactivelist: Opciones mostradas por el listado interactivo de Whatsapp
+Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     report_interaction_interactiontype: 'Tipo de interacción',
     report_interaction_interactiontext: 'Texto de interacción',
     report_interaction_clientnumber: 'Número de cliente',
@@ -3040,13 +3041,25 @@ const translation: LangKeys = {
     dashboard_chartType_bar: 'Gráfico de barras',
     dashboard_chartType_line: 'Gráfico de lineas',
     enterDashboardDescription: 'Ingrese la descripción del dashboard',
-    moreOptions: 'Más opciones',
+    moreOptions: 'Ver más',
     
     reportfreeconversations: 'Conversaciones WhatsApp gratis',
     userinitiatedconversations: 'Conversaciones WhatsApp iniciadas por el usuario',
     businessinitiatedconversations: 'Conversaciones WhatsApp iniciadas por el negocio',
     reportstatus: 'Estado de reporte',
     generateinvoice: 'Generar Comprobante',
+    ene:"Ene",
+    feb:"Feb",
+    mar:"Mar",
+    abr:"Abr",
+    may:"May",
+    jun:"Jun",
+    jul:"Jul",
+    ago:"Ago",
+    set:"Set",
+    oct:"Oct",
+    nov:"Nov",
+    dic:"Dic",
     clientsearch: 'Busqueda de cliente:',
     billingtitle: 'Facturación',
     billinggeneration: 'Generar Comprobante',

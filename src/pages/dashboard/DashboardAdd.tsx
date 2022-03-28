@@ -735,6 +735,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                         valueDefault={getValues(`${key}.graph`)}
                         onChange={(v: typeof graphTypes[number]) => {
                             setValue(`${key}.graph`, v?.key || '')
+                            setValue(`${key}.interval`, "")
                             setgraphicType(v?.key || '')
                         }}
                         error={errors[key]?.graph?.message}

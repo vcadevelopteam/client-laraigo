@@ -514,8 +514,7 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                                                             }}
                                                             onChange={(value) => {
                                                                 fieldUpdate(i, { ...fields[i], translationservice: value.value })
-                                                            }
-                                                            }
+                                                            }}
                                                             label={t(langKeys.translationservice)}
                                                             className={classes.mb2}
                                                             valueDefault={(item.translationservice) ? item.translationservice : ''}
@@ -550,9 +549,11 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                                                             })
                                                         }}
                                                         onChange={(value) => {
-                                                            fieldUpdate(i, { ...fields[i], servicetype: value.value })
-                                                        }
-                                                        }
+                                                            setValue(`services.${i}.servicetype`, value?.value || "")
+                                                            trigger(`services.${i}.servicetype`)
+
+                                                            // fieldUpdate(i, { ...fields[i], servicetype: value.value })
+                                                        }}
                                                         label={'Service type'} //traduccion
                                                         className={classes.mb2}
                                                         valueDefault={(item.servicetype) ? item.servicetype : ''}
