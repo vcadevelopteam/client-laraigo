@@ -8,3 +8,7 @@ export function recoverPassword(request: any) {
 export function changePassword(request: any) {
     return APIManager.post(apiUrls.CHANGEPASSWORD, { data: request }, true);
 }
+
+export function validateChannels(request: any) {
+    return APIManager.post(apiUrls.VALIDATE_CHANNELS, { data: request }, true);
+}

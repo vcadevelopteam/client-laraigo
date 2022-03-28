@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useContext, useEffect } from "react";
+import React, { FC, useContext, useEffect, useState } from "react";
 import { makeStyles, Button, TextField, Breadcrumbs } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { langKeys } from "lang/keys";
@@ -42,11 +42,15 @@ const CssPhonemui = styled(MuiPhoneNumber)({
 
 const URL = "https://ipapi.co/json/";
 const SecondStep: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
-    const { setStep } = useContext(SubscriptionContext);
-    const { getValues, setValue, control, trigger } = useFormContext<MainData>();
     const dispatch = useDispatch();
-    const ressignup = useSelector(state => state.signup.countryList);
+
+    const { getValues, setValue, control, trigger } = useFormContext<MainData>();
+    const { setStep } = useContext(SubscriptionContext);
+
     const mainResult = useSelector(state => state.main.mainData);
+    const ressignup = useSelector(state => state.signup.countryList);
+
+    const [phoneCountry, setPhoneCountry] = useState('');
 
     const fetchData = () => dispatch(getCollectionPublic(getValuesFromDomain("REASONSSIGNUP")));
     useEffect(() => {
@@ -57,6 +61,8 @@ const SecondStep: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarni
                 .then((data) => {
                     // PERU, PE, PEN
                     const countryCode = data.country_code.toUpperCase();
+
+                    setPhoneCountry(countryCode);
                     setValue('country', countryCode);
                     setValue('doctype', countryCode === "PE" ? 1 : 0);
                     setValue('countryname', data.country_name.toUpperCase());
@@ -146,6 +152,7 @@ const SecondStep: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarni
                             onChange={(data) => {
                                 onChange(data?.code || '');
                                 setValue('doctype', data?.code === "PE" ? 1 : 0);
+                                setPhoneCountry(data?.code || '');
                             }}
                             variant="outlined"
                             style={{ marginTop: 8 }}
@@ -161,6 +168,15 @@ const SecondStep: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarni
                 <Controller
                     name="mobilephone"
                     control={control}
+                    rules={{
+                        validate: (value) => {
+                            if (value.length === 0) {
+                                return t(langKeys.field_required) as string;
+                            }else if(value.length<10){
+                                return t(langKeys.validationphone) as string;
+                            }
+                        }
+                    }}
                     render={({ field, formState: { errors } }) => (
                         <CssPhonemui
                             {...field}
@@ -168,7 +184,7 @@ const SecondStep: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarni
                             margin="normal"
                             fullWidth
                             size="small"
-                            defaultCountry={getValues('country').toLowerCase()}
+                            defaultCountry={phoneCountry.toLowerCase()}
                             label={t(langKeys.mobilephoneoptional)}
                             error={!!errors.mobilephone}
                             helperText={errors.mobilephone?.message}

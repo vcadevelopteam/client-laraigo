@@ -1590,7 +1590,6 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
         
         const cb = async () => {
             const valid = await nestedForm.trigger();
-            console.log(valid, 'aswas')
             setSubmitError(!valid);
         }
 
@@ -1770,7 +1769,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
                         </div>
                     </div>
                 </div> */}
-            {!hasFinished ? (
+            {!hasFinished && (
                 <Button
                     onClick={onNext}
                     className={commonClasses.button}
@@ -1779,16 +1778,6 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
                     disabled={loading || integrationId != null}
                 >
                     <Trans i18nKey={langKeys.next} />
-                </Button>
-            ) : selectedChannels === 1 && (
-                <Button
-                    onClick={finishreg}
-                    className={commonClasses.button}
-                    variant="contained"
-                    color="primary"
-                    disabled={loading || integrationId != null}
-                >
-                    <Trans i18nKey={langKeys.finishreg} />
                 </Button>
             )}
             {/* <div style={{ height: 20 }} />

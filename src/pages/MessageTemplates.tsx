@@ -125,6 +125,7 @@ const MessageTemplates: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const [showId, setShowId] = useState(false);
 
     const columns = React.useMemo(
         () => [
@@ -164,6 +165,18 @@ const MessageTemplates: FC = () => {
                 accessor: 'name',
                 NoFilter: true
             },
+            ...(showId ? [{
+                Header: t(langKeys.messagetemplateid),
+                accessor: 'templateid',
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    if (row.showid) {
+                        return row.id
+                    }
+                    return null
+                }
+            }] : []),
             {
                 Header: t(langKeys.namespace),
                 accessor: 'namespace',
@@ -180,7 +193,7 @@ const MessageTemplates: FC = () => {
                 }
             },
         ],
-        []
+        [showId]
     )
 
     const fetchData = () => dispatch(getCollection(getMessageTemplateSel(0)));
@@ -211,6 +224,12 @@ const MessageTemplates: FC = () => {
             }
         }
     }, [executeResult, waitSave]);
+
+    useEffect(() => {
+        if (mainResult.mainData.data.length > 0) {
+            setShowId(mainResult.mainData.data[0]?.showid)
+        }
+    }, [mainResult.mainData.data])
 
     const handleRegister = () => {
         setViewSelected("view-2");
@@ -546,6 +565,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
+                    {row?.showid && <div className="row-zyx">
+                        <FieldView
+                            label={t(langKeys.messagetemplateid)}
+                            value={row ? (row.id || "") : ""}
+                            className="col-12"
+                        />
+                    </div>}
                     <div className="row-zyx">
                         {edit ?
                             <FieldSelect

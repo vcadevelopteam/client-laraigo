@@ -25,3 +25,15 @@ export const changePassword = (request: any): IActionCall => ({
 });
 
 export const resetChangePassword = (): IActionCall => ({ type: actionTypes.CHANGE_PASSWORD_RESET });
+
+export const validateChannels = (request: any): IActionCall => ({
+    callAPI: () => SubscriptionService.validateChannels(request),
+    types: {
+        failure: actionTypes.VALIDATE_CHANNELS_FAILURE,
+        loading: actionTypes.VALIDATE_CHANNELS,
+        success: actionTypes.VALIDATE_CHANNELS_SUCCESS,
+    },
+    type: null,
+});
+
+export const resetValidateChannels = (): IActionCall => ({ type: actionTypes.VALIDATE_CHANNELS_RESET });

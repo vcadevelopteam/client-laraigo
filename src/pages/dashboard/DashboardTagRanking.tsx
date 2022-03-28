@@ -15,6 +15,13 @@ import { showBackdrop, showSnackbar } from "store/popus/actions";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import Tooltip from "@material-ui/core/Tooltip"
 import InfoIcon from '@material-ui/icons/Info';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
 
 const COLORS = ["#0f8fe5", "#067713", "#296680", "#fc3617", "#e8187a", "#7cfa57", "#cfbace", "#4cd45f", "#fd5055", "#7e1be4", "#bf1490", "#66c6cf", "#011c3d", "#1a9595", "#4ae2c7", "#515496", "#a2aa65", "#df909c", "#3aa343", "#e0606e"];
 
@@ -147,6 +154,7 @@ const useStyles = makeStyles((theme: Theme) =>
         },
     })
 );
+
 
 const initialRange = {
     startDate: new Date(new Date().setDate(1)),
@@ -395,14 +403,39 @@ const DashboardTagRanking: FC = () => {
                                 </Tooltip>
                             </div>
                         </div>
-                            <div style={{width: "100%"}}>
-                                <ResponsiveContainer width="100%"  aspect={4.0 / 1.0}>
-                                    <BarChart data={dataAppRank} layout="vertical">
+                        <div style={{width: "100%", display:"flex"}}>
+                            {dataAppRank.length && <div style={{width: "20%", paddingRight: 20}}>
+                                <TableContainer component={Paper}>
+                                    <Table aria-label="simple table">
+                                        <TableHead style={{backgroundColor: "#aa53e0", color:"white"}}>
+                                            <TableRow>
+                                                <TableCell align="right">Tag</TableCell>
+                                                <TableCell>{t(langKeys.quantity)}</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                        {dataAppRank.map((row:any) => (
+                                            <TableRow key={row.tag}>
+                                                <TableCell component="th" scope="row" align="right">
+                                                    {row.tag}
+                                                </TableCell>
+                                                <TableCell>{row.quantity}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            </div>}
+                            <div style={{width: "80%", paddingTop: 50}}>
+                                <ResponsiveContainer width="100%" minHeight={dataAppRank.length*60||300}>
+                                    <BarChart data={dataAppRank} layout="vertical"  barSize={40}>
                                         <CartesianGrid strokeDasharray="3 3" />
                                         <XAxis type="number" height={50} domain={[0, 'dataMax']}  label={{ value: `${t(langKeys.quantity)}`, position: 'insideBottom' }}/>
-                                        <YAxis domain={["",""]} type="category" width={80} dataKey="tag"  label={{ width:80, value: `Tags`, angle: -90, position: 'insideLeft' }}/>
+                                        <YAxis domain={["",""]} type="category" dataKey="tag"  label={{ width:80, value: `Tags`, angle: -90, position: 'insideLeft' }}
+                                            width={dataAppRank?.map((x:any)=> x.tag.length).length>0?Math.max(...dataAppRank?.map((x:any)=> x.tag.length))*11:10}
+                                        />
                                         <RechartsTooltip formatter={(value: any, name: any) => [value, t(name)]} />
-                                        <Bar dataKey="quantity" fill="#8884d8" >
+                                        <Bar dataKey="quantity" fill="#8884d8">
                                             {dataAppRank?.map((entry: any, index: number) => (
                                                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                             ))}
@@ -410,6 +443,8 @@ const DashboardTagRanking: FC = () => {
                                     </BarChart>
                                 </ResponsiveContainer>
                             </div>
+
+                        </div>
                     </Box>
                 </div>
             </div>

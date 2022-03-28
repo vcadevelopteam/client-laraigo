@@ -161,6 +161,8 @@ const FilterDynamic: FC<{ filter: Dictionary, setFiltersDynamic: (param: any) =>
     const [dateRange, setDateRange] = useState<Range>(initialRange);
     const classes = useStyles();
     const { t } = useTranslation();
+    const choosenwidth=filter.description.length*18
+    console.log(choosenwidth)
 
     useEffect(() => {
         setFiltersDynamic((prev: any) => ({
@@ -197,6 +199,7 @@ const FilterDynamic: FC<{ filter: Dictionary, setFiltersDynamic: (param: any) =>
             <FieldEdit
                 label={filter.type === "variable" ? filter.description : t(`personalizedreport_${filter.description}`)}
                 variant="outlined"
+                width={choosenwidth<250?250:choosenwidth}
                 disabled={filter.type_filter === "unique_value"}
                 size="small"
                 valueDefault={filter.type_filter === "unique_value" ? t(langKeys.filter_unique_value) : filter.filter || ""}

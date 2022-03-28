@@ -1494,7 +1494,6 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
     }
 
     useEffect(() => {
-        console.log("ChannelAddChatWeb", channel, service);
         if (edit && !channel) {
             history.push(paths.CHANNELS);
         } else if (edit && channel && channel.servicecredentials.length === 0) {
@@ -1612,7 +1611,6 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
 
     const handleSubmit = (name: string, auto: boolean, hexIconColor: string) => {
         const values = form.getValues();
-        // console.log("handleSubmit:values", values);
         if (!channel) {
             const body = getInsertChatwebChannel(name, auto, hexIconColor, values);
             dispatch(insertChannel2(body));

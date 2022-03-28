@@ -4,16 +4,18 @@ import * as caseFUnctions from './caseFunctions';
 import actionTypes from "./actionTypes";
 
 interface culqiResponse {
-    object: string,
-    id: string,
     code: string,
-    message: string,
     exchangerate: number,
+    id: string,
+    message: string,
+    object: string,
 }
 
 export interface IRequest extends ITemplate {
     data: culqiResponse | null;
+    datacard?: any | null;
     exchangerate?: number | null;
+    msg?: string | null;
 }
 
 export interface IState {
@@ -23,6 +25,9 @@ export interface IState {
     requestCreateCreditNote: IRequest;
     requestRegularizeInvoice: IRequest;
     requestGetExchangeRate: IRequest;
+    requestCardCreate: IRequest;
+    requestCardDelete: IRequest;
+    requestCardGet: IRequest;
 }
 
 export const initialState: IState = {
@@ -32,6 +37,9 @@ export const initialState: IState = {
     requestCreateCreditNote: { ...initialCommon, data: null, loading: false, error: false },
     requestRegularizeInvoice: { ...initialCommon, data: null, loading: false, error: false },
     requestGetExchangeRate: { ...initialCommon, data: null, loading: false, error: false, exchangerate: 0 },
+    requestCardCreate: { ...initialCommon, data: null, loading: false, error: false },
+    requestCardDelete: { ...initialCommon, data: null, loading: false, error: false },
+    requestCardGet: { ...initialCommon, data: null, loading: false, error: false },
 };
 
 export default createReducer<IState>(initialState, {
@@ -84,4 +92,19 @@ export default createReducer<IState>(initialState, {
     [actionTypes.EMIT_INVOICE_FAILURE]: caseFUnctions.emitInvoiceFailure,
     [actionTypes.EMIT_INVOICE_SUCCESS]: caseFUnctions.emitInvoiceSuccess,
     [actionTypes.EMIT_INVOICE_RESET]: caseFUnctions.emitInvoiceReset,
+
+    [actionTypes.CARD_CREATE]: caseFUnctions.cardCreate,
+    [actionTypes.CARD_CREATE_FAILURE]: caseFUnctions.cardCreateFailure,
+    [actionTypes.CARD_CREATE_SUCCESS]: caseFUnctions.cardCreateSuccess,
+    [actionTypes.CARD_CREATE_RESET]: caseFUnctions.cardCreateReset,
+
+    [actionTypes.CARD_DELETE]: caseFUnctions.cardDelete,
+    [actionTypes.CARD_DELETE_FAILURE]: caseFUnctions.cardDeleteFailure,
+    [actionTypes.CARD_DELETE_SUCCESS]: caseFUnctions.cardDeleteSuccess,
+    [actionTypes.CARD_DELETE_RESET]: caseFUnctions.cardDeleteReset,
+
+    [actionTypes.CARD_GET]: caseFUnctions.cardGet,
+    [actionTypes.CARD_GET_FAILURE]: caseFUnctions.cardGetFailure,
+    [actionTypes.CARD_GET_SUCCESS]: caseFUnctions.cardGetSuccess,
+    [actionTypes.CARD_GET_RESET]: caseFUnctions.cardGetReset,
 });

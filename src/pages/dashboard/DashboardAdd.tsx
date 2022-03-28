@@ -256,7 +256,6 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
             }));
         } else {
             handleSubmit((data) => {
-                // console.log(data);
                 setOpenModal(true);
             }, e => console.log('errores', e))();
         }
@@ -532,7 +531,6 @@ export const LayoutItem: FC<LayoutItemProps> = ({
     const [selectedIndex, setSelectedIndex] = useState(-1);
     const [contentType, setContentType] = useState('');
     const [graphicType, setgraphicType] = useState(getValues(`${key}.graph`));
-    console.log(graphicType)
     const [columns, setColumns] = useState<ColumnTemplate[]>([]);
 
     useEffect(() => {
@@ -591,10 +589,10 @@ export const LayoutItem: FC<LayoutItemProps> = ({
             setColumns([]);
             return;
         }
-        console.log(JSON.parse(templates[selectedIndex].summaryjson) as ColumnTemplate[])
+        let columnas= JSON.parse(templates[selectedIndex].columnjson) as ColumnTemplate[]
         let summary = JSON.parse(templates[selectedIndex].summaryjson).map((x:any)=>{return {
-            alias: `${x.columnname.split(".")[1]} (${x.function})`,
-            columnname: x.columnname,
+            alias: `${t(langKeys.summarization)} - ${columnas?.find(y => y.columnname === x.columnname)?.alias} (${t(x.function)})`,
+            columnname: `${x.columnname}${x.function}`,
             description: x.columnname,
             descriptionT: x.columnname,
             disabled: false,
@@ -605,8 +603,10 @@ export const LayoutItem: FC<LayoutItemProps> = ({
             type: x.type,
             function: x.function
         }})
-        setColumns(summary.concat(JSON.parse(templates[selectedIndex].columnjson) as ColumnTemplate[]));
-        console.log(columns)
+        console.log(summary)
+        setColumns(summary.concat(columnas));
+        console.log(summary.concat(columnas))
+        console.log(getValues(`${key}.column`))
     }, [selectedIndex, templates]);
 
     const mandatoryReportTemplate = (value: number) => {
@@ -735,6 +735,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                         valueDefault={getValues(`${key}.graph`)}
                         onChange={(v: typeof graphTypes[number]) => {
                             setValue(`${key}.graph`, v?.key || '')
+                            setValue(`${key}.interval`, "")
                             setgraphicType(v?.key || '')
                         }}
                         error={errors[key]?.graph?.message}
@@ -744,7 +745,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                     />
                     {(getValues(`${key}.graph`) === "bar" || getValues(`${key}.graph`) ==="line") && <FieldSelect
                         className={classes.field}
-                        label={t(langKeys.interval)}
+                        label={t(langKeys.displayinterval)}
                         data={[
                             {key: "day", desc:t(langKeys.day)},
                             {key: "week", desc:t(langKeys.week)},
@@ -762,10 +763,15 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                         data={columns}
                         optionDesc="alias"
                         optionValue="columnname"
-                        valueDefault={getValues(`${key}.column`)}
+                        valueDefault={`${getValues(`${key}.column`)}${getValues(`${key}.summarizationfunction`)|| ''}`}
                         onChange={(v: ColumnTemplate) => {
-                            // console.log('column', v);
-                            setValue(`${key}.column`, v?.columnname || '');
+                            console.log(v?.columnname?.slice(0,-(v?.function?.length||0)))
+                            if(v?.function){
+                                setValue(`${key}.column`, v?.columnname?.slice(0,-(v?.function?.length||0)));
+                            }
+                            else{
+                                setValue(`${key}.column`, v?.columnname||'');
+                            }
                             setValue(`${key}.summarizationfunction`, v?.function || '');
                         }}
                         error={errors[key]?.column?.message}

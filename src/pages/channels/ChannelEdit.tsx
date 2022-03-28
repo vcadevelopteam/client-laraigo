@@ -47,7 +47,6 @@ const ChannelEdit: FC = () => {
     const channel = location.state as IChannel | null;
 
     useEffect(() => {
-        // console.log(channel);
         if (!channel) {
             history.push(paths.CHANNELS);
         } else {
@@ -92,7 +91,6 @@ const ChannelEdit: FC = () => {
     }, [history]);
 
     if (!channel) {
-        // console.log(enable);
         return <div />;
     }
 

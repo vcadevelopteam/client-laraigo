@@ -35,6 +35,7 @@ export { default as UserSettings } from './UserSettings';
 export { default as Invoice } from './Invoice';
 export { default as KPIManager } from './KPIManager';
 export { default as GetLocations } from './GetLocations';
+export { default as AutomatizationRules } from './AutomatizationRules';
 
 export * from './channels';
 export * from './signup';

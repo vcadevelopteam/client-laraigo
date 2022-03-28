@@ -27,10 +27,10 @@ const APIS_URL = {
         CULQIKEY: 'pk_test_041501e753dcb2f9'
     },
     LOCAL: {
-        // API: 'http://localhost:6065/api',
-        API: 'https://apix.laraigo.com/api',
-//        WS: 'http://localhost:7070',
-        WS: 'https://socket.laraigo.com',
+        API: 'http://localhost:6065/api',
+        //API: 'https://apix.laraigo.com/api',
+        WS: 'http://localhost:7070',
+        // WS: 'https://socket.laraigo.com',
         CHATFLOW: 'https://localhost:4200',
         FACEBOOKAPP: '367176075182579',
         INSTAGRAMAPP: '1924971937716955',
@@ -110,4 +110,10 @@ export const apiUrls = {
 
     RECOVERPASSWORD: `${BASE_URL}/subscription/recoverpassword`,
     CHANGEPASSWORD: `${BASE_URL}/subscription/changepassword`,
+    
+    VALIDATE_CHANNELS: `${BASE_URL}/subscription/validatechannels`,
+
+    CARDCREATE: `${BASE_URL}/payment/cardcreate`,
+    CARDDELETE: `${BASE_URL}/payment/carddelete`,
+    CARDGET: `${BASE_URL}/payment/cardget`,
 };

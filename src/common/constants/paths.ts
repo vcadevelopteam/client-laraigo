@@ -32,6 +32,7 @@ const paths = {
         resolve: (token: string) => `/getLocations/${token}`,
     },
     PRIVACY: "/privacy",
+    AUTOMATIZATIONRULES: "/automatizationrules",
     ACTIVATE_USER: {
         path: '/activateuser/:token',
         resolve: (token: string) => `/activateuser/${token}`

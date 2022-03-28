@@ -82,6 +82,37 @@ export const insertChannelReset = (state: IState): IState => ({
     insertChannel: initialState.insertChannel,
 });
 
+export const valChannelsChannel = (state: IState): IState => ({
+    ...state,
+    valChannelsChannel: { ...state.valChannelsChannel, loading: true, error: false },
+});
+
+export const valChannelsChannelSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    valChannelsChannel: {
+        ...state.valChannelsChannel,
+        value: action.payload,
+        loading: false,
+        error: !(action.payload?.success||true),
+    },
+});
+
+export const valChannelsChannelFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    valChannelsChannel: {
+        value: action.payload,
+        code: action.payload?.code,
+        loading: false,
+        error: true,
+        message: action.payload?.message
+    },
+});
+
+export const valChannelsChannelReset = (state: IState): IState => ({
+    ...state,
+    valChannelsChannel: initialState.valChannelsChannel,
+});
+
 export const checkvalidity = (state: IState): IState => ({
     ...state,
     isvalid: false,

@@ -72,7 +72,8 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
     const dataReportSimpleAll = multiData[1] && multiData[1].success ? multiData[1].data: [];
     const dataReportSimple = dataReportSimpleAll.filter(x=>x.origin !== "TICKET") 
     const dataRanges = multiData[2] && multiData[2].success ? multiData[2].data : [];
-    const [filterData, setfilterData] = useState(JSON.parse(dataReportSimple.find(x=>(x.reportname===(row?.reportname)))?.filterjson|| "[]").filter((x:any)=>x.type!=="timestamp without time zone"));
+    const [filterData, setfilterData] = useState(origin==="TICKET"?JSON.parse(dataReportSimpleAll.filter(x=>x.origin==="TICKET")?.[0].filterjson|| "[]"):JSON.parse(dataReportSimple.find(x=>(x.reportname===(row?.reportname)))?.filterjson|| "[]").filter((x:any)=>x.type!=="timestamp without time zone"));
+    const [showError, setShowError] = useState(false);
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
@@ -118,7 +119,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('origin', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('origintype');
-        register('reportname', { validate: (value) => (origin==="REPORT")?(value && value.length) || t(langKeys.field_required):true });
+        register('reportname', { validate: (value) => (getValues("origin") ==="REPORT" || getValues("origin") ==="CAMPAIGN") ? (value && value.length) || t(langKeys.field_required) : true });
         register('frecuency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         //register('group', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('schedule', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -128,8 +129,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
             isemail: (value)=> (value.includes('.') && value.includes('@')) || t(langKeys.emailverification)
         }});
         register('mailcc', { validate: {
-            validation: (value) => (value && value.length) || t(langKeys.field_required) ,
-            isemail: (value)=> (value.includes('.') && value.includes('@')) || t(langKeys.emailverification)
+            isemail: (value)=> ((value) ? (value.includes('.') && value.includes('@')) : true) || t(langKeys.emailverification)
         }});
         register('mailsubject', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
 
@@ -150,8 +150,12 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
 
     const onSubmit = handleSubmit((data) => {
         data.mailbody = renderToString(toElement(bodyobject));
-        if (data.mailbody === `<div data-reactroot=""><p><span></span></p></div>`)
+        if (data.mailbody === `<div data-reactroot=""><p><span></span></p></div>`) {
+            setShowError(true);
             return
+        }
+
+        setShowError(false);
 
         const callback = () => {
             data.mailbody = renderToString(toElement(bodyobject));
@@ -194,7 +198,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
                             onClick={() => setViewSelected("view-1")}>
-                            {t(langKeys.back)}
+                            {t(langKeys.cancel)}
                         </Button>
                         {edit &&
                             <Button
@@ -241,6 +245,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                             onChange={(value) =>{ 
                                 setOrigin(value?.value || '');
                                 setValue('origin', value?.value || '')
+                                setfilterData([])
                                 if(value?.value==="TICKET"){
                                     setfilterData(JSON.parse(dataReportSimpleAll.filter(x=>x.origin==="TICKET")?.[0].filterjson|| "[]"))
                                 }
@@ -273,9 +278,31 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                             data={dataReportSimple}
                             optionDesc="reportname"
                             optionValue="reportname"
+                            uset={true}
+                            prefixTranslation=""
+                        />}
+                        {!((origin!=="CAMPAIGN") && (origin!=="DASHBOARD")) && <FieldSelect
+                            label={t(langKeys.reporttype)}
+                            className="col-6"
+                            valueDefault={getValues("reportname")}
+                            onChange={(value) => {
+                                setValue('reportname', value?.value || '');
+                                setValue('origintype', 'STANDARD');
+                                setValue('reportid', 0);
+                                setfilterData(JSON.parse("[]").filter((x:any)=>x.type!=="timestamp without time zone"))
+                                setfilters([])
+                            }}
+                            error={errors?.reportname?.message}
+                            disabled={(origin!=="CAMPAIGN") && (origin!=="DASHBOARD")}
+                            data={[
+                                {value: "DEFAULT", desc: t(langKeys.defaulttype)},
+                                {value: "PROACTIVE", desc: t(langKeys.proactivetype)},
+                            ]}
+                            optionDesc="desc"
+                            optionValue="value"
                         />}
                     </div>
-                    {(filterData.length>0 && origin ) &&<div className="row-zyx">
+                    {((filterData && filters) && (filterData.length > 0)) &&<div className="row-zyx">
                         
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <div className={classes.subtitle2}>{t(langKeys.filters)}</div>
@@ -303,6 +330,8 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                                     data={filterData}
                                     optionDesc="columnname"
                                     optionValue="columnname"
+                                    uset={true}
+                                    prefixTranslation="personalizedreport_"
                                 />
                                 <FieldEdit
                                     label={t(langKeys.value)}
@@ -394,6 +423,8 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                             data={dataRanges}
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
+                            uset={true}
+                            prefixTranslation="datarange_"
                         />
                     </div>
                 </div>
@@ -430,9 +461,17 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                                         setBodyobject(value)
                                     }}
                                     spellCheck
+                                    onlyurl={true}
                                 />
                             </React.Fragment>
                         </div>
+                        <FieldEdit
+                            label={''}
+                            className="col-12"
+                            valueDefault={''}
+                            error={showError ? t(langKeys.field_required) : ''}
+                            disabled={true}
+                        />
                     </div>
                 </div>
             </form>
@@ -497,9 +536,13 @@ const ReportScheduler: FC = () => {
                 }
             },
             {
-                Header: `${t(langKeys.report_plural)}/${t(langKeys.dashboard_plural)}  ${t(langKeys.sent)}`,
+                Header: `${t(langKeys.report_plural)} ${t(langKeys.sent_plural)}`,
                 accessor: 'reportname',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const { reportname, origin } = props.cell.row.original;
+                    return (t(`${reportname ? (origin === "CAMPAIGN" ? `${origin}_${reportname}` : reportname) : origin}`.toLowerCase()) || "").toUpperCase()
+                }
             },
         ],
         []

@@ -308,7 +308,7 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                             <BarChart
                                 data={dataGraphic}
                                 margin={{
-                                    top: 5,
+                                    top: 20,
                                     right: 30,
                                     left: 20,
                                     bottom: 5,
@@ -318,9 +318,9 @@ const Graphic: FC<IGraphic> = ({ graphicType, column, setOpenModal, setView, Fil
                                 <XAxis dataKey="columnname" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end" height={160} dy={5} dx={-5} />
 
                                 <YAxis />
-                                <ChartTooltip />
+                                <ChartTooltip formatter={(value:any, name:any)=> [value,t(name)]} />
                                 <Bar dataKey="summary" fill="#8884d8" textAnchor="end" stackId="a" type="monotone" >
-                                    <LabelList dataKey="summary" position="inside" />
+                                    <LabelList dataKey="summary" position="top" />
                                 </Bar>
                             </BarChart>
                         </ResponsiveContainer>

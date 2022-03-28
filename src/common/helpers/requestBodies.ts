@@ -2354,10 +2354,10 @@ export const getBillingConfigurationSel = ({ year, month, plan }: Dictionary): I
     parameters: { year, month, plan }
 })
 
-export const billingConfigurationIns = ({ year, month, plan, id, basicfee, userfreequantity, useradditionalfee, channelfreequantity, channelwhatsappfee, channelotherfee, clientfreequantity, clientadditionalfee, allowhsm, hsmfee, description, status, whatsappconversationfreequantity, freewhatsappchannel, usercreateoverride, channelcreateoverride, type, operation }: Dictionary): IRequestBody => ({
+export const billingConfigurationIns = ({ year, month, plan, id, basicfee, userfreequantity, useradditionalfee, channelfreequantity, channelwhatsappfee, channelotherfee, clientfreequantity, clientadditionalfee, allowhsm, hsmfee, description, status, whatsappconversationfreequantity, freewhatsappchannel, usercreateoverride, channelcreateoverride, vcacomissionperhsm, type, operation }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGCONFIGURATION_INS",
     key: "UFN_BILLINGCONFIGURATION_INS",
-    parameters: { year, month, plan, id, basicfee, userfreequantity, useradditionalfee, channelfreequantity, channelwhatsappfee, channelotherfee, clientfreequantity, clientadditionalfee, allowhsm, hsmfee, description, status, whatsappconversationfreequantity, freewhatsappchannel, usercreateoverride, channelcreateoverride, type, operation }
+    parameters: { year, month, plan, id, basicfee, userfreequantity, useradditionalfee, channelfreequantity, channelwhatsappfee, channelotherfee, clientfreequantity, clientadditionalfee, allowhsm, hsmfee, description, status, whatsappconversationfreequantity, freewhatsappchannel, usercreateoverride, channelcreateoverride, vcacomissionperhsm, type, operation }
 })
 
 export const getBillingConversationSel = ({ year, month, countrycode = "" }: Dictionary): IRequestBody => ({
@@ -2378,10 +2378,10 @@ export const getBillingPeriodSel = ({ corpid, orgid, year, month, billingplan, s
     key: "UFN_BILLINGPERIOD_SEL",
     parameters: { corpid, orgid, year, month, billingplan, supportplan }
 })
-export const billingPeriodUpd = ({ corpid, orgid, year, month, billingplan, supportplan, basicfee, userfreequantity, useradditionalfee, channelfreequantity, channelwhatsappfee, channelotherfee, clientfreequantity, clientadditionalfee, supportbasicfee, unitpricepersms, vcacomissionpersms, unitepricepermail, vcacomissionpermail, additionalservicename1, additionalservicefee1, additionalservicename2, additionalservicefee2, additionalservicename3, additionalservicefee3, freewhatsappchannel, freewhatsappconversations, usercreateoverride, channelcreateoverride, vcacomissionperconversation, force }: Dictionary): IRequestBody => ({
+export const billingPeriodUpd = ({ corpid, orgid, year, month, billingplan, supportplan, basicfee, userfreequantity, useradditionalfee, channelfreequantity, channelwhatsappfee, channelotherfee, clientfreequantity, clientadditionalfee, supportbasicfee, unitpricepersms, vcacomissionpersms, unitepricepermail, vcacomissionpermail, additionalservicename1, additionalservicefee1, additionalservicename2, additionalservicefee2, additionalservicename3, additionalservicefee3, freewhatsappchannel, freewhatsappconversations, usercreateoverride, channelcreateoverride, vcacomissionperconversation, vcacomissionperhsm, force }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGPERIOD_UPD",
     key: "UFN_BILLINGPERIOD_UPD",
-    parameters: { corpid, orgid, year, month, billingplan, supportplan, basicfee, userfreequantity, useradditionalfee, channelfreequantity, channelwhatsappfee, channelotherfee, clientfreequantity, clientadditionalfee, supportbasicfee, unitpricepersms, vcacomissionpersms, unitepricepermail, vcacomissionpermail, additionalservicename1, additionalservicefee1, additionalservicename2, additionalservicefee2, additionalservicename3, additionalservicefee3, freewhatsappchannel, freewhatsappconversations, usercreateoverride, channelcreateoverride, vcacomissionperconversation, force }
+    parameters: { corpid, orgid, year, month, billingplan, supportplan, basicfee, userfreequantity, useradditionalfee, channelfreequantity, channelwhatsappfee, channelotherfee, clientfreequantity, clientadditionalfee, supportbasicfee, unitpricepersms, vcacomissionpersms, unitepricepermail, vcacomissionpermail, additionalservicename1, additionalservicefee1, additionalservicename2, additionalservicefee2, additionalservicename3, additionalservicefee3, freewhatsappchannel, freewhatsappconversations, usercreateoverride, channelcreateoverride, vcacomissionperconversation, vcacomissionperhsm, force }
 })
 
 export const getBillingPeriodHSMSel = ({ corpid, orgid, year, month }: Dictionary): IRequestBody => ({
@@ -2563,10 +2563,10 @@ export const getAppsettingInvoiceSel = () => ({
     parameters: {},
 });
 
-export const updateAppsettingInvoice = ({ ruc, businessname, tradename, fiscaladdress, ubigeo, country, emittertype, currency, invoiceserie, invoicecorrelative, annexcode, igv, printingformat, xmlversion, ublversion, returnpdf, returnxmlsunat, returnxml, invoiceprovider, sunaturl, token, sunatusername, paymentprovider, publickey, privatekey, ticketserie, ticketcorrelative, invoicecreditserie, invoicecreditcorrelative, ticketcreditserie, ticketcreditcorrelative, detraction, detractioncode, detractionaccount, operationcodeperu, operationcodeother, culqiurl, detractionminimum }: Dictionary): IRequestBody => ({
+export const updateAppsettingInvoice = ({ ruc, businessname, tradename, fiscaladdress, ubigeo, country, emittertype, currency, invoiceserie, invoicecorrelative, annexcode, igv, printingformat, xmlversion, ublversion, returnpdf, returnxmlsunat, returnxml, invoiceprovider, sunaturl, token, sunatusername, paymentprovider, publickey, privatekey, ticketserie, ticketcorrelative, invoicecreditserie, invoicecreditcorrelative, ticketcreditserie, ticketcreditcorrelative, detraction, detractioncode, detractionaccount, operationcodeperu, operationcodeother, culqiurl, detractionminimum, culqiurlcardcreate, culqiurlclient, culqiurltoken, culqiurlcharge, culqiurlcardget, culqiurlcarddelete }: Dictionary): IRequestBody => ({
     method: "UFN_APPSETTING_INVOICE_UPDATE",
     key: "UFN_APPSETTING_INVOICE_UPDATE",
-    parameters: { ruc, businessname, tradename, fiscaladdress, ubigeo, country, emittertype, currency, invoiceserie, invoicecorrelative, annexcode, igv, printingformat, xmlversion, ublversion, returnpdf, returnxmlsunat, returnxml, invoiceprovider, sunaturl, token, sunatusername, paymentprovider, publickey, privatekey, ticketserie, ticketcorrelative, invoicecreditserie, invoicecreditcorrelative, ticketcreditserie, ticketcreditcorrelative, detraction, detractioncode, detractionaccount, operationcodeperu, operationcodeother, culqiurl, detractionminimum }
+    parameters: { ruc, businessname, tradename, fiscaladdress, ubigeo, country, emittertype, currency, invoiceserie, invoicecorrelative, annexcode, igv, printingformat, xmlversion, ublversion, returnpdf, returnxmlsunat, returnxml, invoiceprovider, sunaturl, token, sunatusername, paymentprovider, publickey, privatekey, ticketserie, ticketcorrelative, invoicecreditserie, invoicecreditcorrelative, ticketcreditserie, ticketcreditcorrelative, detraction, detractioncode, detractionaccount, operationcodeperu, operationcodeother, culqiurl, detractionminimum, culqiurlcardcreate, culqiurlclient, culqiurltoken, culqiurlcharge, culqiurlcardget, culqiurlcarddelete }
 });
 
 export const getBillingNotificationSel = ({ year, month, countrycode = "" }: Dictionary): IRequestBody => ({
@@ -2639,10 +2639,10 @@ export const billingMessagingIns = ({ year, month, id, pricepersms, vcacomission
     parameters: { year, month, id, pricepersms, vcacomissionpersms, pricepermail, vcacomissionpermail, description, status, type, operation }
 })
 
-export const invoiceRefreshTest = (year: number, month: number, corpid: number): IRequestBody => ({
-    method: "UFN_INVOICE_REFRESHTEST",
-    key: "UFN_INVOICE_REFRESHTEST",
-    parameters: { year, month, corpid },
+export const invoiceRefresh = ({ corpid, orgid, invoiceid, year, month }: Dictionary): IRequestBody => ({
+    method: "UFN_INVOICE_REFRESH",
+    key: "UFN_INVOICE_REFRESH",
+    parameters: { corpid, orgid, invoiceid, year, month },
 });
 
 export const getAdviserFilteredUserRol = (): IRequestBody => ({
@@ -2769,3 +2769,29 @@ export const productCatalogIns = ({id, code, description, category, status, type
         id, code, description, category, status, type, imagereference, notes, unitprice, operation
     }
 })
+export const listPaymentCard = ({ corpid, orgid, id }: Dictionary) => ({
+    method: "UFN_PAYMENTCARD_LST",
+    key: "UFN_PAYMENTCARD_LST",
+    parameters: { corpid, orgid, id },
+});
+
+export const paymentCardInsert = ({ corpid, orgid, paymentcardid, cardnumber, cardcode, firstname, lastname, mail, favorite, clientcode, status, type, username }: Dictionary) => ({
+    method: "UFN_PAYMENTCARD_INS",
+    key: "UFN_PAYMENTCARD_INS",
+    parameters: {
+        corpid,
+        orgid,
+        id: paymentcardid || 0,
+        cardnumber,
+        cardcode,
+        firstname,
+        lastname,
+        mail,
+        favorite,
+        clientcode,
+        status,
+        type,
+        username,
+        operation: paymentcardid ? 'UPDATE' : 'INSERT',
+    },
+});

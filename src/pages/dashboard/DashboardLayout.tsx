@@ -40,6 +40,10 @@ interface Item {
 interface Items {
     [key: string]: Item;
 }
+
+const months = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "set", "oct", "nov", "dic"]
+const monthColor=["#c51314","#a255de","#5fbeeb","#ffffff","#2a770b","#cb7ec6","#ff0100", "#5cea22", "#00076b", "#ff01c0", "#ffcc00", "#5372ff"]
+
 const colors=["#8884d8", "#82ca9d", "#d32248", "#1dc1fa", "#2b5ef4", "#7be2aa", "#c58725", "#692f32","#8f97b8", "#57be99"]
 
 const useDashboardLayoutStyles = makeStyles(theme => ({
@@ -580,10 +584,10 @@ const LayoutItem: FC<LayoutItemProps> = ({
 
     const formatTooltip = (v: any, tot?: any) => {
         if (groupment === "percentage") {
-            return `${t(langKeys.percentage)}: ${v}%`;
+            return `${t(langKeys.percentage)}: ${v.toFixed(2)}%`;
         }
 
-        return `${t(langKeys.quantity)}: ${v}\n${t(langKeys.percentage)}: ${v*100/tot}%`;
+        return `${t(langKeys.quantity)}: ${v}\n${t(langKeys.percentage)}: ${(v*100/tot).toFixed(2)}%`;
     }
 
     const renderGraph = useCallback(() => {
@@ -592,9 +596,10 @@ const LayoutItem: FC<LayoutItemProps> = ({
                 return (
                     <LayoutBar
                         data={dataGraph as ChartData[]}
-                        tickFormatter={groupment === "percentage" ? v => `${v}%` : undefined}
+                        tickFormatter={groupment === "percentage" ? v => `${Number(v).toFixed(2)}%` : undefined}
                         tooltipFormatter={formatTooltip}
                         alldata={alldata}
+                        grouping={groupment}
                     />
                 );
             case 'pie':
@@ -602,7 +607,7 @@ const LayoutItem: FC<LayoutItemProps> = ({
                     <LayoutPie
                         data={dataGraph as ChartData[]}
                         tooltipFormatter={formatTooltip}
-                        tickFormatter={groupment === "percentage" ? v => `${v}%` : undefined}
+                        tickFormatter={groupment === "percentage" ? v => `${Number(v).toFixed(2)}%` : undefined}
                         alldata={alldata}
                     />
                 );
@@ -610,9 +615,10 @@ const LayoutItem: FC<LayoutItemProps> = ({
                 return (
                     <LayoutLine
                         data={dataGraph as ChartData[]}
-                        tickFormatter={groupment === "percentage" ? v => `${v}%` : undefined}
+                        tickFormatter={groupment === "percentage" ? v => `${Number(v).toFixed(2)}%` : undefined}
                         tooltipFormatter={formatTooltip}
                         alldata={alldata}
+                        grouping={groupment}
                     />
                 );
             case 'kpi': return <LayoutKpi data={dataGraph as KpiData} />;
@@ -726,27 +732,49 @@ interface LayoutBarProps extends Omit<ResponsiveContainerProps, 'children'> {
     tickFormatter?: (value: string, index: number) => string;
     tooltipFormatter?: (value: any, tot?:any) => string;
     alldata?: any;
+    grouping?: string;
 }
 
-const LayoutBar: FC<LayoutBarProps> = ({ data,alldata, tickFormatter, tooltipFormatter, ...props }) => {
+const LayoutBar: FC<LayoutBarProps> = ({ data,alldata, tickFormatter, tooltipFormatter,grouping, ...props }) => {
     const { t } = useTranslation();
     let total=alldata?.total;
     let modifieddata=data;
     let keys: any[]=[]
+    let reversed=false
     if(alldata?.interval){
+        reversed=true
         modifieddata=data.map(x=>{
-            keys= keys.concat(Object.keys(x.quantity))
+            const localkeys = Object.keys(x.quantity)
+            localkeys.forEach((y)=>{
+                if(!keys.includes(y)){
+                    keys.push(y)
+                }
+            })
             return ({...Object(x.quantity),label:`${t(alldata?.interval)} ${x.label.replace(alldata?.interval,"")}`})
         })
-        keys.filter((item, index) => keys.indexOf(item) === index)
-        console.log(keys)
-        console.log(modifieddata)
+    }else{
+        let listlabels= data.map(x=>x.label)[0]
+        if (listlabels.includes("-")) {
+            reversed=true
+            modifieddata=data.map(x=>{
+                let newlabel = x.label.replace("day","")
+                let month = newlabel.slice(0,newlabel.indexOf("-"))
+                newlabel = newlabel.replace(`${month}-`, `${t(months[Number(month)-1])} `)
+                return ({...x,label:newlabel, color:monthColor[Number(month)-1]})
+            })
+        }
+        if(listlabels.includes("month") || listlabels.includes("week")){
+            reversed=true
+            modifieddata=data.map(x=>({...x,label:x.label.replace("month",`${t("month")} `).replace("week",`${t("week")} `)}))
+        }
+        
     }
     
     return (
         <ResponsiveContainer width={"100%"} {...props}>
-            <BarChart data={modifieddata}>
+            <BarChart data={modifieddata} margin={{ top: 20, right: 10, bottom: 5, left: 10 }}>
                 <XAxis
+                    reversed={reversed}
                     dataKey="label"
                     style={{ fontSize: '0.8em' }}
                     angle={-45}
@@ -755,13 +783,65 @@ const LayoutBar: FC<LayoutBarProps> = ({ data,alldata, tickFormatter, tooltipFor
                     height={160}
                     dy={5}
                     dx={-5}
+                    domain={["",""]}
                 />
                 <YAxis tickFormatter={tickFormatter} padding={{ top: 10 }}/>
                 {alldata?.interval?(
                     <>
-                        <ChartTooltip />
+                        
+                        <ChartTooltip content={({ active, payload, label }) => {
+                                let partialtotal=0;
+                                if (active && payload && payload.length) {
+                                    let partialtotal=payload.reduce((acc,x)=>acc+Number(x.value),0);
+                                    return (
+                                        <Card key={`${label}-${payload[0].value}`} style={{ padding: '0.85em' }}>
+                                            {label && <label>{label}</label>}
+                                            {label && <br />}
+                                            {payload.map((x:any)=>{
+                                                let value = x.payload[x?.dataKey]
+                                                if(grouping==="percentage"){
+                                                    if(value){
+                                                        return (
+                                                            <>
+                                                                <span key={`${label}-${x.dataKey}-${value}`} style={{ color: x.color, whiteSpace: "break-spaces" }}>
+                                                                    {`${x.dataKey}: ${value}%`}
+                                                                </span>
+                                                                <br/>
+                                                            </>
+                                                        )
+                                                    }
+                                                }else{
+                                                    if(value){
+                                                        return (
+                                                            <>
+                                                                <span key={`${label}-${x.dataKey}-${value}`} style={{ color: x.color, whiteSpace: "break-spaces" }}>
+                                                                    {`${x.dataKey}: ${value} / ${(value*100/partialtotal).toFixed(2)}%` }
+                                                                </span>
+                                                                <br/>
+                                                            </>
+                                                        )
+                                                    }
+                                                }
+                                                return null
+                                            })}
+                                            {grouping!=="percentage" && 
+                                                <>
+                                                    <span style={{ whiteSpace: "break-spaces" }}>
+                                                        {`${t(langKeys.percentage)}: ${(partialtotal*100/total).toFixed(2)}%` }
+                                                    </span>
+                                                    <br/>
+                                                </>
+                                            }
+                                        </Card>
+                                    );
+                                }
+
+                                return null;
+                            }}
+                        />
                         {keys.map((x,i)=>(
                             <Bar
+                                isAnimationActive={false}
                                 dataKey={x}
                                 fill={colors[i]}
                                 textAnchor="end"
@@ -798,11 +878,15 @@ const LayoutBar: FC<LayoutBarProps> = ({ data,alldata, tickFormatter, tooltipFor
                             }}
                         />
                         <Bar
+                            isAnimationActive={false}
                             dataKey="quantity"
                             fill="#8884d8"
                             textAnchor="end"
                             type="monotone"
                         >
+                            {modifieddata.map((entry: any, index: number) => (
+                                <Cell key={`cell-${index}`} fill={entry?.color||"#8884d8"} />
+                            ))}
                             <LabelList dataKey="quantity" position="top" fill="#000" />
                         </Bar>
                     </>
@@ -818,27 +902,54 @@ interface LayoutLineProps extends Omit<ResponsiveContainerProps, 'children'> {
     tickFormatter?: (value: string, index: number) => string;
     tooltipFormatter?: (value: any, total?:any) => string;
     alldata?:any;
+    grouping?: string
 }
 
-const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipFormatter, ...props }) => {
+const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipFormatter,grouping, ...props }) => {
     const { t } = useTranslation();
     let total=alldata?.total;
     let modifieddata=data;
     let keys: any[]=[]
+    let reversed=false
     if(alldata?.interval){
-        modifieddata=data.map(x=>{
-            keys= keys.concat(Object.keys(x.quantity))
-            return ({...Object(x.quantity),label:`${t(alldata?.interval)} ${x.label.replace(alldata?.interval,"")}`})
+        reversed=true
+        data.forEach(x=>{
+            const localkeys = Object.keys(x.quantity)
+            localkeys.forEach((y:string)=>{
+                if(!keys.includes(y)){
+                    keys.push(y)
+                }
+            })
         })
-        keys.filter((item, index) => keys.indexOf(item) === index)
-        console.log(keys)
-        console.log(modifieddata)
+        let itemmodel = keys.reduce((acc,x)=>{return {...acc,[x]:0}},{})
+        modifieddata=data.map(x=>{
+
+            return ({...itemmodel,...Object(x.quantity),label:`${t(alldata?.interval)} ${x.label.replace(alldata?.interval,"")}`})
+        })
+    }else{
+        let listlabels= data.map(x=>x.label)[0]
+        if (listlabels.includes("-")) {
+            reversed=true
+            modifieddata=data.map(x=>{
+                let newlabel = x.label.replace("day","")
+                let month = newlabel.slice(0,newlabel.indexOf("-"))
+                newlabel = newlabel.replace(`${month}-`, `${t(months[Number(month)-1])} `)
+                return ({...x,label:newlabel, color:monthColor[Number(month)-1]})
+            })
+        }
+        if(listlabels.includes("month") || listlabels.includes("week")){
+            reversed=true
+            modifieddata=data.map(x=>({...x,label:x.label.replace("month",`${t("month")} `).replace("week",`${t("week")} `)}))
+        }
+        
     }
     return (
         <ResponsiveContainer {...props}>
-            <LineChart data={modifieddata}>
+            <LineChart data={modifieddata} margin={{ top: 20, right: 10, bottom: 5, left: 10 }}>
                 <CartesianGrid stroke="#ccc" />
                 <XAxis
+                    domain={["",""]}
+                    reversed={reversed}
                     dataKey="label"
                     style={{ fontSize: '0.8em' }}
                     angle={-45}
@@ -852,9 +963,58 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipF
                 
                 {alldata?.interval?(
                     <>
-                        <ChartTooltip />
+                        <ChartTooltip content={({ active, payload, label }) => {
+                            if (active && payload && payload.length) {
+                                    let partialtotal=payload.reduce((acc,x)=>acc+Number(x.value),0);
+                                    return (
+                                        <Card key={`${label}-${payload[0].value}`} style={{ padding: '0.85em' }}>
+                                            {label && <label>{label}</label>}
+                                            {label && <br />}
+                                            {payload.map((x:any)=>{
+                                                let value = x.payload[x?.dataKey]
+                                                if(grouping==="percentage"){
+                                                    if(value){
+                                                        return (
+                                                            <>
+                                                                <span key={`${label}-${x.dataKey}-${value}`} style={{ color: x.color, whiteSpace: "break-spaces" }}>
+                                                                    {`${x.dataKey}: ${value}%`}
+                                                                </span>
+                                                                <br/>
+                                                            </>
+                                                        )
+                                                    }
+                                                }else{
+                                                    if(value){
+                                                        return (
+                                                            <>
+                                                                <span key={`${label}-${x.dataKey}-${value}`} style={{ color: x.color, whiteSpace: "break-spaces" }}>
+                                                                    {`${x.dataKey}: ${value} / ${(value*100/partialtotal).toFixed(2)}%` }
+                                                                </span>
+                                                                <br/>
+                                                            </>
+                                                        )
+                                                    }
+                                                }
+                                                return null
+                                            })}
+                                            {grouping!=="percentage" && 
+                                                <>
+                                                    <span style={{ whiteSpace: "break-spaces" }}>
+                                                        {`${t(langKeys.percentage)}: ${(partialtotal*100/total).toFixed(2)}%` }
+                                                    </span>
+                                                    <br/>
+                                                </>
+                                            }
+                                        </Card>
+                                    );
+                                }
+
+                                return null;
+                            }}
+                        />
                         {keys.map((x,i)=>(
-                            <Line type="monotone" dataKey={x} key={x} stroke={colors[i]} />
+                            <Line  type="monotone" dataKey={x} key={x} stroke={colors[i]} >
+                            </Line>
                         ))}
                     </>
                 ):
@@ -882,7 +1042,13 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipF
                                 return null;
                             }}
                         />
-                        <Line type="monotone" dataKey="quantity" stroke="#8884d8" />
+                        <Line isAnimationActive={false} type="monotone" dataKey="quantity" stroke="#8884d8">
+                            
+                            {modifieddata.map((entry: any, index: number) => (
+                                <Cell key={`cell-${index}`} stroke={entry?.color||"#8884d8"} />
+                            ))}
+                            <LabelList dataKey="quantity" position="top" fill="#000" />
+                        </Line>
                     </>
                 )
                 }

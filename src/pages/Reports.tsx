@@ -588,6 +588,7 @@ const ReportConversationWhatsapp: FC = () => {
     const dispatch = useDispatch();
 
     const multiData = useSelector(state => state.main.multiData);
+    const [gridData, setGridData] = useState<any[]>([]);
 
     const classes = useStyles()
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
@@ -614,6 +615,11 @@ const ReportConversationWhatsapp: FC = () => {
     useEffect(() => {
         if (!multiData.loading){
             dispatch(showBackdrop(false));
+            setGridData((multiData.data[0]?.data || []).map(d => ({
+                ...d,
+                conversationstart: d.conversationstart ? new Date(d.conversationstart).toLocaleString() : '',
+                conversationend: d.conversationend ? new Date(d.conversationend).toLocaleString() : ''
+            })))
         }
     }, [multiData])
 
@@ -638,22 +644,22 @@ const ReportConversationWhatsapp: FC = () => {
             {
                 Header: "Fecha de inicio",
                 accessor: 'conversationstart',
-                Cell: (props: any) => {
-                    const { conversationstart } = props.cell.row.original;
-                    return (
-                        <div>{conversationstart ? new Date(conversationstart).toLocaleString() : ''}</div>
-                    )
-                }
+                // Cell: (props: any) => {
+                //     const { conversationstart } = props.cell.row.original;
+                //     return (
+                //         <div>{conversationstart ? new Date(conversationstart).toLocaleString() : ''}</div>
+                //     )
+                // }
             },
             {
                 Header: "Fecha de fin",
                 accessor: 'conversationend',
-                Cell: (props: any) => {
-                    const { conversationend } = props.cell.row.original;
-                    return (
-                        <div>{conversationend ? new Date(conversationend).toLocaleString() : ''}</div>
-                    )
-                }
+                // Cell: (props: any) => {
+                //     const { conversationend } = props.cell.row.original;
+                //     return (
+                //         <div>{conversationend ? new Date(conversationend).toLocaleString() : ''}</div>
+                //     )
+                // }
             },
             {
                 Header: t(langKeys.countrycode),
@@ -681,7 +687,7 @@ const ReportConversationWhatsapp: FC = () => {
             <div style={{ height: 10 }}></div>
             <TableZyx
                 columns={columns}
-                data={multiData.data[0]?.data || []}
+                data={gridData}
                 ButtonsElement={() => (
                     <div className={classes.containerHeader} style={{display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'space-between'}}>
                         <div style={{display: 'flex', gap: 8}}>

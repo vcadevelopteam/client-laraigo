@@ -333,6 +333,9 @@ const RouterApp: FC = () => {
 				<ProtectRoute exact path={paths.CONFIGURATION}>
 					<Layout mainClasses={classes.main}><Settings /></Layout>
 				</ProtectRoute>
+				<ProtectRoute exact path={paths.AUTOMATIZATIONRULES}>
+					<Layout mainClasses={classes.main}><AutomatizationRules /></Layout>
+				</ProtectRoute>
 				<ProtectRoute exact path={paths.CRM}>
 					<Layout mainClasses={classes.main}><CRM /></Layout>
 				</ProtectRoute>
