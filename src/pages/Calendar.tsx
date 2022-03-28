@@ -96,11 +96,11 @@ interface DetailCalendarProps {
     fetchData: (id?: number) => void;
 }
 
-type IIntervals = {
+type ISchedule = {
     start:string,
     end:string,
     dow:number,
-    error: boolean,
+    status: string,
 }
 
 type FormFields = {
@@ -116,7 +116,7 @@ type FormFields = {
     daysintothefuture: number,
     quantity: number,
     operation: string,
-    intervals: IIntervals[],
+    intervals: ISchedule[],
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -223,15 +223,17 @@ interface LabelDaysProps {
     flag: Boolean;
     fieldsIntervals?: any;
     errors?: any;
-    intervalsAppend: (interval: IIntervals) => void;
+    intervalsAppend: (interval: ISchedule) => void;
     intervalsRemove: (index: number) => void;
     register: any;
     setValue: (value: any,value2:any) => void;
+    getValues: (value: any) => any;
+    trigger: (name:any) => any;
     dow: number;
     labelName: string;
 }
 
-const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,intervalsAppend,intervalsRemove,register,setValue,dow,labelName})=>{
+const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,intervalsAppend,intervalsRemove,register,setValue,dow,labelName,getValues,trigger})=>{
     const { t } = useTranslation();
     const classes = useStyles();
     let hoursvalue=hours.map((x:any)=>(x.value))
@@ -254,14 +256,32 @@ const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,interva
                                         <FieldSelect
                                             fregister={{
                                                 ...register(`intervals.${i}.start`, {
-                                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                    validate: {
+                                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required),
+                                                        timescross: (value: any) => ( getValues(`intervals.${i}.end`)>(value)) || t(langKeys.errorhoursdontmatch),
+                                                        overlapval: (value: any) => {//cambiarlo por un flag
+                                                            let fieldEnd= getValues(`intervals.${i}.end`)
+                                                            let fieldStart= value
+                                                            const exists = fieldsIntervals.some((y:any,cont:number) => (y.dow === x.dow) && (cont!==i) && (
+                                                                fieldEnd >= y.start && fieldEnd <= y.end ||
+                                                                fieldStart >= y.start && fieldStart < y.end ||
+                                                                y.start >= fieldStart && y.start <= fieldEnd));
+                                                            //if(exists>=0) trigger(`intervals.${exists}.start`)
+                                                            return (exists+1) || t(langKeys.errorhours)
+                                                        },
+                                                    }
+                                                    
                                                 }),
                                             }}
                                             className="col-5nomargin"
                                             valueDefault={x?.start}
                                             error={errors?.intervals?.[i]?.start?.message}
                                             style={{pointerEvents: "auto"}}                                                                            
-                                            onChange={(value) => {setValue(`intervals.${i}.start`, value?.value)}}
+                                            onChange={(value) => {
+                                                
+                                                setValue(`intervals.${i}.start`, value?.value)
+                                                trigger(`intervals.${i}.start`)
+                                            }}
                                             data={hours}
                                             optionDesc="desc"
                                             optionValue="value"
@@ -276,7 +296,10 @@ const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,interva
                                             valueDefault={x?.end}
                                             error={errors?.intervals?.[i]?.end?.message}
                                             style={{pointerEvents: "auto"}}                                                                            
-                                            onChange={(value) => setValue(`intervals.${i}.end`, value?.value)}
+                                            onChange={(value) => {                                                
+                                                setValue(`intervals.${i}.end`, value?.value)
+                                                trigger(`intervals.${i}.start`)
+                                            }}
                                             data={hours}
                                             optionDesc="desc"
                                             optionValue="value"
@@ -287,12 +310,6 @@ const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,interva
                                             </IconButton>
                                         </div>
                                         </>
-                                        {(hoursvalue.indexOf(x.end)<hoursvalue.indexOf(x.start)) && 
-                                            <p className={classes.errorclass} >{t(langKeys.errorhoursdontmatch)}</p>
-                                        }
-                                        {x?.error && 
-                                            <p className={classes.errorclass} >{t(langKeys.errorhours)}</p>
-                                        }
                                     </div>
                                 )
                             })}
@@ -314,9 +331,10 @@ const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,interva
                                         let indexofnexthour = hoursvalue.indexOf(dowfields[dowfields?.length-1].end)
                                         let startindex = (indexofnexthour+2)<48?indexofnexthour+2:indexofnexthour-46
                                         let endindex = (indexofnexthour+4)<48?indexofnexthour+4:indexofnexthour-44
-                                        intervalsAppend({start:hoursvalue[startindex],end:hoursvalue[endindex],dow:dow, error: false})
+                                        intervalsAppend({start:hoursvalue[startindex],end:hoursvalue[endindex],dow:dow, status: "available"})
+                                        trigger(`intervals.${dowfields?.length-1}.start`)
                                     }else{
-                                        intervalsAppend({start:"09:00:00",end:"17:00:00",dow:dow, error: false})
+                                        intervalsAppend({start:"09:00:00",end:"17:00:00",dow:dow, status: "available"})
                                     }
                                 }}
                                 >{t(langKeys.newinterval)}
@@ -372,7 +390,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
 
-    const { control, register, reset, handleSubmit, setValue, getValues, formState: { errors } } = useForm<FormFields>({
+    const { control, register, reset, handleSubmit, setValue, getValues, trigger,formState: { errors } } = useForm<FormFields>({
         defaultValues: {
             id: row?.id || 0,
             eventcode: row?.eventcode||0,
@@ -729,6 +747,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                             setValue={setValue} 
                                             dow={0} 
                                             labelName={t(langKeys.sunday)}
+                                            getValues={getValues}
+                                            trigger={trigger}
                                         />} />
                                     <FormControlLabel
                                         style={{ pointerEvents: "none" }}
@@ -744,6 +764,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                             setValue={setValue} 
                                             dow={1} 
                                             labelName={t(langKeys.monday)}
+                                            getValues={getValues}
+                                            trigger={trigger}
                                         />}
                                     />
                                     <FormControlLabel
@@ -760,6 +782,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                             setValue={setValue} 
                                             dow={2} 
                                             labelName={t(langKeys.tuesday)}
+                                            getValues={getValues}
+                                            trigger={trigger}
                                         />}
                                     />
                                     <FormControlLabel
@@ -776,6 +800,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                             setValue={setValue} 
                                             dow={3} 
                                             labelName={t(langKeys.wednesday)}
+                                            getValues={getValues}
+                                            trigger={trigger}
                                         />}
                                     />
                                     <FormControlLabel
@@ -792,6 +818,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                             setValue={setValue} 
                                             dow={4} 
                                             labelName={t(langKeys.thursday)}
+                                            getValues={getValues}
+                                            trigger={trigger}
                                         />}
                                     />
                                     <FormControlLabel
@@ -808,6 +836,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                             setValue={setValue} 
                                             dow={5} 
                                             labelName={t(langKeys.friday)}
+                                            getValues={getValues}
+                                            trigger={trigger}
                                         />}
                                     />
                                     <FormControlLabel
@@ -824,6 +854,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                             setValue={setValue} 
                                             dow={6} 
                                             labelName={t(langKeys.saturday)}
+                                            getValues={getValues}
+                                            trigger={trigger}
                                         />}
                                     />
                                     </FormGroup>
@@ -833,7 +865,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                     </div>
                 </AntTabPanel>
                 <AntTabPanel index={2} currentIndex={tabIndex}>
-                    <Schedule />
+                    <Schedule data={fieldsIntervals}/>
                 </AntTabPanel>
             </form>
         </div>
