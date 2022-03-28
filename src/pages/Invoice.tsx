@@ -47,7 +47,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import { Trans } from 'react-i18next';
 import DomToImage from 'dom-to-image';
-import { charge, resetCharge } from 'store/culqi/actions';
+import { charge, resetCharge, balance, resetBalance } from 'store/culqi/actions';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -2409,20 +2409,20 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
     useEffect(() => {
         if (waitPay) {
             if (!culqiSelector.loading && culqiSelector.data) {
-                dispatch(showSnackbar({ show: true, success: true, message: '' + culqiSelector.message }))
+                dispatch(showSnackbar({ show: true, success: true, message: '' + t(culqiSelector.message || langKeys.success) }))
                 dispatch(showBackdrop(false));
                 dispatch(resetCharge());
                 handleCulqiSuccess && handleCulqiSuccess();
                 setWaitPay(false);
             }
             else if (culqiSelector.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: '' + culqiSelector.message }))
+                dispatch(showSnackbar({ show: true, success: false, message: '' + t(culqiSelector.message || langKeys.error_cos_unexpected) }))
                 dispatch(showBackdrop(false));
                 dispatch(resetCharge());
                 setWaitPay(false);
             }
         }
-    }, [culqiSelector]);
+    }, [culqiSelector, waitPay]);
 
     useEffect(() => {
         if (waitSave) {
@@ -5052,11 +5052,13 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
     const { t } = useTranslation();
 
     const classes = useStyles();
+    const culqiSelector = useSelector(state => state.culqi.request);
     const exchangeRequest = useSelector(state => state.culqi.requestGetExchangeRate);
     const mainResult = useSelector(state => state.main);
     const multiResult = useSelector(state => state.main.multiDataAux);
     const user = useSelector(state => state.login.validateToken.user);
 
+    const [cardList, setCardList] = useState<any>([]);
     const [corp, setCorp] = useState(0);
     const [corpList, setCorpList] = useState<any>([]);
     const [corpError, setCorpError] = useState('');
@@ -5083,6 +5085,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
     const [confirmButton, setConfirmButton] = useState(true);
     const [disableInput, setDisableInput] = useState(data?.row ? true : false);
     const [waitSave, setWaitSave] = useState(false);
+    const [waitPay, setWaitPay] = useState(false);
     const [detractionAlert, setDetractionAlert] = useState(false);
     const [detractionAmount, setDetractionAmount] = useState(0);
     const [messagingList, setMessagingList] = useState<any>([]);
@@ -5092,6 +5095,49 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
     const [balanceSent, setBalanceSent] = useState<any>([]);
     const [paymentTax, setPaymentTax] = useState(0);
     const [totalAmount, setTotalAmount] = useState(0);
+    const [paymentCardId, setPaymentCardId] = useState(0);
+    const [paymentCardCode, setPaymentCardCode] = useState('');
+    const [paymentType, setPaymentType] = useState('FAVORITE');
+    const [favoriteCardId, setFavoriteCardId] = useState(0);
+    const [favoriteCardNumber, setFavoriteCardNumber] = useState('');
+    const [favoriteCardCode, setFavoriteCardCode] = useState('');
+
+    const dataPayment =[{ val: "FAVORITE", description: t(langKeys.paymentfavorite) }, { val: "CARD", description: t(langKeys.paymentcard) }, { val: "CULQI", description: t(langKeys.paymentculqi) }];
+
+    const handlePay = () => {
+        const callback = () => {
+            dispatch(showBackdrop(true));
+            dispatch(balance({
+                invoiceid: data?.invoiceid,
+                settings: {
+                    title: reference,
+                    description: reference,
+                    currency: 'USD',
+                    amount: Math.round(((totalPay * 100) + Number.EPSILON) * 100) / 100,
+                },
+                token: null,
+                metadata: {},
+                corpid: corp,
+                orgid: org,
+                reference: reference,
+                buyamount: buyAmount,
+                comments: comments,
+                purchaseorder: purchaseOrder,
+                totalpay: totalPay,
+                totalamount: totalAmount,
+                paymentcardid: paymentCardId,
+                paymentcardcode: paymentCardCode,
+                iscard: true,
+            }));
+            setWaitPay(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_payment),
+            callback
+        }))
+    }
 
     const handleCulqiSuccess = () => {
         fetchData();
@@ -5103,7 +5149,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
         setCorpList({ loading: true, data: [] });
         setOrgList({ loading: false, data: [] });
 
-        dispatch(getMultiCollectionAux([getCorpSel(user?.roledesc === "ADMINISTRADOR" ? user?.corpid : 0), getBillingMessagingCurrent(new Date().getFullYear(), new Date().getMonth(), user?.countrycode || '')]));
+        dispatch(getMultiCollectionAux([getCorpSel(user?.roledesc === "ADMINISTRADOR" ? user?.corpid : 0), getBillingMessagingCurrent(new Date().getFullYear(), new Date().getMonth(), user?.countrycode || ''), listPaymentCard({ corpid: user?.corpid || 0, id: 0, orgid: 0 })]));
 
         if (data?.row === null) {
             dispatch(getCollection(getAppsettingInvoiceSel()));
@@ -5143,7 +5189,63 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
         if (indexSent > -1) {
             setBalanceSent({ loading: false, data: multiResult.data[indexSent] && multiResult.data[indexSent].success ? multiResult.data[indexSent].data : [] });
         }
+
+        const indexCard = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_PAYMENTCARD_LST'));
+
+        if (indexCard > -1) {
+            setCardList({ loading: false, data: multiResult.data[indexCard] && multiResult.data[indexCard].success ? multiResult.data[indexCard].data : [] });
+        }
     }, [multiResult]);
+
+    useEffect(() => {
+        if (cardList) {
+            if (cardList.data) {
+                if (cardList.data.length > 0) {
+                    var favoriteCard = cardList.data.find((o: { favorite: boolean; }) => o.favorite === true);
+
+                    if (favoriteCard) {
+                        setFavoriteCardId(favoriteCard.paymentcardid);
+                        setFavoriteCardNumber(favoriteCard.cardnumber);
+                        setFavoriteCardCode(favoriteCard.cardcode);
+                        setPaymentCardId(favoriteCard.paymentcardid);
+                        setPaymentCardCode(favoriteCard.cardcode);
+                    }
+                }
+            }
+        }
+    }, [cardList]);
+
+    useEffect(() => {
+        if (paymentType) {
+            if (paymentType === "FAVORITE") {
+                setPaymentCardId(favoriteCardId);
+                setPaymentCardCode(favoriteCardCode);
+            }
+
+            if (paymentType === "CARD" || paymentType === "CULQI") {
+                setPaymentCardId(0);
+                setPaymentCardCode('');
+            }
+        }
+    }, [paymentType]);
+
+    useEffect(() => {
+        if (waitPay) {
+            if (!culqiSelector.loading && culqiSelector.data) {
+                dispatch(showSnackbar({ show: true, success: true, message: '' + t(culqiSelector.message || langKeys.success) }))
+                dispatch(showBackdrop(false));
+                dispatch(resetBalance());
+                handleCulqiSuccess && handleCulqiSuccess();
+                setWaitPay(false);
+            }
+            else if (culqiSelector.error) {
+                dispatch(showSnackbar({ show: true, success: false, message: '' + t(culqiSelector.message || langKeys.error_cos_unexpected) }))
+                dispatch(showBackdrop(false));
+                dispatch(resetBalance());
+                setWaitPay(false);
+            }
+        }
+    }, [culqiSelector, waitPay]);
 
     useEffect(() => {
         if (!messagingList.loading) {
@@ -5345,7 +5447,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                             onClick={() => handleShowCulqi()}
                             disabled={confirmButton}
                         >{showCulqi ? t(langKeys.cancel) : t(langKeys.transactionconfirm)}</Button>}
-                        {(publicKey && showCulqi) &&
+                        {(paymentType === "CULQI" && publicKey && showCulqi) &&
                             <CulqiModal
                                 type="BALANCE"
                                 invoiceid={0}
@@ -5367,6 +5469,18 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                                 purchaseorder={purchaseOrder}
                                 totalpay={totalPay}
                             ></CulqiModal>
+                        }
+                        {((paymentType === "FAVORITE" || paymentType === "CARD") && showCulqi) &&
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                type="button"
+                                startIcon={<AttachMoneyIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                                onClick={handlePay}
+                                disabled={paymentDisabled || !paymentCardId || !paymentCardCode}
+                                >{t(langKeys.proceedpayment)}
+                            </Button>
                         }
                     </div>
                 </div>
@@ -5521,11 +5635,45 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                         </div>
                     </div>}
                     {disableInput && <div>
+                        {(data?.edit) && <div className="row-zyx">
+                            <FieldView
+                                className={classes.section}
+                                label={''}
+                                value={t(langKeys.paymentmethod)}
+                            />
+                        </div>}
+                        {(data?.edit) && <div className="row-zyx">
+                            <FieldSelect
+                                label={t(langKeys.paymentmethodtype)}
+                                onChange={(value) => { setPaymentType(value?.val || 0) }}
+                                className="col-6"
+                                valueDefault={paymentType}
+                                data={dataPayment}
+                                optionDesc="description"
+                                optionValue="val"
+                            />
+                            {(paymentType === "CARD") && <FieldSelect
+                                label={t(langKeys.paymentmethodcard)}
+                                onChange={(value) => { setPaymentCardCode(value?.cardcode || ''); setPaymentCardId(value?.paymentcardid || 0); }}
+                                className="col-6"
+                                valueDefault={paymentCardId}
+                                data={cardList.data ? cardList.data.filter((e: { favorite: boolean; }) => e.favorite == true) : []}
+                                optionDesc="cardnumber"
+                                optionValue="paymentcardid"
+                                loading={cardList.loading}
+                            />}
+                            {(paymentType === "FAVORITE") && <FieldEdit
+                                className="col-6"
+                                label={t(langKeys.paymentmethodcard)}
+                                valueDefault={favoriteCardNumber}
+                                disabled={true}
+                            />}
+                        </div>}
                         {(data?.edit || data?.row?.operationtype === "COMPRA") && <div className="row-zyx">
                             <FieldView
                                 className={classes.section}
                                 label={''}
-                                value={t(langKeys.payment_information)}
+                                value={t(langKeys.paymentinformation)}
                             />
                         </div>}
                         {(data?.edit || data?.row?.operationtype === "COMPRA") && <div className="row-zyx">
