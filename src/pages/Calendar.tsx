@@ -101,6 +101,7 @@ type ISchedule = {
     end:string,
     dow:number,
     status: string,
+    overlap?:number,
 }
 
 type FormFields = {
@@ -259,16 +260,6 @@ const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,interva
                                                     validate: {
                                                         validate: (value: any) => (value && value.length) || t(langKeys.field_required),
                                                         timescross: (value: any) => ( getValues(`intervals.${i}.end`)>(value)) || t(langKeys.errorhoursdontmatch),
-                                                        overlapval: (value: any) => {//cambiarlo por un flag
-                                                            let fieldEnd= getValues(`intervals.${i}.end`)
-                                                            let fieldStart= value
-                                                            const exists = fieldsIntervals.some((y:any,cont:number) => (y.dow === x.dow) && (cont!==i) && (
-                                                                fieldEnd >= y.start && fieldEnd <= y.end ||
-                                                                fieldStart >= y.start && fieldStart < y.end ||
-                                                                y.start >= fieldStart && y.start <= fieldEnd));
-                                                            //if(exists>=0) trigger(`intervals.${exists}.start`)
-                                                            return (exists+1) || t(langKeys.errorhours)
-                                                        },
                                                     }
                                                     
                                                 }),
@@ -278,7 +269,25 @@ const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,interva
                                             error={errors?.intervals?.[i]?.start?.message}
                                             style={{pointerEvents: "auto"}}                                                                            
                                             onChange={(value) => {
-                                                
+                                                let overlap= getValues(`intervals.${i}.overlap`)
+                                                let fieldEnd= getValues(`intervals.${i}.end`)
+                                                let fieldStart= value?.value
+                                                if((overlap+1)){
+                                                    setValue(`intervals.${i}.overlap`, -1)
+                                                    setValue(`intervals.${overlap}.overlap`, -1)
+                                                }
+                                                const exists = fieldsIntervals.findIndex((y:any,cont:number) => (y.dow === dow) && (cont!==i)
+                                                    && (
+                                                    ((y.start < fieldEnd) && (y.start > fieldStart)) ||
+                                                    ((y.end < fieldEnd) && (y.end > fieldStart)) ||
+                                                    ((fieldEnd < y.end) && (fieldEnd > y.start)) ||
+                                                    ((fieldStart < y.end )&& (fieldStart > y.start)) ||
+                                                    (y.start===fieldStart )|| (y.end===fieldEnd)
+                                                ));
+                                                if((exists+1)){
+                                                    setValue(`intervals.${i}.overlap`, exists)
+                                                    setValue(`intervals.${exists}.overlap`, i)
+                                                }
                                                 setValue(`intervals.${i}.start`, value?.value)
                                                 trigger(`intervals.${i}.start`)
                                             }}
@@ -296,7 +305,26 @@ const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,interva
                                             valueDefault={x?.end}
                                             error={errors?.intervals?.[i]?.end?.message}
                                             style={{pointerEvents: "auto"}}                                                                            
-                                            onChange={(value) => {                                                
+                                            onChange={(value) => {           
+                                                let overlap= getValues(`intervals.${i}.overlap`)
+                                                let fieldEnd= value?.value
+                                                let fieldStart= getValues(`intervals.${i}.start`)
+                                                if((overlap+1)){
+                                                    setValue(`intervals.${i}.overlap`, -1)
+                                                    setValue(`intervals.${overlap}.overlap`, -1)
+                                                }
+                                                const exists = fieldsIntervals.findIndex((y:any,cont:number) => (y.dow === dow) && (cont!==i)
+                                                    && (
+                                                    ((y.start < fieldEnd) && (y.start > fieldStart)) ||
+                                                    ((y.end < fieldEnd) && (y.end > fieldStart)) ||
+                                                    ((fieldEnd < y.end) && (fieldEnd > y.start)) ||
+                                                    ((fieldStart < y.end )&& (fieldStart > y.start)) ||
+                                                    (y.start===fieldStart )|| (y.end===fieldEnd)
+                                                ));
+                                                if((exists+1)){
+                                                    setValue(`intervals.${exists}.overlap`, i)
+                                                    setValue(`intervals.${i}.overlap`, exists)
+                                                }                                     
                                                 setValue(`intervals.${i}.end`, value?.value)
                                                 trigger(`intervals.${i}.start`)
                                             }}
@@ -310,6 +338,9 @@ const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,interva
                                             </IconButton>
                                         </div>
                                         </>
+                                        {!!(getValues(`intervals.${i}.overlap`)+1) && 
+                                            <p className={classes.errorclass} >{t(langKeys.errorhours)}</p>
+                                        }
                                     </div>
                                 )
                             })}
@@ -331,10 +362,10 @@ const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,interva
                                         let indexofnexthour = hoursvalue.indexOf(dowfields[dowfields?.length-1].end)
                                         let startindex = (indexofnexthour+2)<48?indexofnexthour+2:indexofnexthour-46
                                         let endindex = (indexofnexthour+4)<48?indexofnexthour+4:indexofnexthour-44
-                                        intervalsAppend({start:hoursvalue[startindex],end:hoursvalue[endindex],dow:dow, status: "available"})
+                                        intervalsAppend({start:hoursvalue[startindex],end:hoursvalue[endindex],dow:dow, status: "available", overlap:-1})
                                         trigger(`intervals.${dowfields?.length-1}.start`)
                                     }else{
-                                        intervalsAppend({start:"09:00:00",end:"17:00:00",dow:dow, status: "available"})
+                                        intervalsAppend({start:"09:00:00",end:"17:00:00",dow:dow, status: "available",overlap:-1})
                                     }
                                 }}
                                 >{t(langKeys.newinterval)}
