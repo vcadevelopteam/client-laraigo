@@ -3313,6 +3313,7 @@ export const langKeys = {
     paymentcard: 'paymentcard',
     paymentculqi: 'paymentculqi',
     confirmation_payment: 'confirmation_payment',
+    error_card_nofavorite: 'error_card_nofavorite',
 };
 
 export type LangKeys = typeof langKeys;

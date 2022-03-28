@@ -3326,6 +3326,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     paymentcard: 'Utilizar otra tarjeta registrada',
     paymentculqi: 'Utilizar otra tarjeta',
     confirmation_payment: 'Se utilizara la información seleccionada para proceder con el pago. ¿Desea continuar?',
+    error_card_nofavorite: 'Debe tener al menos una tarjeta registrada como preferida',
 };
 
 const esResource: ResourceLanguage = {
