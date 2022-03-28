@@ -1,10 +1,13 @@
 import { makeStyles } from "@material-ui/core";
+import { Trans, useTranslation } from 'react-i18next';
+import { langKeys } from 'lang/keys';
 import { ArrowDropDown } from "@material-ui/icons";
-import Close from "@material-ui/icons/Close";
 import React, { FC, useCallback, useEffect, useState } from "react";
-import { ChromePicker, ColorChangeHandler, ColorResult } from "react-color";
 import clsx from 'clsx';
+import { Dictionary } from "@types";
 
+import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 const dayNames = [
     'sunday',
     'monday',
@@ -16,102 +19,218 @@ const dayNames = [
 ]
 
 interface ScheduleInputProps {
+    notPreviousDays?: boolean;
     // hex: string;
     // onChange: ColorChangeHandler;
     // disabled?: boolean;
 }
 
 interface DayProp {
-    date: String,
+    date: Date,
     dow: number,
     dom: number,
-    isToday?: boolean
+    isToday?: boolean,
+    isDayPreview?: boolean
 }
 
 const useScheduleStyles = makeStyles(theme => ({
     boxDay: {
         height: 130,
-        cursor: 'pointer',
         borderRight: '1px solid #e0e0e0',
         borderBottom: '1px solid #e0e0e0',
         padding: 8,
-
+    },
+    boxDayHover: {
+        cursor: 'pointer',
         '&:hover': {
             padding: 6,
+            backgroundColor: '#eef5ff',
             border: '2px solid #5593ff'
+        }
+    },
+    boxDayForbidden: {
+        cursor: 'not-allowed',
+        backgroundColor: '#dbdbdb3d',
+        '& > div': {
+            color: '#767676'
         }
     },
     isToday: {
         fontWeight: 'bold',
-        backgroundColor: '#e1e1e1'
+        backgroundColor: '#e1e1e1',
+        width: 20,
+        textAlign: 'center',
+        borderRadius: '50%',
     },
     dow: {
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        display: 'inline-block',
+        fontSize: 12
+    },
+    container: {
+        width: '910px',
+        backgroundColor: '#fff'
     },
     wrapper: {
         display: 'grid',
-        width: '910px',
         gridTemplateColumns: 'repeat(7, 1fr)',
         borderLeft: '1px solid #e0e0e0',
         borderTop: '1px solid #e0e0e0',
+    },
+    wrapperDays: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(7, 1fr)',
+        borderLeft: '1px solid #e0e0e0',
+        borderRight: '1px solid #e0e0e0',
+    },
+    dowHeader: {
+        fontWeight: 'bold',
+        textAlign: 'center',
+        color: '#767676',
+        padding: '12px 0',
+        fontSize: 16,
+        textTransform: 'uppercase',
+    },
+    containerInfo: {
+        border: '1px solid #e0e0e0',
+        padding: theme.spacing(3),
+        display: 'grid',
+        gridTemplateColumns: '1fr 120px',
+    },
+    containerInfoTitle: {
+        fontWeight: 'bold',
+        fontSize: 22,
+    },
+    containerButtons: {
+        borderRadius: 10,
+        border: '1px solid #e0e0e0',
+        display: 'flex',
+        height: 40,
+        justifySelf: 'center',
+        alignSelf: 'center',
+        width: '100%'
+    },
+    buttonMonth: {
+        flex: 1,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        cursor: 'pointer'
     }
 }));
 
 
-const Schedule: FC<ScheduleInputProps> = ({ }) => {
+const Schedule: FC<ScheduleInputProps> = ({ notPreviousDays = true }) => {
     const classes = useScheduleStyles();
+    const { t } = useTranslation();
     const [daysToShow, setDaysToShow] = useState<DayProp[]>([]);
-    console.log(daysToShow)
+    const [dateCurrent, setDateCurrent] = useState<{ month: number, year: number }>({
+        month: new Date().getMonth(),
+        year: new Date().getFullYear()
+    })
+
+
     useEffect(() => {
-        const year = new Date().getFullYear();
-        const month = new Date().getMonth();
-        const countDays = new Date(year, month, 0).getDate();
-        const dayLastDay = new Date(year, month, 0).getDay();
-        const dayPreviewMonth = new Date(year, month - 1, 0).getDay();
+        const year = dateCurrent.year;
+        const month = dateCurrent.month;
+        const currentDate = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())
+        const countDays = new Date(year, month + 1, 0).getDate();
+        const dayLastDay = new Date(year, month + 1, 0).getDay();
+        const dayPreviewMonth = new Date(year, month, 1).getDay();
 
         const daysMonth = Array.from(Array(countDays).keys()).map(x => {
             const date = new Date(year, month, x + 1);
             return {
-                date: date.toISOString().slice(0, 10),
+                date: date,
                 dow: date.getDay(),
                 dom: date.getDate(),
-                isToday: date.getDate() === new Date().getDate() && date.getMonth() === new Date().getMonth() && date.getFullYear() === new Date().getFullYear()
+                isToday: currentDate.getTime() === date.getTime(),
+                isDayPreview: date < currentDate
             }
         })
 
         const daysPreviewMonth = Array.from(Array(dayPreviewMonth).keys()).map(x => {
             const date = new Date(year, month, - x);
             return {
-                date: date.toISOString().slice(0, 10),
+                date: date,
                 dow: date.getDay(),
-                dom: date.getDate()
+                dom: date.getDate(),
+                isDayPreview: date < currentDate
             }
-        })
+        }).reverse()
 
-        const daysNextMonth = Array.from(Array(7 - dayLastDay).keys()).map(x => {
-            const date = new Date(year, month, x + 1);
+        const daysNextMonth = Array.from(Array(6 - dayLastDay).keys()).map(x => {
+            const date = new Date(year, month + 1, x + 1);
             return {
-                date: date.toISOString().slice(0, 10),
+                date: date,
                 dow: date.getDay(),
-                dom: date.getDate()
+                dom: date.getDate(),
+                isDayPreview: date < currentDate
             }
         })
 
         setDaysToShow([...daysPreviewMonth, ...daysMonth, ...daysNextMonth]);
-    }, [])
+    }, [dateCurrent])
+
+    const handleChangeMonth = useCallback((manageMonth: number) => {
+        setDateCurrent({
+            year: dateCurrent.year,
+            month: dateCurrent.month + manageMonth
+        })
+    }, [dateCurrent])
+
 
     return (
-        <div className={classes.wrapper}>
-            {daysToShow.map((day, index) => (
-                <div
-                    className={clsx(classes.boxDay, {
-                        [classes.isToday]: day.isToday
-                    })}
-                    key={index}
-                >
-                    <div className={classes.dow}>{day.dom}</div>
+        <div className={classes.container}>
+            <div className={classes.containerInfo}>
+                <div>
+                    <div className={classes.containerInfoTitle}>
+                        {t((langKeys as Dictionary)[`month_${("" + (dateCurrent.month + 1)).padStart(2, "0")}`])} {dateCurrent.year}
+                    </div>
+                    <div>
+                        Set your weekly hours
+                    </div>
                 </div>
-            ))}
+                <div className={classes.containerButtons}>
+                    <div
+                        className={classes.buttonMonth}
+                        onClick={() => handleChangeMonth(-1)}
+                    >
+                        <NavigateBeforeIcon />
+                    </div>
+                    <div
+                        className={classes.buttonMonth}
+                        style={{ borderLeft: '1px solid #e0e0e0' }}
+                        onClick={() => handleChangeMonth(1)}
+                    >
+                        <NavigateNextIcon />
+                    </div>
+                </div>
+            </div>
+            <div className={classes.wrapperDays}>
+                {dayNames.map((day, index) => (
+                    <div key={index} className={classes.dowHeader}>
+                        {(t((langKeys as Dictionary)[day])).substring(0, 3)}
+                    </div>
+                ))}
+            </div>
+            <div className={classes.wrapper}>
+                {daysToShow.map((day, index) => (
+                    <div
+                        className={clsx(classes.boxDay, {
+                            [classes.boxDayHover]: !day.isDayPreview,
+                            [classes.boxDayForbidden]: notPreviousDays && day.isDayPreview,
+                        })}
+                        key={index}
+                    >
+                        <div className={clsx(classes.dow, {
+                            [classes.isToday]: day.isToday
+                        })}>
+                            {day.dom}
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
     )
 }
