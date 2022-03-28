@@ -273,7 +273,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                     if (currentView === "view-2") {
                                         if (value?.length === 0) {
                                             return t(langKeys.field_required) as string;
-                                        } else if (value?.length!==limitnumbers) {
+                                        } else if ((value?.length!==limitnumbers) || (limitnumbers<12)) {
                                             return t(langKeys.creditcardvalidate) as string;
                                         }
                                     }
@@ -308,12 +308,12 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                         }else if(e.target.value.slice(0,2)==="37"||e.target.value.slice(0,2)==="34"){
                                             setIcon(<img src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{padding: 5}}></img>)
                                             setlimitnumbers(18)
-                                        }else if(e.target.value.slice(0,3)==="36"||e.target.value.slice(0,2)==="38"||e.target.value.slice(0,2)==="300"||e.target.value.slice(0,2)==="305"){
+                                        }else if(e.target.value.slice(0,2)==="36"||e.target.value.slice(0,2)==="38"||e.target.value.slice(0,3)==="300"||e.target.value.slice(0,3)==="305"){
                                             setIcon(<img src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{padding: 5}}></img>)
                                             setlimitnumbers(17)
                                         }else{
                                             setIcon(<></>)
-                                            setlimitnumbers(16)
+                                            setlimitnumbers(10)
                                         }
                                     }}
                                     InputProps={{
