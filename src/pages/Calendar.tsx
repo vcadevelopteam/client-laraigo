@@ -284,7 +284,17 @@ const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,interva
                                 color="primary"
                                 endIcon={<AddIcon style={{ color: "#deac32" }} />}
                                 style={{ backgroundColor: "#6c757d", pointerEvents: "auto",width:150  }}
-                                onClick={() => intervalsAppend({start:"00:00:00",end:"23:30:00",dow:dow})}
+                                onClick={() => {
+                                    let dowfields = fieldsIntervals?.filter((x:any)=>x.dow===dow)
+                                    debugger
+                                    if (dowfields?.length) {
+                                        intervalsAppend({start:"09:00:00",end:"17:00:00",dow:dow})
+                                    }else{
+                                        let hoursvalue=hours.map((x:any)=>(x.value))
+                                        intervalsAppend({start:"09:00:00",end:"17:00:00",dow:dow})
+                                    }
+                                    intervalsAppend(fieldsIntervals.length?{start:"00:00:00",end:"23:30:00",dow:dow}:{start:"00:00:00",end:"23:30:00",dow:dow})
+                                }}
                                 >{t(langKeys.newinterval)}
                             </Button>
                         </div>
