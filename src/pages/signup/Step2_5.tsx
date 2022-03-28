@@ -39,13 +39,14 @@ const Step2five: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarnin
         }
 
         let msg = "";
+        console.log(docType)
         switch (docType) {
             case 1: // DNI
                 msg = t(langKeys.doctype_dni_error);
                 return docnum.length !== 8 ? msg : undefined;
             case 2: // CARNET DE EXTRANJERIA
                 msg = t(langKeys.doctype_foreigners_card);
-                return docnum.length > 12 ? msg : undefined;
+                return docnum.length !== 12 ? msg : undefined;
             case 3: // REG. UNICO DE CONTRIBUYENTES
                 msg = t(langKeys.doctype_ruc_error);
                 return docnum.length !== 11 ? msg : undefined;
