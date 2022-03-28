@@ -251,7 +251,7 @@ const Schedule: FC<ScheduleInputProps> = ({ notPreviousDays = true, data = [] })
         }));
 
         setDaysToShow(monthDates);
-    }, [dateCurrent])
+    }, [dateCurrent, data])
 
     const handleChangeMonth = useCallback((manageMonth: number) => {
         setDateCurrent({
