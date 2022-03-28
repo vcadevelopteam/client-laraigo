@@ -486,6 +486,7 @@ const translation: LangKeys = {
     creditcardvalidate: "Por favor inserte un número de tarjeta válido",
     securitycode: "Código de seguridad",
     finishregwarn: "Para validar los datos ingresados de la tarjeta se realizará, un cargo de S/ 0.5 o su equivalente en dólares a la tarjeta ingresada, monto que será extornado de manera inmediata.",
+    finishregwarn2: "Esta pasarela de pago es soportada por Culqui para proteccion de datos",
     default_credentials: "Credenciales predeterminadas",
     private_mail: "Usar correo privado",
     supportprice: "Costo de soporte",

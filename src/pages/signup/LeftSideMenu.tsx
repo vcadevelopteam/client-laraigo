@@ -422,6 +422,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                     </div>   
                     <div style={{width:"50%"}} >
                         <div style={{ textAlign: "center", padding: "20px", border: "1px solid #7721ad", borderRadius: "15px", margin: "10px" }}>{t(langKeys.finishregwarn)}</div>
+                        <div style={{ textAlign: "center", padding: "20px", color: "#7721ad", margin: "10px" }}>{t(langKeys.finishregwarn2)}</div>
                     </div>                
                 </div>
                 <Button

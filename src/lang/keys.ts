@@ -53,6 +53,7 @@ export const langKeys = {
     validationphone: "validationphone",
     securitycode: "securitycode",
     finishregwarn: "finishregwarn",
+    finishregwarn2: "finishregwarn2",
     addfilter: "addfilter",
     filter: "filter",
     filter_unique_value: "filter_unique_value",

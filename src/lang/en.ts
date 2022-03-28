@@ -37,6 +37,7 @@ const translation: LangKeys = {
     automatizationrule: "Automatization rule",
     automatizationrules: "Automatization rules",
     finishregwarn: "To validate the data entered on the card, a charge of S/ 0.5 or its equivalent in dollars will be made to the card entered, an amount that will be refunded immediately.",
+    finishregwarn2: "This payment gateway is supported by Culqui for data protection",
     creditcard: "Credit card",
     tossub2: "will be required as the final step of creating your account.",
     
