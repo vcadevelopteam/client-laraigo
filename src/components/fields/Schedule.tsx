@@ -5,9 +5,52 @@ import { ArrowDropDown } from "@material-ui/icons";
 import React, { FC, useCallback, useEffect, useState } from "react";
 import clsx from 'clsx';
 import { Dictionary } from "@types";
-
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+
+const calculateMonth = (year: number, month: number) => {
+    const currentDate = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())
+    const countDays = new Date(year, month + 1, 0).getDate();
+    const dayLastDay = new Date(year, month + 1, 0).getDay();
+    const dayPreviewMonth = new Date(year, month, 1).getDay();
+
+    const daysMonth = Array.from(Array(countDays).keys()).map(x => {
+        const date = new Date(year, month, x + 1);
+        return {
+            date: date,
+            dateString: date.toISOString().substring(0, 10),
+            dow: date.getDay(),
+            dom: date.getDate(),
+            isToday: currentDate.getTime() === date.getTime(),
+            isDayPreview: date < currentDate
+        }
+    })
+
+    const daysPreviewMonth = Array.from(Array(dayPreviewMonth).keys()).map(x => {
+        const date = new Date(year, month, - x);
+        return {
+            date: date,
+            dateString: date.toISOString().substring(0, 10),
+            dow: date.getDay(),
+            dom: date.getDate(),
+            isDayPreview: date < currentDate
+        }
+    }).reverse()
+
+    const daysNextMonth = Array.from(Array(6 - dayLastDay).keys()).map(x => {
+        const date = new Date(year, month + 1, x + 1);
+        return {
+            date: date,
+            dateString: date.toISOString().substring(0, 10),
+            dow: date.getDay(),
+            dom: date.getDate(),
+            isDayPreview: date < currentDate
+        }
+    })
+
+    return [...daysPreviewMonth, ...daysMonth, ...daysNextMonth];
+}
+
 const dayNames = [
     'sunday',
     'monday',
@@ -18,19 +61,51 @@ const dayNames = [
     'saturday',
 ]
 
+const dataExample = [
+    { "dow": 0, "status": "available", "start": "09:00", "end": "18:00" },
+    { "dow": 1, "status": "available", "start": "07:00", "end": "18:00" },
+    { "dow": 2, "status": "available", "start": "09:00", "end": "18:00" },
+    { "dow": 3, "status": "available", "start": "09:00", "end": "18:00" },
+    { "dow": 4, "status": "unavailable", "start": "", "end": "" },
+    { "dow": 5, "status": "available", "start": "08:00", "end": "18:00" },
+    { "dow": 6, "status": "available", "start": "09:00", "end": "18:00" },
+    { "date": "2022-03-18", "status": "available", "dow": 5, "start": "09:00", "end": "13:00" },
+    { "date": "2022-03-18", "status": "available", "dow": 5, "start": "14:00", "end": "18:00" },
+    { "date": "2022-03-19", "status": "available", "dow": 6, "start": "09:00", "end": "13:00" },
+    { "date": "2022-03-20", "status": "available", "dow": 0, "start": "09:00", "end": "12:00" },
+    { "date": "2022-03-21", "status": "available", "dow": 1, "start": "09:00", "end": "13:00" },
+    { "date": "2022-03-21", "status": "available", "dow": 1, "start": "14:00", "end": "18:00" },
+    { "date": "2022-03-22", "status": "unavailable", "dow": 2, "start": "", "end": "" },
+    { "date": "2022-03-23", "status": "available", "dow": 3, "start": "09:00", "end": "18:00" }
+]
+interface ISchedule {
+    dow: number;
+    start: string;
+    end: string;
+    date?: string | undefined;
+    status: string;
+}
 interface ScheduleInputProps {
     notPreviousDays?: boolean;
+    data?: ISchedule[];
     // hex: string;
     // onChange: ColorChangeHandler;
     // disabled?: boolean;
 }
+interface DayInputProps {
+    day: DayProp;
+    notPreviousDays?: boolean;
+}
 
 interface DayProp {
-    date: Date,
-    dow: number,
-    dom: number,
-    isToday?: boolean,
-    isDayPreview?: boolean
+    date: Date;
+    dateString: string;
+    dow: number;
+    dom: number;
+    isToday?: boolean;
+    isDayPreview?: boolean;
+    notPreviousDays?: boolean;
+    data: ISchedule[]
 }
 
 const useScheduleStyles = makeStyles(theme => ({
@@ -116,11 +191,50 @@ const useScheduleStyles = makeStyles(theme => ({
         alignItems: 'center',
         justifyContent: 'center',
         cursor: 'pointer'
+    },
+    timeDate: {
+        fontSize: 14,
+        display: 'flex',
+        fontFamily: 'Calibri',
+        justifyContent: 'center'
     }
 }));
 
+const BoxDay: FC<DayInputProps> = ({ day, notPreviousDays }) => {
+    const classes = useScheduleStyles();
+    const [isAvailable, setIsAvailable] = useState(true);
 
-const Schedule: FC<ScheduleInputProps> = ({ notPreviousDays = true }) => {
+    useEffect(() => {
+        setIsAvailable(!day.data.some(x => x.status === "unavailable"))
+    }, [day.data])
+
+    return (
+        <div
+            className={clsx(classes.boxDay, {
+                [classes.boxDayHover]: !day.isDayPreview,
+                [classes.boxDayForbidden]: notPreviousDays && day.isDayPreview,
+            })}
+        >
+            <div className={clsx(classes.dow, {
+                [classes.isToday]: day.isToday
+            })}>
+                {day.dom}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {!isAvailable && (
+                    <div>unavailable</div>
+                )}
+                {isAvailable && day.data.map((item, index) => (
+                    <div key={index} className={classes.timeDate}>
+                        {item.start} - {item.end}
+                    </div>
+                ))}
+            </div>
+        </div>
+    )
+}
+
+const Schedule: FC<ScheduleInputProps> = ({ notPreviousDays = true, data = [] }) => {
     const classes = useScheduleStyles();
     const { t } = useTranslation();
     const [daysToShow, setDaysToShow] = useState<DayProp[]>([]);
@@ -131,46 +245,13 @@ const Schedule: FC<ScheduleInputProps> = ({ notPreviousDays = true }) => {
 
 
     useEffect(() => {
-        const year = dateCurrent.year;
-        const month = dateCurrent.month;
-        const currentDate = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())
-        const countDays = new Date(year, month + 1, 0).getDate();
-        const dayLastDay = new Date(year, month + 1, 0).getDay();
-        const dayPreviewMonth = new Date(year, month, 1).getDay();
+        const monthDates = calculateMonth(dateCurrent.year, dateCurrent.month).map(x => ({
+            ...x,
+            data: data.filter(y => y.dow === x.dow || y.date === x.dateString)
+        }));
 
-        const daysMonth = Array.from(Array(countDays).keys()).map(x => {
-            const date = new Date(year, month, x + 1);
-            return {
-                date: date,
-                dow: date.getDay(),
-                dom: date.getDate(),
-                isToday: currentDate.getTime() === date.getTime(),
-                isDayPreview: date < currentDate
-            }
-        })
-
-        const daysPreviewMonth = Array.from(Array(dayPreviewMonth).keys()).map(x => {
-            const date = new Date(year, month, - x);
-            return {
-                date: date,
-                dow: date.getDay(),
-                dom: date.getDate(),
-                isDayPreview: date < currentDate
-            }
-        }).reverse()
-
-        const daysNextMonth = Array.from(Array(6 - dayLastDay).keys()).map(x => {
-            const date = new Date(year, month + 1, x + 1);
-            return {
-                date: date,
-                dow: date.getDay(),
-                dom: date.getDate(),
-                isDayPreview: date < currentDate
-            }
-        })
-
-        setDaysToShow([...daysPreviewMonth, ...daysMonth, ...daysNextMonth]);
-    }, [dateCurrent])
+        setDaysToShow(monthDates);
+    }, [dateCurrent, data])
 
     const handleChangeMonth = useCallback((manageMonth: number) => {
         setDateCurrent({
@@ -216,19 +297,11 @@ const Schedule: FC<ScheduleInputProps> = ({ notPreviousDays = true }) => {
             </div>
             <div className={classes.wrapper}>
                 {daysToShow.map((day, index) => (
-                    <div
-                        className={clsx(classes.boxDay, {
-                            [classes.boxDayHover]: !day.isDayPreview,
-                            [classes.boxDayForbidden]: notPreviousDays && day.isDayPreview,
-                        })}
+                    <BoxDay
                         key={index}
-                    >
-                        <div className={clsx(classes.dow, {
-                            [classes.isToday]: day.isToday
-                        })}>
-                            {day.dom}
-                        </div>
-                    </div>
+                        day={day}
+                        notPreviousDays={notPreviousDays}
+                    />
                 ))}
             </div>
         </div>
