@@ -37,7 +37,6 @@ const paths = {
         path: '/activateuser/:token',
         resolve: (token: string) => `/activateuser/${token}`
     },
-    AUTOMATIZATIONRULES: "/automatizationrules",
     CHANNELS: '/channels',
     CHANNELS_ADD_FACEBOOK: {
         path: '/channels/:id/add/facebook',
