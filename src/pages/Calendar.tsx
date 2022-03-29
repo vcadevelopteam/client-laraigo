@@ -235,6 +235,7 @@ const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,interva
                                                     (y.start===fieldStart )|| (y.end===fieldEnd)
                                                 ));
                                                 if((exists+1)){
+                                                    console.log(exists)
                                                     setValue(`intervals.${i}.overlap`, exists)
                                                     setValue(`intervals.${exists}.overlap`, i)
                                                 }
@@ -274,6 +275,7 @@ const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,interva
                                                 if((exists+1)){
                                                     setValue(`intervals.${exists}.overlap`, i)
                                                     setValue(`intervals.${i}.overlap`, exists)
+                                                    trigger(`intervals.${exists}.start`)
                                                 }                                     
                                                 setValue(`intervals.${i}.end`, value?.value)
                                                 trigger(`intervals.${i}.start`)
@@ -288,7 +290,7 @@ const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,interva
                                             </IconButton>
                                         </div>
                                         </>
-                                        {!!(getValues(`intervals.${i}.overlap`)+1) && 
+                                        {!!((getValues(`intervals.${i}.overlap`))+1) && 
                                             <p className={classes.errorclass} >{t(langKeys.errorhours)}</p>
                                         }
                                     </div>
@@ -312,7 +314,14 @@ const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,interva
                                         let indexofnexthour = hoursvalue.indexOf(dowfields[dowfields?.length-1].end)
                                         let startindex = (indexofnexthour+2)<48?indexofnexthour+2:indexofnexthour-46
                                         let endindex = (indexofnexthour+4)<48?indexofnexthour+4:indexofnexthour-44
-                                        intervalsAppend({start:hoursvalue[startindex],end:hoursvalue[endindex],dow:dow, status: "available", overlap:-1})
+                                        const exists = fieldsIntervals.findIndex((y:any,cont:number) => (y.dow === dow) && (
+                                                    ((y.start < hoursvalue[endindex]) && (y.start > hoursvalue[startindex])) ||
+                                                    ((y.end < hoursvalue[endindex]) && (y.end > hoursvalue[startindex])) ||
+                                                    ((hoursvalue[endindex] < y.end) && (hoursvalue[endindex] > y.start)) ||
+                                                    ((hoursvalue[startindex] < y.end )&& (hoursvalue[startindex] > y.start)) ||
+                                                    (y.start===hoursvalue[startindex] )|| (y.end===hoursvalue[endindex])
+                                        ));
+                                        intervalsAppend({start:hoursvalue[startindex],end:hoursvalue[endindex],dow:dow, status: "available", overlap: exists})
                                         trigger(`intervals.${dowfields?.length-1}.start`)
                                     }else{
                                         intervalsAppend({start:"09:00:00",end:"17:00:00",dow:dow, status: "available",overlap:-1})
