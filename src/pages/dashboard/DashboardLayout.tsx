@@ -793,7 +793,6 @@ const LayoutBar: FC<LayoutBarProps> = ({ data,alldata, tickFormatter, tooltipFor
                     <>
                         
                         <ChartTooltip content={({ active, payload, label }) => {
-                                let partialtotal=0;
                                 if (active && payload && payload.length) {
                                     let partialtotal=payload.reduce((acc,x)=>acc+Number(x.value),0);
                                     return (
@@ -1017,6 +1016,7 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipF
                         />
                         {keys.map((x,i)=>(
                             <Line  type="monotone" dataKey={x} key={x} stroke={colors[i]} >
+                                <LabelList dataKey={x} position="top" fill="#000" />
                             </Line>
                         ))}
                     </>
