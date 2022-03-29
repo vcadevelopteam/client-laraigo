@@ -1696,6 +1696,7 @@ const translation: LangKeys = {
     report_productivity_suspensiontime: 'Suspension time',
     report_productivity_suspensiontime_help: 'It is the time suspended by an advisor.',
     report_productivity_avgagentresponse: 'Average agent response',
+    report_productivity_avgagentresponse_help: "It is the average time in which a response is granted by the advisor",
     report_productivity_firstname: 'Name',
     report_productivity_lastname: 'Last name',
     report_productivity_derivationtime_help: "Hour in which the user selects the option to be assisted by an advisor.",
