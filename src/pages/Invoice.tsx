@@ -6330,6 +6330,12 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
                                     for(let i=1;i<=spaces;i++){
                                         partialvalue += " " + val.slice(i*4,(i+1)*4)
                                     }
+
+                                    if (partialvalue.slice(-1) === " ") {
+                                        partialvalue = partialvalue.slice(0, -1);
+                                    }
+                                    e.target.value = partialvalue;
+                                    
                                     setValue("cardnumber", partialvalue.trim());
                                 }}
                                 onInput={(e:any) => {
@@ -6345,21 +6351,21 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
                                         setIcon(<img src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{padding: 5}}></img>)
                                         setLimitNumbers(18);
                                         setValue('cardlimit', 18);
-                                    }else if(e.target.value.slice(0,3)==="36"||e.target.value.slice(0,2)==="38"||e.target.value.slice(0,2)==="300"||e.target.value.slice(0,2)==="305"){
+                                    }else if(e.target.value.slice(0,2)==="36"||e.target.value.slice(0,2)==="38"||e.target.value.slice(0,3)==="300"||e.target.value.slice(0,3)==="305"){
                                         setIcon(<img src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{padding: 5}}></img>)
                                         setLimitNumbers(17);
                                         setValue('cardlimit', 17);
                                     }else{
                                         setIcon(<></>)
-                                        setLimitNumbers(16);
-                                        setValue('cardlimit', 16);
+                                        setLimitNumbers(10);
+                                        setValue('cardlimit', 10);
                                     }
                                 }}
                                 InputProps={{
                                     endAdornment: icon,
                                 }}
                                 inputProps={{
-                                    maxLength: limitNumbers
+                                    maxLength: getValues('cardlimit'),
                                 }}
                             />
                             <h3>{t(langKeys.dueDate)}</h3>
