@@ -1,37 +1,55 @@
 import { makeStyles } from "@material-ui/core";
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
+import { ArrowDropDown } from "@material-ui/icons";
 import React, { FC, useCallback, useEffect, useState } from "react";
 import clsx from 'clsx';
 import { Dictionary } from "@types";
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import RepeatIcon from '@material-ui/icons/Repeat';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
 
-import { getLocaleDateString, calculateDateFromMonth } from 'common/helpers';
-import { CalendarZyx } from "components";
+const calculateMonth = (year: number, month: number) => {
+    const currentDate = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())
+    const countDays = new Date(year, month + 1, 0).getDate();
+    const dayLastDay = new Date(year, month + 1, 0).getDay();
+    const dayPreviewMonth = new Date(year, month, 1).getDay();
 
-import {
-    MuiPickersUtilsProvider,
-    KeyboardTimePicker,
-    DatePicker,
-    KeyboardDatePicker
-} from '@material-ui/pickers';
-import { Calendar } from 'react-date-range';
+    const daysMonth = Array.from(Array(countDays).keys()).map(x => {
+        const date = new Date(year, month, x + 1);
+        return {
+            date: date,
+            dateString: date.toISOString().substring(0, 10),
+            dow: date.getDay(),
+            dom: date.getDate(),
+            isToday: currentDate.getTime() === date.getTime(),
+            isDayPreview: date < currentDate
+        }
+    })
 
-import DateFnsUtils from '@date-io/date-fns';
-import * as locale from "date-fns/locale";
+    const daysPreviewMonth = Array.from(Array(dayPreviewMonth).keys()).map(x => {
+        const date = new Date(year, month, - x);
+        return {
+            date: date,
+            dateString: date.toISOString().substring(0, 10),
+            dow: date.getDay(),
+            dom: date.getDate(),
+            isDayPreview: date < currentDate
+        }
+    }).reverse()
 
+    const daysNextMonth = Array.from(Array(6 - dayLastDay).keys()).map(x => {
+        const date = new Date(year, month + 1, x + 1);
+        return {
+            date: date,
+            dateString: date.toISOString().substring(0, 10),
+            dow: date.getDay(),
+            dom: date.getDate(),
+            isDayPreview: date < currentDate
+        }
+    })
 
+    return [...daysPreviewMonth, ...daysMonth, ...daysNextMonth];
+}
 
 const dayNames = [
     'sunday',
@@ -76,7 +94,6 @@ interface ScheduleInputProps {
 interface DayInputProps {
     day: DayProp;
     notPreviousDays?: boolean;
-    handleClick: (event: any, day: DayProp) => void;
 }
 
 interface DayProp {
@@ -106,6 +123,7 @@ const useScheduleStyles = makeStyles(theme => ({
         }
     },
     boxDayForbidden: {
+        cursor: 'not-allowed',
         backgroundColor: '#dbdbdb3d',
         '& > div': {
             color: '#767676'
@@ -181,7 +199,7 @@ const useScheduleStyles = makeStyles(theme => ({
     }
 }));
 
-const BoxDay: FC<DayInputProps> = ({ day, notPreviousDays, handleClick }) => {
+const BoxDay: FC<DayInputProps> = ({ day, notPreviousDays }) => {
     const classes = useScheduleStyles();
     const [isAvailable, setIsAvailable] = useState(true);
 
@@ -191,7 +209,6 @@ const BoxDay: FC<DayInputProps> = ({ day, notPreviousDays, handleClick }) => {
 
     return (
         <div
-            onClick={(e: any) => handleClick(e, day)}
             className={clsx(classes.boxDay, {
                 [classes.boxDayHover]: !day.isDayPreview,
                 [classes.boxDayForbidden]: notPreviousDays && day.isDayPreview,
@@ -216,79 +233,18 @@ const BoxDay: FC<DayInputProps> = ({ day, notPreviousDays, handleClick }) => {
     )
 }
 
-const DialogDate: React.FC<{ open: boolean, setOpen: (param: any) => void, day?: DayProp }> = ({ open, setOpen, day }) => {
-    const { t } = useTranslation();
-    const [dateSelected, setDateSelected] = useState<DayProp[]>([])
-
-    const onHandlerChange = (p1: any, p2: any, p3: string) => {
-        console.log(p1)
-    }
-
-    return (
-        <Dialog
-            open={open}
-            fullWidth
-            maxWidth={"xs"}
-        >
-            <DialogTitle style={{ textAlign: 'center' }}>
-                Select the date(s) you want to assign specific hours
-            </DialogTitle>
-            <DialogContent>
-                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
-                    <CalendarZyx
-                        selectedDays={[day?.dateString!!]}
-                        onChange={onHandlerChange}
-                    />
-                </div>
-                <div style={{backgroundColor: '#e1e1e1'}}>
-                    aaa
-                </div>
-
-            </DialogContent>
-            <DialogActions>
-                <Button variant="outlined" onClick={() => setOpen(false)}>
-                    Cancel
-                </Button>
-                <Button variant="contained" color="primary">
-                    Apply
-                </Button>
-            </DialogActions>
-        </Dialog >
-    )
-}
-
-const ScheduleBase: FC<ScheduleInputProps> = ({ notPreviousDays = true, data }) => {
+const Schedule: FC<ScheduleInputProps> = ({ notPreviousDays = true, data }) => {
     const classes = useScheduleStyles();
     const { t } = useTranslation();
     const [daysToShow, setDaysToShow] = useState<DayProp[]>([]);
     const [dateCurrent, setDateCurrent] = useState<{ month: number, year: number }>({
         month: new Date().getMonth(),
         year: new Date().getFullYear()
-    });
-    const [daySelected, setDaySelected] = useState<DayProp | undefined>(undefined);
-    const [openDialogDate, setOpenDialogDate] = useState(false);
-
-    const [anchorEl, setAnchorEl] = React.useState(null);
-
-    const handleClick = (event: any, day: DayProp) => {
-        if (day.isDayPreview && notPreviousDays)
-            return
-        setDaySelected(day);
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
-    const selectItemDay = () => {
-        setAnchorEl(null);
-        setOpenDialogDate(true);
-    };
+    })
 
 
     useEffect(() => {
-        const monthDates = calculateDateFromMonth(dateCurrent.year, dateCurrent.month).map(x => ({
+        const monthDates = calculateMonth(dateCurrent.year, dateCurrent.month).map(x => ({
             ...x,
             data: dataExample.filter(y => y.dow === x.dow || y.date === x.dateString)
         }));
@@ -343,38 +299,12 @@ const ScheduleBase: FC<ScheduleInputProps> = ({ notPreviousDays = true, data }) 
                     <BoxDay
                         key={index}
                         day={day}
-                        handleClick={handleClick}
                         notPreviousDays={notPreviousDays}
                     />
                 ))}
             </div>
-            <Menu
-                id="calendar_box_day_menu"
-                anchorEl={anchorEl}
-                keepMounted
-                open={Boolean(anchorEl)}
-                onClose={handleClose}
-            >
-                <MenuItem onClick={selectItemDay}>
-                    <ListItemIcon color="inherit">
-                        <CalendarTodayIcon style={{ width: 16, color: "#7721AD" }} fontSize="small" />
-                    </ListItemIcon>
-                    <div style={{ fontSize: 16 }}>Edit date(s)</div>
-                </MenuItem>
-                <MenuItem onClick={selectItemDay}>
-                    <ListItemIcon color="inherit">
-                        <RepeatIcon style={{ width: 16, color: "#7721AD" }} fontSize="small" />
-                    </ListItemIcon>
-                    <div style={{ fontSize: 16 }}>Edit each day</div>
-                </MenuItem>
-            </Menu>
-            <DialogDate
-                day={daySelected}
-                open={openDialogDate}
-                setOpen={setOpenDialogDate}
-            />
         </div>
     )
 }
 
-export default ScheduleBase;
+export default Schedule;

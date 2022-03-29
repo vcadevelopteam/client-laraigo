@@ -799,7 +799,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                     </div>
                 </AntTabPanel>
                 <AntTabPanel index={2} currentIndex={tabIndex}>
-                    <Schedule />
+                    <Schedule data={[]} />
                 </AntTabPanel>
             </form>
         </div>
@@ -1051,7 +1051,9 @@ const Calendar: FC = () => {
                     />
                 </div>
                 <div style={{marginTop: 20}}>
-                    <Schedule />
+                    <Schedule
+                        data={[]}
+                    />
 
                 </div>
             </div>

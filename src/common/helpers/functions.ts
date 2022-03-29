@@ -567,3 +567,46 @@ export const getLocaleDateString = () => {
 
     return formats[navigator.language] || "dd/MM/yyyy";
 }
+
+export const calculateDateFromMonth = (year: number, month: number) => {
+    const currentDate = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())
+    const countDays = new Date(year, month + 1, 0).getDate();
+    const dayLastDay = new Date(year, month + 1, 0).getDay();
+    const dayPreviewMonth = new Date(year, month, 1).getDay();
+
+    const daysMonth = Array.from(Array(countDays).keys()).map(x => {
+        const date = new Date(year, month, x + 1);
+        return {
+            date: date,
+            dateString: date.toISOString().substring(0, 10),
+            dow: date.getDay(),
+            dom: date.getDate(),
+            isToday: currentDate.getTime() === date.getTime(),
+            isDayPreview: date < currentDate
+        }
+    })
+
+    const daysPreviewMonth = Array.from(Array(dayPreviewMonth).keys()).map(x => {
+        const date = new Date(year, month, - x);
+        return {
+            date: date,
+            dateString: date.toISOString().substring(0, 10),
+            dow: date.getDay(),
+            dom: date.getDate(),
+            isDayPreview: date < currentDate
+        }
+    }).reverse()
+
+    const daysNextMonth = Array.from(Array(6 - dayLastDay).keys()).map(x => {
+        const date = new Date(year, month + 1, x + 1);
+        return {
+            date: date,
+            dateString: date.toISOString().substring(0, 10),
+            dow: date.getDay(),
+            dom: date.getDate(),
+            isDayPreview: date < currentDate
+        }
+    })
+
+    return [...daysPreviewMonth, ...daysMonth, ...daysNextMonth];
+}
