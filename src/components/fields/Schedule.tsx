@@ -39,7 +39,7 @@ const dataExample = [
     { "dow": 3, "status": "available", "start": "09:00:00", "end": "18:00:00" },
     { "dow": 5, "status": "available", "start": "08:00:00", "end": "18:00:00" },
     { "dow": 6, "status": "available", "start": "09:00:00", "end": "18:00:00" },
-    { "date": "2022-03-18", "status": "available", "dow": 5, "start": "09:00:00", "end": "13:00:00" },
+    { "date": "2022-03-02", "status": "available", "dow": 3, "start": "12:00:00", "end": "13:00:00" },
     // { "date": "2022-03-18", "status": "available", "dow": 5, "start": "14:00", "end": "18:00" },
     // { "date": "2022-03-19", "status": "available", "dow": 6, "start": "09:00", "end": "13:00" },
     // { "date": "2022-03-20", "status": "available", "dow": 0, "start": "09:00", "end": "12:00" },
@@ -188,9 +188,20 @@ const useScheduleStyles = makeStyles(theme => ({
 const BoxDay: FC<DayInputProps> = ({ day, notPreviousDays, handleClick }) => {
     const classes = useScheduleStyles();
     const [isAvailable, setIsAvailable] = useState(true);
+    const [timesOnDate, setTimesOnDate] = useState<ISchedule[]>([])
 
     useEffect(() => {
-        setIsAvailable(!day.data.some(x => x.status === "unavailable") && day.data.length > 0)
+        const isAvaialable = !day.data.some(x => x.status === "unavailable") && day.data.length > 0
+        setIsAvailable(isAvaialable);
+        if (isAvaialable) {
+            //validar si existe una fecha personalizada para ese día
+            const existDatePersonalized = day.data.some(x => !!x.date) 
+            if (existDatePersonalized) {
+                setTimesOnDate(day.data.filter(x => !!x.date))
+            } else {
+                setTimesOnDate(day.data)
+            }
+        }
     }, [day.data])
 
     return (
@@ -210,7 +221,7 @@ const BoxDay: FC<DayInputProps> = ({ day, notPreviousDays, handleClick }) => {
                 {!isAvailable && (
                     <div>unavailable</div>
                 )}
-                {isAvailable && day.data.map((item, index) => (
+                {isAvailable && timesOnDate.map((item, index) => (
                     <div key={index} className={classes.timeDate}>
                         {item.start} - {item.end}
                     </div>
@@ -226,8 +237,14 @@ const DialogDate: React.FC<{ open: boolean, setOpen: (param: any) => void, day?:
 
     const [dateSelected, setDateSelected] = useState<DayProp[]>([])
 
+    useEffect(() => {
+        if (!!day)
+            setDateSelected([day])
+    }, [day])
+
     const onHandlerChange = (p1: any, p2: any, p3: string) => {
         console.log(p1)
+        setDateSelected(p1)
     }
 
     const { control, register, reset, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm<{ times: ISchedule[] }>({
@@ -249,9 +266,10 @@ const DialogDate: React.FC<{ open: boolean, setOpen: (param: any) => void, day?:
 
 
     const onSubmit = handleSubmit((data) => {
-        console.log("submitted")
-    });
+        console.log("submitted");
 
+        console.log(data.times, dateSelected)
+    });
 
     return (
         <Dialog
@@ -442,7 +460,7 @@ const ScheduleBase: FC<ScheduleInputProps> = ({ notPreviousDays = true, data }) 
     useEffect(() => {
         const monthDates = calculateDateFromMonth(dateCurrent.year, dateCurrent.month).map(x => ({
             ...x,
-            data: dataExample.filter(y => y.dow === x.dow || y.date === x.dateString)
+            data: dataExample.filter(y => y.date === x.dateString || (y.dow === x.dow && y.date !== x.dateString))
         }));
 
         setDaysToShow(monthDates);
