@@ -6272,17 +6272,9 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
                             onChange={(value) => setValue('mail', value)}
                             valueDefault={getValues('mail')}
                             error={errors?.mail?.message}
-                            className="col-6"
+                            className="col-12"
                             disabled={!edit}
                         />
-                        <div className={"col-6"} style={{ paddingBottom: '3px' }}>
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.preferred)}</Box>
-                            <FormControlLabel
-                                style={{ paddingLeft: 10 }}
-                                control={<IOSSwitch checked={checkedFavorite} disabled={!edit} onChange={(e) => { setCheckedFavorite(e.target.checked); setValue('favorite', e.target.checked) }} />}
-                                label={""}
-                            />
-                        </div>
                     </div>
                     <h3>{t(langKeys.creditcard)}</h3>
                     <div style={{display:"flex"}}>
@@ -6293,61 +6285,71 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
                     </div>
                     <div style={{display: "flex",width:"100%"}}>
                         <div style={{width:"50%"}}>
-                            <TextField
-                                variant="outlined"
-                                margin="normal"
-                                fullWidth
-                                size="small"
-                                label={t(langKeys.creditcard)}
-                                error={!!errors.cardnumber}
-                                helperText={errors.cardnumber?.message}
-                                disabled={!edit}
-                                defaultValue={getValues('cardnumber')}
-                                onChange={(e) => {
-                                    let val = e.target.value.replace(/[^0-9]/g, '');
-                                    let spaces = Math.floor(val.length/4)
-                                    let partialvalue = val.slice(0,4)
-                                    for(let i=1;i<=spaces;i++){
-                                        partialvalue += " " + val.slice(i*4,(i+1)*4)
-                                    }
+                            <div className="row-zyx">
+                                <TextField
+                                    variant="outlined"
+                                    margin="normal"
+                                    fullWidth
+                                    size="small"
+                                    label={t(langKeys.creditcard)}
+                                    error={!!errors.cardnumber}
+                                    helperText={errors.cardnumber?.message}
+                                    disabled={!edit}
+                                    defaultValue={getValues('cardnumber')}
+                                    onChange={(e) => {
+                                        let val = e.target.value.replace(/[^0-9]/g, '');
+                                        let spaces = Math.floor(val.length/4)
+                                        let partialvalue = val.slice(0,4)
+                                        for(let i=1;i<=spaces;i++){
+                                            partialvalue += " " + val.slice(i*4,(i+1)*4)
+                                        }
+                                        if (partialvalue.slice(-1) === " ") {
+                                            partialvalue = partialvalue.slice(0, -1);
+                                        }
+                                        e.target.value = partialvalue;
 
-                                    if (partialvalue.slice(-1) === " ") {
-                                        partialvalue = partialvalue.slice(0, -1);
-                                    }
-                                    e.target.value = partialvalue;
-                                    
-                                    setValue("cardnumber", partialvalue.trim());
-                                }}
-                                onInput={(e:any) => {
-                                    if(e.target.value.slice(0,1)==="4"){
-                                        setIcon(<img src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{padding: 5}}></img>)
-                                        setLimitNumbers(19);
-                                        setValue('cardlimit', 19);
-                                    }else if(e.target.value.slice(0,2)==="51"||e.target.value.slice(0,2)==="55"){
-                                        setIcon(<img src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{padding: 5}}></img>)
-                                        setLimitNumbers(19);
-                                        setValue('cardlimit', 19);
-                                    }else if(e.target.value.slice(0,2)==="37"||e.target.value.slice(0,2)==="34"){
-                                        setIcon(<img src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{padding: 5}}></img>)
-                                        setLimitNumbers(18);
-                                        setValue('cardlimit', 18);
-                                    }else if(e.target.value.slice(0,2)==="36"||e.target.value.slice(0,2)==="38"||e.target.value.slice(0,3)==="300"||e.target.value.slice(0,3)==="305"){
-                                        setIcon(<img src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{padding: 5}}></img>)
-                                        setLimitNumbers(17);
-                                        setValue('cardlimit', 17);
-                                    }else{
-                                        setIcon(<></>)
-                                        setLimitNumbers(10);
-                                        setValue('cardlimit', 10);
-                                    }
-                                }}
-                                InputProps={{
-                                    endAdornment: icon,
-                                }}
-                                inputProps={{
-                                    maxLength: getValues('cardlimit'),
-                                }}
-                            />
+                                        setValue("cardnumber", partialvalue.trim());
+                                    }}
+                                    onInput={(e:any) => {
+                                        if(e.target.value.slice(0,1)==="4"){
+                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{padding: 5}}></img>)
+                                            setLimitNumbers(19);
+                                            setValue('cardlimit', 19);
+                                        }else if(e.target.value.slice(0,2)==="51"||e.target.value.slice(0,2)==="55"){
+                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{padding: 5}}></img>)
+                                            setLimitNumbers(19);
+                                            setValue('cardlimit', 19);
+                                        }else if(e.target.value.slice(0,2)==="37"||e.target.value.slice(0,2)==="34"){
+                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{padding: 5}}></img>)
+                                            setLimitNumbers(18);
+                                            setValue('cardlimit', 18);
+                                        }else if(e.target.value.slice(0,2)==="36"||e.target.value.slice(0,2)==="38"||e.target.value.slice(0,3)==="300"||e.target.value.slice(0,3)==="305"){
+                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{padding: 5}}></img>)
+                                            setLimitNumbers(17);
+                                            setValue('cardlimit', 17);
+                                        }else{
+                                            setIcon(<></>)
+                                            setLimitNumbers(10);
+                                            setValue('cardlimit', 10);
+                                        }
+                                    }}
+                                    InputProps={{
+                                        endAdornment: icon,
+                                    }}
+                                    inputProps={{
+                                        maxLength: getValues('cardlimit'),
+                                    }}
+                                    className="col-9"
+                                />
+                                <div className={"col-3"} style={{ paddingBottom: '3px' }}>
+                                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.preferred)}</Box>
+                                    <FormControlLabel
+                                        style={{ paddingLeft: 10 }}
+                                        control={<IOSSwitch checked={checkedFavorite} disabled={!edit} onChange={(e) => { setCheckedFavorite(e.target.checked); setValue('favorite', e.target.checked) }} />}
+                                        label={""}
+                                    />
+                                </div>
+                            </div>
                             <h3>{t(langKeys.dueDate)}</h3>
                             {edit && <div style={{display:"flex"}}>
                                 <FieldSelect
