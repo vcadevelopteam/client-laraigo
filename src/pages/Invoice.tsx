@@ -6296,6 +6296,9 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
                                     helperText={errors.cardnumber?.message}
                                     disabled={!edit}
                                     defaultValue={getValues('cardnumber')}
+                                    onPaste={e=>{
+                                        e.preventDefault()
+                                    }}
                                     onChange={(e) => {
                                         let val = e.target.value.replace(/[^0-9]/g, '');
                                         let spaces = Math.floor(val.length/4)
