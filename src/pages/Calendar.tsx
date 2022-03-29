@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldEditMulti, RichText, ColorInput, AntTabPanel } from 'components';
-import { calcKPIManager, convertLocalDate, dictToArrayKV, getDateCleaned, getDateToday, getFirstDayMonth, getLastDayMonth, getValuesFromDomain, insCalendar, insKPIManager, selCalendar, selKPIManager, selKPIManagerHistory } from 'common/helpers';
+import { calcKPIManager, convertLocalDate, dictToArrayKV, getDateCleaned, getDateToday, getFirstDayMonth, getLastDayMonth, getValuesFromDomain, insCalendar, hours, selCalendar, selKPIManager, selKPIManagerHistory } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -31,56 +31,6 @@ import clsx from 'clsx';
 import Schedule from 'components/fields/Schedule';
 import AddIcon from '@material-ui/icons/Add';
 
-const hours = [
-    {desc: "00:00", value: "00:00:00"},
-    {desc: "00:30", value: "00:30:00"},
-    {desc: "01:00", value: "01:00:00"},
-    {desc: "01:30", value: "01:30:00"},
-    {desc: "02:00", value: "02:00:00"},
-    {desc: "02:30", value: "02:30:00"},
-    {desc: "03:00", value: "03:00:00"},
-    {desc: "03:30", value: "03:30:00"},
-    {desc: "04:00", value: "04:00:00"},
-    {desc: "04:30", value: "04:30:00"},
-    {desc: "05:00", value: "05:00:00"},
-    {desc: "05:30", value: "05:30:00"},
-    {desc: "06:00", value: "06:00:00"},
-    {desc: "06:30", value: "06:30:00"},
-    {desc: "07:00", value: "07:00:00"},
-    {desc: "07:30", value: "07:30:00"},
-    {desc: "08:00", value: "08:00:00"},
-    {desc: "08:30", value: "08:30:00"},
-    {desc: "09:00", value: "09:00:00"},
-    {desc: "09:30", value: "09:30:00"},
-    {desc: "10:00", value: "10:00:00"},
-    {desc: "10:30", value: "10:30:00"},
-    {desc: "11:00", value: "11:00:00"},
-    {desc: "11:30", value: "11:30:00"},
-    {desc: "12:00", value: "12:00:00"},
-    {desc: "12:30", value: "12:30:00"},
-    {desc: "13:00", value: "13:00:00"},
-    {desc: "13:30", value: "13:30:00"},
-    {desc: "14:00", value: "14:00:00"},
-    {desc: "14:30", value: "14:30:00"},
-    {desc: "15:00", value: "15:00:00"},
-    {desc: "15:30", value: "15:30:00"},
-    {desc: "16:00", value: "16:00:00"},
-    {desc: "16:30", value: "16:30:00"},
-    {desc: "17:00", value: "17:00:00"},
-    {desc: "17:30", value: "17:30:00"},
-    {desc: "18:00", value: "18:00:00"},
-    {desc: "18:30", value: "18:30:00"},
-    {desc: "19:00", value: "19:00:00"},
-    {desc: "19:30", value: "19:30:00"},
-    {desc: "20:00", value: "20:00:00"},
-    {desc: "20:30", value: "20:30:00"},
-    {desc: "21:00", value: "21:00:00"},
-    {desc: "21:30", value: "21:30:00"},
-    {desc: "22:00", value: "22:00:00"},
-    {desc: "22:30", value: "22:30:00"},
-    {desc: "23:00", value: "23:00:00"},
-    {desc: "23:30", value: "23:30:00"},
-]
 interface RowSelected {
     row: Dictionary | null,
     operation: string

@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core";
+import { IconButton, makeStyles } from "@material-ui/core";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import React, { FC, useCallback, useEffect, useState } from "react";
@@ -16,22 +16,11 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-
-import { getLocaleDateString, calculateDateFromMonth } from 'common/helpers';
-import { CalendarZyx } from "components";
-
-import {
-    MuiPickersUtilsProvider,
-    KeyboardTimePicker,
-    DatePicker,
-    KeyboardDatePicker
-} from '@material-ui/pickers';
-import { Calendar } from 'react-date-range';
-
-import DateFnsUtils from '@date-io/date-fns';
-import * as locale from "date-fns/locale";
-
-
+import { CalendarZyx, FieldSelect } from "components";
+import { useFieldArray, useForm } from 'react-hook-form';
+import { hours, calculateDateFromMonth } from "common/helpers";
+import DeleteIcon from '@material-ui/icons/Delete';
+import AddIcon from '@material-ui/icons/Add';
 
 const dayNames = [
     'sunday',
@@ -44,20 +33,20 @@ const dayNames = [
 ]
 
 const dataExample = [
-    { "dow": 0, "status": "available", "start": "09:00", "end": "18:00" },
-    { "dow": 1, "status": "available", "start": "07:00", "end": "18:00" },
-    { "dow": 2, "status": "available", "start": "09:00", "end": "18:00" },
-    { "dow": 3, "status": "available", "start": "09:00", "end": "18:00" },
-    { "dow": 5, "status": "available", "start": "08:00", "end": "18:00" },
-    { "dow": 6, "status": "available", "start": "09:00", "end": "18:00" },
-    { "date": "2022-03-18", "status": "available", "dow": 5, "start": "09:00", "end": "13:00" },
-    { "date": "2022-03-18", "status": "available", "dow": 5, "start": "14:00", "end": "18:00" },
-    { "date": "2022-03-19", "status": "available", "dow": 6, "start": "09:00", "end": "13:00" },
-    { "date": "2022-03-20", "status": "available", "dow": 0, "start": "09:00", "end": "12:00" },
-    { "date": "2022-03-21", "status": "available", "dow": 1, "start": "09:00", "end": "13:00" },
-    { "date": "2022-03-21", "status": "available", "dow": 1, "start": "14:00", "end": "18:00" },
-    { "date": "2022-03-22", "status": "unavailable", "dow": 2, "start": "", "end": "" },
-    { "date": "2022-03-23", "status": "available", "dow": 3, "start": "09:00", "end": "18:00" }
+    { "dow": 0, "status": "available", "start": "09:00:00", "end": "18:00:00" },
+    { "dow": 1, "status": "available", "start": "07:00:00", "end": "18:00:00" },
+    { "dow": 2, "status": "available", "start": "09:00:00", "end": "18:00:00" },
+    { "dow": 3, "status": "available", "start": "09:00:00", "end": "18:00:00" },
+    { "dow": 5, "status": "available", "start": "08:00:00", "end": "18:00:00" },
+    { "dow": 6, "status": "available", "start": "09:00:00", "end": "18:00:00" },
+    { "date": "2022-03-18", "status": "available", "dow": 5, "start": "09:00:00", "end": "13:00:00" },
+    // { "date": "2022-03-18", "status": "available", "dow": 5, "start": "14:00", "end": "18:00" },
+    // { "date": "2022-03-19", "status": "available", "dow": 6, "start": "09:00", "end": "13:00" },
+    // { "date": "2022-03-20", "status": "available", "dow": 0, "start": "09:00", "end": "12:00" },
+    // { "date": "2022-03-21", "status": "available", "dow": 1, "start": "09:00", "end": "13:00" },
+    // { "date": "2022-03-21", "status": "available", "dow": 1, "start": "14:00", "end": "18:00" },
+    // { "date": "2022-03-22", "status": "unavailable", "dow": 2, "start": "", "end": "" },
+    // { "date": "2022-03-23", "status": "available", "dow": 3, "start": "09:00", "end": "18:00" }
 ]
 interface ISchedule {
     dow: number;
@@ -65,6 +54,7 @@ interface ISchedule {
     end: string;
     date?: string | undefined;
     status: string;
+    overlap?: number;
 }
 interface ScheduleInputProps {
     notPreviousDays?: boolean;
@@ -91,6 +81,16 @@ interface DayProp {
 }
 
 const useScheduleStyles = makeStyles(theme => ({
+    errorclass: {
+        color: "#f44336",
+        margin: 0,
+        marginTop: "4px",
+        fontSize: "0.75rem",
+        textAlign: "left",
+        fontFamily: "dm-sans",
+        fontWeight: 400,
+        lineHeight: 1.66,
+    },
     boxDay: {
         height: 130,
         borderRight: '1px solid #e0e0e0',
@@ -178,6 +178,10 @@ const useScheduleStyles = makeStyles(theme => ({
         display: 'flex',
         fontFamily: 'Calibri',
         justifyContent: 'center'
+    },
+    centerInput: {
+        display: 'flex',
+        alignItems: 'center'
     }
 }));
 
@@ -218,11 +222,31 @@ const BoxDay: FC<DayInputProps> = ({ day, notPreviousDays, handleClick }) => {
 
 const DialogDate: React.FC<{ open: boolean, setOpen: (param: any) => void, day?: DayProp }> = ({ open, setOpen, day }) => {
     const { t } = useTranslation();
+    const classes = useScheduleStyles();
+
     const [dateSelected, setDateSelected] = useState<DayProp[]>([])
 
     const onHandlerChange = (p1: any, p2: any, p3: string) => {
         console.log(p1)
     }
+
+    const { control, register, reset, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm<{ times: ISchedule[] }>({
+        defaultValues: {
+            times: day?.data || []
+        }
+    });
+
+    useEffect(() => {
+        reset({
+            times: day?.data || []
+        })
+    }, [reset, day])
+
+    const { fields: fieldstimes, append: timesAppend, remove: timesRemove } = useFieldArray({
+        control,
+        name: 'times',
+    });
+    console.log(fieldstimes)
 
     return (
         <Dialog
@@ -234,14 +258,132 @@ const DialogDate: React.FC<{ open: boolean, setOpen: (param: any) => void, day?:
                 Select the date(s) you want to assign specific hours
             </DialogTitle>
             <DialogContent>
-                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
                     <CalendarZyx
                         selectedDays={[day?.dateString!!]}
                         onChange={onHandlerChange}
                     />
                 </div>
-                <div style={{backgroundColor: '#e1e1e1'}}>
-                    aaa
+                <div style={{ borderTop: '1px solid #e1e1e1', borderBottom: '1px solid #e1e1e1', paddingTop: 16, paddingBottom: 16 }}>
+                    <div style={{ marginBottom: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ fontWeight: 'bold' }}>
+                            What hours are you available?
+                        </div>
+                        <IconButton
+                            onClick={() => {
+                                const hoursvalue = hours.map((x: any) => (x.value));
+                                if (fieldstimes?.length) {
+                                    let indexofnexthour = hoursvalue.indexOf(fieldstimes[fieldstimes?.length - 1].end);
+                                    let startindex = (indexofnexthour + 2) < 48 ? indexofnexthour + 2 : indexofnexthour - 46;
+                                    let endindex = (indexofnexthour + 4) < 48 ? indexofnexthour + 4 : indexofnexthour - 44;
+                                    timesAppend({ start: hoursvalue[startindex], end: hours.map((x: any) => (x.value))[endindex], dow: day?.dow!!, status: "available", overlap: -1 })
+                                    trigger(`times.${fieldstimes?.length - 1}.start`)
+                                } else {
+                                    timesAppend({ start: "09:00:00", end: "17:00:00", dow: day?.dow!!, status: "available", overlap: -1 })
+                                }
+                            }}
+                        >
+                            <AddIcon />
+                        </IconButton>
+
+                    </div>
+
+                    {!!day && fieldstimes.map((x: any, i: number) => {
+                        // if (x.dow !== dow) return null
+                        return (
+                            <div key={x.id}>
+                                <div style={{ margin: 0, display: 'grid', gridTemplateColumns: '130px 8px 130px 50px', gap: 8, alignContent: 'center' }}>
+                                    <FieldSelect
+                                        valueDefault={getValues(`times.${i}.start`)}
+                                        fregister={{
+                                            ...register(`times.${i}.start`, {
+                                                validate: {
+                                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required),
+                                                    timescross: (value: any) => (getValues(`times.${i}.end`) > (value)) || t(langKeys.errorhoursdontmatch) + "",
+                                                }
+
+                                            }),
+                                        }}
+                                        variant="outlined"
+                                        className={classes.centerInput}
+                                        error={errors?.times?.[i]?.start?.message}
+                                        style={{ pointerEvents: "auto", display: 'flex', alignItems: 'center' }}
+                                        onChange={(value) => {
+                                            console.log(value)
+                                            let overlap = getValues(`times.${i}.overlap`) || 0
+                                            let fieldEnd = getValues(`times.${i}.end`)
+                                            let fieldStart = value?.value
+                                            if ((overlap + 1)) {
+                                                setValue(`times.${i}.overlap`, -1)
+                                                setValue(`times.${overlap}.overlap`, -1)
+                                            }
+                                            const exists = fieldstimes.findIndex((y: any, cont: number) => (
+                                                ((y.start < fieldEnd) && (y.start > fieldStart)) ||
+                                                ((y.end < fieldEnd) && (y.end > fieldStart)) ||
+                                                ((fieldEnd < y.end) && (fieldEnd > y.start)) ||
+                                                ((fieldStart < y.end) && (fieldStart > y.start)) ||
+                                                (y.start === fieldStart) || (y.end === fieldEnd)
+                                            ));
+                                            if ((exists + 1)) {
+                                                setValue(`times.${i}.overlap`, exists)
+                                                setValue(`times.${exists}.overlap`, i)
+                                            }
+                                            setValue(`times.${i}.start`, value?.value)
+                                            trigger(`times.${i}.start`)
+                                        }}
+                                        data={hours}
+                                        optionDesc="desc"
+                                        optionValue="value"
+                                    />
+                                    <div style={{ fontWeight: 'bold', display: 'flex', alignItems: 'center' }}> - </div>
+                                    <FieldSelect
+                                        fregister={{
+                                            ...register(`times.${i}.end`, {
+                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                            }),
+                                        }}
+                                        variant="outlined"
+                                        className={classes.centerInput}
+                                        valueDefault={getValues(`times.${i}.end`)}
+                                        error={errors?.times?.[i]?.end?.message}
+                                        style={{ pointerEvents: "auto", display: 'flex', alignItems: 'center' }}
+                                        onChange={(value) => {
+                                            let overlap = getValues(`times.${i}.overlap`) || 0
+                                            let fieldEnd = value?.value
+                                            let fieldStart = getValues(`times.${i}.start`)
+                                            if ((overlap + 1)) {
+                                                setValue(`times.${i}.overlap`, -1)
+                                                setValue(`times.${overlap}.overlap`, -1)
+                                            }
+                                            const exists = fieldstimes.findIndex((y: any, cont: number) => (
+                                                ((y.start < fieldEnd) && (y.start > fieldStart)) ||
+                                                ((y.end < fieldEnd) && (y.end > fieldStart)) ||
+                                                ((fieldEnd < y.end) && (fieldEnd > y.start)) ||
+                                                ((fieldStart < y.end) && (fieldStart > y.start)) ||
+                                                (y.start === fieldStart) || (y.end === fieldEnd)
+                                            ));
+                                            if ((exists + 1)) {
+                                                setValue(`times.${exists}.overlap`, i)
+                                                setValue(`times.${i}.overlap`, exists)
+                                            }
+                                            setValue(`times.${i}.end`, value?.value)
+                                            trigger(`times.${i}.start`)
+                                        }}
+                                        data={hours}
+                                        optionDesc="desc"
+                                        optionValue="value"
+                                    />
+                                    <IconButton style={{ pointerEvents: "auto" }} aria-label="delete" onClick={(e: any) => { e.preventDefault(); timesRemove(i) }}>
+                                        <DeleteIcon />
+                                    </IconButton>
+
+                                </div>
+                                {!!((getValues(`times.${i}.overlap`) || 0) + 1) &&
+                                    <p className={classes.errorclass} >{t(langKeys.errorhours)}</p>
+                                }
+                            </div>
+                        )
+                    })}
                 </div>
 
             </DialogContent>
