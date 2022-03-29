@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useContext, useMemo } from "react";
+import { FC, useContext, useMemo, useState } from "react";
 import { makeStyles, Button, TextField, Breadcrumbs } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { langKeys } from "lang/keys";
@@ -27,6 +27,8 @@ const Step2five: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarnin
     const { getValues, control, trigger } = useFormContext<MainData>();
     const { t } = useTranslation();
 
+    const [docType, setDocType] = useState(getValues('doctype') || 0);
+
     const databilling = useMemo(() => ([
         { id: 1, desc: t(langKeys.billingfield_billingdni) },
         { id: 2, desc: t(langKeys.billingfield_billingextra) },
@@ -34,6 +36,8 @@ const Step2five: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarnin
     ]), [t]);
 
     const docTypeValidate = (docnum: string, docType: number) => {
+        console.log(docType);
+
         if (!docnum) {
             return t(langKeys.field_required);
         }
@@ -82,6 +86,7 @@ const Step2five: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarnin
                         <FieldSelect
                             onChange={(data: typeof databilling[number]) => {
                                 onChange(data?.id || "");
+                                setDocType(data?.id || 0);
                             }}
                             variant="outlined"
                             style={{ marginTop: 8 }}
@@ -138,7 +143,7 @@ const Step2five: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarnin
                         margin="normal"
                         fullWidth
                         size="small"
-                        label={t(langKeys.businessname)}
+                        label={(docType === 1 || docType === 2) ? t(langKeys.name) : t(langKeys.businessname)}
                         error={!!errors.businessname}
                         helperText={errors.businessname?.message}
                     />
