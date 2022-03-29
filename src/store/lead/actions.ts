@@ -1,4 +1,5 @@
 import { IActionCall, ICrmLeadNoteSave, IRequestBody, ITransaction } from "@types";
+import { getCommChannelLst, getMessageTemplateLst, getProductCatalogSel } from "common/helpers";
 import { CommonService } from "network";
 import actionTypes from "./actionTypes";
 
@@ -201,8 +202,8 @@ export const updateLeadTags = (body: IRequestBody): IActionCall => ({
 
 export const resetUpdateLeadTags = (): IActionCall => ({type: actionTypes.UPDATE_LEAD_TAGS_RESET});
 
-export const getLeadProductsDomain = (body: IRequestBody): IActionCall => ({
-    callAPI: () => CommonService.main(body),
+export const getLeadProductsDomain = (): IActionCall => ({
+    callAPI: () => CommonService.main(getProductCatalogSel()),
     types: {
         loading: actionTypes.GET_LEAD_PRODUCTS_DOMAIN,
         success: actionTypes.GET_LEAD_PRODUCTS_DOMAIN_SUCCESS,
@@ -224,3 +225,28 @@ export const getLeadTagsDomain = (body: IRequestBody): IActionCall => ({
 });
 
 export const resetGetLeadTagsDomain = (): IActionCall => ({type: actionTypes.GET_LEAD_TAGS_DOMAIN_RESET});
+
+export const getLeadTemplates = (): IActionCall => ({
+    callAPI: () => CommonService.main(getMessageTemplateLst()),
+    types: {
+        loading: actionTypes.GET_LEAD_TEMPLATES,
+        success: actionTypes.GET_LEAD_TEMPLATES_SUCCESS,
+        failure: actionTypes.GET_LEAD_TEMPLATES_FAILURE,
+    },
+    type: null,
+});
+
+export const resetGetLeadTemplates = (): IActionCall => ({type: actionTypes.GET_LEAD_TEMPLATES_RESET});
+
+
+export const getLeadChannels = (): IActionCall => ({
+    callAPI: () => CommonService.main(getCommChannelLst()),
+    types: {
+        loading: actionTypes.GET_LEAD_CHANNELS,
+        success: actionTypes.GET_LEAD_CHANNELS_SUCCESS,
+        failure: actionTypes.GET_LEAD_CHANNELS_FAILURE,
+    },
+    type: null,
+});
+
+export const resetGetLeadChannels = (): IActionCall => ({type: actionTypes.GET_LEAD_CHANNELS_RESET});

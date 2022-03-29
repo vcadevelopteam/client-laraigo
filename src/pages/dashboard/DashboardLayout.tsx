@@ -40,6 +40,10 @@ interface Item {
 interface Items {
     [key: string]: Item;
 }
+
+const months = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "set", "oct", "nov", "dic"]
+const monthColor=["#c51314","#a255de","#5fbeeb","#ffffff","#2a770b","#cb7ec6","#ff0100", "#5cea22", "#00076b", "#ff01c0", "#ffcc00", "#5372ff"]
+
 const colors=["#8884d8", "#82ca9d", "#d32248", "#1dc1fa", "#2b5ef4", "#7be2aa", "#c58725", "#692f32","#8f97b8", "#57be99"]
 
 const useDashboardLayoutStyles = makeStyles(theme => ({
@@ -750,9 +754,21 @@ const LayoutBar: FC<LayoutBarProps> = ({ data,alldata, tickFormatter, tooltipFor
         })
     }else{
         let listlabels= data.map(x=>x.label)[0]
-        if(listlabels.includes("day") || listlabels.includes("month") || listlabels.includes("week")){
+        if (listlabels.includes("-")) {
             reversed=true
-            modifieddata=data.map(x=>({...x,label:x.label.replace("day",`${t("day")} `).replace("month",`${t("month")} `).replace("week",`${t("week")} `)}))
+            modifieddata=data.map(x=>{
+                let newlabel = x.label.replace("day","")
+                let month = newlabel.slice(0,newlabel.indexOf("-"))
+                newlabel = newlabel.replace(`${month}-`, `${t(months[Number(month)-1])} `)
+                return ({...x,label:newlabel, color:monthColor[Number(month)-1]})
+            })
+        }
+        if(listlabels.includes("week")){
+            reversed=true
+            modifieddata=data.map(x=>({...x,label:x.label.replace("month",`${t("month")} `).replace("week",`${t("week")} `)}))
+        }
+        if(listlabels.includes("month")){
+            modifieddata=data.map(x=>({...x,label:t("full" + months[Number(x.label.replace("month",``))-1])}))
         }
         
     }
@@ -777,7 +793,6 @@ const LayoutBar: FC<LayoutBarProps> = ({ data,alldata, tickFormatter, tooltipFor
                     <>
                         
                         <ChartTooltip content={({ active, payload, label }) => {
-                                let partialtotal=0;
                                 if (active && payload && payload.length) {
                                     let partialtotal=payload.reduce((acc,x)=>acc+Number(x.value),0);
                                     return (
@@ -871,6 +886,9 @@ const LayoutBar: FC<LayoutBarProps> = ({ data,alldata, tickFormatter, tooltipFor
                             textAnchor="end"
                             type="monotone"
                         >
+                            {modifieddata.map((entry: any, index: number) => (
+                                <Cell key={`cell-${index}`} fill={entry?.color||"#8884d8"} />
+                            ))}
                             <LabelList dataKey="quantity" position="top" fill="#000" />
                         </Bar>
                     </>
@@ -912,9 +930,18 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipF
         })
     }else{
         let listlabels= data.map(x=>x.label)[0]
-        if(listlabels.includes("day") || listlabels.includes("month") || listlabels.includes("week")){
+        if (listlabels.includes("-")) {
             reversed=true
-            modifieddata=data.map(x=>({...x,label:x.label.replace("day",`${t("day")} `).replace("month",`${t("month")} `).replace("week",`${t("week")} `)}))
+            modifieddata=data.map(x=>{
+                let newlabel = x.label.replace("day","")
+                let month = newlabel.slice(0,newlabel.indexOf("-"))
+                newlabel = newlabel.replace(`${month}-`, `${t(months[Number(month)-1])} `)
+                return ({...x,label:newlabel, color:monthColor[Number(month)-1]})
+            })
+        }
+        if(listlabels.includes("month") || listlabels.includes("week")){
+            reversed=true
+            modifieddata=data.map(x=>({...x,label:x.label.replace("month",`${t("month")} `).replace("week",`${t("week")} `)}))
         }
         
     }
@@ -988,7 +1015,9 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipF
                             }}
                         />
                         {keys.map((x,i)=>(
-                            <Line  type="monotone" dataKey={x} key={x} stroke={colors[i]}  />
+                            <Line  type="monotone" dataKey={x} key={x} stroke={colors[i]} >
+                                <LabelList dataKey={x} position="top" fill="#000" />
+                            </Line>
                         ))}
                     </>
                 ):
@@ -1016,7 +1045,13 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipF
                                 return null;
                             }}
                         />
-                        <Line isAnimationActive={false} type="monotone" dataKey="quantity" stroke="#8884d8"><LabelList dataKey="quantity" position="top" fill="#000" /></Line>
+                        <Line isAnimationActive={false} type="monotone" dataKey="quantity" stroke="#8884d8">
+                            
+                            {modifieddata.map((entry: any, index: number) => (
+                                <Cell key={`cell-${index}`} stroke={entry?.color||"#8884d8"} />
+                            ))}
+                            <LabelList dataKey="quantity" position="top" fill="#000" />
+                        </Line>
                     </>
                 )
                 }

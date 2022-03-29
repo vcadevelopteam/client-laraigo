@@ -1,3 +1,5 @@
+
+
 export interface ILead {
     leadid: number;
     description: string;
@@ -40,7 +42,12 @@ export interface ICrmLead {
     tags: string;
     type: string;
     phone: string | null;
+    firstname?: string | null;
+    lastname?: string | null;
+    documenttype?: string | null;
+    documentnumber?: string | null;
     email: string | null;
+    personid?: bigint;
     /**asesor */
     userid: string | number | null;
     phase: string | null;
@@ -90,7 +97,31 @@ export interface ICrmLeadActivitySave {
     feedback: string;
     /**array json type: Descendant[] (RichText) */
     detailjson: string;
+    sendhsm?: string;
     assigneduser?: number;
+
+    hsmtemplateid?: number;
+    communicationchannelid?: number;
+    communicationchanneltype?: string;
+    hsmtemplatename?: string;
+    variables?: any[]
+}
+export interface AutomatizationRuleSave {
+	id: number,
+    operation: string,
+    description: string,
+    communicationchannelid: number,
+    columnid: number,
+    shippingtype: string,
+    xdays: string,
+    status: string,
+    type: string,
+    schedule: string,
+    tags: string,
+    products: string,
+    messagetemplateid: number,
+    hsmtemplatename: string,
+    variables?: any[],
 }
 
 export interface ICrmLeadNoteSave {

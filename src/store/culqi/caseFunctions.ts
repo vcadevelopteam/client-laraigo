@@ -371,3 +371,112 @@ export const emitInvoiceReset = (state: IState): IState => ({
     ...state,
     requestEmitInvoice: initialState.requestEmitInvoice
 })
+
+export const cardCreate = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestCardCreate: {
+        ...state.requestCardCreate,
+        error: false,
+        loading: true,
+    }
+})
+
+export const cardCreateFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestCardCreate: {
+        ...state.requestCardCreate,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message || 'error_unexpected_error',
+    }
+})
+
+export const cardCreateSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestCardCreate: {
+        ...state.requestCardCreate,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message,
+    }
+})
+
+export const cardCreateReset = (state: IState): IState => ({
+    ...state,
+    requestCardCreate: initialState.requestCardCreate,
+})
+
+export const cardDelete = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestCardDelete: {
+        ...state.requestCardDelete,
+        error: false,
+        loading: true,
+    }
+})
+
+export const cardDeleteFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestCardDelete: {
+        ...state.requestCardDelete,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message || 'error_unexpected_error',
+    }
+})
+
+export const cardDeleteSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestCardDelete: {
+        ...state.requestCardDelete,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message,
+    }
+})
+
+export const cardDeleteReset = (state: IState): IState => ({
+    ...state,
+    requestCardDelete: initialState.requestCardDelete,
+})
+
+export const cardGet = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestCardGet: {
+        ...state.requestCardGet,
+        error: false,
+        loading: true,
+    }
+})
+
+export const cardGetFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestCardGet: {
+        ...state.requestCardGet,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message || 'error_unexpected_error',
+    }
+})
+
+export const cardGetSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestCardGet: {
+        ...state.requestCardGet,
+        datacard: action?.payload?.data,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message,
+    }
+})
+
+export const cardGetReset = (state: IState): IState => ({
+    ...state,
+    requestCardGet: initialState.requestCardGet,
+})

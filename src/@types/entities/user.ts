@@ -58,10 +58,10 @@ export interface IUser {
     countrycode: string;
     currencysymbol: string;
     pwdchangefirstlogin: boolean;
-    notifications: Notification[];
+    // notifications: Notification[];
 }
 
-interface Notification {
+export interface NotificationZyx {
     notificationtype: string | null;
     [key: string]: any;
 }

@@ -251,8 +251,8 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
                         className="col-12"
                         valueDefault={getValues('communicationchannelid')}
                         onChange={value => {
-                            setValue('communicationchannelid', value.communicationchannelid);
-                            setValue('communicationchanneltype', value.type);
+                            setValue('communicationchannelid', value?.communicationchannelid || 0);
+                            setValue('communicationchanneltype', value?.type || "");
                         }}
                         error={errors?.communicationchannelid?.message}
                         data={channelList}

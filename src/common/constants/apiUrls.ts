@@ -1,4 +1,4 @@
-const ENV = "DEVELOP";
+const ENV = "TESTING";
 
 const APIS_URL = {
     DEVELOP: {
@@ -112,4 +112,8 @@ export const apiUrls = {
     CHANGEPASSWORD: `${BASE_URL}/subscription/changepassword`,
     
     VALIDATE_CHANNELS: `${BASE_URL}/subscription/validatechannels`,
+
+    CARDCREATE: `${BASE_URL}/payment/cardcreate`,
+    CARDDELETE: `${BASE_URL}/payment/carddelete`,
+    CARDGET: `${BASE_URL}/payment/cardget`,
 };
