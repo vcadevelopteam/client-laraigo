@@ -289,6 +289,9 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                     label={t(langKeys.creditcard)}
                                     error={!!errors.creditcard}
                                     helperText={errors.creditcard?.message}
+                                    onPaste={e=>{
+                                        e.preventDefault()
+                                    }}
                                     onChange={(e) =>{
                                         let val = e.target.value.replace(/[^0-9]/g, '');
                                         let spaces = Math.floor(val.length/4)
