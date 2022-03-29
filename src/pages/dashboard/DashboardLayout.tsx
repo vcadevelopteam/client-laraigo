@@ -750,7 +750,11 @@ const LayoutBar: FC<LayoutBarProps> = ({ data,alldata, tickFormatter, tooltipFor
                     keys.push(y)
                 }
             })
-            return ({...Object(x.quantity),label:`${t(alldata?.interval)} ${x.label.replace(alldata?.interval,"")}`})
+            if(alldata?.interval==="month"){
+                return ({...Object(x.quantity),label:t("full" + months[Number(x.label.split("-")[1])-1]) + " " + x.label.split("-")[0].replace("month",``)})
+            }else{
+                return ({...Object(x.quantity),label:`${t(alldata?.interval)} ${x.label.replace(alldata?.interval,"")}`})
+            }
         })
     }else{
         let listlabels= data.map(x=>x.label)[0]
@@ -769,7 +773,7 @@ const LayoutBar: FC<LayoutBarProps> = ({ data,alldata, tickFormatter, tooltipFor
         }
         if(listlabels.includes("month")){
             reversed=true
-            modifieddata=data.map(x=>({...x,label:t("full" + months[Number(x.label.replace("month",``))-1])}))
+            modifieddata=data.map(x=>({...x,label:t("full" + months[Number(x.label.split("-")[1])-1]) + " " + x.label.split("-")[0].replace("month",``)}))
         }
         
     }
@@ -925,11 +929,12 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipF
             })
         })
         let itemmodel = keys.reduce((acc,x)=>{return {...acc,[x]:0}},{})
+        console.log(alldata?.interval)
         if(alldata?.interval==="month"){
             
             modifieddata=data.map(x=>{
                 
-                return ({...itemmodel,...Object(x.quantity),label:t("full" + months[Number(x.label.replace("month",``))-1])})
+                return ({...itemmodel,...Object(x.quantity),label:t("full" + months[Number(x.label.split("-")[1])-1]) + " " + x.label.split("-")[0].replace("month",``)})
             })
         }else{
             modifieddata=data.map(x=>{
@@ -954,7 +959,7 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipF
         }
         if(listlabels.includes("month")){
             reversed=true
-            modifieddata=data.map(x=>({...x,label:t("full" + months[Number(x.label.replace("month",``))-1])}))
+            modifieddata=data.map(x=>({...x,label:t("full" + months[Number(x.label.split("-")[1])-1]) + " " + x.label.split("-")[0].replace("month",``)}))
         }
         
     }
