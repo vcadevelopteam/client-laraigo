@@ -6157,8 +6157,6 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            address: row?.address || '',
-            addresscity: row?.addresscity || '',
             firstname: row?.firstname || '',
             lastname: row?.lastname || '',
             mail: row?.mail || '',
@@ -6172,8 +6170,6 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
     });
 
     React.useEffect(() => {
-        register('address', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('addresscity', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('firstname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('lastname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('mail', { validate: emailRequired, value: '' });
@@ -6252,22 +6248,6 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
                 </div>
                 <div className={classes.containerDetail}>
                     <h3>{t(langKeys.addpaymentmethodsub)}</h3>
-                    {edit && <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.addresscity)}
-                            onChange={(value) => setValue('addresscity', value)}
-                            valueDefault={getValues('addresscity')}
-                            error={errors?.addresscity?.message}
-                            className="col-6"
-                        />
-                        <FieldEdit
-                            label={t(langKeys.address)}
-                            onChange={(value) => setValue('address', value)}
-                            valueDefault={getValues('address')}
-                            error={errors?.address?.message}
-                            className="col-6"
-                        />
-                    </div>}
                     <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.firstname)}
@@ -6443,7 +6423,7 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
                                 error={!!errors.securitycode}
                                 helperText={errors.securitycode?.message}
                                 inputProps={{
-                                    maxLength: 3
+                                    maxLength: getValues('cardlimit') === 18 ? 4 : 3
                                 }}
                                 onChange={(e) => {
                                     setValue("securitycode", e.target.value);

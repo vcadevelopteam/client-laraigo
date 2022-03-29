@@ -414,7 +414,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                     error={!!errors.securitycode}
                                     helperText={errors.securitycode?.message}
                                     inputProps={{
-                                        maxLength: 3
+                                        maxLength: limitnumbers === 18 ? 4 : 3
                                     }}
                                 />
                             )}
