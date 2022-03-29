@@ -249,7 +249,12 @@ const DialogDate: React.FC<{ open: boolean, setOpen: (param: any) => void, day?:
 
 
     const onSubmit = handleSubmit((data) => {
-        console.log("submitted")
+        debugger
+        if(data.times.some(x=>(x.overlap||-1)!==-1)){
+            console.log("submitted")
+        }else{
+            console.log("error overlap")
+        }
     });
 
 
