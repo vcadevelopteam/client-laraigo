@@ -77,7 +77,7 @@ interface DayProp {
     isToday?: boolean;
     isDayPreview?: boolean;
     notPreviousDays?: boolean;
-    data: ISchedule[]
+    data: ISchedule[];
 }
 
 const useScheduleStyles = makeStyles(theme => ({
@@ -188,20 +188,10 @@ const useScheduleStyles = makeStyles(theme => ({
 const BoxDay: FC<DayInputProps> = ({ day, notPreviousDays, handleClick }) => {
     const classes = useScheduleStyles();
     const [isAvailable, setIsAvailable] = useState(true);
-    const [timesOnDate, setTimesOnDate] = useState<ISchedule[]>([])
 
     useEffect(() => {
-        const isAvaialable = !day.data.some(x => x.status === "unavailable") && day.data.length > 0
+        const isAvaialable = !day.data.some(x => x.status === "unavailable") && day.data.length > 0;
         setIsAvailable(isAvaialable);
-        if (isAvaialable) {
-            //validar si existe una fecha personalizada para ese día
-            const existDatePersonalized = day.data.some(x => !!x.date) 
-            if (existDatePersonalized) {
-                setTimesOnDate(day.data.filter(x => !!x.date))
-            } else {
-                setTimesOnDate(day.data)
-            }
-        }
     }, [day.data])
 
     return (
@@ -221,7 +211,7 @@ const BoxDay: FC<DayInputProps> = ({ day, notPreviousDays, handleClick }) => {
                 {!isAvailable && (
                     <div>unavailable</div>
                 )}
-                {isAvailable && timesOnDate.map((item, index) => (
+                {isAvailable && day?.data.map((item, index) => (
                     <div key={index} className={classes.timeDate}>
                         {item.start} - {item.end}
                     </div>
@@ -266,9 +256,22 @@ const DialogDate: React.FC<{ open: boolean, setOpen: (param: any) => void, day?:
 
 
     const onSubmit = handleSubmit((data) => {
-        console.log("submitted");
-
-        console.log(data.times, dateSelected)
+        if (data.times.some(x => (x.overlap || -1) !== -1)) {
+            console.log("submitted")
+        } else {
+            const timesToAdd = data.times.reduce((acc: ISchedule[], time: ISchedule) => ([
+                ...acc,
+                ...(dateSelected.map(x => ({
+                    start: time.start,
+                    end: time.end,
+                    dow: time.dow,
+                    dom: x.dom,
+                    date: x.dateString,
+                    status: "available"
+                })))
+            ]) ,[])
+            console.log(timesToAdd)
+        }
     });
 
     return (
@@ -460,7 +463,7 @@ const ScheduleBase: FC<ScheduleInputProps> = ({ notPreviousDays = true, data }) 
     useEffect(() => {
         const monthDates = calculateDateFromMonth(dateCurrent.year, dateCurrent.month).map(x => ({
             ...x,
-            data: dataExample.filter(y => y.date === x.dateString || (y.dow === x.dow && y.date !== x.dateString))
+            data: dataExample.some(y => y.date === x.dateString) ? dataExample.filter(y => y.date === x.dateString) : dataExample.filter(y => y.dow === x.dow && !y.date),
         }));
 
         setDaysToShow(monthDates);

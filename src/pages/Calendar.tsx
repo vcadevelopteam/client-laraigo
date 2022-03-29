@@ -424,7 +424,12 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     }
 
     const onSubmit = handleSubmit((data) => {
-        console.log("submitted")
+        
+        if(data.intervals.some(x=>(x.overlap||-1)!==-1)){
+            console.log("submitted")
+        }else{
+            console.log("error overlap")
+        }
         /*
         console.log(data)
         const callback = () => {
