@@ -925,10 +925,18 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipF
             })
         })
         let itemmodel = keys.reduce((acc,x)=>{return {...acc,[x]:0}},{})
-        modifieddata=data.map(x=>{
-
-            return ({...itemmodel,...Object(x.quantity),label:`${t(alldata?.interval)} ${x.label.replace(alldata?.interval,"")}`})
-        })
+        if(alldata?.interval==="month"){
+            
+            modifieddata=data.map(x=>{
+                
+                return ({...itemmodel,...Object(x.quantity),label:t("full" + months[Number(x.label.replace("month",``))-1])})
+            })
+        }else{
+            modifieddata=data.map(x=>{
+    
+                return ({...itemmodel,...Object(x.quantity),label:`${t(alldata?.interval)} ${x.label.replace(alldata?.interval,"")}`})
+            })
+        }
     }else{
         let listlabels= data.map(x=>x.label)[0]
         if (listlabels.includes("-")) {
