@@ -591,7 +591,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
         }
         let columnas= JSON.parse(templates[selectedIndex].columnjson) as ColumnTemplate[]
         let summary = JSON.parse(templates[selectedIndex].summaryjson).map((x:any)=>{return {
-            alias: `${t(langKeys.summarization)} - ${columnas?.find(y => y.columnname === x.columnname)?.alias} (${t(x.function)})`,
+            alias: `${t(langKeys.summarization)} - ${columnas?.find(y => y.columnname === x.columnname)?.alias} (${t("function_" + x.function)})`,
             columnname: `${x.columnname}${x.function}`,
             description: x.columnname,
             descriptionT: x.columnname,
