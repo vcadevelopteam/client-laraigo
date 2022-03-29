@@ -29,6 +29,8 @@ const translation: LangKeys = {
     type_service_plural: 'Services Type',
     
     show_all: 'Show all',
+    errorhours: "Hours overlap another set of hours",
+    errorhoursdontmatch: "Choose an end time later than the start time",
 
     model: 'Model',
     model_plural: 'Models',

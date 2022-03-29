@@ -33,6 +33,8 @@ const translation: LangKeys = {
     indefinetly: "Indefinido",
     daysintothefuture: "Días en el futuro",
     withinadaterange: "Rango de fechas",
+    errorhours: "Las horas se solapan con otro conjunto de horas",
+    errorhoursdontmatch: "Elija una hora de fin más tarde que la hora de inicio",
 
     lead: 'Oportunidad',
     sunday: "Domingo",

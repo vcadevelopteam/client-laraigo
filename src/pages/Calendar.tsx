@@ -96,10 +96,12 @@ interface DetailCalendarProps {
     fetchData: (id?: number) => void;
 }
 
-type IIntervals = {
+type ISchedule = {
     start:string,
     end:string,
-    dow:number
+    dow:number,
+    status: string,
+    overlap?:number,
 }
 
 type FormFields = {
@@ -115,7 +117,7 @@ type FormFields = {
     daysintothefuture: number,
     quantity: number,
     operation: string,
-    intervals: IIntervals[],
+    intervals: ISchedule[],
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -194,6 +196,16 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: '#106ba3',
       },
     },
+    errorclass:{
+        color: "#f44336",
+        margin: 0,
+        marginTop: "4px",
+        fontSize: "0.75rem",
+        textAlign: "left",
+        fontFamily: "dm-sans",
+        fontWeight: 400,
+        lineHeight: 1.66,
+    }
 }));
 
 const dataPeriod: Dictionary = {
@@ -212,16 +224,23 @@ interface LabelDaysProps {
     flag: Boolean;
     fieldsIntervals?: any;
     errors?: any;
-    intervalsAppend: (interval: IIntervals) => void;
+    intervalsAppend: (interval: ISchedule) => void;
     intervalsRemove: (index: number) => void;
     register: any;
     setValue: (value: any,value2:any) => void;
+    getValues: (value: any) => any;
+    trigger: (name:any) => any;
     dow: number;
     labelName: string;
 }
 
-const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,intervalsAppend,intervalsRemove,register,setValue,dow,labelName})=>{
+const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,intervalsAppend,intervalsRemove,register,setValue,dow,labelName,getValues,trigger})=>{
     const { t } = useTranslation();
+    const classes = useStyles();
+    let hoursvalue=hours.map((x:any)=>(x.value))
+    let dowfields = fieldsIntervals?.filter((x:any)=>x.dow===dow)
+    
+
     return (
         <>
         <div style={{display:"flex", width: "100%",paddingTop:5, marginRight:10}}>
@@ -233,43 +252,97 @@ const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,interva
                             {fieldsIntervals.map((x:any,i:number) =>{
                                 if (x.dow!==dow) return null
                                 return (
-                                <div className="row-zyx" style={{margin:0}} key={`sun${i}`}>                                
-                                    <FieldSelect
-                                        fregister={{
-                                            ...register(`intervals.${i}.start`, {
-                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                            }),
-                                        }}
-                                        className="col-5nomargin"
-                                        valueDefault={x?.start}
-                                        error={errors?.intervals?.[i]?.start?.message}
-                                        style={{pointerEvents: "auto"}}                                                                            
-                                        onChange={(value) => setValue(`intervals.${i}.start`, value?.value)}
-                                        data={hours}
-                                        optionDesc="desc"
-                                        optionValue="value"
-                                    />                               
-                                    <FieldSelect
-                                        fregister={{
-                                            ...register(`intervals.${i}.end`, {
-                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                            }),
-                                        }}
-                                        className="col-5nomargin"
-                                        valueDefault={x?.end}
-                                        error={errors?.intervals?.[i]?.end?.message}
-                                        style={{pointerEvents: "auto"}}                                                                            
-                                        onChange={(value) => setValue(`intervals.${i}.end`, value?.value)}
-                                        data={hours}
-                                        optionDesc="desc"
-                                        optionValue="value"
-                                    />                                                          
-                                    <div style={{ width: "16.6%" }}>
-                                        <IconButton style={{pointerEvents: "auto"}} aria-label="delete" onClick={(e) =>{e.preventDefault();intervalsRemove(i)}}>
-                                            <DeleteIcon />
-                                        </IconButton>
+                                    <div className="row-zyx" style={{margin:0}} key={`sun${i}`}>                                
+                                        <>
+                                        <FieldSelect
+                                            fregister={{
+                                                ...register(`intervals.${i}.start`, {
+                                                    validate: {
+                                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required),
+                                                        timescross: (value: any) => ( getValues(`intervals.${i}.end`)>(value)) || t(langKeys.errorhoursdontmatch),
+                                                    }
+                                                    
+                                                }),
+                                            }}
+                                            className="col-5nomargin"
+                                            valueDefault={x?.start}
+                                            error={errors?.intervals?.[i]?.start?.message}
+                                            style={{pointerEvents: "auto"}}                                                                            
+                                            onChange={(value) => {
+                                                let overlap= getValues(`intervals.${i}.overlap`)
+                                                let fieldEnd= getValues(`intervals.${i}.end`)
+                                                let fieldStart= value?.value
+                                                if((overlap+1)){
+                                                    setValue(`intervals.${i}.overlap`, -1)
+                                                    setValue(`intervals.${overlap}.overlap`, -1)
+                                                }
+                                                const exists = fieldsIntervals.findIndex((y:any,cont:number) => (y.dow === dow) && (cont!==i)
+                                                    && (
+                                                    ((y.start < fieldEnd) && (y.start > fieldStart)) ||
+                                                    ((y.end < fieldEnd) && (y.end > fieldStart)) ||
+                                                    ((fieldEnd < y.end) && (fieldEnd > y.start)) ||
+                                                    ((fieldStart < y.end )&& (fieldStart > y.start)) ||
+                                                    (y.start===fieldStart )|| (y.end===fieldEnd)
+                                                ));
+                                                if((exists+1)){
+                                                    setValue(`intervals.${i}.overlap`, exists)
+                                                    setValue(`intervals.${exists}.overlap`, i)
+                                                }
+                                                setValue(`intervals.${i}.start`, value?.value)
+                                                trigger(`intervals.${i}.start`)
+                                            }}
+                                            data={hours}
+                                            optionDesc="desc"
+                                            optionValue="value"
+                                        />                               
+                                        <FieldSelect
+                                            fregister={{
+                                                ...register(`intervals.${i}.end`, {
+                                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                }),
+                                            }}
+                                            className="col-5nomargin"
+                                            valueDefault={x?.end}
+                                            error={errors?.intervals?.[i]?.end?.message}
+                                            style={{pointerEvents: "auto"}}                                                                            
+                                            onChange={(value) => {           
+                                                let overlap= getValues(`intervals.${i}.overlap`)
+                                                let fieldEnd= value?.value
+                                                let fieldStart= getValues(`intervals.${i}.start`)
+                                                if((overlap+1)){
+                                                    setValue(`intervals.${i}.overlap`, -1)
+                                                    setValue(`intervals.${overlap}.overlap`, -1)
+                                                }
+                                                const exists = fieldsIntervals.findIndex((y:any,cont:number) => (y.dow === dow) && (cont!==i)
+                                                    && (
+                                                    ((y.start < fieldEnd) && (y.start > fieldStart)) ||
+                                                    ((y.end < fieldEnd) && (y.end > fieldStart)) ||
+                                                    ((fieldEnd < y.end) && (fieldEnd > y.start)) ||
+                                                    ((fieldStart < y.end )&& (fieldStart > y.start)) ||
+                                                    (y.start===fieldStart )|| (y.end===fieldEnd)
+                                                ));
+                                                if((exists+1)){
+                                                    setValue(`intervals.${exists}.overlap`, i)
+                                                    setValue(`intervals.${i}.overlap`, exists)
+                                                }                                     
+                                                setValue(`intervals.${i}.end`, value?.value)
+                                                trigger(`intervals.${i}.start`)
+                                            }}
+                                            data={hours}
+                                            optionDesc="desc"
+                                            optionValue="value"
+                                        />                                                          
+                                        <div style={{ width: "16.6%" }}>
+                                            <IconButton style={{pointerEvents: "auto"}} aria-label="delete" onClick={(e) =>{e.preventDefault();intervalsRemove(i)}}>
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </div>
+                                        </>
+                                        {!!(getValues(`intervals.${i}.overlap`)+1) && 
+                                            <p className={classes.errorclass} >{t(langKeys.errorhours)}</p>
+                                        }
                                     </div>
-                                </div>)
+                                )
                             })}
                         </div>):
                         <div style={{ display: 'flex', margin: 'auto' }}>
@@ -284,7 +357,17 @@ const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,interva
                                 color="primary"
                                 endIcon={<AddIcon style={{ color: "#deac32" }} />}
                                 style={{ backgroundColor: "#6c757d", pointerEvents: "auto",width:150  }}
-                                onClick={() => intervalsAppend({start:"00:00:00",end:"23:30:00",dow:dow})}
+                                onClick={() => {
+                                    if (dowfields?.length) {
+                                        let indexofnexthour = hoursvalue.indexOf(dowfields[dowfields?.length-1].end)
+                                        let startindex = (indexofnexthour+2)<48?indexofnexthour+2:indexofnexthour-46
+                                        let endindex = (indexofnexthour+4)<48?indexofnexthour+4:indexofnexthour-44
+                                        intervalsAppend({start:hoursvalue[startindex],end:hoursvalue[endindex],dow:dow, status: "available", overlap:-1})
+                                        trigger(`intervals.${dowfields?.length-1}.start`)
+                                    }else{
+                                        intervalsAppend({start:"09:00:00",end:"17:00:00",dow:dow, status: "available",overlap:-1})
+                                    }
+                                }}
                                 >{t(langKeys.newinterval)}
                             </Button>
                         </div>
@@ -338,7 +421,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
 
-    const { control, register, reset, handleSubmit, setValue, getValues, formState: { errors } } = useForm<FormFields>({
+    const { control, register, reset, handleSubmit, setValue, getValues, trigger,formState: { errors } } = useForm<FormFields>({
         defaultValues: {
             id: row?.id || 0,
             eventcode: row?.eventcode||0,
@@ -695,6 +778,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                             setValue={setValue} 
                                             dow={0} 
                                             labelName={t(langKeys.sunday)}
+                                            getValues={getValues}
+                                            trigger={trigger}
                                         />} />
                                     <FormControlLabel
                                         style={{ pointerEvents: "none" }}
@@ -710,6 +795,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                             setValue={setValue} 
                                             dow={1} 
                                             labelName={t(langKeys.monday)}
+                                            getValues={getValues}
+                                            trigger={trigger}
                                         />}
                                     />
                                     <FormControlLabel
@@ -726,6 +813,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                             setValue={setValue} 
                                             dow={2} 
                                             labelName={t(langKeys.tuesday)}
+                                            getValues={getValues}
+                                            trigger={trigger}
                                         />}
                                     />
                                     <FormControlLabel
@@ -742,6 +831,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                             setValue={setValue} 
                                             dow={3} 
                                             labelName={t(langKeys.wednesday)}
+                                            getValues={getValues}
+                                            trigger={trigger}
                                         />}
                                     />
                                     <FormControlLabel
@@ -758,6 +849,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                             setValue={setValue} 
                                             dow={4} 
                                             labelName={t(langKeys.thursday)}
+                                            getValues={getValues}
+                                            trigger={trigger}
                                         />}
                                     />
                                     <FormControlLabel
@@ -774,6 +867,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                             setValue={setValue} 
                                             dow={5} 
                                             labelName={t(langKeys.friday)}
+                                            getValues={getValues}
+                                            trigger={trigger}
                                         />}
                                     />
                                     <FormControlLabel
@@ -790,6 +885,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                             setValue={setValue} 
                                             dow={6} 
                                             labelName={t(langKeys.saturday)}
+                                            getValues={getValues}
+                                            trigger={trigger}
                                         />}
                                     />
                                     </FormGroup>
