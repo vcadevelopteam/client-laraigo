@@ -1752,6 +1752,7 @@ export const langKeys = {
     report_productivity_suspensiontime: 'report_productivity_suspensiontime',
     report_productivity_suspensiontime_help: 'report_productivity_suspensiontime_help',
     report_productivity_avgagentresponse: 'report_productivity_avgagentresponse',
+    report_productivity_avgagentresponse_help: "report_productivity_avgagentresponse_help",
     report_productivity_firstname: 'report_productivity_firstname',
     report_productivity_lastname: 'report_productivity_lastname',
     report_productivity_email: 'report_productivity_email',

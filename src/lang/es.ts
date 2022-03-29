@@ -1628,6 +1628,7 @@ const translation: LangKeys = {
     report_productivity_suspensiontime: 'Tiempo de suspensión',
     report_productivity_suspensiontime_help: 'Es el tiempo suspendido por un asesor.',
     report_productivity_avgagentresponse: 'Tiempo promedio de respuesta de asesor',
+    report_productivity_avgagentresponse_help: 'Es el tiempo promedio en que se otorga una respuesta por parte del asesor', 
     person_who_modified: 'Persona que modificó',
     report_productivity_firstname: 'Nombre',
     report_productivity_lastname: 'Apellido',
