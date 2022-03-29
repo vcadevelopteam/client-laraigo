@@ -2590,7 +2590,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                             onChange={(value) => { setPaymentCardCode(value?.cardcode || ''); setPaymentCardId(value?.paymentcardid || 0); }}
                             className="col-6"
                             valueDefault={paymentCardId}
-                            data={cardList.data ? cardList.data.filter((e: { favorite: boolean; }) => e.favorite == true) : []}
+                            data={cardList.data ? cardList.data.filter((e: { favorite: boolean; }) => e.favorite !== true) : []}
                             optionDesc="cardnumber"
                             optionValue="paymentcardid"
                             loading={cardList.loading}
@@ -5748,7 +5748,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                                 onChange={(value) => { setPaymentCardCode(value?.cardcode || ''); setPaymentCardId(value?.paymentcardid || 0); }}
                                 className="col-6"
                                 valueDefault={paymentCardId}
-                                data={cardList.data ? cardList.data.filter((e: { favorite: boolean; }) => e.favorite == true) : []}
+                                data={cardList.data ? cardList.data.filter((e: { favorite: boolean; }) => e.favorite !== true) : []}
                                 optionDesc="cardnumber"
                                 optionValue="paymentcardid"
                                 loading={cardList.loading}
