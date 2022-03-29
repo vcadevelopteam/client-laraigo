@@ -763,9 +763,12 @@ const LayoutBar: FC<LayoutBarProps> = ({ data,alldata, tickFormatter, tooltipFor
                 return ({...x,label:newlabel, color:monthColor[Number(month)-1]})
             })
         }
-        if(listlabels.includes("month") || listlabels.includes("week")){
+        if(listlabels.includes("week")){
             reversed=true
             modifieddata=data.map(x=>({...x,label:x.label.replace("month",`${t("month")} `).replace("week",`${t("week")} `)}))
+        }
+        if(listlabels.includes("month")){
+            modifieddata=data.map(x=>({...x,label:t("full" + months[Number(x.label.replace("month",``))-1])}))
         }
         
     }
