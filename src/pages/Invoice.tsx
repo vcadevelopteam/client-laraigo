@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { cleanMemoryTable, setMemoryTable, uploadFile } from 'store/main/actions';
 import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx, FieldEditArray, TemplateIcons, IOSSwitch } from 'components';
-import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, billingReportConversationWhatsApp, invoiceRefresh, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail, selBalanceData, getBillingMessagingCurrent, getBalanceSelSent, getCorpSelVariant, listPaymentCard, paymentCardInsert } from 'common/helpers';
+import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, billingReportConversationWhatsApp, invoiceRefresh, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail, selBalanceData, getBillingMessagingCurrent, getBalanceSelSent, getCorpSelVariant, listPaymentCard, paymentCardInsert, uploadExcel, insInvoice, templateMaker, exportExcel } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -2699,8 +2699,10 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const dataOrgList = dataPlan.data[1] && dataPlan.data[1].success? dataPlan.data[1].data : [];
     const executeRes = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main.mainData);
+    const mainMain = useSelector(state => state.main);
     const memoryTable = useSelector(state => state.main.memoryTable);
     const user = useSelector(state => state.login.validateToken.user);
+    const [insertexcel, setinsertexcel] = useState(false);
 
     const [dataMain, setdataMain] = useState({
         corpid: user?.corpid || 0,
@@ -2719,6 +2721,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const [isRegularize, setIsRegularize] = useState(false);
     const [operationName, setOperationName] = useState('');
     const [waitSave, setWaitSave] = useState(false);
+    const [waitSaveImport, setwaitSaveImport] = useState(false);
 
     const dataYears = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }];
     const dataMonths =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
@@ -2931,6 +2934,92 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         ],
         []
     );
+    
+    useEffect(() => {
+        if (waitSaveImport) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(insertexcel?langKeys.successful_edit: langKeys.successful_delete) }))
+                setinsertexcel(false)
+                fetchData();
+                dispatch(showBackdrop(false));
+                setwaitSaveImport(false);
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setwaitSaveImport(false);
+            }
+        }
+    }, [executeRes, waitSaveImport])
+
+    const handleTemplate = () => {
+        const data = [
+            {},
+            {},
+            //mainResult.multiData.data[2].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domaindesc}), {}),
+            {},
+            //mainResult.multiData.data[3].data.reduce((a,d) => ({...a, [d.classificationid]: d.description}), {0: ''}),
+            //mainResult.multiData.data[0].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domainvalue}), {})
+        ];
+        const header = ["corpid","orgid","year","month","description","status","receiverdoctype","receiverdocnum","receiverbusinessname","receiverfiscaladdress","receivercountry","receivermail","invoicetype","serie","correlative","invoicedate","expirationdate","invoicestatus","paymentstatus","paymentdate","paidby","paymenttype","totalamount","exchangerate","currency","urlcdr","urlpdf","urlxml","purchaseorder","comments","credittype"];
+        exportExcel(t(langKeys.template), templateMaker(data, header));
+    }
+
+    const importCSV = async (files: any[]) => {
+        setinsertexcel(true)
+        const file = files[0];
+        if (file) {
+            let data: any = (await uploadExcel(file, undefined) as any[])
+                .filter((d: any) => !['', null, undefined].includes(d.classification)
+                    && !['', null, undefined].includes(d.channels)    
+                    && Object.keys(mainMain.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.title}), {0: ''})).includes('' + d.parent)
+                );
+            if (data.length > 0) {
+                dispatch(showBackdrop(true));
+                dispatch(execute({
+                    header: null,
+                    detail: data.map((x: any) => insInvoice({
+                        ...x,
+                        corpid:x.corpid,
+	                    orgid:x.orgid,
+                        year: x.year,
+                        month: x.month,
+                        receiverdoctype: x.receiverdoctype,
+                        receiverdocnum: x.receiverdocnum,
+                        receiverbusinessname: x.receiverbusinessname,
+                        receiverfiscaladdress: x.receiverfiscaladdress,
+                        receivercountry: x.receivercountry,
+                        receivermail: x.receivermail,
+                        invoicetype: x.invoicetype,
+                        serie: x.serie,
+                        correlative: x.correlative,
+                        invoicedate: x.invoicedate,
+                        expirationdate: x.expirationdate,
+                        invoicestatus: x.invoicestatus,
+                        paymentstatus: x.paymentstatus,
+                        paymentdate: x.paymentdate,
+                        paidby: x.paidby,
+                        paymenttype: x.paymenttype,
+                        totalamount: x.totalamount,
+                        exchangerate: x.exchangerate,
+                        currency: x.currency,
+                        urlcdr: x.urlcdr,
+                        urlpdf: x.urlpdf,
+                        urlxml: x.urlxml,
+                        purchaseorder: x.purchaseorder,
+                        comments: x.comments,
+                        credittype: x.credittype,
+                        description: x.description,
+                        tags: x.tag || '',
+                        parent: x.parent || 0,
+                        status: x.status || "ACTIVO",
+                        id: 0,
+                    }))
+                }, true));
+                setWaitSave(true)
+            }
+        }
+    }
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
@@ -3069,6 +3158,8 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 )}
                 data={dataInvoice}
                 filterGeneral={false}
+                importCSV={importCSV}
+                handleTemplate={handleTemplate}
                 download={true}
                 loading={mainResult.loading}
                 register={true}

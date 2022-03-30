@@ -610,7 +610,46 @@ export const getClassificationSel = (id: number): IRequestBody => ({
         all: true
     }
 })
-export const insClassification = ({ id, title, description, parent, communicationchannel, status, type, operation, tags, jobplan = null }: Dictionary): IRequestBody => ({
+export const insClassification = ({ corpid,
+    orgid, year, month, description, status, receiverdoctype, receiverdocnum, receiverbusinessname, receiverfiscaladdress, receivercountry, receivermail, invoicetype, serie, correlative, invoicedate, expirationdate, invoicestatus, paymentstatus, paymentdate, paidby, paymenttype, totalamount, exchangerate, currency, urlcdr, urlpdf, urlxml, purchaseorder, comments, credittype, }: Dictionary): IRequestBody => ({
+    method: "UFN_INVOICE_IMPORT",
+    key: "UFN_INVOICE_IMPORT",
+    parameters: {
+        corpid,
+	    orgid,
+        year,
+        month,
+        description,
+        status,
+        receiverdoctype,
+        receiverdocnum,
+        receiverbusinessname,
+        receiverfiscaladdress,
+        receivercountry,
+        receivermail,
+        invoicetype,
+        serie,
+        correlative,
+        invoicedate,
+        expirationdate,
+        invoicestatus,
+        paymentstatus,
+        paymentdate,
+        paidby,
+        paymenttype,
+        totalamount,
+        exchangerate,
+        currency,
+        urlcdr,
+        urlpdf,
+        urlxml,
+        purchaseorder,
+        comments,
+        credittype,
+    }
+})
+
+export const insInvoice = ({ id, title, description, parent, communicationchannel, status, type, operation, tags, jobplan = null }: Dictionary): IRequestBody => ({
     method: "UFN_CLASSIFICATION_INS",
     key: "UFN_CLASSIFICATION_INS",
     parameters: {
