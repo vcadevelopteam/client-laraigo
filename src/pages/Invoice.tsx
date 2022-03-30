@@ -2699,7 +2699,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const dataOrgList = dataPlan.data[1] && dataPlan.data[1].success? dataPlan.data[1].data : [];
     const executeRes = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main.mainData);
-    const multiResult = useSelector(state => state.main.multiDataAux);
+    const multiResult = useSelector(state => state.main.multiData);
     const mainMain = useSelector(state => state.main);
     const memoryTable = useSelector(state => state.main.memoryTable);
     const user = useSelector(state => state.login.validateToken.user);
@@ -2756,7 +2756,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         }))
         return () => {
             dispatch(cleanMemoryTable());
-            dispatch(getMultiCollectionAux([
+            dispatch(getMultiCollection([
                 getCorpSel(user?.roledesc === "ADMINISTRADOR" ? user?.corpid : 0),
                 getMeasureUnit(), 
                 getValuesFromDomain("TYPECREDIT", null, user?.orgid, user?.corpid),
@@ -2961,14 +2961,18 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const handleTemplate = () => {
         const indexCorp = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_CORP_SEL'));
         const indexOrg = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_ORG_SEL'));
+        const dataYears = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }];
+        const dataMonths =[{ val: "1" }, { val: "2" }, { val: "3" }, { val: "4" }, { val: "5" }, { val: "6" }, { val: "7" }, { val: "8" }, { val: "9" }, { val: "10" }, { val: "11" }, { val: "12" }];
+        const indexCreditType = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_DOMAIN_LST_VALORES'));
+        let credittypelist = multiResult.data[indexCreditType] && multiResult.data[indexCreditType].success ? multiResult.data[indexCreditType].data : []
         let corplist = multiResult.data[indexCorp] && multiResult.data[indexCorp].success ? multiResult.data[indexCorp].data : [] 
         let orglist = multiResult.data[indexOrg] && multiResult.data[indexOrg].success ? multiResult.data[indexOrg].data : [] 
-        console.log(corplist)
+        
         const data = [
             corplist.reduce((a,d) => ({...a, [d.corpid]: t(`${d.description}`)}),{}), //"corpid"
             orglist.reduce((a,d) => ({...a, [d.orgid]: t(`${d.orgdesc}`)}),{}), //"orgid"
-            {}, //"year"
-            {}, //"month"
+            dataYears.reduce((a,d) => ({...a, [d.desc]: t(`${d.desc}`)}),{}), //"year"
+            dataMonths.reduce((a,d) => ({...a, [d.val]: t(`${d.val}`)}),{}), //"month"
             {}, //"description"
             {}, //"status"
             {}, //"receiverdoctype"
@@ -2995,7 +2999,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             {}, //"urlxml"
             {}, //"purchaseorder"
             {}, //"comments"
-            {}, //"credittype"
+            credittypelist.reduce((a,d) => ({...a, [d.domainvalue]: t(`${d.domainvalue}`)}),{}), //"credittype"
         ];
         const header = ["corpid","orgid","year","month","description","status","receiverdoctype","receiverdocnum","receiverbusinessname","receiverfiscaladdress","receivercountry","receivermail","invoicetype","serie","correlative","invoicedate","expirationdate","invoicestatus","paymentstatus","paymentdate","paidby","paymenttype","totalamount","exchangerate","currency","urlcdr","urlpdf","urlxml","purchaseorder","comments","credittype"];
         exportExcel(`${t(langKeys.template)} - ${t(langKeys.invoice)}`, templateMaker(data, header));
