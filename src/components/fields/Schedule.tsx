@@ -60,6 +60,7 @@ interface ISchedule {
 interface ScheduleInputProps {
     notPreviousDays?: boolean;
     data: ISchedule[];
+    setData: (p: any) => void;
     // hex: string;
     // onChange: ColorChangeHandler;
     // disabled?: boolean;
@@ -464,7 +465,7 @@ const makeData = (year: number, month: number, schedule: ISchedule[]) => {
     }));
 }
 
-const ScheduleBase: FC<ScheduleInputProps> = ({ notPreviousDays = true, data }) => {
+const ScheduleBase: FC<ScheduleInputProps> = ({ notPreviousDays = true, data, setData }) => {
     const classes = useScheduleStyles();
     const { t } = useTranslation();
     const [daysToShow, setDaysToShow] = useState<DayProp[]>([]);
@@ -499,11 +500,13 @@ const ScheduleBase: FC<ScheduleInputProps> = ({ notPreviousDays = true, data }) 
         const newScheduler = [...dates.filter(x => !datesDistinct.includes(x.date)), ...scheduler]
         setDates(newScheduler);
         setDaysToShow(makeData(dateCurrent.year, dateCurrent.month, newScheduler));
+        
+        setData(newScheduler); //actualizar
     }
 
     useEffect(() => {
-        setDates(dataExample);
-        setDaysToShow(makeData(dateCurrent.year, dateCurrent.month, dataExample));
+        setDates(data);
+        setDaysToShow(makeData(dateCurrent.year, dateCurrent.month, data));
     }, [dateCurrent, data])
 
     const handleChangeMonth = useCallback((manageMonth: number) => {

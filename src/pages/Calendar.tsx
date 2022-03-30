@@ -398,6 +398,12 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         }
     });
 
+    const handlerCalendar = (data: ISchedule[]) => {
+        reset({
+            intervals: data
+        })
+    }
+
     const { fields: fieldsIntervals, append: intervalsAppend, remove: intervalsRemove } = useFieldArray({
         control,
         name: 'intervals',
@@ -860,7 +866,10 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                     </div>
                 </AntTabPanel>
                 <AntTabPanel index={2} currentIndex={tabIndex}>
-                    <Schedule data={[]} />
+                    <Schedule
+                        data={[]} 
+                        setData={() => null}
+                    />
                 </AntTabPanel>
             </form>
         </div>
@@ -1114,6 +1123,7 @@ const Calendar: FC = () => {
                 <div style={{marginTop: 20}}>
                     <Schedule
                         data={[]}
+                        setData={() => {}}
                     />
 
                 </div>
