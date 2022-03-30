@@ -322,7 +322,10 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
         register('businessname', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('fiscaladdress', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('contact', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
-        register('contactemail', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
+        register('contactemail', { validate: {
+            hasvalue: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true ,
+            isemail: (value) => !billbyorg ? ((/\S+@\S+\.\S+/.test(value)) || t(langKeys.emailverification)+"") : true
+        }});
         register('sunatcountry', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('credittype', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('paymentmethod', { validate: (value) => user?.roledesc === "SUPERADMIN"? ((value && value.length) || t(langKeys.field_required)) : true });
