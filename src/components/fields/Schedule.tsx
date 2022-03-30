@@ -21,6 +21,7 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { hours, calculateDateFromMonth } from "common/helpers";
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
+import { getDayOfYear } from "date-fns";
 
 const dayNames = [
     'sunday',
@@ -188,9 +189,11 @@ const useScheduleStyles = makeStyles(theme => ({
 const BoxDay: FC<DayInputProps> = ({ day, notPreviousDays, handleClick }) => {
     const classes = useScheduleStyles();
     const [isAvailable, setIsAvailable] = useState(true);
+    const [more3Items, setMore3Items] = useState(false)
 
     useEffect(() => {
         const isAvaialable = !day.data.some(x => x.status === "unavailable") && day.data.length > 0;
+        setMore3Items(day.data.length > 3)
         setIsAvailable(isAvaialable);
     }, [day.data])
 
@@ -211,17 +214,20 @@ const BoxDay: FC<DayInputProps> = ({ day, notPreviousDays, handleClick }) => {
                 {!isAvailable && (
                     <div>unavailable</div>
                 )}
-                {isAvailable && day?.data.map((item, index) => (
+                {isAvailable && day?.data.slice(0, 3).map((item, index) => (
                     <div key={index} className={classes.timeDate}>
                         {item.start} - {item.end}
                     </div>
                 ))}
+                {isAvailable && more3Items && (
+                    <div style={{ fontWeight: 'bold' }}>+ {day.data.length - 3} more times</div>
+                )}
             </div>
         </div>
     )
 }
 
-const DialogDate: React.FC<{ open: boolean, setOpen: (param: any) => void, day?: DayProp }> = ({ open, setOpen, day }) => {
+const DialogDate: React.FC<{ open: boolean, setOpen: (param: any) => void, day?: DayProp, handlerChangeDates: (p: any) => void }> = ({ open, setOpen, day, handlerChangeDates }) => {
     const { t } = useTranslation();
     const classes = useScheduleStyles();
 
@@ -254,11 +260,9 @@ const DialogDate: React.FC<{ open: boolean, setOpen: (param: any) => void, day?:
         name: 'times',
     });
 
-
     const onSubmit = handleSubmit((data) => {
-        if (data.times.some(x => (x.overlap || -1) !== -1)) {
-            console.log("submitted")
-        } else {
+        if (data.times.every(x => (x.overlap || -1) === -1)) {
+            console.log('gooooooo')
             const timesToAdd = data.times.reduce((acc: ISchedule[], time: ISchedule) => ([
                 ...acc,
                 ...(dateSelected.map(x => ({
@@ -269,8 +273,9 @@ const DialogDate: React.FC<{ open: boolean, setOpen: (param: any) => void, day?:
                     date: x.dateString,
                     status: "available"
                 })))
-            ]) ,[])
-            console.log(timesToAdd)
+            ]), [])
+            handlerChangeDates(timesToAdd);
+            setOpen(false)
         }
     });
 
@@ -430,6 +435,13 @@ const DialogDate: React.FC<{ open: boolean, setOpen: (param: any) => void, day?:
     )
 }
 
+const makeData = (year: number, month: number, schedule: ISchedule[]) => {
+    return calculateDateFromMonth(year, month).map(x => ({
+        ...x,
+        data: schedule.some(y => y.date === x.dateString) ? schedule.filter(y => y.date === x.dateString) : schedule.filter(y => y.dow === x.dow && !y.date),
+    }));
+}
+
 const ScheduleBase: FC<ScheduleInputProps> = ({ notPreviousDays = true, data }) => {
     const classes = useScheduleStyles();
     const { t } = useTranslation();
@@ -440,6 +452,7 @@ const ScheduleBase: FC<ScheduleInputProps> = ({ notPreviousDays = true, data }) 
     });
     const [daySelected, setDaySelected] = useState<DayProp | undefined>(undefined);
     const [openDialogDate, setOpenDialogDate] = useState(false);
+    const [dates, setDates] = useState<ISchedule[]>([])
 
     const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -459,14 +472,16 @@ const ScheduleBase: FC<ScheduleInputProps> = ({ notPreviousDays = true, data }) 
         setOpenDialogDate(true);
     };
 
+    const handlerChangeDates = (scheduler: ISchedule[]) => {
+        const datesDistinct = Array.from(new Set(scheduler.map(x => x.date)));
+        const newScheduler = [...dates.filter(x => !datesDistinct.includes(x.date)), ...scheduler]
+        setDates(newScheduler);
+        setDaysToShow(makeData(dateCurrent.year, dateCurrent.month, newScheduler));
+    }
 
     useEffect(() => {
-        const monthDates = calculateDateFromMonth(dateCurrent.year, dateCurrent.month).map(x => ({
-            ...x,
-            data: dataExample.some(y => y.date === x.dateString) ? dataExample.filter(y => y.date === x.dateString) : dataExample.filter(y => y.dow === x.dow && !y.date),
-        }));
-
-        setDaysToShow(monthDates);
+        setDates(dataExample);
+        setDaysToShow(makeData(dateCurrent.year, dateCurrent.month, dataExample));
     }, [dateCurrent, data])
 
     const handleChangeMonth = useCallback((manageMonth: number) => {
@@ -545,6 +560,7 @@ const ScheduleBase: FC<ScheduleInputProps> = ({ notPreviousDays = true, data }) 
                 day={daySelected}
                 open={openDialogDate}
                 setOpen={setOpenDialogDate}
+                handlerChangeDates={handlerChangeDates}
             />
         </div>
     )

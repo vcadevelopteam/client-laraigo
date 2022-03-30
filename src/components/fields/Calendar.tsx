@@ -152,7 +152,17 @@ const CalendarZyx: FC<CalendarInputProps> = ({ notPreviousDays = true, selectedD
     const [datesSelected, setDatesSelected] = useState<DayProp[]>([]);
 
     useEffect(() => {
-        const monthDates = calculateDateFromMonth(dateCurrent.year, dateCurrent.month).map(x => ({
+        let year = dateCurrent.year;
+        let month = dateCurrent.month;
+
+        if (selectedDays[0]) {
+            const splitDate = selectedDays[0].split("-").map(item => parseInt(item));
+            const date = new Date(splitDate[0], splitDate[1] - 1, splitDate[2]);
+            year = date.getFullYear();
+            month = date.getMonth();
+            setDateCurrent({ year, month })
+        }
+        const monthDates = calculateDateFromMonth(year, month).map(x => ({
             ...x,
             isSelected: datesSelected.some(date => date.dateString === x.dateString)
         }));
@@ -181,7 +191,7 @@ const CalendarZyx: FC<CalendarInputProps> = ({ notPreviousDays = true, selectedD
         }
     }, [])
 
-    const handleClick = (event: any, day: DayProp) => {
+    const handleClick = (_: any, day: DayProp) => {
         if (day.isDayPreview)
             return
 
