@@ -1162,11 +1162,7 @@ const translation: LangKeys = {
     hsmquantitysimple: "Cantidad HSM",
     messagesbydaytooltip: "Muestra la cantidad de HSM enviados por Día.",
     tmotooltip: "Tiempo promedio de la conversación (duración real + tiempo pausado).",
-<<<<<<< HEAD
     tmotooltipproductivity: "Tiempo promedio de la conversación del asesor (duración real + tiempo pausado).",
-=======
-    tmotooltipproductivity: "Tiempo promedio de la conversación del asesor (duración real+ tiempo pausado)",
->>>>>>> 654656938bd782ea635ed1c2f65cef0bc3714ff0
     tmetooltip: "Es el tiempo promedio de la primera respuesta que otorga el asesor/bot al cliente.",
     tmrtooltip: "Tiempo Promedio de respuesta del asesor/bot.",
     maxavgtickethourtooltip: "Asesor o bot con la cantidad de Tickets más altas atendidas en una hora en específico.",
