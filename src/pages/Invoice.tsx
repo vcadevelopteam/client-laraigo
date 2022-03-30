@@ -2963,6 +2963,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         const indexOrg = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_ORG_SEL'));
         const dataYears = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }];
         const dataMonths =[{ val: "1" }, { val: "2" }, { val: "3" }, { val: "4" }, { val: "5" }, { val: "6" }, { val: "7" }, { val: "8" }, { val: "9" }, { val: "10" }, { val: "11" }, { val: "12" }];
+        const dataCurrency = [{ value: "PEN", description: "PEN" }, { value: "USD", description: "USD" }]
         const indexCreditType = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_DOMAIN_LST_VALORES'));
         let credittypelist = multiResult.data[indexCreditType] && multiResult.data[indexCreditType].success ? multiResult.data[indexCreditType].data : []
         let corplist = multiResult.data[indexCorp] && multiResult.data[indexCorp].success ? multiResult.data[indexCorp].data : [] 
@@ -2974,7 +2975,6 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             dataYears.reduce((a,d) => ({...a, [d.desc]: t(`${d.desc}`)}),{}), //"year"
             dataMonths.reduce((a,d) => ({...a, [d.val]: t(`${d.val}`)}),{}), //"month"
             {}, //"description"
-            {}, //"status"
             {}, //"receiverdoctype"
             {}, //"receiverdocnum"
             {}, //"receiverbusinessname"
@@ -2993,7 +2993,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             {}, //"paymenttype"
             {}, //"totalamount"
             {}, //"exchangerate"
-            {}, //"currency"
+            dataCurrency.reduce((a,d) => ({...a, [d.value]: t(`${d.description}`)}),{}), //"currency"
             {}, //"urlcdr"
             {}, //"urlpdf"
             {}, //"urlxml"
@@ -3001,7 +3001,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             {}, //"comments"
             credittypelist.reduce((a,d) => ({...a, [d.domainvalue]: t(`${d.domainvalue}`)}),{}), //"credittype"
         ];
-        const header = ["corpid","orgid","year","month","description","status","receiverdoctype","receiverdocnum","receiverbusinessname","receiverfiscaladdress","receivercountry","receivermail","invoicetype","serie","correlative","invoicedate","expirationdate","invoicestatus","paymentstatus","paymentdate","paidby","paymenttype","totalamount","exchangerate","currency","urlcdr","urlpdf","urlxml","purchaseorder","comments","credittype"];
+        const header = ["corpid","orgid","year","month","description","receiverdoctype","receiverdocnum","receiverbusinessname","receiverfiscaladdress","receivercountry","receivermail","invoicetype","serie","correlative","invoicedate","expirationdate","invoicestatus","paymentstatus","paymentdate","paidby","paymenttype","totalamount","exchangerate","currency","urlcdr","urlpdf","urlxml","purchaseorder","comments","credittype"];
         exportExcel(`${t(langKeys.template)} - ${t(langKeys.invoice)}`, templateMaker(data, header));
     }
 
@@ -3009,51 +3009,73 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         setinsertexcel(true)
         const file = files[0];
         if (file) {
+            
+            const indexCorp = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_CORP_SEL'));
+            const dataYears = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }];
+            const dataMonths =[{ val: "1" }, { val: "2" }, { val: "3" }, { val: "4" }, { val: "5" }, { val: "6" }, { val: "7" }, { val: "8" }, { val: "9" }, { val: "10" }, { val: "11" }, { val: "12" }];
+            const dataCurrency = [{ value: "PEN", description: "PEN" }, { value: "USD", description: "USD" }]
+            let corplist = multiResult.data[indexCorp] && multiResult.data[indexCorp].success ? multiResult.data[indexCorp].data : [] 
+
+
             let data: any = (await uploadExcel(file, undefined) as any[])
-                .filter((d: any) => !['', null, undefined].includes(d.classification)
-                    && !['', null, undefined].includes(d.channels)    
-                    && Object.keys(mainMain.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.title}), {0: ''})).includes('' + d.parent)
-                );
+            .filter((d: any) => !['', null, undefined].includes(d.description)
+                && !['', null, undefined].includes(d.receiverdoctype)
+                && !['', null, undefined].includes(d.receiverdocnum)
+                && !['', null, undefined].includes(d.receiverbusinessname)
+                && !['', null, undefined].includes(d.receiverfiscaladdress)
+                && !['', null, undefined].includes(d.receivercountry)
+                && !['', null, undefined].includes(d.receivermail)
+                && !['', null, undefined].includes(d.invoicetype)
+                && !['', null, undefined].includes(d.serie)
+                && !['', null, undefined].includes(d.correlative)
+                && !['', null, undefined].includes(d.invoicedate)
+                && !['', null, undefined].includes(d.invoicestatus)
+                && !['', null, undefined].includes(d.paymentstatus)
+                && !['', null, undefined].includes(d.totalamount)
+                && !['', null, undefined].includes(d.exchangerate)
+                && Object.keys(corplist.reduce((a,d) => ({...a, [d.corpid]: d.description}), {})).includes('' + d.corpid)
+                && Object.keys(dataYears.reduce((a,d) => ({...a, [d.desc]: d.desc}), {})).includes('' + d.year)
+                && Object.keys(dataMonths.reduce((a,d) => ({...a, [d.val]: d.val}), {})).includes('' + d.month)
+                && Object.keys(dataCurrency.reduce((a,d) => ({...a, [d.value]: d.description}), {})).includes('' + d.currency)
+            );
+            debugger
             if (data.length > 0) {
                 dispatch(showBackdrop(true));
                 dispatch(execute({
                     header: null,
                     detail: data.map((x: any) => insInvoice({
                         ...x,
-                        corpid:x.corpid,
-	                    orgid:x.orgid,
-                        year: x.year,
-                        month: x.month,
-                        receiverdoctype: x.receiverdoctype,
-                        receiverdocnum: x.receiverdocnum,
-                        receiverbusinessname: x.receiverbusinessname,
-                        receiverfiscaladdress: x.receiverfiscaladdress,
-                        receivercountry: x.receivercountry,
-                        receivermail: x.receivermail,
-                        invoicetype: x.invoicetype,
-                        serie: x.serie,
-                        correlative: x.correlative,
-                        invoicedate: x.invoicedate,
-                        expirationdate: x.expirationdate,
-                        invoicestatus: x.invoicestatus,
-                        paymentstatus: x.paymentstatus,
-                        paymentdate: x.paymentdate,
-                        paidby: x.paidby,
-                        paymenttype: x.paymenttype,
-                        totalamount: x.totalamount,
-                        exchangerate: x.exchangerate,
-                        currency: x.currency,
-                        urlcdr: x.urlcdr,
-                        urlpdf: x.urlpdf,
-                        urlxml: x.urlxml,
-                        purchaseorder: x.purchaseorder,
-                        comments: x.comments,
-                        credittype: x.credittype,
-                        description: x.description,
-                        tags: x.tag || '',
-                        parent: x.parent || 0,
-                        status: x.status || "ACTIVO",
-                        id: 0,
+                        corpid:Number(x.corpid)||0,
+	                    orgid:Number(x.orgid)||0,
+                        year: Number(x.year),
+                        month: Number(x.month),
+                        receiverdoctype: String(x.receiverdoctype),
+                        receiverdocnum: String(x.receiverdocnum),
+                        receiverbusinessname: String(x.receiverbusinessname),
+                        receiverfiscaladdress: String(x.receiverfiscaladdress),
+                        receivercountry: String(x.receivercountry),
+                        receivermail: String(x.receivermail),
+                        invoicetype: String(x.invoicetype),
+                        serie: Number(x.serie)||0,
+                        correlative: Number(x.correlative)||0,
+                        invoicedate: new Date(x.invoicedate),
+                        expirationdate: new Date(x.expirationdate),
+                        invoicestatus: String(x.invoicestatus),
+                        paymentstatus: String(x.paymentstatus),
+                        paymentdate: new Date(x.paymentdate),
+                        paidby: String(x.paidby),
+                        paymenttype: String(x.paymenttype),
+                        totalamount: Number(x.totalamount),
+                        exchangerate: Number(x.exchangerate),
+                        currency: String(x.currency),
+                        urlcdr: String(x.urlcdr),
+                        urlpdf: String(x.urlpdf),
+                        urlxml: String(x.urlxml),
+                        purchaseorder: String(x.purchaseorder),
+                        comments: String(x.comments),
+                        credittype: String(x.credittype),
+                        description: String(x.description),
+                        status: "ACTIVO",
                     }))
                 }, true));
                 setWaitSave(true)
