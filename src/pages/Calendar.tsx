@@ -415,8 +415,6 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         control,
         name: 'intervals',
     });
-
-    console.log(fieldsIntervals)
     
     React.useEffect(() => {
         register('eventcode', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
