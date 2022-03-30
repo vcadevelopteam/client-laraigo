@@ -6726,6 +6726,7 @@ const Invoice: FC = () => {
                     <AntTab label={t(langKeys.periodreport)} />
                     <AntTab label={t(langKeys.payments)} />
                     <AntTab label={t(langKeys.messagingpackages)} />
+                    <AntTab label={t(langKeys.paymentmethods)} />
                 </Tabs>
                 {pageSelected === 0 &&
                     <div style={{ marginTop: 16 }}>
