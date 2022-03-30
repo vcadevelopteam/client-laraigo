@@ -2699,6 +2699,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const dataOrgList = dataPlan.data[1] && dataPlan.data[1].success? dataPlan.data[1].data : [];
     const executeRes = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main.mainData);
+    const multiResult = useSelector(state => state.main.multiDataAux);
     const mainMain = useSelector(state => state.main);
     const memoryTable = useSelector(state => state.main.memoryTable);
     const user = useSelector(state => state.login.validateToken.user);
@@ -2755,6 +2756,11 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         }))
         return () => {
             dispatch(cleanMemoryTable());
+            dispatch(getMultiCollectionAux([
+                getCorpSel(user?.roledesc === "ADMINISTRADOR" ? user?.corpid : 0),
+                getMeasureUnit(), 
+                getValuesFromDomain("TYPECREDIT", null, user?.orgid, user?.corpid),
+                getAppsettingInvoiceSel()]));
         }
     }, [])
 
@@ -2953,16 +2959,46 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     }, [executeRes, waitSaveImport])
 
     const handleTemplate = () => {
+        const indexCorp = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_CORP_SEL'));
+        const indexOrg = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_ORG_SEL'));
+        let corplist = multiResult.data[indexCorp] && multiResult.data[indexCorp].success ? multiResult.data[indexCorp].data : [] 
+        let orglist = multiResult.data[indexOrg] && multiResult.data[indexOrg].success ? multiResult.data[indexOrg].data : [] 
+        console.log(corplist)
         const data = [
-            {},
-            {},
-            //mainResult.multiData.data[2].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domaindesc}), {}),
-            {},
-            //mainResult.multiData.data[3].data.reduce((a,d) => ({...a, [d.classificationid]: d.description}), {0: ''}),
-            //mainResult.multiData.data[0].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domainvalue}), {})
+            corplist.reduce((a,d) => ({...a, [d.corpid]: t(`${d.description}`)}),{}), //"corpid"
+            orglist.reduce((a,d) => ({...a, [d.orgid]: t(`${d.orgdesc}`)}),{}), //"orgid"
+            {}, //"year"
+            {}, //"month"
+            {}, //"description"
+            {}, //"status"
+            {}, //"receiverdoctype"
+            {}, //"receiverdocnum"
+            {}, //"receiverbusinessname"
+            {}, //"receiverfiscaladdress"
+            {}, //"receivercountry"
+            {}, //"receivermail"
+            {}, //"invoicetype"
+            {}, //"serie"
+            {}, //"correlative"
+            {}, //"invoicedate"
+            {}, //"expirationdate"
+            {}, //"invoicestatus"
+            {}, //"paymentstatus"
+            {}, //"paymentdate"
+            {}, //"paidby"
+            {}, //"paymenttype"
+            {}, //"totalamount"
+            {}, //"exchangerate"
+            {}, //"currency"
+            {}, //"urlcdr"
+            {}, //"urlpdf"
+            {}, //"urlxml"
+            {}, //"purchaseorder"
+            {}, //"comments"
+            {}, //"credittype"
         ];
         const header = ["corpid","orgid","year","month","description","status","receiverdoctype","receiverdocnum","receiverbusinessname","receiverfiscaladdress","receivercountry","receivermail","invoicetype","serie","correlative","invoicedate","expirationdate","invoicestatus","paymentstatus","paymentdate","paidby","paymenttype","totalamount","exchangerate","currency","urlcdr","urlpdf","urlxml","purchaseorder","comments","credittype"];
-        exportExcel(t(langKeys.template), templateMaker(data, header));
+        exportExcel(`${t(langKeys.template)} - ${t(langKeys.invoice)}`, templateMaker(data, header));
     }
 
     const importCSV = async (files: any[]) => {
@@ -3161,7 +3197,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 importCSV={importCSV}
                 handleTemplate={handleTemplate}
                 download={true}
-                loading={mainResult.loading}
+                loading={mainResult.loading || multiResult.loading}
                 register={true}
                 handleRegister={handleRegister}
                 registertext={langKeys.generateinvoice}
