@@ -2964,6 +2964,8 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         const dataYears = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }];
         const dataMonths =[{ val: "1" }, { val: "2" }, { val: "3" }, { val: "4" }, { val: "5" }, { val: "6" }, { val: "7" }, { val: "8" }, { val: "9" }, { val: "10" }, { val: "11" }, { val: "12" }];
         const dataCurrency = [{ value: "PEN", description: "PEN" }, { value: "USD", description: "USD" }]
+        const receiverdoctype = [{ value: 0, description: "NO DOMICILIADO" }, { value: 1, description: "DNI" }, { value: 4, description: "CARNE EXT." }, { value: 6, description: "RUC" }, { value: 7, description: "PASAPORTE" }]
+        const invoicetype = [{ value: "01", description: "FACTURA" }, { value: "03", description: "BOLETA" }]
         const indexCreditType = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_DOMAIN_LST_VALORES'));
         let credittypelist = multiResult.data[indexCreditType] && multiResult.data[indexCreditType].success ? multiResult.data[indexCreditType].data : []
         let corplist = multiResult.data[indexCorp] && multiResult.data[indexCorp].success ? multiResult.data[indexCorp].data : [] 
@@ -2975,22 +2977,22 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             dataYears.reduce((a,d) => ({...a, [d.desc]: t(`${d.desc}`)}),{}), //"year"
             dataMonths.reduce((a,d) => ({...a, [d.val]: t(`${d.val}`)}),{}), //"month"
             {}, //"description"
-            {}, //"receiverdoctype"
+            receiverdoctype.reduce((a,d) => ({...a, [d.value]: t(`${d.description}`)}),{}), //"receiverdoctype"
             {}, //"receiverdocnum"
             {}, //"receiverbusinessname"
             {}, //"receiverfiscaladdress"
-            {}, //"receivercountry"
+            {"CODIGO DE PAIS": "CODIGO DE PAIS"}, //"receivercountry"
             {}, //"receivermail"
-            {}, //"invoicetype"
+            invoicetype.reduce((a,d) => ({...a, [d.value]: t(`${d.description}`)}),{}), //"invoicetype"
             {}, //"serie"
             {}, //"correlative"
             {}, //"invoicedate"
             {}, //"expirationdate"
             {}, //"invoicestatus"
-            {}, //"paymentstatus"
+            {"PENDING":"PENDING","PAID":"PAID"}, //"paymentstatus"
             {}, //"paymentdate"
             {}, //"paidby"
-            {}, //"paymenttype"
+            {"CARD":"CARD", "REGISTEREDCARD":"REGISTEREDCARD"}, //"paymenttype"
             {}, //"totalamount"
             {}, //"exchangerate"
             dataCurrency.reduce((a,d) => ({...a, [d.value]: t(`${d.description}`)}),{}), //"currency"
@@ -3015,17 +3017,16 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             const dataMonths =[{ val: "1" }, { val: "2" }, { val: "3" }, { val: "4" }, { val: "5" }, { val: "6" }, { val: "7" }, { val: "8" }, { val: "9" }, { val: "10" }, { val: "11" }, { val: "12" }];
             const dataCurrency = [{ value: "PEN", description: "PEN" }, { value: "USD", description: "USD" }]
             let corplist = multiResult.data[indexCorp] && multiResult.data[indexCorp].success ? multiResult.data[indexCorp].data : [] 
-
+            const receiverdoctypeList = [{ value: 0, description: "NO DOMICILIADO" }, { value: 1, description: "DNI" }, { value: 4, description: "CARNE EXT." }, { value: 6, description: "RUC" }, { value: 7, description: "PASAPORTE" }]
+            const invoicetypeList = [{ value: "01", description: "FACTURA" }, { value: "03", description: "BOLETA" }]
 
             let data: any = (await uploadExcel(file, undefined) as any[])
             .filter((d: any) => !['', null, undefined].includes(d.description)
-                && !['', null, undefined].includes(d.receiverdoctype)
                 && !['', null, undefined].includes(d.receiverdocnum)
                 && !['', null, undefined].includes(d.receiverbusinessname)
                 && !['', null, undefined].includes(d.receiverfiscaladdress)
                 && !['', null, undefined].includes(d.receivercountry)
                 && !['', null, undefined].includes(d.receivermail)
-                && !['', null, undefined].includes(d.invoicetype)
                 && !['', null, undefined].includes(d.serie)
                 && !['', null, undefined].includes(d.correlative)
                 && !['', null, undefined].includes(d.invoicedate)
@@ -3033,6 +3034,8 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 && !['', null, undefined].includes(d.paymentstatus)
                 && !['', null, undefined].includes(d.totalamount)
                 && !['', null, undefined].includes(d.exchangerate)
+                && Object.keys(invoicetypeList.reduce((a,d) => ({...a, [d.value]: d.description}), {})).includes('' + d.invoicetype)
+                && Object.keys(receiverdoctypeList.reduce((a,d) => ({...a, [d.value]: d.description}), {})).includes('' + d.receiverdoctype)
                 && Object.keys(corplist.reduce((a,d) => ({...a, [d.corpid]: d.description}), {})).includes('' + d.corpid)
                 && Object.keys(dataYears.reduce((a,d) => ({...a, [d.desc]: d.desc}), {})).includes('' + d.year)
                 && Object.keys(dataMonths.reduce((a,d) => ({...a, [d.val]: d.val}), {})).includes('' + d.month)
@@ -3056,7 +3059,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         receivercountry: String(x.receivercountry),
                         receivermail: String(x.receivermail),
                         invoicetype: String(x.invoicetype),
-                        serie: Number(x.serie)||0,
+                        serie: String(x.serie),
                         correlative: Number(x.correlative)||0,
                         invoicedate: new Date(x.invoicedate),
                         expirationdate: new Date(x.expirationdate),
