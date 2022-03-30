@@ -2988,7 +2988,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             {}, //"correlative"
             {}, //"invoicedate"
             {}, //"expirationdate"
-            {}, //"invoicestatus"
+            {"DRAFT": "DRAFT", "INVOICED": "INVOICED", "ERROR":"ERROR"}, //"invoicestatus"
             {"PENDING":"PENDING","PAID":"PAID"}, //"paymentstatus"
             {}, //"paymentdate"
             {}, //"paidby"
@@ -3001,7 +3001,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             {}, //"urlxml"
             {}, //"purchaseorder"
             {}, //"comments"
-            credittypelist.reduce((a,d) => ({...a, [d.domainvalue]: t(`${d.domainvalue}`)}),{}), //"credittype"
+            {"typecredit_alcontado": "typecredit_alcontado","typecredit_15": "typecredit_15","typecredit_30":"typecredit_30","typecredit_45":"typecredit_45","typecredit_60":"typecredit_60","typecredit_90":"typecredit_90"}, //"credittype"
         ];
         const header = ["corpid","orgid","year","month","description","receiverdoctype","receiverdocnum","receiverbusinessname","receiverfiscaladdress","receivercountry","receivermail","invoicetype","serie","correlative","invoicedate","expirationdate","invoicestatus","paymentstatus","paymentdate","paidby","paymenttype","totalamount","exchangerate","currency","urlcdr","urlpdf","urlxml","purchaseorder","comments","credittype"];
         exportExcel(`${t(langKeys.template)} - ${t(langKeys.invoice)}`, templateMaker(data, header));
