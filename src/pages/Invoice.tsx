@@ -494,6 +494,9 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                 setCanEdit(true);
             }
         }
+        else {
+            setCanEdit(true);
+        }
     }, [])
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
