@@ -1344,7 +1344,7 @@ const DashboardProductivity: FC = () => {
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>TMO
-                                    <Tooltip title={`${t(langKeys.tmotooltip)}`} placement="top-start">
+                                    <Tooltip title={`${t(langKeys.tmotooltipproductivity)}`} placement="top-start">
                                         <InfoIcon style={{padding: "5px 0 0 5px"}} />
                                     </Tooltip>
                                 </div>
