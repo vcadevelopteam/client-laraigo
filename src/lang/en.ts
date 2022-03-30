@@ -1243,7 +1243,7 @@ const translation: LangKeys = {
     distributionTMEtooltip: "Shows the percentage of conversations that fall in the TME minute range.",
     distributionProductivitytooltip: "Shows the number of tickets that advisors attend to on average.",
     tmotooltip: "Average time of the conversation (real duration + paused time).",
-    tmotooltipproductivity: "Advisor's average talk time (real duration + paused time)",
+    tmotooltipproductivity: "Average time of the advisor's conversation (real duration + paused time).",
     tmetooltip: "It is the average time of the first response given by the advisor/bot to the client.",
     numberofadvisers: "Number of Advisors",
     rankinghsmtooltip: "Shows the number of HSMs templates launched.",
