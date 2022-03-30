@@ -235,7 +235,6 @@ const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,interva
                                                     (y.start===fieldStart )|| (y.end===fieldEnd)
                                                 ));
                                                 if((exists+1)){
-                                                    console.log(exists)
                                                     setValue(`intervals.${i}.overlap`, exists)
                                                     setValue(`intervals.${exists}.overlap`, i)
                                                 }
@@ -285,7 +284,15 @@ const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,interva
                                             optionValue="value"
                                         />                                                          
                                         <div style={{ width: "16.6%" }}>
-                                            <IconButton style={{pointerEvents: "auto"}} aria-label="delete" onClick={(e) =>{e.preventDefault();intervalsRemove(i)}}>
+                                            <IconButton style={{pointerEvents: "auto"}} aria-label="delete" onClick={(e) =>{
+                                                
+                                                let overlap= getValues(`intervals.${i}.overlap`)
+                                                if(overlap!=-1){
+                                                    setValue(`intervals.${overlap}.overlap`, -1)
+                                                }
+                                                e.preventDefault();
+                                                intervalsRemove(i)
+                                                }}>
                                                 <DeleteIcon />
                                             </IconButton>
                                         </div>
@@ -432,9 +439,9 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     const onSubmit = handleSubmit((data) => {
         
         if(data.intervals.some(x=>(x.overlap||-1)!==-1)){
-            console.log("submitted")
-        }else{
             console.log("error overlap")
+        }else{
+            console.log("submitted")
         }
         /*
         console.log(data)
@@ -517,6 +524,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                 Calendario test
                             </div>
                         )}
+                        disabled={getValues("intervals").some(x=>(x.overlap||-1)!==-1)}
                     />
                 </Tabs>
                 
@@ -867,8 +875,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                 </AntTabPanel>
                 <AntTabPanel index={2} currentIndex={tabIndex}>
                     <Schedule
-                        data={[]} 
-                        setData={() => null}
+                        data={fieldsIntervals} 
+                        setData={handlerCalendar}
                     />
                 </AntTabPanel>
             </form>
