@@ -115,14 +115,17 @@ const useScheduleStyles = makeStyles(theme => ({
     isToday: {
         fontWeight: 'bold',
         backgroundColor: '#e1e1e1',
-        width: 20,
         textAlign: 'center',
         borderRadius: '50%',
     },
     dow: {
         fontWeight: 'bold',
-        display: 'inline-block',
-        fontSize: 12
+        width: 24,
+        height: 24,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: 13
     },
     container: {
         width: '910px',
@@ -183,18 +186,24 @@ const useScheduleStyles = makeStyles(theme => ({
     centerInput: {
         display: 'flex',
         alignItems: 'center'
+    },
+    infoBox: {
+        display: 'flex',
+        justifyContent: 'space-between'
     }
 }));
 
 const BoxDay: FC<DayInputProps> = ({ day, notPreviousDays, handleClick }) => {
     const classes = useScheduleStyles();
     const [isAvailable, setIsAvailable] = useState(true);
-    const [more3Items, setMore3Items] = useState(false)
+    const [more3Items, setMore3Items] = useState(false);
+    const [type, setType] = useState("")
 
     useEffect(() => {
-        const isAvaialable = !day.data.some(x => x.status === "unavailable") && day.data.length > 0;
+        const isAvaialable = !day.data.some(x => x.status === "unavailable");
         setMore3Items(day.data.length > 3)
         setIsAvailable(isAvaialable);
+        // if 
     }, [day.data])
 
     return (
@@ -205,10 +214,15 @@ const BoxDay: FC<DayInputProps> = ({ day, notPreviousDays, handleClick }) => {
                 [classes.boxDayForbidden]: notPreviousDays && day.isDayPreview,
             })}
         >
-            <div className={clsx(classes.dow, {
-                [classes.isToday]: day.isToday
-            })}>
-                {day.dom}
+            <div className={classes.infoBox}>
+                <div className={clsx(classes.dow, {
+                    [classes.isToday]: day.isToday
+                })}>
+                    {day.dom}
+                </div>
+                <div>
+                    x
+                </div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 {!isAvailable && (
@@ -251,7 +265,7 @@ const DialogDate: React.FC<{ open: boolean, setOpen: (param: any) => void, day?:
 
     useEffect(() => {
         reset({
-            times: day?.data || []
+            times: day?.data.filter(x => x.status === "available") || []
         })
     }, [reset, day])
 
@@ -262,18 +276,26 @@ const DialogDate: React.FC<{ open: boolean, setOpen: (param: any) => void, day?:
 
     const onSubmit = handleSubmit((data) => {
         if (data.times.every(x => (x.overlap || -1) === -1)) {
-            console.log('gooooooo')
-            const timesToAdd = data.times.reduce((acc: ISchedule[], time: ISchedule) => ([
+            const haveTimes = data.times.length > 0;
+            const timesToAdd = dateSelected.reduce((acc: ISchedule[], x) => ([
                 ...acc,
-                ...(dateSelected.map(x => ({
+                ...(haveTimes ? data.times.map(time => ({
                     start: time.start,
                     end: time.end,
                     dow: time.dow,
                     dom: x.dom,
                     date: x.dateString,
                     status: "available"
-                })))
-            ]), [])
+                })) : [{
+                    start: "",
+                    end: "",
+                    dow: x.dow,
+                    dom: x.dom,
+                    date: x.dateString,
+                    status: "unavailable"
+                }])
+            ]), []);
+
             handlerChangeDates(timesToAdd);
             setOpen(false)
         }
