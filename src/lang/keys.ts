@@ -3327,6 +3327,7 @@ export const langKeys = {
     paymentculqi: 'paymentculqi',
     confirmation_payment: 'confirmation_payment',
     error_card_nofavorite: 'error_card_nofavorite',
+    automaticpayment: 'automaticpayment',
 };
 
 export type LangKeys = typeof langKeys;

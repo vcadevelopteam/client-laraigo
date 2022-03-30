@@ -3261,7 +3261,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     'filter_firstuser.pwdchangefirstlogin':'Conversación - Cambiar password en primer login',
     'filter_conversation.wnluuserjoy':'Conversación - Alegría',
     'filter_conversation.wtauserconfident':'Conversación - Confianza',
-    vcacomissionperhsm: 'Comisión VCA por Envió HSM',
+    vcacomissionperhsm: 'Comisión VCA por envío HSM',
     culqiurlcardcreate: 'URL API Crear Tarjeta',
     culqiurlclient: 'URL API Crear cliente',
     culqiurltoken: 'URL API Crear Token',
@@ -3340,6 +3340,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     paymentculqi: 'Utilizar otra tarjeta',
     confirmation_payment: 'Se utilizara la información seleccionada para proceder con el pago. ¿Desea continuar?',
     error_card_nofavorite: 'Debe tener al menos una tarjeta registrada como preferida',
+    automaticpayment: 'Cobro automático',
 };
 
 const esResource: ResourceLanguage = {

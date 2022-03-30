@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { cleanMemoryTable, setMemoryTable, uploadFile } from 'store/main/actions';
 import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx, FieldEditArray, TemplateIcons, IOSSwitch } from 'components';
-import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, billingReportConversationWhatsApp, invoiceRefresh, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail, selBalanceData, getBillingMessagingCurrent, getBalanceSelSent, getCorpSelVariant, listPaymentCard, paymentCardInsert } from 'common/helpers';
+import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, billingReportConversationWhatsApp, invoiceRefresh, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail, selBalanceData, getBillingMessagingCurrent, getBalanceSelSent, getCorpSelVariant, listPaymentCard, paymentCardInsert, uploadExcel, insInvoice, templateMaker, exportExcel } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -2590,7 +2590,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                             onChange={(value) => { setPaymentCardCode(value?.cardcode || ''); setPaymentCardId(value?.paymentcardid || 0); }}
                             className="col-6"
                             valueDefault={paymentCardId}
-                            data={cardList.data ? cardList.data.filter((e: { favorite: boolean; }) => e.favorite == true) : []}
+                            data={cardList.data ? cardList.data.filter((e: { favorite: boolean; }) => e.favorite !== true) : []}
                             optionDesc="cardnumber"
                             optionValue="paymentcardid"
                             loading={cardList.loading}
@@ -2699,8 +2699,11 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const dataOrgList = dataPlan.data[1] && dataPlan.data[1].success? dataPlan.data[1].data : [];
     const executeRes = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main.mainData);
+    const multiResult = useSelector(state => state.main.multiDataAux);
+    const mainMain = useSelector(state => state.main);
     const memoryTable = useSelector(state => state.main.memoryTable);
     const user = useSelector(state => state.login.validateToken.user);
+    const [insertexcel, setinsertexcel] = useState(false);
 
     const [dataMain, setdataMain] = useState({
         corpid: user?.corpid || 0,
@@ -2719,6 +2722,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const [isRegularize, setIsRegularize] = useState(false);
     const [operationName, setOperationName] = useState('');
     const [waitSave, setWaitSave] = useState(false);
+    const [waitSaveImport, setwaitSaveImport] = useState(false);
 
     const dataYears = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }];
     const dataMonths =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
@@ -2752,6 +2756,11 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         }))
         return () => {
             dispatch(cleanMemoryTable());
+            dispatch(getMultiCollectionAux([
+                getCorpSel(user?.roledesc === "ADMINISTRADOR" ? user?.corpid : 0),
+                getMeasureUnit(), 
+                getValuesFromDomain("TYPECREDIT", null, user?.orgid, user?.corpid),
+                getAppsettingInvoiceSel()]));
         }
     }, [])
 
@@ -2931,6 +2940,122 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         ],
         []
     );
+    
+    useEffect(() => {
+        if (waitSaveImport) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(insertexcel?langKeys.successful_edit: langKeys.successful_delete) }))
+                setinsertexcel(false)
+                fetchData();
+                dispatch(showBackdrop(false));
+                setwaitSaveImport(false);
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setwaitSaveImport(false);
+            }
+        }
+    }, [executeRes, waitSaveImport])
+
+    const handleTemplate = () => {
+        const indexCorp = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_CORP_SEL'));
+        const indexOrg = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_ORG_SEL'));
+        let corplist = multiResult.data[indexCorp] && multiResult.data[indexCorp].success ? multiResult.data[indexCorp].data : [] 
+        let orglist = multiResult.data[indexOrg] && multiResult.data[indexOrg].success ? multiResult.data[indexOrg].data : [] 
+        console.log(corplist)
+        const data = [
+            corplist.reduce((a,d) => ({...a, [d.corpid]: t(`${d.description}`)}),{}), //"corpid"
+            orglist.reduce((a,d) => ({...a, [d.orgid]: t(`${d.orgdesc}`)}),{}), //"orgid"
+            {}, //"year"
+            {}, //"month"
+            {}, //"description"
+            {}, //"status"
+            {}, //"receiverdoctype"
+            {}, //"receiverdocnum"
+            {}, //"receiverbusinessname"
+            {}, //"receiverfiscaladdress"
+            {}, //"receivercountry"
+            {}, //"receivermail"
+            {}, //"invoicetype"
+            {}, //"serie"
+            {}, //"correlative"
+            {}, //"invoicedate"
+            {}, //"expirationdate"
+            {}, //"invoicestatus"
+            {}, //"paymentstatus"
+            {}, //"paymentdate"
+            {}, //"paidby"
+            {}, //"paymenttype"
+            {}, //"totalamount"
+            {}, //"exchangerate"
+            {}, //"currency"
+            {}, //"urlcdr"
+            {}, //"urlpdf"
+            {}, //"urlxml"
+            {}, //"purchaseorder"
+            {}, //"comments"
+            {}, //"credittype"
+        ];
+        const header = ["corpid","orgid","year","month","description","status","receiverdoctype","receiverdocnum","receiverbusinessname","receiverfiscaladdress","receivercountry","receivermail","invoicetype","serie","correlative","invoicedate","expirationdate","invoicestatus","paymentstatus","paymentdate","paidby","paymenttype","totalamount","exchangerate","currency","urlcdr","urlpdf","urlxml","purchaseorder","comments","credittype"];
+        exportExcel(`${t(langKeys.template)} - ${t(langKeys.invoice)}`, templateMaker(data, header));
+    }
+
+    const importCSV = async (files: any[]) => {
+        setinsertexcel(true)
+        const file = files[0];
+        if (file) {
+            let data: any = (await uploadExcel(file, undefined) as any[])
+                .filter((d: any) => !['', null, undefined].includes(d.classification)
+                    && !['', null, undefined].includes(d.channels)    
+                    && Object.keys(mainMain.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.title}), {0: ''})).includes('' + d.parent)
+                );
+            if (data.length > 0) {
+                dispatch(showBackdrop(true));
+                dispatch(execute({
+                    header: null,
+                    detail: data.map((x: any) => insInvoice({
+                        ...x,
+                        corpid:x.corpid,
+	                    orgid:x.orgid,
+                        year: x.year,
+                        month: x.month,
+                        receiverdoctype: x.receiverdoctype,
+                        receiverdocnum: x.receiverdocnum,
+                        receiverbusinessname: x.receiverbusinessname,
+                        receiverfiscaladdress: x.receiverfiscaladdress,
+                        receivercountry: x.receivercountry,
+                        receivermail: x.receivermail,
+                        invoicetype: x.invoicetype,
+                        serie: x.serie,
+                        correlative: x.correlative,
+                        invoicedate: x.invoicedate,
+                        expirationdate: x.expirationdate,
+                        invoicestatus: x.invoicestatus,
+                        paymentstatus: x.paymentstatus,
+                        paymentdate: x.paymentdate,
+                        paidby: x.paidby,
+                        paymenttype: x.paymenttype,
+                        totalamount: x.totalamount,
+                        exchangerate: x.exchangerate,
+                        currency: x.currency,
+                        urlcdr: x.urlcdr,
+                        urlpdf: x.urlpdf,
+                        urlxml: x.urlxml,
+                        purchaseorder: x.purchaseorder,
+                        comments: x.comments,
+                        credittype: x.credittype,
+                        description: x.description,
+                        tags: x.tag || '',
+                        parent: x.parent || 0,
+                        status: x.status || "ACTIVO",
+                        id: 0,
+                    }))
+                }, true));
+                setWaitSave(true)
+            }
+        }
+    }
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
@@ -3069,8 +3194,10 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 )}
                 data={dataInvoice}
                 filterGeneral={false}
+                importCSV={importCSV}
+                handleTemplate={handleTemplate}
                 download={true}
-                loading={mainResult.loading}
+                loading={mainResult.loading || multiResult.loading}
                 register={true}
                 handleRegister={handleRegister}
                 registertext={langKeys.generateinvoice}
@@ -5657,7 +5784,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                                 onChange={(value) => { setPaymentCardCode(value?.cardcode || ''); setPaymentCardId(value?.paymentcardid || 0); }}
                                 className="col-6"
                                 valueDefault={paymentCardId}
-                                data={cardList.data ? cardList.data.filter((e: { favorite: boolean; }) => e.favorite == true) : []}
+                                data={cardList.data ? cardList.data.filter((e: { favorite: boolean; }) => e.favorite !== true) : []}
                                 optionDesc="cardnumber"
                                 optionValue="paymentcardid"
                                 loading={cardList.loading}
@@ -6272,17 +6399,9 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
                             onChange={(value) => setValue('mail', value)}
                             valueDefault={getValues('mail')}
                             error={errors?.mail?.message}
-                            className="col-6"
+                            className="col-12"
                             disabled={!edit}
                         />
-                        <div className={"col-6"} style={{ paddingBottom: '3px' }}>
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.preferred)}</Box>
-                            <FormControlLabel
-                                style={{ paddingLeft: 10 }}
-                                control={<IOSSwitch checked={checkedFavorite} disabled={!edit} onChange={(e) => { setCheckedFavorite(e.target.checked); setValue('favorite', e.target.checked) }} />}
-                                label={""}
-                            />
-                        </div>
                     </div>
                     <h3>{t(langKeys.creditcard)}</h3>
                     <div style={{display:"flex"}}>
@@ -6293,61 +6412,74 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
                     </div>
                     <div style={{display: "flex",width:"100%"}}>
                         <div style={{width:"50%"}}>
-                            <TextField
-                                variant="outlined"
-                                margin="normal"
-                                fullWidth
-                                size="small"
-                                label={t(langKeys.creditcard)}
-                                error={!!errors.cardnumber}
-                                helperText={errors.cardnumber?.message}
-                                disabled={!edit}
-                                defaultValue={getValues('cardnumber')}
-                                onChange={(e) => {
-                                    let val = e.target.value.replace(/[^0-9]/g, '');
-                                    let spaces = Math.floor(val.length/4)
-                                    let partialvalue = val.slice(0,4)
-                                    for(let i=1;i<=spaces;i++){
-                                        partialvalue += " " + val.slice(i*4,(i+1)*4)
-                                    }
+                            <div className="row-zyx">
+                                <TextField
+                                    variant="outlined"
+                                    margin="normal"
+                                    fullWidth
+                                    size="small"
+                                    label={t(langKeys.creditcard)}
+                                    error={!!errors.cardnumber}
+                                    helperText={errors.cardnumber?.message}
+                                    disabled={!edit}
+                                    defaultValue={getValues('cardnumber')}
+                                    onPaste={e=>{
+                                        e.preventDefault()
+                                    }}
+                                    onChange={(e) => {
+                                        let val = e.target.value.replace(/[^0-9]/g, '');
+                                        let spaces = Math.floor(val.length/4)
+                                        let partialvalue = val.slice(0,4)
+                                        for(let i=1;i<=spaces;i++){
+                                            partialvalue += " " + val.slice(i*4,(i+1)*4)
+                                        }
+                                        if (partialvalue.slice(-1) === " ") {
+                                            partialvalue = partialvalue.slice(0, -1);
+                                        }
+                                        e.target.value = partialvalue;
 
-                                    if (partialvalue.slice(-1) === " ") {
-                                        partialvalue = partialvalue.slice(0, -1);
-                                    }
-                                    e.target.value = partialvalue;
-                                    
-                                    setValue("cardnumber", partialvalue.trim());
-                                }}
-                                onInput={(e:any) => {
-                                    if(e.target.value.slice(0,1)==="4"){
-                                        setIcon(<img src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{padding: 5}}></img>)
-                                        setLimitNumbers(19);
-                                        setValue('cardlimit', 19);
-                                    }else if(e.target.value.slice(0,2)==="51"||e.target.value.slice(0,2)==="55"){
-                                        setIcon(<img src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{padding: 5}}></img>)
-                                        setLimitNumbers(19);
-                                        setValue('cardlimit', 19);
-                                    }else if(e.target.value.slice(0,2)==="37"||e.target.value.slice(0,2)==="34"){
-                                        setIcon(<img src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{padding: 5}}></img>)
-                                        setLimitNumbers(18);
-                                        setValue('cardlimit', 18);
-                                    }else if(e.target.value.slice(0,2)==="36"||e.target.value.slice(0,2)==="38"||e.target.value.slice(0,3)==="300"||e.target.value.slice(0,3)==="305"){
-                                        setIcon(<img src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{padding: 5}}></img>)
-                                        setLimitNumbers(17);
-                                        setValue('cardlimit', 17);
-                                    }else{
-                                        setIcon(<></>)
-                                        setLimitNumbers(10);
-                                        setValue('cardlimit', 10);
-                                    }
-                                }}
-                                InputProps={{
-                                    endAdornment: icon,
-                                }}
-                                inputProps={{
-                                    maxLength: getValues('cardlimit'),
-                                }}
-                            />
+                                        setValue("cardnumber", partialvalue.trim());
+                                    }}
+                                    onInput={(e:any) => {
+                                        if(e.target.value.slice(0,1)==="4"){
+                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{padding: 5}}></img>)
+                                            setLimitNumbers(19);
+                                            setValue('cardlimit', 19);
+                                        }else if(e.target.value.slice(0,2)==="51"||e.target.value.slice(0,2)==="55"){
+                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{padding: 5}}></img>)
+                                            setLimitNumbers(19);
+                                            setValue('cardlimit', 19);
+                                        }else if(e.target.value.slice(0,2)==="37"||e.target.value.slice(0,2)==="34"){
+                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{padding: 5}}></img>)
+                                            setLimitNumbers(18);
+                                            setValue('cardlimit', 18);
+                                        }else if(e.target.value.slice(0,2)==="36"||e.target.value.slice(0,2)==="38"||e.target.value.slice(0,3)==="300"||e.target.value.slice(0,3)==="305"){
+                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{padding: 5}}></img>)
+                                            setLimitNumbers(17);
+                                            setValue('cardlimit', 17);
+                                        }else{
+                                            setIcon(<></>)
+                                            setLimitNumbers(10);
+                                            setValue('cardlimit', 10);
+                                        }
+                                    }}
+                                    InputProps={{
+                                        endAdornment: icon,
+                                    }}
+                                    inputProps={{
+                                        maxLength: getValues('cardlimit'),
+                                    }}
+                                    className="col-9"
+                                />
+                                <div className={"col-3"} style={{ paddingBottom: '3px' }}>
+                                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.preferred)}</Box>
+                                    <FormControlLabel
+                                        style={{ paddingLeft: 10 }}
+                                        control={<IOSSwitch checked={checkedFavorite} disabled={!edit} onChange={(e) => { setCheckedFavorite(e.target.checked); setValue('favorite', e.target.checked) }} />}
+                                        label={""}
+                                    />
+                                </div>
+                            </div>
                             <h3>{t(langKeys.dueDate)}</h3>
                             {edit && <div style={{display:"flex"}}>
                                 <FieldSelect

@@ -580,15 +580,15 @@ export const getQuickrepliesSel = (id: number): IRequestBody => ({
     }
 })
 
-export const insCorp = ({ id, description, type, status, logo, logotype, operation, paymentplanid = 0, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, billbyorg = false, credittype="", paymentmethod="" }: Dictionary): IRequestBody => ({
+export const insCorp = ({ id, description, type, status, logo, logotype, operation, paymentplanid = 0, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, billbyorg = false, credittype="", paymentmethod="", automaticpayment }: Dictionary): IRequestBody => ({
     method: "UFN_CORP_INS",
     key: "UFN_CORP_INS",
-    parameters: { companysize: null, id, description, type, status, logo, logotype, operation, paymentplanid, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, billbyorg,credittype,paymentmethod }
+    parameters: { companysize: null, id, description, type, status, logo, logotype, operation, paymentplanid, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, billbyorg, credittype, paymentmethod, automaticpayment }
 });
-export const insOrg = ({ corpid, description, status, type, id, operation, currency, email = "", password = "", port = 0, host, ssl, default_credentials, private_mail, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, iconbot = "", iconadvisor="", iconclient="", credittype="", timezone, timezoneoffset }: Dictionary): IRequestBody => ({
+export const insOrg = ({ corpid, description, status, type, id, operation, currency, email = "", password = "", port = 0, host, ssl, default_credentials, private_mail, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, iconbot = "", iconadvisor="", iconclient="", credittype="", timezone, timezoneoffset, automaticpayment }: Dictionary): IRequestBody => ({
     method: "UFN_ORG_INS",
     key: "UFN_ORG_INS",
-    parameters: { corpid, id, description, status, type, operation, currency, email, password, port: parseInt(port), host, ssl, default_credentials, private_mail, country: null, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice,iconbot,iconadvisor, iconclient,credittype, timezone, timezoneoffset }
+    parameters: { corpid, id, description, status, type, operation, currency, email, password, port: parseInt(port), host, ssl, default_credentials, private_mail, country: null, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, iconbot, iconadvisor, iconclient, credittype, timezone, timezoneoffset, automaticpayment }
 });
 
 export const insQuickreplies = ({ id, classificationid, description, quickreply, status, type, operation, favorite }: Dictionary): IRequestBody => ({
@@ -610,7 +610,46 @@ export const getClassificationSel = (id: number): IRequestBody => ({
         all: true
     }
 })
-export const insClassification = ({ id, title, description, parent, communicationchannel, status, type, operation, tags, jobplan = null }: Dictionary): IRequestBody => ({
+export const insClassification = ({ corpid=0,
+    orgid=0, year, month, description, status, receiverdoctype, receiverdocnum, receiverbusinessname, receiverfiscaladdress, receivercountry, receivermail, invoicetype, serie, correlative, invoicedate, expirationdate, invoicestatus, paymentstatus, paymentdate, paidby, paymenttype, totalamount, exchangerate, currency, urlcdr, urlpdf, urlxml, purchaseorder, comments, credittype, }: Dictionary): IRequestBody => ({
+    method: "UFN_INVOICE_IMPORT",
+    key: "UFN_INVOICE_IMPORT",
+    parameters: {
+        corpid,
+	    orgid,
+        year,
+        month,
+        description,
+        status,
+        receiverdoctype,
+        receiverdocnum,
+        receiverbusinessname,
+        receiverfiscaladdress,
+        receivercountry,
+        receivermail,
+        invoicetype,
+        serie,
+        correlative,
+        invoicedate,
+        expirationdate,
+        invoicestatus,
+        paymentstatus,
+        paymentdate,
+        paidby,
+        paymenttype,
+        totalamount,
+        exchangerate,
+        currency,
+        urlcdr,
+        urlpdf,
+        urlxml,
+        purchaseorder,
+        comments,
+        credittype,
+    }
+})
+
+export const insInvoice = ({ id, title, description, parent, communicationchannel, status, type, operation, tags, jobplan = null }: Dictionary): IRequestBody => ({
     method: "UFN_CLASSIFICATION_INS",
     key: "UFN_CLASSIFICATION_INS",
     parameters: {
