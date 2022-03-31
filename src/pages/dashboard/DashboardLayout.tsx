@@ -750,7 +750,11 @@ const LayoutBar: FC<LayoutBarProps> = ({ data,alldata, tickFormatter, tooltipFor
                     keys.push(y)
                 }
             })
-            return ({...Object(x.quantity),label:`${t(alldata?.interval)} ${x.label.replace(alldata?.interval,"")}`})
+            if(alldata?.interval==="month"){
+                return ({...Object(x.quantity),label:t("full" + months[Number(x.label.split("-")[1])-1]) + " " + x.label.split("-")[0].replace("month",``)})
+            }else{
+                return ({...Object(x.quantity),label:`${t(alldata?.interval)} ${x.label.replace(alldata?.interval,"")}`})
+            }
         })
     }else{
         let listlabels= data.map(x=>x.label)[0]
@@ -763,9 +767,13 @@ const LayoutBar: FC<LayoutBarProps> = ({ data,alldata, tickFormatter, tooltipFor
                 return ({...x,label:newlabel, color:monthColor[Number(month)-1]})
             })
         }
-        if(listlabels.includes("month") || listlabels.includes("week")){
+        if(listlabels.includes("week")){
             reversed=true
             modifieddata=data.map(x=>({...x,label:x.label.replace("month",`${t("month")} `).replace("week",`${t("week")} `)}))
+        }
+        if(listlabels.includes("month")){
+            reversed=true
+            modifieddata=data.map(x=>({...x,label:t("full" + months[Number(x.label.split("-")[1])-1]) + " " + x.label.split("-")[0].replace("month",``)}))
         }
         
     }
@@ -790,7 +798,6 @@ const LayoutBar: FC<LayoutBarProps> = ({ data,alldata, tickFormatter, tooltipFor
                     <>
                         
                         <ChartTooltip content={({ active, payload, label }) => {
-                                let partialtotal=0;
                                 if (active && payload && payload.length) {
                                     let partialtotal=payload.reduce((acc,x)=>acc+Number(x.value),0);
                                     return (
@@ -922,10 +929,19 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipF
             })
         })
         let itemmodel = keys.reduce((acc,x)=>{return {...acc,[x]:0}},{})
-        modifieddata=data.map(x=>{
-
-            return ({...itemmodel,...Object(x.quantity),label:`${t(alldata?.interval)} ${x.label.replace(alldata?.interval,"")}`})
-        })
+        console.log(alldata?.interval)
+        if(alldata?.interval==="month"){
+            
+            modifieddata=data.map(x=>{
+                
+                return ({...itemmodel,...Object(x.quantity),label:t("full" + months[Number(x.label.split("-")[1])-1]) + " " + x.label.split("-")[0].replace("month",``)})
+            })
+        }else{
+            modifieddata=data.map(x=>{
+    
+                return ({...itemmodel,...Object(x.quantity),label:`${t(alldata?.interval)} ${x.label.replace(alldata?.interval,"")}`})
+            })
+        }
     }else{
         let listlabels= data.map(x=>x.label)[0]
         if (listlabels.includes("-")) {
@@ -937,9 +953,13 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipF
                 return ({...x,label:newlabel, color:monthColor[Number(month)-1]})
             })
         }
-        if(listlabels.includes("month") || listlabels.includes("week")){
+        if(listlabels.includes("week")){
             reversed=true
-            modifieddata=data.map(x=>({...x,label:x.label.replace("month",`${t("month")} `).replace("week",`${t("week")} `)}))
+            modifieddata=data.map(x=>({...x,label:x.label.replace("week",`${t("week")} `)}))
+        }
+        if(listlabels.includes("month")){
+            reversed=true
+            modifieddata=data.map(x=>({...x,label:t("full" + months[Number(x.label.split("-")[1])-1]) + " " + x.label.split("-")[0].replace("month",``)}))
         }
         
     }
@@ -1014,6 +1034,7 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipF
                         />
                         {keys.map((x,i)=>(
                             <Line  type="monotone" dataKey={x} key={x} stroke={colors[i]} >
+                                <LabelList dataKey={x} position="top" fill="#000" />
                             </Line>
                         ))}
                     </>
