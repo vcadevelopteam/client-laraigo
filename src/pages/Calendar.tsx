@@ -53,7 +53,7 @@ type ISchedule = {
 
 type FormFields = {
     id: number,
-    eventcode: number,
+    eventcode: string,
     eventname: string,
     location: string,
     mailbody: string,
@@ -395,7 +395,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     const { control, register, reset, handleSubmit, setValue, getValues, trigger,formState: { errors } } = useForm<FormFields>({
         defaultValues: {
             id: row?.id || 0,
-            eventcode: row?.eventcode||0,
+            eventcode: row?.eventcode||"",
             eventname: row?.eventname||"",
             location: row?.location||"",
             mailbody: row?.mailbody || "",
@@ -410,11 +410,11 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
             hsmtemplatename: row?.hsmtemplatename || "",
             intervals: row?.intervals || [],
             variables: row?.variables || [],
-            durationtype: row?.durationtype || "",
+            durationtype: row?.durationtype || "MM",
             duration: row?.duration || 0,
-            timebeforeeventunit: row?.timebeforeeventunit|| "",
+            timebeforeeventunit: row?.timebeforeeventunit|| "MM",
             timebeforeeventduration: row?.timebeforeeventduration|| 0,
-            timeaftereventunit: row?.timeaftereventunit|| "",
+            timeaftereventunit: row?.timeaftereventunit|| "MM",
             timeaftereventduration: row?.timeaftereventduration|| 0,
         }
     });
@@ -436,7 +436,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     });
     
     React.useEffect(() => {
-        register('eventcode', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
+        register('eventcode', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('quantity', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
         register('eventname', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('location', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
@@ -506,7 +506,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                 ...data,
                 description:"",
                 type: "",
-                code: Number(data.eventcode),
+                code: data.eventcode,
                 name: data.eventname,
                 locationtype: "",
                 eventlink: "",
@@ -600,9 +600,12 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                             <FieldEdit
                                 label={t(langKeys.eventcode)}
                                 className="col-6"
-                                type="number"
                                 valueDefault={getValues('eventcode')}
-                                onChange={(value) => setValue('eventcode', value)}
+                                onChange={(value) => {
+                                    let valuetosend = value.trim()
+                                    setValue('eventcode', valuetosend)
+                                }}
+                                
                                 error={errors?.eventcode?.message}
                             />
                             <FieldEdit
@@ -737,8 +740,84 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                 </AntTabPanel>
                 <AntTabPanel index={1} currentIndex={tabIndex}>
                     <div className={classes.containerDetail}>
-                        <div className="row-zyx" >
-                            <div className="col-6">
+                        <div style={{display:"grid", gridTemplateColumns: "[first] auto [line2] 20px [col2] auto [end]"}} >
+                            <div style={{gridColumnStart: "first"}}>
+                                <div className="col-12" style={{padding: 5}}>
+                                    <Box fontWeight={500} lineHeight="18px" fontSize={16} mb={1} color="textPrimary">{t(langKeys.duration)}</Box>
+                                    <div className="row-zyx" >
+                                        <FieldEdit
+                                            label={t(langKeys.quantity)}
+                                            className="col-6"
+                                            type="number"
+                                            valueDefault={getValues('duration')}
+                                            onChange={(value) => {
+                                                let val =  Number(value.replace(/[^0-9]/g, ''))
+                                                if(val<0) val=0
+                                                debugger
+                                                setValue('duration', val)
+                                            }}
+                                            error={errors?.duration?.message}
+                                        />
+                                        <FieldSelect
+                                            label={t(langKeys.unitofmeasure)}
+                                            className="col-6"
+                                            valueDefault={row?.durationtype || ""}
+                                            onChange={(value) => setValue('durationtype', (value?.val||""))}
+                                            error={errors?.durationtype?.message}
+                                            data={[{desc: "MM",val: "MM"},{desc: "HH",val: "HH"}]}
+                                            optionDesc="desc"
+                                            optionValue="val"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="col-12" style={{padding: 5}}>
+                                    <Box fontWeight={500} lineHeight="18px" fontSize={16} mb={1} color="textPrimary">{t(langKeys.settimebeforetheevent)}</Box>
+                                    <div className="row-zyx" >
+                                        <FieldEdit
+                                            label={t(langKeys.quantity)}
+                                            className="col-6"
+                                            type="number"
+                                            valueDefault={getValues('timebeforeeventduration')}
+                                            onChange={(value) => setValue('timebeforeeventduration', value)}
+                                            error={errors?.timebeforeeventduration?.message}
+                                        />
+                                        <FieldSelect
+                                            label={t(langKeys.unitofmeasure)}
+                                            className="col-6"
+                                            valueDefault={row?.timebeforeeventunit || ""}
+                                            onChange={(value) => setValue('timebeforeeventunit', (value?.val||""))}
+                                            error={errors?.timebeforeeventunit?.message}
+                                            data={[{desc: "MM",val: "MM"},{desc: "HH",val: "HH"}]}
+                                            optionDesc="desc"
+                                            optionValue="val"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="col-12" style={{padding: 5}}>
+                                    <Box fontWeight={500} lineHeight="18px" fontSize={16} mb={1} color="textPrimary">{t(langKeys.settimeaftertheevent)}</Box>
+                                    <div className="row-zyx" >
+                                        <FieldEdit
+                                            label={t(langKeys.quantity)}
+                                            className="col-6"
+                                            type="number"
+                                            valueDefault={getValues('timeaftereventduration')}
+                                            onChange={(value) => setValue('timeaftereventduration', value)}
+                                            error={errors?.timeaftereventduration?.message}
+                                        />
+                                        <FieldSelect
+                                            label={t(langKeys.unitofmeasure)}
+                                            className="col-6"
+                                            valueDefault={row?.timeaftereventunit || ""}
+                                            onChange={(value) => setValue('timeaftereventunit', (value?.val||""))}
+                                            error={errors?.timeaftereventunit?.message}
+                                            data={[{desc: "MM",val: "MM"},{desc: "HH",val: "HH"}]}
+                                            optionDesc="desc"
+                                            optionValue="val"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <div style={{gridColumnStart: "col2"}}>
                                 <React.Fragment>
                                     <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.dateinterval)}</Box>
                                     <RadioGroup aria-label="dateinterval" name="dateinterval1" value={dateinterval} onChange={handleChange}>
@@ -781,77 +860,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                     </RadioGroup>
                                 </React.Fragment>
                             </div>
-                        </div>
-                        <div className="row-zyx" >
-                            <div className="col-4" style={{padding: 5}}>
-                                <Box fontWeight={500} lineHeight="18px" fontSize={16} mb={1} color="textPrimary">{t(langKeys.duration)}</Box>
-                                <div className="row-zyx" >
-                                    <FieldEdit
-                                        label={t(langKeys.quantity)}
-                                        className="col-6"
-                                        type="number"
-                                        valueDefault={getValues('duration')}
-                                        onChange={(value) => setValue('duration', value)}
-                                        error={errors?.duration?.message}
-                                    />
-                                    <FieldSelect
-                                        label={t(langKeys.unitofmeasure)}
-                                        className="col-6"
-                                        valueDefault={row?.durationtype || ""}
-                                        onChange={(value) => setValue('durationtype', (value?.val||""))}
-                                        error={errors?.durationtype?.message}
-                                        data={[{desc: "MM",val: "MM"},{desc: "HH",val: "HH"}]}
-                                        optionDesc="desc"
-                                        optionValue="val"
-                                    />
-                                </div>
-                            </div>
-                            <div className="col-4" style={{padding: 5}}>
-                                <Box fontWeight={500} lineHeight="18px" fontSize={16} mb={1} color="textPrimary">{t(langKeys.settimebeforetheevent)}</Box>
-                                <div className="row-zyx" >
-                                    <FieldEdit
-                                        label={t(langKeys.quantity)}
-                                        className="col-6"
-                                        type="number"
-                                        valueDefault={getValues('timebeforeeventduration')}
-                                        onChange={(value) => setValue('timebeforeeventduration', value)}
-                                        error={errors?.timebeforeeventduration?.message}
-                                    />
-                                    <FieldSelect
-                                        label={t(langKeys.unitofmeasure)}
-                                        className="col-6"
-                                        valueDefault={row?.timebeforeeventunit || ""}
-                                        onChange={(value) => setValue('timebeforeeventunit', (value?.val||""))}
-                                        error={errors?.timebeforeeventunit?.message}
-                                        data={[{desc: "MM",val: "MM"},{desc: "HH",val: "HH"}]}
-                                        optionDesc="desc"
-                                        optionValue="val"
-                                    />
-                                </div>
-                            </div>
-                            <div className="col-4" style={{padding: 5}}>
-                                <Box fontWeight={500} lineHeight="18px" fontSize={16} mb={1} color="textPrimary">{t(langKeys.settimeaftertheevent)}</Box>
-                                <div className="row-zyx" >
-                                    <FieldEdit
-                                        label={t(langKeys.quantity)}
-                                        className="col-6"
-                                        type="number"
-                                        valueDefault={getValues('timeaftereventduration')}
-                                        onChange={(value) => setValue('timeaftereventduration', value)}
-                                        error={errors?.timeaftereventduration?.message}
-                                    />
-                                    <FieldSelect
-                                        label={t(langKeys.unitofmeasure)}
-                                        className="col-6"
-                                        valueDefault={row?.timeaftereventunit || ""}
-                                        onChange={(value) => setValue('timeaftereventunit', (value?.val||""))}
-                                        error={errors?.timeaftereventunit?.message}
-                                        data={[{desc: "MM",val: "MM"},{desc: "HH",val: "HH"}]}
-                                        optionDesc="desc"
-                                        optionValue="val"
-                                    />
-                                </div>
-                            </div>
+                            
                         </div>
                         
                         <div className="row-zyx">
