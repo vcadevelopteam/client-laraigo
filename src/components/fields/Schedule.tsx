@@ -9,6 +9,7 @@ import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
+import EventIcon from '@material-ui/icons/Event';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import RepeatIcon from '@material-ui/icons/Repeat';
 import Button from '@material-ui/core/Button';
@@ -21,7 +22,7 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { hours, calculateDateFromMonth } from "common/helpers";
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
-import { getDayOfYear } from "date-fns";
+import RefreshIcon from '@material-ui/icons/Refresh';
 
 const dayNames = [
     'sunday',
@@ -41,14 +42,8 @@ const dataExample = [
     { "dow": 5, "status": "available", "start": "08:00:00", "end": "18:00:00" },
     { "dow": 6, "status": "available", "start": "09:00:00", "end": "18:00:00" },
     { "date": "2022-03-02", "status": "available", "dow": 3, "start": "12:00:00", "end": "13:00:00" },
-    // { "date": "2022-03-18", "status": "available", "dow": 5, "start": "14:00", "end": "18:00" },
-    // { "date": "2022-03-19", "status": "available", "dow": 6, "start": "09:00", "end": "13:00" },
-    // { "date": "2022-03-20", "status": "available", "dow": 0, "start": "09:00", "end": "12:00" },
-    // { "date": "2022-03-21", "status": "available", "dow": 1, "start": "09:00", "end": "13:00" },
-    // { "date": "2022-03-21", "status": "available", "dow": 1, "start": "14:00", "end": "18:00" },
-    // { "date": "2022-03-22", "status": "unavailable", "dow": 2, "start": "", "end": "" },
-    // { "date": "2022-03-23", "status": "available", "dow": 3, "start": "09:00", "end": "18:00" }
 ]
+
 interface ISchedule {
     dow: number;
     start: string;
@@ -80,6 +75,11 @@ interface DayProp {
     isDayPreview?: boolean;
     notPreviousDays?: boolean;
     data: ISchedule[];
+    type: string;
+}
+
+const getDay = (day?: number) => {
+    return day ? (dayNames[day] || "") : "";
 }
 
 const useScheduleStyles = makeStyles(theme => ({
@@ -198,7 +198,6 @@ const BoxDay: FC<DayInputProps> = ({ day, notPreviousDays, handleClick }) => {
     const classes = useScheduleStyles();
     const [isAvailable, setIsAvailable] = useState(true);
     const [more3Items, setMore3Items] = useState(false);
-    const [type, setType] = useState("")
 
     useEffect(() => {
         const isAvaialable = !day.data.some(x => x.status === "unavailable");
@@ -222,7 +221,12 @@ const BoxDay: FC<DayInputProps> = ({ day, notPreviousDays, handleClick }) => {
                     {day.dom}
                 </div>
                 <div>
-                    x
+                    {day.type === "personalized" && (
+                        <EventIcon style={{ width: 16 }} color="action" />
+                    )}
+                    {day.type === "repeat" && (
+                        <RepeatIcon style={{ width: 16 }} color="action" />
+                    )}
                 </div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -242,7 +246,9 @@ const BoxDay: FC<DayInputProps> = ({ day, notPreviousDays, handleClick }) => {
     )
 }
 
-const DialogDate: React.FC<{ open: boolean, setOpen: (param: any) => void, day?: DayProp, handlerChangeDates: (p: any) => void }> = ({ open, setOpen, day, handlerChangeDates }) => {
+const DialogDate: React.FC<{
+    open: boolean, setOpen: (param: any) => void, day?: DayProp, handlerChangeDates: (p: any) => void, type?: string
+}> = ({ open, setOpen, day, handlerChangeDates, type }) => {
     const { t } = useTranslation();
     const classes = useScheduleStyles();
 
@@ -285,16 +291,16 @@ const DialogDate: React.FC<{ open: boolean, setOpen: (param: any) => void, day?:
                     end: time.end,
                     dow: time.dow,
                     dom: x.dom,
-                    date: x.dateString,
+                    date: type === "personalized" ? x.dateString : undefined,
                     status: "available"
-                })) : [{
+                })) : (type === "personalized" ? [{
                     start: "",
                     end: "",
                     dow: x.dow,
                     dom: x.dom,
                     date: x.dateString,
                     status: "unavailable"
-                }])
+                }] : []))
             ]), []);
 
             handlerChangeDates(timesToAdd);
@@ -309,16 +315,19 @@ const DialogDate: React.FC<{ open: boolean, setOpen: (param: any) => void, day?:
             maxWidth={"xs"}
         >
             <DialogTitle style={{ textAlign: 'center' }}>
-                Select the date(s) you want to assign specific hours
+                {type === "personalized" ? "Select the date(s) you want to assign specific hours" : t(getDay(day?.dow) + " availability")}
+
             </DialogTitle>
             <DialogContent>
                 <form onSubmit={onSubmit} id="form-date-calendar">
-                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
-                        <CalendarZyx
-                            selectedDays={[day?.dateString!!]}
-                            onChange={onHandlerChange}
-                        />
-                    </div>
+                    {type === "personalized" && (
+                        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
+                            <CalendarZyx
+                                selectedDays={[day?.dateString!!]}
+                                onChange={onHandlerChange}
+                            />
+                        </div>
+                    )}
                     <div style={{ borderTop: '1px solid #e1e1e1', borderBottom: '1px solid #e1e1e1', paddingTop: 16, paddingBottom: 16 }}>
                         <div style={{ marginBottom: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <div style={{ fontWeight: 'bold' }}>
@@ -461,7 +470,15 @@ const DialogDate: React.FC<{ open: boolean, setOpen: (param: any) => void, day?:
 const makeData = (year: number, month: number, schedule: ISchedule[]) => {
     return calculateDateFromMonth(year, month).map(x => ({
         ...x,
-        data: schedule.some(y => y.date === x.dateString) ? schedule.filter(y => y.date === x.dateString) : schedule.filter(y => y.dow === x.dow && !y.date),
+        ...(() => {
+            const isPersonalized = schedule.some(y => y.date === x.dateString);
+            const dataRepeatDay = isPersonalized ? [] : schedule.filter(y => y.dow === x.dow && !y.date)
+            const data = isPersonalized ? schedule.filter(y => y.date === x.dateString) : dataRepeatDay;
+            return {
+                data,
+                type: isPersonalized ? 'personalized' : dataRepeatDay.length ? 'repeat' : 'none'
+            };
+        })()
     }));
 }
 
@@ -475,9 +492,9 @@ const ScheduleBase: FC<ScheduleInputProps> = ({ notPreviousDays = true, data, se
     });
     const [daySelected, setDaySelected] = useState<DayProp | undefined>(undefined);
     const [openDialogDate, setOpenDialogDate] = useState(false);
-    const [dates, setDates] = useState<ISchedule[]>([])
-
+    const [dates, setDates] = useState<ISchedule[]>([]);
     const [anchorEl, setAnchorEl] = React.useState(null);
+    const [typeSelected, setTypeSelected] = useState("")
 
     const handleClick = (event: any, day: DayProp) => {
         if (day.isDayPreview && notPreviousDays)
@@ -490,23 +507,30 @@ const ScheduleBase: FC<ScheduleInputProps> = ({ notPreviousDays = true, data, se
         setAnchorEl(null);
     };
 
-    const selectItemDay = () => {
+    const selectItemDay = (type: string) => {
+        setTypeSelected(type);
         setAnchorEl(null);
         setOpenDialogDate(true);
     };
 
     const handlerChangeDates = (scheduler: ISchedule[]) => {
-        const datesDistinct = Array.from(new Set(scheduler.map(x => x.date)));
-        const newScheduler = [...dates.filter(x => !datesDistinct.includes(x.date)), ...scheduler]
-        setDates(newScheduler);
-        setDaysToShow(makeData(dateCurrent.year, dateCurrent.month, newScheduler));
-        
-        setData(newScheduler); //actualizar
+        if (typeSelected === "personalized") {
+            const datesDistinct = Array.from(new Set(scheduler.map(x => x.date)));
+            const newScheduler = [...dates.filter(x => !datesDistinct.includes(x.date)), ...scheduler];
+            setDates(newScheduler);
+            setDaysToShow(makeData(dateCurrent.year, dateCurrent.month, newScheduler));
+            setData(newScheduler);
+        } else {
+            const newScheduler = [...dates.filter(x => x.dow !== daySelected?.dow), ...scheduler];
+            setDates(newScheduler);
+            setDaysToShow(makeData(dateCurrent.year, dateCurrent.month, newScheduler));
+            setData(newScheduler);
+        }
     }
 
     useEffect(() => {
-        setDates(data);
-        setDaysToShow(makeData(dateCurrent.year, dateCurrent.month, data));
+        setDates(dataExample);
+        setDaysToShow(makeData(dateCurrent.year, dateCurrent.month, dataExample));
     }, [dateCurrent, data])
 
     const handleChangeMonth = useCallback((manageMonth: number) => {
@@ -516,6 +540,14 @@ const ScheduleBase: FC<ScheduleInputProps> = ({ notPreviousDays = true, data, se
         })
     }, [dateCurrent])
 
+    const resetWeekly = () => {
+        console.log(daySelected?.dateString)
+        const newScheduler = dates.filter(x => x.date !== daySelected?.dateString)
+        setDates(newScheduler);
+        setDaysToShow(makeData(dateCurrent.year, dateCurrent.month, newScheduler));
+        setData(newScheduler); //actualizar
+        setAnchorEl(null);
+    }
 
     return (
         <div className={classes.container}>
@@ -568,21 +600,32 @@ const ScheduleBase: FC<ScheduleInputProps> = ({ notPreviousDays = true, data, se
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                <MenuItem onClick={selectItemDay}>
+                <MenuItem onClick={() => selectItemDay("personalized")}>
                     <ListItemIcon color="inherit">
                         <CalendarTodayIcon style={{ width: 16, color: "#7721AD" }} fontSize="small" />
                     </ListItemIcon>
                     <div style={{ fontSize: 16 }}>Edit date(s)</div>
                 </MenuItem>
-                <MenuItem onClick={selectItemDay}>
-                    <ListItemIcon color="inherit">
-                        <RepeatIcon style={{ width: 16, color: "#7721AD" }} fontSize="small" />
-                    </ListItemIcon>
-                    <div style={{ fontSize: 16 }}>Edit each day</div>
-                </MenuItem>
+                {["none", "repeat"].includes((daySelected?.type || "none")) && (
+                    <MenuItem onClick={() => selectItemDay("repeat")}>
+                        <ListItemIcon color="inherit">
+                            <RepeatIcon style={{ width: 16, color: "#7721AD" }} fontSize="small" />
+                        </ListItemIcon>
+                        <div style={{ fontSize: 16 }}>Edit all {t(getDay(daySelected?.dow))}</div>
+                    </MenuItem>
+                )}
+                {daySelected?.type === "personalized" && (
+                    <MenuItem onClick={resetWeekly}>
+                        <ListItemIcon color="inherit">
+                            <RefreshIcon style={{ width: 16, color: "#7721AD" }} fontSize="small" />
+                        </ListItemIcon>
+                        <div style={{ fontSize: 16 }}>Reset to weekly hours</div>
+                    </MenuItem>
+                )}
             </Menu>
             <DialogDate
                 day={daySelected}
+                type={typeSelected}
                 open={openDialogDate}
                 setOpen={setOpenDialogDate}
                 handlerChangeDates={handlerChangeDates}
