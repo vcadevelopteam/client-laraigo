@@ -26,6 +26,10 @@ const paths = {
         path: "/sign-up/:token",
         resolve: (token: string) => `/sign-up/${token}`,
     },
+    CALENDAR_EVENT: {
+        path: "/events/:orgid/:eventcode",
+        resolve: (orgid: number, eventcode: string) => `/events/${orgid}/${eventcode}`,
+    },
     LOCATION: {
         path: "/getLocations/:token",
         resolve: (token: string) => `/getLocations/${token}`,

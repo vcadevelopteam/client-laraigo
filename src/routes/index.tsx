@@ -7,7 +7,7 @@ import {
 	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger, ChannelAddInstagram, ChannelAddWhatsapp, ChannelAddTelegram,
 	Reports, Tickets, MessageInbox, BotDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail, Iaservices,UserSettings,
 	Corporations, Settings, Dashboard, ChannelEdit, ChannelAddIos, ChannelAddAndroid, ChannelAddInstagramDM , Privacy, CRM, ActivateUser, RecoverPassword, LeadForm, ChangePwdFirstLogin, BillingSetups, DashboardAdd,
-	InputValidation, DashboardLayout, Invoice, KPIManager,GetLocations, ReportScheduler, Calendar
+	InputValidation, DashboardLayout, Invoice, KPIManager,GetLocations, ReportScheduler, Calendar, CalendarEvent
 } from 'pages';
 
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
@@ -104,6 +104,7 @@ const RouterApp: FC = () => {
 				<Route exact path={paths.SIGNIN} component={SignIn} />
 				<Route exact path={paths.SIGNUP.path} component={SignUp} />
 				<Route exact path={paths.LOCATION.path} component={GetLocations} />
+				<Route exact path={paths.CALENDAR_EVENT.path} component={CalendarEvent} />
 				<Route exact path={paths.PRIVACY} component={Privacy} />
 				<Route exact path={paths.ACTIVATE_USER.path} component={ActivateUser} />
 				<Route exact path={paths.RECOVER_PASSWORD.path} component={RecoverPassword} />

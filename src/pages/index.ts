@@ -49,3 +49,4 @@ export { default as ActivateUser } from './ActivateUser';
 export { default as RecoverPassword } from './RecoverPassword';
 export * from './crm';
 export { default as ChangePwdFirstLogin } from './ChangePwdFirstLogin';
+export { default as CalendarEvent } from './CalendarEvent';
