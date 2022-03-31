@@ -3,31 +3,26 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldEditMulti, RichText, ColorInput, AntTabPanel } from 'components';
-import { calcKPIManager, convertLocalDate, dictToArrayKV, getDateCleaned, getDateToday, getFirstDayMonth, getLastDayMonth, getValuesFromDomain, insCalendar, hours, selCalendar, selKPIManager, selKPIManagerHistory } from 'common/helpers';
+import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, RichText, ColorInput, AntTabPanel } from 'components';
+import { getDateCleaned,getValuesFromDomain, insCalendar, hours, selCalendar } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { useFieldArray, useForm, useFormContext } from 'react-hook-form';
-import { getCollection, getMultiCollection, execute, resetAllMain, getCollectionAux, getCollectionAux2, resetMainAux, resetMainAux2 } from 'store/main/actions';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { getCollection, getMultiCollection, execute, resetAllMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import ClearIcon from '@material-ui/icons/Clear';
-import { Box, Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel, IconButton, ListItemIcon, Menu, MenuItem, Radio, RadioGroup, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, Typography } from '@material-ui/core';
+import { Box, Checkbox, FormControl, FormControlLabel, FormGroup, IconButton, ListItemIcon, Menu, MenuItem, Radio, RadioGroup, Tabs } from '@material-ui/core';
 import { Range } from 'react-date-range';
 import { DateRangePicker } from 'components';
 import { CalendarIcon, DuplicateIcon } from 'icons';
-import GaugeChart from 'react-gauge-chart'
-import {ContactSupportOutlined, Search as SearchIcon }  from '@material-ui/icons';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import DeleteIcon from '@material-ui/icons/Delete';
 import UpdateIcon from '@material-ui/icons/Update';
 import { Descendant } from 'slate';
-import { renderToString, toElement } from 'components/fields/RichText';
 import { ColorChangeHandler } from 'react-color';
-import clsx from 'clsx';
 import Schedule from 'components/fields/Schedule';
 import AddIcon from '@material-ui/icons/Add';
 
@@ -347,7 +342,7 @@ const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,interva
 }
 
 const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation }, setViewSelected, multiData, fetchData }) => {
-    const user = useSelector(state => state.login.validateToken.user);
+    const executeRes = useSelector(state => state.main.execute);
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const dispatch = useDispatch();
@@ -367,15 +362,6 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         fri: true,
         sat: false,
     });
-    const [intervals, setIntervals] = React.useState<{sun: any[],mon: any[],tue: any[],wed: any[],thu: any[],fri: any[],sat: any[]}>({
-        sun: [],
-        mon: [],
-        tue: [],
-        wed: [],
-        thu: [],
-        fri: [],
-        sat: [],
-    })
 
     const handleChange = (event:any) => {
       setdateinterval(event.target.value);
@@ -433,32 +419,64 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         setColor(e.hex);
         setValue('color', e.hex);
     }
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                fetchData && fetchData();
+                dispatch(showBackdrop(false));
+                setViewSelected("view-1")
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.calendar_plural).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                setWaitSave(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [executeRes, waitSave])
 
     const onSubmit = handleSubmit((data) => {
         
         if(data.intervals.some(x=>(x.overlap||-1)!==-1)){
             console.log("error overlap")
         }else{
-            console.log("submitted")
-        }
-        /*
-        console.log(data)
-        const callback = () => {
-            data.mailbody = renderToString(toElement(bodyobject));
-            if (data.mailbody === '<div data-reactroot=""><p><span></span></p></div>')
-                return;
-                
-            //dispatch(execute(reportSchedulerIns({ ...data, filterjson: JSON.stringify(filtertosend), mailbodyobject: bodyobject })));
-            //dispatch(execute(insKPIManager(data)));
+            console.log(data)
+            let datatosend = {
+                ...data,
+                description:"",
+                type: "",
+                code: Number(data.eventcode),
+                name: data.eventname,
+                locationtype: "",
+                eventlink: "",
+                "mailbody": "",
+                "notificationtemplate": "MM",
+                //"daysintothefuture": "10",
+                //"quantity": "10",
+                "operation": "INSERT",
+                "intervals": [
+                    {
+                        "start": "09:00:00",
+                        "end": "17:00:00",
+                        "dow": 1,
+                        "status": "available",
+                        "overlap": -1
+                    },
+                    {
+                        "start": "18:00:00",
+                        "end": "19:00:00",
+                        "dow": 1,
+                        "status": "available",
+                        "overlap": -1
+                    }
+                ]
+            }
+            debugger
             dispatch(showBackdrop(true));
             setWaitSave(true)
+            dispatch(execute(insCalendar(datatosend)));
+            console.log("submitted")
         }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))*/
     });
 
     const arrayBread = [
