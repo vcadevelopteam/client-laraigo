@@ -328,7 +328,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
             imagereference: row?.imagereference || '',
             notes: row?.notes || '',
             unitprice: row?.unitprice || 0.0,
-            operation: edit ? "EDIT" : "INSERT",
+            operation: (edit && row) ? "EDIT" : "INSERT",
         }
     });
 
