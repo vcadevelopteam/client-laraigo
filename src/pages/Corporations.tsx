@@ -277,6 +277,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
             fiscaladdress: row?.fiscaladdress || '',
             sunatcountry: row?.sunatcountry || '',
             contactemail: row?.contactemail || '',
+            automaticpayment: row?.automaticpayment || false,
             contact: row?.contact || '',
             autosendinvoice: row?.autosendinvoice || false,
             credittype: row?.credittype || "typecredit_alcontado",
@@ -321,11 +322,15 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
         register('businessname', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('fiscaladdress', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('contact', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
-        register('contactemail', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
+        register('contactemail', { validate: {
+            hasvalue: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true ,
+            isemail: (value) => !billbyorg ? ((/\S+@\S+\.\S+/.test(value)) || t(langKeys.emailverification)+"") : true
+        }});
         register('sunatcountry', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('credittype', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('paymentmethod', { validate: (value) => user?.roledesc === "SUPERADMIN"? ((value && value.length) || t(langKeys.field_required)) : true });
         register('paymentplanid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('automaticpayment');
     }, [register, billbyorg, doctype, getValues, t]);
 
     useEffect(() => {
@@ -370,6 +375,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                     contactemail: "",
                     sunatcountry: "",
                     autosendinvoice: false,
+                    automaticpayment: false,
                 }
             }
             // console.log(data)
@@ -602,27 +608,38 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                 />
                             </div>
                             {user?.roledesc === "SUPERADMIN" &&
-                                <div className="row-zyx">
-                                    <FieldSelect
-                                        label={t(langKeys.typecredit)}
-                                        className="col-6"
-                                        valueDefault={getValues("credittype")}
-                                        onChange={(value) => { setValue("credittype", value?.domainvalue || ""); }}
-                                        error={errors?.credittype?.message}
-                                        disabled={user?.roledesc !== "SUPERADMIN"}
-                                        data={typeofcreditList}
-                                        uset={true}
-                                        optionDesc="domainvalue"
-                                        optionValue="domainvalue"
-                                    />
-                                    <TemplateSwitch
-                                        label={t(langKeys.autosendinvoice)}
-                                        className="col-6"
-                                        valueDefault={getValues('autosendinvoice')}
-                                        onChange={(value) => setValue('autosendinvoice', value)}
-                                        disabled={user?.roledesc !== "SUPERADMIN"}
-                                    />
-                                </div>
+                                <>
+                                    <div className="row-zyx">
+                                        <FieldSelect
+                                            label={t(langKeys.typecredit)}
+                                            className="col-6"
+                                            valueDefault={getValues("credittype")}
+                                            onChange={(value) => { setValue("credittype", value?.domainvalue || ""); }}
+                                            error={errors?.credittype?.message}
+                                            disabled={user?.roledesc !== "SUPERADMIN"}
+                                            data={typeofcreditList}
+                                            uset={true}
+                                            optionDesc="domainvalue"
+                                            optionValue="domainvalue"
+                                        />
+                                        <TemplateSwitch
+                                            label={t(langKeys.autosendinvoice)}
+                                            className="col-6"
+                                            valueDefault={getValues('autosendinvoice')}
+                                            onChange={(value) => setValue('autosendinvoice', value)}
+                                            disabled={user?.roledesc !== "SUPERADMIN"}
+                                        />
+                                    </div>
+                                    <div className="row-zyx">
+                                        <TemplateSwitch
+                                            label={t(langKeys.automaticpayment)}
+                                            className="col-6"
+                                            valueDefault={getValues('automaticpayment')}
+                                            onChange={(value) => setValue('automaticpayment', value)}
+                                            disabled={user?.roledesc !== "SUPERADMIN"}
+                                        />
+                                    </div>
+                                </>
                             }
                         </>
                     )}

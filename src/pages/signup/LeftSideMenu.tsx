@@ -263,8 +263,8 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                     <img src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{padding: 5}}></img>
                     <img src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{padding: 5}}></img>
                 </div>
-                <div style={{display: "flex",width:"100%"}} >
-                    <div style={{width:"50%"}} >
+                <div style={{display: "flex",width:"100%"}}>
+                    <div style={{width:"50%"}}>
                         <Controller
                             name="creditcard"
                             control={control}
@@ -273,7 +273,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                     if (currentView === "view-2") {
                                         if (value?.length === 0) {
                                             return t(langKeys.field_required) as string;
-                                        } else if (value?.length!==16) {
+                                        } else if ((value?.length!==limitnumbers) || (limitnumbers<12)) {
                                             return t(langKeys.creditcardvalidate) as string;
                                         }
                                     }
@@ -289,6 +289,9 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                     label={t(langKeys.creditcard)}
                                     error={!!errors.creditcard}
                                     helperText={errors.creditcard?.message}
+                                    onPaste={e=>{
+                                        e.preventDefault()
+                                    }}
                                     onChange={(e) =>{
                                         let val = e.target.value.replace(/[^0-9]/g, '');
                                         let spaces = Math.floor(val.length/4)
@@ -296,7 +299,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                         for(let i=1;i<=spaces;i++){
                                             partialvalue += " " + val.slice(i*4,(i+1)*4)
                                         }
-                                        setValue("creditcard",partialvalue.trim())
+                                        setValue("creditcard", partialvalue.trim());
                                     }}
                                     onInput={(e:any) => {
                                         if(e.target.value.slice(0,1)==="4"){
@@ -308,12 +311,12 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                         }else if(e.target.value.slice(0,2)==="37"||e.target.value.slice(0,2)==="34"){
                                             setIcon(<img src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{padding: 5}}></img>)
                                             setlimitnumbers(18)
-                                        }else if(e.target.value.slice(0,3)==="36"||e.target.value.slice(0,2)==="38"||e.target.value.slice(0,2)==="300"||e.target.value.slice(0,2)==="305"){
+                                        }else if(e.target.value.slice(0,2)==="36"||e.target.value.slice(0,2)==="38"||e.target.value.slice(0,3)==="300"||e.target.value.slice(0,3)==="305"){
                                             setIcon(<img src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{padding: 5}}></img>)
                                             setlimitnumbers(17)
                                         }else{
                                             setIcon(<></>)
-                                            setlimitnumbers(16)
+                                            setlimitnumbers(10)
                                         }
                                     }}
                                     InputProps={{
@@ -322,7 +325,6 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                     inputProps={{
                                         maxLength: limitnumbers
                                     }}
-
                                 />
                             )}
                         />
@@ -346,7 +348,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                             onChange(data?.id || "");
                                         }}
                                         variant="outlined"
-                                        style={{ marginTop: 8, marginRight: 5 }}
+                                        style={{ marginTop: 8, marginRight: 10 }}
                                         className="col-6"
                                         valueDefault={getValues('mm')}
                                         label={"MM"}
@@ -381,7 +383,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                         style={{ marginTop: 8 }}
                                         type="number"
                                         size="small"
-                                        label={"yyyy"}
+                                        label={"YYYY"}
                                         error={!!errors.yyyy}
                                         helperText={errors.yyyy?.message}
                                         inputProps={{
@@ -415,7 +417,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                     error={!!errors.securitycode}
                                     helperText={errors.securitycode?.message}
                                     inputProps={{
-                                        maxLength: 3
+                                        maxLength: limitnumbers === 18 ? 4 : 3
                                     }}
                                 />
                             )}
@@ -423,6 +425,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                     </div>   
                     <div style={{width:"50%"}} >
                         <div style={{ textAlign: "center", padding: "20px", border: "1px solid #7721ad", borderRadius: "15px", margin: "10px" }}>{t(langKeys.finishregwarn)}</div>
+                        <div style={{ textAlign: "center", padding: "20px", color: "#7721ad", margin: "10px" }}>{t(langKeys.finishregwarn2)}</div>
                     </div>                
                 </div>
                 <Button
