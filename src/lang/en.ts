@@ -3333,7 +3333,7 @@ const translation: LangKeys = {
     markpreferred: 'Mark as preferred',
     confirmation_paymentcard: 'The card will be set as preferred. ¿Do you wish to continue?',
     markpreferred_success: 'The card was set as preferred',
-    paymentmethod_preferreddelete: 'Cannot delete a preferred card',
+    paymentmethod_preferreddelete: 'Cannot delete a preferred card, select another card as preferred in order to delete it.',
     error_card_insert: 'Could not register the card, contact an administrator',
     error_card_usernotfound: 'User not found, contact an administrator',
     error_card_update: 'Could not update the card, contact an administrator',

@@ -6330,6 +6330,34 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
     });
 
     React.useEffect(() => {
+        if (!edit) {
+            if (row?.cardnumber) {
+                if(row.cardnumber.slice(0,1)==="4"){
+                    setIcon(<img src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{padding: 5}}></img>)
+                    setLimitNumbers(19);
+                    setValue('cardlimit', 19);
+                }else if(row.cardnumber.slice(0,2)==="51"||row.cardnumber.slice(0,2)==="55"){
+                    setIcon(<img src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{padding: 5}}></img>)
+                    setLimitNumbers(19);
+                    setValue('cardlimit', 19);
+                }else if(row.cardnumber.slice(0,2)==="37"||row.cardnumber.slice(0,2)==="34"){
+                    setIcon(<img src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{padding: 5}}></img>)
+                    setLimitNumbers(18);
+                    setValue('cardlimit', 18);
+                }else if(row.cardnumber.slice(0,2)==="36"||row.cardnumber.slice(0,2)==="38"||row.cardnumber.slice(0,3)==="300"||row.cardnumber.slice(0,3)==="305"){
+                    setIcon(<img src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{padding: 5}}></img>)
+                    setLimitNumbers(17);
+                    setValue('cardlimit', 17);
+                }else{
+                    setIcon(<></>)
+                    setLimitNumbers(10);
+                    setValue('cardlimit', 10);
+                }
+            }
+        }
+    }, [edit]);
+
+    React.useEffect(() => {
         register('firstname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('lastname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('mail', { validate: emailRequired, value: '' });
@@ -6437,12 +6465,12 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
                         />
                     </div>
                     <h3>{t(langKeys.creditcard)}</h3>
-                    <div style={{display:"flex"}}>
+                    {edit && <div style={{display:"flex"}}>
                         <img src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{padding: 5}}></img>
                         <img src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{padding: 5}}></img>
                         <img src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{padding: 5}}></img>
                         <img src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{padding: 5}}></img>
-                    </div>
+                    </div>}
                     <div style={{display: "flex",width:"100%"}}>
                         <div style={{width:"50%"}}>
                             <div className="row-zyx">
@@ -6513,7 +6541,7 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
                                     />
                                 </div>
                             </div>
-                            <h3>{t(langKeys.dueDate)}</h3>
+                            {edit && <h3>{t(langKeys.dueDate)}</h3>}
                             {edit && <div style={{display:"flex"}}>
                                 <FieldSelect
                                     onChange={(data: typeof datamonth[number]) => {
@@ -6548,36 +6576,6 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
                                     }}
                                 />
                             </div>}
-                            {!edit && <div style={{display:"flex"}}>
-                                <TextField
-                                    variant="outlined"
-                                    margin="normal"
-                                    fullWidth
-                                    className="col-6"
-                                    style={{ marginTop: 8, marginRight: 10 }}
-                                    type="number"
-                                    size="small"
-                                    label={"MM"}
-                                    error={!!errors.expirationmonth}
-                                    helperText={errors.expirationmonth?.message}
-                                    value={"MM"}
-                                    disabled={true}
-                                />
-                                <TextField
-                                    variant="outlined"
-                                    margin="normal"
-                                    fullWidth
-                                    className="col-6"
-                                    style={{ marginTop: 8 }}
-                                    type="number"
-                                    size="small"
-                                    label={"YYYY"}
-                                    error={!!errors.expirationyear}
-                                    helperText={errors.expirationyear?.message}
-                                    value={"YYYY"}
-                                    disabled={true}
-                                />
-                            </div>}
                             {edit && <TextField
                                 variant="outlined"
                                 margin="normal"
@@ -6594,21 +6592,10 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
                                     setValue("securitycode", e.target.value);
                                 }}
                             />}
-                            {!edit && <TextField
-                                variant="outlined"
-                                margin="normal"
-                                fullWidth
-                                size="small"
-                                label={t(langKeys.securitycode)}
-                                error={!!errors.securitycode}
-                                helperText={errors.securitycode?.message}
-                                value={"***"}
-                                disabled={true}
-                            />}
                         </div>
                         <div style={{width:"50%"}}>
-                            <div style={{ textAlign: "center", padding: "20px", border: "1px solid #7721ad", borderRadius: "15px", margin: "10px" }}>{t(langKeys.finishregwarn)}</div>
-                            <div style={{ textAlign: "center", padding: "20px", color: "#7721ad", margin: "10px" }}>{t(langKeys.finishregwarn2)}</div>
+                            {edit && <div style={{ textAlign: "center", padding: "20px", border: "1px solid #7721ad", borderRadius: "15px", margin: "10px" }}>{t(langKeys.finishregwarn)}</div>}
+                            {edit && <div style={{ textAlign: "center", padding: "20px", color: "#7721ad", margin: "10px" }}>{t(langKeys.finishregwarn2)}</div>}
                         </div>
                     </div>
                 </div>
