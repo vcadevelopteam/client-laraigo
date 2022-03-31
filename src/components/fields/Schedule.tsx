@@ -519,11 +519,13 @@ const ScheduleBase: FC<ScheduleInputProps> = ({ notPreviousDays = true, data, se
             const newScheduler = [...dates.filter(x => !datesDistinct.includes(x.date)), ...scheduler];
             setDates(newScheduler);
             setDaysToShow(makeData(dateCurrent.year, dateCurrent.month, newScheduler));
+            console.log(newScheduler)
             setData(newScheduler);
         } else {
             const newScheduler = [...dates.filter(x => x.dow !== daySelected?.dow), ...scheduler];
             setDates(newScheduler);
             setDaysToShow(makeData(dateCurrent.year, dateCurrent.month, newScheduler));
+            console.log(newScheduler)
             setData(newScheduler);
         }
     }
