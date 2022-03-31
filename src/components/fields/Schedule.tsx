@@ -315,6 +315,7 @@ const DialogDate: React.FC<{
                             <CalendarZyx
                                 selectedDays={[day?.dateString!!]}
                                 onChange={onHandlerChange}
+                                multiple
                             />
                         </div>
                     )}
@@ -442,7 +443,7 @@ const DialogDate: React.FC<{
             </DialogContent>
             <DialogActions>
                 <Button variant="outlined" onClick={() => setOpen(false)}>
-                    Cancel
+                    {t(langKeys.cancel)}
                 </Button>
                 <Button
                     variant="contained"
@@ -450,7 +451,7 @@ const DialogDate: React.FC<{
                     color="primary"
                     form="form-date-calendar"
                 >
-                    Apply
+                    {t(langKeys.apply)}
                 </Button>
             </DialogActions>
         </Dialog >

@@ -6,12 +6,6 @@ import clsx from 'clsx';
 import { Dictionary } from "@types";
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import RepeatIcon from '@material-ui/icons/Repeat';
-
 import { calculateDateFromMonth } from 'common/helpers';
 
 const dayNames = [
@@ -28,6 +22,7 @@ interface CalendarInputProps {
     notPreviousDays?: boolean;
     selectedDays?: string[];
     onChange?: (dates: DayProp[], dateChanged: DayProp, action: string) => void;
+    multiple?: boolean;
     // hex: string;
     // onChange: ColorChangeHandler;
     // disabled?: boolean;
@@ -141,7 +136,7 @@ const BoxDay: FC<DayInputProps> = ({ day, handleClick }) => {
 }
 
 
-const CalendarZyx: FC<CalendarInputProps> = ({ notPreviousDays = true, selectedDays = [], onChange }) => {
+const CalendarZyx: FC<CalendarInputProps> = ({ notPreviousDays = true, selectedDays = [], onChange, multiple }) => {
     const classes = useScheduleStyles();
     const { t } = useTranslation();
     const [daysToShow, setDaysToShow] = useState<DayProp[]>([]);
@@ -194,23 +189,31 @@ const CalendarZyx: FC<CalendarInputProps> = ({ notPreviousDays = true, selectedD
     const handleClick = (_: any, day: DayProp) => {
         if (day.isDayPreview)
             return
-
-        const alreadyMarked = datesSelected.some(date => date.dateString === day.dateString);
-        if (alreadyMarked) {
-            const newDates = datesSelected.filter(date => date.dateString !== day.dateString);
-            onChange && onChange(newDates, day, 'remove');
-            setDatesSelected(newDates);
-            setDaysToShow(daysToShow.map(date => ({
-                ...date,
-                isSelected: date.dateString === day.dateString ? false : date.isSelected
-            })));
+        if (multiple) {
+            const alreadyMarked = datesSelected.some(date => date.dateString === day.dateString);
+            if (alreadyMarked) {
+                const newDates = datesSelected.filter(date => date.dateString !== day.dateString);
+                onChange && onChange(newDates, day, 'remove');
+                setDatesSelected(newDates);
+                setDaysToShow(daysToShow.map(date => ({
+                    ...date,
+                    isSelected: date.dateString === day.dateString ? false : date.isSelected
+                })));
+            } else {
+                const newDates = [...datesSelected, day];
+                onChange && onChange(newDates, day, 'add');
+                setDatesSelected(newDates);
+                setDaysToShow(daysToShow.map(date => ({
+                    ...date,
+                    isSelected: date.dateString === day.dateString ? true : date.isSelected
+                })));
+            }
         } else {
-            const newDates = [...datesSelected, day];
-            onChange && onChange(newDates, day, 'add');
-            setDatesSelected(newDates);
+            onChange && onChange([day], day, 'remove');
+            setDatesSelected([day]);
             setDaysToShow(daysToShow.map(date => ({
                 ...date,
-                isSelected: date.dateString === day.dateString ? true : date.isSelected
+                isSelected: date.dateString === day.dateString ? true : false
             })));
         }
     };
