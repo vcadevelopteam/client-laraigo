@@ -529,8 +529,8 @@ const ScheduleBase: FC<ScheduleInputProps> = ({ notPreviousDays = true, data, se
     }
 
     useEffect(() => {
-        setDates(dataExample);
-        setDaysToShow(makeData(dateCurrent.year, dateCurrent.month, dataExample));
+        setDates(data);
+        setDaysToShow(makeData(dateCurrent.year, dateCurrent.month, data));
     }, [dateCurrent, data])
 
     const handleChangeMonth = useCallback((manageMonth: number) => {
