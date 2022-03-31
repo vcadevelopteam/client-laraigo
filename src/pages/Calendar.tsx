@@ -198,7 +198,7 @@ const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,interva
     const { t } = useTranslation();
     const classes = useStyles();
     let hoursvalue=hours.map((x:any)=>(x.value))
-    let dowfields = fieldsIntervals?.filter((x:any)=>x.dow===dow)
+    let dowfields = fieldsIntervals?.filter((x:any)=>((x.dow===dow) && (!x.date)))
     
 
     return (
@@ -207,7 +207,7 @@ const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,interva
             <div style={{display:"flex", margin: "auto",marginLeft: 0,fontWeight:"bold", width:100}}>{labelName}</div>
             {flag &&
                 <>
-                    {(fieldsIntervals?.filter((x:any)=>x.dow===dow).length)?
+                    {(fieldsIntervals?.filter((x:any)=>((x.dow===dow) && (!x.date))).length)?
                         (<div style={{ marginLeft: 50, width:"100%" }}>
                             {fieldsIntervals.map((x:any,i:number) =>{
                                 if (x.dow!==dow) return null
