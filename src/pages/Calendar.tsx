@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, RichText, ColorInput, AntTabPanel } from 'components';
-import { getDateCleaned,getValuesFromDomain, insCalendar, hours, selCalendar } from 'common/helpers';
+import { getDateCleaned,getValuesFromDomain, insCalendar, hours, selCalendar, getMessageTemplateLst } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -60,9 +60,11 @@ type FormFields = {
     notificationtype: string,
     notificationtemplate: string,
     daysintothefuture: number,
+    hsmtemplateid: number,
     quantity: number,
     operation: string,
     intervals: ISchedule[],
+    variables: any[],
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -372,6 +374,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     };
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
+    const dataTemplates = multiData[1] && multiData[1].success ? multiData[1].data : [];
 
     const { control, register, reset, handleSubmit, setValue, getValues, trigger,formState: { errors } } = useForm<FormFields>({
         defaultValues: {
@@ -387,7 +390,9 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
             daysintothefuture: row?.daysintothefuture || 0,
             quantity: row?.quantity || 0,
             operation: operation==="DUPLICATE"? "INSERT":operation,
+            hsmtemplateid: row?.hsmtemplateid || 0,
             intervals: row?.intervals || [],
+            variables: row?.variables || [],
         }
     });
 
@@ -401,6 +406,11 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         control,
         name: 'intervals',
     });
+
+    const { fields } = useFieldArray({
+        control,
+        name: 'variables',
+    });
     
     React.useEffect(() => {
         register('eventcode', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
@@ -410,6 +420,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         register('status', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('notificationtype', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('notificationtemplate', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
+        register('hsmtemplateid', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
         if(dateinterval==="daysintothefuture"){
             register('daysintothefuture', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
         }
@@ -625,14 +636,14 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                 optionValue="val"
                             />
                             <FieldSelect
-                                label={t(langKeys.notificationtemplate)}
+                                label={t(langKeys.hsm_template)}
                                 className="col-6"
-                                valueDefault={row?.notificationtemplate || ""}
-                                onChange={(value) => setValue('notificationtemplate', (value?.val||""))}
-                                error={errors?.notificationtemplate?.message}
-                                data={[{desc: "HSM",val: "HSM"},{desc: t(langKeys.email),val: "EMAIL"}]}
-                                optionDesc="desc"
-                                optionValue="val"
+                                valueDefault={getValues('hsmtemplateid')}
+                                //onChange={onSelectTemplate}
+                                error={errors?.hsmtemplateid?.message}
+                                data={dataTemplates}
+                                optionDesc="name"
+                                optionValue="id"
                             />
                         </div>
                     </div>
@@ -1089,6 +1100,7 @@ const Calendar: FC = () => {
         fetchData();
         dispatch(getMultiCollection([
             getValuesFromDomain("ESTADOGENERICO"),
+            getMessageTemplateLst(),
         ]));
         return () => {
             dispatch(resetAllMain());
