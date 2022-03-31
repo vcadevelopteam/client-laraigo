@@ -224,6 +224,7 @@ const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,interva
                                                     
                                                 }),
                                             }}
+                                            variant="outlined"
                                             className="col-5nomargin"
                                             valueDefault={x?.start}
                                             error={errors?.intervals?.[i]?.start?.message}
@@ -261,6 +262,7 @@ const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,interva
                                                     validate: (value: any) => (value && value.length) || t(langKeys.field_required)
                                                 }),
                                             }}
+                                            variant="outlined"
                                             className="col-5nomargin"
                                             valueDefault={x?.end}
                                             error={errors?.intervals?.[i]?.end?.message}
@@ -1231,26 +1233,17 @@ const Calendar: FC = () => {
 
     if (viewSelected === "view-1") {
         return (
-            <div>
-                <div>
-                    <TableZyx
-                        onClickRow={handleEdit}
-                        columns={columns}
-                        titlemodule={t(langKeys.calendar_plural, { count: 2 })}
-                        data={dataGrid}
-                        download={true}
-                        loading={mainResult.mainData.loading}
-                        register={true}
-                        handleRegister={handleRegister}
-                    />
-                </div>
-                <div style={{marginTop: 20}}>
-                    <Schedule
-                        data={[]}
-                        setData={() => {}}
-                    />
-
-                </div>
+            <div style={{width:"100%"}}>
+                <TableZyx
+                    onClickRow={handleEdit}
+                    columns={columns}
+                    titlemodule={t(langKeys.calendar_plural, { count: 2 })}
+                    data={dataGrid}
+                    download={true}
+                    loading={mainResult.mainData.loading}
+                    register={true}
+                    handleRegister={handleRegister}
+                />
             </div>
         )
     }
