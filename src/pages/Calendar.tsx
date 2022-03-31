@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, RichText, ColorInput, AntTabPanel } from 'components';
+import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, RichText, ColorInput, AntTabPanel, FieldEditArray } from 'components';
 import { getDateCleaned,getValuesFromDomain, insCalendar, hours, selCalendar, getMessageTemplateLst } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -14,7 +14,7 @@ import { langKeys } from 'lang/keys';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { getCollection, getMultiCollection, execute, resetAllMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { Box, Checkbox, FormControl, FormControlLabel, FormGroup, IconButton, ListItemIcon, Menu, MenuItem, Radio, RadioGroup, Tabs } from '@material-ui/core';
+import { Box, Checkbox, FormControl, FormControlLabel, FormGroup, Grid, IconButton, ListItemIcon, Menu, MenuItem, Radio, RadioGroup, Tabs } from '@material-ui/core';
 import { Range } from 'react-date-range';
 import { DateRangePicker } from 'components';
 import { CalendarIcon, DuplicateIcon } from 'icons';
@@ -26,6 +26,8 @@ import { ColorChangeHandler } from 'react-color';
 import Schedule from 'components/fields/Schedule';
 import AddIcon from '@material-ui/icons/Add';
 
+
+const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'custom'].map(x => ({ key: x }))
 interface RowSelected {
     row: Dictionary | null,
     operation: string
@@ -59,12 +61,19 @@ type FormFields = {
     status: string,
     notificationtype: string,
     notificationtemplate: string,
+    hsmtemplatename: string,
     daysintothefuture: number,
     hsmtemplateid: number,
     quantity: number,
     operation: string,
     intervals: ISchedule[],
     variables: any[],
+    durationtype:string,
+    duration: number,
+    timebeforeeventunit:string,
+    timebeforeeventduration: number,
+    timeaftereventunit:string,
+    timeaftereventduration: number,
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -75,6 +84,10 @@ const useStyles = makeStyles((theme) => ({
     },
     root:{
         width:"100%",
+    },
+    field: {
+        margin: theme.spacing(1),
+        minHeight: 58,
     },
     button: {
         padding: 12,
@@ -355,6 +368,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     const [dateinterval, setdateinterval] = React.useState('daysintothefuture');
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
+    const [bodyMessage, setBodyMessage] = useState('');
     const [state, setState] = React.useState({
         sun: false,
         mon: true,
@@ -391,8 +405,15 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
             quantity: row?.quantity || 0,
             operation: operation==="DUPLICATE"? "INSERT":operation,
             hsmtemplateid: row?.hsmtemplateid || 0,
+            hsmtemplatename: row?.hsmtemplatename || "",
             intervals: row?.intervals || [],
             variables: row?.variables || [],
+            durationtype: row?.durationtype || "",
+            duration: row?.duration || 0,
+            timebeforeeventunit: row?.timebeforeeventunit|| "",
+            timebeforeeventduration: row?.timebeforeeventduration|| 0,
+            timeaftereventunit: row?.timeaftereventunit|| "",
+            timeaftereventduration: row?.timeaftereventduration|| 0,
         }
     });
 
@@ -420,7 +441,14 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         register('status', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('notificationtype', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('notificationtemplate', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
+        register('hsmtemplatename', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('hsmtemplateid', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
+        register('durationtype', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
+        register('duration', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
+        register('timebeforeeventunit', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
+        register('timebeforeeventduration', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
+        register('timeaftereventunit', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
+        register('timeaftereventduration', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
         if(dateinterval==="daysintothefuture"){
             register('daysintothefuture', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
         }
@@ -446,12 +474,32 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         }
     }, [executeRes, waitSave])
 
+    const onSelectTemplate = (value: Dictionary) => {
+        if (value) {
+            setBodyMessage(value.body);
+            setValue('hsmtemplateid', value ? value.id : 0);
+            setValue('hsmtemplatename', value ? value.name : '');
+            const variablesList = value.body.match(/({{)(.*?)(}})/g) || [];
+            const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
+            setValue('variables', varaiblesCleaned.map((x: string) => ({ name: x, text: '', type: 'text' })));
+        } else {
+            setValue('hsmtemplatename', '');
+            setValue('variables', []);
+            setBodyMessage('');
+            setValue('hsmtemplateid', 0);
+        }
+    }
+
     const onSubmit = handleSubmit((data) => {
         
         if(data.intervals.some(x=>(x.overlap||-1)!==-1)){
             console.log("error overlap")
         }else{
             console.log(data)
+            const date1 = Number(dateRangeCreateDate.startDate);
+            const date2 = Number(dateRangeCreateDate.endDate);
+            const diffTime = Math.abs(date2 - date1);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
             let datatosend = {
                 ...data,
                 description:"",
@@ -460,27 +508,16 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                 name: data.eventname,
                 locationtype: "",
                 eventlink: "",
-                "mailbody": "",
-                "notificationtemplate": "MM",
-                //"daysintothefuture": "10",
-                //"quantity": "10",
-                "operation": "INSERT",
-                "intervals": [
-                    {
-                        "start": "09:00:00",
-                        "end": "17:00:00",
-                        "dow": 1,
-                        "status": "available",
-                        "overlap": -1
-                    },
-                    {
-                        "start": "18:00:00",
-                        "end": "19:00:00",
-                        "dow": 1,
-                        "status": "available",
-                        "overlap": -1
-                    }
-                ]
+                messagetemplateid: data.hsmtemplateid,
+                availability: data.intervals,
+                timeduration: data.duration,
+                timeunit: data.durationtype,
+                daterange: dateRangeCreateDate,
+                startdate: dateRangeCreateDate.startDate,
+                enddate: dateRangeCreateDate.endDate,
+                daysduration: diffDays,
+                daystype: dateinterval,
+                increments: "30",
             }
             debugger
             dispatch(showBackdrop(true));
@@ -639,12 +676,60 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                 label={t(langKeys.hsm_template)}
                                 className="col-6"
                                 valueDefault={getValues('hsmtemplateid')}
-                                //onChange={onSelectTemplate}
+                                onChange={onSelectTemplate}
                                 error={errors?.hsmtemplateid?.message}
                                 data={dataTemplates}
                                 optionDesc="name"
                                 optionValue="id"
                             />
+                        </div>
+                        <div className="row-zyx" >
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.message)}
+                                value={bodyMessage}
+                            />
+                            <Grid className="col-6" item xs={12} sm={12} md={12} lg={12} xl={12} style={{ borderTop: '1px solid #e1e1e1', paddingTop: 8, marginTop: 8 }}>
+                                {fields.map((item: Dictionary, i) => (
+                                    <div key={item.id}>
+                                        <FieldSelect
+                                            key={"var_" + item.id}
+                                            fregister={{
+                                                ...register(`variables.${i}.variable`, {
+                                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                })
+                                            }}
+                                            className={classes.field}
+                                            label={item.name}
+                                            valueDefault={getValues(`variables.${i}.variable`)}
+                                            onChange={(value) => {
+                                                setValue(`variables.${i}.variable`, value.key)
+                                                trigger(`variables.${i}.variable`)
+                                            }}
+                                            error={errors?.variables?.[i]?.text?.message}
+                                            data={variables}
+                                            uset={true}
+                                            prefixTranslation=""
+                                            optionDesc="key"
+                                            optionValue="key"
+                                        />
+                                        {getValues(`variables.${i}.variable`) === 'custom' &&
+                                            <FieldEditArray
+                                                key={"custom_" + item.id}
+                                                fregister={{
+                                                    ...register(`variables.${i}.text`, {
+                                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                    })
+                                                }}
+                                                className={classes.field}
+                                                valueDefault={item.value}
+                                                error={errors?.variables?.[i]?.text?.message}
+                                                onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
+                                            />
+                                        }
+                                    </div>
+                                ))}
+                            </Grid>
                         </div>
                     </div>
                 </AntTabPanel>
@@ -702,16 +787,17 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                     <FieldEdit
                                         label={t(langKeys.quantity)}
                                         className="col-6"
-                                        valueDefault={getValues('quantity')}
-                                        onChange={(value) => setValue('quantity', value)}
-                                        error={errors?.quantity?.message}
+                                        type="number"
+                                        valueDefault={getValues('duration')}
+                                        onChange={(value) => setValue('duration', value)}
+                                        error={errors?.duration?.message}
                                     />
                                     <FieldSelect
                                         label={t(langKeys.unitofmeasure)}
                                         className="col-6"
-                                        valueDefault={row?.notificationtemplate || ""}
-                                        onChange={(value) => setValue('notificationtemplate', (value?.val||""))}
-                                        error={errors?.notificationtemplate?.message}
+                                        valueDefault={row?.durationtype || ""}
+                                        onChange={(value) => setValue('durationtype', (value?.val||""))}
+                                        error={errors?.durationtype?.message}
                                         data={[{desc: "MM",val: "MM"},{desc: "HH",val: "HH"}]}
                                         optionDesc="desc"
                                         optionValue="val"
@@ -724,16 +810,17 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                     <FieldEdit
                                         label={t(langKeys.quantity)}
                                         className="col-6"
-                                        valueDefault={getValues('quantity')}
-                                        onChange={(value) => setValue('quantity', value)}
-                                        error={errors?.quantity?.message}
+                                        type="number"
+                                        valueDefault={getValues('timebeforeeventduration')}
+                                        onChange={(value) => setValue('timebeforeeventduration', value)}
+                                        error={errors?.timebeforeeventduration?.message}
                                     />
                                     <FieldSelect
                                         label={t(langKeys.unitofmeasure)}
                                         className="col-6"
-                                        valueDefault={row?.notificationtemplate || ""}
-                                        onChange={(value) => setValue('notificationtemplate', (value?.val||""))}
-                                        error={errors?.notificationtemplate?.message}
+                                        valueDefault={row?.timebeforeeventunit || ""}
+                                        onChange={(value) => setValue('timebeforeeventunit', (value?.val||""))}
+                                        error={errors?.timebeforeeventunit?.message}
                                         data={[{desc: "MM",val: "MM"},{desc: "HH",val: "HH"}]}
                                         optionDesc="desc"
                                         optionValue="val"
@@ -746,16 +833,17 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                     <FieldEdit
                                         label={t(langKeys.quantity)}
                                         className="col-6"
-                                        valueDefault={getValues('quantity')}
-                                        onChange={(value) => setValue('quantity', value)}
-                                        error={errors?.quantity?.message}
+                                        type="number"
+                                        valueDefault={getValues('timeaftereventduration')}
+                                        onChange={(value) => setValue('timeaftereventduration', value)}
+                                        error={errors?.timeaftereventduration?.message}
                                     />
                                     <FieldSelect
                                         label={t(langKeys.unitofmeasure)}
                                         className="col-6"
-                                        valueDefault={row?.notificationtemplate || ""}
-                                        onChange={(value) => setValue('notificationtemplate', (value?.val||""))}
-                                        error={errors?.notificationtemplate?.message}
+                                        valueDefault={row?.timeaftereventunit || ""}
+                                        onChange={(value) => setValue('timeaftereventunit', (value?.val||""))}
+                                        error={errors?.timeaftereventunit?.message}
                                         data={[{desc: "MM",val: "MM"},{desc: "HH",val: "HH"}]}
                                         optionDesc="desc"
                                         optionValue="val"
