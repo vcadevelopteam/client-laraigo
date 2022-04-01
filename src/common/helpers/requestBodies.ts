@@ -2042,7 +2042,7 @@ export const insAutomatizationRules = ({  id, description, status, type, columni
         operation,
     }
 });
-export const insColumns = ({ id, description, type, status, edit, index, operation, delete_all = false }: Dictionary): IRequestBody => ({
+export const insColumns = ({ id, description, type, status, edit=true, index, operation, delete_all = false }: Dictionary): IRequestBody => ({
     method: 'UFN_COLUMN_INS',
     key: "UFN_COLUMN_INS",
     parameters: {

@@ -1730,7 +1730,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
         }
 
         if (activity?.type === "automated") {
-            register('hsmtemplateid', { validate: (value) => value && value > 0 ? undefined : t(langKeys.field_required) + "" })
+            register('hsmtemplateid', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
             register('communicationchannelid', { validate: (value) => value && value > 0 ? undefined : t(langKeys.field_required) + "" })
             register('communicationchannelid', { validate: (value) => value && value > 0 ? undefined : t(langKeys.field_required) + "" })
         } else {
@@ -1876,7 +1876,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                                 setValue('type', v?.domainvalue || "");
                                                 trigger('type');
                                                 if ((v?.domainvalue || "") === "automated") {
-                                                    register('hsmtemplateid', { validate: (value) => value && value > 0 ? t(langKeys.field_required) + "" : undefined })
+                                                    register('hsmtemplateid', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) })
                                                 } else {
                                                     register('hsmtemplateid', { validate: () => true })
                                                 }

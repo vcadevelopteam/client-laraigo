@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import ClearIcon from '@material-ui/icons/Clear';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SaveIcon from '@material-ui/icons/Save';
@@ -254,11 +254,9 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
                             valueDefault={getValues('shippingtype')}
                             onChange={(value) => {setshippingtype(value?.desc || '');setValue('shippingtype', value?.desc || '')}}
                             error={errors?.shippingtype?.message}
-                            data={[{desc: "INMEDIATELY"}, {desc: "DAY"}]}
+                            data={[{desc: t(langKeys.inmediately),val:"INMEDIATELY"}, {desc: t(langKeys.day),val:"DAY"}]}
                             optionDesc="desc"
-                            uset={true}
-                            prefixTranslation=""
-                            optionValue="desc"
+                            optionValue="val"
                         />
                         {shippingtype === "DAY" && <FieldEdit
                             label={`${t(langKeys.day)}s`}
@@ -385,6 +383,7 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
                                                 validate: (value: any) => (value && value.length) || t(langKeys.field_required)
                                             })
                                         }}
+                                        prefixTranslation=""
                                         className={classes.field}
                                         valueDefault={item.value}
                                         error={errors?.variables?.[i]?.text?.message}
@@ -407,6 +406,7 @@ const AutomatizationRules: FC = () => {
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.main.execute);
     const [viewSelected, setViewSelected] = useState("view-1");
+    const [filerchanneltype, setfilerchanneltype] = useState("");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, domainname: "", edit: false });
     const [waitSave, setWaitSave] = useState(false);
     const user = useSelector(state => state.login.validateToken.user);
@@ -438,14 +438,19 @@ const AutomatizationRules: FC = () => {
                 }
             },
             {
-                Header: t(langKeys.automatizationrule),
-                accessor: 'description',
-                NoFilter: true
+                Header: t(langKeys.communicationchannel),
+                accessor: 'communicationchanneldesc',
+                NoFilter: false
+            },
+            {
+                Header: t(langKeys.templatetosend),
+                accessor: 'messagetemplateid',
+                NoFilter: false,
             },
             {
                 Header: t(langKeys.status),
                 accessor: 'status',
-                NoFilter: true,
+                NoFilter: false,
                 prefixTranslation: 'status_',
                 Cell: (props: any) => {
                     const { status } = props.cell.row.original;
@@ -455,17 +460,22 @@ const AutomatizationRules: FC = () => {
             {
                 Header: t(langKeys.shippingtype),
                 accessor: 'shippingtype',
-                NoFilter: true
+                NoFilter: false,
+                prefixTranslation: 'xdays_',
+                Cell: (props: any) => {
+                    const { shippingtype } = props.cell.row.original;
+                    return (t(`xdays_${shippingtype}`.toLowerCase()) || "").toUpperCase()
+                }
             },
             {
                 Header: t(langKeys.day),
                 accessor: 'xdays',
-                NoFilter: true
+                NoFilter: false,
             },
             {
                 Header: t(langKeys.schedule),
                 accessor: 'schedule',
-                NoFilter: true
+                NoFilter: false
             },
         ],
         []
@@ -547,10 +557,26 @@ const AutomatizationRules: FC = () => {
                     titlemodule={t(langKeys.automatizationrules, { count: 2 })}
                     data={mainResult.mainData.data}
                     download={false}
+                    //fetchData={fetchData}
                     onClickRow={handleEdit}
+                    ButtonsElement={()=>(<>
+                        <FieldSelect
+                            onChange={(value) => setfilerchanneltype(value||"")}
+                            size="small"
+                            label={t(langKeys.channel)}
+                            style={{ maxWidth: 300, minWidth: 200 }}
+                            variant="outlined"
+                            loading={mainResult.multiData.loading}
+                            data={mainResult.multiData?.data[2]?.data || []}
+                            optionValue="communicationchannelid"
+                            optionDesc="communicationchanneldesc"
+                            valueDefault={filerchanneltype}
+                        />
+                    </>)}
                     loading={mainResult.mainData.loading}
                     register={superadmin}
                     handleRegister={handleRegister}
+                    
             />
             </div>
         )
