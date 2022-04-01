@@ -328,6 +328,7 @@ const translation: LangKeys = {
     district: "Distrito",
     postalcode: "Código postal",
     searchyourlocation: "Busca tu ubicación",
+    calendarview: "Vista del calendario",
     zone: "Zona",
     smileys: "Emoticones",
     generalinformation: 'Información General',

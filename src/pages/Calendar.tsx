@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, RichText, ColorInput, AntTabPanel, FieldEditArray } from 'components';
+import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, RichText, ColorInput, AntTabPanel, FieldEditArray, IOSSwitch } from 'components';
 import { getDateCleaned,getValuesFromDomain, insCalendar, hours, selCalendar, getMessageTemplateLst } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -14,7 +14,7 @@ import { langKeys } from 'lang/keys';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { getCollection, getMultiCollection, execute, resetAllMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { Box, Checkbox, FormControl, FormControlLabel, FormGroup, Grid, IconButton, ListItemIcon, Menu, MenuItem, Radio, RadioGroup, Tabs } from '@material-ui/core';
+import { Box, Checkbox, FormControl, FormControlLabel, FormGroup, Grid, IconButton, ListItemIcon, Menu, MenuItem, Radio, RadioGroup, Switch, Tabs, TextField } from '@material-ui/core';
 import { Range } from 'react-date-range';
 import { DateRangePicker } from 'components';
 import { CalendarIcon, DuplicateIcon } from 'icons';
@@ -371,6 +371,14 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
     const [bodyMessage, setBodyMessage] = useState('');
+    const [generalstate, setgeneralstate] = useState({
+        eventcode: row?.eventcode || '',
+        duration: row?.duration || 0,
+        timebeforeeventduration: row?.timebeforeeventduration || 0,
+        timeaftereventduration: row?.timeaftereventduration || 0,
+        daysintothefuture: row?.daysintothefuture || 0,
+        calendarview: false,
+    });
     const [state, setState] = React.useState({
         sun: false,
         mon: true,
@@ -584,35 +592,34 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                             </div>
                         )}
                     />
-                    <AntTab
-                        label={(
-                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                Calendario test
-                            </div>
-                        )}
-                        disabled={getValues("intervals").some(x=>(x.overlap||-1)!==-1)}
-                    />
                 </Tabs>
                 
                 <AntTabPanel index={0} currentIndex={tabIndex}>
                     <div className={classes.containerDetail}>
                         <div className="row-zyx">
-                            <FieldEdit
-                                label={t(langKeys.eventcode)}
-                                className="col-6"
-                                valueDefault={getValues('eventcode')}
-                                onChange={(value) => {
-                                    let valuetosend = value.trim()
-                                    setValue('eventcode', valuetosend)
-                                }}
-                                
-                                error={errors?.eventcode?.message}
-                            />
+                            <div className="col-6">
+                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">{t(langKeys.eventcode)}</Box>
+                                <TextField
+                                    color="primary"
+                                    fullWidth
+                                    value={generalstate.eventcode}
+                                    error={!!errors?.eventcode?.message}
+                                    helperText={errors?.eventcode?.message || null}
+                                    onInput={(e:any)=>{
+                                        let val =  e.target.value.replace(/[^0-9a-zA-Z ]/g, "").replace(/\s+/g, '')
+                                        e.target.value=String(val)
+                                    }}
+                                    onChange={(e) => {
+                                        setgeneralstate({...generalstate, eventcode:e.target.value});
+                                        setValue('eventcode', e.target.value)
+                                    }}
+                                />
+                            </div>
                             <FieldEdit
                                 label={t(langKeys.eventname)}
                                 className="col-6"
                                 valueDefault={getValues('eventname')}
-                                onChange={(value) => setValue('eventname', value)}
+                                onChange={(value) => {let val = value.trim();setValue('eventname', val)}}
                                 error={errors?.eventname?.message}
                             />
                         </div>
@@ -745,23 +752,29 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                 <div className="col-12" style={{padding: 5}}>
                                     <Box fontWeight={500} lineHeight="18px" fontSize={16} mb={1} color="textPrimary">{t(langKeys.duration)}</Box>
                                     <div className="row-zyx" >
-                                        <FieldEdit
-                                            label={t(langKeys.quantity)}
-                                            className="col-6"
-                                            type="number"
-                                            valueDefault={getValues('duration')}
-                                            onChange={(value) => {
-                                                let val =  Number(value.replace(/[^0-9]/g, ''))
-                                                if(val<0) val=0
-                                                debugger
-                                                setValue('duration', val)
-                                            }}
-                                            error={errors?.duration?.message}
-                                        />
+                                        <div className="col-6">
+                                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">{t(langKeys.quantity)}</Box>
+                                            <TextField
+                                                color="primary"
+                                                type="number"
+                                                fullWidth
+                                                value={generalstate.duration}
+                                                error={!!errors?.duration?.message}
+                                                helperText={errors?.duration?.message || null}
+                                                onInput={(e:any)=>{
+                                                    let val =  Number(e.target.value.replace(/[^0-9 ]/g, ""))
+                                                    e.target.value=String(val)
+                                                }}
+                                                onChange={(e) => {
+                                                    setgeneralstate({...generalstate, duration:Number(e.target.value)});
+                                                    setValue('duration', Number(e.target.value))
+                                                }}
+                                            />
+                                        </div>
                                         <FieldSelect
                                             label={t(langKeys.unitofmeasure)}
                                             className="col-6"
-                                            valueDefault={row?.durationtype || ""}
+                                            valueDefault={row?.durationtype || "MM"}
                                             onChange={(value) => setValue('durationtype', (value?.val||""))}
                                             error={errors?.durationtype?.message}
                                             data={[{desc: "MM",val: "MM"},{desc: "HH",val: "HH"}]}
@@ -773,18 +786,29 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                 <div className="col-12" style={{padding: 5}}>
                                     <Box fontWeight={500} lineHeight="18px" fontSize={16} mb={1} color="textPrimary">{t(langKeys.settimebeforetheevent)}</Box>
                                     <div className="row-zyx" >
-                                        <FieldEdit
-                                            label={t(langKeys.quantity)}
-                                            className="col-6"
-                                            type="number"
-                                            valueDefault={getValues('timebeforeeventduration')}
-                                            onChange={(value) => setValue('timebeforeeventduration', value)}
-                                            error={errors?.timebeforeeventduration?.message}
-                                        />
+                                        <div className="col-6">
+                                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">{t(langKeys.quantity)}</Box>
+                                            <TextField
+                                                color="primary"
+                                                type="number"
+                                                fullWidth
+                                                value={generalstate.timebeforeeventduration}
+                                                error={!!errors?.timebeforeeventduration?.message}
+                                                helperText={errors?.timebeforeeventduration?.message || null}
+                                                onInput={(e:any)=>{
+                                                    let val =  Number(e.target.value.replace(/[^0-9 ]/g, ""))
+                                                    e.target.value=String(val)
+                                                }}
+                                                onChange={(e) => {
+                                                    setgeneralstate({...generalstate, timebeforeeventduration:Number(e.target.value)});
+                                                    setValue('timebeforeeventduration', Number(e.target.value))
+                                                }}
+                                            />
+                                        </div>
                                         <FieldSelect
                                             label={t(langKeys.unitofmeasure)}
                                             className="col-6"
-                                            valueDefault={row?.timebeforeeventunit || ""}
+                                            valueDefault={row?.timebeforeeventunit || "MM"}
                                             onChange={(value) => setValue('timebeforeeventunit', (value?.val||""))}
                                             error={errors?.timebeforeeventunit?.message}
                                             data={[{desc: "MM",val: "MM"},{desc: "HH",val: "HH"}]}
@@ -796,18 +820,29 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                 <div className="col-12" style={{padding: 5}}>
                                     <Box fontWeight={500} lineHeight="18px" fontSize={16} mb={1} color="textPrimary">{t(langKeys.settimeaftertheevent)}</Box>
                                     <div className="row-zyx" >
-                                        <FieldEdit
-                                            label={t(langKeys.quantity)}
-                                            className="col-6"
-                                            type="number"
-                                            valueDefault={getValues('timeaftereventduration')}
-                                            onChange={(value) => setValue('timeaftereventduration', value)}
-                                            error={errors?.timeaftereventduration?.message}
-                                        />
+                                        <div className="col-6">
+                                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">{t(langKeys.quantity)}</Box>
+                                            <TextField
+                                                color="primary"
+                                                type="number"
+                                                fullWidth
+                                                value={generalstate.timeaftereventduration}
+                                                error={!!errors?.timeaftereventduration?.message}
+                                                helperText={errors?.timeaftereventduration?.message || null}
+                                                onInput={(e:any)=>{
+                                                    let val =  Number(e.target.value.replace(/[^0-9 ]/g, ""))
+                                                    e.target.value=String(val)
+                                                }}
+                                                onChange={(e) => {
+                                                    setgeneralstate({...generalstate, timeaftereventduration:Number(e.target.value)});
+                                                    setValue('timeaftereventduration', Number(e.target.value))
+                                                }}
+                                            />
+                                        </div>
                                         <FieldSelect
                                             label={t(langKeys.unitofmeasure)}
                                             className="col-6"
-                                            valueDefault={row?.timeaftereventunit || ""}
+                                            valueDefault={row?.timeaftereventunit || "MM"}
                                             onChange={(value) => setValue('timeaftereventunit', (value?.val||""))}
                                             error={errors?.timeaftereventunit?.message}
                                             data={[{desc: "MM",val: "MM"},{desc: "HH",val: "HH"}]}
@@ -823,13 +858,23 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                     <RadioGroup aria-label="dateinterval" name="dateinterval1" value={dateinterval} onChange={handleChange}>
                                         <FormControlLabel value="daysintothefuture" control={<Radio color="primary"/>} label={<div style={{display:"flex", margin: "auto"}}>{dateinterval==="daysintothefuture" && (
                                             <>
-                                                <FieldEdit
-                                                    width={50}
-                                                    valueDefault={getValues('daysintothefuture')}
+                                                <TextField
+                                                    color="primary"
                                                     type="number"
+                                                    fullWidth
                                                     size="small"
-                                                    onChange={(value) => setValue('daysintothefuture', value)}
-                                                    error={errors?.daysintothefuture?.message}
+                                                    value={generalstate.daysintothefuture}
+                                                    error={!!errors?.daysintothefuture?.message}
+                                                    helperText={errors?.daysintothefuture?.message || null}
+                                                    onInput={(e:any)=>{
+                                                        let val =  Number(e.target.value.replace(/[^0-9 ]/g, ""))
+                                                        e.target.value=String(val)
+                                                    }}
+                                                    style={{width: 50}}
+                                                    onChange={(e) => {
+                                                        setgeneralstate({...generalstate, daysintothefuture:Number(e.target.value)});
+                                                        setValue('daysintothefuture', Number(e.target.value))
+                                                    }}
                                                 />
                                             </>
                                         )}
@@ -864,7 +909,20 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                         </div>
                         
                         <div className="row-zyx">
-                            <Box fontWeight={500} lineHeight="18px" fontSize={20} mb={1} color="textPrimary">{t(langKeys.availability)}</Box>
+                            <div style={{display:"grid", gridTemplateColumns: "[first] 200px [line2] auto [col2] 200px [end]"}} >
+                                <Box style={{gridColumnStart: "first"}} fontWeight={500} lineHeight="18px" fontSize={20} mb={1} color="textPrimary">{t(langKeys.availability)}</Box>
+                                <div style={{gridColumnStart: "col2"}}>
+                                <FormControlLabel
+                                    disabled={getValues("intervals").some(x=>(x.overlap||-1)!==-1)}
+                                    control={<Switch 
+                                        color="primary" checked={generalstate.calendarview} onChange={(e) => {
+                                        setgeneralstate({...generalstate, calendarview: e.target.checked});
+                                    }}  />}
+                                    label={t(langKeys.calendarview)}
+                                />       
+                                </div>
+                            </div>
+                            {!generalstate.calendarview?(
                             <div>
                                 <FormControl component="fieldset" className={classes.formControl} style={{width:"100%"}}>
                                     <FormGroup>
@@ -996,14 +1054,14 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                     </FormGroup>
                                 </FormControl>
                             </div>
+                            ):
+                            <Schedule
+                                data={fieldsIntervals} 
+                                setData={handlerCalendar}
+                            />
+                            }
                         </div>
                     </div>
-                </AntTabPanel>
-                <AntTabPanel index={2} currentIndex={tabIndex}>
-                    <Schedule
-                        data={fieldsIntervals} 
-                        setData={handlerCalendar}
-                    />
                 </AntTabPanel>
             </form>
         </div>
