@@ -196,104 +196,109 @@ const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,interva
     const { t } = useTranslation();
     const classes = useStyles();
     let hoursvalue=hours.map((x:any)=>(x.value))
+    console.log(dow)
     let dowfields = fieldsIntervals?.filter((x:any)=>((x.dow===dow) && (!x.date)))
     
 
     return (
         <>
-        <div style={{display:"flex", width: "100%",paddingTop:5, marginRight:10}}>
-            <div style={{display:"flex", margin: "auto",marginLeft: 0,fontWeight:"bold", width:100}}>{labelName}</div>
+        <div style={{display:"grid", gridTemplateColumns: "[first] 100px [line2] 20px [col2] 450px [line3] 20px [col3] 100px [lol] auto [end]", width: "100%", marginTop:10,marginBottom:10 ,marginRight:10}}>
+            <div style={{gridColumnStart: "first", margin: "auto",marginLeft: 0,fontWeight:"bold", }}>{labelName}</div>
             {flag &&
                 <>
                     {(fieldsIntervals?.filter((x:any)=>((x.dow===dow) && (!x.date))).length)?
-                        (<div style={{ marginLeft: 50, width:"100%" }}>
+                        (<div style={{ gridColumnStart: "col2", marginLeft: 50, width:"100%" }}>
                             {fieldsIntervals.map((x:any,i:number) =>{
                                 if (x.dow!==dow) return null
                                 return (
-                                    <div className="row-zyx" style={{margin:0}} key={`sun${i}`}>                                
+                                    <div className="row-zyx" style={{display:"grid", gridTemplateColumns: "[first] 150px [line1] 20px [col2] 150px [other] 20px [line2] 100px [land] auto [end]",margin:0}} key={`sun${i}`}>                                
                                         <>
-                                        <FieldSelect
-                                            fregister={{
-                                                ...register(`intervals.${i}.start`, {
-                                                    validate: {
-                                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required),
-                                                        timescross: (value: any) => ( getValues(`intervals.${i}.end`)>(value)) || t(langKeys.errorhoursdontmatch),
+                                        <div style={{gridColumnStart: "first"}}>
+                                            <FieldSelect
+                                                fregister={{
+                                                    ...register(`intervals.${i}.start`, {
+                                                        validate: {
+                                                            validate: (value: any) => (value && value.length) || t(langKeys.field_required),
+                                                            timescross: (value: any) => ( getValues(`intervals.${i}.end`)>(value)) || t(langKeys.errorhoursdontmatch),
+                                                        }
+                                                        
+                                                    }),
+                                                }}
+                                                variant="outlined"
+                                                className="col-5nomargin"
+                                                valueDefault={x?.start}
+                                                error={errors?.intervals?.[i]?.start?.message}
+                                                style={{pointerEvents: "auto"}}                                                                            
+                                                onChange={(value) => {
+                                                    let overlap= getValues(`intervals.${i}.overlap`)
+                                                    let fieldEnd= getValues(`intervals.${i}.end`)
+                                                    let fieldStart= value?.value
+                                                    if((overlap+1)){
+                                                        setValue(`intervals.${i}.overlap`, -1)
+                                                        setValue(`intervals.${overlap}.overlap`, -1)
                                                     }
-                                                    
-                                                }),
-                                            }}
-                                            variant="outlined"
-                                            className="col-5nomargin"
-                                            valueDefault={x?.start}
-                                            error={errors?.intervals?.[i]?.start?.message}
-                                            style={{pointerEvents: "auto"}}                                                                            
-                                            onChange={(value) => {
-                                                let overlap= getValues(`intervals.${i}.overlap`)
-                                                let fieldEnd= getValues(`intervals.${i}.end`)
-                                                let fieldStart= value?.value
-                                                if((overlap+1)){
-                                                    setValue(`intervals.${i}.overlap`, -1)
-                                                    setValue(`intervals.${overlap}.overlap`, -1)
-                                                }
-                                                const exists = fieldsIntervals.findIndex((y:any,cont:number) => (y.dow === dow) && (cont!==i)
-                                                    && (
-                                                    ((y.start < fieldEnd) && (y.start > fieldStart)) ||
-                                                    ((y.end < fieldEnd) && (y.end > fieldStart)) ||
-                                                    ((fieldEnd < y.end) && (fieldEnd > y.start)) ||
-                                                    ((fieldStart < y.end )&& (fieldStart > y.start)) ||
-                                                    (y.start===fieldStart )|| (y.end===fieldEnd)
-                                                ));
-                                                if((exists+1)){
-                                                    setValue(`intervals.${i}.overlap`, exists)
-                                                    setValue(`intervals.${exists}.overlap`, i)
-                                                }
-                                                setValue(`intervals.${i}.start`, value?.value)
-                                                trigger(`intervals.${i}.start`)
-                                            }}
-                                            data={hours}
-                                            optionDesc="desc"
-                                            optionValue="value"
-                                        />                               
-                                        <FieldSelect
-                                            fregister={{
-                                                ...register(`intervals.${i}.end`, {
-                                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                                }),
-                                            }}
-                                            variant="outlined"
-                                            className="col-5nomargin"
-                                            valueDefault={x?.end}
-                                            error={errors?.intervals?.[i]?.end?.message}
-                                            style={{pointerEvents: "auto"}}                                                                            
-                                            onChange={(value) => {           
-                                                let overlap= getValues(`intervals.${i}.overlap`)
-                                                let fieldEnd= value?.value
-                                                let fieldStart= getValues(`intervals.${i}.start`)
-                                                if((overlap+1)){
-                                                    setValue(`intervals.${i}.overlap`, -1)
-                                                    setValue(`intervals.${overlap}.overlap`, -1)
-                                                }
-                                                const exists = fieldsIntervals.findIndex((y:any,cont:number) => (y.dow === dow) && (cont!==i)
-                                                    && (
-                                                    ((y.start < fieldEnd) && (y.start > fieldStart)) ||
-                                                    ((y.end < fieldEnd) && (y.end > fieldStart)) ||
-                                                    ((fieldEnd < y.end) && (fieldEnd > y.start)) ||
-                                                    ((fieldStart < y.end )&& (fieldStart > y.start)) ||
-                                                    (y.start===fieldStart )|| (y.end===fieldEnd)
-                                                ));
-                                                if((exists+1)){
-                                                    setValue(`intervals.${exists}.overlap`, i)
-                                                    setValue(`intervals.${i}.overlap`, exists)
-                                                    trigger(`intervals.${exists}.start`)
-                                                }                                     
-                                                setValue(`intervals.${i}.end`, value?.value)
-                                                trigger(`intervals.${i}.start`)
-                                            }}
-                                            data={hours}
-                                            optionDesc="desc"
-                                            optionValue="value"
-                                        />                                                          
-                                        <div style={{ width: "16.6%" }}>
+                                                    const exists = fieldsIntervals.findIndex((y:any,cont:number) => (y.dow === dow) && (cont!==i)
+                                                        && (
+                                                        ((y.start < fieldEnd) && (y.start > fieldStart)) ||
+                                                        ((y.end < fieldEnd) && (y.end > fieldStart)) ||
+                                                        ((fieldEnd < y.end) && (fieldEnd > y.start)) ||
+                                                        ((fieldStart < y.end )&& (fieldStart > y.start)) ||
+                                                        (y.start===fieldStart )|| (y.end===fieldEnd)
+                                                    ));
+                                                    if((exists+1)){
+                                                        setValue(`intervals.${i}.overlap`, exists)
+                                                        setValue(`intervals.${exists}.overlap`, i)
+                                                    }
+                                                    setValue(`intervals.${i}.start`, value?.value)
+                                                    trigger(`intervals.${i}.start`)
+                                                }}
+                                                data={hours}
+                                                optionDesc="desc"
+                                                optionValue="value"
+                                            />                               
+                                        </div>
+                                        <div style={{gridColumnStart: "col2"}}>
+                                            <FieldSelect
+                                                fregister={{
+                                                    ...register(`intervals.${i}.end`, {
+                                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                    }),
+                                                }}
+                                                variant="outlined"
+                                                className="col-5nomargin"
+                                                valueDefault={x?.end}
+                                                error={errors?.intervals?.[i]?.end?.message}
+                                                style={{pointerEvents: "auto"}}                                                                            
+                                                onChange={(value) => {           
+                                                    let overlap= getValues(`intervals.${i}.overlap`)
+                                                    let fieldEnd= value?.value
+                                                    let fieldStart= getValues(`intervals.${i}.start`)
+                                                    if((overlap+1)){
+                                                        setValue(`intervals.${i}.overlap`, -1)
+                                                        setValue(`intervals.${overlap}.overlap`, -1)
+                                                    }
+                                                    const exists = fieldsIntervals.findIndex((y:any,cont:number) => (y.dow === dow) && (cont!==i)
+                                                        && (
+                                                        ((y.start < fieldEnd) && (y.start > fieldStart)) ||
+                                                        ((y.end < fieldEnd) && (y.end > fieldStart)) ||
+                                                        ((fieldEnd < y.end) && (fieldEnd > y.start)) ||
+                                                        ((fieldStart < y.end )&& (fieldStart > y.start)) ||
+                                                        (y.start===fieldStart )|| (y.end===fieldEnd)
+                                                    ));
+                                                    if((exists+1)){
+                                                        setValue(`intervals.${exists}.overlap`, i)
+                                                        setValue(`intervals.${i}.overlap`, exists)
+                                                        trigger(`intervals.${exists}.start`)
+                                                    }                                     
+                                                    setValue(`intervals.${i}.end`, value?.value)
+                                                    trigger(`intervals.${i}.start`)
+                                                }}
+                                                data={hours}
+                                                optionDesc="desc"
+                                                optionValue="value"
+                                            />                                                          
+                                        </div>
+                                        <div style={{ gridColumnStart: "line2",width: "16.6%" }}>
                                             <IconButton style={{pointerEvents: "auto"}} aria-label="delete" onClick={(e) =>{
                                                 
                                                 let overlap= getValues(`intervals.${i}.overlap`)
@@ -314,18 +319,14 @@ const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,interva
                                 )
                             })}
                         </div>):
-                        <div style={{ display: 'flex', margin: 'auto' }}>
+                        <div style={{ gridColumnStart: "col2",display: 'flex', margin: 'auto' }}>
                             {t(langKeys.notavailable)}
                         </div>
                         }
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div style={{ gridColumnStart: "col3", justifyContent: 'space-between' }}>
                         <div>
-                            <Button
-                                variant="contained"
-                                type="button"
-                                color="primary"
-                                endIcon={<AddIcon style={{ color: "#deac32" }} />}
-                                style={{ backgroundColor: "#6c757d", pointerEvents: "auto",width:150  }}
+                            <IconButton 
+                                style={{pointerEvents: "auto", cursor:"pointer"}}
                                 onClick={() => {
                                     if (dowfields?.length) {
                                         let indexofnexthour = hoursvalue.indexOf(dowfields[dowfields?.length-1].end)
@@ -344,8 +345,9 @@ const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,interva
                                         intervalsAppend({start:"09:00:00",end:"17:00:00",dow:dow, status: "available",overlap:-1})
                                     }
                                 }}
-                                >{t(langKeys.newinterval)}
-                            </Button>
+                            >
+                                <AddIcon /> 
+                            </IconButton>
                         </div>
                     </div>
                 </>
@@ -1036,7 +1038,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                         classes={{label: classes.root}}
                                         control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={sat} onChange={handleChangeAvailability} name="sat" />}
                                         label={<LabelDays 
-                                            flag={sun} 
+                                            flag={sat} 
                                             fieldsIntervals={fieldsIntervals} 
                                             errors={errors} 
                                             intervalsAppend={intervalsAppend} 
