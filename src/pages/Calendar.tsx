@@ -202,16 +202,16 @@ const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,interva
 
     return (
         <>
-        <div style={{display:"grid", gridTemplateColumns: "[first] 100px [line2] 20px [col2] 450px [line3] 20px [col3] 100px [lol] auto [end]", width: "100%", marginTop:10,marginBottom:10 ,marginRight:10}}>
+        <div style={{display:"grid", gridTemplateColumns: "[first] 100px [line2] 20px [col2] 450px [line3] 20px [col3] 100px [lol] auto [end]", width: "100%" ,minHeight: 50,marginRight:10}}>
             <div style={{gridColumnStart: "first", margin: "auto",marginLeft: 0,fontWeight:"bold", }}>{labelName}</div>
             {flag &&
                 <>
                     {(fieldsIntervals?.filter((x:any)=>((x.dow===dow) && (!x.date))).length)?
-                        (<div style={{ gridColumnStart: "col2", marginLeft: 50, width:"100%" }}>
+                        (<div style={{ gridColumnStart: "col2", marginLeft: 50,marginTop:5,marginBottom:5, width:"100%" }}>
                             {fieldsIntervals.map((x:any,i:number) =>{
                                 if (x.dow!==dow) return null
                                 return (
-                                    <div className="row-zyx" style={{display:"grid", gridTemplateColumns: "[first] 150px [line1] 20px [col2] 150px [other] 20px [line2] 100px [land] auto [end]",margin:0}} key={`sun${i}`}>                                
+                                    <div style={{display:"grid", gridTemplateColumns: "[first] 150px [line1] 20px [col2] 150px [other] 20px [line2] 100px [land] auto [end]",margin:0, marginTop: 5}} key={`sun${i}`}>                                
                                         <>
                                         <div style={{gridColumnStart: "first"}}>
                                             <FieldSelect
@@ -353,7 +353,7 @@ const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,interva
                 </>
             }
         </div>
-        <div style={{width:"100%", border: "lightgrey 1px solid"}}></div>
+        <div style={{width:"650px", border: "lightgrey 1px solid"}}></div>
         </>
     )
 }
