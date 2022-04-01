@@ -370,7 +370,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
     const dataTemplates = multiData[1] && multiData[1].success ? multiData[1].data : [];
     console.log(row)
-    const [bodyMessage, setBodyMessage] = useState(row?.messagetemplateid? dataTemplates.filter(x=>x.id===row.messagetemplateid)[0].body: "");
+    const [bodyMessage, setBodyMessage] = useState(row?.messagetemplateid? (dataTemplates.filter(x=>x.id===row.messagetemplateid)[0]?.body||""): "");
     const [generalstate, setgeneralstate] = useState({
         eventcode: row?.code || '',
         duration: row?.timeduration || 0,
