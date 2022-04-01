@@ -362,19 +362,21 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     const [waitSave, setWaitSave] = useState(false);
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const [bodyobject, setBodyobject] = useState<Descendant[]>(row?.mailbodyobject || [{ "type": "paragraph", "children": [{ "text": row?.mailbody || "" }] }])
+    const [bodyobject, setBodyobject] = useState<Descendant[]>(row?.description || [{ "type": "paragraph", "children": [{ "text": row?.description || "" }] }])
     const [color, setColor] = useState(row?.color||"#aa53e0");
     const [tabIndex, setTabIndex] = useState(0);
-    const [dateinterval, setdateinterval] = useState('daysintothefuture');
+    const [dateinterval, setdateinterval] = useState(row?.daystype||'daysintothefuture');
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
-    const [bodyMessage, setBodyMessage] = useState('');
+    const dataTemplates = multiData[1] && multiData[1].success ? multiData[1].data : [];
+    console.log(row)
+    const [bodyMessage, setBodyMessage] = useState(row?.messagetemplateid? dataTemplates.filter(x=>x.id===row.messagetemplateid)[0].body: "");
     const [generalstate, setgeneralstate] = useState({
-        eventcode: row?.eventcode || '',
-        duration: row?.duration || 0,
+        eventcode: row?.code || '',
+        duration: row?.timeduration || 0,
         timebeforeeventduration: row?.timebeforeeventduration || 0,
         timeaftereventduration: row?.timeaftereventduration || 0,
-        daysintothefuture: row?.daysintothefuture || 0,
+        daysintothefuture: row?.daysduration || 0,
         calendarview: false,
     });
     const [state, setState] = React.useState({
@@ -396,32 +398,32 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     };
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataTemplates = multiData[1] && multiData[1].success ? multiData[1].data : [];
 
     const { control, register, reset, handleSubmit, setValue, getValues, trigger,formState: { errors } } = useForm<FormFields>({
         defaultValues: {
-            id: row?.id || 0,
-            eventcode: row?.eventcode||"",
-            eventname: row?.eventname||"",
+            id: row?.calendareventid || 0,
+            eventcode: row?.code||"",
+            eventname: row?.name||"",
             location: row?.location||"",
             mailbody: row?.mailbody || "",
             color: row?.color || "#aa53e0",
             status: row?.status || "ACTIVO",
             notificationtype: row?.notificationtype || "",
-            daysintothefuture: row?.daysintothefuture || 0,
+            daysintothefuture: row?.daysduration || 0,
             operation: operation==="DUPLICATE"? "INSERT":operation,
-            hsmtemplateid: row?.hsmtemplateid || 0,
+            hsmtemplateid: row?.messagetemplateid || 0,
             hsmtemplatename: row?.hsmtemplatename || "",
-            intervals: row?.intervals || [],
+            intervals: row?.availability || [],
             variables: row?.variables || [],
-            durationtype: row?.durationtype || "MM",
-            duration: row?.duration || 0,
+            durationtype: row?.timeunit || "MM",
+            duration: row?.timeduration || 0,
             timebeforeeventunit: row?.timebeforeeventunit|| "MM",
             timebeforeeventduration: row?.timebeforeeventduration|| 0,
             timeaftereventunit: row?.timeaftereventunit|| "MM",
             timeaftereventduration: row?.timeaftereventduration|| 0,
         }
     });
+    
 
     const handlerCalendar = (data: ISchedule[]) => {
         reset({
@@ -545,7 +547,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                             }}
                         />
                         <TitleDetail
-                            title={row?.id ? `${row.name}` : t(langKeys.newcalendar)}
+                            title={row?.name || t(langKeys.newcalendar)}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
