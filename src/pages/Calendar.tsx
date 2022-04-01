@@ -60,11 +60,9 @@ type FormFields = {
     color: string,
     status: string,
     notificationtype: string,
-    notificationtemplate: string,
     hsmtemplatename: string,
     daysintothefuture: number,
     hsmtemplateid: number,
-    quantity: number,
     operation: string,
     intervals: ISchedule[],
     variables: any[],
@@ -367,7 +365,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     const [bodyobject, setBodyobject] = useState<Descendant[]>(row?.mailbodyobject || [{ "type": "paragraph", "children": [{ "text": row?.mailbody || "" }] }])
     const [color, setColor] = useState(row?.color||"#aa53e0");
     const [tabIndex, setTabIndex] = useState(0);
-    const [dateinterval, setdateinterval] = React.useState('daysintothefuture');
+    const [dateinterval, setdateinterval] = useState('daysintothefuture');
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
     const [bodyMessage, setBodyMessage] = useState('');
@@ -410,9 +408,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
             color: row?.color || "#aa53e0",
             status: row?.status || "ACTIVO",
             notificationtype: row?.notificationtype || "",
-            notificationtemplate: row?.notificationtemplate || "",
             daysintothefuture: row?.daysintothefuture || 0,
-            quantity: row?.quantity || 0,
             operation: operation==="DUPLICATE"? "INSERT":operation,
             hsmtemplateid: row?.hsmtemplateid || 0,
             hsmtemplatename: row?.hsmtemplatename || "",
@@ -445,12 +441,10 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     
     React.useEffect(() => {
         register('eventcode', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
-        register('quantity', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
         register('eventname', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('location', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('status', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('notificationtype', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
-        register('notificationtemplate', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('hsmtemplatename', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('hsmtemplateid', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
         register('durationtype', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
@@ -459,9 +453,6 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         register('timebeforeeventduration', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
         register('timeaftereventunit', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('timeaftereventduration', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
-        if(dateinterval==="daysintothefuture"){
-            register('daysintothefuture', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
-        }
     }, [register]);
 
     const handleColorChange: ColorChangeHandler = (e) => {
@@ -472,9 +463,9 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
                 dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
-                fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
+                fetchData && fetchData();
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.calendar_plural).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
@@ -563,6 +554,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                             variant="contained"
                             color="primary"
                             type="submit"
+                            onClick={() => {console.log(errors)}}
                             startIcon={<SaveIcon color="secondary" />}
                             style={{ backgroundColor: "#55BD84" }}>
                             {t(langKeys.save)}
@@ -677,7 +669,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                             <FieldSelect
                                 label={t(langKeys.notificationtype)}
                                 className="col-6"
-                                valueDefault={row?.notificationtype || ""}
+                                valueDefault={getValues("notificationtype")}
                                 onChange={(value) => setValue('notificationtype', (value?.val||""))}
                                 error={errors?.notificationtype?.message}
                                 data={[{desc: "HSM",val: "HSM"},{desc: t(langKeys.email),val: "EMAIL"}]}
