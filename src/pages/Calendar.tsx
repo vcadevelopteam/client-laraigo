@@ -365,7 +365,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     const [bodyobject, setBodyobject] = useState<Descendant[]>(row?.description || [{ "type": "paragraph", "children": [{ "text": row?.description || "" }] }])
     const [color, setColor] = useState(row?.color||"#aa53e0");
     const [tabIndex, setTabIndex] = useState(0);
-    const [dateinterval, setdateinterval] = useState(row?.daterange||'daysintothefuture');
+    const [dateinterval, setdateinterval] = useState(row?.daterange||'DAYS');
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
     const dataTemplates = multiData[1] && multiData[1].success ? multiData[1].data : [];
@@ -450,9 +450,9 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         register('durationtype', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('duration', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
         register('timebeforeeventunit', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
-        register('timebeforeeventduration', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
+        register('timebeforeeventduration', { validate: (value) => Boolean(value && value>=0) || String(t(langKeys.field_required)) });
         register('timeaftereventunit', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
-        register('timeaftereventduration', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
+        register('timeaftereventduration', { validate: (value) => Boolean(value && value>=0) || String(t(langKeys.field_required)) });
     }, [register]);
 
     const handleColorChange: ColorChangeHandler = (e) => {
@@ -583,13 +583,13 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                             </div>
                         )}
                     />
-                    <AntTab
+                    {operation === "EDIT" && <AntTab
                         label={(
                             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                                 <Trans i18nKey={langKeys.schedule} count={2} />
                             </div>
                         )}
-                    />
+                    />}
                 </Tabs>
                 
                 <AntTabPanel index={0} currentIndex={tabIndex}>
