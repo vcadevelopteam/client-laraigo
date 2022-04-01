@@ -32,6 +32,7 @@ export const langKeys = {
     reportschedulerdetail2: "reportschedulerdetail2",
     to: "to",
     sunday: "sunday",
+    calendarview: "calendarview",
     monday: "monday",
     tuesday: "tuesday",
     wednesday: "wednesday",

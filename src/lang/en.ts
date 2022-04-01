@@ -1249,6 +1249,7 @@ const translation: LangKeys = {
     error_channels_limit: "The maximum number of channels has been reached, upgrade your plan to continue",
     error_users_limit: "The maximum number of users was reached({{limit}}), upgrade your plan to continue",
     timeofday: "Time of day",
+    calendarview: "Calendar view",
     distributionTMOtooltip: "Shows the percentage of conversations that fall in the TMO minute range.",
     distributionTMEtooltip: "Shows the percentage of conversations that fall in the TME minute range.",
     distributionProductivitytooltip: "Shows the number of tickets that advisors attend to on average.",

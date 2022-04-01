@@ -2752,12 +2752,12 @@ export const insCalendar = ({
     increments,
     operation
 }: Dictionary): IRequestBody => ({
-    method: "UFN_CALENDARYEVENT_INS",
-    key: "UFN_CALENDARYEVENT_INS",
+    method: "UFN_CALENDAREVENT_INS",
+    key: "UFN_CALENDAREVENT_INS",
     parameters: {
         id, description, status, type,
         code, name, locationtype, location, eventlink, color, notificationtype, messagetemplateid,
-        daterange, daysduration, daystype, startdate, enddate,
+        daterange:"daterange", daysduration, daystype, startdate, enddate,
         timeduration, timeunit,
         availability: JSON.stringify(availability),
         timebeforeeventduration, timebeforeeventunit, timeaftereventduration, timeaftereventunit,
