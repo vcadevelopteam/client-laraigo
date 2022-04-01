@@ -34,16 +34,6 @@ const dayNames = [
     'saturday',
 ]
 
-const dataExample = [
-    { "dow": 0, "status": "available", "start": "09:00:00", "end": "18:00:00" },
-    { "dow": 1, "status": "available", "start": "07:00:00", "end": "18:00:00" },
-    { "dow": 2, "status": "available", "start": "09:00:00", "end": "18:00:00" },
-    { "dow": 3, "status": "available", "start": "09:00:00", "end": "18:00:00" },
-    { "dow": 5, "status": "available", "start": "08:00:00", "end": "18:00:00" },
-    { "dow": 6, "status": "available", "start": "09:00:00", "end": "18:00:00" },
-    { "date": "2022-03-02", "status": "available", "dow": 3, "start": "12:00:00", "end": "13:00:00" },
-]
-
 interface ISchedule {
     dow: number;
     start: string;
@@ -325,6 +315,7 @@ const DialogDate: React.FC<{
                             <CalendarZyx
                                 selectedDays={[day?.dateString!!]}
                                 onChange={onHandlerChange}
+                                multiple
                             />
                         </div>
                     )}
@@ -452,7 +443,7 @@ const DialogDate: React.FC<{
             </DialogContent>
             <DialogActions>
                 <Button variant="outlined" onClick={() => setOpen(false)}>
-                    Cancel
+                    {t(langKeys.cancel)}
                 </Button>
                 <Button
                     variant="contained"
@@ -460,7 +451,7 @@ const DialogDate: React.FC<{
                     color="primary"
                     form="form-date-calendar"
                 >
-                    Apply
+                    {t(langKeys.apply)}
                 </Button>
             </DialogActions>
         </Dialog >
