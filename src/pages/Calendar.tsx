@@ -775,7 +775,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                             valueDefault={row?.durationtype || "MINUTE"}
                                             onChange={(value) => setValue('durationtype', (value?.val||""))}
                                             error={errors?.durationtype?.message}
-                                            data={[{desc: "MM",val: "MINUTE"},{desc: "HH",val: "HOUR"}]}
+                                            data={[{desc: t(langKeys.minute_plural),val: "MINUTE"},{desc: t(langKeys.hour_plural),val: "HOUR"}]}
                                             optionDesc="desc"
                                             optionValue="val"
                                         />
@@ -809,7 +809,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                             valueDefault={row?.timebeforeeventunit || "MINUTE"}
                                             onChange={(value) => setValue('timebeforeeventunit', (value?.val||""))}
                                             error={errors?.timebeforeeventunit?.message}
-                                            data={[{desc: "MM",val: "MINUTE"},{desc: "HH",val: "HOUR"}]}
+                                            data={[{desc: t(langKeys.minute_plural),val: "MINUTE"},{desc: t(langKeys.hour_plural),val: "HOUR"}]}
                                             optionDesc="desc"
                                             optionValue="val"
                                         />
@@ -843,7 +843,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                             valueDefault={row?.timeaftereventunit || "MINUTE"}
                                             onChange={(value) => setValue('timeaftereventunit', (value?.val||""))}
                                             error={errors?.timeaftereventunit?.message}
-                                            data={[{desc: "MM",val: "MINUTE"},{desc: "HH",val: "HOUR"}]}
+                                            data={[{desc: t(langKeys.minute_plural),val: "MINUTE"},{desc: t(langKeys.hour_plural),val: "HOUR"}]}
                                             optionDesc="desc"
                                             optionValue="val"
                                         />

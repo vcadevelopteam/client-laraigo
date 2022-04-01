@@ -45,7 +45,7 @@ const translation: LangKeys = {
     friday: "Viernes",
     saturday: "Sábado",
     availability: "Disponibilidad",
-    unitofmeasure: "Unidad de Medida",
+    unitofmeasure: "Unidad de tiempo",
     settimebeforetheevent: "Tiempo antes del evento",
     settimeaftertheevent: "Tiempo despues del evento",
     choosebotorasesor: "Debe seleccionar al menos una opción “Asesor” o “Bot”.",

@@ -1635,7 +1635,7 @@ const translation: LangKeys = {
     numberofconversationsperchannel: "Number of conversations per channel",
     daysintothefuture: "Days into the future",
     withinadaterange: "Within a date range",
-    unitofmeasure: "Unit of measure",
+    unitofmeasure: "Unit of time",
     choosebotorasesor: "You must select at least one option “Advisor” or “Bot”.",
     newinterval: "New interval",
 
