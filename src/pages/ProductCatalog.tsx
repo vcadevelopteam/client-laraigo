@@ -208,7 +208,7 @@ const ProductCatalog: FC = () => {
             },
             {
                 Header: t(langKeys.productcatalogcategory),
-                accessor: 'category'
+                accessor: 'descriptiontext'
             },
             {
                 Header: t(langKeys.productcatalogunitprice),
@@ -245,7 +245,7 @@ const ProductCatalog: FC = () => {
                         ButtonsElement={() => (
                             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                                 <FieldSelect
-                                    label="Category"
+                                    label={t(langKeys.category)}
                                     className={classes.fieldsfilter}
                                     valueDefault={dataMain.category}
                                     variant="outlined"
@@ -322,6 +322,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
             id: row?.productcatalogid || 0,
             code: row?.code || '',
             description: row?.description || '',
+            descriptiontext: row?.descriptiontext || '',
             category: row?.category || '',
             status: row?.status || 'ACTIVO',
             type: row?.type || '',
@@ -352,6 +353,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
         register('id');
         register('code', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('descriptiontext');
         register('category', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('type');
@@ -483,7 +485,10 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             label={t(langKeys.category)}
                             className="col-6"
                             valueDefault={row?.category || ""}
-                            onChange={(value) => setValue('category', value?.domainvalue || '')}
+                            onChange={(value) => {
+                                setValue('category', value?.domainvalue || '');
+                                setValue('descriptiontext', value?.domaindesc || '');
+                            }}
                             error={errors?.category?.message}
                             data={dataDomainCategory}
                             optionDesc="domaindesc"
