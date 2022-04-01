@@ -1,6 +1,43 @@
 import { IAction } from "@types";
 import { initialState, IState } from "./reducer";
 
+
+export const mainEventBooking = (state: IState): IState => ({
+    ...state,
+    mainEventBooking: { ...state.mainEventBooking, data: [], loading: true, error: false }
+});
+
+export const mainEventBookingSuccess = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        mainEventBooking: {
+            key: action.payload.key,
+            data: action.payload.data || [],
+            count: 0,
+            loading: false,
+            error: false
+        }
+    }
+};
+
+export const mainEventBookingFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    mainEventBooking: {
+        ...state.mainEventBooking,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    }
+});
+
+export const mainEventBookingReset = (state: IState): IState => ({
+    ...state,
+    mainEventBooking: initialState.mainEventBooking,
+});
+
+
+
 export const main = (state: IState): IState => ({
     ...state,
     mainData: { ...state.mainData, data: [], loading: true, error: false }

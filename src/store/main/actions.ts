@@ -247,3 +247,14 @@ export const getMainGraphic = (requestBody: IRequestBody): IActionCall => ({
 export const resetMainGraphic = (): IActionCall => ({ type: actionTypes.GRAPHIC_MAIN_RESET });
 
 export const resetAllMain = (): IActionCall => ({ type: actionTypes.RESET_ALL });
+
+
+export const getCollEventBooking = (requestBody: IRequestBody): IActionCall => ({
+    callAPI: () => CommonService.mainEventBooking(requestBody),
+    types: {
+        loading: actionTypes.MAIN_EVENT_BOOKING,
+        success: actionTypes.MAIN_EVENT_BOOKING_SUCCESS,
+        failure: actionTypes.MAIN_EVENT_BOOKING_FAILURE,
+    },
+    type: null,
+});

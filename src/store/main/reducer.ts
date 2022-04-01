@@ -28,6 +28,7 @@ export interface IUpload extends ITemplate {
 
 export interface IState {
     mainData: IListStatePaginated<Dictionary> & { key?: string };
+    mainEventBooking: IListStatePaginated<Dictionary> & { key?: string };
     mainDynamic: IListStatePaginated<Dictionary>;
     multiData: IListStatePaginated<MultiData>;
     multiDataAux: IListStatePaginated<itemMulti>;
@@ -46,6 +47,7 @@ export interface IState {
 
 export const initialState: IState = {
     mainData: initialListPaginatedState,
+    mainEventBooking: initialListPaginatedState,
     mainDynamic: initialListPaginatedState,
     multiData: initialListPaginatedState,
     multiDataAux: initialListPaginatedState,
@@ -132,6 +134,11 @@ export default createReducer<IState>(initialState, {
     [actionTypes.DATA_DYNAMIC_SUCCESS]: caseFunctions.mainDynamicSuccess,
     [actionTypes.DATA_DYNAMIC_FAILURE]: caseFunctions.mainDynamicFailure,
     [actionTypes.DATA_DYNAMIC_RESET]: caseFunctions.mainDynamicReset,
+
+    [actionTypes.MAIN_EVENT_BOOKING]: caseFunctions.mainEventBooking,
+    [actionTypes.MAIN_EVENT_BOOKING_SUCCESS]: caseFunctions.mainEventBookingSuccess,
+    [actionTypes.MAIN_EVENT_BOOKING_FAILURE]: caseFunctions.mainEventBookingFailure,
+    [actionTypes.MAIN_EVENT_BOOKING_RESET]: caseFunctions.mainEventBookingReset,
 
     [actionTypes.DATA_EXPORT_DYNAMIC]: caseFunctions.exportDataDynamic,
     [actionTypes.DATA_EXPORT_DYNAMIC_SUCCESS]: caseFunctions.exportDataDynamicSuccess,
