@@ -365,11 +365,10 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     const [bodyobject, setBodyobject] = useState<Descendant[]>(row?.description || [{ "type": "paragraph", "children": [{ "text": row?.description || "" }] }])
     const [color, setColor] = useState(row?.color||"#aa53e0");
     const [tabIndex, setTabIndex] = useState(0);
-    const [dateinterval, setdateinterval] = useState(row?.daystype||'daysintothefuture');
+    const [dateinterval, setdateinterval] = useState(row?.daterange||'daysintothefuture');
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
     const dataTemplates = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    console.log(row)
     const [bodyMessage, setBodyMessage] = useState(row?.messagetemplateid? (dataTemplates.filter(x=>x.id===row.messagetemplateid)[0]?.body||""): "");
     const [generalstate, setgeneralstate] = useState({
         eventcode: row?.code || '',
@@ -415,11 +414,11 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
             hsmtemplatename: row?.hsmtemplatename || "",
             intervals: row?.availability || [],
             variables: row?.variables || [],
-            durationtype: row?.timeunit || "MM",
+            durationtype: row?.timeunit || "MINUTE",
             duration: row?.timeduration || 0,
-            timebeforeeventunit: row?.timebeforeeventunit|| "MM",
+            timebeforeeventunit: row?.timebeforeeventunit|| "MINUTE",
             timebeforeeventduration: row?.timebeforeeventduration|| 0,
-            timeaftereventunit: row?.timeaftereventunit|| "MM",
+            timeaftereventunit: row?.timeaftereventunit|| "MINUTE",
             timeaftereventduration: row?.timeaftereventduration|| 0,
         }
     });
@@ -447,7 +446,6 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         register('location', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('status', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('notificationtype', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
-        register('hsmtemplatename', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('hsmtemplateid', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
         register('durationtype', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('duration', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
@@ -515,12 +513,11 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                 availability: data.intervals,
                 timeduration: data.duration,
                 timeunit: data.durationtype,
-                daterange: dateRangeCreateDate,
+                daterange: dateinterval,
                 startdate: dateRangeCreateDate.startDate,
                 enddate: dateRangeCreateDate.endDate,
                 daysduration: diffDays,
-                daystype: dateinterval,
-                increments: "30",
+                increments: "00:30",
             }
             debugger
             dispatch(showBackdrop(true));
@@ -576,6 +573,13 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                         label={(
                             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                                 <Trans i18nKey={langKeys.generalinformation} count={2} />
+                            </div>
+                        )}
+                    />
+                    <AntTab
+                        label={(
+                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                <Trans i18nKey={langKeys.schedule} count={2} />
                             </div>
                         )}
                     />
@@ -768,10 +772,10 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                         <FieldSelect
                                             label={t(langKeys.unitofmeasure)}
                                             className="col-6"
-                                            valueDefault={row?.durationtype || "MM"}
+                                            valueDefault={row?.durationtype || "MINUTE"}
                                             onChange={(value) => setValue('durationtype', (value?.val||""))}
                                             error={errors?.durationtype?.message}
-                                            data={[{desc: "MM",val: "MM"},{desc: "HH",val: "HH"}]}
+                                            data={[{desc: "MM",val: "MINUTE"},{desc: "HH",val: "HOUR"}]}
                                             optionDesc="desc"
                                             optionValue="val"
                                         />
@@ -802,10 +806,10 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                         <FieldSelect
                                             label={t(langKeys.unitofmeasure)}
                                             className="col-6"
-                                            valueDefault={row?.timebeforeeventunit || "MM"}
+                                            valueDefault={row?.timebeforeeventunit || "MINUTE"}
                                             onChange={(value) => setValue('timebeforeeventunit', (value?.val||""))}
                                             error={errors?.timebeforeeventunit?.message}
-                                            data={[{desc: "MM",val: "MM"},{desc: "HH",val: "HH"}]}
+                                            data={[{desc: "MM",val: "MINUTE"},{desc: "HH",val: "HOUR"}]}
                                             optionDesc="desc"
                                             optionValue="val"
                                         />
@@ -836,10 +840,10 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                         <FieldSelect
                                             label={t(langKeys.unitofmeasure)}
                                             className="col-6"
-                                            valueDefault={row?.timeaftereventunit || "MM"}
+                                            valueDefault={row?.timeaftereventunit || "MINUTE"}
                                             onChange={(value) => setValue('timeaftereventunit', (value?.val||""))}
                                             error={errors?.timeaftereventunit?.message}
-                                            data={[{desc: "MM",val: "MM"},{desc: "HH",val: "HH"}]}
+                                            data={[{desc: "MM",val: "MINUTE"},{desc: "HH",val: "HOUR"}]}
                                             optionDesc="desc"
                                             optionValue="val"
                                         />
@@ -850,7 +854,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                 <React.Fragment>
                                     <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.dateinterval)}</Box>
                                     <RadioGroup aria-label="dateinterval" name="dateinterval1" value={dateinterval} onChange={handleChange}>
-                                        <FormControlLabel value="daysintothefuture" control={<Radio color="primary"/>} label={<div style={{display:"flex", margin: "auto"}}>{dateinterval==="daysintothefuture" && (
+                                        <FormControlLabel value="DAYS" control={<Radio color="primary"/>} label={<div style={{display:"flex", margin: "auto"}}>{dateinterval==="DAYS" && (
                                             <>
                                                 <TextField
                                                     color="primary"
@@ -873,10 +877,10 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                             </>
                                         )}
                                         <div style={{display:"flex", margin: "auto"}}>{t(langKeys.daysintothefuture)}</div></div>} />
-                                        <FormControlLabel value="withinadaterange" control={<Radio color="primary"/>} label={
+                                        <FormControlLabel value="RANGE" control={<Radio color="primary"/>} label={
                                         <div style={{display:"flex", margin: "auto"}}>
                                             <div style={{display:"flex", margin: "auto", paddingRight:8}}>{t(langKeys.withinadaterange)}  </div>
-                                            {dateinterval==="withinadaterange" && (
+                                            {dateinterval==="RANGE" && (
                                                 <>
                                                     <DateRangePicker
                                                         open={openDateRangeCreateDateModal}
@@ -895,7 +899,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                                 </>
                                             )}
                                         </div>} />
-                                        <FormControlLabel value="indefinetly" control={<Radio color="primary"/>} label={t(langKeys.indefinetly)} />
+                                        <FormControlLabel value="UNDEFINED" control={<Radio color="primary"/>} label={t(langKeys.indefinetly)} />
                                     </RadioGroup>
                                 </React.Fragment>
                             </div>
@@ -1057,6 +1061,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                         </div>
                     </div>
                 </AntTabPanel>
+                
             </form>
         </div>
     );

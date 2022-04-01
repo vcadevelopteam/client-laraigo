@@ -2745,7 +2745,7 @@ export const selCalendar = (id: number = 0) => ({
 export const insCalendar = ({
     id = 0, description, status, type,
     code, name, locationtype, location, eventlink, color, notificationtype, messagetemplateid,
-    daterange, daysduration, daystype, startdate, enddate,
+    daterange, daysduration, startdate, enddate,
     timeduration, timeunit,
     availability,
     timebeforeeventduration, timebeforeeventunit, timeaftereventduration, timeaftereventunit,
@@ -2757,7 +2757,7 @@ export const insCalendar = ({
     parameters: {
         id, description, status, type,
         code, name, locationtype, location, eventlink, color, notificationtype, messagetemplateid,
-        daterange:"daterange", daysduration, daystype, startdate, enddate,
+        daterange, daysduration, daystype: "CALENDAR", startdate, enddate,
         timeduration, timeunit,
         availability: JSON.stringify(availability),
         timebeforeeventduration, timebeforeeventunit, timeaftereventduration, timeaftereventunit,
@@ -2779,6 +2779,14 @@ export const validateCalendaryBooking = (params: Dictionary): IRequestBody => ({
     method: "UFN_CALENDARYBOOKING_SEL_DATETIME",
     parameters: {
         ...params,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+export const CalendaryBookingReport = ({period="", startdate,enddate,take,skip}: Dictionary): IRequestBody => ({
+    key: "UFN_CALENDARYBOOKING_REPORT",
+    method: "UFN_CALENDARYBOOKING_REPORT",
+    parameters: {
+        period, startdate,enddate,take,skip,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
