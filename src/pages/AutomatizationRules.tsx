@@ -235,7 +235,7 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
                             optionValue="domainvalue"
                         />
                         <FieldSelect
-                            label={t(langKeys.column)}
+                            label={t(langKeys.whensettingstate)}
                             className="col-6"
                             valueDefault={getValues('columnid')}
                             onChange={(value) => {setValue('columnid', value?.columnid || 0)}}
@@ -252,7 +252,7 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
                             label={t(langKeys.shippingtype)}
                             className="col-6"
                             valueDefault={getValues('shippingtype')}
-                            onChange={(value) => {setshippingtype(value?.desc || '');setValue('shippingtype', value?.desc || '')}}
+                            onChange={(value) => {setshippingtype(value?.val || '');setValue('shippingtype', value?.val || '')}}
                             error={errors?.shippingtype?.message}
                             data={[{desc: t(langKeys.inmediately),val:"INMEDIATELY"}, {desc: t(langKeys.day),val:"DAY"}]}
                             optionDesc="desc"
@@ -406,7 +406,7 @@ const AutomatizationRules: FC = () => {
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.main.execute);
     const [viewSelected, setViewSelected] = useState("view-1");
-    const [filerchanneltype, setfilerchanneltype] = useState("");
+    const [filerchanneltype, setfilerchanneltype] = useState(0);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, domainname: "", edit: false });
     const [waitSave, setWaitSave] = useState(false);
     const user = useSelector(state => state.login.validateToken.user);
@@ -443,19 +443,33 @@ const AutomatizationRules: FC = () => {
                 NoFilter: false
             },
             {
-                Header: t(langKeys.templatetosend),
-                accessor: 'messagetemplateid',
+                Header: t(langKeys.whensettingstate),
+                accessor: 'columnname',
                 NoFilter: false,
+                prefixTranslation: '',
+                Cell: (props: any) => {
+                    const { columnname } = props.cell.row.original;
+                    return (t(`${columnname.toLowerCase()}`.toLowerCase()) || "").toUpperCase()
+                }
             },
             {
-                Header: t(langKeys.status),
-                accessor: 'status',
+                Header: t(langKeys.conditional),
+                accessor: 'tags',
                 NoFilter: false,
-                prefixTranslation: 'status_',
                 Cell: (props: any) => {
-                    const { status } = props.cell.row.original;
-                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
+                    const { tags, products } = props.cell.row.original;
+                    return (
+                        <>
+                            <div><b>Tags:</b> {tags}</div>
+                            <div><b>{t(langKeys.product_plural)}:</b> {products}</div>
+                        </>
+                    )
                 }
+            },
+            {
+                Header: t(langKeys.templatetosend),
+                accessor: 'messagetemplatename',
+                NoFilter: false,
             },
             {
                 Header: t(langKeys.shippingtype),
@@ -468,7 +482,7 @@ const AutomatizationRules: FC = () => {
                 }
             },
             {
-                Header: t(langKeys.day),
+                Header: `X ${t(langKeys.day)}s`,
                 accessor: 'xdays',
                 NoFilter: false,
             },
@@ -477,11 +491,21 @@ const AutomatizationRules: FC = () => {
                 accessor: 'schedule',
                 NoFilter: false
             },
+            {
+                Header: t(langKeys.status),
+                accessor: 'status',
+                NoFilter: false,
+                prefixTranslation: 'status_',
+                Cell: (props: any) => {
+                    const { status } = props.cell.row.original;
+                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
+                }
+            },
         ],
         []
     );
 
-    const fetchData = () => dispatch(getCollection(getAutomatizationRulesSel(0)));
+    const fetchData = (communicationchannelid?:number) => dispatch(getCollection(getAutomatizationRulesSel({id:0,communicationchannelid:communicationchannelid||0})));
 
     useEffect(() => {
         fetchData();
@@ -561,7 +585,7 @@ const AutomatizationRules: FC = () => {
                     onClickRow={handleEdit}
                     ButtonsElement={()=>(<>
                         <FieldSelect
-                            onChange={(value) => setfilerchanneltype(value||"")}
+                            onChange={(value) => {setfilerchanneltype(value?.communicationchannelid||0);fetchData(value?.communicationchannelid||0)}}
                             size="small"
                             label={t(langKeys.channel)}
                             style={{ maxWidth: 300, minWidth: 200 }}

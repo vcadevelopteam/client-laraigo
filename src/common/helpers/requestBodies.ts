@@ -2013,11 +2013,12 @@ export const getLeadsSel = (params: ICrmLeadSel): IRequestBody => ({
         all: params.id === 0,
     }
 })
-export const getAutomatizationRulesSel = (id: number): IRequestBody => ({
+export const getAutomatizationRulesSel = ({id,communicationchannelid}:Dictionary ): IRequestBody => ({
     method: "UFN_LEADAUTOMATIZATIONRULES_SEL",
     key: "UFN_LEADAUTOMATIZATIONRULES_SEL",
     parameters: {
         id,
+        communicationchannelid,
         all: id===0
     }
 })

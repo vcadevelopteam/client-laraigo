@@ -31,6 +31,8 @@ const translation: LangKeys = {
     show_all: 'Show all',
 
     model: 'Model',
+    conditional: "Conditional",
+    whensettingstate: "When setting state",
     model_plural: 'Models',
     tossub1: "Consider that registration of a",
     securitycode: "Security code",
