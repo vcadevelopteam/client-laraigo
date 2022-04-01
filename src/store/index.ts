@@ -2,7 +2,6 @@ import callAPIMiddleware from 'middlewares/apiMiddleware';
 import callWSMiddleware from 'middlewares/wsMiddleware';
 import { applyMiddleware, compose, createStore, combineReducers, Middleware } from 'redux';
 import thunk from 'redux-thunk';
-import ticketReducer, { IState as ITicketState } from './ticket/reducer';
 import channelReducer, { IState as IChannelState } from './channel/reducer';
 import loginReducer, { IState as ILogin } from './login/reducer';
 import mainReducer, { IState as IMain } from './main/reducer';
@@ -21,7 +20,6 @@ import getlocationsReducer, { IState as IGetLocations } from './getlocations/red
 import subscriptionReducer, { IState as ISubscription } from './subscription/reducer';
 
 export interface IRootState {
-    ticket: ITicketState;
     login: ILogin,
     main: IMain;
     popus: IPopus;
@@ -47,7 +45,6 @@ declare global {
 }   
 
 const rootReducer = combineReducers<IRootState>({
-    ticket: ticketReducer,
     login: loginReducer,
     main: mainReducer,
     popus: popusReducer,

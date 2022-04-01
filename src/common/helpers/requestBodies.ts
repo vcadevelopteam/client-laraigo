@@ -141,7 +141,7 @@ export const getChannelsByOrg = (orgid?: number | null, keytmp?: any): IRequestB
     }
 });
 
-export const getValuesFromDomain = (domainname: string, keytmp?: any, orgid?: number | null,corpid?: number | null): IRequestBody => ({
+export const getValuesFromDomain = (domainname: string, keytmp?: any, orgid?: number | null, corpid?: number | null): IRequestBody => ({
     method: "UFN_DOMAIN_LST_VALORES",
     key: "UFN_DOMAIN_LST_VALORES" + (keytmp || ""),
     parameters: {
@@ -197,10 +197,10 @@ export const getClassificationLevel2 = (type: string, classificationid: number):
 export const insUser = ({ id, usr, doctype, send_password_by_email, docnum, password = "", firstname, lastname, email, pwdchangefirstlogin, type, status, description = "", operation, company = "", twofactorauthentication, registercode, billinggroupid, image, language, key = "UFN_USER_INS" }: Dictionary): IRequestBody => ({
     method: "UFN_USER_INS",
     key,
-    parameters: { id, usr, doctype, docnum, password: password, firstname, lastname, email, pwdchangefirstlogin, type, status, description, operation, company, twofactorauthentication, sendMailPassword: send_password_by_email , registercode, billinggroup: billinggroupid || 0, image, language }
+    parameters: { id, usr, doctype, docnum, password: password, firstname, lastname, email, pwdchangefirstlogin, type, status, description, operation, company, twofactorauthentication, sendMailPassword: send_password_by_email, registercode, billinggroup: billinggroupid || 0, image, language }
 });
 
-export const insOrgUser = ({ roleid, orgid, bydefault, labels, groups, channels, status, type, supervisor="", operation, redirect }: Dictionary): IRequestBody => ({
+export const insOrgUser = ({ roleid, orgid, bydefault, labels, groups, channels, status, type, supervisor = "", operation, redirect }: Dictionary): IRequestBody => ({
     method: "UFN_ORGUSER_INS",
     key: "UFN_ORGUSER_INS",
     parameters: { orgid, roleid, usersupervisor: supervisor, bydefault, labels, groups, channels, status, type, defaultsort: 1, operation, redirect }
@@ -287,7 +287,7 @@ export const getCorpSel = (id: number): IRequestBody => ({
         all: id === 0,
     }
 });
-export const getOrgSel = (id: number, corpid?:number): IRequestBody => ({
+export const getOrgSel = (id: number, corpid?: number): IRequestBody => ({
     method: "UFN_ORG_SEL",
     key: "UFN_ORG_SEL",
     parameters: {
@@ -459,7 +459,7 @@ export const getEmojiSel = (emojidec: string): IRequestBody => ({
     }
 })
 
-export const insEmoji = ({ favorite,restricted,...allParameters }: Dictionary): IRequestBody => ({
+export const insEmoji = ({ favorite, restricted, ...allParameters }: Dictionary): IRequestBody => ({
     method: "UFN_EMOJI_INS",
     key: "UFN_EMOJI_INS",
     parameters: {
@@ -540,12 +540,12 @@ export const getReportSchedulerSel = (id: number): IRequestBody => ({
         all: true
     }
 })
-export const reportSchedulerIns = ({id, title, status, origin, origintype, reportid, reportname, filterjson, frecuency, schedule, datarange, mailto, mailcc, mailsubject, mailbody,mailbodyobject, operation}: Dictionary): IRequestBody => ({
+export const reportSchedulerIns = ({ id, title, status, origin, origintype, reportid, reportname, filterjson, frecuency, schedule, datarange, mailto, mailcc, mailsubject, mailbody, mailbodyobject, operation }: Dictionary): IRequestBody => ({
     method: "UFN_REPORTSCHEDULER_INS",
     key: "UFN_REPORTSCHEDULER_INS",
     parameters: {
-        id, title, status, origin, origintype, reportid, reportname, filterjson, frecuency, schedule, datarange, mailto, mailcc, mailsubject, mailbody, operation, 
-        mailbodyobject:JSON.stringify(mailbodyobject),
+        id, title, status, origin, origintype, reportid, reportname, filterjson, frecuency, schedule, datarange, mailto, mailcc, mailsubject, mailbody, operation,
+        mailbodyobject: JSON.stringify(mailbodyobject),
         description: "",
         type: "",
     }
@@ -564,7 +564,7 @@ export const getAutomatizationRulesSel = (id: number): IRequestBody => ({
     key: "UFN_LEADAUTOMATIZATIONRULES_SEL",
     parameters: {
         id,
-        all: id===0
+        all: id === 0
     }
 })
 
@@ -588,15 +588,15 @@ export const getQuickrepliesSel = (id: number): IRequestBody => ({
     }
 })
 
-export const insCorp = ({ id, description, type, status, logo, logotype, operation, paymentplanid = 0, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, billbyorg = false, credittype="", paymentmethod="" }: Dictionary): IRequestBody => ({
+export const insCorp = ({ id, description, type, status, logo, logotype, operation, paymentplanid = 0, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, billbyorg = false, credittype = "", paymentmethod = "" }: Dictionary): IRequestBody => ({
     method: "UFN_CORP_INS",
     key: "UFN_CORP_INS",
-    parameters: { companysize: null, id, description, type, status, logo, logotype, operation, paymentplanid, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, billbyorg,credittype,paymentmethod }
+    parameters: { companysize: null, id, description, type, status, logo, logotype, operation, paymentplanid, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, billbyorg, credittype, paymentmethod }
 });
-export const insOrg = ({ corpid, description, status, type, id, operation, currency, email = "", password = "", port = 0, host, ssl, default_credentials, private_mail, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, iconbot = "", iconadvisor="", iconclient="", credittype="", timezone, timezoneoffset }: Dictionary): IRequestBody => ({
+export const insOrg = ({ corpid, description, status, type, id, operation, currency, email = "", password = "", port = 0, host, ssl, default_credentials, private_mail, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, iconbot = "", iconadvisor = "", iconclient = "", credittype = "", timezone, timezoneoffset }: Dictionary): IRequestBody => ({
     method: "UFN_ORG_INS",
     key: "UFN_ORG_INS",
-    parameters: { corpid, id, description, status, type, operation, currency, email, password, port: parseInt(port), host, ssl, default_credentials, private_mail, country: null, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice,iconbot,iconadvisor, iconclient,credittype, timezone, timezoneoffset }
+    parameters: { corpid, id, description, status, type, operation, currency, email, password, port: parseInt(port), host, ssl, default_credentials, private_mail, country: null, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, iconbot, iconadvisor, iconclient, credittype, timezone, timezoneoffset }
 });
 
 export const insQuickreplies = ({ id, classificationid, description, quickreply, status, type, operation, favorite }: Dictionary): IRequestBody => ({
@@ -608,7 +608,7 @@ export const insQuickreplies = ({ id, classificationid, description, quickreply,
 export const getTimeZoneSel = () => ({
     method: "UFN_TIMEZONE_SEL",
     key: "UFN_TIMEZONE_SEL",
-    parameters: { }
+    parameters: {}
 })
 export const getClassificationSel = (id: number): IRequestBody => ({
     method: "UFN_CLASSIFICATION_SEL",
@@ -671,7 +671,7 @@ export const getCommChannelLst = (): IRequestBody => ({
     }
 });
 
-export const getValuesForTree = (type="QUICKREPLY"): IRequestBody => ({
+export const getValuesForTree = (type = "QUICKREPLY"): IRequestBody => ({
     method: "UFN_CLASSIFICATION_QUICKREPLYTREE_SEL",
     key: "UFN_CLASSIFICATION_QUICKREPLYTREE_SEL",
     parameters: {
@@ -823,7 +823,7 @@ export const getdataIntegrationManager = (id: number): IRequestBody => ({
     }
 });
 
-export const getChannelSel = (id: number,orgid?:number,corpid?:number): IRequestBody => ({
+export const getChannelSel = (id: number, orgid?: number, corpid?: number): IRequestBody => ({
     method: "UFN_COMMUNICATIONCHANNEL_SEL",
     parameters: {
         communicationchannelid: id,
@@ -2201,7 +2201,7 @@ export const heatmappage1detail = ({ communicationchannel, startdate, enddate, c
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
-export const heatmappage2 = ({ communicationchannel, startdate, enddate, closedby, company, group  }: Dictionary): IRequestBody => ({
+export const heatmappage2 = ({ communicationchannel, startdate, enddate, closedby, company, group }: Dictionary): IRequestBody => ({
     key: "UFN_REPORT_HEATMAP_PAGE2_SEL",
     method: "UFN_REPORT_HEATMAP_PAGE2_SEL",
     parameters: {
@@ -2214,7 +2214,7 @@ export const heatmappage2 = ({ communicationchannel, startdate, enddate, closedb
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
-export const heatmappage2detail1 = ({ communicationchannel, startdate, enddate, closedby, company, group, agentid,option  }: Dictionary): IRequestBody => ({
+export const heatmappage2detail1 = ({ communicationchannel, startdate, enddate, closedby, company, group, agentid, option }: Dictionary): IRequestBody => ({
     key: "UFN_REPORT_HEATMAP_PAGE2_1_AGENT_DETAIL_SEL",
     method: "UFN_REPORT_HEATMAP_PAGE2_1_AGENT_DETAIL_SEL",
     parameters: {
@@ -2229,7 +2229,7 @@ export const heatmappage2detail1 = ({ communicationchannel, startdate, enddate, 
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
-export const heatmappage2detail2 = ({ communicationchannel, startdate, enddate, closedby, company, group, agentid,option  }: Dictionary): IRequestBody => ({
+export const heatmappage2detail2 = ({ communicationchannel, startdate, enddate, closedby, company, group, agentid, option }: Dictionary): IRequestBody => ({
     key: "UFN_REPORT_HEATMAP_PAGE2_2_AGENT_DETAIL_SEL",
     method: "UFN_REPORT_HEATMAP_PAGE2_2_AGENT_DETAIL_SEL",
     parameters: {
@@ -2244,7 +2244,7 @@ export const heatmappage2detail2 = ({ communicationchannel, startdate, enddate, 
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
-export const heatmappage3 = ({ communicationchannel, startdate, enddate}: Dictionary): IRequestBody => ({
+export const heatmappage3 = ({ communicationchannel, startdate, enddate }: Dictionary): IRequestBody => ({
     key: "UFN_REPORT_HEATMAP_ASESORESCONECTADOS_SEL",
     method: "UFN_REPORT_HEATMAP_ASESORESCONECTADOS_SEL",
     parameters: {
@@ -2462,13 +2462,13 @@ export const getBusinessDocType = () => ({
 export const selInvoice = ({ corpid, orgid, year, month, invoiceid, currency, paymentstatus }: Dictionary) => ({
     method: "UFN_INVOICE_SEL",
     key: "UFN_INVOICE_SEL",
-    parameters: { corpid, orgid, year, month, invoiceid: invoiceid ? invoiceid : 0 , currency, paymentstatus},
+    parameters: { corpid, orgid, year, month, invoiceid: invoiceid ? invoiceid : 0, currency, paymentstatus },
 });
 
 export const selInvoiceClient = ({ corpid, orgid, year, month, invoiceid, currency, paymentstatus }: Dictionary) => ({
     method: "UFN_INVOICE_SELCLIENT",
     key: "UFN_INVOICE_SELCLIENT",
-    parameters: { corpid, orgid, year, month, invoiceid: invoiceid ? invoiceid : 0 , currency, paymentstatus},
+    parameters: { corpid, orgid, year, month, invoiceid: invoiceid ? invoiceid : 0, currency, paymentstatus },
 });
 
 export const deleteInvoice = ({ corpid, orgid, invoiceid }: Dictionary) => ({
@@ -2563,7 +2563,7 @@ export const billingNotificationIns = ({ year, month, countrycode, id, vcacomiss
 })
 
 /**bloquear o desbloquear personas de forma masiva */
-export const personcommunicationchannelUpdateLockedArrayIns = (table: {personid: number, personcommunicationchannel: string, locked: boolean}[]) => ({
+export const personcommunicationchannelUpdateLockedArrayIns = (table: { personid: number, personcommunicationchannel: string, locked: boolean }[]) => ({
     method: "UFN_PERSONCOMMUNICATIONCHANNEL_UPDATE_LOCKED_ARRAY",
     key: "UFN_PERSONCOMMUNICATIONCHANNEL_UPDATE_LOCKED_ARRAY",
     parameters: { table: JSON.stringify(table) },
@@ -2662,7 +2662,7 @@ export const cancelSuscription = () => ({
 export const getMeasureUnit = (): IRequestBody => ({
     method: "UFN_MEASUREUNIT_SEL",
     key: "UFN_MEASUREUNIT_SEL",
-    parameters: { },
+    parameters: {},
 });
 
 export const getConversationsWhatsapp = ({ startdate, enddate }: Dictionary): IRequestBody => ({
@@ -2683,7 +2683,7 @@ export const getInvoiceDetail = (corpid: number, orgid: number, invoiceid: numbe
 export const checkUserPaymentPlan = (): IRequestBody => ({
     key: "UFN_USER_PAYMENTPLAN_CHECK",
     method: "UFN_USER_PAYMENTPLAN_CHECK",
-    parameters: { }
+    parameters: {}
 });
 
 export const selBalanceData = ({ corpid, orgid, balanceid, type, operationtype, all }: Dictionary) => ({
@@ -2763,5 +2763,22 @@ export const insCalendar = ({
         timebeforeeventduration, timebeforeeventunit, timeaftereventduration, timeaftereventunit,
         increments,
         operation
+    }
+});
+
+export const getEventByCode = (orgid: number, code: string): IRequestBody => ({
+    key: "QUERY_EVENT_BY_CODE",
+    method: "QUERY_EVENT_BY_CODE",
+    parameters: {
+        orgid, code
+    }
+});
+
+export const validateCalendaryBooking = (params: Dictionary): IRequestBody => ({
+    key: "UFN_CALENDARYBOOKING_SEL_DATETIME",
+    method: "UFN_CALENDARYBOOKING_SEL_DATETIME",
+    parameters: {
+        ...params,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
