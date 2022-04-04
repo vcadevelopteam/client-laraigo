@@ -38,17 +38,21 @@ const useStyles = makeStyles(theme => ({
     },
     container: {
         // minWidth: 800,
-        height: 600,
+        maxHeight: 800,
         backgroundColor: 'white',
         display: 'flex',
         borderRadius: 8,
         boxShadow: '0 1px 8px 0 rgb(0 0 0 / 8%)',
         // maxWidth: 1000
-        // flexWrap: 'wrap'
+        flexWrap: 'wrap',
+        maxWidth: '80vw',
+        [theme.breakpoints.down('xs')]: {
+            maxWidth: '100vw',
+        },
     },
     panel: {
         // flex: "1",
-        minWidth: 370,
+        minWidth: 250,
         // width: 0,
         padding: theme.spacing(2)
     },
@@ -182,12 +186,11 @@ export const CalendarEvent: FC = () => {
                         {event?.timeduration} {event?.timeunit}
                     </div>
                 </div>
-                <div className={classes.vertical}></div>
-                <div className={classes.panel} style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
+                <div className={classes.panel} style={{ position: 'relative', display: 'flex', flexDirection: 'column', height: '600px' }}>
                     <div style={{ fontWeight: 'bold' }}>
                         Select a Date & Time
                     </div>
-                    <div style={{ display: 'flex', gap: 8 }}>
+                    <div style={{ display: 'flex', gap: 8, overflowY: 'auto' }}>
                         <div className={classes.panelCalendar}>
                             <CalendarZyx
                                 onChangeMonth={onChangeMonth}
