@@ -661,3 +661,13 @@ export const hours = [
     {desc: "23:00", value: "23:00:00"},
     {desc: "23:30", value: "23:30:00"},
 ]
+
+export const dayNames = [
+    'sunday',
+    'monday',
+    'tuesday',
+    'wednesday',
+    'thursday',
+    'friday',
+    'saturday',
+]

@@ -39,7 +39,7 @@ const translation: LangKeys = {
     lead: 'Oportunidad',
     sunday: "Domingo",
     monday: "Lunes",
-    tuesday: "Marte",
+    tuesday: "Martes",
     wednesday: "Miércoles",
     thursday: "Jueves",
     friday: "Viernes",

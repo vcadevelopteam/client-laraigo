@@ -5,17 +5,26 @@ import { makeStyles } from "@material-ui/core";
 import { useParams } from 'react-router';
 import { CalendarZyx } from "components";
 import { getCollEventBooking } from 'store/main/actions';
-import { getEventByCode, validateCalendaryBooking } from 'common/helpers';
+import { getEventByCode, validateCalendaryBooking, dayNames } from 'common/helpers';
 import { Dictionary } from '@types';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import Backdrop from '@material-ui/core/Backdrop';
-
+import { useTranslation } from 'react-i18next';
+import { langKeys } from 'lang/keys';
 interface IDay {
     date: Date;
     dateString: string;
     dom: number;
     dow: number;
+}
+
+interface ITime {
+    localyeardate: string;
+    localstarthour: string;
+    localendhour: string;
+    localddow: number;
+    localdday: number;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -28,16 +37,20 @@ const useStyles = makeStyles(theme => ({
         alignItems: 'center'
     },
     container: {
-        width: 800,
+        // minWidth: 800,
         height: 600,
         backgroundColor: 'white',
         display: 'flex',
         borderRadius: 8,
-        boxShadow: '0 1px 8px 0 rgb(0 0 0 / 8%)'
+        boxShadow: '0 1px 8px 0 rgb(0 0 0 / 8%)',
+        // maxWidth: 1000
+        flexWrap: 'wrap'
     },
     panel: {
         flex: "1",
-        padding: theme.spacing(2),
+        minWidth: 370,
+        width: 0,
+        padding: theme.spacing(2)
     },
     vertical: {
         width: 1,
@@ -48,20 +61,62 @@ const useStyles = makeStyles(theme => ({
     panelCalendar: {
         display: 'flex',
         justifyContent: 'center',
-        marginTop: theme.spacing(3),
+        marginTop: theme.spacing(1),
     },
     panelDays: {
-        flex: '0 0 200px'
+        width: 200,
+        padding: theme.spacing(2),
+        marginTop: theme.spacing(3),
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 16
+    },
+    containerTimes: {
+        overflowY: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 8,
+        height: '100%',
+    },
+    itemTime: {
+        display: 'flex',
+        marginRight: 20,
+        justifyContent: 'center',
+        border: '1px solid rgb(119, 33, 173, 0.4)',
+        paddingTop: theme.spacing(1.5),
+        paddingBottom: theme.spacing(1.5),
+        color: "#7721AD",
+        borderRadius: 5,
+        fontWeight: 'bold',
+        cursor: 'pointer',
+        '&:hover': {
+            backgroundColor: '#fbfcfd',
+            border: '2px solid rgb(119, 33, 173, 0.9)',
+            paddingTop: theme.spacing(1.5) - 1,
+            paddingBottom: theme.spacing(1.5) - 1,
+        }
     }
 }));
 
-export const GetLocations: FC = () => {
+const TimeDate: FC<{ time: ITime }> = ({ time }) => {
+    const classes = useStyles();
+    return (
+        <div className={classes.itemTime}>
+            {time.localstarthour}
+        </div>
+    )
+}
+
+export const CalendarEvent: FC = () => {
     const dispatch = useDispatch();
     const classes = useStyles();
+    const { t } = useTranslation();
     const { orgid, eventcode }: any = useParams();
     const [event, setEvent] = useState<Dictionary | null>(null);
     const resMain = useSelector(state => state.main.mainEventBooking);
-    const [daySelected, setDaySelected] = useState<IDay | null>(null)
+    const [daySelected, setDaySelected] = useState<IDay | null>(null);
+    const [times, setTimes] = useState<ITime[]>([]);
+    const [timesDateSelected, setTimesDateSelected] = useState<ITime[]>([]);
     const [dateCurrent, setDateCurrent] = useState<{ month: number, year: number }>({
         month: new Date().getMonth(),
         year: new Date().getFullYear()
@@ -98,13 +153,15 @@ export const GetLocations: FC = () => {
                     setEvent(null)
                 }
             } else if (resMain.key === "UFN_CALENDARYBOOKING_SEL_DATETIME") {
-                console.log(resMain.data)
+                setTimes(resMain.data as ITime[]);
             }
         }
     }, [resMain])
 
     const handlerSelectDate = (p: IDay[]) => {
-        setDaySelected(p[0])
+        setDaySelected(p[0]);
+        console.log(p[0])
+        setTimesDateSelected(times.filter(x => x.localyeardate === p[0].dateString))
     }
 
     if (resMain.loading && !event) {
@@ -128,7 +185,7 @@ export const GetLocations: FC = () => {
                 </div>
                 <div className={classes.vertical}></div>
                 <div className={classes.panel} style={{ position: 'relative' }}>
-                    <div style={{ fontWeight: 'bold', textAlign: 'center' }}>
+                    <div style={{ fontWeight: 'bold' }}>
                         Select a Date & Time
                     </div>
                     <div className={classes.panelCalendar}>
@@ -144,7 +201,14 @@ export const GetLocations: FC = () => {
                 </div>
                 {!!daySelected && (
                     <div className={classes.panelDays}>
-                        dias!
+                        <div>
+                            {t(dayNames[daySelected?.dow])}, {t(`month_${((daySelected?.date.getMonth() + 1) + "").padStart(2, "0")}`)} {daySelected?.date.getDate()}
+                        </div>
+                        <div className={classes.containerTimes}>
+                            {timesDateSelected.map((x, index) => (
+                                <TimeDate key={index} time={x} />
+                            ))}
+                        </div>
                     </div>
                 )}
             </div>
@@ -152,4 +216,4 @@ export const GetLocations: FC = () => {
     )
 }
 
-export default GetLocations;
+export default CalendarEvent;

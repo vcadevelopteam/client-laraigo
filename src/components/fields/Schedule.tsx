@@ -19,20 +19,10 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { CalendarZyx, FieldSelect } from "components";
 import { useFieldArray, useForm } from 'react-hook-form';
-import { hours, calculateDateFromMonth } from "common/helpers";
+import { hours, calculateDateFromMonth, dayNames } from "common/helpers";
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
 import RefreshIcon from '@material-ui/icons/Refresh';
-
-const dayNames = [
-    'sunday',
-    'monday',
-    'tuesday',
-    'wednesday',
-    'thursday',
-    'friday',
-    'saturday',
-]
 
 interface ISchedule {
     dow: number;
