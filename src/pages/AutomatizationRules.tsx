@@ -449,7 +449,7 @@ const AutomatizationRules: FC = () => {
                 prefixTranslation: '',
                 Cell: (props: any) => {
                     const { columnname } = props.cell.row.original;
-                    return (t(`${columnname.toLowerCase()}`.toLowerCase()) || "").toUpperCase()
+                    return (t(`${columnname?.toLowerCase()}`.toLowerCase()) || "").toUpperCase()
                 }
             },
             {
