@@ -23,6 +23,7 @@ interface CalendarInputProps {
     selectedDays?: string[];
     onChange?: (dates: DayProp[], dateChanged: DayProp, action: string) => void;
     multiple?: boolean;
+    onChangeMonth?: (month: number, year: number) => void;
     // hex: string;
     // onChange: ColorChangeHandler;
     // disabled?: boolean;
@@ -136,7 +137,7 @@ const BoxDay: FC<DayInputProps> = ({ day, handleClick }) => {
 }
 
 
-const CalendarZyx: FC<CalendarInputProps> = ({ notPreviousDays = true, selectedDays = [], onChange, multiple }) => {
+const CalendarZyx: FC<CalendarInputProps> = ({ notPreviousDays = true, selectedDays = [], onChange, multiple, onChangeMonth }) => {
     const classes = useScheduleStyles();
     const { t } = useTranslation();
     const [daysToShow, setDaysToShow] = useState<DayProp[]>([]);
@@ -229,11 +230,12 @@ const CalendarZyx: FC<CalendarInputProps> = ({ notPreviousDays = true, selectedD
     }, [dateCurrent])
 
     const handleChangeMonth = useCallback((manageMonth: number) => {
-        console.log("handleChangeMonth")
+        
         setDateCurrent({
             year: dateCurrent.year,
             month: dateCurrent.month + manageMonth
-        })
+        });
+        onChangeMonth && onChangeMonth(dateCurrent.month + manageMonth, dateCurrent.year)
     }, [dateCurrent])
 
 

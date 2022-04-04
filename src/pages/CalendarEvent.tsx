@@ -9,6 +9,14 @@ import { getEventByCode, validateCalendaryBooking } from 'common/helpers';
 import { Dictionary } from '@types';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ScheduleIcon from '@material-ui/icons/Schedule';
+import Backdrop from '@material-ui/core/Backdrop';
+
+interface IDay {
+    date: Date;
+    dateString: string;
+    dom: number;
+    dow: number;
+}
 
 const useStyles = makeStyles(theme => ({
     back: {
@@ -28,11 +36,12 @@ const useStyles = makeStyles(theme => ({
         boxShadow: '0 1px 8px 0 rgb(0 0 0 / 8%)'
     },
     panel: {
-        flex: 1,
+        flex: "1",
         padding: theme.spacing(2),
     },
     vertical: {
         width: 1,
+        flex: '0 0 1px',
         backgroundColor: '#e1e1e1',
         height: '100%',
     },
@@ -40,75 +49,105 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         justifyContent: 'center',
         marginTop: theme.spacing(3),
+    },
+    panelDays: {
+        flex: '0 0 200px'
     }
 }));
+
 export const GetLocations: FC = () => {
     const dispatch = useDispatch();
     const classes = useStyles();
     const { orgid, eventcode }: any = useParams();
+    const [event, setEvent] = useState<Dictionary | null>(null);
     const resMain = useSelector(state => state.main.mainEventBooking);
+    const [daySelected, setDaySelected] = useState<IDay | null>(null)
+    const [dateCurrent, setDateCurrent] = useState<{ month: number, year: number }>({
+        month: new Date().getMonth(),
+        year: new Date().getFullYear()
+    });
 
-    const [event, setEvent] = useState<Dictionary | null>(null)
-
-    console.log(event)
-
+    const onChangeMonth = (month: number, year: number) => {
+        setDateCurrent({ month, year });
+    }
     useEffect(() => {
         dispatch(getCollEventBooking(getEventByCode(orgid, eventcode)))
     }, [])
 
     useEffect(() => {
+        console.log(dateCurrent)
+        if (!!event) {
+            const { year, month } = dateCurrent;
+            const { corpid, orgid, calendareventid } = event;
+            dispatch(getCollEventBooking(validateCalendaryBooking({
+                corpid,
+                orgid,
+                calendareventid,
+                startdate: new Date(year, month, 1).toISOString().split('T')[0],
+                enddate: new Date(year, month + 1, 0).toISOString().split('T')[0],
+            })))
+        }
+    }, [dateCurrent, dispatch, event])
+
+    useEffect(() => {
         if (!resMain.loading && !resMain.error) {
-            console.log(console.log(resMain))
             if (resMain.key === "QUERY_EVENT_BY_CODE") {
                 if (resMain.data.length > 0) {
                     setEvent(resMain.data[0]);
-
-                    // validateCalendaryBooking
-                    const { corpid, orgid, calendareventid } = resMain.data[0];
-                    dispatch(getCollEventBooking(validateCalendaryBooking({
-                        corpid,
-                        orgid,
-                        calendareventid,
-                        startdate: '2022-04-01',
-                        enddate: '2022-04-01',
-                    })))
                 } else {
                     setEvent(null)
                 }
+            } else if (resMain.key === "UFN_CALENDARYBOOKING_SEL_DATETIME") {
+                console.log(resMain.data)
             }
         }
     }, [resMain])
 
+    const handlerSelectDate = (p: IDay[]) => {
+        setDaySelected(p[0])
+    }
+
+    if (resMain.loading && !event) {
+        return (
+            <div className={classes.back}>
+                <CircularProgress />
+            </div>
+        )
+    }
     return (
         <div className={classes.back}>
-            {resMain.loading && (
-                <CircularProgress />
-            )}
-            {(!resMain.loading && !!event) && (
-                <div className={classes.container}>
-                    <div className={classes.panel}>
-                        <div style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 16 }}>
-                            {event.name}
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                            <ScheduleIcon color="action" />
-                            {event.timeduration} {event.timeunit}
-                        </div>
+            <div className={classes.container}>
+                <div className={classes.panel}>
+                    <div style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 16 }}>
+                        {event?.name}
                     </div>
-                    <div className={classes.vertical}></div>
-                    <div className={classes.panel}>
-                        <div style={{ fontWeight: 'bold', textAlign: 'center' }}>
-                            Select a Date & Time
-                        </div>
-                        <div className={classes.panelCalendar}>
-                            <CalendarZyx
-                                selectedDays={[]}
-                                onChange={() => null}
-                            />
-                        </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <ScheduleIcon color="action" />
+                        {event?.timeduration} {event?.timeunit}
                     </div>
                 </div>
-            )}
+                <div className={classes.vertical}></div>
+                <div className={classes.panel} style={{ position: 'relative' }}>
+                    <div style={{ fontWeight: 'bold', textAlign: 'center' }}>
+                        Select a Date & Time
+                    </div>
+                    <div className={classes.panelCalendar}>
+                        <CalendarZyx
+                            onChangeMonth={onChangeMonth}
+                            selectedDays={[]}
+                            onChange={handlerSelectDate}
+                        />
+                        <Backdrop style={{ zIndex: 999999999, position: 'absolute' }} open={resMain.loading}>
+                            <CircularProgress />
+                        </Backdrop>
+                    </div>
+                </div>
+                {!!daySelected && (
+                    <div className={classes.panelDays}>
+                        dias!
+                    </div>
+                )}
+            </div>
         </div>
     )
 }
