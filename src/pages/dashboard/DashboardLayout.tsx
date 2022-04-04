@@ -72,7 +72,7 @@ const useDashboardLayoutStyles = makeStyles(theme => ({
     },
 }));
 
-const format = (date: Date) => date.toISOString().split('T')[0];
+const format = (date: Date) => new Date(date.setHours(10)).toISOString().split('T')[0];
 
 const DashboardLayout: FC = () => {
     const classes = useDashboardLayoutStyles();
