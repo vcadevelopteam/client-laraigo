@@ -44,12 +44,12 @@ const useStyles = makeStyles(theme => ({
         borderRadius: 8,
         boxShadow: '0 1px 8px 0 rgb(0 0 0 / 8%)',
         // maxWidth: 1000
-        flexWrap: 'wrap'
+        // flexWrap: 'wrap'
     },
     panel: {
-        flex: "1",
+        // flex: "1",
         minWidth: 370,
-        width: 0,
+        // width: 0,
         padding: theme.spacing(2)
     },
     vertical: {
@@ -65,8 +65,7 @@ const useStyles = makeStyles(theme => ({
     },
     panelDays: {
         width: 200,
-        padding: theme.spacing(2),
-        marginTop: theme.spacing(3),
+        // padding: theme.spacing(2),
         display: 'flex',
         flexDirection: 'column',
         gap: 16
@@ -188,29 +187,32 @@ export const CalendarEvent: FC = () => {
                     <div style={{ fontWeight: 'bold' }}>
                         Select a Date & Time
                     </div>
-                    <div className={classes.panelCalendar}>
-                        <CalendarZyx
-                            onChangeMonth={onChangeMonth}
-                            selectedDays={[]}
-                            onChange={handlerSelectDate}
-                        />
-                        <Backdrop style={{ zIndex: 999999999, position: 'absolute' }} open={resMain.loading}>
-                            <CircularProgress />
-                        </Backdrop>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                        <div className={classes.panelCalendar}>
+                            <CalendarZyx
+                                onChangeMonth={onChangeMonth}
+                                selectedDays={[]}
+                                onChange={handlerSelectDate}
+                            />
+                            <Backdrop style={{ zIndex: 999999999, position: 'absolute' }} open={resMain.loading}>
+                                <CircularProgress />
+                            </Backdrop>
+                        </div>
+                        {!!daySelected && (
+                            <div className={classes.panelDays}>
+                                <div>
+                                    {t(dayNames[daySelected?.dow])}, {t(`month_${((daySelected?.date.getMonth() + 1) + "").padStart(2, "0")}`)} {daySelected?.date.getDate()}
+                                </div>
+                                <div className={classes.containerTimes}>
+                                    {timesDateSelected.map((x, index) => (
+                                        <TimeDate key={index} time={x} />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
-                {!!daySelected && (
-                    <div className={classes.panelDays}>
-                        <div>
-                            {t(dayNames[daySelected?.dow])}, {t(`month_${((daySelected?.date.getMonth() + 1) + "").padStart(2, "0")}`)} {daySelected?.date.getDate()}
-                        </div>
-                        <div className={classes.containerTimes}>
-                            {timesDateSelected.map((x, index) => (
-                                <TimeDate key={index} time={x} />
-                            ))}
-                        </div>
-                    </div>
-                )}
+
             </div>
         </div>
     )
