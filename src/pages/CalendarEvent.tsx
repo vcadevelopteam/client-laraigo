@@ -61,7 +61,7 @@ const useStyles = makeStyles(theme => ({
     panelCalendar: {
         display: 'flex',
         justifyContent: 'center',
-        marginTop: theme.spacing(1),
+        // marginTop: theme.spacing(1),
     },
     panelDays: {
         width: 200,
@@ -183,7 +183,7 @@ export const CalendarEvent: FC = () => {
                     </div>
                 </div>
                 <div className={classes.vertical}></div>
-                <div className={classes.panel} style={{ position: 'relative' }}>
+                <div className={classes.panel} style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
                     <div style={{ fontWeight: 'bold' }}>
                         Select a Date & Time
                     </div>
