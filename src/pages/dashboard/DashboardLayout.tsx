@@ -1220,6 +1220,12 @@ const TableModal: FC<TableModalProps> = ({ title, open, rawColumns, dateRange, d
         Header: x.alias,
         accessor: x.columnname.replace(".", ""),
         type: "string",
+        ...(x.type === "timestamp without time zone" ? {
+            Cell: (props: any) => {
+                const row = props.cell.row.original;
+                return row[x.columnname.replace(".", "")] ? new Date(row[x.columnname.replace(".", "")]).toLocaleString() : "";
+            }
+        } : {})
     })), [rawColumns]);
 
     const getBody = useCallback(() => ({
