@@ -5,7 +5,7 @@ import { Button, Fab, IconButton, makeStyles, Typography } from "@material-ui/co
 import { useParams } from 'react-router';
 import { FieldEdit, CalendarZyx, FieldEditMulti } from "components";
 import { getCollEventBooking } from 'store/main/actions';
-import { getEventByCode, validateCalendaryBooking, dayNames, calculateDateFromMonth } from 'common/helpers';
+import { getEventByCode, validateCalendaryBooking, dayNames, calculateDateFromMonth, insBookingCalendar } from 'common/helpers';
 import { Dictionary } from '@types';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ScheduleIcon from '@material-ui/icons/Schedule';
@@ -16,6 +16,8 @@ import clsx from 'clsx';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
 import { useForm } from 'react-hook-form';
+import SaveIcon from '@material-ui/icons/Save';
+import { time } from 'console';
 
 interface IDay {
     date: Date;
@@ -157,27 +159,28 @@ const TimeDate: FC<{ time: ITime, isSelected: boolean, setTimeSelected: (p: any)
     )
 }
 
-const FormToSend: FC = () => {
+const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, disabledSubmit: boolean }> = ({ event, handlerOnSubmit, disabledSubmit }) => {
     const { t } = useTranslation();
     const classes = useStyles();
 
-    const { register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             name: '',
             email: '',
             phone: '',
-            observation: '',
+            notes: '',
         }
     })
 
     React.useEffect(() => {
-        register('name', { validate: (value) => (value && value.length) ? "" : (t(langKeys.field_required) + "") });
-        register('email', { validate: (value) => (value && value.length) ? "" : (t(langKeys.field_required) + "") });
-        register('phone', { validate: (value) => (value && value.length) ? "" : (t(langKeys.field_required) + "") });
-    }, [register, t])
+        register('notes');
+        register('name', { validate: (value) => (!!value && value.length > 0) || (t(langKeys.field_required) + "") });
+        register('email', { validate: (value) => event?.notificationtype === "HSM" || !!value || (t(langKeys.field_required) + "") });
+        register('phone', { validate: (value) => event?.notificationtype !== "HSM" || !!value || (t(langKeys.field_required) + "") });
+    }, [register, t, event])
 
     const onSubmit = handleSubmit((data) => {
-        console.log(data)
+        handlerOnSubmit(data)
     });
 
     return (
@@ -194,44 +197,50 @@ const FormToSend: FC = () => {
                         error={errors?.name?.message}
                     />
                 </div>
-                <div>
-                    <div style={{ marginBottom: 8, fontSize: 14, fontWeight: 'bold' }}>{t(langKeys.email)}</div>
-                    <FieldEdit
-                        size="small"
-                        className={classes.colInput}
-                        variant={'outlined'}
-                        valueDefault={getValues('email')}
-                        onChange={(value: any) => setValue('email', value)}
-                        error={errors?.email?.message}
-                    />
-                </div>
-                <div>
-                    <div style={{ marginBottom: 8, fontSize: 14, fontWeight: 'bold' }}>{t(langKeys.phone)}</div>
-                    <FieldEdit
-                        size="small"
-                        className={classes.colInput}
-                        variant={'outlined'}
-                        valueDefault={getValues('phone')}
-                        onChange={(value: any) => setValue('phone', value)}
-                        error={errors?.phone?.message}
-                    />
-                </div>
+                {event.notificationtype !== "HSM" && (
+                    <div>
+                        <div style={{ marginBottom: 8, fontSize: 14, fontWeight: 'bold' }}>{t(langKeys.email)}</div>
+                        <FieldEdit
+                            size="small"
+                            className={classes.colInput}
+                            variant={'outlined'}
+                            valueDefault={getValues('email')}
+                            onChange={(value: any) => setValue('email', value)}
+                            error={errors?.email?.message}
+                        />
+                    </div>
+                )}
+                {event.notificationtype === "HSM" && (
+                    <div>
+                        <div style={{ marginBottom: 8, fontSize: 14, fontWeight: 'bold' }}>{t(langKeys.phone)}</div>
+                        <FieldEdit
+                            size="small"
+                            className={classes.colInput}
+                            variant={'outlined'}
+                            valueDefault={getValues('phone')}
+                            onChange={(value: any) => setValue('phone', value)}
+                            error={errors?.phone?.message}
+                        />
+                    </div>
+                )}
                 <div>
                     <div style={{ marginBottom: 8, fontSize: 14, fontWeight: 'bold' }}>Please share anything that will help prepare for our meeting.</div>
                     <FieldEditMulti
                         size="small"
                         className={classes.colInput}
                         variant={'outlined'}
-                        valueDefault={getValues('observation')}
-                        onChange={(value: any) => setValue('observation', value)}
-                        error={errors?.observation?.message}
+                        valueDefault={getValues('notes')}
+                        onChange={(value: any) => setValue('notes', value)}
+                        error={errors?.notes?.message}
                     />
                 </div>
-                <div style={{marginTop: 16}}>
+                <div style={{ marginTop: 16 }}>
                     <Button
                         type="submit"
                         variant="contained"
+                        startIcon={<SaveIcon color="secondary" />}
                         color="primary"
+                        disabled={disabledSubmit}
                     >
                         Schedule Event
                     </Button>
@@ -251,7 +260,6 @@ export const CalendarEvent: FC = () => {
     const resMain = useSelector(state => state.main.mainEventBooking);
     const [daySelected, setDaySelected] = useState<IDay | null>(null);
     const [timeSelected, setTimeSelected] = useState<ITime & { selected?: boolean, confirm?: boolean } | null>(null);
-
     const [times, setTimes] = useState<ITime[]>([]);
     const [timesDateSelected, setTimesDateSelected] = useState<ITime[]>([]);
     const [daysAvailable, setDaysAvailable] = useState<string[]>([]);
@@ -283,20 +291,26 @@ export const CalendarEvent: FC = () => {
     }, [dateCurrent, dispatch, event])
 
     useEffect(() => {
-        if (!resMain.loading && !resMain.error) {
-            if (resMain.key === "QUERY_EVENT_BY_CODE") {
-                if (resMain.data.length > 0) {
-                    setEvent(resMain.data[0]);
-                } else {
-                    setEvent(null)
+        if (!resMain.loading) {
+            if (!resMain.error) {
+                if (resMain.key === "QUERY_EVENT_BY_CODE") {
+                    if (resMain.data.length > 0) {
+                        setEvent(resMain.data[0]);
+                    } else {
+                        setEvent(null)
+                    }
+                } else if (resMain.key === "UFN_CALENDARYBOOKING_SEL_DATETIME") {
+                    setDaysAvailable(Array.from(new Set(resMain.data.map(x => x.localyeardate))));
+                    setTimes((resMain.data as ITime[]).map(x => ({
+                        ...x,
+                        localstarthour: x.localstarthour.substring(0, 5),
+                        localendhour: x.localendhour.substring(0, 5)
+                    })));
                 }
-            } else if (resMain.key === "UFN_CALENDARYBOOKING_SEL_DATETIME") {
-                setDaysAvailable(Array.from(new Set(resMain.data.map(x => x.localyeardate))));
-                setTimes((resMain.data as ITime[]).map(x => ({
-                    ...x,
-                    localstarthour: x.localstarthour.substring(0, 5),
-                    localendhour: x.localendhour.substring(0, 5)
-                })));
+            } else {
+                if (resMain.key === "UFN_CALENDARYBOOKING_SEL_DATETIME") {
+                    const errormessage = t(resMain.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                }
             }
         }
     }, [resMain])
@@ -305,6 +319,29 @@ export const CalendarEvent: FC = () => {
         setDaySelected(p[0]);
         setTimeSelected(null)
         setTimesDateSelected(times.filter(x => x.localyeardate === p[0].dateString))
+    }
+
+    const handlerOnSubmit = (data: Dictionary) => {
+        const { corpid, orgid, calendareventid } = event!!;
+        const parameters = {
+            corpid,
+            orgid,
+            calendareventid,
+            id: 0,
+            description: '',
+            type: 'NINGUNO',
+            status: 'ACTIVO',
+            monthdate: timeSelected?.localyeardate,
+            hourstart: timeSelected?.localstarthour,
+            notes: data.notes,
+            conversationid: 0,
+            personname: data.name,
+            personcontact: data.email || data.phone,
+            persontimezone: -5.00,
+            operation: 'INSERT',
+            username: 'admin'
+        }
+        dispatch(getCollEventBooking(insBookingCalendar(parameters)))
     }
 
     if (resMain.loading && !event) {
@@ -328,7 +365,11 @@ export const CalendarEvent: FC = () => {
             <div className={classes.container}>
                 <div className={classes.panel}>
                     {timeSelected?.confirm && (
-                        <IconButton style={{border: '1px solid #e1e1e1'}} onClick={() => setTimeSelected({ ...timeSelected, confirm: false })}>
+                        <IconButton
+                            style={{ border: '1px solid #e1e1e1' }}
+                            onClick={() => setTimeSelected({ ...timeSelected, confirm: false })}
+                            disabled={resMain.loading && !!event}
+                        >
                             <ArrowBackIcon color="primary" />
                         </IconButton>
                     )}
@@ -353,7 +394,11 @@ export const CalendarEvent: FC = () => {
                             <div style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 16 }}>
                                 Enter details
                             </div>
-                            <FormToSend />
+                            <FormToSend
+                                event={event!!}
+                                handlerOnSubmit={handlerOnSubmit}
+                                disabledSubmit={resMain.loading && !!event}
+                            />
                         </div>
                     )}
                     {!timeSelected?.confirm && (

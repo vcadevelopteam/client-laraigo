@@ -3325,6 +3325,10 @@ const translation: LangKeys = {
     campaign_default: 'CAMPAIGN/DEFAULT',
     campaign_proactive: 'CAMPAIGN/PROACTIVE',
     password_strongvalidation: 'Your password is not safe enough, it must contain at least the following: special character, uppercase, lowercase and number',
+
+    not_allowed_time: 'Sorry, that time is no longer available',
+    select_differente_time: 'Please select a different time to book this event.',
+    view_times: 'View times',
 };
 
 const enResource: ResourceLanguage = {

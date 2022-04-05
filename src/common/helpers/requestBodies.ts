@@ -2782,11 +2782,17 @@ export const validateCalendaryBooking = (params: Dictionary): IRequestBody => ({
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
-export const CalendaryBookingReport = ({period="", startdate,enddate,take,skip}: Dictionary): IRequestBody => ({
+export const CalendaryBookingReport = ({ period = "", startdate, enddate, take, skip }: Dictionary): IRequestBody => ({
     key: "UFN_CALENDARYBOOKING_REPORT",
     method: "UFN_CALENDARYBOOKING_REPORT",
     parameters: {
-        period, startdate,enddate,take,skip,
+        period, startdate, enddate, take, skip,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
+});
+
+export const insBookingCalendar = (params: Dictionary): IRequestBody => ({
+    key: "UFN_CALENDARYBOOKING_INS",
+    method: "UFN_CALENDARYBOOKING_INS",
+    parameters: params
 });

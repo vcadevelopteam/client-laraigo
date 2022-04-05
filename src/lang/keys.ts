@@ -3304,6 +3304,10 @@ export const langKeys = {
     campaign_default: 'campaign_default',
     campaign_proactive: 'campaign_proactive',
     password_strongvalidation: 'password_strongvalidation',
+    
+    not_allowed_time: 'not_allowed_time',
+    select_differente_time: 'select_differente_time',
+    view_times: 'view_times',
 };
 
 export type LangKeys = typeof langKeys;
