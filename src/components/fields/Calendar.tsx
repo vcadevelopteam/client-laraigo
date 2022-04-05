@@ -24,6 +24,7 @@ interface CalendarInputProps {
     onChange?: (dates: DayProp[], dateChanged: DayProp, action: string) => void;
     multiple?: boolean;
     onChangeMonth?: (month: number, year: number) => void;
+    daysAvailable?: string[];
     // hex: string;
     // onChange: ColorChangeHandler;
     // disabled?: boolean;
@@ -120,15 +121,15 @@ const useScheduleStyles = makeStyles(theme => ({
     }
 }));
 
-const BoxDay: FC<DayInputProps> = ({ day, handleClick }) => {
+const BoxDay: FC<DayInputProps & { isActive?: boolean }> = ({ day, handleClick, isActive = true }) => {
     const classes = useScheduleStyles();
 
     return (
         <div
-            onClick={(e: any) => handleClick(e, day)}
+            onClick={(e: any) => isActive && handleClick(e, day)}
             className={clsx(classes.boxDay, {
-                [classes.boxDayHover]: !day.isDayPreview,
-                [classes.dateSelected]: day.isSelected
+                [classes.boxDayHover]: !day.isDayPreview && isActive,
+                [classes.dateSelected]: day.isSelected && isActive
             })}
         >
             {day.dom}
@@ -137,7 +138,7 @@ const BoxDay: FC<DayInputProps> = ({ day, handleClick }) => {
 }
 
 
-const CalendarZyx: FC<CalendarInputProps> = ({ notPreviousDays = true, selectedDays = [], onChange, multiple, onChangeMonth }) => {
+const CalendarZyx: FC<CalendarInputProps> = ({ notPreviousDays = true, selectedDays = [], onChange, multiple, onChangeMonth, daysAvailable }) => {
     const classes = useScheduleStyles();
     const { t } = useTranslation();
     const [daysToShow, setDaysToShow] = useState<DayProp[]>([]);
@@ -267,6 +268,7 @@ const CalendarZyx: FC<CalendarInputProps> = ({ notPreviousDays = true, selectedD
                 {daysToShow.map((day, index) => (
                     <BoxDay
                         key={index}
+                        isActive={daysAvailable === undefined || daysAvailable.includes(day.dateString)}
                         day={day}
                         handleClick={handleClick}
                         notPreviousDays={notPreviousDays}

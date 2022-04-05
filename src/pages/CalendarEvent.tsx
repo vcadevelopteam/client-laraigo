@@ -1,17 +1,22 @@
 import React, { FC, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
-import { makeStyles } from "@material-ui/core";
+import { Button, Fab, IconButton, makeStyles, Typography } from "@material-ui/core";
 import { useParams } from 'react-router';
-import { CalendarZyx } from "components";
+import { FieldEdit, CalendarZyx, FieldEditMulti } from "components";
 import { getCollEventBooking } from 'store/main/actions';
-import { getEventByCode, validateCalendaryBooking, dayNames } from 'common/helpers';
+import { getEventByCode, validateCalendaryBooking, dayNames, calculateDateFromMonth } from 'common/helpers';
 import { Dictionary } from '@types';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import Backdrop from '@material-ui/core/Backdrop';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
+import clsx from 'clsx';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
+import { useForm } from 'react-hook-form';
+
 interface IDay {
     date: Date;
     dateString: string;
@@ -43,7 +48,6 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         borderRadius: 8,
         boxShadow: '0 1px 8px 0 rgb(0 0 0 / 8%)',
-        // maxWidth: 1000
         flexWrap: 'wrap',
         maxWidth: '80vw',
         [theme.breakpoints.down('xs')]: {
@@ -51,10 +55,8 @@ const useStyles = makeStyles(theme => ({
         },
     },
     panel: {
-        // flex: "1",
-        minWidth: 250,
-        // width: 0,
-        padding: theme.spacing(2)
+        minWidth: 300,
+        padding: theme.spacing(3)
     },
     vertical: {
         width: 1,
@@ -65,11 +67,9 @@ const useStyles = makeStyles(theme => ({
     panelCalendar: {
         display: 'flex',
         justifyContent: 'center',
-        // marginTop: theme.spacing(1),
     },
     panelDays: {
-        width: 200,
-        // padding: theme.spacing(2),
+        width: 220,
         display: 'flex',
         flexDirection: 'column',
         gap: 16
@@ -83,7 +83,7 @@ const useStyles = makeStyles(theme => ({
     },
     itemTime: {
         display: 'flex',
-        marginRight: 20,
+        flex: 1,
         justifyContent: 'center',
         border: '1px solid rgb(119, 33, 173, 0.4)',
         paddingTop: theme.spacing(1.5),
@@ -98,15 +98,147 @@ const useStyles = makeStyles(theme => ({
             paddingTop: theme.spacing(1.5) - 1,
             paddingBottom: theme.spacing(1.5) - 1,
         }
+    },
+    itemTimeSelected: {
+        display: 'flex',
+        flex: 1,
+        justifyContent: 'center',
+        paddingTop: theme.spacing(1.5),
+        paddingBottom: theme.spacing(1.5),
+        color: "white",
+        backgroundColor: 'rgba(0,0,0,.6)',
+        borderRadius: 5,
+        fontWeight: 'bold',
+    },
+    itemTimeConfirm: {
+        display: 'flex',
+        flex: 1,
+        justifyContent: 'center',
+        paddingTop: theme.spacing(1.5),
+        paddingBottom: theme.spacing(1.5),
+        backgroundColor: '#7721AD',
+        color: "white",
+        borderRadius: 5,
+        fontWeight: 'bold',
+        cursor: 'pointer',
+        '&:hover': {
+            backgroundColor: 'rgb(119, 33, 173, 0.7)',
+        }
+    },
+    colInput: {
+        width: 400
     }
 }));
 
-const TimeDate: FC<{ time: ITime }> = ({ time }) => {
+const TimeDate: FC<{ time: ITime, isSelected: boolean, setTimeSelected: (p: any) => void }> = ({ time, setTimeSelected, isSelected }) => {
     const classes = useStyles();
+    const { t } = useTranslation();
+
     return (
-        <div className={classes.itemTime}>
-            {time.localstarthour}
+        <div style={{ display: 'flex', gap: 8, marginRight: 10 }}>
+            <div
+                className={clsx({
+                    [classes.itemTime]: !isSelected,
+                    [classes.itemTimeSelected]: isSelected
+                })}
+                onClick={() => setTimeSelected({ ...time, selected: true })}
+            >
+                {time.localstarthour}
+            </div>
+            {isSelected && (
+                <div
+                    className={classes.itemTimeConfirm}
+                    onClick={() => setTimeSelected({ ...time, selected: true, confirm: true })}
+                >
+                    Confirm
+                </div>
+            )}
         </div>
+    )
+}
+
+const FormToSend: FC = () => {
+    const { t } = useTranslation();
+    const classes = useStyles();
+
+    const { register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm({
+        defaultValues: {
+            name: '',
+            email: '',
+            phone: '',
+            observation: '',
+        }
+    })
+
+    React.useEffect(() => {
+        register('name', { validate: (value) => (value && value.length) ? "" : (t(langKeys.field_required) + "") });
+        register('email', { validate: (value) => (value && value.length) ? "" : (t(langKeys.field_required) + "") });
+        register('phone', { validate: (value) => (value && value.length) ? "" : (t(langKeys.field_required) + "") });
+    }, [register, t])
+
+    const onSubmit = handleSubmit((data) => {
+        console.log(data)
+    });
+
+    return (
+        <form onSubmit={onSubmit}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <div>
+                    <div style={{ marginBottom: 8, fontSize: 14, fontWeight: 'bold' }}>{t(langKeys.name)}</div>
+                    <FieldEdit
+                        className={classes.colInput}
+                        size="small"
+                        variant={'outlined'}
+                        valueDefault={getValues('name')}
+                        onChange={(value: any) => setValue('name', value)}
+                        error={errors?.name?.message}
+                    />
+                </div>
+                <div>
+                    <div style={{ marginBottom: 8, fontSize: 14, fontWeight: 'bold' }}>{t(langKeys.email)}</div>
+                    <FieldEdit
+                        size="small"
+                        className={classes.colInput}
+                        variant={'outlined'}
+                        valueDefault={getValues('email')}
+                        onChange={(value: any) => setValue('email', value)}
+                        error={errors?.email?.message}
+                    />
+                </div>
+                <div>
+                    <div style={{ marginBottom: 8, fontSize: 14, fontWeight: 'bold' }}>{t(langKeys.phone)}</div>
+                    <FieldEdit
+                        size="small"
+                        className={classes.colInput}
+                        variant={'outlined'}
+                        valueDefault={getValues('phone')}
+                        onChange={(value: any) => setValue('phone', value)}
+                        error={errors?.phone?.message}
+                    />
+                </div>
+                <div>
+                    <div style={{ marginBottom: 8, fontSize: 14, fontWeight: 'bold' }}>Please share anything that will help prepare for our meeting.</div>
+                    <FieldEditMulti
+                        size="small"
+                        className={classes.colInput}
+                        variant={'outlined'}
+                        valueDefault={getValues('observation')}
+                        onChange={(value: any) => setValue('observation', value)}
+                        error={errors?.observation?.message}
+                    />
+                </div>
+                <div style={{marginTop: 16}}>
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                    >
+                        Schedule Event
+                    </Button>
+
+                </div>
+            </div>
+        </form>
     )
 }
 
@@ -118,8 +250,11 @@ export const CalendarEvent: FC = () => {
     const [event, setEvent] = useState<Dictionary | null>(null);
     const resMain = useSelector(state => state.main.mainEventBooking);
     const [daySelected, setDaySelected] = useState<IDay | null>(null);
+    const [timeSelected, setTimeSelected] = useState<ITime & { selected?: boolean, confirm?: boolean } | null>(null);
+
     const [times, setTimes] = useState<ITime[]>([]);
     const [timesDateSelected, setTimesDateSelected] = useState<ITime[]>([]);
+    const [daysAvailable, setDaysAvailable] = useState<string[]>([]);
     const [dateCurrent, setDateCurrent] = useState<{ month: number, year: number }>({
         month: new Date().getMonth(),
         year: new Date().getFullYear()
@@ -133,16 +268,16 @@ export const CalendarEvent: FC = () => {
     }, [])
 
     useEffect(() => {
-        console.log(dateCurrent)
         if (!!event) {
             const { year, month } = dateCurrent;
             const { corpid, orgid, calendareventid } = event;
+            const listDates = calculateDateFromMonth(year, month)
             dispatch(getCollEventBooking(validateCalendaryBooking({
                 corpid,
                 orgid,
                 calendareventid,
-                startdate: new Date(year, month, 1).toISOString().split('T')[0],
-                enddate: new Date(year, month + 1, 0).toISOString().split('T')[0],
+                startdate: listDates[0].dateString,
+                enddate: listDates[listDates.length - 1].dateString
             })))
         }
     }, [dateCurrent, dispatch, event])
@@ -156,14 +291,19 @@ export const CalendarEvent: FC = () => {
                     setEvent(null)
                 }
             } else if (resMain.key === "UFN_CALENDARYBOOKING_SEL_DATETIME") {
-                setTimes(resMain.data as ITime[]);
+                setDaysAvailable(Array.from(new Set(resMain.data.map(x => x.localyeardate))));
+                setTimes((resMain.data as ITime[]).map(x => ({
+                    ...x,
+                    localstarthour: x.localstarthour.substring(0, 5),
+                    localendhour: x.localendhour.substring(0, 5)
+                })));
             }
         }
     }, [resMain])
 
     const handlerSelectDate = (p: IDay[]) => {
         setDaySelected(p[0]);
-        console.log(p[0])
+        setTimeSelected(null)
         setTimesDateSelected(times.filter(x => x.localyeardate === p[0].dateString))
     }
 
@@ -174,50 +314,89 @@ export const CalendarEvent: FC = () => {
             </div>
         )
     }
+
+    if (!event) {
+        return (
+            <div className={classes.back}>
+                <Typography variant="h5">Ningún evento encontrado</Typography>
+            </div>
+        )
+    }
+
     return (
         <div className={classes.back}>
             <div className={classes.container}>
                 <div className={classes.panel}>
-                    <div style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 16 }}>
+                    {timeSelected?.confirm && (
+                        <IconButton style={{border: '1px solid #e1e1e1'}} onClick={() => setTimeSelected({ ...timeSelected, confirm: false })}>
+                            <ArrowBackIcon color="primary" />
+                        </IconButton>
+                    )}
+                    <div style={{ fontWeight: 'bold', fontSize: 28, marginTop: 12, marginBottom: 16 }}>
                         {event?.name}
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                         <ScheduleIcon color="action" />
                         {event?.timeduration} {event?.timeunit}
                     </div>
-                </div>
-                <div className={classes.panel} style={{ position: 'relative', display: 'flex', flexDirection: 'column', height: '600px' }}>
-                    <div style={{ fontWeight: 'bold' }}>
-                        Select a Date & Time
-                    </div>
-                    <div style={{ display: 'flex', gap: 8, overflowY: 'auto' }}>
-                        <div className={classes.panelCalendar}>
-                            <CalendarZyx
-                                onChangeMonth={onChangeMonth}
-                                selectedDays={[]}
-                                onChange={handlerSelectDate}
-                            />
-                            <Backdrop style={{ zIndex: 999999999, position: 'absolute' }} open={resMain.loading}>
-                                <CircularProgress />
-                            </Backdrop>
+                    {timeSelected?.confirm && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 12 }}>
+                            <CalendarTodayIcon color="action" />
+                            {timeSelected?.localstarthour} - {timeSelected?.localendhour}
                         </div>
-                        {!!daySelected && (
-                            <div className={classes.panelDays}>
-                                <div>
-                                    {t(dayNames[daySelected?.dow])}, {t(`month_${((daySelected?.date.getMonth() + 1) + "").padStart(2, "0")}`)} {daySelected?.date.getDate()}
-                                </div>
-                                <div className={classes.containerTimes}>
-                                    {timesDateSelected.map((x, index) => (
-                                        <TimeDate key={index} time={x} />
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                    </div>
+                    )}
                 </div>
+                <div className={classes.vertical}></div>
+                <div className={classes.panel} style={{ position: 'relative', display: 'flex', gap: 20, flexDirection: 'column', height: '600px', borderLeft: '1px solid #e1e1e1' }}>
+                    {timeSelected?.confirm && (
+                        <div style={{ width: 590 }}>
+                            <div style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 16 }}>
+                                Enter details
+                            </div>
+                            <FormToSend />
+                        </div>
+                    )}
+                    {!timeSelected?.confirm && (
+                        <>
+                            <div style={{ fontWeight: 'bold', fontSize: 18 }}>
+                                Select a Date & Time
+                            </div>
+                            <div style={{ display: 'flex', gap: 20, overflowY: 'auto' }}>
+                                <div className={classes.panelCalendar}>
+                                    <CalendarZyx
+                                        onChangeMonth={onChangeMonth}
+                                        selectedDays={[]}
+                                        daysAvailable={daysAvailable}
+                                        onChange={handlerSelectDate}
+                                    />
+                                    <Backdrop style={{ zIndex: 999999999, position: 'absolute' }} open={resMain.loading}>
+                                        <CircularProgress />
+                                    </Backdrop>
+                                </div>
+                                {!!daySelected && (
+                                    <div className={classes.panelDays}>
+                                        <div>
+                                            {t(dayNames[daySelected?.dow])}, {t(`month_${((daySelected?.date.getMonth() + 1) + "").padStart(2, "0")}`)} {daySelected?.date.getDate()}
+                                        </div>
+                                        <div className={classes.containerTimes}>
+                                            {timesDateSelected.map((x, index) => (
+                                                <TimeDate
+                                                    isSelected={!!timeSelected && timeSelected?.localstarthour === x.localstarthour}
+                                                    key={index}
+                                                    time={x}
+                                                    setTimeSelected={setTimeSelected}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </>
+                    )}
 
+                </div>
             </div>
-        </div>
+        </div >
     )
 }
 

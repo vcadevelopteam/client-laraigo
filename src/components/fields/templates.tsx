@@ -436,7 +436,7 @@ export const CurrencyFieldEdit: FC<ICurrencyFieldEdit> = ({
     );
 }
 
-export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {}, inputProps = {} }) => {
+export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {}, inputProps = {}, variant = "standard" }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -451,6 +451,7 @@ export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disable
                 color="primary"
                 fullWidth
                 disabled={disabled}
+                variant={variant}
                 type={type}
                 error={!!error}
                 value={value}
