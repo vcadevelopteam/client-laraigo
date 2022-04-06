@@ -17,7 +17,10 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
 import { useForm } from 'react-hook-form';
 import SaveIcon from '@material-ui/icons/Save';
-import { time } from 'console';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 interface IDay {
     date: Date;
@@ -54,6 +57,7 @@ const useStyles = makeStyles(theme => ({
         maxWidth: '80vw',
         [theme.breakpoints.down('xs')]: {
             maxWidth: '100vw',
+            maxHeight: '100vh',
         },
     },
     panel: {
@@ -71,7 +75,7 @@ const useStyles = makeStyles(theme => ({
         justifyContent: 'center',
     },
     panelDays: {
-        width: 220,
+        minWidth: 220,
         display: 'flex',
         flexDirection: 'column',
         gap: 16
@@ -128,7 +132,22 @@ const useStyles = makeStyles(theme => ({
         }
     },
     colInput: {
-        width: 400
+        width: '100%',
+    },
+    containerSuccess: {
+        minHeight: 600,
+        backgroundColor: 'white',
+        display: 'flex',
+        borderRadius: 8,
+        boxShadow: '0 1px 8px 0 rgb(0 0 0 / 8%)',
+        width: '80vw',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: theme.spacing(3),
+        [theme.breakpoints.down('xs')]: {
+            width: '100vw',
+        },
+        flexDirection: 'column',
     }
 }));
 
@@ -263,6 +282,9 @@ export const CalendarEvent: FC = () => {
     const [times, setTimes] = useState<ITime[]>([]);
     const [timesDateSelected, setTimesDateSelected] = useState<ITime[]>([]);
     const [daysAvailable, setDaysAvailable] = useState<string[]>([]);
+    const [error, setError] = useState('');
+    const [openDialogError, setOpenDialogError] = useState(false);
+
     const [dateCurrent, setDateCurrent] = useState<{ month: number, year: number }>({
         month: new Date().getMonth(),
         year: new Date().getFullYear()
@@ -275,22 +297,27 @@ export const CalendarEvent: FC = () => {
         dispatch(getCollEventBooking(getEventByCode(orgid, eventcode)))
     }, [])
 
+    const triggerCalculateDate = () => {
+        const { year, month } = dateCurrent;
+        const { corpid, orgid, calendareventid } = event!!;
+        const listDates = calculateDateFromMonth(year, month)
+        dispatch(getCollEventBooking(validateCalendaryBooking({
+            corpid,
+            orgid,
+            calendareventid,
+            startdate: listDates[0].dateString,
+            enddate: listDates[listDates.length - 1].dateString
+        })))
+    }
+
     useEffect(() => {
         if (!!event) {
-            const { year, month } = dateCurrent;
-            const { corpid, orgid, calendareventid } = event;
-            const listDates = calculateDateFromMonth(year, month)
-            dispatch(getCollEventBooking(validateCalendaryBooking({
-                corpid,
-                orgid,
-                calendareventid,
-                startdate: listDates[0].dateString,
-                enddate: listDates[listDates.length - 1].dateString
-            })))
+            triggerCalculateDate()
         }
     }, [dateCurrent, dispatch, event])
 
     useEffect(() => {
+        console.log(resMain)
         if (!resMain.loading) {
             if (!resMain.error) {
                 if (resMain.key === "QUERY_EVENT_BY_CODE") {
@@ -308,8 +335,10 @@ export const CalendarEvent: FC = () => {
                     })));
                 }
             } else {
-                if (resMain.key === "UFN_CALENDARYBOOKING_SEL_DATETIME") {
-                    const errormessage = t(resMain.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                if (resMain.key === "UFN_CALENDARYBOOKING_INS") {
+                    const errormessage = t(resMain.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() });
+                    setError(errormessage);
+                    setOpenDialogError(true)
                 }
             }
         }
@@ -322,8 +351,9 @@ export const CalendarEvent: FC = () => {
     }
 
     const handlerOnSubmit = (data: Dictionary) => {
+        const month = t(`month_${((daySelected!!.date.getMonth() + 1) + "").padStart(2, "0")}`)
         const { corpid, orgid, calendareventid } = event!!;
-        const parameters = {
+        const dataToSend = {
             corpid,
             orgid,
             calendareventid,
@@ -339,9 +369,20 @@ export const CalendarEvent: FC = () => {
             personcontact: data.email || data.phone,
             persontimezone: -5.00,
             operation: 'INSERT',
-            username: 'admin'
+            username: 'admin',
+            email: data.email,
+            phone: data.phone,
+            name: data.name,
+            parameters: [
+                { name: "timeevent", text: `${timeSelected?.localstarthour} - ${timeSelected?.localendhour}, ${t(dayNames[daySelected!!.dow])}, ${month} ${daySelected?.date.getDate()}, ${daySelected?.date.getFullYear()}` },
+                { name: "timestart", text: timeSelected?.localstarthour },
+                { name: "timeend", text: timeSelected?.localendhour },
+                { name: "eventname", text: event?.name },
+                { name: "personname", text: data.name },
+                { name: "personcontact", text: data.email || data.phone },
+            ]
         }
-        dispatch(getCollEventBooking(insBookingCalendar(parameters)))
+        dispatch(getCollEventBooking(insBookingCalendar(dataToSend)))
     }
 
     if (resMain.loading && !event) {
@@ -356,6 +397,32 @@ export const CalendarEvent: FC = () => {
         return (
             <div className={classes.back}>
                 <Typography variant="h5">Ningún evento encontrado</Typography>
+            </div>
+        )
+    }
+
+    if (!resMain.error && !resMain.loading && resMain.key === "UFN_CALENDARYBOOKING_INS") {
+        return (
+            <div className={classes.back}>
+                <div className={classes.containerSuccess}>
+                    <div style={{ fontWeight: 'bold', fontSize: 20 }}>Confirmed</div>
+                    <div style={{ marginTop: 16, textAlign: 'center' }} >You have successfully scheduled an appointment</div>
+                    <div style={{ width: '70%', height: 1, backgroundColor: '#e1e1e1', marginTop: 24, marginBottom: 24 }}></div>
+                    <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 12 }}>
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                            <span style={{ backgroundColor: event.color, width: 24, height: 24, borderRadius: 12 }}></span>
+                            <div style={{ fontWeight: 'bold', fontSize: 20 }}>{event?.name}</div>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 'bold' }}>
+                            <CalendarTodayIcon />
+                            {timeSelected?.localstarthour} - {timeSelected?.localendhour}, {t(dayNames[daySelected!!.dow])}, {t(`month_${((daySelected!!.date.getMonth() + 1) + "").padStart(2, "0")}`)} {daySelected?.date.getDate()}, {daySelected?.date.getFullYear()}
+                        </div>
+                        <div style={{ marginTop: 4, fontWeight: 'bold', textAlign: 'start' }}>
+                            A calendar invitation has been sent to your email address.
+                        </div>
+                    </div>
+                    <div style={{ width: '70%', height: 1, backgroundColor: '#e1e1e1', marginTop: 24, marginBottom: 24 }}></div>
+                </div>
             </div>
         )
     }
@@ -381,16 +448,16 @@ export const CalendarEvent: FC = () => {
                         {event?.timeduration} {event?.timeunit}
                     </div>
                     {timeSelected?.confirm && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 12 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12 }}>
                             <CalendarTodayIcon color="action" />
-                            {timeSelected?.localstarthour} - {timeSelected?.localendhour}
+                            {timeSelected?.localstarthour} - {timeSelected?.localendhour}, {t(dayNames[daySelected!!.dow])}, {t(`month_${((daySelected!!.date.getMonth() + 1) + "").padStart(2, "0")}`)} {daySelected?.date.getDate()}, {daySelected?.date.getFullYear()}
                         </div>
                     )}
                 </div>
                 <div className={classes.vertical}></div>
                 <div className={classes.panel} style={{ position: 'relative', display: 'flex', gap: 20, flexDirection: 'column', height: '600px', borderLeft: '1px solid #e1e1e1' }}>
                     {timeSelected?.confirm && (
-                        <div style={{ width: 590 }}>
+                        <div style={{ flex: '0 0 590px' }}>
                             <div style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 16 }}>
                                 Enter details
                             </div>
@@ -410,7 +477,7 @@ export const CalendarEvent: FC = () => {
                                 <div className={classes.panelCalendar}>
                                     <CalendarZyx
                                         onChangeMonth={onChangeMonth}
-                                        selectedDays={[]}
+                                        selectedDays={daySelected ? [daySelected.dateString] : undefined}
                                         daysAvailable={daysAvailable}
                                         onChange={handlerSelectDate}
                                     />
@@ -441,6 +508,34 @@ export const CalendarEvent: FC = () => {
 
                 </div>
             </div>
+
+            <Dialog
+                open={openDialogError}
+                fullWidth
+                maxWidth={"xs"}
+                style={{ zIndex: 99999999 }}>
+                <DialogTitle>{error}</DialogTitle>
+                <DialogContent>
+                    <div style={{ textAlign: 'center' }}>
+                        {t(langKeys.select_differente_time)}
+                    </div>
+
+                </DialogContent>
+                <DialogActions style={{ justifyContent: 'center', marginBottom: 12 }}>
+                    <Button
+                        onClick={() => {
+                            setOpenDialogError(false);
+                            setTimeSelected(null);
+                            setDaySelected(null);
+                            triggerCalculateDate();
+                        }}
+                        color="primary"
+                        variant="contained"
+                    >
+                        {t(langKeys.view_times)}
+                    </Button>
+                </DialogActions>
+            </Dialog >
         </div >
     )
 }

@@ -678,7 +678,10 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                 label={t(langKeys.notificationtype)}
                                 className="col-6"
                                 valueDefault={getValues("notificationtype")}
-                                onChange={(value) => setValue('notificationtype', (value?.val||""))}
+                                onChange={(value) => {
+                                    setValue('notificationtype', (value?.val || ""))
+                                    trigger('notificationtype')
+                                }}
                                 error={errors?.notificationtype?.message}
                                 data={[{desc: "HSM",val: "HSM"},{desc: t(langKeys.email),val: "EMAIL"}]}
                                 optionDesc="desc"
@@ -690,7 +693,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                 valueDefault={getValues('hsmtemplateid')}
                                 onChange={onSelectTemplate}
                                 error={errors?.hsmtemplateid?.message}
-                                data={dataTemplates}
+                                data={dataTemplates.filter(x => x.type === (getValues("notificationtype") === "EMAIL" ? "MAIL" : getValues("notificationtype")))}
                                 optionDesc="name"
                                 optionValue="id"
                             />

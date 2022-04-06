@@ -24,6 +24,7 @@ export const mainEventBookingFailure = (state: IState, action: IAction): IState 
     ...state,
     mainEventBooking: {
         ...state.mainEventBooking,
+        key: action.payload.key,
         loading: false,
         error: true,
         code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',

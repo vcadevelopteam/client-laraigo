@@ -3305,7 +3305,7 @@ export const langKeys = {
     campaign_proactive: 'campaign_proactive',
     password_strongvalidation: 'password_strongvalidation',
     
-    not_allowed_time: 'not_allowed_time',
+    error_not_allowed_time: 'error_not_allowed_time',
     select_differente_time: 'select_differente_time',
     view_times: 'view_times',
 };

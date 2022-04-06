@@ -3316,7 +3316,7 @@ const translation: LangKeys = {
     campaign_proactive: 'CAMPAÑA/PROACTIVO',
     password_strongvalidation: 'Tu contraseña no es lo bastante segura, debe tener minimo 8 caracteres y contener: caracter especial, mayúscula, minúscula y número',
 
-    not_allowed_time: 'Lo siento, esa hora ya no está disponible',
+    error_not_allowed_time: 'Lo siento, esa hora ya no está disponible',
     select_differente_time: 'Seleccione una hora diferente para reservar este evento.',
     view_times: 'Ver horas disponibles',
 };

@@ -20,7 +20,7 @@ const dayNames = [
 
 interface CalendarInputProps {
     notPreviousDays?: boolean;
-    selectedDays?: string[];
+    selectedDays?: string[] | undefined;
     onChange?: (dates: DayProp[], dateChanged: DayProp, action: string) => void;
     multiple?: boolean;
     onChangeMonth?: (month: number, year: number) => void;
@@ -136,8 +136,6 @@ const BoxDay: FC<DayInputProps & { isActive?: boolean }> = ({ day, handleClick, 
         </div>
     )
 }
-
-
 const CalendarZyx: FC<CalendarInputProps> = ({ notPreviousDays = true, selectedDays = [], onChange, multiple, onChangeMonth, daysAvailable }) => {
     const classes = useScheduleStyles();
     const { t } = useTranslation();
