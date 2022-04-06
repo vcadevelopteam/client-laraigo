@@ -179,7 +179,11 @@ const BoxDay: FC<DayInputProps> = ({ day, notPreviousDays, handleClick }) => {
     const [isAvailable, setIsAvailable] = useState(true);
     const [more3Items, setMore3Items] = useState(false);
     const { t } = useTranslation();
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 24ff81729904f03b5a08f1625f2b8d29f51da082
     useEffect(() => {
         const isAvaialable = !day.data.some(x => x.status === "unavailable");
         setMore3Items(day.data.length > 3)
@@ -212,7 +216,11 @@ const BoxDay: FC<DayInputProps> = ({ day, notPreviousDays, handleClick }) => {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 {!isAvailable && (
+<<<<<<< HEAD
                     <div>{t(langKeys.unavailable)}</div>
+=======
+                    <div>{t(langKeys.uniqueclients)}</div>
+>>>>>>> 24ff81729904f03b5a08f1625f2b8d29f51da082
                 )}
                 {isAvailable && day?.data.slice(0, 3).map((item, index) => (
                     <div key={index} className={classes.timeDate}>
@@ -262,32 +270,36 @@ const DialogDate: React.FC<{
         name: 'times',
     });
 
-    const onSubmit = handleSubmit((data) => {
-        if (data.times.every(x => (x.overlap || -1) === -1)) {
-            const haveTimes = data.times.length > 0;
-            const timesToAdd = dateSelected.reduce((acc: ISchedule[], x) => ([
-                ...acc,
-                ...(haveTimes ? data.times.map(time => ({
-                    start: time.start,
-                    end: time.end,
-                    dow: time.dow,
-                    dom: x.dom,
-                    date: type === "personalized" ? x.dateString : undefined,
-                    status: "available"
-                })) : (type === "personalized" ? [{
-                    start: "",
-                    end: "",
-                    dow: x.dow,
-                    dom: x.dom,
-                    date: x.dateString,
-                    status: "unavailable"
-                }] : []))
-            ]), []);
-
-            handlerChangeDates(timesToAdd);
-            setOpen(false)
+    const onSubmitManual = async () => {
+        const allOk = await trigger();
+        if (allOk) {
+            const data = getValues();
+            if (data.times.every(x => (x.overlap || -1) === -1)) {
+                const haveTimes = data.times.length > 0;
+                const timesToAdd = dateSelected.reduce((acc: ISchedule[], x) => ([
+                    ...acc,
+                    ...(haveTimes ? data.times.map(time => ({
+                        start: time.start,
+                        end: time.end,
+                        dow: time.dow,
+                        dom: x.dom,
+                        date: type === "personalized" ? x.dateString : undefined,
+                        status: "available"
+                    })) : (type === "personalized" ? [{
+                        start: "",
+                        end: "",
+                        dow: x.dow,
+                        dom: x.dom,
+                        date: x.dateString,
+                        status: "unavailable"
+                    }] : []))
+                ]), []);
+    
+                handlerChangeDates(timesToAdd);
+                setOpen(false)
+            }
         }
-    });
+    }
 
     return (
         <Dialog
@@ -300,7 +312,7 @@ const DialogDate: React.FC<{
 
             </DialogTitle>
             <DialogContent>
-                <form onSubmit={onSubmit} id="form-date-calendar">
+                <div>
                     {type === "personalized" && (
                         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
                             <CalendarZyx
@@ -430,7 +442,7 @@ const DialogDate: React.FC<{
                             )
                         })}
                     </div>
-                </form>
+                </div>
             </DialogContent>
             <DialogActions>
                 <Button variant="outlined" onClick={() => setOpen(false)}>
@@ -438,9 +450,9 @@ const DialogDate: React.FC<{
                 </Button>
                 <Button
                     variant="contained"
-                    type="submit"
+                    type="button"
                     color="primary"
-                    form="form-date-calendar"
+                    onClick={onSubmitManual}
                 >
                     {t(langKeys.apply)}
                 </Button>

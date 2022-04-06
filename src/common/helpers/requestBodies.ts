@@ -2750,7 +2750,8 @@ export const insCalendar = ({
     availability,
     timebeforeeventduration, timebeforeeventunit, timeaftereventduration, timeaftereventunit,
     increments,
-    operation
+    operation,
+    communicationchannelid
 }: Dictionary): IRequestBody => ({
     method: "UFN_CALENDAREVENT_INS",
     key: "UFN_CALENDAREVENT_INS",
@@ -2762,7 +2763,8 @@ export const insCalendar = ({
         availability: JSON.stringify(availability),
         timebeforeeventduration, timebeforeeventunit, timeaftereventduration, timeaftereventunit,
         increments,
-        operation
+        operation,
+        communicationchannelid: communicationchannelid || 0
     }
 });
 
