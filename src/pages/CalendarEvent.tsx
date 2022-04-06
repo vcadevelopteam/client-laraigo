@@ -5,7 +5,7 @@ import { Button, Fab, IconButton, makeStyles, Typography } from "@material-ui/co
 import { useParams } from 'react-router';
 import { FieldEdit, CalendarZyx, FieldEditMulti } from "components";
 import { getCollEventBooking } from 'store/main/actions';
-import { getEventByCode, validateCalendaryBooking, dayNames, calculateDateFromMonth, insBookingCalendar } from 'common/helpers';
+import { getEventByCode, validateCalendaryBooking, dayNames, calculateDateFromMonth, insBookingCalendar, getPersonFromBooking } from 'common/helpers';
 import { Dictionary } from '@types';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ScheduleIcon from '@material-ui/icons/Schedule';
@@ -21,6 +21,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { useLocation } from "react-router";
 
 interface IDay {
     date: Date;
@@ -178,10 +179,12 @@ const TimeDate: FC<{ time: ITime, isSelected: boolean, setTimeSelected: (p: any)
     )
 }
 
-const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, disabledSubmit: boolean }> = ({ event, handlerOnSubmit, disabledSubmit }) => {
+const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, disabledSubmit: boolean, parameters: Dictionary }> = ({ event, handlerOnSubmit, disabledSubmit, parameters }) => {
     const { t } = useTranslation();
     const classes = useStyles();
 
+    console.log(parameters)
+    
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             name: '',
@@ -283,18 +286,35 @@ export const CalendarEvent: FC = () => {
     const [timesDateSelected, setTimesDateSelected] = useState<ITime[]>([]);
     const [daysAvailable, setDaysAvailable] = useState<string[]>([]);
     const [error, setError] = useState('');
+    const [ticket, setTicket] = useState({
+        conversationid: 0,
+        personid: 0
+    })
     const [openDialogError, setOpenDialogError] = useState(false);
-
     const [dateCurrent, setDateCurrent] = useState<{ month: number, year: number }>({
         month: new Date().getMonth(),
         year: new Date().getFullYear()
     });
+    const location = useLocation();
 
     const onChangeMonth = (month: number, year: number) => {
         setDateCurrent({ month, year });
     }
+
     useEffect(() => {
-        dispatch(getCollEventBooking(getEventByCode(orgid, eventcode)))
+        let personid = 0;
+        const query = new URLSearchParams(location.search);
+        const posibleConversationID = query.get('cid');
+        const posiblePersonID = query.get('pid');
+
+        if (posibleConversationID && Number.isInteger(Number(posibleConversationID)) && posiblePersonID && Number.isInteger(Number(posiblePersonID))) {
+            personid = Number(posiblePersonID);
+            setTicket({
+                conversationid: Number(posibleConversationID),
+                personid: Number(posiblePersonID)
+            })
+        }
+        dispatch(getCollEventBooking(getEventByCode(orgid, eventcode, personid)))
     }, [])
 
     const triggerCalculateDate = () => {
@@ -317,7 +337,6 @@ export const CalendarEvent: FC = () => {
     }, [dateCurrent, dispatch, event])
 
     useEffect(() => {
-        console.log(resMain)
         if (!resMain.loading) {
             if (!resMain.error) {
                 if (resMain.key === "QUERY_EVENT_BY_CODE") {
@@ -465,6 +484,11 @@ export const CalendarEvent: FC = () => {
                                 event={event!!}
                                 handlerOnSubmit={handlerOnSubmit}
                                 disabledSubmit={resMain.loading && !!event}
+                                parameters={{
+                                    corpid: event?.corpid,
+                                    orgid: event?.orgid,
+                                    personid: ticket?.personid,
+                                }}
                             />
                         </div>
                     )}

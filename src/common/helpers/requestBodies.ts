@@ -2768,11 +2768,11 @@ export const insCalendar = ({
     }
 });
 
-export const getEventByCode = (orgid: number, code: string): IRequestBody => ({
+export const getEventByCode = (orgid: number, code: string, personid: number): IRequestBody => ({
     key: "QUERY_EVENT_BY_CODE",
     method: "QUERY_EVENT_BY_CODE",
     parameters: {
-        orgid, code
+        orgid, code, personid
     }
 });
 
@@ -2796,5 +2796,11 @@ export const CalendaryBookingReport = ({ period = "", startdate, enddate, take, 
 export const insBookingCalendar = (params: Dictionary): IRequestBody => ({
     key: "UFN_CALENDARYBOOKING_INS",
     method: "UFN_CALENDARYBOOKING_INS",
+    parameters: params
+});
+
+export const getPersonFromBooking = (params: Dictionary): IRequestBody => ({
+    key: "QUERY_GET_PERSON_FROM_BOOKING",
+    method: "QUERY_GET_PERSON_FROM_BOOKING",
     parameters: params
 });
