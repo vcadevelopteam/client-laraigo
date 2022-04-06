@@ -187,9 +187,9 @@ const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, dis
     
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            name: '',
-            email: '',
-            phone: '',
+            name: event?.personname,
+            email: event?.email,
+            phone: event?.phone,
             notes: '',
         }
     })

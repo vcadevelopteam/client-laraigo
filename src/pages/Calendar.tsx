@@ -433,10 +433,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
 
     const handlerCalendar = (data: ISchedule[]) => {
         setValue('intervals', data);
-        trigger('intervals');
-        // reset({
-        //     intervals: data
-        // })
+        trigger('intervals')
     }
 
     const { fields: fieldsIntervals, append: intervalsAppend, remove: intervalsRemove } = useFieldArray({
@@ -444,10 +441,6 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         name: 'intervals',
     });
 
-    const { fields } = useFieldArray({
-        control,
-        name: 'variables',
-    });
     
     React.useEffect(() => {
         register('eventcode', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
@@ -455,7 +448,9 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         register('location', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('status', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('notificationtype', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
-        register('communicationchannelid', { validate: (value) => Boolean(getValues('notificationtype') === 'HSM' && value && value>0) || String(t(langKeys.field_required)) });
+
+        register('communicationchannelid', { validate: (value) => Boolean(getValues('notificationtype') !== 'HSM' || (value && value > 0)) || String(t(langKeys.field_required)) });
+
         register('hsmtemplateid', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
         register('durationtype', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('duration', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
