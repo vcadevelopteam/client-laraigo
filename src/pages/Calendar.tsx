@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, RichText, ColorInput, AntTabPanel, FieldEditArray, IOSSwitch } from 'components';
-import { getDateCleaned,getValuesFromDomain, insCalendar, hours, selCalendar, getMessageTemplateLst } from 'common/helpers';
+import { getDateCleaned,getValuesFromDomain, insCalendar, hours, selCalendar, getMessageTemplateLst, getCommChannelLst } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -62,6 +62,7 @@ type FormFields = {
     notificationtype: string,
     hsmtemplatename: string,
     daysintothefuture: number,
+    communicationchannelid: number,
     hsmtemplateid: number,
     operation: string,
     intervals: ISchedule[],
@@ -364,6 +365,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     const [waitSave, setWaitSave] = useState(false);
     const dispatch = useDispatch();
     const { t } = useTranslation();
+    const user = useSelector(state => state.login.validateToken.user);
     const [bodyobject, setBodyobject] = useState<Descendant[]>(row?.description || [{ "type": "paragraph", "children": [{ "text": row?.description || "" }] }])
     const [color, setColor] = useState(row?.color||"#aa53e0");
     const [tabIndex, setTabIndex] = useState(0);
@@ -371,6 +373,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
     const dataTemplates = multiData[1] && multiData[1].success ? multiData[1].data : [];
+    const dataChannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const [bodyMessage, setBodyMessage] = useState(row?.messagetemplateid? (dataTemplates.filter(x=>x.id===row.messagetemplateid)[0]?.body||""): "");
     const [generalstate, setgeneralstate] = useState({
         eventcode: row?.code || '',
@@ -389,6 +392,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         fri: true,
         sat: false,
     });
+    const [eventURL, setEventUrl] = useState(new URL(`events/${user?.orgid}/${generalstate.eventcode}`, window.location.origin));
 
     const handleChange = (event:any) => {
       setdateinterval(event.target.value);
@@ -412,6 +416,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
             notificationtype: row?.notificationtype || "",
             daysintothefuture: row?.daysduration || 0,
             operation: operation==="DUPLICATE"? "INSERT":operation,
+            communicationchannelid: row?.communicationchannelid || 0,
             hsmtemplateid: row?.messagetemplateid || 0,
             hsmtemplatename: row?.hsmtemplatename || "",
             intervals: row?.availability || [],
@@ -448,6 +453,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         register('location', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('status', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('notificationtype', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
+        register('communicationchannelid', { validate: (value) => Boolean(getValues('notificationtype') === 'HSM' && value && value>0) || String(t(langKeys.field_required)) });
         register('hsmtemplateid', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
         register('durationtype', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('duration', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
@@ -613,6 +619,9 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                         setgeneralstate({...generalstate, eventcode:e.target.value});
                                         setValue('eventcode', e.target.value)
                                     }}
+                                    onBlur={(e) => {
+                                        setEventUrl(new URL(`events/${user?.orgid}/${generalstate.eventcode}`, window.location.origin))
+                                    }}
                                 />
                             </div>
                             <FieldEdit
@@ -649,9 +658,9 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                             <FieldView
                                 label={t(langKeys.eventlink)}
                                 className="col-6"
-                                value={"eventlink"}
+                                value={`${eventURL.host}${eventURL.pathname}`}
                             />
-                            <a className='col-6' href="https://example.com">{t(langKeys.seeagendapage)}</a>
+                            <a className='col-6' href={eventURL.href} target="_blank" rel="noreferrer">{t(langKeys.seeagendapage)}</a>
                         </div>
                         <div className="row-zyx" >
                             <div className="col-6">
@@ -680,7 +689,10 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                 valueDefault={getValues("notificationtype")}
                                 onChange={(value) => {
                                     setValue('notificationtype', (value?.val || ""))
+                                    setValue('hsmtemplateid', 0)
+                                    setValue('communicationchannelid', 0)
                                     trigger('notificationtype')
+                                    onSelectTemplate({id: 0, name: '', body: ''})
                                 }}
                                 error={errors?.notificationtype?.message}
                                 data={[{desc: "HSM",val: "HSM"},{desc: t(langKeys.email),val: "EMAIL"}]}
@@ -688,23 +700,36 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                 optionValue="val"
                             />
                             <FieldSelect
-                                label={t(langKeys.hsm_template)}
+                                label={t(langKeys.notificationtemplate)}
                                 className="col-6"
                                 valueDefault={getValues('hsmtemplateid')}
-                                onChange={onSelectTemplate}
                                 error={errors?.hsmtemplateid?.message}
+                                onChange={onSelectTemplate}
                                 data={dataTemplates.filter(x => x.type === (getValues("notificationtype") === "EMAIL" ? "MAIL" : getValues("notificationtype")))}
                                 optionDesc="name"
                                 optionValue="id"
                             />
                         </div>
+                        {getValues("notificationtype") === 'HSM' && <div className="row-zyx" >
+                            <FieldSelect
+                                label={t(langKeys.communicationchannel)}
+                                className="col-12"
+                                valueDefault={getValues('communicationchannelid')}
+                                error={errors?.communicationchannelid?.message}
+                                onChange={(value) => setValue('communicationchannelid', value.communicationchannelid)}
+                                data={dataChannels.filter(x => x.type.startsWith('WHA'))}
+                                optionDesc="communicationchanneldesc"
+                                optionValue="communicationchannelid"
+                            />
+                        </div>}
                         <div className="row-zyx" >
-                            <FieldView
+                            {getValues("notificationtype") === 'HSM' && <FieldView
                                 className="col-6"
                                 label={t(langKeys.message)}
                                 value={bodyMessage}
-                            />
-                            <Grid className="col-6" item xs={12} sm={12} md={12} lg={12} xl={12} style={{ borderTop: '1px solid #e1e1e1', paddingTop: 8, marginTop: 8 }}>
+                            />}
+                            {getValues("notificationtype") === 'EMAIL' && <div dangerouslySetInnerHTML={{ __html: bodyMessage }} />}
+                            {/* <Grid className="col-6" item xs={12} sm={12} md={12} lg={12} xl={12} style={{ borderTop: '1px solid #e1e1e1', paddingTop: 8, marginTop: 8 }}>
                                 {fields.map((item: Dictionary, i) => (
                                     <div key={item.id}>
                                         <FieldSelect
@@ -744,7 +769,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                         }
                                     </div>
                                 ))}
-                            </Grid>
+                            </Grid> */}
                         </div>
                     </div>
                 </AntTabPanel>
@@ -1262,6 +1287,7 @@ const Calendar: FC = () => {
         dispatch(getMultiCollection([
             getValuesFromDomain("ESTADOGENERICO"),
             getMessageTemplateLst(),
+            getCommChannelLst()
         ]));
         return () => {
             dispatch(resetAllMain());
