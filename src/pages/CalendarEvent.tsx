@@ -21,6 +21,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { useLocation } from "react-router";
 
 interface IDay {
     date: Date;
@@ -283,18 +284,34 @@ export const CalendarEvent: FC = () => {
     const [timesDateSelected, setTimesDateSelected] = useState<ITime[]>([]);
     const [daysAvailable, setDaysAvailable] = useState<string[]>([]);
     const [error, setError] = useState('');
+    const [ticket, setTicket] = useState({
+        conversationid: 0,
+        personid: 0
+    })
     const [openDialogError, setOpenDialogError] = useState(false);
-
     const [dateCurrent, setDateCurrent] = useState<{ month: number, year: number }>({
         month: new Date().getMonth(),
         year: new Date().getFullYear()
     });
+    const location = useLocation();
 
     const onChangeMonth = (month: number, year: number) => {
         setDateCurrent({ month, year });
     }
+    console.log(ticket)
+
     useEffect(() => {
         dispatch(getCollEventBooking(getEventByCode(orgid, eventcode)))
+        const query = new URLSearchParams(location.search);
+        const posibleConversationID = query.get('cid');
+        const posiblePersonID = query.get('pid');
+
+        if (posibleConversationID && Number.isInteger(Number(posibleConversationID)) && posiblePersonID && Number.isInteger(Number(posiblePersonID))) {
+            setTicket({
+                conversationid: Number(posibleConversationID),
+                personid: Number(posiblePersonID)
+            })
+        }
     }, [])
 
     const triggerCalculateDate = () => {
@@ -317,7 +334,6 @@ export const CalendarEvent: FC = () => {
     }, [dateCurrent, dispatch, event])
 
     useEffect(() => {
-        console.log(resMain)
         if (!resMain.loading) {
             if (!resMain.error) {
                 if (resMain.key === "QUERY_EVENT_BY_CODE") {
