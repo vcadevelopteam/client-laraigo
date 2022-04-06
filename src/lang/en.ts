@@ -1464,6 +1464,15 @@ const translation: LangKeys = {
     unavailable: "Unavailable",
     more_times: "More Times",
     select_date_time: "Select date and time",
+    prepare_meeting: "Please share anything that will help prepare for our meeting.",
+    no_event_found: "No event found",
+    invitation_email: "A calendar invitation has been sent to your email address.",
+    schedule_event: "Programar evento",
+    successfully_scheduled: "You have successfully scheduled an appointment",
+    confirmed: "Confirmed",
+    enter_details: "Enter details",
+    confirm: "Confirm",
+    
 
     dashboard_managerial_tmo_ticketnum: 'Ticketnum',
     dashboard_managerial_tmo_channel: 'Channel',

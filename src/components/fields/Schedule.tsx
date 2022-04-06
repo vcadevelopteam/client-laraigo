@@ -179,11 +179,6 @@ const BoxDay: FC<DayInputProps> = ({ day, notPreviousDays, handleClick }) => {
     const [isAvailable, setIsAvailable] = useState(true);
     const [more3Items, setMore3Items] = useState(false);
     const { t } = useTranslation();
-<<<<<<< HEAD
-
-=======
-    
->>>>>>> 24ff81729904f03b5a08f1625f2b8d29f51da082
     useEffect(() => {
         const isAvaialable = !day.data.some(x => x.status === "unavailable");
         setMore3Items(day.data.length > 3)
@@ -216,11 +211,7 @@ const BoxDay: FC<DayInputProps> = ({ day, notPreviousDays, handleClick }) => {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 {!isAvailable && (
-<<<<<<< HEAD
                     <div>{t(langKeys.unavailable)}</div>
-=======
-                    <div>{t(langKeys.uniqueclients)}</div>
->>>>>>> 24ff81729904f03b5a08f1625f2b8d29f51da082
                 )}
                 {isAvailable && day?.data.slice(0, 3).map((item, index) => (
                     <div key={index} className={classes.timeDate}>
