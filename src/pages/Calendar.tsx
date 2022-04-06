@@ -752,8 +752,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                 </AntTabPanel>
                 <AntTabPanel index={1} currentIndex={tabIndex}>
                     <div className={classes.containerDetail}>
-                        <div style={{display:"grid", gridTemplateColumns: "[first] auto [line2] 20px [col2] auto [end]"}} >
-                            <div style={{gridColumnStart: "first"}}>
+                        <div style={{display: 'flex', flexWrap: "wrap", gap: 16}} >
+                            <div style={{ flex: 1, minWidth: 250 }}>
                                 <div className="col-12" style={{padding: 5}}>
                                     <Box fontWeight={500} lineHeight="18px" fontSize={16} mb={1} color="textPrimary">{t(langKeys.duration)}</Box>
                                     <div className="row-zyx" >
@@ -857,7 +857,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                     </div>
                                 </div>
                             </div>
-                            <div style={{gridColumnStart: "col2"}}>
+                            <div style={{ flex: 1, minWidth: 250 }}>
                                 <React.Fragment>
                                     <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.dateinterval)}</Box>
                                     <RadioGroup aria-label="dateinterval" name="dateinterval1" value={dateinterval} onChange={handleChange}>
@@ -1186,7 +1186,7 @@ const Calendar: FC = () => {
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(insCalendar({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.id })));
+            dispatch(execute(insCalendar({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.calendareventid })));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }

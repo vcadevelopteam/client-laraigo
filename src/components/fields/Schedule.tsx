@@ -263,8 +263,6 @@ const DialogDate: React.FC<{
     });
 
     const onSubmitManual = async () => {
-        // handlerChangeDates(dateSelected);
-        setOpen(false)
         const allOk = await trigger();
         if (allOk) {
             const data = getValues();
