@@ -427,9 +427,11 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     
 
     const handlerCalendar = (data: ISchedule[]) => {
-        reset({
-            intervals: data
-        })
+        setValue('intervals', data);
+        trigger('intervals');
+        // reset({
+        //     intervals: data
+        // })
     }
 
     const { fields: fieldsIntervals, append: intervalsAppend, remove: intervalsRemove } = useFieldArray({
