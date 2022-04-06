@@ -730,7 +730,11 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                 label={t(langKeys.message)}
                                 value={bodyMessage}
                             />}
-                            {getValues("notificationtype") === 'EMAIL' && <div dangerouslySetInnerHTML={{ __html: bodyMessage }} />}
+                            {getValues("notificationtype") === 'EMAIL' && <React.Fragment>
+                                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.message)}</Box>
+                                    <div dangerouslySetInnerHTML={{ __html: bodyMessage }} />
+                                </React.Fragment>
+                            }
                             {/* <Grid className="col-6" item xs={12} sm={12} md={12} lg={12} xl={12} style={{ borderTop: '1px solid #e1e1e1', paddingTop: 8, marginTop: 8 }}>
                                 {fields.map((item: Dictionary, i) => (
                                     <div key={item.id}>
