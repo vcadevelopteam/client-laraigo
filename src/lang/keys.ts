@@ -10,6 +10,17 @@ export const langKeys = {
     show_logs: 'show_logs',
     hide_logs: 'hide_logs',
     compliance: "compliance",
+    
+    selectday: "selectday",
+    schedule_availability: "schedule_availability",
+    reset_weekly_hours: "reset_weekly_hours",
+    edit_date: "edit_date",
+    edit_all: "edit_all",
+    set_your_weekly: "set_your_weekly",
+    unavailable: "unavailable",
+    more_times: "more_times",
+    select_date_time: "select_date_time",
+
     actionplan: 'actionplan',
     organization: 'organization',
     iaservices: 'iaservices',

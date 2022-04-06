@@ -1455,6 +1455,16 @@ const translation: LangKeys = {
     ticket_tdatime: 'Waiting time before adviser attention',
     ticket_tdatime_help: 'Sum of time when ticket is in holding until the agent give you first answer',
 
+    selectday: "Select the date(s) you want to assign specific hours",
+    schedule_availability: "What hours are you available? ",
+    reset_weekly_hours: "Reset to weekly hours",
+    edit_date: "Edit date(s)",
+    edit_all: "Edit all ",
+    set_your_weekly: "Set your weekly hours",
+    unavailable: "Unavailable",
+    more_times: "More Times",
+    select_date_time: "Select date and time",
+
     dashboard_managerial_tmo_ticketnum: 'Ticketnum',
     dashboard_managerial_tmo_channel: 'Channel',
     dashboard_managerial_tmo_closedby: 'Closedby',
@@ -1640,7 +1650,7 @@ const translation: LangKeys = {
     newinterval: "New interval",
 
     report_loginhistory: 'User login',
-    availability: "Availability",
+    availability: " Availability",
     sunday: "Sunday",
     monday: "Monday",
     tuesday: "Tuesday",

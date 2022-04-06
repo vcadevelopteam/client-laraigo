@@ -178,6 +178,7 @@ const BoxDay: FC<DayInputProps> = ({ day, notPreviousDays, handleClick }) => {
     const classes = useScheduleStyles();
     const [isAvailable, setIsAvailable] = useState(true);
     const [more3Items, setMore3Items] = useState(false);
+    const { t } = useTranslation();
 
     useEffect(() => {
         const isAvaialable = !day.data.some(x => x.status === "unavailable");
@@ -211,7 +212,7 @@ const BoxDay: FC<DayInputProps> = ({ day, notPreviousDays, handleClick }) => {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 {!isAvailable && (
-                    <div>unavailable</div>
+                    <div>{t(langKeys.unavailable)}</div>
                 )}
                 {isAvailable && day?.data.slice(0, 3).map((item, index) => (
                     <div key={index} className={classes.timeDate}>
@@ -219,7 +220,7 @@ const BoxDay: FC<DayInputProps> = ({ day, notPreviousDays, handleClick }) => {
                     </div>
                 ))}
                 {isAvailable && more3Items && (
-                    <div style={{ fontWeight: 'bold' }}>+ {day.data.length - 3} more times</div>
+                    <div style={{ fontWeight: 'bold' }}>+ {day.data.length - 3} {t(langKeys.more_times)}</div>
                 )}
             </div>
         </div>
@@ -295,7 +296,7 @@ const DialogDate: React.FC<{
             maxWidth={"xs"}
         >
             <DialogTitle style={{ textAlign: 'center' }}>
-                {type === "personalized" ? "Select the date(s) you want to assign specific hours" : t(getDay(day?.dow) + " availability")}
+                {type === "personalized" ? t(langKeys.selectday) : t(getDay(day?.dow)) + t(langKeys.availability).toLowerCase()}
 
             </DialogTitle>
             <DialogContent>
@@ -312,7 +313,7 @@ const DialogDate: React.FC<{
                     <div style={{ borderTop: '1px solid #e1e1e1', borderBottom: '1px solid #e1e1e1', paddingTop: 16, paddingBottom: 16 }}>
                         <div style={{ marginBottom: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <div style={{ fontWeight: 'bold' }}>
-                                What hours are you available?
+                               {t(langKeys.schedule_availability)}
                             </div>
                             <IconButton
                                 onClick={() => {
@@ -540,7 +541,7 @@ const ScheduleBase: FC<ScheduleInputProps> = ({ notPreviousDays = true, data, se
                         {t((langKeys as Dictionary)[`month_${("" + (dateCurrent.month + 1)).padStart(2, "0")}`])} {dateCurrent.year}
                     </div>
                     <div>
-                        Set your weekly hours
+                        {t(langKeys.set_your_weekly)}
                     </div>
                 </div>
                 <div className={classes.containerButtons}>
@@ -587,14 +588,14 @@ const ScheduleBase: FC<ScheduleInputProps> = ({ notPreviousDays = true, data, se
                     <ListItemIcon color="inherit">
                         <CalendarTodayIcon style={{ width: 16, color: "#7721AD" }} fontSize="small" />
                     </ListItemIcon>
-                    <div style={{ fontSize: 16 }}>Edit date(s)</div>
+                    <div style={{ fontSize: 16 }}>{t(langKeys.edit)}</div>
                 </MenuItem>
                 {["none", "repeat"].includes((daySelected?.type || "none")) && (
                     <MenuItem onClick={() => selectItemDay("repeat")}>
                         <ListItemIcon color="inherit">
                             <RepeatIcon style={{ width: 16, color: "#7721AD" }} fontSize="small" />
                         </ListItemIcon>
-                        <div style={{ fontSize: 16 }}>Edit all {t(getDay(daySelected?.dow))}</div>
+                        <div style={{ fontSize: 16 }}>{t(langKeys.edit_all )}{t(getDay(daySelected?.dow))}</div>
                     </MenuItem>
                 )}
                 {daySelected?.type === "personalized" && (
@@ -602,10 +603,10 @@ const ScheduleBase: FC<ScheduleInputProps> = ({ notPreviousDays = true, data, se
                         <ListItemIcon color="inherit">
                             <RefreshIcon style={{ width: 16, color: "#7721AD" }} fontSize="small" />
                         </ListItemIcon>
-                        <div style={{ fontSize: 16 }}>Reset to weekly hours</div>
+                        <div style={{ fontSize: 16 }}>{t(langKeys.reset_weekly_hours)}</div>
                     </MenuItem>
                 )}
-            </Menu>
+            </Menu> 
             <DialogDate
                 day={daySelected}
                 type={typeSelected}
