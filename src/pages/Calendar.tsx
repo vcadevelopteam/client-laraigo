@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, RichText, ColorInput, AntTabPanel, DateRangePicker } from 'components';
+import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, RichText, ColorInput, AntTabPanel, DateRangePicker, DialogZyx, FieldEditMulti } from 'components';
 import { getDateCleaned, getValuesFromDomain, insCalendar, hours, selCalendar, getMessageTemplateLst, getCommChannelLst, getDateToday, selBookingCalendar } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -167,6 +167,17 @@ const useStyles = makeStyles((theme) => ({
         fontFamily: "dm-sans",
         fontWeight: 400,
         lineHeight: 1.66,
+    },
+    itemBooking: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        padding: 24,
+        backgroundColor: 'white',
+        boxShadow: '0 1px 8px 0 rgb(0 0 0 / 8%)',
+        cursor: 'pointer',
+        '&:hover': {
+            backgroundColor: '#f5f8fa',
+        }
     }
 }));
 
@@ -189,15 +200,100 @@ interface LabelDaysProps {
     labelName: string;
 }
 
+const DialogBooking: React.FC<{
+    setOpenModal: (param: any) => void;
+    openModal: boolean;
+    event: Dictionary;
+    booking: Dictionary | null;
+}> = ({ setOpenModal, openModal, event, booking }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const [waitClose, setWaitClose] = useState(false);
+    const [waitOther, setWaitOther] = useState(false);
+    const changeStatusRes = useSelector(state => state.main.execute);
+
+    const multiData = useSelector(state => state.main.multiData);
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const userType = useSelector(state => state.inbox.userType);
+    const agentSelected = useSelector(state => state.inbox.agentSelected);
+    const closingRes = useSelector(state => state.inbox.triggerCloseTicket);
+    const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm();
+
+    useEffect(() => {
+        if (waitClose) {
+            if (!closingRes.loading && !closingRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_close_ticket) }))
+                setOpenModal(false);
+                dispatch(showBackdrop(false));
+                setWaitClose(false);
+            } else if (closingRes.error) {
+                dispatch(showSnackbar({ show: true, success: false, message: t(closingRes.code || "error_unexpected_error") }))
+                dispatch(showBackdrop(false));
+                setWaitClose(false);
+            }
+        }
+    }, [closingRes, waitClose])
+
+
+    useEffect(() => {
+        if (openModal) {
+            reset({
+                motive: '',
+                observation: ''
+            })
+            register('motive', { validate: (value) => ((value && value.length) || t(langKeys.field_required)) });
+            register('observation');
+        }
+    }, [openModal])
+
+    const onSubmit = handleSubmit((data) => {
+        
+    });
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={"aa"}
+            buttonText1={t(langKeys.cancel)}
+            buttonText2={t(langKeys.save)}
+            handleClickButton1={() => setOpenModal(false)}
+            handleClickButton2={onSubmit}
+            button2Type="submit"
+        >
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.ticket_reason)}
+                    className="col-12"
+                    valueDefault={getValues('motive')}
+                    onChange={(value) => setValue('motive', value ? value.domainvalue : '')}
+                    error={errors?.motive?.message}
+                    data={[]}
+                    optionDesc="domaindesc"
+                    optionValue="domainvalue"
+                />
+                <FieldEditMulti
+                    label={t(langKeys.observation)}
+                    valueDefault={getValues('observation')}
+                    className="col-12"
+                    onChange={(value) => setValue('observation', value)}
+                    maxLength={1024}
+                />
+            </div>
+        </DialogZyx>)
+}
+
 const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = ({ calendarEventID, event }) => {
     const dispatch = useDispatch();
     const [openDatePicker, setOpenDatePicker] = useState(false);
+    const classes = useStyles();
     const mainAux = useSelector(state => state.main.mainAux);
     const [dateRange, setDateRange] = useState<Range>({
         startDate: getDateToday(),
         endDate: new Date(new Date().setDate(getDateToday().getDate() + 7)),
         key: 'selection',
     });
+    const [openDialog, setOpenDialog] = useState(false);
+    const [bookingSelected, setBookingSelected] = useState<Dictionary | null>(null)
 
     const fetchData = () => dispatch(getCollectionAux(selBookingCalendar(
         dateRange.startDate ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10) : "",
@@ -236,7 +332,14 @@ const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = 
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, overflowY: 'auto', height: '100%', marginTop: 16 }}>
                 {mainAux.data.map(x => (
-                    <div key={x.calendarbookingid} style={{ display: 'flex', justifyContent: 'space-between', padding: 24, backgroundColor: 'white', boxShadow: '0 1px 8px 0 rgb(0 0 0 / 8%)', }}>
+                    <div 
+                        key={x.calendarbookingid} 
+                        className={classes.itemBooking}
+                        onClick={() => {
+                            setBookingSelected(x);
+                            setOpenDialog(true);
+                        }}
+                    >
                         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                             <div style={{ backgroundColor: x.color, width: 24, height: 24, borderRadius: 12 }}></div>
                             <div>{x.hourstart.substring(0, 5)} - {x.hourend.substring(0, 5)}</div>
@@ -249,6 +352,12 @@ const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = 
                     </div>
                 ))}
             </div>
+            <DialogBooking
+                booking={bookingSelected}
+                setOpenModal={setOpenDialog}
+                openModal={openDialog}
+                event={event}
+            />
         </div>
     )
 }
@@ -1113,7 +1222,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                 <div style={{ overflowY: 'auto' }}>
                     <AntTabPanel index={2} currentIndex={tabIndex} >
                         <BookingEvents
-                            calendarEventID={row!!.calendareventid}
+                            calendarEventID={row?.calendareventid || 0}
                             event={row!!}
                         />
                     </AntTabPanel>
