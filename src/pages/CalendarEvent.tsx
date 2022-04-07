@@ -172,7 +172,7 @@ const TimeDate: FC<{ time: ITime, isSelected: boolean, setTimeSelected: (p: any)
                     className={classes.itemTimeConfirm}
                     onClick={() => setTimeSelected({ ...time, selected: true, confirm: true })}
                 >
-                    Confirm
+                    {t(langKeys.confirm)}
                 </div>
             )}
         </div>
@@ -246,7 +246,7 @@ const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, dis
                     </div>
                 )}
                 <div>
-                    <div style={{ marginBottom: 8, fontSize: 14, fontWeight: 'bold' }}>Please share anything that will help prepare for our meeting.</div>
+                    <div style={{ marginBottom: 8, fontSize: 14, fontWeight: 'bold' }}> {t(langKeys.prepare_meeting)} </div>
                     <FieldEditMulti
                         size="small"
                         className={classes.colInput}
@@ -264,7 +264,7 @@ const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, dis
                         color="primary"
                         disabled={disabledSubmit}
                     >
-                        Schedule Event
+                        {t(langKeys.schedule_event)}
                     </Button>
 
                 </div>
@@ -416,7 +416,7 @@ export const CalendarEvent: FC = () => {
     if (!event) {
         return (
             <div className={classes.back}>
-                <Typography variant="h5">Ningún evento encontrado</Typography>
+                <Typography variant="h5">{t(langKeys.no_event_found)}</Typography>
             </div>
         )
     }
@@ -425,8 +425,8 @@ export const CalendarEvent: FC = () => {
         return (
             <div className={classes.back}>
                 <div className={classes.containerSuccess}>
-                    <div style={{ fontWeight: 'bold', fontSize: 20 }}>Confirmed</div>
-                    <div style={{ marginTop: 16, textAlign: 'center' }} >You have successfully scheduled an appointment</div>
+                    <div style={{ fontWeight: 'bold', fontSize: 20 }}>{t(langKeys.confirmed)}</div>
+                    <div style={{ marginTop: 16, textAlign: 'center' }} >{t(langKeys.successfully_scheduled)}</div>
                     <div style={{ width: '70%', height: 1, backgroundColor: '#e1e1e1', marginTop: 24, marginBottom: 24 }}></div>
                     <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 12 }}>
                         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -438,7 +438,7 @@ export const CalendarEvent: FC = () => {
                             {timeSelected?.localstarthour} - {timeSelected?.localendhour}, {t(dayNames[daySelected!!.dow])}, {t(`month_${((daySelected!!.date.getMonth() + 1) + "").padStart(2, "0")}`)} {daySelected?.date.getDate()}, {daySelected?.date.getFullYear()}
                         </div>
                         <div style={{ marginTop: 4, fontWeight: 'bold', textAlign: 'start' }}>
-                            A calendar invitation has been sent to your email address.
+                            {t(langKeys.invitation_email)}
                         </div>
                     </div>
                     <div style={{ width: '70%', height: 1, backgroundColor: '#e1e1e1', marginTop: 24, marginBottom: 24 }}></div>
@@ -479,7 +479,7 @@ export const CalendarEvent: FC = () => {
                     {timeSelected?.confirm && (
                         <div style={{ flex: '0 0 590px' }}>
                             <div style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 16 }}>
-                                Enter details
+                                {t(langKeys.enter_details)} 
                             </div>
                             <FormToSend
                                 event={event!!}
@@ -496,7 +496,7 @@ export const CalendarEvent: FC = () => {
                     {!timeSelected?.confirm && (
                         <>
                             <div style={{ fontWeight: 'bold', fontSize: 18 }}>
-                                Select a Date & Time
+                                {t(langKeys.select_date_time)}
                             </div>
                             <div style={{ display: 'flex', gap: 20, overflowY: 'auto' }}>
                                 <div className={classes.panelCalendar}>
