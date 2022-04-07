@@ -1022,6 +1022,13 @@ const translation: LangKeys = {
     flow: 'Flujo',
     color: 'Color',
     bold: 'Negrita',
+    italic: 'Cursiva',
+    underline: 'Subrayado',
+    heading_one: 'Encabezado uno',
+    heading_two: 'Encabezado dos',
+    block_quote: 'Cita en bloque',
+    numbered_list: 'Lista ordenada',
+    bulleted_list: 'Lista con viñetas',
     show: 'Mostrar',
 
     campaign: 'Campaña',
