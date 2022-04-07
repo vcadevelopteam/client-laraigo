@@ -3,8 +3,8 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, RichText, ColorInput, AntTabPanel, FieldEditArray, IOSSwitch } from 'components';
-import { getDateCleaned,getValuesFromDomain, insCalendar, hours, selCalendar, getMessageTemplateLst, getCommChannelLst } from 'common/helpers';
+import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, RichText, ColorInput, AntTabPanel, DateRangePicker } from 'components';
+import { getDateCleaned, getValuesFromDomain, insCalendar, hours, selCalendar, getMessageTemplateLst, getCommChannelLst, getDateToday, selBookingCalendar } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -12,12 +12,16 @@ import SaveIcon from '@material-ui/icons/Save';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { getCollection, getMultiCollection, execute, resetAllMain } from 'store/main/actions';
+import { getCollection, getMultiCollection, execute, resetAllMain, getCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { Box, Checkbox, FormControl, FormControlLabel, FormGroup, Grid, IconButton, ListItemIcon, Menu, MenuItem, Radio, RadioGroup, Switch, Tabs, TextField } from '@material-ui/core';
+import { Box, Checkbox, FormControl, FormControlLabel, FormGroup, IconButton, ListItemIcon, Menu, MenuItem, Radio, RadioGroup, Switch, Tabs, TextField } from '@material-ui/core';
 import { Range } from 'react-date-range';
-import { DateRangePicker } from 'components';
 import { CalendarIcon, DuplicateIcon } from 'icons';
+
+import {
+    Search as SearchIcon,
+} from '@material-ui/icons';
+
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import DeleteIcon from '@material-ui/icons/Delete';
 import UpdateIcon from '@material-ui/icons/Update';
@@ -27,7 +31,6 @@ import Schedule from 'components/fields/Schedule';
 import AddIcon from '@material-ui/icons/Add';
 
 
-const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'custom'].map(x => ({ key: x }))
 interface RowSelected {
     row: Dictionary | null,
     operation: string
@@ -44,11 +47,11 @@ interface DetailCalendarProps {
 }
 
 type ISchedule = {
-    start:string,
-    end:string,
-    dow:number,
+    start: string,
+    end: string,
+    dow: number,
     status: string,
-    overlap?:number,
+    overlap?: number,
 }
 
 type FormFields = {
@@ -67,11 +70,11 @@ type FormFields = {
     operation: string,
     intervals: ISchedule[],
     variables: any[],
-    durationtype:string,
+    durationtype: string,
     duration: number,
-    timebeforeeventunit:string,
+    timebeforeeventunit: string,
     timebeforeeventduration: number,
-    timeaftereventunit:string,
+    timeaftereventunit: string,
     timeaftereventduration: number,
 }
 
@@ -81,8 +84,8 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2),
         background: '#fff',
     },
-    root:{
-        width:"100%",
+    root: {
+        width: "100%",
     },
     field: {
         margin: theme.spacing(1),
@@ -117,45 +120,45 @@ const useStyles = makeStyles((theme) => ({
         color: 'rgb(143, 146, 161)'
     },
     formControl: {
-      margin: theme.spacing(3),
+        margin: theme.spacing(3),
     },
     icon: {
-      borderRadius: 3,
-      width: 16,
-      height: 16,
-      boxShadow: 'inset 0 0 0 1px rgba(16,22,26,.2), inset 0 -1px 0 rgba(16,22,26,.1)',
-      backgroundColor: '#f5f8fa',
-      backgroundImage: 'linear-gradient(180deg,hsla(0,0%,100%,.8),hsla(0,0%,100%,0))',
-      '$root.Mui-focusVisible &': {
-        outline: '2px auto rgba(19,124,189,.6)',
-        outlineOffset: 2,
-      },
-      'input:hover ~ &': {
-        backgroundColor: '#ebf1f5',
-      },
-      'input:disabled ~ &': {
-        boxShadow: 'none',
-        background: 'rgba(206,217,224,.5)',
-      },
-    },
-    checkedIcon: {
-      backgroundColor: '#137cbd',
-      backgroundImage: 'linear-gradient(180deg,hsla(0,0%,100%,.1),hsla(0,0%,100%,0))',
-      '&:before': {
-        display: 'block',
+        borderRadius: 3,
         width: 16,
         height: 16,
-        backgroundImage:
-          "url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath" +
-          " fill-rule='evenodd' clip-rule='evenodd' d='M12 5c-.28 0-.53.11-.71.29L7 9.59l-2.29-2.3a1.003 " +
-          "1.003 0 00-1.42 1.42l3 3c.18.18.43.29.71.29s.53-.11.71-.29l5-5A1.003 1.003 0 0012 5z' fill='%23fff'/%3E%3C/svg%3E\")",
-        content: '""',
-      },
-      'input:hover ~ &': {
-        backgroundColor: '#106ba3',
-      },
+        boxShadow: 'inset 0 0 0 1px rgba(16,22,26,.2), inset 0 -1px 0 rgba(16,22,26,.1)',
+        backgroundColor: '#f5f8fa',
+        backgroundImage: 'linear-gradient(180deg,hsla(0,0%,100%,.8),hsla(0,0%,100%,0))',
+        '$root.Mui-focusVisible &': {
+            outline: '2px auto rgba(19,124,189,.6)',
+            outlineOffset: 2,
+        },
+        'input:hover ~ &': {
+            backgroundColor: '#ebf1f5',
+        },
+        'input:disabled ~ &': {
+            boxShadow: 'none',
+            background: 'rgba(206,217,224,.5)',
+        },
     },
-    errorclass:{
+    checkedIcon: {
+        backgroundColor: '#137cbd',
+        backgroundImage: 'linear-gradient(180deg,hsla(0,0%,100%,.1),hsla(0,0%,100%,0))',
+        '&:before': {
+            display: 'block',
+            width: 16,
+            height: 16,
+            backgroundImage:
+                "url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath" +
+                " fill-rule='evenodd' clip-rule='evenodd' d='M12 5c-.28 0-.53.11-.71.29L7 9.59l-2.29-2.3a1.003 " +
+                "1.003 0 00-1.42 1.42l3 3c.18.18.43.29.71.29s.53-.11.71-.29l5-5A1.003 1.003 0 0012 5z' fill='%23fff'/%3E%3C/svg%3E\")",
+            content: '""',
+        },
+        'input:hover ~ &': {
+            backgroundColor: '#106ba3',
+        },
+    },
+    errorclass: {
         color: "#f44336",
         margin: 0,
         marginTop: "4px",
@@ -167,18 +170,11 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const dataPeriod: Dictionary = {
-    MINUTE: 'minute',
-    HOUR: 'hour',
-    DAY: 'day',
-    MONTH: 'month'
-};
 const initialRange = {
     startDate: new Date(new Date().setDate(1)),
     endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
     key: 'selection'
 }
-
 interface LabelDaysProps {
     flag: Boolean;
     fieldsIntervals?: any;
@@ -186,175 +182,239 @@ interface LabelDaysProps {
     intervalsAppend: (interval: ISchedule) => void;
     intervalsRemove: (index: number) => void;
     register: any;
-    setValue: (value: any,value2:any) => void;
+    setValue: (value: any, value2: any) => void;
     getValues: (value: any) => any;
-    trigger: (name:any) => any;
+    trigger: (name: any) => any;
     dow: number;
     labelName: string;
 }
 
-const LabelDays: React.FC<LabelDaysProps>=({flag, fieldsIntervals,errors,intervalsAppend,intervalsRemove,register,setValue,dow,labelName,getValues,trigger})=>{
+const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = ({ calendarEventID, event }) => {
+    const dispatch = useDispatch();
+    const [openDatePicker, setOpenDatePicker] = useState(false);
+    const mainAux = useSelector(state => state.main.mainAux);
+    const [dateRange, setDateRange] = useState<Range>({
+        startDate: getDateToday(),
+        endDate: new Date(new Date().setDate(getDateToday().getDate() + 7)),
+        key: 'selection',
+    });
+
+    const fetchData = () => dispatch(getCollectionAux(selBookingCalendar(
+        dateRange.startDate ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10) : "",
+        dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : "",
+        calendarEventID
+    )))
+
+    return (
+        <div style={{ gap: 16, marginTop: 16, overflowY: 'auto' }}>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', backgroundColor: 'white', padding: 16 }}>
+                <DateRangePicker
+                    open={openDatePicker}
+                    setOpen={setOpenDatePicker}
+                    range={dateRange}
+                    onSelect={setDateRange}
+                >
+                    <Button
+                        disabled={mainAux.loading}
+                        style={{ border: '1px solid #bfbfc0', borderRadius: 4, color: 'rgb(143, 146, 161)' }}
+                        startIcon={<CalendarIcon />}
+                        onClick={() => setOpenDatePicker(!openDatePicker)}
+                    >
+                        {getDateCleaned(dateRange.startDate!) + " - " + getDateCleaned(dateRange.endDate!)}
+                    </Button>
+                </DateRangePicker>
+                <Button
+                    disabled={mainAux.loading}
+                    variant="contained"
+                    color="primary"
+                    startIcon={<SearchIcon style={{ color: 'white' }} />}
+                    style={{ backgroundColor: '#55BD84', width: 120 }}
+                    onClick={fetchData}
+                >
+                    <Trans i18nKey={langKeys.search} />
+                </Button>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, overflowY: 'auto', height: '100%', marginTop: 16 }}>
+                {mainAux.data.map(x => (
+                    <div key={x.calendarbookingid} style={{ display: 'flex', justifyContent: 'space-between', padding: 24, backgroundColor: 'white', boxShadow: '0 1px 8px 0 rgb(0 0 0 / 8%)', }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                            <div style={{ backgroundColor: x.color, width: 24, height: 24, borderRadius: 12 }}></div>
+                            <div>{x.hourstart.substring(0, 5)} - {x.hourend.substring(0, 5)}</div>
+                        </div>
+                        <div>
+                            <div>{x.personname}</div>
+                            <div>Evento: {event.name}</div>
+                        </div>
+                        <div></div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    )
+}
+
+const LabelDays: React.FC<LabelDaysProps> = ({ flag, fieldsIntervals, errors, intervalsAppend, intervalsRemove, register, setValue, dow, labelName, getValues, trigger }) => {
     const { t } = useTranslation();
     const classes = useStyles();
-    let hoursvalue=hours.map((x:any)=>(x.value))
+    let hoursvalue = hours.map((x: any) => (x.value))
     console.log(dow)
-    let dowfields = fieldsIntervals?.filter((x:any)=>((x.dow===dow) && (!x.date)))
-    
+    let dowfields = fieldsIntervals?.filter((x: any) => ((x.dow === dow) && (!x.date)))
+
 
     return (
         <>
-        <div style={{display:"grid", gridTemplateColumns: "[first] 100px [line2] 20px [col2] 450px [line3] 20px [col3] 100px [lol] auto [end]", width: "100%" ,minHeight: 50,marginRight:10}}>
-            <div style={{gridColumnStart: "first", margin: "auto",marginLeft: 0,fontWeight:"bold", }}>{labelName}</div>
-            {flag &&
-                <>
-                    {(fieldsIntervals?.filter((x:any)=>((x.dow===dow) && (!x.date))).length)?
-                        (<div style={{ gridColumnStart: "col2", marginLeft: 50,marginTop:5,marginBottom:5, width:"100%" }}>
-                            {fieldsIntervals.map((x:any,i:number) =>{
-                                if (x.dow!==dow) return null
-                                return (
-                                    <div style={{display:"grid", gridTemplateColumns: "[first] 150px [line1] 20px [col2] 150px [other] 20px [line2] 100px [land] auto [end]",margin:0, marginTop: 5}} key={`sun${i}`}>                                
-                                        <>
-                                        <div style={{gridColumnStart: "first"}}>
-                                            <FieldSelect
-                                                fregister={{
-                                                    ...register(`intervals.${i}.start`, {
-                                                        validate: {
-                                                            validate: (value: any) => (value && value.length) || t(langKeys.field_required),
-                                                            timescross: (value: any) => ( getValues(`intervals.${i}.end`)>(value)) || t(langKeys.errorhoursdontmatch),
+            <div style={{ display: "grid", gridTemplateColumns: "[first] 100px [line2] 20px [col2] 450px [line3] 20px [col3] 100px [lol] auto [end]", width: "100%", minHeight: 50, marginRight: 10 }}>
+                <div style={{ gridColumnStart: "first", margin: "auto", marginLeft: 0, fontWeight: "bold", }}>{labelName}</div>
+                {flag &&
+                    <>
+                        {(fieldsIntervals?.filter((x: any) => ((x.dow === dow) && (!x.date))).length) ?
+                            (<div style={{ gridColumnStart: "col2", marginLeft: 50, marginTop: 5, marginBottom: 5, width: "100%" }}>
+                                {fieldsIntervals.map((x: any, i: number) => {
+                                    if (x.dow !== dow) return null
+                                    return (
+                                        <div style={{ display: "grid", gridTemplateColumns: "[first] 150px [line1] 20px [col2] 150px [other] 20px [line2] 100px [land] auto [end]", margin: 0, marginTop: 5 }} key={`sun${i}`}>
+                                            <>
+                                                <div style={{ gridColumnStart: "first" }}>
+                                                    <FieldSelect
+                                                        fregister={{
+                                                            ...register(`intervals.${i}.start`, {
+                                                                validate: {
+                                                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required),
+                                                                    timescross: (value: any) => (getValues(`intervals.${i}.end`) > (value)) || t(langKeys.errorhoursdontmatch),
+                                                                }
+
+                                                            }),
+                                                        }}
+                                                        variant="outlined"
+                                                        className="col-5nomargin"
+                                                        valueDefault={x?.start}
+                                                        error={errors?.intervals?.[i]?.start?.message}
+                                                        style={{ pointerEvents: "auto" }}
+                                                        onChange={(value) => {
+                                                            let overlap = getValues(`intervals.${i}.overlap`)
+                                                            let fieldEnd = getValues(`intervals.${i}.end`)
+                                                            let fieldStart = value?.value
+                                                            if ((overlap + 1)) {
+                                                                setValue(`intervals.${i}.overlap`, -1)
+                                                                setValue(`intervals.${overlap}.overlap`, -1)
+                                                            }
+                                                            const exists = fieldsIntervals.findIndex((y: any, cont: number) => (y.dow === dow) && (cont !== i)
+                                                                && (
+                                                                    ((y.start < fieldEnd) && (y.start > fieldStart)) ||
+                                                                    ((y.end < fieldEnd) && (y.end > fieldStart)) ||
+                                                                    ((fieldEnd < y.end) && (fieldEnd > y.start)) ||
+                                                                    ((fieldStart < y.end) && (fieldStart > y.start)) ||
+                                                                    (y.start === fieldStart) || (y.end === fieldEnd)
+                                                                ));
+                                                            if ((exists + 1)) {
+                                                                setValue(`intervals.${i}.overlap`, exists)
+                                                                setValue(`intervals.${exists}.overlap`, i)
+                                                            }
+                                                            setValue(`intervals.${i}.start`, value?.value)
+                                                            trigger(`intervals.${i}.start`)
+                                                        }}
+                                                        data={hours}
+                                                        optionDesc="desc"
+                                                        optionValue="value"
+                                                    />
+                                                </div>
+                                                <div style={{ gridColumnStart: "col2" }}>
+                                                    <FieldSelect
+                                                        fregister={{
+                                                            ...register(`intervals.${i}.end`, {
+                                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                            }),
+                                                        }}
+                                                        variant="outlined"
+                                                        className="col-5nomargin"
+                                                        valueDefault={x?.end}
+                                                        error={errors?.intervals?.[i]?.end?.message}
+                                                        style={{ pointerEvents: "auto" }}
+                                                        onChange={(value) => {
+                                                            let overlap = getValues(`intervals.${i}.overlap`)
+                                                            let fieldEnd = value?.value
+                                                            let fieldStart = getValues(`intervals.${i}.start`)
+                                                            if ((overlap + 1)) {
+                                                                setValue(`intervals.${i}.overlap`, -1)
+                                                                setValue(`intervals.${overlap}.overlap`, -1)
+                                                            }
+                                                            const exists = fieldsIntervals.findIndex((y: any, cont: number) => (y.dow === dow) && (cont !== i)
+                                                                && (
+                                                                    ((y.start < fieldEnd) && (y.start > fieldStart)) ||
+                                                                    ((y.end < fieldEnd) && (y.end > fieldStart)) ||
+                                                                    ((fieldEnd < y.end) && (fieldEnd > y.start)) ||
+                                                                    ((fieldStart < y.end) && (fieldStart > y.start)) ||
+                                                                    (y.start === fieldStart) || (y.end === fieldEnd)
+                                                                ));
+                                                            if ((exists + 1)) {
+                                                                setValue(`intervals.${exists}.overlap`, i)
+                                                                setValue(`intervals.${i}.overlap`, exists)
+                                                                trigger(`intervals.${exists}.start`)
+                                                            }
+                                                            setValue(`intervals.${i}.end`, value?.value)
+                                                            trigger(`intervals.${i}.start`)
+                                                        }}
+                                                        data={hours}
+                                                        optionDesc="desc"
+                                                        optionValue="value"
+                                                    />
+                                                </div>
+                                                <div style={{ gridColumnStart: "line2", width: "16.6%" }}>
+                                                    <IconButton style={{ pointerEvents: "auto" }} aria-label="delete" onClick={(e) => {
+
+                                                        let overlap = getValues(`intervals.${i}.overlap`)
+                                                        if (overlap != -1) {
+                                                            setValue(`intervals.${overlap}.overlap`, -1)
                                                         }
-                                                        
-                                                    }),
-                                                }}
-                                                variant="outlined"
-                                                className="col-5nomargin"
-                                                valueDefault={x?.start}
-                                                error={errors?.intervals?.[i]?.start?.message}
-                                                style={{pointerEvents: "auto"}}                                                                            
-                                                onChange={(value) => {
-                                                    let overlap= getValues(`intervals.${i}.overlap`)
-                                                    let fieldEnd= getValues(`intervals.${i}.end`)
-                                                    let fieldStart= value?.value
-                                                    if((overlap+1)){
-                                                        setValue(`intervals.${i}.overlap`, -1)
-                                                        setValue(`intervals.${overlap}.overlap`, -1)
-                                                    }
-                                                    const exists = fieldsIntervals.findIndex((y:any,cont:number) => (y.dow === dow) && (cont!==i)
-                                                        && (
-                                                        ((y.start < fieldEnd) && (y.start > fieldStart)) ||
-                                                        ((y.end < fieldEnd) && (y.end > fieldStart)) ||
-                                                        ((fieldEnd < y.end) && (fieldEnd > y.start)) ||
-                                                        ((fieldStart < y.end )&& (fieldStart > y.start)) ||
-                                                        (y.start===fieldStart )|| (y.end===fieldEnd)
-                                                    ));
-                                                    if((exists+1)){
-                                                        setValue(`intervals.${i}.overlap`, exists)
-                                                        setValue(`intervals.${exists}.overlap`, i)
-                                                    }
-                                                    setValue(`intervals.${i}.start`, value?.value)
-                                                    trigger(`intervals.${i}.start`)
-                                                }}
-                                                data={hours}
-                                                optionDesc="desc"
-                                                optionValue="value"
-                                            />                               
+                                                        e.preventDefault();
+                                                        intervalsRemove(i)
+                                                    }}>
+                                                        <DeleteIcon />
+                                                    </IconButton>
+                                                </div>
+                                            </>
+                                            {!!((getValues(`intervals.${i}.overlap`)) + 1) &&
+                                                <p className={classes.errorclass} >{t(langKeys.errorhours)}</p>
+                                            }
                                         </div>
-                                        <div style={{gridColumnStart: "col2"}}>
-                                            <FieldSelect
-                                                fregister={{
-                                                    ...register(`intervals.${i}.end`, {
-                                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                                    }),
-                                                }}
-                                                variant="outlined"
-                                                className="col-5nomargin"
-                                                valueDefault={x?.end}
-                                                error={errors?.intervals?.[i]?.end?.message}
-                                                style={{pointerEvents: "auto"}}                                                                            
-                                                onChange={(value) => {           
-                                                    let overlap= getValues(`intervals.${i}.overlap`)
-                                                    let fieldEnd= value?.value
-                                                    let fieldStart= getValues(`intervals.${i}.start`)
-                                                    if((overlap+1)){
-                                                        setValue(`intervals.${i}.overlap`, -1)
-                                                        setValue(`intervals.${overlap}.overlap`, -1)
-                                                    }
-                                                    const exists = fieldsIntervals.findIndex((y:any,cont:number) => (y.dow === dow) && (cont!==i)
-                                                        && (
-                                                        ((y.start < fieldEnd) && (y.start > fieldStart)) ||
-                                                        ((y.end < fieldEnd) && (y.end > fieldStart)) ||
-                                                        ((fieldEnd < y.end) && (fieldEnd > y.start)) ||
-                                                        ((fieldStart < y.end )&& (fieldStart > y.start)) ||
-                                                        (y.start===fieldStart )|| (y.end===fieldEnd)
-                                                    ));
-                                                    if((exists+1)){
-                                                        setValue(`intervals.${exists}.overlap`, i)
-                                                        setValue(`intervals.${i}.overlap`, exists)
-                                                        trigger(`intervals.${exists}.start`)
-                                                    }                                     
-                                                    setValue(`intervals.${i}.end`, value?.value)
-                                                    trigger(`intervals.${i}.start`)
-                                                }}
-                                                data={hours}
-                                                optionDesc="desc"
-                                                optionValue="value"
-                                            />                                                          
-                                        </div>
-                                        <div style={{ gridColumnStart: "line2",width: "16.6%" }}>
-                                            <IconButton style={{pointerEvents: "auto"}} aria-label="delete" onClick={(e) =>{
-                                                
-                                                let overlap= getValues(`intervals.${i}.overlap`)
-                                                if(overlap!=-1){
-                                                    setValue(`intervals.${overlap}.overlap`, -1)
-                                                }
-                                                e.preventDefault();
-                                                intervalsRemove(i)
-                                                }}>
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </div>
-                                        </>
-                                        {!!((getValues(`intervals.${i}.overlap`))+1) && 
-                                            <p className={classes.errorclass} >{t(langKeys.errorhours)}</p>
-                                        }
-                                    </div>
-                                )
-                            })}
-                        </div>):
-                        <div style={{ gridColumnStart: "col2",display: 'flex', margin: 'auto' }}>
-                            {t(langKeys.notavailable)}
-                        </div>
+                                    )
+                                })}
+                            </div>) :
+                            <div style={{ gridColumnStart: "col2", display: 'flex', margin: 'auto' }}>
+                                {t(langKeys.notavailable)}
+                            </div>
                         }
-                    <div style={{ gridColumnStart: "col3", justifyContent: 'space-between' }}>
-                        <div>
-                            <IconButton 
-                                style={{pointerEvents: "auto", cursor:"pointer"}}
-                                onClick={() => {
-                                    if (dowfields?.length) {
-                                        let indexofnexthour = hoursvalue.indexOf(dowfields[dowfields?.length-1].end)
-                                        let startindex = (indexofnexthour+2)<48?indexofnexthour+2:indexofnexthour-46
-                                        let endindex = (indexofnexthour+4)<48?indexofnexthour+4:indexofnexthour-44
-                                        const exists = fieldsIntervals.findIndex((y:any,cont:number) => (y.dow === dow) && (
-                                                    ((y.start < hoursvalue[endindex]) && (y.start > hoursvalue[startindex])) ||
-                                                    ((y.end < hoursvalue[endindex]) && (y.end > hoursvalue[startindex])) ||
-                                                    ((hoursvalue[endindex] < y.end) && (hoursvalue[endindex] > y.start)) ||
-                                                    ((hoursvalue[startindex] < y.end )&& (hoursvalue[startindex] > y.start)) ||
-                                                    (y.start===hoursvalue[startindex] )|| (y.end===hoursvalue[endindex])
-                                        ));
-                                        intervalsAppend({start:hoursvalue[startindex],end:hoursvalue[endindex],dow:dow, status: "available", overlap: exists})
-                                        trigger(`intervals.${dowfields?.length-1}.start`)
-                                    }else{
-                                        intervalsAppend({start:"09:00:00",end:"17:00:00",dow:dow, status: "available",overlap:-1})
-                                    }
-                                }}
-                            >
-                                <AddIcon /> 
-                            </IconButton>
+                        <div style={{ gridColumnStart: "col3", justifyContent: 'space-between' }}>
+                            <div>
+                                <IconButton
+                                    style={{ pointerEvents: "auto", cursor: "pointer" }}
+                                    onClick={() => {
+                                        if (dowfields?.length) {
+                                            let indexofnexthour = hoursvalue.indexOf(dowfields[dowfields?.length - 1].end)
+                                            let startindex = (indexofnexthour + 2) < 48 ? indexofnexthour + 2 : indexofnexthour - 46
+                                            let endindex = (indexofnexthour + 4) < 48 ? indexofnexthour + 4 : indexofnexthour - 44
+                                            const exists = fieldsIntervals.findIndex((y: any, cont: number) => (y.dow === dow) && (
+                                                ((y.start < hoursvalue[endindex]) && (y.start > hoursvalue[startindex])) ||
+                                                ((y.end < hoursvalue[endindex]) && (y.end > hoursvalue[startindex])) ||
+                                                ((hoursvalue[endindex] < y.end) && (hoursvalue[endindex] > y.start)) ||
+                                                ((hoursvalue[startindex] < y.end) && (hoursvalue[startindex] > y.start)) ||
+                                                (y.start === hoursvalue[startindex]) || (y.end === hoursvalue[endindex])
+                                            ));
+                                            intervalsAppend({ start: hoursvalue[startindex], end: hoursvalue[endindex], dow: dow, status: "available", overlap: exists })
+                                            trigger(`intervals.${dowfields?.length - 1}.start`)
+                                        } else {
+                                            intervalsAppend({ start: "09:00:00", end: "17:00:00", dow: dow, status: "available", overlap: -1 })
+                                        }
+                                    }}
+                                >
+                                    <AddIcon />
+                                </IconButton>
+                            </div>
                         </div>
-                    </div>
-                </>
-            }
-        </div>
-        <div style={{width:"650px", border: "lightgrey 1px solid"}}></div>
+                    </>
+                }
+            </div>
+            <div style={{ width: "650px", border: "lightgrey 1px solid" }}></div>
         </>
     )
 }
@@ -367,14 +427,14 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     const { t } = useTranslation();
     const user = useSelector(state => state.login.validateToken.user);
     const [bodyobject, setBodyobject] = useState<Descendant[]>(row?.description || [{ "type": "paragraph", "children": [{ "text": row?.description || "" }] }])
-    const [color, setColor] = useState(row?.color||"#aa53e0");
+    const [color, setColor] = useState(row?.color || "#aa53e0");
     const [tabIndex, setTabIndex] = useState(0);
-    const [dateinterval, setdateinterval] = useState(row?.daterange||'DAYS');
+    const [dateinterval, setdateinterval] = useState(row?.daterange || 'DAYS');
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
     const dataTemplates = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataChannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
-    const [bodyMessage, setBodyMessage] = useState(row?.messagetemplateid? (dataTemplates.filter(x=>x.id===row.messagetemplateid)[0]?.body||""): "");
+    const [bodyMessage, setBodyMessage] = useState(row?.messagetemplateid ? (dataTemplates.filter(x => x.id === row.messagetemplateid)[0]?.body || "") : "");
     const [generalstate, setgeneralstate] = useState({
         eventcode: row?.code || '',
         duration: row?.timeduration || 0,
@@ -394,28 +454,28 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     });
     const [eventURL, setEventUrl] = useState(new URL(`events/${user?.orgid}/${generalstate.eventcode}`, window.location.origin));
 
-    const handleChange = (event:any) => {
-      setdateinterval(event.target.value);
+    const handleChange = (event: any) => {
+        setdateinterval(event.target.value);
     };
 
-    const handleChangeAvailability = (event:any) => {
+    const handleChangeAvailability = (event: any) => {
         setState({ ...state, [event.target.name]: event.target.checked });
     };
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
 
-    const { control, register, reset, handleSubmit, setValue, getValues, trigger,formState: { errors } } = useForm<FormFields>({
+    const { control, register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm<FormFields>({
         defaultValues: {
             id: row?.calendareventid || 0,
-            eventcode: row?.code||"",
-            eventname: row?.name||"",
-            location: row?.location||"",
+            eventcode: row?.code || "",
+            eventname: row?.name || "",
+            location: row?.location || "",
             mailbody: row?.mailbody || "",
             color: row?.color || "#aa53e0",
             status: row?.status || "ACTIVO",
             notificationtype: row?.notificationtype || "",
             daysintothefuture: row?.daysduration || 0,
-            operation: operation==="DUPLICATE"? "INSERT":operation,
+            operation: operation === "DUPLICATE" ? "INSERT" : operation,
             communicationchannelid: row?.communicationchannelid || 0,
             hsmtemplateid: row?.messagetemplateid || 0,
             hsmtemplatename: row?.hsmtemplatename || "",
@@ -423,13 +483,13 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
             variables: row?.variables || [],
             durationtype: row?.timeunit || "MINUTE",
             duration: row?.timeduration || 0,
-            timebeforeeventunit: row?.timebeforeeventunit|| "MINUTE",
-            timebeforeeventduration: row?.timebeforeeventduration|| 0,
-            timeaftereventunit: row?.timeaftereventunit|| "MINUTE",
-            timeaftereventduration: row?.timeaftereventduration|| 0,
+            timebeforeeventunit: row?.timebeforeeventunit || "MINUTE",
+            timebeforeeventduration: row?.timebeforeeventduration || 0,
+            timeaftereventunit: row?.timeaftereventunit || "MINUTE",
+            timeaftereventduration: row?.timeaftereventduration || 0,
         }
     });
-    
+
 
     const handlerCalendar = (data: ISchedule[]) => {
         setValue('intervals', data);
@@ -441,7 +501,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         name: 'intervals',
     });
 
-    
+
     React.useEffect(() => {
         register('eventcode', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('eventname', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
@@ -451,13 +511,13 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
 
         register('communicationchannelid', { validate: (value) => Boolean(getValues('notificationtype') !== 'HSM' || (value && value > 0)) || String(t(langKeys.field_required)) });
 
-        register('hsmtemplateid', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
+        register('hsmtemplateid', { validate: (value) => Boolean(value && value > 0) || String(t(langKeys.field_required)) });
         register('durationtype', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
-        register('duration', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
+        register('duration', { validate: (value) => Boolean(value && value > 0) || String(t(langKeys.field_required)) });
         register('timebeforeeventunit', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
-        register('timebeforeeventduration', { validate: (value) => Boolean(value && value>=0) || String(t(langKeys.field_required)) });
+        register('timebeforeeventduration', { validate: (value) => Boolean(value && value >= 0) || String(t(langKeys.field_required)) });
         register('timeaftereventunit', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
-        register('timeaftereventduration', { validate: (value) => Boolean(value && value>=0) || String(t(langKeys.field_required)) });
+        register('timeaftereventduration', { validate: (value) => Boolean(value && value >= 0) || String(t(langKeys.field_required)) });
     }, [register]);
 
     const handleColorChange: ColorChangeHandler = (e) => {
@@ -497,18 +557,18 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     }
 
     const onSubmit = handleSubmit((data) => {
-        
-        if(data.intervals.some(x=>(x.overlap||-1)!==-1)){
+
+        if (data.intervals.some(x => (x.overlap || -1) !== -1)) {
             console.log("error overlap")
-        }else{
+        } else {
             console.log(data)
             const date1 = Number(dateRangeCreateDate.startDate);
             const date2 = Number(dateRangeCreateDate.endDate);
             const diffTime = Math.abs(date2 - date1);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             let datatosend = {
                 ...data,
-                description:"",
+                description: "",
                 type: "",
                 code: data.eventcode,
                 name: data.eventname,
@@ -533,13 +593,12 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     });
 
     const arrayBread = [
-        { id: "view-1", name: t(langKeys.calendar)},
+        { id: "view-1", name: t(langKeys.calendar) },
         { id: "view-2", name: t(langKeys.calendar_detail) }
     ];
-    const { sun,mon,tue,wed,thu,fri,sat } = state;
+    const { sun, mon, tue, wed, thu, fri, sat } = state;
     return (
-        <div style={{ width: '100%' }}>
-            <form onSubmit={onSubmit}>
+            <form onSubmit={onSubmit} style={{display: 'flex', flexDirection: 'column', width: '100%'}}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
@@ -558,13 +617,13 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                             variant="contained"
                             color="primary"
                             type="submit"
-                            onClick={() => {console.log(errors)}}
+                            onClick={() => { console.log(errors) }}
                             startIcon={<SaveIcon color="secondary" />}
                             style={{ backgroundColor: "#55BD84" }}>
                             {t(langKeys.save)}
                         </Button>
                     </div>
-                    
+
                 </div>
                 <Tabs
                     value={tabIndex}
@@ -591,12 +650,12 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                     {operation === "EDIT" && <AntTab
                         label={(
                             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                <Trans i18nKey={langKeys.schedule} count={2} />
+                                <Trans i18nKey={langKeys.scheduled_events} count={2} />
                             </div>
                         )}
                     />}
                 </Tabs>
-                
+
                 <AntTabPanel index={0} currentIndex={tabIndex}>
                     <div className={classes.containerDetail}>
                         <div className="row-zyx">
@@ -608,12 +667,12 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                     value={generalstate.eventcode}
                                     error={!!errors?.eventcode?.message}
                                     helperText={errors?.eventcode?.message || null}
-                                    onInput={(e:any)=>{
-                                        let val =  e.target.value.replace(/[^0-9a-zA-Z ]/g, "").replace(/\s+/g, '')
-                                        e.target.value=String(val)
+                                    onInput={(e: any) => {
+                                        let val = e.target.value.replace(/[^0-9a-zA-Z ]/g, "").replace(/\s+/g, '')
+                                        e.target.value = String(val)
                                     }}
                                     onChange={(e) => {
-                                        setgeneralstate({...generalstate, eventcode:e.target.value});
+                                        setgeneralstate({ ...generalstate, eventcode: e.target.value });
                                         setValue('eventcode', e.target.value)
                                     }}
                                     onBlur={(e) => {
@@ -625,7 +684,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                 label={t(langKeys.eventname)}
                                 className="col-6"
                                 valueDefault={getValues('eventname')}
-                                onChange={(value) => {let val = value.trim();setValue('eventname', val)}}
+                                onChange={(value) => { let val = value.trim(); setValue('eventname', val) }}
                                 error={errors?.eventname?.message}
                             />
                         </div>
@@ -670,7 +729,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                 label={t(langKeys.status)}
                                 className="col-6"
                                 valueDefault={row?.status || "ACTIVO"}
-                                onChange={(value) => setValue('status', (value?value.domainvalue:""))}
+                                onChange={(value) => setValue('status', (value ? value.domainvalue : ""))}
                                 error={errors?.status?.message}
                                 data={dataStatus}
                                 uset={true}
@@ -689,10 +748,10 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                     setValue('hsmtemplateid', 0)
                                     setValue('communicationchannelid', 0)
                                     trigger('notificationtype')
-                                    onSelectTemplate({id: 0, name: '', body: ''})
+                                    onSelectTemplate({ id: 0, name: '', body: '' })
                                 }}
                                 error={errors?.notificationtype?.message}
-                                data={[{desc: "HSM",val: "HSM"},{desc: t(langKeys.email),val: "EMAIL"}]}
+                                data={[{ desc: "HSM", val: "HSM" }, { desc: t(langKeys.email), val: "EMAIL" }]}
                                 optionDesc="desc"
                                 optionValue="val"
                             />
@@ -726,59 +785,18 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                 value={bodyMessage}
                             />}
                             {getValues("notificationtype") === 'EMAIL' && <React.Fragment>
-                                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.message)}</Box>
-                                    <div dangerouslySetInnerHTML={{ __html: bodyMessage }} />
-                                </React.Fragment>
+                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.message)}</Box>
+                                <div dangerouslySetInnerHTML={{ __html: bodyMessage }} />
+                            </React.Fragment>
                             }
-                            {/* <Grid className="col-6" item xs={12} sm={12} md={12} lg={12} xl={12} style={{ borderTop: '1px solid #e1e1e1', paddingTop: 8, marginTop: 8 }}>
-                                {fields.map((item: Dictionary, i) => (
-                                    <div key={item.id}>
-                                        <FieldSelect
-                                            key={"var_" + item.id}
-                                            fregister={{
-                                                ...register(`variables.${i}.variable`, {
-                                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                                })
-                                            }}
-                                            className={classes.field}
-                                            label={item.name}
-                                            valueDefault={getValues(`variables.${i}.variable`)}
-                                            onChange={(value) => {
-                                                setValue(`variables.${i}.variable`, value.key)
-                                                trigger(`variables.${i}.variable`)
-                                            }}
-                                            error={errors?.variables?.[i]?.text?.message}
-                                            data={variables}
-                                            uset={true}
-                                            prefixTranslation=""
-                                            optionDesc="key"
-                                            optionValue="key"
-                                        />
-                                        {getValues(`variables.${i}.variable`) === 'custom' &&
-                                            <FieldEditArray
-                                                key={"custom_" + item.id}
-                                                fregister={{
-                                                    ...register(`variables.${i}.text`, {
-                                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                                    })
-                                                }}
-                                                className={classes.field}
-                                                valueDefault={item.value}
-                                                error={errors?.variables?.[i]?.text?.message}
-                                                onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
-                                            />
-                                        }
-                                    </div>
-                                ))}
-                            </Grid> */}
                         </div>
                     </div>
                 </AntTabPanel>
                 <AntTabPanel index={1} currentIndex={tabIndex}>
                     <div className={classes.containerDetail}>
-                        <div style={{display: 'flex', flexWrap: "wrap", gap: 16}} >
+                        <div style={{ display: 'flex', flexWrap: "wrap", gap: 16 }} >
                             <div style={{ flex: 1, minWidth: 250 }}>
-                                <div className="col-12" style={{padding: 5}}>
+                                <div className="col-12" style={{ padding: 5 }}>
                                     <Box fontWeight={500} lineHeight="18px" fontSize={16} mb={1} color="textPrimary">{t(langKeys.duration)}</Box>
                                     <div className="row-zyx" >
                                         <div className="col-6">
@@ -790,12 +808,12 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                                 value={generalstate.duration}
                                                 error={!!errors?.duration?.message}
                                                 helperText={errors?.duration?.message || null}
-                                                onInput={(e:any)=>{
-                                                    let val =  Number(e.target.value.replace(/[^0-9 ]/g, ""))
-                                                    e.target.value=String(val)
+                                                onInput={(e: any) => {
+                                                    let val = Number(e.target.value.replace(/[^0-9 ]/g, ""))
+                                                    e.target.value = String(val)
                                                 }}
                                                 onChange={(e) => {
-                                                    setgeneralstate({...generalstate, duration:Number(e.target.value)});
+                                                    setgeneralstate({ ...generalstate, duration: Number(e.target.value) });
                                                     setValue('duration', Number(e.target.value))
                                                 }}
                                             />
@@ -804,15 +822,15 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                             label={t(langKeys.unitofmeasure)}
                                             className="col-6"
                                             valueDefault={row?.durationtype || "MINUTE"}
-                                            onChange={(value) => setValue('durationtype', (value?.val||""))}
+                                            onChange={(value) => setValue('durationtype', (value?.val || ""))}
                                             error={errors?.durationtype?.message}
-                                            data={[{desc: t(langKeys.minute_plural),val: "MINUTE"},{desc: t(langKeys.hour_plural),val: "HOUR"}]}
+                                            data={[{ desc: t(langKeys.minute_plural), val: "MINUTE" }, { desc: t(langKeys.hour_plural), val: "HOUR" }]}
                                             optionDesc="desc"
                                             optionValue="val"
                                         />
                                     </div>
                                 </div>
-                                <div className="col-12" style={{padding: 5}}>
+                                <div className="col-12" style={{ padding: 5 }}>
                                     <Box fontWeight={500} lineHeight="18px" fontSize={16} mb={1} color="textPrimary">{t(langKeys.settimebeforetheevent)}</Box>
                                     <div className="row-zyx" >
                                         <div className="col-6">
@@ -824,12 +842,12 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                                 value={generalstate.timebeforeeventduration}
                                                 error={!!errors?.timebeforeeventduration?.message}
                                                 helperText={errors?.timebeforeeventduration?.message || null}
-                                                onInput={(e:any)=>{
-                                                    let val =  Number(e.target.value.replace(/[^0-9 ]/g, ""))
-                                                    e.target.value=String(val)
+                                                onInput={(e: any) => {
+                                                    let val = Number(e.target.value.replace(/[^0-9 ]/g, ""))
+                                                    e.target.value = String(val)
                                                 }}
                                                 onChange={(e) => {
-                                                    setgeneralstate({...generalstate, timebeforeeventduration:Number(e.target.value)});
+                                                    setgeneralstate({ ...generalstate, timebeforeeventduration: Number(e.target.value) });
                                                     setValue('timebeforeeventduration', Number(e.target.value))
                                                 }}
                                             />
@@ -838,15 +856,15 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                             label={t(langKeys.unitofmeasure)}
                                             className="col-6"
                                             valueDefault={row?.timebeforeeventunit || "MINUTE"}
-                                            onChange={(value) => setValue('timebeforeeventunit', (value?.val||""))}
+                                            onChange={(value) => setValue('timebeforeeventunit', (value?.val || ""))}
                                             error={errors?.timebeforeeventunit?.message}
-                                            data={[{desc: t(langKeys.minute_plural),val: "MINUTE"},{desc: t(langKeys.hour_plural),val: "HOUR"}]}
+                                            data={[{ desc: t(langKeys.minute_plural), val: "MINUTE" }, { desc: t(langKeys.hour_plural), val: "HOUR" }]}
                                             optionDesc="desc"
                                             optionValue="val"
                                         />
                                     </div>
                                 </div>
-                                <div className="col-12" style={{padding: 5}}>
+                                <div className="col-12" style={{ padding: 5 }}>
                                     <Box fontWeight={500} lineHeight="18px" fontSize={16} mb={1} color="textPrimary">{t(langKeys.settimeaftertheevent)}</Box>
                                     <div className="row-zyx" >
                                         <div className="col-6">
@@ -858,12 +876,12 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                                 value={generalstate.timeaftereventduration}
                                                 error={!!errors?.timeaftereventduration?.message}
                                                 helperText={errors?.timeaftereventduration?.message || null}
-                                                onInput={(e:any)=>{
-                                                    let val =  Number(e.target.value.replace(/[^0-9 ]/g, ""))
-                                                    e.target.value=String(val)
+                                                onInput={(e: any) => {
+                                                    let val = Number(e.target.value.replace(/[^0-9 ]/g, ""))
+                                                    e.target.value = String(val)
                                                 }}
                                                 onChange={(e) => {
-                                                    setgeneralstate({...generalstate, timeaftereventduration:Number(e.target.value)});
+                                                    setgeneralstate({ ...generalstate, timeaftereventduration: Number(e.target.value) });
                                                     setValue('timeaftereventduration', Number(e.target.value))
                                                 }}
                                             />
@@ -872,9 +890,9 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                             label={t(langKeys.unitofmeasure)}
                                             className="col-6"
                                             valueDefault={row?.timeaftereventunit || "MINUTE"}
-                                            onChange={(value) => setValue('timeaftereventunit', (value?.val||""))}
+                                            onChange={(value) => setValue('timeaftereventunit', (value?.val || ""))}
                                             error={errors?.timeaftereventunit?.message}
-                                            data={[{desc: t(langKeys.minute_plural),val: "MINUTE"},{desc: t(langKeys.hour_plural),val: "HOUR"}]}
+                                            data={[{ desc: t(langKeys.minute_plural), val: "MINUTE" }, { desc: t(langKeys.hour_plural), val: "HOUR" }]}
                                             optionDesc="desc"
                                             optionValue="val"
                                         />
@@ -885,7 +903,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                 <React.Fragment>
                                     <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.dateinterval)}</Box>
                                     <RadioGroup aria-label="dateinterval" name="dateinterval1" value={dateinterval} onChange={handleChange}>
-                                        <FormControlLabel value="DAYS" control={<Radio color="primary"/>} label={<div style={{display:"flex", margin: "auto"}}>{dateinterval==="DAYS" && (
+                                        <FormControlLabel value="DAYS" control={<Radio color="primary" />} label={<div style={{ display: "flex", margin: "auto" }}>{dateinterval === "DAYS" && (
                                             <>
                                                 <TextField
                                                     color="primary"
@@ -895,206 +913,212 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                                     value={generalstate.daysintothefuture}
                                                     error={!!errors?.daysintothefuture?.message}
                                                     helperText={errors?.daysintothefuture?.message || null}
-                                                    onInput={(e:any)=>{
-                                                        let val =  Number(e.target.value.replace(/[^0-9 ]/g, ""))
-                                                        e.target.value=String(val)
+                                                    onInput={(e: any) => {
+                                                        let val = Number(e.target.value.replace(/[^0-9 ]/g, ""))
+                                                        e.target.value = String(val)
                                                     }}
-                                                    style={{width: 50}}
+                                                    style={{ width: 50 }}
                                                     onChange={(e) => {
-                                                        setgeneralstate({...generalstate, daysintothefuture:Number(e.target.value)});
+                                                        setgeneralstate({ ...generalstate, daysintothefuture: Number(e.target.value) });
                                                         setValue('daysintothefuture', Number(e.target.value))
                                                     }}
                                                 />
                                             </>
                                         )}
-                                        <div style={{display:"flex", margin: "auto"}}>{t(langKeys.daysintothefuture)}</div></div>} />
-                                        <FormControlLabel value="RANGE" control={<Radio color="primary"/>} label={
-                                        <div style={{display:"flex", margin: "auto"}}>
-                                            <div style={{display:"flex", margin: "auto", paddingRight:8}}>{t(langKeys.withinadaterange)}  </div>
-                                            {dateinterval==="RANGE" && (
-                                                <>
-                                                    <DateRangePicker
-                                                        open={openDateRangeCreateDateModal}
-                                                        setOpen={setOpenDateRangeCreateDateModal}
-                                                        range={dateRangeCreateDate}
-                                                        onSelect={setDateRangeCreateDate}
-                                                    >
-                                                        <Button
-                                                            className={classes.itemDate}
-                                                            startIcon={<CalendarIcon />}
-                                                            onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
+                                            <div style={{ display: "flex", margin: "auto" }}>{t(langKeys.daysintothefuture)}</div></div>} />
+                                        <FormControlLabel value="RANGE" control={<Radio color="primary" />} label={
+                                            <div style={{ display: "flex", margin: "auto" }}>
+                                                <div style={{ display: "flex", margin: "auto", paddingRight: 8 }}>{t(langKeys.withinadaterange)}  </div>
+                                                {dateinterval === "RANGE" && (
+                                                    <>
+                                                        <DateRangePicker
+                                                            open={openDateRangeCreateDateModal}
+                                                            setOpen={setOpenDateRangeCreateDateModal}
+                                                            range={dateRangeCreateDate}
+                                                            onSelect={setDateRangeCreateDate}
                                                         >
-                                                            {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
-                                                        </Button>
-                                                    </DateRangePicker>
-                                                </>
-                                            )}
-                                        </div>} />
-                                        <FormControlLabel value="UNDEFINED" control={<Radio color="primary"/>} label={t(langKeys.indefinetly)} />
+                                                            <Button
+                                                                className={classes.itemDate}
+                                                                startIcon={<CalendarIcon />}
+                                                                onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
+                                                            >
+                                                                {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
+                                                            </Button>
+                                                        </DateRangePicker>
+                                                    </>
+                                                )}
+                                            </div>} />
+                                        <FormControlLabel value="UNDEFINED" control={<Radio color="primary" />} label={t(langKeys.indefinetly)} />
                                     </RadioGroup>
                                 </React.Fragment>
                             </div>
-                            
+
                         </div>
-                        
+
                         <div className="row-zyx">
-                            <div style={{display:"grid", gridTemplateColumns: "[first] 200px [line2] auto [col2] 200px [end]"}} >
-                                <Box style={{gridColumnStart: "first"}} fontWeight={500} lineHeight="18px" fontSize={20} mb={1} color="textPrimary">{t(langKeys.availability)}</Box>
-                                <div style={{gridColumnStart: "col2"}}>
-                                <FormControlLabel
-                                    disabled={getValues("intervals").some(x=>(x.overlap||-1)!==-1)}
-                                    control={<Switch 
-                                        color="primary" checked={generalstate.calendarview} onChange={(e) => {
-                                        setgeneralstate({...generalstate, calendarview: e.target.checked});
-                                    }}  />}
-                                    label={t(langKeys.calendarview)}
-                                />       
+                            <div style={{ display: "grid", gridTemplateColumns: "[first] 200px [line2] auto [col2] 200px [end]" }} >
+                                <Box style={{ gridColumnStart: "first" }} fontWeight={500} lineHeight="18px" fontSize={20} mb={1} color="textPrimary">{t(langKeys.availability)}</Box>
+                                <div style={{ gridColumnStart: "col2" }}>
+                                    <FormControlLabel
+                                        disabled={getValues("intervals").some(x => (x.overlap || -1) !== -1)}
+                                        control={<Switch
+                                            color="primary" checked={generalstate.calendarview} onChange={(e) => {
+                                                setgeneralstate({ ...generalstate, calendarview: e.target.checked });
+                                            }} />}
+                                        label={t(langKeys.calendarview)}
+                                    />
                                 </div>
                             </div>
-                            {!generalstate.calendarview?(
-                            <div>
-                                <FormControl component="fieldset" className={classes.formControl} style={{width:"100%"}}>
-                                    <FormGroup>
-                                    <FormControlLabel
-                                        style={{ pointerEvents: "none" }}
-                                        classes={{label: classes.root}}
-                                        control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={sun} onChange={handleChangeAvailability} name="sun" />}
-                                        label={<LabelDays 
-                                            flag={sun} 
-                                            fieldsIntervals={fieldsIntervals} 
-                                            errors={errors} 
-                                            intervalsAppend={intervalsAppend} 
-                                            intervalsRemove={intervalsRemove} 
-                                            register={register} 
-                                            setValue={setValue} 
-                                            dow={0} 
-                                            labelName={t(langKeys.sunday)}
-                                            getValues={getValues}
-                                            trigger={trigger}
-                                        />} />
-                                    <FormControlLabel
-                                        style={{ pointerEvents: "none" }}
-                                        classes={{label: classes.root}}
-                                        control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={mon} onChange={handleChangeAvailability} name="mon" />}
-                                        label={<LabelDays 
-                                            flag={mon} 
-                                            fieldsIntervals={fieldsIntervals} 
-                                            errors={errors} 
-                                            intervalsAppend={intervalsAppend} 
-                                            intervalsRemove={intervalsRemove} 
-                                            register={register} 
-                                            setValue={setValue} 
-                                            dow={1} 
-                                            labelName={t(langKeys.monday)}
-                                            getValues={getValues}
-                                            trigger={trigger}
-                                        />}
-                                    />
-                                    <FormControlLabel
-                                        style={{ pointerEvents: "none" }}
-                                        classes={{label: classes.root}}
-                                        control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={tue} onChange={handleChangeAvailability} name="tue" />}
-                                        label={<LabelDays 
-                                            flag={tue} 
-                                            fieldsIntervals={fieldsIntervals} 
-                                            errors={errors} 
-                                            intervalsAppend={intervalsAppend} 
-                                            intervalsRemove={intervalsRemove} 
-                                            register={register} 
-                                            setValue={setValue} 
-                                            dow={2} 
-                                            labelName={t(langKeys.tuesday)}
-                                            getValues={getValues}
-                                            trigger={trigger}
-                                        />}
-                                    />
-                                    <FormControlLabel
-                                        style={{ pointerEvents: "none" }}
-                                        classes={{label: classes.root}}
-                                        control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={wed} onChange={handleChangeAvailability} name="wed" />}
-                                        label={<LabelDays 
-                                            flag={wed} 
-                                            fieldsIntervals={fieldsIntervals} 
-                                            errors={errors} 
-                                            intervalsAppend={intervalsAppend} 
-                                            intervalsRemove={intervalsRemove} 
-                                            register={register} 
-                                            setValue={setValue} 
-                                            dow={3} 
-                                            labelName={t(langKeys.wednesday)}
-                                            getValues={getValues}
-                                            trigger={trigger}
-                                        />}
-                                    />
-                                    <FormControlLabel
-                                        style={{ pointerEvents: "none" }}
-                                        classes={{label: classes.root}}
-                                        control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={thu} onChange={handleChangeAvailability} name="thu" />}
-                                        label={<LabelDays 
-                                            flag={thu} 
-                                            fieldsIntervals={fieldsIntervals} 
-                                            errors={errors} 
-                                            intervalsAppend={intervalsAppend} 
-                                            intervalsRemove={intervalsRemove} 
-                                            register={register} 
-                                            setValue={setValue} 
-                                            dow={4} 
-                                            labelName={t(langKeys.thursday)}
-                                            getValues={getValues}
-                                            trigger={trigger}
-                                        />}
-                                    />
-                                    <FormControlLabel
-                                        style={{ pointerEvents: "none" }}
-                                        classes={{label: classes.root}}
-                                        control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={fri} onChange={handleChangeAvailability} name="fri" />}
-                                        label={<LabelDays 
-                                            flag={fri} 
-                                            fieldsIntervals={fieldsIntervals} 
-                                            errors={errors} 
-                                            intervalsAppend={intervalsAppend} 
-                                            intervalsRemove={intervalsRemove} 
-                                            register={register} 
-                                            setValue={setValue} 
-                                            dow={5} 
-                                            labelName={t(langKeys.friday)}
-                                            getValues={getValues}
-                                            trigger={trigger}
-                                        />}
-                                    />
-                                    <FormControlLabel
-                                        style={{ pointerEvents: "none" }}
-                                        classes={{label: classes.root}}
-                                        control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={sat} onChange={handleChangeAvailability} name="sat" />}
-                                        label={<LabelDays 
-                                            flag={sat} 
-                                            fieldsIntervals={fieldsIntervals} 
-                                            errors={errors} 
-                                            intervalsAppend={intervalsAppend} 
-                                            intervalsRemove={intervalsRemove} 
-                                            register={register} 
-                                            setValue={setValue} 
-                                            dow={6} 
-                                            labelName={t(langKeys.saturday)}
-                                            getValues={getValues}
-                                            trigger={trigger}
-                                        />}
-                                    />
-                                    </FormGroup>
-                                </FormControl>
-                            </div>
-                            ):
-                            <Schedule
-                                data={fieldsIntervals} 
-                                setData={handlerCalendar}
-                            />
+                            {!generalstate.calendarview ? (
+                                <div>
+                                    <FormControl component="fieldset" className={classes.formControl} style={{ width: "100%" }}>
+                                        <FormGroup>
+                                            <FormControlLabel
+                                                style={{ pointerEvents: "none" }}
+                                                classes={{ label: classes.root }}
+                                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={sun} onChange={handleChangeAvailability} name="sun" />}
+                                                label={<LabelDays
+                                                    flag={sun}
+                                                    fieldsIntervals={fieldsIntervals}
+                                                    errors={errors}
+                                                    intervalsAppend={intervalsAppend}
+                                                    intervalsRemove={intervalsRemove}
+                                                    register={register}
+                                                    setValue={setValue}
+                                                    dow={0}
+                                                    labelName={t(langKeys.sunday)}
+                                                    getValues={getValues}
+                                                    trigger={trigger}
+                                                />} />
+                                            <FormControlLabel
+                                                style={{ pointerEvents: "none" }}
+                                                classes={{ label: classes.root }}
+                                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={mon} onChange={handleChangeAvailability} name="mon" />}
+                                                label={<LabelDays
+                                                    flag={mon}
+                                                    fieldsIntervals={fieldsIntervals}
+                                                    errors={errors}
+                                                    intervalsAppend={intervalsAppend}
+                                                    intervalsRemove={intervalsRemove}
+                                                    register={register}
+                                                    setValue={setValue}
+                                                    dow={1}
+                                                    labelName={t(langKeys.monday)}
+                                                    getValues={getValues}
+                                                    trigger={trigger}
+                                                />}
+                                            />
+                                            <FormControlLabel
+                                                style={{ pointerEvents: "none" }}
+                                                classes={{ label: classes.root }}
+                                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={tue} onChange={handleChangeAvailability} name="tue" />}
+                                                label={<LabelDays
+                                                    flag={tue}
+                                                    fieldsIntervals={fieldsIntervals}
+                                                    errors={errors}
+                                                    intervalsAppend={intervalsAppend}
+                                                    intervalsRemove={intervalsRemove}
+                                                    register={register}
+                                                    setValue={setValue}
+                                                    dow={2}
+                                                    labelName={t(langKeys.tuesday)}
+                                                    getValues={getValues}
+                                                    trigger={trigger}
+                                                />}
+                                            />
+                                            <FormControlLabel
+                                                style={{ pointerEvents: "none" }}
+                                                classes={{ label: classes.root }}
+                                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={wed} onChange={handleChangeAvailability} name="wed" />}
+                                                label={<LabelDays
+                                                    flag={wed}
+                                                    fieldsIntervals={fieldsIntervals}
+                                                    errors={errors}
+                                                    intervalsAppend={intervalsAppend}
+                                                    intervalsRemove={intervalsRemove}
+                                                    register={register}
+                                                    setValue={setValue}
+                                                    dow={3}
+                                                    labelName={t(langKeys.wednesday)}
+                                                    getValues={getValues}
+                                                    trigger={trigger}
+                                                />}
+                                            />
+                                            <FormControlLabel
+                                                style={{ pointerEvents: "none" }}
+                                                classes={{ label: classes.root }}
+                                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={thu} onChange={handleChangeAvailability} name="thu" />}
+                                                label={<LabelDays
+                                                    flag={thu}
+                                                    fieldsIntervals={fieldsIntervals}
+                                                    errors={errors}
+                                                    intervalsAppend={intervalsAppend}
+                                                    intervalsRemove={intervalsRemove}
+                                                    register={register}
+                                                    setValue={setValue}
+                                                    dow={4}
+                                                    labelName={t(langKeys.thursday)}
+                                                    getValues={getValues}
+                                                    trigger={trigger}
+                                                />}
+                                            />
+                                            <FormControlLabel
+                                                style={{ pointerEvents: "none" }}
+                                                classes={{ label: classes.root }}
+                                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={fri} onChange={handleChangeAvailability} name="fri" />}
+                                                label={<LabelDays
+                                                    flag={fri}
+                                                    fieldsIntervals={fieldsIntervals}
+                                                    errors={errors}
+                                                    intervalsAppend={intervalsAppend}
+                                                    intervalsRemove={intervalsRemove}
+                                                    register={register}
+                                                    setValue={setValue}
+                                                    dow={5}
+                                                    labelName={t(langKeys.friday)}
+                                                    getValues={getValues}
+                                                    trigger={trigger}
+                                                />}
+                                            />
+                                            <FormControlLabel
+                                                style={{ pointerEvents: "none" }}
+                                                classes={{ label: classes.root }}
+                                                control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={sat} onChange={handleChangeAvailability} name="sat" />}
+                                                label={<LabelDays
+                                                    flag={sat}
+                                                    fieldsIntervals={fieldsIntervals}
+                                                    errors={errors}
+                                                    intervalsAppend={intervalsAppend}
+                                                    intervalsRemove={intervalsRemove}
+                                                    register={register}
+                                                    setValue={setValue}
+                                                    dow={6}
+                                                    labelName={t(langKeys.saturday)}
+                                                    getValues={getValues}
+                                                    trigger={trigger}
+                                                />}
+                                            />
+                                        </FormGroup>
+                                    </FormControl>
+                                </div>
+                            ) :
+                                <Schedule
+                                    data={fieldsIntervals}
+                                    setData={handlerCalendar}
+                                />
                             }
                         </div>
                     </div>
                 </AntTabPanel>
-                
+                <div style={{ overflowY: 'auto' }}>
+                    <AntTabPanel index={2} currentIndex={tabIndex} >
+                        <BookingEvents
+                            calendarEventID={row!!.calendareventid}
+                            event={row!!}
+                        />
+                    </AntTabPanel>
+                </div>
             </form>
-        </div>
     );
 }
 
@@ -1221,7 +1245,7 @@ const Calendar: FC = () => {
             callback
         }))
     }
-    
+
     const columns = React.useMemo(
         () => [
             {
@@ -1240,10 +1264,10 @@ const Calendar: FC = () => {
                             onDuplicate={() => {
                                 handleDuplicate(row);
                             }}
-                            />
-                            )
-                        }
-                    },
+                        />
+                    )
+                }
+            },
             {
                 Header: t(langKeys.code),
                 accessor: 'code',
@@ -1311,8 +1335,6 @@ const Calendar: FC = () => {
         }
     }, [executeResult, waitSave])
 
-    
-
     useEffect(() => {
         if (waitDuplicate) {
             if (!executeResult.loading && !executeResult.error) {
@@ -1331,7 +1353,7 @@ const Calendar: FC = () => {
 
     if (viewSelected === "view-1") {
         return (
-            <div style={{width:"100%"}}>
+            <div style={{ width: "100%" }}>
                 <TableZyx
                     onClickRow={handleEdit}
                     columns={columns}

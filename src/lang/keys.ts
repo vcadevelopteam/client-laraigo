@@ -3458,6 +3458,7 @@ export const langKeys = {
     confirmation_payment: 'confirmation_payment',
     error_card_nofavorite: 'error_card_nofavorite',
     automaticpayment: 'automaticpayment',
+    scheduled_events: 'scheduled_events',
 };
 
 export type LangKeys = typeof langKeys;

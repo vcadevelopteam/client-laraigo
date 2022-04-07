@@ -2801,6 +2801,16 @@ export const selCalendar = (id: number = 0) => ({
         all: id === 0,
     },
 });
+export const selBookingCalendar = (startdate: string, enddate: string, calendareventid: number) => ({
+    method: "UFN_CALENDARBOOKING_REPORT",
+    key: "UFN_CALENDARBOOKING_REPORT",
+    parameters: {
+        startdate,
+        enddate,
+        calendareventid,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    },
+});
 
 export const insCalendar = ({
     id = 0, description, status, type,

@@ -3479,6 +3479,7 @@ const translation: LangKeys = {
     confirmation_payment: 'The selected information will be used to proceed with the payment ¿Do you wish to continue?',
     error_card_nofavorite: 'You need at least one card selected as preferred',
     automaticpayment: 'Automatic Payment',
+    scheduled_events: 'Scheduled events',
 };
 
 const enResource: ResourceLanguage = {
