@@ -42,9 +42,9 @@ interface Items {
 }
 
 const months = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "set", "oct", "nov", "dic"]
-const monthColor = ["#c51314", "#a255de", "#5fbeeb", "#ffffff", "#2a770b", "#cb7ec6", "#ff0100", "#5cea22", "#00076b", "#ff01c0", "#ffcc00", "#5372ff"]
+const monthColor=["#c51314","#a255de","#5fbeeb","#ffffff","#2a770b","#cb7ec6","#ff0100", "#5cea22", "#00076b", "#ff01c0", "#ffcc00", "#5372ff"]
 
-const colors = ["#8884d8", "#82ca9d", "#d32248", "#1dc1fa", "#2b5ef4", "#7be2aa", "#c58725", "#692f32", "#8f97b8", "#57be99"]
+const colors=["#8884d8", "#82ca9d", "#d32248", "#1dc1fa", "#2b5ef4", "#7be2aa", "#c58725", "#692f32","#8f97b8", "#57be99"]
 
 const useDashboardLayoutStyles = makeStyles(theme => ({
     root: {
@@ -72,7 +72,7 @@ const useDashboardLayoutStyles = makeStyles(theme => ({
     },
 }));
 
-const format = (date: Date) => date.toISOString().split('T')[0];
+const format = (date: Date) => new Date(date.setHours(10)).toISOString().split('T')[0];
 
 const DashboardLayout: FC = () => {
     const classes = useDashboardLayoutStyles();
@@ -394,43 +394,42 @@ const DashboardLayout: FC = () => {
             // isResizable={canLayoutChange && !dashboardtemplate.loading && !dashboard.loading}
             >
                 {layout.layout.map(e => {
-                    return (
-                        <div key={e.i}>
-                            {e.i in layout.detail ? (
-                                <LayoutItem
-                                    layoutKey={e.i}
-                                    title={getChartTitle(e.i)}
-                                    data={dashboard.value?.[e.i]?.data}
-                                    alldata={dashboard.value?.[e.i]}
-                                    columns={dashboard.value?.[e.i]?.columns}
-                                    dataorigin={dashboard.value?.[e.i]?.dataorigin}
-                                    type={dashboard.value?.[e.i]?.contentType === 'report' ? layout.detail[e.i]!.graph : 'kpi'}
-                                    groupment={layout.detail[e.i]?.grouping}
-                                    detail={layout.detail}
-                                    onDetailChange={(d, t) => onDetailChange(d, t, e.i)}
-                                    dateRange={dateRange}
-                                    onModalOpenhasChanged={v => { }}
-                                    error={dashboard.value?.[e.i]?.error}
-                                    errorcode={dashboard.value?.[e.i]?.errorcode}
-                                />
-                            ) : (
-                                <NewLayoutItem
-                                    layoutKey={e.i}
-                                    edit={false}
-                                    templates={reportTemplates.data as ReportTemplate[]}
-                                    kpis={[]}
-                                    loading={reportTemplates.loading}
-                                    register={register}
-                                    unregister={unregister}
-                                    getValues={getValues}
-                                    setValue={setValue}
-                                    errors={errors}
-                                    onDelete={() => deleteItemOnClick(e.i)}
-                                />
-                            )}
-                        </div>
-                    )
-                })}
+                    return(
+                    <div key={e.i}>
+                        {e.i in layout.detail ? (
+                            <LayoutItem
+                                layoutKey={e.i}
+                                title={getChartTitle(e.i)}
+                                data={dashboard.value?.[e.i]?.data}
+                                alldata={dashboard.value?.[e.i]}
+                                columns={dashboard.value?.[e.i]?.columns}
+                                dataorigin={dashboard.value?.[e.i]?.dataorigin}
+                                type={dashboard.value?.[e.i]?.contentType === 'report' ? layout.detail[e.i]!.graph : 'kpi'}
+                                groupment={layout.detail[e.i]?.grouping}
+                                detail={layout.detail}
+                                onDetailChange={(d, t) => onDetailChange(d, t, e.i)}
+                                dateRange={dateRange}
+                                onModalOpenhasChanged={v => {}}
+                                error={dashboard.value?.[e.i]?.error}
+                                errorcode={dashboard.value?.[e.i]?.errorcode}
+                            />
+                        ) : (
+                            <NewLayoutItem
+                                layoutKey={e.i}
+                                edit={false}
+                                templates={reportTemplates.data as ReportTemplate[]}
+                                kpis={[]}
+                                loading={reportTemplates.loading}
+                                register={register}
+                                unregister={unregister}
+                                getValues={getValues}
+                                setValue={setValue}
+                                errors={errors}
+                                onDelete={() => deleteItemOnClick(e.i)}
+                            />
+                        )}
+                    </div>
+                )})}
             </ReactGridLayout>
         </Box>
     );
@@ -543,7 +542,7 @@ const LayoutItem: FC<LayoutItemProps> = ({
     alldata,
     onDetailChange,
     onModalOpenhasChanged,
-}) => {
+}) => {    
     const classes = useLayoutItemStyles();
     const { t } = useTranslation();
     const dataGraph = useMemo<ChartData[] | KpiData>(() => {
@@ -588,7 +587,7 @@ const LayoutItem: FC<LayoutItemProps> = ({
             return `${t(langKeys.percentage)}: ${v.toFixed(2)}%`;
         }
 
-        return `${t(langKeys.quantity)}: ${v}\n${t(langKeys.percentage)}: ${(v * 100 / tot).toFixed(2)}%`;
+        return `${t(langKeys.quantity)}: ${v}\n${t(langKeys.percentage)}: ${(v*100/tot).toFixed(2)}%`;
     }
 
     const renderGraph = useCallback(() => {
@@ -731,46 +730,57 @@ interface IData {
 interface LayoutBarProps extends Omit<ResponsiveContainerProps, 'children'> {
     data: IData[];
     tickFormatter?: (value: string, index: number) => string;
-    tooltipFormatter?: (value: any, tot?: any) => string;
+    tooltipFormatter?: (value: any, tot?:any) => string;
     alldata?: any;
     grouping?: string;
 }
 
-const LayoutBar: FC<LayoutBarProps> = ({ data, alldata, tickFormatter, tooltipFormatter, grouping, ...props }) => {
+const LayoutBar: FC<LayoutBarProps> = ({ data,alldata, tickFormatter, tooltipFormatter,grouping, ...props }) => {
     const { t } = useTranslation();
-    let total = alldata?.total;
-    let modifieddata = data;
-    let keys: any[] = []
-    let reversed = false
-    if (alldata?.interval) {
-        reversed = true
-        modifieddata = data.map(x => {
+    let total=alldata?.total;
+    let modifieddata=data;
+    let keys: any[]=[]
+    let reversed=false
+    if(alldata?.interval){
+        reversed=true
+        modifieddata=data.map(x=>{
             const localkeys = Object.keys(x.quantity)
-            localkeys.forEach((y) => {
-                if (!keys.includes(y)) {
+            localkeys.forEach((y)=>{
+                if(!keys.includes(y)){
                     keys.push(y)
                 }
             })
-            return ({ ...Object(x.quantity), label: `${t(alldata?.interval)} ${x.label.replace(alldata?.interval, "")}` })
+            if(alldata?.interval==="month"){
+                return ({...Object(x.quantity),label:t("full" + months[Number(x.label.split("-")[1])-1]) + " " + x.label.split("-")[0].replace("month",``)})
+            }else{
+                return ({...Object(x.quantity),label:`${t(alldata?.interval)} ${x.label.replace(alldata?.interval,"")}`})
+            }
         })
-    } else {
-        let listlabels = data.map(x => x.label)[0]
-        if (listlabels.includes("-")) {
-            reversed = true
-            modifieddata = data.map(x => {
-                let newlabel = x.label.replace("day", "")
-                let month = newlabel.slice(0, newlabel.indexOf("-"))
-                newlabel = newlabel.replace(`${month}-`, `${t(months[Number(month) - 1])} `)
-                return ({ ...x, label: newlabel, color: monthColor[Number(month) - 1] })
-            })
+    }else{
+        let listlabels= data.map(x=>x.label)[0]
+        if (!!listlabels) {
+            if (listlabels.includes("-")) {
+                reversed=true
+                modifieddata=data.map(x=>{
+                    let newlabel = x.label.replace("day","")
+                    let month = newlabel.slice(0,newlabel.indexOf("-"))
+                    newlabel = newlabel.replace(`${month}-`, `${t(months[Number(month)-1])} `)
+                    return ({...x,label:newlabel, color:monthColor[Number(month)-1]})
+                })
+            }
+            if(listlabels.includes("week")){
+                reversed=true
+                modifieddata=data.map(x=>({...x,label:x.label.replace("month",`${t("month")} `).replace("week",`${t("week")} `)}))
+            }
+            if(listlabels.includes("month")){
+                reversed=true
+                modifieddata=data.map(x=>({...x,label:t("full" + months[Number(x.label.split("-")[1])-1]) + " " + x.label.split("-")[0].replace("month",``)}))
+            }
+    
         }
-        if (listlabels.includes("month") || listlabels.includes("week")) {
-            reversed = true
-            modifieddata = data.map(x => ({ ...x, label: x.label.replace("month", `${t("month")} `).replace("week", `${t("week")} `) }))
-        }
-
+        
     }
-
+    
     return (
         <ResponsiveContainer width={"100%"} {...props}>
             <BarChart data={modifieddata} margin={{ top: 20, right: 10, bottom: 5, left: 10 }}>
@@ -784,63 +794,62 @@ const LayoutBar: FC<LayoutBarProps> = ({ data, alldata, tickFormatter, tooltipFo
                     height={160}
                     dy={5}
                     dx={-5}
-                    domain={["", ""]}
+                    domain={["",""]}
                 />
-                <YAxis tickFormatter={tickFormatter} padding={{ top: 10 }} />
-                {alldata?.interval ? (
+                <YAxis tickFormatter={tickFormatter} padding={{ top: 10 }}/>
+                {alldata?.interval?(
                     <>
-
+                        
                         <ChartTooltip content={({ active, payload, label }) => {
-                            let partialtotal = 0;
-                            if (active && payload && payload.length) {
-                                let partialtotal = payload.reduce((acc, x) => acc + Number(x.value), 0);
-                                return (
-                                    <Card key={`${label}-${payload[0].value}`} style={{ padding: '0.85em' }}>
-                                        {label && <label>{label}</label>}
-                                        {label && <br />}
-                                        {payload.map((x: any) => {
-                                            let value = x.payload[x?.dataKey]
-                                            if (grouping === "percentage") {
-                                                if (value) {
-                                                    return (
-                                                        <>
-                                                            <span key={`${label}-${x.dataKey}-${value}`} style={{ color: x.color, whiteSpace: "break-spaces" }}>
-                                                                {`${x.dataKey}: ${value}%`}
-                                                            </span>
-                                                            <br />
-                                                        </>
-                                                    )
+                                if (active && payload && payload.length) {
+                                    let partialtotal=payload.reduce((acc,x)=>acc+Number(x.value),0);
+                                    return (
+                                        <Card key={`${label}-${payload[0].value}`} style={{ padding: '0.85em' }}>
+                                            {label && <label>{label}</label>}
+                                            {label && <br />}
+                                            {payload.map((x:any)=>{
+                                                let value = x.payload[x?.dataKey]
+                                                if(grouping==="percentage"){
+                                                    if(value){
+                                                        return (
+                                                            <>
+                                                                <span key={`${label}-${x.dataKey}-${value}`} style={{ color: x.color, whiteSpace: "break-spaces" }}>
+                                                                    {`${x.dataKey}: ${value}%`}
+                                                                </span>
+                                                                <br/>
+                                                            </>
+                                                        )
+                                                    }
+                                                }else{
+                                                    if(value){
+                                                        return (
+                                                            <>
+                                                                <span key={`${label}-${x.dataKey}-${value}`} style={{ color: x.color, whiteSpace: "break-spaces" }}>
+                                                                    {`${x.dataKey}: ${value} / ${(value*100/partialtotal).toFixed(2)}%` }
+                                                                </span>
+                                                                <br/>
+                                                            </>
+                                                        )
+                                                    }
                                                 }
-                                            } else {
-                                                if (value) {
-                                                    return (
-                                                        <>
-                                                            <span key={`${label}-${x.dataKey}-${value}`} style={{ color: x.color, whiteSpace: "break-spaces" }}>
-                                                                {`${x.dataKey}: ${value} / ${(value * 100 / partialtotal).toFixed(2)}%`}
-                                                            </span>
-                                                            <br />
-                                                        </>
-                                                    )
-                                                }
+                                                return null
+                                            })}
+                                            {grouping!=="percentage" && 
+                                                <>
+                                                    <span style={{ whiteSpace: "break-spaces" }}>
+                                                        {`${t(langKeys.percentage)}: ${(partialtotal*100/total).toFixed(2)}%` }
+                                                    </span>
+                                                    <br/>
+                                                </>
                                             }
-                                            return null
-                                        })}
-                                        {grouping !== "percentage" &&
-                                            <>
-                                                <span style={{ whiteSpace: "break-spaces" }}>
-                                                    {`${t(langKeys.percentage)}: ${(partialtotal * 100 / total).toFixed(2)}%`}
-                                                </span>
-                                                <br />
-                                            </>
-                                        }
-                                    </Card>
-                                );
-                            }
+                                        </Card>
+                                    );
+                                }
 
-                            return null;
-                        }}
+                                return null;
+                            }}
                         />
-                        {keys.map((x, i) => (
+                        {keys.map((x,i)=>(
                             <Bar
                                 isAnimationActive={false}
                                 dataKey={x}
@@ -853,45 +862,45 @@ const LayoutBar: FC<LayoutBarProps> = ({ data, alldata, tickFormatter, tooltipFo
                             </Bar>
                         ))}
                     </>
-                ) :
+                ):
+                
+                ( 
+                    <>
+                        <ChartTooltip
+                            content={({ active, payload, label }) => {
+                                if (active && payload && payload.length) {
+                                    const { value } = payload[0];
+                                    return (
+                                        <Card key={`${label}-${value}`} style={{ padding: '0.85em' }}>
+                                            {label && <label>{label}</label>}
+                                            {label && <br />}
+                                            <span style={{ color: "#8884d8", whiteSpace: "break-spaces" }}>
+                                                {
+                                                    tooltipFormatter?.(value,total) ||
+                                                    `quantity: ${value}`
+                                                }
+                                            </span>
+                                        </Card>
+                                    );
+                                }
 
-                    (
-                        <>
-                            <ChartTooltip
-                                content={({ active, payload, label }) => {
-                                    if (active && payload && payload.length) {
-                                        const { value } = payload[0];
-                                        return (
-                                            <Card key={`${label}-${value}`} style={{ padding: '0.85em' }}>
-                                                {label && <label>{label}</label>}
-                                                {label && <br />}
-                                                <span style={{ color: "#8884d8", whiteSpace: "break-spaces" }}>
-                                                    {
-                                                        tooltipFormatter?.(value, total) ||
-                                                        `quantity: ${value}`
-                                                    }
-                                                </span>
-                                            </Card>
-                                        );
-                                    }
-
-                                    return null;
-                                }}
-                            />
-                            <Bar
-                                isAnimationActive={false}
-                                dataKey="quantity"
-                                fill="#8884d8"
-                                textAnchor="end"
-                                type="monotone"
-                            >
-                                {modifieddata.map((entry: any, index: number) => (
-                                    <Cell key={`cell-${index}`} fill={entry?.color || "#8884d8"} />
-                                ))}
-                                <LabelList dataKey="quantity" position="top" fill="#000" />
-                            </Bar>
-                        </>
-                    )
+                                return null;
+                            }}
+                        />
+                        <Bar
+                            isAnimationActive={false}
+                            dataKey="quantity"
+                            fill="#8884d8"
+                            textAnchor="end"
+                            type="monotone"
+                        >
+                            {modifieddata.map((entry: any, index: number) => (
+                                <Cell key={`cell-${index}`} fill={entry?.color||"#8884d8"} />
+                            ))}
+                            <LabelList dataKey="quantity" position="top" fill="#000" />
+                        </Bar>
+                    </>
+                )
                 }
             </BarChart>
         </ResponsiveContainer>
@@ -901,46 +910,68 @@ const LayoutBar: FC<LayoutBarProps> = ({ data, alldata, tickFormatter, tooltipFo
 interface LayoutLineProps extends Omit<ResponsiveContainerProps, 'children'> {
     data: IData[];
     tickFormatter?: (value: string, index: number) => string;
-    tooltipFormatter?: (value: any, total?: any) => string;
-    alldata?: any;
+    tooltipFormatter?: (value: any, total?:any) => string;
+    alldata?:any;
     grouping?: string
 }
 
-const LayoutLine: FC<LayoutLineProps> = ({ data, alldata, tickFormatter, tooltipFormatter, grouping, ...props }) => {
+const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipFormatter,grouping, ...props }) => {
     const { t } = useTranslation();
-    let total = alldata?.total;
-    let modifieddata = data;
-    let keys: any[] = []
-    let reversed = false
-    if (alldata?.interval) {
-        reversed = true
-        data.forEach(x => {
+    let total=alldata?.total;
+    let modifieddata=data;
+    let keys: any[]=[]
+    let reversed=false
+    if(alldata?.interval){
+        reversed=true
+        data.forEach(x=>{
             const localkeys = Object.keys(x.quantity)
-            localkeys.forEach((y: string) => {
-                if (!keys.includes(y)) {
+            localkeys.forEach((y:string)=>{
+                if(!keys.includes(y)){
                     keys.push(y)
                 }
             })
         })
-        let itemmodel = keys.reduce((acc, x) => { return { ...acc, [x]: 0 } }, {})
-        modifieddata = data.map(x => {
-
-            return ({ ...itemmodel, ...Object(x.quantity), label: `${t(alldata?.interval)} ${x.label.replace(alldata?.interval, "")}` })
-        })
-    } else {
-        let listlabels = data.map(x => x.label)[0]
-        if (listlabels.includes("day") || listlabels.includes("month") || listlabels.includes("week")) {
-            reversed = true
-            modifieddata = data.map(x => ({ ...x, label: x.label.replace("day", `${t("day")} `).replace("month", `${t("month")} `).replace("week", `${t("week")} `) }))
+        let itemmodel = keys.reduce((acc,x)=>{return {...acc,[x]:0}},{})
+        console.log(alldata?.interval)
+        if(alldata?.interval==="month"){
+            
+            modifieddata=data.map(x=>{
+                
+                return ({...itemmodel,...Object(x.quantity),label:t("full" + months[Number(x.label.split("-")[1])-1]) + " " + x.label.split("-")[0].replace("month",``)})
+            })
+        }else{
+            modifieddata=data.map(x=>{
+    
+                return ({...itemmodel,...Object(x.quantity),label:`${t(alldata?.interval)} ${x.label.replace(alldata?.interval,"")}`})
+            })
         }
-
+    }else{
+        let listlabels= data.map(x=>x.label)[0]
+        if (listlabels.includes("-")) {
+            reversed=true
+            modifieddata=data.map(x=>{
+                let newlabel = x.label.replace("day","")
+                let month = newlabel.slice(0,newlabel.indexOf("-"))
+                newlabel = newlabel.replace(`${month}-`, `${t(months[Number(month)-1])} `)
+                return ({...x,label:newlabel, color:monthColor[Number(month)-1]})
+            })
+        }
+        if(listlabels.includes("week")){
+            reversed=true
+            modifieddata=data.map(x=>({...x,label:x.label.replace("week",`${t("week")} `)}))
+        }
+        if(listlabels.includes("month")){
+            reversed=true
+            modifieddata=data.map(x=>({...x,label:t("full" + months[Number(x.label.split("-")[1])-1]) + " " + x.label.split("-")[0].replace("month",``)}))
+        }
+        
     }
     return (
         <ResponsiveContainer {...props}>
             <LineChart data={modifieddata} margin={{ top: 20, right: 10, bottom: 5, left: 10 }}>
                 <CartesianGrid stroke="#ccc" />
                 <XAxis
-                    domain={["", ""]}
+                    domain={["",""]}
                     reversed={reversed}
                     dataKey="label"
                     style={{ fontSize: '0.8em' }}
@@ -952,90 +983,98 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, alldata, tickFormatter, tooltip
                     dx={-5}
                 />
                 <YAxis tickFormatter={tickFormatter} />
-
-                {alldata?.interval ? (
+                
+                {alldata?.interval?(
                     <>
                         <ChartTooltip content={({ active, payload, label }) => {
                             if (active && payload && payload.length) {
-                                let partialtotal = payload.reduce((acc, x) => acc + Number(x.value), 0);
-                                return (
-                                    <Card key={`${label}-${payload[0].value}`} style={{ padding: '0.85em' }}>
-                                        {label && <label>{label}</label>}
-                                        {label && <br />}
-                                        {payload.map((x: any) => {
-                                            let value = x.payload[x?.dataKey]
-                                            if (grouping === "percentage") {
-                                                if (value) {
-                                                    return (
-                                                        <>
-                                                            <span key={`${label}-${x.dataKey}-${value}`} style={{ color: x.color, whiteSpace: "break-spaces" }}>
-                                                                {`${x.dataKey}: ${value}%`}
-                                                            </span>
-                                                            <br />
-                                                        </>
-                                                    )
+                                    let partialtotal=payload.reduce((acc,x)=>acc+Number(x.value),0);
+                                    return (
+                                        <Card key={`${label}-${payload[0].value}`} style={{ padding: '0.85em' }}>
+                                            {label && <label>{label}</label>}
+                                            {label && <br />}
+                                            {payload.map((x:any)=>{
+                                                let value = x.payload[x?.dataKey]
+                                                if(grouping==="percentage"){
+                                                    if(value){
+                                                        return (
+                                                            <>
+                                                                <span key={`${label}-${x.dataKey}-${value}`} style={{ color: x.color, whiteSpace: "break-spaces" }}>
+                                                                    {`${x.dataKey}: ${value}%`}
+                                                                </span>
+                                                                <br/>
+                                                            </>
+                                                        )
+                                                    }
+                                                }else{
+                                                    if(value){
+                                                        return (
+                                                            <>
+                                                                <span key={`${label}-${x.dataKey}-${value}`} style={{ color: x.color, whiteSpace: "break-spaces" }}>
+                                                                    {`${x.dataKey}: ${value} / ${(value*100/partialtotal).toFixed(2)}%` }
+                                                                </span>
+                                                                <br/>
+                                                            </>
+                                                        )
+                                                    }
                                                 }
-                                            } else {
-                                                if (value) {
-                                                    return (
-                                                        <>
-                                                            <span key={`${label}-${x.dataKey}-${value}`} style={{ color: x.color, whiteSpace: "break-spaces" }}>
-                                                                {`${x.dataKey}: ${value} / ${(value * 100 / partialtotal).toFixed(2)}%`}
-                                                            </span>
-                                                            <br />
-                                                        </>
-                                                    )
-                                                }
+                                                return null
+                                            })}
+                                            {grouping!=="percentage" && 
+                                                <>
+                                                    <span style={{ whiteSpace: "break-spaces" }}>
+                                                        {`${t(langKeys.percentage)}: ${(partialtotal*100/total).toFixed(2)}%` }
+                                                    </span>
+                                                    <br/>
+                                                </>
                                             }
-                                            return null
-                                        })}
-                                        {grouping !== "percentage" &&
-                                            <>
-                                                <span style={{ whiteSpace: "break-spaces" }}>
-                                                    {`${t(langKeys.percentage)}: ${(partialtotal * 100 / total).toFixed(2)}%`}
-                                                </span>
-                                                <br />
-                                            </>
-                                        }
-                                    </Card>
-                                );
-                            }
+                                        </Card>
+                                    );
+                                }
 
-                            return null;
-                        }}
+                                return null;
+                            }}
                         />
-                        {keys.map((x, i) => (
-                            <Line type="monotone" dataKey={x} key={x} stroke={colors[i]} />
+                        {keys.map((x,i)=>(
+                            <Line  type="monotone" dataKey={x} key={x} stroke={colors[i]} >
+                                <LabelList dataKey={x} position="top" fill="#000" />
+                            </Line>
                         ))}
                     </>
-                ) :
+                ):
+                
+                ( 
+                    <>
+                        <ChartTooltip
+                            content={({ active, payload, label }) => {
+                                if (active && payload && payload.length) {
+                                    const { value } = payload[0];
+                                    return (
+                                        <Card key={`${label}-${value}`} style={{ padding: '0.85em' }}>
+                                            {label && <label>{label}</label>}
+                                            {label && <br />}
+                                            <span style={{ color: "#8884d8", whiteSpace: "break-spaces" }}>
+                                                {
+                                                    tooltipFormatter?.(value,total) ||
+                                                    `quantity: ${value}`
+                                                }
+                                            </span>
+                                        </Card>
+                                    );
+                                }
 
-                    (
-                        <>
-                            <ChartTooltip
-                                content={({ active, payload, label }) => {
-                                    if (active && payload && payload.length) {
-                                        const { value } = payload[0];
-                                        return (
-                                            <Card key={`${label}-${value}`} style={{ padding: '0.85em' }}>
-                                                {label && <label>{label}</label>}
-                                                {label && <br />}
-                                                <span style={{ color: "#8884d8", whiteSpace: "break-spaces" }}>
-                                                    {
-                                                        tooltipFormatter?.(value, total) ||
-                                                        `quantity: ${value}`
-                                                    }
-                                                </span>
-                                            </Card>
-                                        );
-                                    }
-
-                                    return null;
-                                }}
-                            />
-                            <Line isAnimationActive={false} type="monotone" dataKey="quantity" stroke="#8884d8"><LabelList dataKey="quantity" position="top" fill="#000" /></Line>
-                        </>
-                    )
+                                return null;
+                            }}
+                        />
+                        <Line isAnimationActive={false} type="monotone" dataKey="quantity" stroke="#8884d8">
+                            
+                            {modifieddata.map((entry: any, index: number) => (
+                                <Cell key={`cell-${index}`} stroke={entry?.color||"#8884d8"} />
+                            ))}
+                            <LabelList dataKey="quantity" position="top" fill="#000" />
+                        </Line>
+                    </>
+                )
                 }
             </LineChart>
         </ResponsiveContainer>
@@ -1045,14 +1084,14 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, alldata, tickFormatter, tooltip
 interface LayoutPieProps extends Omit<ResponsiveContainerProps, 'children'> {
     data: IData[];
     tickFormatter?: (value: string, index: number) => string;
-    tooltipFormatter?: (value: any, total?: any) => string;
-    alldata?: any;
+    tooltipFormatter?: (value: any, total?:any) => string;
+    alldata?:any;
 }
 
 const PIE_COLORS = ['#22b66e', '#b41a1a', '#ffcd56', '#D32F2F', '#FBC02D', '#757575', '#00BCD4', '#AFB42B', '#8BC34A', '#5D4037', '#607D8B', '#03A9F4', '#303F9F', '#009688', '#388E3C', '#E64A19', '#212121'];
 
-const LayoutPie: FC<LayoutPieProps> = ({ data, alldata, tooltipFormatter, tickFormatter, ...props }) => {
-    let total = alldata?.total;
+const LayoutPie: FC<LayoutPieProps> = ({ data,alldata, tooltipFormatter,tickFormatter, ...props }) => {
+    let total=alldata?.total;
     return (
         <ResponsiveContainer {...props}>
             <PieChart>
@@ -1066,7 +1105,7 @@ const LayoutPie: FC<LayoutPieProps> = ({ data, alldata, tooltipFormatter, tickFo
                                     {label && <br />}
                                     <span style={{ color: "#8884d8", whiteSpace: "break-spaces" }}>
                                         {
-                                            tooltipFormatter?.(value, total) ||
+                                            tooltipFormatter?.(value,total) ||
                                             `quantity: ${value}`
                                         }
                                     </span>
@@ -1191,8 +1230,6 @@ const TableModal: FC<TableModalProps> = ({ title, open, rawColumns, dateRange, d
             }
         } : {})
     })), [rawColumns]);
-
-    console.log(rawColumns)
 
     const getBody = useCallback(() => ({
         columns: rawColumns,

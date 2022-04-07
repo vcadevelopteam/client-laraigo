@@ -228,18 +228,6 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
                             />
                         }
                     </div>
-                    // <FieldEditArray
-                    //     key={item.id}
-                    //     label={item.name}
-                    //     fregister={{
-                    //         ...register(`variables.${i}.text`, {
-                    //             validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                    //         })
-                    //     }}
-                    //     valueDefault={item.value}
-                    //     error={errors?.variables?.[i]?.text?.message}
-                    //     onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
-                    // />
                 ))}
             </div>
         </DialogZyx>)

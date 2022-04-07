@@ -432,3 +432,66 @@ export const getLeadTagsDomainReset = (state: IState): IState => ({
     ...state,
     leadTagsDomain: initialState.leadTagsDomain,
 });
+
+
+
+export const getLeadTemplates = (state: IState): IState => ({
+    ...state,
+    leadTemplates: { ...state.leadTemplates, loading: true, error: false },
+});
+
+export const getLeadTemplatesSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    leadTemplates: {
+        data: action.payload.data || [],
+        loading: false,
+        error: false,
+    },
+});
+
+export const getLeadTemplatesFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    leadTemplates: {
+        ...state.leadTemplates,
+        loading: false,
+        error: true,
+        code: action.payload.code || 'getLeadTemplatesFailure:error',
+        message: action.payload.message || 'Error al objtener el dominio OPORTUNIDADPRODUCTOS',
+    },
+});
+
+export const getLeadTemplatesReset = (state: IState): IState => ({
+    ...state,
+    leadTemplates: initialState.leadTemplates,
+});
+
+
+export const getLeadChannels = (state: IState): IState => ({
+    ...state,
+    leadChannels: { ...state.leadChannels, loading: true, error: false },
+});
+
+export const getLeadChannelsSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    leadChannels: {
+        data: action.payload.data || [],
+        loading: false,
+        error: false,
+    },
+});
+
+export const getLeadChannelsFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    leadChannels: {
+        ...state.leadChannels,
+        loading: false,
+        error: true,
+        code: action.payload.code || 'getLeadChannelsFailure:error',
+        message: action.payload.message || 'Error al objtener el dominio OPORTUNIDADPRODUCTOS',
+    },
+});
+
+export const getLeadChannelsReset = (state: IState): IState => ({
+    ...state,
+    leadChannels: initialState.leadChannels,
+});

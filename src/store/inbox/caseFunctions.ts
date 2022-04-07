@@ -3,12 +3,12 @@ import { initialState, IState } from "./reducer";
 import { toTime24HR, convertLocalDate } from 'common/helpers';
 import { keys } from 'common/constants';
 
-const getGroupInteractions = (interactions: IInteraction[]): IGroupInteraction[] => {
+const getGroupInteractions = (interactions: IInteraction[], hideLogs: boolean = false): IGroupInteraction[] => {
 
     const listImages = interactions.filter(x => x.interactiontype.includes("image")).map(x => x.interactiontext)
     let indexImage = 0;
 
-    return interactions.reduce((acc: any, item: IInteraction) => {
+    return (hideLogs ? interactions.filter(x => x.interactiontype !== "LOG") : cleanLogsReassignedTask(interactions)).reduce((acc: any, item: IInteraction) => {
         item.indexImage = indexImage;
         item.listImage = listImages;
         item.onlyTime = toTime24HR(convertLocalDate(item.createdate, false).toLocaleTimeString())
@@ -409,7 +409,7 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
     let newInteractionList = [...state.interactionList.data];
     let newTicketSelected = state.ticketSelected ? { ...state.ticketSelected } : null;
     let newAgentList = [...state.agentList.data];
-
+    let newInteraction = null;
     const { agentSelected, ticketSelected, userType } = state;
     if (userType === 'SUPERVISOR') {
         if (data.newConversation) {
@@ -462,7 +462,7 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
                 newTicketSelected!!.lastreplyuser = new Date().toISOString();
             }
 
-            const newInteraction: IInteraction = {
+            newInteraction = {
                 interactionid: data.interactionid,
                 interactiontype: data.typemessage,
                 interactiontext: data.lastmessage,
@@ -481,6 +481,7 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
             ...state.ticketList,
             data: newticketList
         },
+        interactionBaseList: !!newInteraction ? [...state.interactionBaseList, newInteraction] : state.interactionBaseList,
         aNewTicket: (data.newConversation && data.usertype !== "agent") ? !(state.aNewTicket || false) : state.aNewTicket,
         aNewMessage: (!data.newConversation && data.usertype !== "agent") ? !(state.aNewMessage || false) : state.aNewMessage,
         agentList: {
@@ -625,7 +626,7 @@ export const getDataTicketSuccess = (state: IState, action: IAction): IState => 
         ticketSelected: { ...state.ticketSelected!!, isAnswered: action.payload.data[0].data.some((x: IInteraction) => x.userid === state.agentSelected?.userid && x.interactiontype !== "LOG") },
         interactionBaseList: action.payload.data?.[0]?.data || [],
         interactionList: {
-            data: getGroupInteractions(state.hideLogsOnTicket ? action.payload.data[0].data.filter((x: any) => x.interactiontype !== "LOG") : cleanLogsReassignedTask(action.payload.data[0].data)),
+            data: getGroupInteractions(action.payload.data[0].data, state.hideLogsOnTicket),
             count: action.payload.count,
             loading: false,
             error: false,
@@ -654,11 +655,12 @@ export const getDataTicketSuccess = (state: IState, action: IAction): IState => 
 
 export const hideLogInteractions = (state: IState, action: IAction): IState => {
     localStorage.setItem(keys.HIDE_LOGS, action.payload ? "1" : "0");
+    // const interactions = state.interactionList.data.reduce((acc: IInteraction[], item: IGroupInteraction) => [...acc, ...item.interactions], [])
     return {
         ...state,
         hideLogsOnTicket: action.payload,
         interactionList: {
-            data: getGroupInteractions(action.payload ? state.interactionBaseList.filter(x => x.interactiontype !== "LOG") : cleanLogsReassignedTask(state.interactionBaseList)),
+            data: getGroupInteractions(state.interactionBaseList, action.payload),
             count: action.payload.count,
             loading: false,
             error: false,

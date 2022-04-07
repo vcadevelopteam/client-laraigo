@@ -143,6 +143,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             contactemail: row?.contactemail || '',
             contact: row?.contact || '',
             autosendinvoice: row?.autosendinvoice || false,
+            automaticpayment: row?.automaticpayment || false,
             iconbot: row?.iconbot || "",
             iconadvisor: row?.iconadvisor || "",
             iconclient: row?.iconclient || "",
@@ -179,12 +180,16 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         register('businessname', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('fiscaladdress', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('contact', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
-        register('contactemail', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
+        register('contactemail', { validate: {
+            hasvalue: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true ,
+            isemail: (value) => getValues('billbyorg') ? ((/\S+@\S+\.\S+/.test(value)) || t(langKeys.emailverification)+"") : true
+        }});
         register('sunatcountry', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('credittype', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('host');
         register('ssl');
         register('private_mail');
+        register('automaticpayment');
     }, [edit, register, doctype, getValues, t]);
 
     useEffect(() => {
@@ -574,25 +579,37 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     error={errors?.contactemail?.message}
                                 />
                             </div>
-                            {roledesc === "SUPERADMIN" && <div className="row-zyx">
-                                <FieldSelect
-                                    label={t(langKeys.typecredit)}
-                                    className="col-6"
-                                    valueDefault={getValues("credittype")}
-                                    onChange={(value) => { setValue("credittype", value?.domainvalue || ""); }}
-                                    error={errors?.credittype?.message}
-                                    data={typeofcreditList}
-                                    uset={true}
-                                    optionDesc="domainvalue"
-                                    optionValue="domainvalue"
-                                />
-                                <TemplateSwitch
-                                    label={t(langKeys.autosendinvoice)}
-                                    className="col-6"
-                                    valueDefault={getValues('autosendinvoice')}
-                                    onChange={(value) => setValue('autosendinvoice', value)}
-                                />
-                            </div>}
+                            {roledesc === "SUPERADMIN" && 
+                                <>
+                                    <div className="row-zyx">
+                                        <FieldSelect
+                                            label={t(langKeys.typecredit)}
+                                            className="col-6"
+                                            valueDefault={getValues("credittype")}
+                                            onChange={(value) => { setValue("credittype", value?.domainvalue || ""); }}
+                                            error={errors?.credittype?.message}
+                                            data={typeofcreditList}
+                                            uset={true}
+                                            optionDesc="domainvalue"
+                                            optionValue="domainvalue"
+                                        />
+                                        <TemplateSwitch
+                                            label={t(langKeys.autosendinvoice)}
+                                            className="col-6"
+                                            valueDefault={getValues('autosendinvoice')}
+                                            onChange={(value) => setValue('autosendinvoice', value)}
+                                        />
+                                    </div>
+                                    <div className="row-zyx">
+                                        <TemplateSwitch
+                                            label={t(langKeys.automaticpayment)}
+                                            className="col-6"
+                                            valueDefault={getValues('automaticpayment')}
+                                            onChange={(value) => setValue('automaticpayment', value)}
+                                        />
+                                    </div>
+                                </>
+                            }
                         </>
                     )}
                 </div>}

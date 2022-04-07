@@ -7,7 +7,7 @@ import {
 	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger, ChannelAddInstagram, ChannelAddWhatsapp, ChannelAddTelegram,
 	Reports, Tickets, MessageInbox, BotDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail, Iaservices,UserSettings,
 	Corporations, Settings, Dashboard, ChannelEdit, ChannelAddIos, ChannelAddAndroid, ChannelAddInstagramDM , Privacy, CRM, ActivateUser, RecoverPassword, LeadForm, ChangePwdFirstLogin, BillingSetups, DashboardAdd,
-	InputValidation, DashboardLayout, Invoice, KPIManager,GetLocations, ReportScheduler, Calendar, CalendarEvent
+	InputValidation, DashboardLayout, Invoice, KPIManager,GetLocations, ReportScheduler, ProductCatalog, Calendar, CalendarEvent
 } from 'pages';
 
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
@@ -60,10 +60,10 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 		if (!resValidateToken.error && !resValidateToken.loading) {
 			const automaticConnection = resLogin.user?.automaticConnection || false;
 			const fromLogin = !!resLogin.user;
-			const { userid, orgid } = resValidateToken.user!!
-			dispatch(wsConnect({ userid, orgid, usertype: 'PLATFORM', automaticConnection, fromLogin  }));
+			const { userid, orgid, roledesc } = resValidateToken.user!!
+			dispatch(wsConnect({ userid, orgid, usertype: 'PLATFORM', automaticConnection, fromLogin, roledesc  }));
 		}
-	}, [resValidateToken])
+	}, [resValidateToken.loading])
 	
 	if (!existToken) {
 		return <Redirect to={{ pathname: paths.SIGNIN }} />;
@@ -109,6 +109,11 @@ const RouterApp: FC = () => {
 				<Route exact path={paths.ACTIVATE_USER.path} component={ActivateUser} />
 				<Route exact path={paths.RECOVER_PASSWORD.path} component={RecoverPassword} />
 
+				<ProtectRoute exact path={paths.PRODUCTCATALOG}>
+					<Layout mainClasses={classes.main}>
+						<ProductCatalog />
+					</Layout>
+				</ProtectRoute>
 				<ProtectRoute exact path={paths.REPORTS}>
 					<Layout mainClasses={classes.main}>
 						<Reports />
@@ -334,6 +339,9 @@ const RouterApp: FC = () => {
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CRM}>
 					<Layout mainClasses={classes.main}><CRM /></Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.AUTOMATIZATIONRULES}>
+					<Layout mainClasses={classes.main}><AutomatizationRules /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CRM_ADD_LEAD}>
 					<Layout mainClasses={classes.main}><LeadForm /></Layout>

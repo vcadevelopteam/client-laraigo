@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import ClearIcon from '@material-ui/icons/Clear';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SaveIcon from '@material-ui/icons/Save';
@@ -12,16 +12,19 @@ import { makeStyles } from '@material-ui/core/styles';
 import TableZyx from '../components/fields/table-simple';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, FieldView, FieldEdit, FieldSelect, TemplateSwitch, TitleDetail, FieldMultiSelectFreeSolo } from 'components';
-import { getDomainValueSel, getDomainSel, getValuesFromDomain, insDomain, insDomainvalue , getAutomatizationRulesSel, getCommChannelLst, getColumnsSel} from 'common/helpers';
-import { Dictionary, MultiData } from "@types";
+import { TemplateIcons, TemplateBreadcrumbs, FieldView, FieldEdit, FieldSelect, TitleDetail, FieldMultiSelectFreeSolo, FieldEditArray } from 'components';
+import { getProductCatalogSel, getValuesFromDomain , getAutomatizationRulesSel, getCommChannelLst, getColumnsSel, insAutomatizationRules} from 'common/helpers';
+import { AutomatizationRuleSave, Dictionary, MultiData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { useForm } from 'react-hook-form';
+import { useFieldArray, useForm } from 'react-hook-form';
 import { getCollection, getMultiCollection, execute, getCollectionAux, resetMainAux, resetAllMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { useHistory } from 'react-router-dom';
 import paths from 'common/constants/paths';
+import { getLeadTemplates } from 'store/lead/actions';
+
+const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'custom'].map(x => ({ key: x }))
 
 interface RowSelected {
     row: Dictionary | null;
@@ -54,7 +57,11 @@ const useStyles = makeStyles((theme) => ({
     },
     button: {
         marginRight: theme.spacing(2),
-    }
+    },
+    field: {
+        margin: theme.spacing(1),
+        minHeight: 58,
+    },
 }));
 
 const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainname, edit }, setViewSelected, multiData, fetchData,arrayBread }) => {
@@ -62,28 +69,19 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
     const dispatch = useDispatch();
     const user = useSelector(state => state.login.validateToken.user);
     const useradmin = user?.roledesc === "ADMINISTRADOR"
-    const newrow = row===null
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
-    const detailRes = useSelector(state => state.main.mainAux);
-    const [dataDomain, setdataDomain] = useState<Dictionary[]>([]);
-    const [domainToDelete, setDomainToDelete] = useState<Dictionary[]>([]);
     const [shippingtype, setshippingtype] = useState(row?.shippingtype || "");
-    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, domainname: "", edit: false });
+    const templates = useSelector(state => state.lead.leadTemplates);
+    const [bodyMessage, setBodyMessage] = useState(templates.data.find(x=>x.id===row?.messagetemplateid)?.body||"");
     const dataDomainStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataDomainType = multiData[0] && multiData[1].success ? (useradmin?multiData[1].data.filter(x=>x.domainvalue === "BOT"):multiData[1].data) : [];
+    const dataProducts = multiData[0] && multiData[1].success ? (useradmin?multiData[1].data.filter(x=>x.domainvalue === "BOT"):multiData[1].data) : [];
     const dataCommChannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const dataLeads = multiData[3] && multiData[3].success ? multiData[3].data : [];
     const dataTags = multiData[4] && multiData[4].success ? multiData[4].data : [];
 
-    useEffect(() => {
-        if (!detailRes.loading && !detailRes.error) {
-            setdataDomain(detailRes.data);
-        }
-    }, [detailRes]);
-
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue,control, getValues,trigger, formState: { errors } } = useForm<AutomatizationRuleSave>({
         defaultValues: {
             id: row?.leadautomatizationrulesid || 0,
             operation: row ? "EDIT" : "INSERT",
@@ -91,13 +89,20 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
             communicationchannelid: row?.communicationchannelid || 0,
             columnid: row?.columnid|| NaN,
             shippingtype: row?.shippingtype || "",
-            xdays: row?.xdays || "",
+            xdays: row?.xdays || 0,
             status: row?.status || 'ACTIVO',
             type: "NINGUNO",
             schedule: row?.schedule || "",
             tags: row?.tags || "",
             products: row?.products || "",
+            messagetemplateid: row?.messagetemplateid||0,
+            hsmtemplatename: row?.hsmtemplatename||"",
+            variables: row?.messagetemplateparameters||[],
         }
+    });
+    const { fields } = useFieldArray({
+        control,
+        name: 'variables',
     });
 
     useEffect(() => {
@@ -118,40 +123,48 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
 
     React.useEffect(() => {
         register('id');
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('communicationchannelid', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('columnid', { validate: (value) => (value) || t(langKeys.field_required) });
-        register('shippingtype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('schedule', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('tags', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('products', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('description', { validate: (value:any) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
+        register('communicationchannelid', { validate: (value:any) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
+        register('columnid');
+        register('shippingtype', { validate: (value:any) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
+        register('schedule', { validate: (value:any) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
+        register('tags');
+        register('products');
+        register('messagetemplateid', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
+        register('hsmtemplatename');
+        register('variables');
         if(shippingtype === "DAY"){
-            register('xdays', { validate: (value) => (value && Number(value)>0) || t(langKeys.field_required) });
+            register('xdays', { validate: (value) => Boolean(value && Number(value)>0) || String(t(langKeys.field_required)) });
         }
     }, [register]);
+    const onSelectTemplate = (value: Dictionary) => {
+        if (value) {
+            setBodyMessage(value.body);
+            setValue('messagetemplateid', value ? value.id : 0);
+            setValue('hsmtemplatename', value ? value.name : '');
+            const variablesList = value.body.match(/({{)(.*?)(}})/g) || [];
+            const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
+            setValue('variables', varaiblesCleaned.map((x: string) => ({ name: x, text: '', type: 'text' })));
+        } else {
+            setValue('hsmtemplatename', '');
+            setValue('variables', []);
+            setBodyMessage('');
+            setValue('messagetemplateid', 0);
+        }
+    }
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
             dispatch(showBackdrop(true));
-            dispatch(execute({
-                header: insDomain({ ...data }),
-                detail: [
-                    ...dataDomain.filter(x => !!x.operation).map(x => insDomainvalue({ ...data, ...x, status: data?.status, id: x.domainid ? x.domainid : 0 })),
-                    ...domainToDelete.map(x => insDomainvalue({ ...x, id: x.domainid, description: data.description }))
-                ]
-            }, true));
+            dispatch(execute(insAutomatizationRules({...data, messagetemplateparameters: JSON.stringify(data.variables)})));
 
             setWaitSave(true);
         }
-        if(!!dataDomain.length){
-            dispatch(manageConfirmation({
-                visible: true,
-                question: t(langKeys.confirmation_save),
-                callback
-            }))
-        }else{
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.errorneedvalues) }))
-        }
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
     });
     return (
         <div style={{width: "100%"}}>
@@ -222,10 +235,10 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
                             optionValue="domainvalue"
                         />
                         <FieldSelect
-                            label={t(langKeys.column)}
+                            label={t(langKeys.whensettingstate)}
                             className="col-6"
                             valueDefault={getValues('columnid')}
-                            onChange={(value) => setValue('columnid', value?.columnid || 0)}
+                            onChange={(value) => {setValue('columnid', value?.columnid || 0)}}
                             error={errors?.columnid?.message}
                             data={dataLeads}
                             prefixTranslation=""
@@ -239,13 +252,11 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
                             label={t(langKeys.shippingtype)}
                             className="col-6"
                             valueDefault={getValues('shippingtype')}
-                            onChange={(value) => {setshippingtype(value?.desc || '');setValue('shippingtype', value?.desc || '')}}
+                            onChange={(value) => {setshippingtype(value?.val || '');setValue('shippingtype', value?.val || '')}}
                             error={errors?.shippingtype?.message}
-                            data={[{desc: "INMEDIATELY"}, {desc: "DAY"}]}
+                            data={[{desc: t(langKeys.inmediately),val:"INMEDIATELY"}, {desc: t(langKeys.day),val:"DAY"}]}
                             optionDesc="desc"
-                            uset={true}
-                            prefixTranslation=""
-                            optionValue="desc"
+                            optionValue="val"
                         />
                         {shippingtype === "DAY" && <FieldEdit
                             label={`${t(langKeys.day)}s`}
@@ -298,8 +309,8 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
                             label={t(langKeys.tags)}
                             className="col-6"
                             valueDefault={getValues('tags')}
-                            onChange={(value: ({domaindesc: string} | string)[], value2: {action: "create-option" | "remove-option" | "select-option", option: {option: string}}) => {
-                                const tags = value.map((o: any) => o.domaindesc || o).join();
+                            onChange={(value: ({domaindesc: string} | string)[]) => {
+                                const tags = value.map((o: any) => o.domaindesc || o).join(',');
                                 setValue('tags', tags);
                             }}
                             error={errors?.tags?.message}
@@ -312,18 +323,76 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
                             label={t(langKeys.product_plural)}
                             className="col-6"
                             valueDefault={getValues('products')}
-                            onChange={(value: ({domaindesc: string} | string)[], value2: {action: "create-option" | "remove-option" | "select-option", option: {option: string}}) => {
-                                const products = value.map((o: any) => o.domaindesc || o).join();
+                            onChange={(value: ({domaindesc: string} | string)[]) => {
+                                const products = value.map((o: any) => o.productcatalogid || o).join(',');
                                 setValue('products', products);
                             }}
                             error={errors?.products?.message}
                             loading={false}
-                            data={[]}
-                            optionDesc="domaindesc"
-                            optionValue="domaindesc"
+                            data={dataProducts}
+                            optionDesc="description"
+                            optionValue="productcatalogid"
                         />
                     </div>
-                    
+                    <div className="row-zyx">
+                        <FieldSelect
+                            label={t(langKeys.hsm_template)}
+                            className="col-6"
+                            valueDefault={getValues('messagetemplateid')}
+                            onChange={onSelectTemplate}
+                            error={errors?.messagetemplateid?.message}
+                            data={templates.data}
+                            optionDesc="name"
+                            optionValue="id"
+                        />
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.message)}
+                            value={bodyMessage}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        {fields.map((item: Dictionary, i) => (
+                            <div key={item.id} style={{width:"50%"}}>
+                                <FieldSelect
+                                    key={"var_" + item.id}
+                                    fregister={{
+                                        ...register(`variables.${i}.variable`, {
+                                            validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                        })
+                                    }}
+                                    className={classes.field}
+                                    label={item.name}
+                                    valueDefault={getValues(`variables.${i}.variable`)}
+                                    onChange={(value) => {
+                                        setValue(`variables.${i}.variable`, value.key)
+                                        trigger(`variables.${i}.variable`)
+                                    }}
+                                    error={errors?.variables?.[i]?.text?.message}
+                                    data={variables}
+                                    uset={true}
+                                    prefixTranslation=""
+                                    optionDesc="key"
+                                    optionValue="key"
+                                />
+                                {getValues(`variables.${i}.variable`) === 'custom' &&
+                                    <FieldEditArray
+                                        key={"custom_" + item.id}
+                                        fregister={{
+                                            ...register(`variables.${i}.text`, {
+                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                            })
+                                        }}
+                                        prefixTranslation=""
+                                        className={classes.field}
+                                        valueDefault={item.value}
+                                        error={errors?.variables?.[i]?.text?.message}
+                                        onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
+                                    />
+                                }
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </form>
         </div>
@@ -337,13 +406,14 @@ const AutomatizationRules: FC = () => {
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.main.execute);
     const [viewSelected, setViewSelected] = useState("view-1");
+    const [filerchanneltype, setfilerchanneltype] = useState(0);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, domainname: "", edit: false });
     const [waitSave, setWaitSave] = useState(false);
     const user = useSelector(state => state.login.validateToken.user);
     const superadmin = user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMINISTRADOR"
 
     const arrayBread = [
-        { id: "view-0", name: t(langKeys.automatizationrules) },
+        { id: "view-1", name: t(langKeys.automatizationrules) },
     ];
     function redirectFunc(view:string){
         setViewSelected(view)
@@ -368,50 +438,85 @@ const AutomatizationRules: FC = () => {
                 }
             },
             {
-                Header: t(langKeys.automatizationrule),
-                accessor: 'description',
-                NoFilter: true
+                Header: t(langKeys.communicationchannel),
+                accessor: 'communicationchanneldesc',
+                NoFilter: false
+            },
+            {
+                Header: t(langKeys.whensettingstate),
+                accessor: 'columnname',
+                NoFilter: false,
+                prefixTranslation: '',
+                Cell: (props: any) => {
+                    const { columnname } = props.cell.row.original;
+                    return (t(`${columnname?.toLowerCase()}`.toLowerCase()) || "").toUpperCase()
+                }
+            },
+            {
+                Header: t(langKeys.conditional),
+                accessor: 'tags',
+                NoFilter: false,
+                Cell: (props: any) => {
+                    const { tags, products } = props.cell.row.original;
+                    return (
+                        <>
+                            <div><b>Tags:</b> {tags}</div>
+                            <div><b>{t(langKeys.product_plural)}:</b> {products}</div>
+                        </>
+                    )
+                }
+            },
+            {
+                Header: t(langKeys.templatetosend),
+                accessor: 'messagetemplatename',
+                NoFilter: false,
+            },
+            {
+                Header: t(langKeys.shippingtype),
+                accessor: 'shippingtype',
+                NoFilter: false,
+                prefixTranslation: 'xdays_',
+                Cell: (props: any) => {
+                    const { shippingtype } = props.cell.row.original;
+                    return (t(`xdays_${shippingtype}`.toLowerCase()) || "").toUpperCase()
+                }
+            },
+            {
+                Header: `X ${t(langKeys.day)}s`,
+                accessor: 'xdays',
+                NoFilter: false,
+            },
+            {
+                Header: t(langKeys.schedule),
+                accessor: 'schedule',
+                NoFilter: false
             },
             {
                 Header: t(langKeys.status),
                 accessor: 'status',
-                NoFilter: true,
+                NoFilter: false,
                 prefixTranslation: 'status_',
                 Cell: (props: any) => {
                     const { status } = props.cell.row.original;
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
                 }
             },
-            {
-                Header: t(langKeys.shippingtype),
-                accessor: 'shippingtype',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.day),
-                accessor: 'xdays',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.schedule),
-                accessor: 'schedule',
-                NoFilter: true
-            },
         ],
         []
     );
 
-    const fetchData = () => dispatch(getCollection(getAutomatizationRulesSel(0)));
+    const fetchData = (communicationchannelid?:number) => dispatch(getCollection(getAutomatizationRulesSel({id:0,communicationchannelid:communicationchannelid||0})));
 
     useEffect(() => {
         fetchData();
         dispatch(getMultiCollection([
             getValuesFromDomain("ESTADOGENERICO"),
-            getValuesFromDomain("TIPODOMINIO"),
+            getProductCatalogSel(),
             getCommChannelLst(),
             getColumnsSel(0, true),
             getValuesFromDomain('OPORTUNIDADETIQUETAS'),
         ]));
+        dispatch(getLeadTemplates());
 
         return () => {
             dispatch(resetAllMain());
@@ -451,7 +556,7 @@ const AutomatizationRules: FC = () => {
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(insDomain({ ...row, operation: 'DELETE', status: 'ELIMINADO' })));
+            dispatch(execute(insAutomatizationRules({ ...row,id: row?.leadautomatizationrulesid, operation: 'DELETE', status: 'ELIMINADO' })));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -476,10 +581,26 @@ const AutomatizationRules: FC = () => {
                     titlemodule={t(langKeys.automatizationrules, { count: 2 })}
                     data={mainResult.mainData.data}
                     download={false}
+                    //fetchData={fetchData}
                     onClickRow={handleEdit}
+                    ButtonsElement={()=>(<>
+                        <FieldSelect
+                            onChange={(value) => {setfilerchanneltype(value?.communicationchannelid||0);fetchData(value?.communicationchannelid||0)}}
+                            size="small"
+                            label={t(langKeys.channel)}
+                            style={{ maxWidth: 300, minWidth: 200 }}
+                            variant="outlined"
+                            loading={mainResult.multiData.loading}
+                            data={mainResult.multiData?.data[2]?.data || []}
+                            optionValue="communicationchannelid"
+                            optionDesc="communicationchanneldesc"
+                            valueDefault={filerchanneltype}
+                        />
+                    </>)}
                     loading={mainResult.mainData.loading}
                     register={superadmin}
                     handleRegister={handleRegister}
+                    
             />
             </div>
         )

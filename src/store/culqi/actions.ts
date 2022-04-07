@@ -121,3 +121,39 @@ export const emitInvoice = (request: any): IActionCall => ({
 });
 
 export const resetEmitInvoice = (): IActionCall => ({ type: actionTypes.EMIT_INVOICE_RESET });
+
+export const cardCreate = (request: any): IActionCall => ({
+    callAPI: () => CulqiService.cardCreate(request),
+    types: {
+        failure: actionTypes.CARD_CREATE_FAILURE,
+        loading: actionTypes.CARD_CREATE,
+        success: actionTypes.CARD_CREATE_SUCCESS,
+    },
+    type: null,
+});
+
+export const resetCardCreate = (): IActionCall => ({ type: actionTypes.CARD_CREATE_RESET });
+
+export const cardDelete = (request: any): IActionCall => ({
+    callAPI: () => CulqiService.cardDelete(request),
+    types: {
+        failure: actionTypes.CARD_DELETE_FAILURE,
+        loading: actionTypes.CARD_DELETE,
+        success: actionTypes.CARD_DELETE_SUCCESS,
+    },
+    type: null,
+});
+
+export const resetCardDelete = (): IActionCall => ({ type: actionTypes.CARD_DELETE_RESET });
+
+export const cardGet = (request: any): IActionCall => ({
+    callAPI: () => CulqiService.cardGet(request),
+    types: {
+        failure: actionTypes.CARD_GET_FAILURE,
+        loading: actionTypes.CARD_GET,
+        success: actionTypes.CARD_GET_SUCCESS,
+    },
+    type: null,
+});
+
+export const resetCardGet = (): IActionCall => ({ type: actionTypes.CARD_GET_RESET });

@@ -1,4 +1,4 @@
-import { Box, BoxProps, IconButton, IconButtonProps, Menu, TextField, Toolbar, makeStyles, Button, InputAdornment, Tabs, FormHelperText, CircularProgress } from '@material-ui/core';
+import { Box, BoxProps, IconButton, IconButtonProps, Menu, TextField, Toolbar, makeStyles, Button, InputAdornment, Tabs, FormHelperText, CircularProgress, Tooltip } from '@material-ui/core';
 import {
     FormatBold as FormatBoldIcon,
     FormatItalic as FormatItalicIcon,
@@ -130,31 +130,31 @@ const RichText: FC<RichTextProps> = ({ value, onChange, placeholder,image=true, 
         <Box {...boxProps}>
             <Slate editor={editor} value={value} onChange={onChange}>
                 <Toolbar className={classes.toolbar}>
-                    <MarkButton format="bold">
+                    <MarkButton format="bold" tooltip='bold'>
                         <FormatBoldIcon />
                     </MarkButton>
-                    <MarkButton format="italic">
+                    <MarkButton format="italic" tooltip='italic'>
                         <FormatItalicIcon />
                     </MarkButton>
-                    <MarkButton format="underline">
+                    <MarkButton format="underline" tooltip='underline'>
                         <FormatUnderlinedIcon />
                     </MarkButton>
-                    <MarkButton format="code">
+                    <MarkButton format="code" tooltip='code'>
                         <FormatCodeIcon />
                     </MarkButton>
-                    <BlockButton format="heading-one">
+                    <BlockButton format="heading-one" tooltip='heading_one'>
                         <FormatLooksOneIcon />
                     </BlockButton>
-                    <BlockButton format="heading-two">
+                    <BlockButton format="heading-two" tooltip='heading_two'>
                         <FormatLooksTwoIcon />
                     </BlockButton>
-                    <BlockButton format="block-quote">
+                    <BlockButton format="block-quote" tooltip='block_quote'>
                         <FormatQuoteIcon />
                     </BlockButton>
-                    <BlockButton format="numbered-list">
+                    <BlockButton format="numbered-list" tooltip='numbered_list'>
                         <FormatListNumberedIcon />
                     </BlockButton>
-                    <BlockButton format="bulleted-list">
+                    <BlockButton format="bulleted-list" tooltip='bulleted_list'>
                         <FormatListBulletedIcon />
                     </BlockButton>
                     {image &&
@@ -287,48 +287,56 @@ const isMarkActive = (editor: BaseEditor & ReactEditor, format: keyof Omit<Custo
 }
 
 interface MarkButtonProps extends IconButtonProps {
+    tooltip: string;
     format: keyof Omit<CustomText, 'text'>;
 }
 
-const MarkButton: FC<MarkButtonProps> = ({ format, children, onClick, ...props }) => {
+const MarkButton: FC<MarkButtonProps> = ({ tooltip = '', format, children, onClick, ...props }) => {
     const editor = useSlate();
     const active = isMarkActive(editor, format);
+    const { t } = useTranslation();
 
     return (
-        <IconButton
-            {...props}
-            onClick={e => {
-                e.preventDefault();
-                toggleMark(editor, format);
-                onClick?.(e);
-            }}
-            color={active ? 'primary' : 'default'}
-        >
-            {children}
-        </IconButton>
+        <Tooltip title={t((langKeys as any)[tooltip]) || ''}>
+            <IconButton
+                {...props}
+                onClick={e => {
+                    e.preventDefault();
+                    toggleMark(editor, format);
+                    onClick?.(e);
+                }}
+                color={active ? 'primary' : 'default'}
+            >
+                {children}
+            </IconButton>
+        </Tooltip>
     );
 }
 
 interface BlockButtonProps extends IconButtonProps {
+    tooltip: string;
     format: ElemetType;
 }
 
-const BlockButton: FC<BlockButtonProps> = ({ format, children, onClick, ...props }) => {
+const BlockButton: FC<BlockButtonProps> = ({ tooltip = '', format, children, onClick, ...props }) => {
     const editor = useSlate();
     const active = isBlockActive(editor, format);
+    const { t } = useTranslation();
 
     return (
-        <IconButton
-            {...props}
-            onClick={e => {
-                e.preventDefault();
-                toggleBlock(editor, format);
-                onClick?.(e);
-            }}
-            color={active ? 'primary' : 'default'}
-        >
-            {children}
-        </IconButton>
+        <Tooltip title={t((langKeys as any)[tooltip]) || ''}>
+            <IconButton
+                {...props}
+                onClick={e => {
+                    e.preventDefault();
+                    toggleBlock(editor, format);
+                    onClick?.(e);
+                }}
+                color={active ? 'primary' : 'default'}
+            >
+                {children}
+            </IconButton>
+        </Tooltip>
     );
 }
 
@@ -410,17 +418,19 @@ const OnlyURLInsertImageButton: FC = ({ children }) => {
 
     return (
         <div>
-            <IconButton
-                aria-controls="insert-image-button-rich-text-popup"
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
-                onMouseDown={event => {
-                    event.preventDefault();
-                    handleClick(event);
-                }}
-            >
-                {children}
-            </IconButton>
+            <Tooltip title={t(langKeys.image) || ''}>
+                <IconButton
+                    aria-controls="insert-image-button-rich-text-popup"
+                    aria-haspopup="true"
+                    aria-expanded={open ? 'true' : undefined}
+                    onMouseDown={event => {
+                        event.preventDefault();
+                        handleClick(event);
+                    }}
+                >
+                    {children}
+                </IconButton>
+            </Tooltip>
             <Menu
                 id="insert-image-button-rich-text-popup"
                 anchorEl={anchorEl}
@@ -536,17 +546,19 @@ const InsertImageButton: FC = ({ children }) => {
 
     return (
         <div>
-            <IconButton
-                aria-controls="insert-image-button-rich-text-popup"
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
-                onMouseDown={event => {
-                    event.preventDefault();
-                    handleClick(event);
-                }}
-            >
-                {children}
-            </IconButton>
+            <Tooltip title={t(langKeys.image) || ''}>
+                <IconButton
+                    aria-controls="insert-image-button-rich-text-popup"
+                    aria-haspopup="true"
+                    aria-expanded={open ? 'true' : undefined}
+                    onMouseDown={event => {
+                        event.preventDefault();
+                        handleClick(event);
+                    }}
+                >
+                    {children}
+                </IconButton>
+            </Tooltip>
             <Menu
                 id="insert-image-button-rich-text-popup"
                 anchorEl={anchorEl}

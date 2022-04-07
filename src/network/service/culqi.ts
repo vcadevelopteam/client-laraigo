@@ -50,3 +50,15 @@ export function getExchangeRate(request: any) {
 export function emitInvoice(request: any) {
     return APIManager.post(apiUrls.BILLINGEMITINVOICE, { data: request }, true);
 }
+
+export function cardCreate(request: any) {
+    return APIManager.post(apiUrls.CARDCREATE, { data: request }, true);
+}
+
+export function cardDelete(request: any) {
+    return APIManager.post(apiUrls.CARDDELETE, { data: request }, true);
+}
+
+export function cardGet(request: any) {
+    return APIManager.post(apiUrls.CARDGET, { data: request }, true);
+}

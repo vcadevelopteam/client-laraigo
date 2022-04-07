@@ -283,7 +283,7 @@ const Dashboard: FC = () => {
                                         component="img"
                                         height="140"
                                         className={classes.media}
-                                        image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/3operativoPush.png'}
+                                        image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/randkinfg.png'}
                                         title={t(langKeys.tagranking)}
                                     />
                                     <CardContent>

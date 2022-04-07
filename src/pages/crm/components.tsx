@@ -2,6 +2,7 @@ import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { Box, BoxProps, Button, IconButton, makeStyles, Popover, TextField } from '@material-ui/core';
 import { Add, MoreVert as MoreVertIcon } from '@material-ui/icons';
+import CloseIcon from '@material-ui/icons/Close';
 import { DraggableProvided, DraggableStateSnapshot, DroppableStateSnapshot } from 'react-beautiful-dnd';
 import { langKeys } from 'lang/keys';
 import { Trans, useTranslation } from 'react-i18next';
@@ -9,7 +10,7 @@ import { Rating, Skeleton } from '@material-ui/lab';
 import { useHistory } from 'react-router';
 import paths from 'common/constants/paths';
 import { ICrmLead } from '@types';
-import { FieldSelect } from 'components/fields/templates';
+import { FieldEdit, FieldSelect } from 'components';
 
 const columnWidth = 275;
 const columnMinHeight = 500;
@@ -310,6 +311,7 @@ interface LeadColumnProps extends Omit<BoxProps, 'title'> {
     provided?: DraggableProvided;
     columnid: string;
     total_revenue: number;
+    deletable: boolean;
 }
 
 const useLeadColumnStyles = makeStyles(theme => ({
@@ -361,21 +363,22 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
     titleOnChange,
     onDelete,
     onAddCard,
+    deletable,
     ...boxProps
 }) => {
     const classes = useLeadColumnStyles();
     const edit = useRef(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-
+    
     const handleOnBlur = useCallback((value: string) => {
         edit.current = false;
         titleOnChange?.(value);
     }, [titleOnChange]);
 
-    // const handleDelete = useCallback(() => {
-    //     setAnchorEl(null);
-    //     onDelete?.(columnid);
-    // }, []);
+    const handleDelete = useCallback(() => {
+        onDelete?.(columnid);
+    }, []);
+    
 
     return (
         <Box {...boxProps}>
@@ -386,36 +389,9 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
                         edit={edit.current}
                         onBlur={handleOnBlur}
                     />
-                    {/* <IconButton size="small" aria-describedby={id} onClick={handleClick}>
-                        <MoreVertIcon style={{ height: 22, width: 22 }} />
-                    </IconButton>
-                    <Popover
-                        id={id}
-                        open={open}
-                        anchorEl={anchorEl}
-                        onClose={handleClose}
-                        anchorOrigin={{
-                            vertical: 'bottom',
-                            horizontal: 'left',
-                        }}
-                        PaperProps={{
-                            className: classes.popoverPaper,
-                        }}
-                    >
-                        <Button
-                            variant="text"
-                            color="inherit"
-                            fullWidth
-                            type="button"
-                            onClick={handleEdit}
-                            style={{ fontWeight: "normal", textTransform: "uppercase" }}
-                        >
-                            <Trans i18nKey={langKeys.edit} />
-                        </Button>
-                    </Popover>
-                    <IconButton size="small" onClick={onAddCard}>
-                        <Add style={{ height: 22, width: 22 }} />
-                    </IconButton> */}
+                    {deletable && <IconButton size="small" onClick={handleDelete}>
+                        <CloseIcon style={{ height: 22, width: 22 }} />
+                    </IconButton>}
                 </div>
                 <span className={classes.currency}>S/ {total_revenue?.toLocaleString('en-US') || 0}</span>
                 {children}
@@ -454,7 +430,7 @@ export const DroppableLeadColumnList: FC<LeadColumnListProps> = ({ children, sna
 }
 
 interface AddColumnTemplatePops extends Omit<BoxProps, 'onSubmit'> {
-    onSubmit: (title: string) => void;
+    onSubmit: (data: any) => void;
 }
 
 const useAddColumnTemplateStyles = makeStyles(theme => ({
@@ -496,6 +472,7 @@ const useAddColumnTemplateStyles = makeStyles(theme => ({
 export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, ...boxProps }) => {
     const classes = useAddColumnTemplateStyles();
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+    const { t } = useTranslation();
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -508,13 +485,13 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, ...boxP
     const open = Boolean(anchorEl);
     const id = open ? 'crm-add-new-column-popover' : undefined;
 
-    const handleSubmit = (title: string) => {
-        onSubmit(title);
+    const handleSubmit = (data: any) => {
+        onSubmit(data);
         handleClose();
     };
 
     return (
-        <Box {...boxProps}>
+        <Box>
             <div className={classes.root}>
                 <Button
                     color="primary"
@@ -526,7 +503,7 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, ...boxP
                         <Add style={{ height: '75%', width: 'auto' }} color="secondary" />
                     </div>
                     <div style={{ width: 12 }} />
-                    <span>Add a column</span>
+                    <span>{t(langKeys.addacolumn)}</span>
                 </Button>
                 <Popover
                     id={id}
@@ -536,9 +513,6 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, ...boxP
                     anchorOrigin={{
                         vertical: 'top',
                         horizontal: 'left',
-                    }}
-                    PaperProps={{
-                        className: classes.popoverRoot,
                     }}
                 >
                     <ColumnTemplate onSubmit={handleSubmit} />
@@ -562,71 +536,59 @@ const useColumnTemplateStyles = makeStyles(theme => ({
         padding: theme.spacing(2),
     },
     titleSection: {
-        display: 'flex',
-        flexDirection: 'row',
         width: 'inherit',
     },
     btn: {
-        minWidth: 'unset',
-    },
-    input: {
-        flexGrow: 1,
+        width: "100%"
     },
 }));
 
 const ColumnTemplate: FC<ColumnTemplateProps> = ({ onSubmit }) => {
     const classes = useColumnTemplateStyles();
-    const inputClasses = useInputTitleStyles();
-    const [data, setdata] = useState({
-        title: "",
-        type: ""
-    });
+    const [title, setTitle] = useState("");
+    const [type, settype] = useState("");
+    const [disabled, setdisabled] = useState(true);
     const { t } = useTranslation();
 
     return (
         <div className={classes.root}>
             <div className={classes.titleSection}>
-                <TextField
-                    value={data.title}
-                    size="small"
-                    placeholder="Column title"
-                    className={classes.input}
-                    InputProps={{
-                        classes: {
-                            input: inputClasses.titleInput,
-                        },
-                    }}
-                    onChange={e => setdata((x)=>{return {...x,title: e.target.value}})}
-                />
+                <div  style={{padding: "10px 0"}}>
+                    <FieldEdit
+                        label={t(langKeys.columntitle)}
+                        valueDefault={title}
+                        onChange={value =>{setdisabled(value.trim().length === 0 || !type);setTitle(value)}}
+                    />
+                </div>
                 
-                <FieldSelect
-                    label={t(langKeys.type)}
-                    valueDefault={data.type}
-                    onChange={(value) => {
-                        setdata((x)=>{return {...x,title: value?.key|| ""}})
-                    }}
-                    data={[
-                        {key: "QUALIFIED"},
-                        {key: "WON"},
-                        {key: "PROPOSITION"},
-                    ]}
-                    uset={true}
-                    prefixTranslation=""
-                    optionDesc="key"
-                    optionValue="key"
-                />
-                <div style={{ width: 12 }} />
-                <Button
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    className={classes.btn}
-                    onClick={() => onSubmit(data)}
-                    disabled={data.title.trim().length === 0 || data.type.trim().length === 0}
-                >
-                    <Trans i18nKey={langKeys.add} />
-                </Button>
+                <div  style={{padding: "10px 0"}}>
+                    <FieldSelect
+                        label={`${t(langKeys.type)}`}
+                        size="small"
+                        valueDefault={type}
+                        onChange={e =>{ setdisabled(!(e?.type) || title.trim().length === 0); settype(e?.type||"")}}
+                        data={[
+                            {type: "QUALIFIED", desc: t(langKeys.qualified)},
+                            {type: "PROPOSITION", desc: t(langKeys.proposition)},
+                            {type: "WON", desc: t(langKeys.won)},
+                        ]}
+                        optionDesc="desc"
+                        optionValue="type"
+                    />
+                </div>
                 
+                <div  style={{padding: "10px 0", width: "100%"}}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        className={classes.btn}
+                        onClick={() => onSubmit({title: title, type:type})}
+                        disabled={disabled}
+                    >
+                        <Trans i18nKey={langKeys.add} />
+                    </Button>
+                </div>
             </div>
         </div>
     );
