@@ -947,24 +947,25 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipF
         }
     }else{
         let listlabels= data.map(x=>x.label)[0]
-        if (listlabels.includes("-")) {
-            reversed=true
-            modifieddata=data.map(x=>{
-                let newlabel = x.label.replace("day","")
-                let month = newlabel.slice(0,newlabel.indexOf("-"))
-                newlabel = newlabel.replace(`${month}-`, `${t(months[Number(month)-1])} `)
-                return ({...x,label:newlabel, color:monthColor[Number(month)-1]})
-            })
+        if (!!listlabels) {
+            if (listlabels.includes("-")) {
+                reversed=true
+                modifieddata=data.map(x=>{
+                    let newlabel = x.label.replace("day","")
+                    let month = newlabel.slice(0,newlabel.indexOf("-"))
+                    newlabel = newlabel.replace(`${month}-`, `${t(months[Number(month)-1])} `)
+                    return ({...x,label:newlabel, color:monthColor[Number(month)-1]})
+                })
+            }
+            if(listlabels.includes("week")){
+                reversed=true
+                modifieddata=data.map(x=>({...x,label:x.label.replace("week",`${t("week")} `)}))
+            }
+            if(listlabels.includes("month")){
+                reversed=true
+                modifieddata=data.map(x=>({...x,label:t("full" + months[Number(x.label.split("-")[1])-1]) + " " + x.label.split("-")[0].replace("month",``)}))
+            }
         }
-        if(listlabels.includes("week")){
-            reversed=true
-            modifieddata=data.map(x=>({...x,label:x.label.replace("week",`${t("week")} `)}))
-        }
-        if(listlabels.includes("month")){
-            reversed=true
-            modifieddata=data.map(x=>({...x,label:t("full" + months[Number(x.label.split("-")[1])-1]) + " " + x.label.split("-")[0].replace("month",``)}))
-        }
-        
     }
     return (
         <ResponsiveContainer {...props}>
