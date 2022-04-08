@@ -8,7 +8,9 @@ import {
     MessageTemplateIcon,
     AIModelsIcon,
     ClientIcon,
-    CRMIcon
+    CRMIcon,
+    EnvioIcon
+
 } from 'icons';
 import { langKeys } from "lang/keys";
 import { Trans } from "react-i18next";
@@ -33,7 +35,7 @@ export const routes: RouteConfig[] = [
         description: <Trans i18nKey={langKeys.reportscheduler} count={2} />, // prop:count for plural purposes
         tooltip: <Trans i18nKey={langKeys.reportscheduler} count={2} />,
         path: paths.REPORTSCHEDULER,
-        icon: (className) => <ReportsIcon style={{ width: 22, height: 22 }} className={className} />,
+        icon: (className) => <EnvioIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     {
         key: paths.KPIMANAGER,
