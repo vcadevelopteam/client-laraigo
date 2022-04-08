@@ -229,12 +229,15 @@ const CalendarZyx: FC<CalendarInputProps> = ({ notPreviousDays = true, selectedD
     }, [dateCurrent])
 
     const handleChangeMonth = useCallback((manageMonth: number) => {
-        
+        const newdate = new Date(new Date(dateCurrent.year, dateCurrent.month).setMonth(dateCurrent.month + manageMonth));
+        const newyear = newdate.getFullYear();
+        const newmonth = newdate.getMonth();
+
         setDateCurrent({
-            year: dateCurrent.year,
-            month: dateCurrent.month + manageMonth
+            year: newyear,
+            month: newmonth
         });
-        onChangeMonth && onChangeMonth(dateCurrent.month + manageMonth, dateCurrent.year)
+        onChangeMonth && onChangeMonth(newmonth, newyear)
     }, [dateCurrent])
 
 
