@@ -33,6 +33,7 @@ import { ColorChangeHandler } from 'react-color';
 import Schedule from 'components/fields/Schedule';
 import AddIcon from '@material-ui/icons/Add';
 import InfoIcon from '@material-ui/icons/Info';
+import ClearIcon from '@material-ui/icons/Clear';
 
 
 interface RowSelected {
@@ -724,9 +725,9 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
                 dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
-                fetchData && fetchData();
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.calendar_plural).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
@@ -753,39 +754,45 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     }
 
     const onSubmit = handleSubmit((data) => {
-
-        if (data.intervals.some(x => (x.overlap || -1) !== -1)) {
-            console.log("error overlap")
-        } else {
-            console.log(data)
-            const date1 = Number(dateRangeCreateDate.startDate);
-            const date2 = Number(dateRangeCreateDate.endDate);
-            const diffTime = Math.abs(date2 - date1);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            let datatosend = {
-                ...data,
-                description: "",
-                type: "",
-                code: data.eventcode,
-                name: data.eventname,
-                locationtype: "",
-                eventlink: "",
-                messagetemplateid: data.hsmtemplateid,
-                availability: data.intervals,
-                timeduration: data.duration,
-                timeunit: data.durationtype,
-                daterange: dateinterval,
-                startdate: dateRangeCreateDate.startDate,
-                enddate: dateRangeCreateDate.endDate,
-                daysduration: diffDays,
-                increments: "00:30",
+        const callback = () => {
+            if (data.intervals.some(x => (x.overlap || -1) !== -1)) {
+                console.log("error overlap")
+            } else {
+                console.log(data)
+                const date1 = Number(dateRangeCreateDate.startDate);
+                const date2 = Number(dateRangeCreateDate.endDate);
+                const diffTime = Math.abs(date2 - date1);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                let datatosend = {
+                    ...data,
+                    description: "",
+                    type: "",
+                    code: data.eventcode,
+                    name: data.eventname,
+                    locationtype: "",
+                    eventlink: "",
+                    messagetemplateid: data.hsmtemplateid,
+                    availability: data.intervals,
+                    timeduration: data.duration,
+                    timeunit: data.durationtype,
+                    daterange: dateinterval,
+                    startdate: dateRangeCreateDate.startDate,
+                    enddate: dateRangeCreateDate.endDate,
+                    daysduration: diffDays,
+                    increments: "00:30",
+                }
+                dispatch(execute(insCalendar(datatosend)));
+                dispatch(showBackdrop(true));
+                setWaitSave(true)
+                console.log("submitted")
             }
-            debugger
-            dispatch(showBackdrop(true));
-            setWaitSave(true)
-            dispatch(execute(insCalendar(datatosend)));
-            console.log("submitted")
         }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
     });
 
     const arrayBread = [
@@ -808,6 +815,16 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => {
+                                setViewSelected("view-1")
+                            }}
+                        >{t(langKeys.back)}</Button>
                         <Button
                             className={classes.button}
                             variant="contained"
