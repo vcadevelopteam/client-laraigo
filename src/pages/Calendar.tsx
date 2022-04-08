@@ -3,8 +3,8 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, RichText, ColorInput, AntTabPanel, DateRangePicker, DialogZyx, FieldEditMulti } from 'components';
-import { getDateCleaned, getValuesFromDomain, insCalendar, hours, selCalendar, getMessageTemplateLst, getCommChannelLst, getDateToday, selBookingCalendar } from 'common/helpers';
+import { TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, AntTab, RichText, ColorInput, AntTabPanel, DateRangePicker, DialogZyx, FieldEditMulti, FieldView } from 'components';
+import { getDateCleaned, insCommentsBooking, getValuesFromDomain, insCalendar, hours, selCalendar, getMessageTemplateLst, getCommChannelLst, getDateToday, selBookingCalendar } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -17,7 +17,10 @@ import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/acti
 import { Box, Checkbox, FormControl, FormControlLabel, FormGroup, IconButton, ListItemIcon, Menu, MenuItem, Radio, RadioGroup, Switch, Tabs, TextField } from '@material-ui/core';
 import { Range } from 'react-date-range';
 import { CalendarIcon, DuplicateIcon } from 'icons';
-
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import {
     Search as SearchIcon,
 } from '@material-ui/icons';
@@ -29,6 +32,7 @@ import { Descendant } from 'slate';
 import { ColorChangeHandler } from 'react-color';
 import Schedule from 'components/fields/Schedule';
 import AddIcon from '@material-ui/icons/Add';
+import { exec } from 'child_process';
 
 
 interface RowSelected {
@@ -178,6 +182,9 @@ const useStyles = makeStyles((theme) => ({
         '&:hover': {
             backgroundColor: '#f5f8fa',
         }
+    },
+    colInput: {
+        width: '100%'
     }
 }));
 
@@ -205,81 +212,124 @@ const DialogBooking: React.FC<{
     openModal: boolean;
     event: Dictionary;
     booking: Dictionary | null;
-}> = ({ setOpenModal, openModal, event, booking }) => {
+    fetchData: () => void
+}> = ({ setOpenModal, openModal, event, booking, fetchData }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-    const [waitClose, setWaitClose] = useState(false);
-    const [waitOther, setWaitOther] = useState(false);
-    const changeStatusRes = useSelector(state => state.main.execute);
-
-    const multiData = useSelector(state => state.main.multiData);
-    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
-    const userType = useSelector(state => state.inbox.userType);
-    const agentSelected = useSelector(state => state.inbox.agentSelected);
-    const closingRes = useSelector(state => state.inbox.triggerCloseTicket);
-    const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm();
+    const [waitSave, setWaitSave] = useState(false);
+    const classes = useStyles();
+    const saveRes = useSelector(state => state.main.execute);
+    const { register, setValue, getValues, reset, trigger, formState: { errors } } = useForm();
 
     useEffect(() => {
-        if (waitClose) {
-            if (!closingRes.loading && !closingRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_close_ticket) }))
+        if (waitSave) {
+            if (!saveRes.loading && !saveRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_update) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
-                setWaitClose(false);
-            } else if (closingRes.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(closingRes.code || "error_unexpected_error") }))
+                setWaitSave(false);
+                fetchData()
+            } else if (saveRes.error) {
+                dispatch(showSnackbar({ show: true, success: false, message: t(saveRes.code || "error_unexpected_error") }))
                 dispatch(showBackdrop(false));
-                setWaitClose(false);
+                setWaitSave(false);
             }
         }
-    }, [closingRes, waitClose])
+    }, [saveRes, waitSave])
 
 
     useEffect(() => {
         if (openModal) {
             reset({
-                motive: '',
-                observation: ''
+                comment: booking?.comment || ''
             })
-            register('motive', { validate: (value) => ((value && value.length) || t(langKeys.field_required)) });
-            register('observation');
+            register('comment', { validate: (value) => ((value && value.length) || t(langKeys.field_required)) });
         }
     }, [openModal])
 
-    const onSubmit = handleSubmit((data) => {
-        
-    });
+    const onSubmit = async () => {
+        const allOk = await trigger();
+        if (allOk) {
+            const data = getValues();
+            const datat = {
+                calendareventid: event.calendareventid,
+                id: booking?.calendarbookingid,
+                comment: data.comment,
+            }
+             dispatch(execute(insCommentsBooking(datat)));
+             setWaitSave(true);
+             dispatch(showBackdrop(true));
+        }
+    }
 
     return (
-        <DialogZyx
+        <Dialog
             open={openModal}
-            title={"aa"}
-            buttonText1={t(langKeys.cancel)}
-            buttonText2={t(langKeys.save)}
-            handleClickButton1={() => setOpenModal(false)}
-            handleClickButton2={onSubmit}
-            button2Type="submit"
-        >
-            <div className="row-zyx">
-                <FieldSelect
-                    label={t(langKeys.ticket_reason)}
-                    className="col-12"
-                    valueDefault={getValues('motive')}
-                    onChange={(value) => setValue('motive', value ? value.domainvalue : '')}
-                    error={errors?.motive?.message}
-                    data={[]}
-                    optionDesc="domaindesc"
-                    optionValue="domainvalue"
-                />
-                <FieldEditMulti
-                    label={t(langKeys.observation)}
-                    valueDefault={getValues('observation')}
-                    className="col-12"
-                    onChange={(value) => setValue('observation', value)}
-                    maxLength={1024}
-                />
-            </div>
-        </DialogZyx>)
+            fullWidth
+            maxWidth="xs"
+            >
+            <DialogTitle>
+                {booking?.personname}
+            </DialogTitle>
+            <DialogContent>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                        <div style={{display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                            <div style={{ backgroundColor: booking?.color, width: 24, height: 24, borderRadius: 12 }}></div>
+                            <FieldView
+                                label={t(langKeys.event)}
+                                value={event?.name}
+                                className={classes.colInput}
+                            />
+                            <FieldView
+                                label={t(langKeys.location)}
+                                value={event?.location}
+                                className={classes.colInput}
+                            />
+                            <FieldView
+                                label={t(langKeys.description)}
+                                value={event?.description}
+                                className={classes.colInput}
+                            />
+                        </div>
+                        <div style={{display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                            <FieldView
+                                label={t(langKeys.schedule)}
+                                value={`${booking?.hourstart.substring(0, 5)} - ${booking?.hourend.substring(0, 5)}`}
+                                className={classes.colInput}
+                            />
+                            <FieldView
+                                label={t(langKeys.person)}
+                                value={booking?.personname}
+                                className={classes.colInput}
+                            />
+                            <FieldView
+                                label={t(langKeys.note)}
+                                value={booking?.notes}
+                                className={classes.colInput}
+                            />
+                        </div>
+                    </div>
+                    <FieldEditMulti
+                        label={t(langKeys.comments)}
+                        valueDefault={getValues('comment')}
+                        className={classes.colInput}
+                        onChange={(value) => setValue('comment', value)}
+                        maxLength={1024}
+                        error={errors?.comment?.message}
+                    />
+                </div>
+            </DialogContent>
+            <DialogActions>
+                <Button color="primary" onClick={onSubmit}>
+                    {t(langKeys.save)}
+                </Button>
+                <Button onClick={() => setOpenModal(false)}>
+                    {t(langKeys.cancel)}
+                </Button>
+            </DialogActions>
+        </Dialog >
+    )
 }
 
 const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = ({ calendarEventID, event }) => {
@@ -357,6 +407,7 @@ const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = 
                 setOpenModal={setOpenDialog}
                 openModal={openDialog}
                 event={event}
+                fetchData={fetchData}
             />
         </div>
     )

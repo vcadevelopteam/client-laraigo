@@ -3470,6 +3470,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     error_card_nofavorite: 'Debe tener al menos una tarjeta registrada como preferida',
     automaticpayment: 'Cobro automático',
     scheduled_events: 'Eventos programados',
+    event: 'Evento',
 };
 
 const esResource: ResourceLanguage = {

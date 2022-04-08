@@ -2812,6 +2812,12 @@ export const selBookingCalendar = (startdate: string, enddate: string, calendare
     },
 });
 
+export const insCommentsBooking = (parameters: Dictionary) => ({
+    method: "UFN_CALENDARYBOOKING_COMMENT",
+    key: "UFN_CALENDARYBOOKING_COMMENT",
+    parameters,
+});
+
 export const insCalendar = ({
     id = 0, description, status, type,
     code, name, locationtype, location, eventlink, color, notificationtype, messagetemplateid,
