@@ -55,6 +55,7 @@ import {
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import MuiPhoneNumber, { MaterialUiPhoneNumberProps } from 'material-ui-phone-number';
 import NumberFormat from 'react-number-format';
+import InfoIcon from '@material-ui/icons/Info';
 
 const EMOJISINDEXED = emojis.reduce((acc, item) => ({...acc, [item.emojihex]: item}), {});
 
@@ -188,9 +189,14 @@ export const Title: React.FC = ({ children }) => {
     return <label style={style}>{children}</label>;
 }
 
-export const FieldView: React.FC<{ label: string, value?: string, className?: any, styles?: CSSProperties, onclick?: (param: any) => void }> = ({ label, value, className, styles, onclick }) => (
+export const FieldView: React.FC<{ label: string, value?: string, className?: any, styles?: CSSProperties, tooltip?: string, onclick?: (param: any) => void }> = ({ label, value, className, styles, tooltip, onclick }) => (
     <div className={className}>
-        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+            {label}
+            {!!tooltip && <Tooltip title={tooltip} placement="top-start">
+                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+            </Tooltip>}
+        </Box>
         <Box onClick={onclick} lineHeight="20px" fontSize={15} color="textPrimary" style={styles}>{value || ""}</Box>
     </div>
 )

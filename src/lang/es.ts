@@ -974,6 +974,7 @@ const translation: LangKeys = {
     location: 'Ubicación',
     duration: 'Duración',
     notificationtype: 'Tipo de notificación',
+    calendar_messate_tooltip: 'Variables disponibles: timeevent, timestart, timeend, eventname, personname, personcontact',
 
     id: 'Id',
     newmessagetemplate: 'Nueva plantilla de comunicación',

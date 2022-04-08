@@ -14,7 +14,7 @@ import { langKeys } from 'lang/keys';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { getCollection, getMultiCollection, execute, resetAllMain, getCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { Box, Checkbox, FormControl, FormControlLabel, FormGroup, IconButton, ListItemIcon, Menu, MenuItem, Radio, RadioGroup, Switch, Tabs, TextField } from '@material-ui/core';
+import { Box, Checkbox, FormControl, FormControlLabel, FormGroup, IconButton, ListItemIcon, Menu, MenuItem, Radio, RadioGroup, Switch, Tabs, TextField, Tooltip } from '@material-ui/core';
 import { Range } from 'react-date-range';
 import { CalendarIcon, DuplicateIcon } from 'icons';
 import Dialog from '@material-ui/core/Dialog';
@@ -32,7 +32,7 @@ import { Descendant } from 'slate';
 import { ColorChangeHandler } from 'react-color';
 import Schedule from 'components/fields/Schedule';
 import AddIcon from '@material-ui/icons/Add';
-import { exec } from 'child_process';
+import InfoIcon from '@material-ui/icons/Info';
 
 
 interface RowSelected {
@@ -943,9 +943,15 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                 className="col-6"
                                 label={t(langKeys.message)}
                                 value={bodyMessage}
+                                tooltip={`${t(langKeys.calendar_messate_tooltip)}`}
                             />}
                             {getValues("notificationtype") === 'EMAIL' && <React.Fragment>
-                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.message)}</Box>
+                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                    {t(langKeys.message)}
+                                    <Tooltip title={`${t(langKeys.calendar_messate_tooltip)}`} placement="top-start">
+                                        <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                    </Tooltip>
+                                </Box>
                                 <div dangerouslySetInnerHTML={{ __html: bodyMessage }} />
                             </React.Fragment>
                             }

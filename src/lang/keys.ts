@@ -936,6 +936,7 @@ export const langKeys = {
     location: 'location',
     duration: 'duration',
     notificationtype: 'notificationtype',
+    calendar_messate_tooltip: 'calendar_messate_tooltip',
 
 
     no_reply_use_hsm: 'no_reply_use_hsm',
