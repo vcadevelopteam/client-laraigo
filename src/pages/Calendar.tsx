@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, AntTab, RichText, ColorInput, AntTabPanel, DateRangePicker, DialogZyx, FieldEditMulti, FieldView } from 'components';
-import { getDateCleaned, insCommentsBooking, getValuesFromDomain, insCalendar, hours, selCalendar, getMessageTemplateLst, getCommChannelLst, getDateToday, selBookingCalendar } from 'common/helpers';
+import { getDateCleaned, insCommentsBooking, getValuesFromDomain, insCalendar, hours, selCalendar, getMessageTemplateLst, getCommChannelLst, getDateToday, selBookingCalendar, dayNames } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -343,13 +343,41 @@ const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = 
         key: 'selection',
     });
     const [openDialog, setOpenDialog] = useState(false);
-    const [bookingSelected, setBookingSelected] = useState<Dictionary | null>(null)
+    const [bookingSelected, setBookingSelected] = useState<Dictionary | null>(null);
+    const [dataBooking, setDataBooking] = useState<Dictionary[]>([])
+    const { t } = useTranslation();
 
     const fetchData = () => dispatch(getCollectionAux(selBookingCalendar(
         dateRange.startDate ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10) : "",
         dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : "",
         calendarEventID
     )))
+
+    useEffect(() => {
+        if (!mainAux.error && !mainAux.loading && mainAux.key === "UFN_CALENDARBOOKING_REPORT") {
+            const cc: Dictionary = {}
+
+            const bookingDates = Object.values(mainAux.data.reduce((acc, item) => ({
+                ...acc,
+                [item.monthdate]: acc[item.monthdate] ? acc[item.monthdate] : item
+            }) ,{}))
+
+            setDataBooking(mainAux.data.map(x => {
+                const datessplit = x.monthdate.split("-");
+                const date = new Date(parseInt(datessplit[0]), parseInt(datessplit[1]) - 1, parseInt(datessplit[2]));
+
+                const month = t(`month_${((date.getMonth() + 1) + "").padStart(2, "0")}`);
+                const dayofweek = t(dayNames[date.getDay()] || "");
+                const dateString =  `${dayofweek}, ${month} ${date.getDate()}, ${date.getFullYear()}`;
+
+                return {
+                    ...x,
+                    dateString,
+                    haveDate: bookingDates.find(y => y.calendarbookingid === x.calendarbookingid)
+                };
+            }));
+        }
+    }, [mainAux])
 
     return (
         <div style={{ gap: 16, marginTop: 16, overflowY: 'auto' }}>
@@ -381,24 +409,32 @@ const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = 
                 </Button>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, overflowY: 'auto', height: '100%', marginTop: 16 }}>
-                {mainAux.data.map(x => (
-                    <div 
+                {dataBooking.map(x => (
+                    <div
                         key={x.calendarbookingid} 
-                        className={classes.itemBooking}
-                        onClick={() => {
-                            setBookingSelected(x);
-                            setOpenDialog(true);
-                        }}
                     >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                            <div style={{ backgroundColor: x.color, width: 24, height: 24, borderRadius: 12 }}></div>
-                            <div>{x.hourstart.substring(0, 5)} - {x.hourend.substring(0, 5)}</div>
+                        {!!x.haveDate && (
+                            <div style={{ marginBottom: 16 }}>
+                                {x.dateString}
+                            </div>
+                        )}
+                        <div 
+                            className={classes.itemBooking}
+                            onClick={() => {
+                                setBookingSelected(x);
+                                setOpenDialog(true);
+                            }}
+                        >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                                <div style={{ backgroundColor: x.color, width: 24, height: 24, borderRadius: 12 }}></div>
+                                <div>{x.hourstart.substring(0, 5)} - {x.hourend.substring(0, 5)}</div>
+                            </div>
+                            <div>
+                                <div>{x.personname}</div>
+                                <div>Evento: {event.name}</div>
+                            </div>
+                            <div></div>
                         </div>
-                        <div>
-                            <div>{x.personname}</div>
-                            <div>Evento: {event.name}</div>
-                        </div>
-                        <div></div>
                     </div>
                 ))}
             </div>
