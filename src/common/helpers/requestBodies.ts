@@ -141,7 +141,7 @@ export const getChannelsByOrg = (orgid?: number | null, keytmp?: any): IRequestB
     }
 });
 
-export const getValuesFromDomain = (domainname: string, keytmp?: any, orgid?: number | null,corpid?: number | null): IRequestBody => ({
+export const getValuesFromDomain = (domainname: string, keytmp?: any, orgid?: number | null, corpid?: number | null): IRequestBody => ({
     method: "UFN_DOMAIN_LST_VALORES",
     key: "UFN_DOMAIN_LST_VALORES" + (keytmp || ""),
     parameters: {
@@ -197,10 +197,10 @@ export const getClassificationLevel2 = (type: string, classificationid: number):
 export const insUser = ({ id, usr, doctype, send_password_by_email, docnum, password = "", firstname, lastname, email, pwdchangefirstlogin, type, status, description = "", operation, company = "", twofactorauthentication, registercode, billinggroupid, image, language, key = "UFN_USER_INS" }: Dictionary): IRequestBody => ({
     method: "UFN_USER_INS",
     key,
-    parameters: { id, usr, doctype, docnum, password: password, firstname, lastname, email, pwdchangefirstlogin, type, status, description, operation, company, twofactorauthentication, sendMailPassword: send_password_by_email , registercode, billinggroup: billinggroupid || 0, image, language }
+    parameters: { id, usr, doctype, docnum, password: password, firstname, lastname, email, pwdchangefirstlogin, type, status, description, operation, company, twofactorauthentication, sendMailPassword: send_password_by_email, registercode, billinggroup: billinggroupid || 0, image, language }
 });
 
-export const insOrgUser = ({ roleid, orgid, bydefault, labels, groups, channels, status, type, supervisor="", operation, redirect }: Dictionary): IRequestBody => ({
+export const insOrgUser = ({ roleid, orgid, bydefault, labels, groups, channels, status, type, supervisor = "", operation, redirect }: Dictionary): IRequestBody => ({
     method: "UFN_ORGUSER_INS",
     key: "UFN_ORGUSER_INS",
     parameters: { orgid, roleid, usersupervisor: supervisor, bydefault, labels, groups, channels, status, type, defaultsort: 1, operation, redirect }
@@ -287,7 +287,7 @@ export const getCorpSel = (id: number): IRequestBody => ({
         all: id === 0,
     }
 });
-export const getOrgSel = (id: number, corpid?:number): IRequestBody => ({
+export const getOrgSel = (id: number, corpid?: number): IRequestBody => ({
     method: "UFN_ORG_SEL",
     key: "UFN_ORG_SEL",
     parameters: {
@@ -459,7 +459,7 @@ export const getEmojiSel = (emojidec: string): IRequestBody => ({
     }
 })
 
-export const insEmoji = ({ favorite,restricted,...allParameters }: Dictionary): IRequestBody => ({
+export const insEmoji = ({ favorite, restricted, ...allParameters }: Dictionary): IRequestBody => ({
     method: "UFN_EMOJI_INS",
     key: "UFN_EMOJI_INS",
     parameters: {
@@ -540,12 +540,12 @@ export const getReportSchedulerSel = (id: number): IRequestBody => ({
         all: true
     }
 })
-export const reportSchedulerIns = ({id, title, status, origin, origintype, reportid, reportname, filterjson, frecuency, schedule, datarange, mailto, mailcc, mailsubject, mailbody,mailbodyobject, operation}: Dictionary): IRequestBody => ({
+export const reportSchedulerIns = ({ id, title, status, origin, origintype, reportid, reportname, filterjson, frecuency, schedule, datarange, mailto, mailcc, mailsubject, mailbody, mailbodyobject, operation }: Dictionary): IRequestBody => ({
     method: "UFN_REPORTSCHEDULER_INS",
     key: "UFN_REPORTSCHEDULER_INS",
     parameters: {
-        id, title, status, origin, origintype, reportid, reportname, filterjson, frecuency, schedule, datarange, mailto, mailcc, mailsubject, mailbody, operation, 
-        mailbodyobject:JSON.stringify(mailbodyobject),
+        id, title, status, origin, origintype, reportid, reportname, filterjson, frecuency, schedule, datarange, mailto, mailcc, mailsubject, mailbody, operation,
+        mailbodyobject: JSON.stringify(mailbodyobject),
         description: "",
         type: "",
     }
@@ -600,7 +600,7 @@ export const insQuickreplies = ({ id, classificationid, description, quickreply,
 export const getTimeZoneSel = () => ({
     method: "UFN_TIMEZONE_SEL",
     key: "UFN_TIMEZONE_SEL",
-    parameters: { }
+    parameters: {}
 })
 export const getClassificationSel = (id: number): IRequestBody => ({
     method: "UFN_CLASSIFICATION_SEL",
@@ -702,7 +702,7 @@ export const getCommChannelLst = (): IRequestBody => ({
     }
 });
 
-export const getValuesForTree = (type="QUICKREPLY"): IRequestBody => ({
+export const getValuesForTree = (type = "QUICKREPLY"): IRequestBody => ({
     method: "UFN_CLASSIFICATION_QUICKREPLYTREE_SEL",
     key: "UFN_CLASSIFICATION_QUICKREPLYTREE_SEL",
     parameters: {
@@ -854,7 +854,7 @@ export const getdataIntegrationManager = (id: number): IRequestBody => ({
     }
 });
 
-export const getChannelSel = (id: number,orgid?:number,corpid?:number): IRequestBody => ({
+export const getChannelSel = (id: number, orgid?: number, corpid?: number): IRequestBody => ({
     method: "UFN_COMMUNICATIONCHANNEL_SEL",
     parameters: {
         communicationchannelid: id,
@@ -2261,7 +2261,7 @@ export const heatmappage1detail = ({ communicationchannel, startdate, enddate, c
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
-export const heatmappage2 = ({ communicationchannel, startdate, enddate, closedby, company, group  }: Dictionary): IRequestBody => ({
+export const heatmappage2 = ({ communicationchannel, startdate, enddate, closedby, company, group }: Dictionary): IRequestBody => ({
     key: "UFN_REPORT_HEATMAP_PAGE2_SEL",
     method: "UFN_REPORT_HEATMAP_PAGE2_SEL",
     parameters: {
@@ -2274,7 +2274,7 @@ export const heatmappage2 = ({ communicationchannel, startdate, enddate, closedb
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
-export const heatmappage2detail1 = ({ communicationchannel, startdate, enddate, closedby, company, group, agentid,option  }: Dictionary): IRequestBody => ({
+export const heatmappage2detail1 = ({ communicationchannel, startdate, enddate, closedby, company, group, agentid, option }: Dictionary): IRequestBody => ({
     key: "UFN_REPORT_HEATMAP_PAGE2_1_AGENT_DETAIL_SEL",
     method: "UFN_REPORT_HEATMAP_PAGE2_1_AGENT_DETAIL_SEL",
     parameters: {
@@ -2289,7 +2289,7 @@ export const heatmappage2detail1 = ({ communicationchannel, startdate, enddate, 
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
-export const heatmappage2detail2 = ({ communicationchannel, startdate, enddate, closedby, company, group, agentid,option  }: Dictionary): IRequestBody => ({
+export const heatmappage2detail2 = ({ communicationchannel, startdate, enddate, closedby, company, group, agentid, option }: Dictionary): IRequestBody => ({
     key: "UFN_REPORT_HEATMAP_PAGE2_2_AGENT_DETAIL_SEL",
     method: "UFN_REPORT_HEATMAP_PAGE2_2_AGENT_DETAIL_SEL",
     parameters: {
@@ -2304,7 +2304,7 @@ export const heatmappage2detail2 = ({ communicationchannel, startdate, enddate, 
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
-export const heatmappage3 = ({ communicationchannel, startdate, enddate}: Dictionary): IRequestBody => ({
+export const heatmappage3 = ({ communicationchannel, startdate, enddate }: Dictionary): IRequestBody => ({
     key: "UFN_REPORT_HEATMAP_ASESORESCONECTADOS_SEL",
     method: "UFN_REPORT_HEATMAP_ASESORESCONECTADOS_SEL",
     parameters: {
@@ -2522,13 +2522,13 @@ export const getBusinessDocType = () => ({
 export const selInvoice = ({ corpid, orgid, year, month, invoiceid, currency, paymentstatus }: Dictionary) => ({
     method: "UFN_INVOICE_SEL",
     key: "UFN_INVOICE_SEL",
-    parameters: { corpid, orgid, year, month, invoiceid: invoiceid ? invoiceid : 0 , currency, paymentstatus},
+    parameters: { corpid, orgid, year, month, invoiceid: invoiceid ? invoiceid : 0, currency, paymentstatus },
 });
 
 export const selInvoiceClient = ({ corpid, orgid, year, month, invoiceid, currency, paymentstatus }: Dictionary) => ({
     method: "UFN_INVOICE_SELCLIENT",
     key: "UFN_INVOICE_SELCLIENT",
-    parameters: { corpid, orgid, year, month, invoiceid: invoiceid ? invoiceid : 0 , currency, paymentstatus},
+    parameters: { corpid, orgid, year, month, invoiceid: invoiceid ? invoiceid : 0, currency, paymentstatus },
 });
 
 export const deleteInvoice = ({ corpid, orgid, invoiceid }: Dictionary) => ({
@@ -2623,7 +2623,7 @@ export const billingNotificationIns = ({ year, month, countrycode, id, vcacomiss
 })
 
 /**bloquear o desbloquear personas de forma masiva */
-export const personcommunicationchannelUpdateLockedArrayIns = (table: {personid: number, personcommunicationchannel: string, locked: boolean}[]) => ({
+export const personcommunicationchannelUpdateLockedArrayIns = (table: { personid: number, personcommunicationchannel: string, locked: boolean }[]) => ({
     method: "UFN_PERSONCOMMUNICATIONCHANNEL_UPDATE_LOCKED_ARRAY",
     key: "UFN_PERSONCOMMUNICATIONCHANNEL_UPDATE_LOCKED_ARRAY",
     parameters: { table: JSON.stringify(table) },
@@ -2722,7 +2722,7 @@ export const cancelSuscription = () => ({
 export const getMeasureUnit = (): IRequestBody => ({
     method: "UFN_MEASUREUNIT_SEL",
     key: "UFN_MEASUREUNIT_SEL",
-    parameters: { },
+    parameters: {},
 });
 
 export const getConversationsWhatsapp = ({ startdate, enddate }: Dictionary): IRequestBody => ({
@@ -2743,7 +2743,7 @@ export const getInvoiceDetail = (corpid: number, orgid: number, invoiceid: numbe
 export const checkUserPaymentPlan = (): IRequestBody => ({
     key: "UFN_USER_PAYMENTPLAN_CHECK",
     method: "UFN_USER_PAYMENTPLAN_CHECK",
-    parameters: { }
+    parameters: {}
 });
 
 export const selBalanceData = ({ corpid, orgid, balanceid, type, operationtype, all }: Dictionary) => ({
@@ -2793,6 +2793,93 @@ export const billingReportConversationWhatsApp = ({ corpid, orgid, year, month }
     parameters: { corpid, orgid, year, month }
 })
 
+export const selCalendar = (id: number = 0) => ({
+    method: "UFN_CALENDAREVENT_SEL",
+    key: "UFN_CALENDAREVENT_SEL",
+    parameters: {
+        id,
+        all: id === 0,
+    },
+});
+export const selBookingCalendar = (startdate: string, enddate: string, calendareventid: number) => ({
+    method: "UFN_CALENDARBOOKING_REPORT",
+    key: "UFN_CALENDARBOOKING_REPORT",
+    parameters: {
+        startdate,
+        enddate,
+        calendareventid,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    },
+});
+
+export const insCommentsBooking = (parameters: Dictionary) => ({
+    method: "UFN_CALENDARYBOOKING_COMMENT",
+    key: "UFN_CALENDARYBOOKING_COMMENT",
+    parameters,
+});
+
+export const insCalendar = ({
+    id = 0, description, status, type,
+    code, name, locationtype, location, eventlink, color, notificationtype, messagetemplateid,
+    daterange, daysduration, startdate, enddate,
+    timeduration, timeunit,
+    availability,
+    timebeforeeventduration, timebeforeeventunit, timeaftereventduration, timeaftereventunit,
+    increments,
+    operation,
+    communicationchannelid
+}: Dictionary): IRequestBody => ({
+    method: "UFN_CALENDAREVENT_INS",
+    key: "UFN_CALENDAREVENT_INS",
+    parameters: {
+        id, description, status, type,
+        code, name, locationtype, location, eventlink, color, notificationtype, messagetemplateid,
+        daterange, daysduration, daystype: "CALENDAR", startdate, enddate,
+        timeduration, timeunit,
+        availability: JSON.stringify(availability),
+        timebeforeeventduration, timebeforeeventunit, timeaftereventduration, timeaftereventunit,
+        increments,
+        operation,
+        communicationchannelid: communicationchannelid || 0
+    }
+});
+
+export const getEventByCode = (orgid: number, code: string, personid: number): IRequestBody => ({
+    key: "QUERY_EVENT_BY_CODE",
+    method: "QUERY_EVENT_BY_CODE",
+    parameters: {
+        orgid, code, personid
+    }
+});
+
+export const validateCalendaryBooking = (params: Dictionary): IRequestBody => ({
+    key: "UFN_CALENDARYBOOKING_SEL_DATETIME",
+    method: "UFN_CALENDARYBOOKING_SEL_DATETIME",
+    parameters: {
+        ...params,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+export const CalendaryBookingReport = ({ period = "", startdate, enddate, take, skip }: Dictionary): IRequestBody => ({
+    key: "UFN_CALENDARYBOOKING_REPORT",
+    method: "UFN_CALENDARYBOOKING_REPORT",
+    parameters: {
+        period, startdate, enddate, take, skip,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+
+export const insBookingCalendar = (params: Dictionary): IRequestBody => ({
+    key: "UFN_CALENDARYBOOKING_INS",
+    method: "UFN_CALENDARYBOOKING_INS",
+    parameters: params
+});
+
+export const getPersonFromBooking = (params: Dictionary): IRequestBody => ({
+    key: "QUERY_GET_PERSON_FROM_BOOKING",
+    method: "QUERY_GET_PERSON_FROM_BOOKING",
+    parameters: params
+});
 export const getProductCatalogSel = (id: number = 0, category: string = ''): IRequestBody => ({
     method: "UFN_PRODUCTCATALOG_SEL",
     parameters: {

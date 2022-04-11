@@ -1008,7 +1008,7 @@ const TableZyx = React.memo(({
                         <Box>
                             <Trans
                                 i18nKey={langKeys.tableShowingRecordOf}
-                                values={{ itemCount: page.length, totalItems: preGlobalFilteredRows.length }}
+                                values={{ itemCount: page.length, totalItems: globalFilteredRows.length }}
                             />
                         </Box>
                         <Box>

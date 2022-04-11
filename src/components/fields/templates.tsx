@@ -55,6 +55,7 @@ import {
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import MuiPhoneNumber, { MaterialUiPhoneNumberProps } from 'material-ui-phone-number';
 import NumberFormat from 'react-number-format';
+import InfoIcon from '@material-ui/icons/Info';
 
 const EMOJISINDEXED = emojis.reduce((acc, item) => ({...acc, [item.emojihex]: item}), {});
 
@@ -188,9 +189,14 @@ export const Title: React.FC = ({ children }) => {
     return <label style={style}>{children}</label>;
 }
 
-export const FieldView: React.FC<{ label: string, value?: string, className?: any, styles?: CSSProperties, onclick?: (param: any) => void }> = ({ label, value, className, styles, onclick }) => (
+export const FieldView: React.FC<{ label: string, value?: string, className?: any, styles?: CSSProperties, tooltip?: string, onclick?: (param: any) => void }> = ({ label, value, className, styles, tooltip, onclick }) => (
     <div className={className}>
-        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+            {label}
+            {!!tooltip && <Tooltip title={tooltip} placement="top-start">
+                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+            </Tooltip>}
+        </Box>
         <Box onClick={onclick} lineHeight="20px" fontSize={15} color="textPrimary" style={styles}>{value || ""}</Box>
     </div>
 )
@@ -436,7 +442,7 @@ export const CurrencyFieldEdit: FC<ICurrencyFieldEdit> = ({
     );
 }
 
-export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {}, inputProps = {} }) => {
+export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {}, inputProps = {}, variant = "standard" }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -451,6 +457,7 @@ export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disable
                 color="primary"
                 fullWidth
                 disabled={disabled}
+                variant={variant}
                 type={type}
                 error={!!error}
                 value={value}
@@ -509,7 +516,7 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
 export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({multiline=false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false }) => {
     const { t } = useTranslation();
     const [value, setValue] = useState<Dictionary | null>(null);
-
+    
     useEffect(() => {
         if (valueDefault && data.length > 0) {
             const optionfound = data.find((o: Dictionary) => o[optionValue] === valueDefault);

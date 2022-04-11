@@ -567,3 +567,107 @@ export const getLocaleDateString = () => {
 
     return formats[navigator.language] || "dd/MM/yyyy";
 }
+
+export const calculateDateFromMonth = (year: number, month: number) => {
+    const currentDate = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())
+    const countDays = new Date(year, month + 1, 0).getDate();
+    const dayLastDay = new Date(year, month + 1, 0).getDay();
+    const dayPreviewMonth = new Date(year, month, 1).getDay();
+
+    const daysMonth = Array.from(Array(countDays).keys()).map(x => {
+        const date = new Date(year, month, x + 1);
+        return {
+            date: date,
+            dateString: date.toISOString().substring(0, 10),
+            dow: date.getDay(),
+            dom: date.getDate(),
+            isToday: currentDate.getTime() === date.getTime(),
+            isDayPreview: date < currentDate
+        }
+    })
+
+    const daysPreviewMonth = Array.from(Array(dayPreviewMonth).keys()).map(x => {
+        const date = new Date(year, month, - x);
+        return {
+            date: date,
+            dateString: date.toISOString().substring(0, 10),
+            dow: date.getDay(),
+            dom: date.getDate(),
+            isDayPreview: date < currentDate
+        }
+    }).reverse()
+
+    const daysNextMonth = Array.from(Array(6 - dayLastDay).keys()).map(x => {
+        const date = new Date(year, month + 1, x + 1);
+        return {
+            date: date,
+            dateString: date.toISOString().substring(0, 10),
+            dow: date.getDay(),
+            dom: date.getDate(),
+            isDayPreview: date < currentDate
+        }
+    })
+
+    return [...daysPreviewMonth, ...daysMonth, ...daysNextMonth];
+}
+
+export const hours = [
+    {desc: "00:00", value: "00:00:00"},
+    {desc: "00:30", value: "00:30:00"},
+    {desc: "01:00", value: "01:00:00"},
+    {desc: "01:30", value: "01:30:00"},
+    {desc: "02:00", value: "02:00:00"},
+    {desc: "02:30", value: "02:30:00"},
+    {desc: "03:00", value: "03:00:00"},
+    {desc: "03:30", value: "03:30:00"},
+    {desc: "04:00", value: "04:00:00"},
+    {desc: "04:30", value: "04:30:00"},
+    {desc: "05:00", value: "05:00:00"},
+    {desc: "05:30", value: "05:30:00"},
+    {desc: "06:00", value: "06:00:00"},
+    {desc: "06:30", value: "06:30:00"},
+    {desc: "07:00", value: "07:00:00"},
+    {desc: "07:30", value: "07:30:00"},
+    {desc: "08:00", value: "08:00:00"},
+    {desc: "08:30", value: "08:30:00"},
+    {desc: "09:00", value: "09:00:00"},
+    {desc: "09:30", value: "09:30:00"},
+    {desc: "10:00", value: "10:00:00"},
+    {desc: "10:30", value: "10:30:00"},
+    {desc: "11:00", value: "11:00:00"},
+    {desc: "11:30", value: "11:30:00"},
+    {desc: "12:00", value: "12:00:00"},
+    {desc: "12:30", value: "12:30:00"},
+    {desc: "13:00", value: "13:00:00"},
+    {desc: "13:30", value: "13:30:00"},
+    {desc: "14:00", value: "14:00:00"},
+    {desc: "14:30", value: "14:30:00"},
+    {desc: "15:00", value: "15:00:00"},
+    {desc: "15:30", value: "15:30:00"},
+    {desc: "16:00", value: "16:00:00"},
+    {desc: "16:30", value: "16:30:00"},
+    {desc: "17:00", value: "17:00:00"},
+    {desc: "17:30", value: "17:30:00"},
+    {desc: "18:00", value: "18:00:00"},
+    {desc: "18:30", value: "18:30:00"},
+    {desc: "19:00", value: "19:00:00"},
+    {desc: "19:30", value: "19:30:00"},
+    {desc: "20:00", value: "20:00:00"},
+    {desc: "20:30", value: "20:30:00"},
+    {desc: "21:00", value: "21:00:00"},
+    {desc: "21:30", value: "21:30:00"},
+    {desc: "22:00", value: "22:00:00"},
+    {desc: "22:30", value: "22:30:00"},
+    {desc: "23:00", value: "23:00:00"},
+    {desc: "23:30", value: "23:30:00"},
+]
+
+export const dayNames = [
+    'sunday',
+    'monday',
+    'tuesday',
+    'wednesday',
+    'thursday',
+    'friday',
+    'saturday',
+]

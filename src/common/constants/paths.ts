@@ -27,6 +27,10 @@ const paths = {
         path: "/sign-up/:token",
         resolve: (token: string) => `/sign-up/${token}`,
     },
+    CALENDAR_EVENT: {
+        path: "/events/:orgid/:eventcode",
+        resolve: (orgid: number, eventcode: string) => `/events/${orgid}/${eventcode}`,
+    },
     LOCATION: {
         path: "/getLocations/:token",
         resolve: (token: string) => `/getLocations/${token}`,
@@ -134,6 +138,7 @@ const paths = {
         resolve: (leadId: string | number) => `/crm/leads/${leadId}`,
     },
     KPIMANAGER: '/kpimanager',
+    CALENDAR: '/calendar',
     CHNAGE_PWD_FIRST_LOGIN: '/changePasswordOnFirstLogin',
     RECOVER_PASSWORD: {
         path: '/recoverpassword/:token',

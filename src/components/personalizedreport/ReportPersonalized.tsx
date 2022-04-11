@@ -257,30 +257,35 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
 
     useEffect(() => {
         if (!mainDynamic.loading && !mainDynamic.error) {
-            const columnsDate = columns.filter(x => ["timestamp without time zone", "date"].includes(x.type));
+            const columnsDate = columns.filter(x => ["timestamp without time zone", "date", "boolean"].includes(x.type));
             if (columnsDate.length > 0) {
                 setDataCleaned(mainDynamic.data.map(x => {
                     columnsDate.forEach(y => {
                         const columnclean = y.columnname.replace(".", "");
-                        if (!!x[columnclean]) {
-                            const date = new Date(x[columnclean]);
-                            if (!isNaN(date.getTime())) {
-                                if (y.type === "timestamp without time zone")
-                                    x[columnclean] = date.toLocaleString();
-                                else
-                                    x[columnclean] = date.toLocaleDateString();
-                            } else {
-                                const regex = /[0-9]{4}-[0-9]{2}-[0-9]{2}\s[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{0,6}Z/gi
-                                const resRegex = (x[columnclean] + "").matchAll(regex);
-                                Array.from(resRegex).forEach(z => {
-                                    if (z) {
-                                        if (y.type === "timestamp without time zone")
-                                            x[columnclean] = x[columnclean].replace(z, new Date(z[0]).toLocaleString());
-                                        else
-                                            x[columnclean] = x[columnclean].replace(z, new Date(z[0]).toLocaleDateString());
-                                    }
-                                })
+                        if (["timestamp without time zone", "date"].includes(y.type)) {
+                            if (!!x[columnclean]) {
+                                const date = new Date(x[columnclean]);
+                                if (!isNaN(date.getTime())) {
+                                    if (y.type === "timestamp without time zone")
+                                        x[columnclean] = date.toLocaleString();
+                                    else
+                                        x[columnclean] = date.toLocaleDateString();
+                                } else {
+                                    const regex = /[0-9]{4}-[0-9]{2}-[0-9]{2}\s[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{0,6}Z/gi
+                                    const resRegex = (x[columnclean] + "").matchAll(regex);
+                                    Array.from(resRegex).forEach(z => {
+                                        if (z) {
+                                            if (y.type === "timestamp without time zone")
+                                                x[columnclean] = x[columnclean].replace(z, new Date(z[0]).toLocaleString());
+                                            else
+                                                x[columnclean] = x[columnclean].replace(z, new Date(z[0]).toLocaleDateString());
+                                        }
+                                    })
+                                }
                             }
+                        }
+                        if (["boolean"].includes(y.type)) {
+                            x[columnclean] = `${x[columnclean]}`
                         }
                     })
                     return x;
