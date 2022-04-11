@@ -1437,7 +1437,9 @@ const Calendar: FC = () => {
     const [dataGrid, setDataGrid] = useState<any[]>([]);
 
     useEffect(() => {
-        setDataGrid(mainResult.mainData.data)
+        let data = mainResult.mainData.data
+        data = data.map(x=>({...x,fullduration: x.timeduration + " " + t((langKeys as any)[`${x.timeunit?.toLowerCase()}${x.timeduration > 1 ? '_plural' : ''}`])}))
+        setDataGrid(data)
     }, [mainResult.mainData.data])
 
     const handleRegister = () => {
@@ -1509,11 +1511,7 @@ const Calendar: FC = () => {
             },
             {
                 Header: t(langKeys.duration),
-                accessor: 'duration',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (<div>{row.timeduration} {t((langKeys as any)[`${row.timeunit?.toLowerCase()}${row.timeduration > 1 ? '_plural' : ''}`])}</div>)
-                }
+                accessor: 'fullduration',
             },
             {
                 Header: t(langKeys.status),
@@ -1582,6 +1580,7 @@ const Calendar: FC = () => {
         return (
             <div style={{ width: "100%" }}>
                 <TableZyx
+                    filterGeneral={false}
                     onClickRow={handleEdit}
                     columns={columns}
                     titlemodule={t(langKeys.calendar_plural, { count: 2 })}
