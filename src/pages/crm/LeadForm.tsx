@@ -1480,8 +1480,10 @@ export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({
                                                 {activity.status === "PROGRAMADO" && <div
                                                     className={clsx(classes.activityFor, classes.row, classes.centerRow, classes.hoverCursor)}
                                                     onClick={() => {
+                                                        console.log(activity)
                                                         const body = leadActivityIns({
                                                             ...activity,
+                                                            sendhsm: '{}',
                                                             username: null,
                                                             status: "ELIMINADO",
                                                             operation: "UPDATE",
@@ -1523,6 +1525,7 @@ export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({
                     if (action === "DISCARD" || !openDoneModal.payload) return;
                     const body = leadActivityIns({
                         ...openDoneModal.payload,
+                        sendhsm: '{}',
                         username: null,
                         status: "REALIZADO",
                         operation: "UPDATE",

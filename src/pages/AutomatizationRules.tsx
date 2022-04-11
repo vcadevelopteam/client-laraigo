@@ -1,12 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import ClearIcon from '@material-ui/icons/Clear';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SaveIcon from '@material-ui/icons/Save';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import TableZyx from '../components/fields/table-simple';
@@ -18,10 +13,8 @@ import { AutomatizationRuleSave, Dictionary, MultiData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { getCollection, getMultiCollection, execute, getCollectionAux, resetMainAux, resetAllMain } from 'store/main/actions';
+import { getCollection, getMultiCollection, execute, resetAllMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { useHistory } from 'react-router-dom';
-import paths from 'common/constants/paths';
 import { getLeadTemplates } from 'store/lead/actions';
 
 const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'custom'].map(x => ({ key: x }))
@@ -38,14 +31,6 @@ interface DetailProps {
     multiData: MultiData[];
     fetchData?: () => void;
     arrayBread: any;
-}
-
-interface ModalProps {
-    data: RowSelected;
-    dataDomain: Dictionary[] | null;
-    openModal: boolean;
-    setOpenModal: (open: boolean) => void;
-    updateRecords?: (record: any) => void;
 }
 
 
@@ -212,7 +197,7 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
                             error={errors?.description?.message}
                         />
                         <FieldSelect
-                            label={t(langKeys.channel)}
+                            label={t(langKeys.shippingchannel)}
                             className="col-6"
                             onChange={(value) => setValue('communicationchannelid', value?.communicationchannelid||0)}
                             valueDefault={getValues('communicationchannelid')}
@@ -368,7 +353,7 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
                                         setValue(`variables.${i}.variable`, value.key)
                                         trigger(`variables.${i}.variable`)
                                     }}
-                                    error={errors?.variables?.[i]?.text?.message}
+                                    error={errors?.variables?.[i]?.variable?.message}
                                     data={variables}
                                     uset={true}
                                     prefixTranslation=""
@@ -379,15 +364,15 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
                                     <FieldEditArray
                                         key={"custom_" + item.id}
                                         fregister={{
-                                            ...register(`variables.${i}.text`, {
+                                            ...register(`variables.${i}.variable`, {
                                                 validate: (value: any) => (value && value.length) || t(langKeys.field_required)
                                             })
                                         }}
                                         prefixTranslation=""
                                         className={classes.field}
                                         valueDefault={item.value}
-                                        error={errors?.variables?.[i]?.text?.message}
-                                        onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
+                                        error={errors?.variables?.[i]?.variable?.message}
+                                        onChange={(value) => setValue(`variables.${i}.variable`, "" + value)}
                                     />
                                 }
                             </div>
@@ -400,7 +385,6 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
 }
 
 const AutomatizationRules: FC = () => {
-    const history = useHistory();
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const mainResult = useSelector(state => state.main);
@@ -438,7 +422,7 @@ const AutomatizationRules: FC = () => {
                 }
             },
             {
-                Header: t(langKeys.communicationchannel),
+                Header: t(langKeys.shippingchannel),
                 accessor: 'communicationchanneldesc',
                 NoFilter: false
             },
@@ -587,7 +571,7 @@ const AutomatizationRules: FC = () => {
                         <FieldSelect
                             onChange={(value) => {setfilerchanneltype(value?.communicationchannelid||0);fetchData(value?.communicationchannelid||0)}}
                             size="small"
-                            label={t(langKeys.channel)}
+                            label={t(langKeys.shippingchannel)}
                             style={{ maxWidth: 300, minWidth: 200 }}
                             variant="outlined"
                             loading={mainResult.multiData.loading}

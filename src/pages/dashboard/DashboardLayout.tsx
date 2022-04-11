@@ -42,7 +42,7 @@ interface Items {
 }
 
 const months = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "set", "oct", "nov", "dic"]
-const monthColor=["#c51314","#a255de","#5fbeeb","#ffffff","#2a770b","#cb7ec6","#ff0100", "#5cea22", "#00076b", "#ff01c0", "#ffcc00", "#5372ff"]
+const monthColor=["#0000ff", "#ff0000", "#ffff00", "#ff0080", "#00aae4","#00ffff","#76bd17","#ff00ff","#4c2882","#804000","#008f39","#ff8000"]
 
 const colors=["#8884d8", "#82ca9d", "#d32248", "#1dc1fa", "#2b5ef4", "#7be2aa", "#c58725", "#692f32","#8f97b8", "#57be99"]
 
@@ -765,6 +765,7 @@ const LayoutBar: FC<LayoutBarProps> = ({ data,alldata, tickFormatter, tooltipFor
                     let newlabel = x.label.replace("day","")
                     let month = newlabel.slice(0,newlabel.indexOf("-"))
                     newlabel = newlabel.replace(`${month}-`, `${t(months[Number(month)-1])} `)
+                    console.log(monthColor[Number(month)-1])
                     return ({...x,label:newlabel, color:monthColor[Number(month)-1]})
                 })
             }

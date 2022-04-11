@@ -519,6 +519,7 @@ const translation: LangKeys = {
     businesshours: "Horario de atención",
     starttime: "Hora de inicio",
     finishtime: "Hora de fin",
+    linkcopysuccesfull:"Enlace copiado con éxito",
     newsupportplan: "Nuevo plan de soporte",
     newcontractedplanbyperiod: "Nuevo plan contratado",
     newconversationplan: "Nuevo costo WhatsApp basado en conversaciones",
@@ -630,6 +631,7 @@ const translation: LangKeys = {
     note: "Nota",
 
     username: 'Usuario',
+    copyLink: "Copiar enlace",
     password: 'Contraseña',
     confirmpassword: 'Confirmar contraseña',
 
@@ -655,6 +657,7 @@ const translation: LangKeys = {
     graphic_report_of: 'Reporte gráfico de {{report}} por {{column}}',
     grid_view: 'Vista lista',
     in_white: 'En blanco',
+    shippingchannel: "Canal de envío",
     view_table: 'Ver tabla',
     reportscheduler: "Envíos Automáticos",
     reportscheduler_singular: "Envío Automático",

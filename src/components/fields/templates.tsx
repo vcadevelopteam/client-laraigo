@@ -651,7 +651,7 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
     )
 }
 
-export const FieldMultiSelectFreeSolo: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null, variant = "standard", readOnly = false }) => {
+export const FieldMultiSelectFreeSolo: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "",onBlur, onChange, disabled = false, loading, className = null, style = null, variant = "standard", readOnly = false }) => {
 
     const [optionsSelected, setOptionsSelected] = useState<any[]>([]);
 
@@ -712,6 +712,9 @@ export const FieldMultiSelectFreeSolo: React.FC<TemplateAutocompleteProps> = ({ 
                                 </React.Fragment>
                             ),
                             readOnly,
+                        }}
+                        onBlur={(e) => {
+                            onBlur && onBlur(e.target.value);
                         }}
                         error={!!error}
                         helperText={error || null}

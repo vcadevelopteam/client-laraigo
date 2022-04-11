@@ -1263,6 +1263,7 @@ const translation: LangKeys = {
     error_users_limit: "The maximum number of users was reached({{limit}}), upgrade your plan to continue",
     timeofday: "Time of day",
     calendarview: "Calendar view",
+    linkcopysuccesfull:"Link copied successfully",
     distributionTMOtooltip: "Shows the percentage of conversations that fall in the TMO minute range.",
     distributionTMEtooltip: "Shows the percentage of conversations that fall in the TME minute range.",
     distributionProductivitytooltip: "Shows the number of tickets that advisors attend to on average.",
@@ -1631,6 +1632,7 @@ const translation: LangKeys = {
 
     dashboard_operationalpush_categoryrank_hsmcategory: 'HSM Category',
     dashboard_operationalpush_categoryrank_hsm: 'HSM',
+    copyLink: "Copy Link",
 
     dashboard_operationalpush_hsmrank_hsm: 'HSM',
     dashboard_operationalpush_hsmrank_sentdate: 'Sent Date',
@@ -1690,6 +1692,7 @@ const translation: LangKeys = {
     report_loginhistory_user: 'User',
     report_loginhistory_username: 'Username',
     report_loginhistory_status: 'Status',
+    shippingchannel: "Shipping channel",
     uniqueclients: "Unique contacts",
     report_loginhistory_status_help: `- Inbox: In receipt tray.
 - Login: Session initiated.
