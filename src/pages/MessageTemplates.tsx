@@ -368,7 +368,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
     useEffect(() => {
         if (waitUploadFile) {
             if (!uploadResult.loading && !uploadResult.error) {
-                setValue('attachment', [getValues('attachment'), uploadResult?.url || ''].join(','))
+                setValue('attachment', (!!getValues('attachment') ? [getValues('attachment'), uploadResult?.url || ''] : [uploadResult?.url || '']).join(','));
                 setWaitUploadFile(false);
             } else if (uploadResult.error) {
                 setWaitUploadFile(false);

@@ -754,7 +754,7 @@ const withImages = (editor: BaseEditor & ReactEditor) => {
                     reader.readAsDataURL(file);
                 }
             }
-        } else if (isUrl(text)) {
+        } else if (isUrl(text) && /(apng|avif|gif|jpg|jpeg|jfif|png|svg)$/i.test(text)) {
             insertImage(editor, text);
         } else {
             insertData(data);
