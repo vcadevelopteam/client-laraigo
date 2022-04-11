@@ -104,6 +104,7 @@ export interface ICrmLeadActivitySave {
     communicationchannelid?: number;
     communicationchanneltype?: string;
     hsmtemplatename?: string;
+    hsmtemplatetype?: string;
     variables?: any[]
 }
 export interface AutomatizationRuleSave {
@@ -165,6 +166,10 @@ export interface IcrmLeadActivity {
     feedback: string | null;
     /**array json type: Descendant[] (RichText) */
     detailjson: string;
+
+    communicationchannelid?: number;
+    hsmtemplateid?: number;
+    hsmtemplatetype?: string;
 }
 
 export interface ICrmColumn {

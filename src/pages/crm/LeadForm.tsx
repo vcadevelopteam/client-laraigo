@@ -1587,7 +1587,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
     const [, refresh] = useState(false);
     const [domainsTotal, setDomainsTotal] = useState<Dictionary[]>([])
     const [bodyMessage, setBodyMessage] = useState('');
-    const [bodyCleaned, setBodyCleaned] = useState('');
+    // const [bodyCleaned, setBodyCleaned] = useState('');
     const [assigntoinitial, setassigntoinitial] = useState(0)
 
     useEffect(() => {
@@ -1643,8 +1643,10 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             feedback: '',
             detailjson: JSON.stringify(initialValue),
 
-            hsmtemplateid: 0,
             hsmtemplatename: '',
+            hsmtemplateid: activity?.hsmtemplateid || 0,
+            communicationchannelid: activity?.communicationchannelid || 0,
+            hsmtemplatetype: activity?.hsmtemplatetype || "",
             variables: []
         },
     });
@@ -1706,6 +1708,9 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
 
     useEffect(() => {
         setDetail(activity?.detailjson ? JSON.parse(activity?.detailjson) : initialValue);
+        
+        const template = templates.data.find(x => x.id === (activity?.hsmtemplateid || 0));
+
         reset({
             leadid: leadid,
             leadactivityid: activity?.leadactivityid || 0,
@@ -1720,10 +1725,14 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             feedback: '',
             detailjson: activity?.detailjson || JSON.stringify(initialValue),
 
-            hsmtemplateid: 0,
-            hsmtemplatename: '',
+            hsmtemplatename: template?.name || "",
+            hsmtemplateid: activity?.hsmtemplateid || 0,
+            communicationchannelid: activity?.communicationchannelid || 0,
+            hsmtemplatetype: template?.type || "",
             variables: []
         });
+
+        setBodyMessage(template?.body || "")
 
         registerFormFieldOptions();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1763,7 +1772,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             // const year = dueate.toLocaleDateString("en-US", { year: 'numeric' });
             // const time = dueate.toLocaleDateString("en-US", { hour: '2-digit', minute: '2-digit' });
             if (values.type === "automated") {
-                setBodyCleaned(body => {
+                setBodyMessage(body => {
                     values?.variables?.forEach((x: Dictionary) => {
                         body = body.replace(`{{${x.name}}}`, x.variable !== 'custom' ? (lead.value as Dictionary)[x.variable] : x.text)
                     })
@@ -1771,12 +1780,12 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                 })
             }
             const bb = values.type === "automated" ? {
-                hsmtemplateid: values.hsmtemplateid,
                 hsmtemplatename: values.hsmtemplatename,
-                communicationchannelid: values?.communicationchannelid!!,
-                communicationchanneltype: values?.communicationchanneltype!!,
-                platformtype: "",
-                type: 'HSM',
+                hsmtemplateid: values.hsmtemplateid,
+                communicationchannelid: values?.communicationchannelid || "",
+                communicationchanneltype: values?.communicationchanneltype || "",
+                platformtype: values?.communicationchanneltype || "",
+                type: values?.hsmtemplatetype || "",
                 shippingreason: "LEAD",
                 listmembers: [{
                     personid: lead.value?.personid || 0,
@@ -1794,7 +1803,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
 
 
             if (values.leadactivityid === 0 || values.assigneduser !== assigntoinitial) {
-                const supervisorid = advisers.data.find(x => x.userid === values.assigneduser).supervisorid;
+                const supervisorid = advisers.data.find(x => x.userid === values.assigneduser)?.supervisorid || 0;
                 const data = {
                     leadid: lead.value?.leadid || 0,
                     leadname: lead.value?.description,
@@ -1819,6 +1828,8 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                 ...values,
                 status,
                 detailjson: JSON.stringify(detail),
+                hsmtemplateid: values.hsmtemplateid,
+                communicationchannelid: values?.communicationchannelid || 0,
                 sendhsm: values.type === "automated" ? JSON.stringify(bb) : "",
                 // duedate: dueate.toUTCString()
                 // duedate: `${year}-${month}-${day}T${time.split(",")[1]}`,
@@ -1835,9 +1846,10 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
     const onSelectTemplate = (value: Dictionary) => {
         if (value) {
             setBodyMessage(value.body);
-            setValue('hsmtemplateid', value ? value.id : 0);
-            setValue('hsmtemplatename', value ? value.name : '');
-            setBodyCleaned(value.body);
+            setValue('hsmtemplateid', value?.id || 0);
+            setValue('hsmtemplatename', value?.name || '');
+            setValue('hsmtemplatetype', value?.type || '');
+            // setBodyCleaned(value.body);
             const variablesList = value.body.match(/({{)(.*?)(}})/g) || [];
             const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
             setValue('variables', varaiblesCleaned.map((x: string) => ({ name: x, text: '', type: 'text' })));
@@ -1896,8 +1908,8 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                             error={errors?.description?.message}
                                         />
                                     </Grid>
-                                    {getValues('type') === "automated" &&
-                                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ borderTop: '1px solid #e1e1e1', paddingTop: 8, marginTop: 8 }}>
+                                    {(getValues('type') === "automated" && getValues("hsmtemplatetype") === "HSM") &&
+                                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ paddingTop: 8, marginTop: 8 }}>
                                             <FieldSelect
                                                 label={t(langKeys.channel)}
                                                 className={classes.field}
@@ -1905,6 +1917,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                                 onChange={value => {
                                                     setValue('communicationchannelid', value?.communicationchannelid || 0);
                                                     setValue('communicationchanneltype', value?.type || "");
+                                                    // trigger("communicationchanneltype")
                                                 }}
                                                 error={errors?.communicationchannelid?.message}
                                                 data={channels.data}
@@ -1968,7 +1981,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                     </Grid>
 
                                     {getValues('type') === "automated" &&
-                                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ borderTop: '1px solid #e1e1e1', paddingTop: 8, marginTop: 8 }}>
+                                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ paddingTop: 8, marginTop: 8 }}>
                                             {fields.map((item: Dictionary, i) => (
                                                 <div key={item.id}>
                                                     <FieldSelect
