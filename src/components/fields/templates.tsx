@@ -725,6 +725,92 @@ export const FieldMultiSelectFreeSolo: React.FC<TemplateAutocompleteProps> = ({ 
         </div>
     )
 }
+export const FieldMultiSelectEmails: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "",onBlur, onChange, disabled = false, loading, className = null, style = null, variant = "standard", readOnly = false }) => {
+
+    const [optionsSelected, setOptionsSelected] = useState<any[]>([]);
+
+
+    useEffect(() => {
+        if (valueDefault && data.length > 0) {
+            const optionsSelected = data.filter(o => valueDefault.split(",").indexOf(o[optionValue].toString()) > -1)
+            setOptionsSelected(optionsSelected);
+        } else {
+            setOptionsSelected([]);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [valueDefault, data]);
+    const el = React.useRef<null | HTMLDivElement>(null);
+    const ke = new KeyboardEvent("keydown", {bubbles: true, cancelable: true, keyCode: 13});
+
+    return (
+        <div className={className}>
+            {variant === "standard" &&
+                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+            }
+            <Autocomplete
+                multiple
+                freeSolo
+                filterSelectedOptions
+                style={style}
+                disabled={disabled}
+                loading={loading}
+                ref={el}
+                value={optionsSelected}
+                renderOption={(item, { selected }: any) => (
+                    <React.Fragment>
+                        <Checkbox
+                            icon={icon}
+                            checkedIcon={checkedIcon}
+                            style={{ marginRight: 8 }}
+                            checked={selected}
+                            readOnly={readOnly}
+                        />
+                        {item[optionDesc]}
+                    </React.Fragment>
+                )}
+                onInput={(e:any) => {
+                    if(e.target.value.indexOf(",") > -1){
+                        const values = e.target.value.split(",");
+                        e.target.value = values[0]
+                        el?.current?.dispatchEvent(ke);
+                    }
+                }}
+                onChange={(_, values, action, option) => {
+                    if (readOnly) return;
+                    setOptionsSelected(values);
+                    onChange && onChange(values, { action, option });
+                }}
+                size="small"
+                getOptionLabel={option => String(option ? option[optionDesc] || option : '')}
+                options={data}
+                renderInput={(params) => 
+                    {
+                        return (<TextField
+                        {...params}
+                        label={variant !== "standard" && label}
+                        variant={variant}
+                        InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                                <React.Fragment>
+                                    {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                    {params.InputProps.endAdornment}
+                                </React.Fragment>
+                            ),
+                            readOnly,
+                        }}
+                        onBlur={(e) => {
+                            el?.current?.dispatchEvent(ke);
+                        }}
+                        error={!!error}
+                        helperText={error || null}
+
+                    />)}
+                }
+            />
+        </div>
+    )
+}
 
 interface TemplateSwitchProps extends InputProps {
     className?: any;

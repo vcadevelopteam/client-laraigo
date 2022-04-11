@@ -8,7 +8,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import TableZyx from '../components/fields/table-simple';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { TemplateIcons, TemplateBreadcrumbs, FieldEdit, FieldSelect, TitleDetail, RichText, FieldMultiSelectFreeSolo } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, FieldEdit, FieldSelect, TitleDetail, RichText, FieldMultiSelectEmails } from 'components';
 import { getDomainValueSel, getReportSchedulerSel, getValuesFromDomain, reportSchedulerIns , getReportschedulerreportsSel} from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import { useTranslation } from 'react-i18next';
@@ -68,6 +68,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
     const executeRes = useSelector(state => state.main.execute);
     const [origin, setOrigin] = useState(row?.origin || '');
     const [mailsto, setmailsto] = useState(row?.mailto || '');
+    const [mailscc, setmailscc] = useState(row?.mailcc || '');
     const [bodyobject, setBodyobject] = useState<Descendant[]>(row?.mailbodyobject || [{ "type": "paragraph", "children": [{ "text": row?.mailbody || "" }] }])
     const dataDomainStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataReportSimpleAll = multiData[1] && multiData[1].success ? multiData[1].data: [];
@@ -139,7 +140,16 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
             }
         }});
         register('mailcc', { validate: {
-            isemail: (value)=> ((value) ? (value.includes('.') && value.includes('@')) : true) || t(langKeys.emailverification)
+            isemail: (value)=> {
+                let valuelist=value.split(",");
+                let returnval = "";
+                valuelist.forEach((element:any) => {                    
+                    if(!element.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g)){ //validacion de email
+                        returnval = t(langKeys.emailverification)
+                    }
+                })
+                return returnval
+            }
         }});
         register('mailsubject', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
 
@@ -414,7 +424,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                 <div className={classes.containerDetail}>
                     <div className={classes.subtitle}>{t(langKeys.reportschedulerdetail2)}</div>
                     <div className="row-zyx">
-                        <FieldMultiSelectFreeSolo
+                        <FieldMultiSelectEmails
                             label={t(langKeys.to)}
                             className="col-12"
                             valueDefault={getValues("mailto")}
@@ -423,21 +433,26 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                                 setmailsto(mailto);
                                 setValue('mailto', mailto);
                             }}
-                            onBlur={e => {
-                                trigger('mailto');
-                            }}
                             data={[].concat(getValues('mailto').split(',').filter((i: any) => i !== '').map((domaindesc: any) => ({ domaindesc })))}
                             optionValue={"domaindesc"}
                             optionDesc={"domaindesc"}
                             error={errors?.mailto?.message}
                             loading={false}
                         />
-                        <FieldEdit
-                            label="Cc"
+                        <FieldMultiSelectEmails
+                            label={"Cc"}
                             className="col-12"
-                            valueDefault={row?.mailcc || ""}
-                            onChange={(value) => setValue('mailcc', value)}
+                            valueDefault={getValues("mailcc")}
+                            onChange={(value: ({domaindesc: string} | string)[]) => {
+                                const mailcc = value.map((o: any) => o).join();
+                                setmailscc(mailcc);
+                                setValue('mailcc', mailcc);
+                            }}
+                            data={[].concat(getValues('mailcc').split(',').filter((i: any) => i !== '').map((domaindesc: any) => ({ domaindesc })))}
+                            optionValue={"domaindesc"}
+                            optionDesc={"domaindesc"}
                             error={errors?.mailcc?.message}
+                            loading={false}
                         />
                         <FieldEdit
                             label={t(langKeys.subject)}

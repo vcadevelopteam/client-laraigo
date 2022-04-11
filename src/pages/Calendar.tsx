@@ -726,7 +726,11 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                if(operation === "DUPLICATE"){                    
+                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_duplicate) }))
+                }else{
+                    dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                }
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
@@ -764,7 +768,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                 const date1 = Number(dateRangeCreateDate.startDate);
                 const date2 = Number(dateRangeCreateDate.endDate);
                 const diffTime = Math.abs(date2 - date1);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                const diffDays = (dateinterval==="DAYS")? data.daysintothefuture: Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 let datatosend = {
                     ...data,
                     description: "",
@@ -778,8 +782,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                     timeduration: data.duration,
                     timeunit: data.durationtype,
                     daterange: dateinterval,
-                    startdate: dateRangeCreateDate.startDate,
-                    enddate: dateRangeCreateDate.endDate,
+                    startdate: (dateinterval==="DAYS")? new Date():dateRangeCreateDate.startDate,
+                    enddate: (dateinterval==="DAYS")? new Date(Number(new Date())+diffDays*86400000):dateRangeCreateDate.endDate,
                     daysduration: diffDays,
                     increments: "00:30",
                 }
@@ -1433,7 +1437,6 @@ const Calendar: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, operation: "" });
     const [waitSave, setWaitSave] = useState(false);
-    const [waitDuplicate, setWaitDuplicate] = useState(false);
     const [dataGrid, setDataGrid] = useState<any[]>([]);
 
     useEffect(() => {
@@ -1498,11 +1501,11 @@ const Calendar: FC = () => {
                 }
             },
             {
-                Header: t(langKeys.code),
+                Header: t(langKeys.eventcode),
                 accessor: 'code',
             },
             {
-                Header: t(langKeys.name),
+                Header: t(langKeys.eventname),
                 accessor: 'name',
             },
             {
@@ -1559,22 +1562,6 @@ const Calendar: FC = () => {
             }
         }
     }, [executeResult, waitSave])
-
-    useEffect(() => {
-        if (waitDuplicate) {
-            if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_duplicate) }))
-                fetchData();
-                dispatch(showBackdrop(false));
-                setWaitDuplicate(false);
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.calendar_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                dispatch(showBackdrop(false));
-                setWaitDuplicate(false);
-            }
-        }
-    }, [executeResult, waitDuplicate])
 
     if (viewSelected === "view-1") {
         return (
