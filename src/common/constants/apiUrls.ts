@@ -29,8 +29,8 @@ const APIS_URL = {
     LOCAL: {
         API: 'http://localhost:6065/api',
         //API: 'https://apix.laraigo.com/api',
-        WS: 'http://localhost:7070',
-        // WS: 'https://socket.laraigo.com',
+        // WS: 'http://localhost:7070',
+        WS: 'https://socket.laraigo.com',
         CHATFLOW: 'https://localhost:4200',
         FACEBOOKAPP: '367176075182579',
         INSTAGRAMAPP: '1924971937716955',

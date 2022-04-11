@@ -474,7 +474,7 @@ export const getLeadChannels = (state: IState): IState => ({
 export const getLeadChannelsSuccess = (state: IState, action: IAction): IState => ({
     ...state,
     leadChannels: {
-        data: action.payload.data || [],
+        data: (action.payload.data || []).filter((x: any) => x.type.includes("WHA")),
         loading: false,
         error: false,
     },
