@@ -180,7 +180,6 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
                                 variant="contained"
                                 color="primary"
                                 type="submit"
-                                onClick={() => {console.log(errors);debugger}}
                                 startIcon={<SaveIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}>
                                 {t(langKeys.save)}
@@ -354,7 +353,7 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
                                         setValue(`variables.${i}.variable`, value.key)
                                         trigger(`variables.${i}.variable`)
                                     }}
-                                    error={errors?.variables?.[i]?.text?.message}
+                                    error={errors?.variables?.[i]?.variable?.message}
                                     data={variables}
                                     uset={true}
                                     prefixTranslation=""
@@ -365,15 +364,15 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
                                     <FieldEditArray
                                         key={"custom_" + item.id}
                                         fregister={{
-                                            ...register(`variables.${i}.text`, {
+                                            ...register(`variables.${i}.variable`, {
                                                 validate: (value: any) => (value && value.length) || t(langKeys.field_required)
                                             })
                                         }}
                                         prefixTranslation=""
                                         className={classes.field}
                                         valueDefault={item.value}
-                                        error={errors?.variables?.[i]?.text?.message}
-                                        onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
+                                        error={errors?.variables?.[i]?.variable?.message}
+                                        onChange={(value) => setValue(`variables.${i}.variable`, "" + value)}
                                     />
                                 }
                             </div>
