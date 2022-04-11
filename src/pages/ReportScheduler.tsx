@@ -429,7 +429,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                             className="col-12"
                             valueDefault={getValues("mailto")}
                             onChange={(value: ({domaindesc: string} | string)[]) => {
-                                const mailto = value.map((o: any) => o).join();
+                                const mailto = value.map((o: any) => o.domaindesc || o).join();
                                 setmailsto(mailto);
                                 setValue('mailto', mailto);
                             }}
@@ -444,7 +444,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                             className="col-12"
                             valueDefault={getValues("mailcc")}
                             onChange={(value: ({domaindesc: string} | string)[]) => {
-                                const mailcc = value.map((o: any) => o).join();
+                                const mailcc = value.map((o: any) => o.domaindesc || o).join();
                                 setmailscc(mailcc);
                                 setValue('mailcc', mailcc);
                             }}
