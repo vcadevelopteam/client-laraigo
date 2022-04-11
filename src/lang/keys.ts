@@ -25,10 +25,11 @@ export const langKeys = {
     invitation_email: "invitation_email",
     schedule_event: "schedule_event",
     successfully_scheduled: "successfully_scheduled",
+    linkcopysuccesfull:"linkcopysuccesfull",
     confirmed: "confirmed",
     enter_details: "enter_details",
     confirm: "confirm",
-
+    copyLink: "copyLink",
     actionplan: 'actionplan',
     organization: 'organization',
     iaservices: 'iaservices',

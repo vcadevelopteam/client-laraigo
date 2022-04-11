@@ -16,6 +16,7 @@ import { getCollection, getMultiCollection, execute, resetAllMain, getCollection
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { Box, Checkbox, FormControl, FormControlLabel, FormGroup, IconButton, ListItemIcon, Menu, MenuItem, Radio, RadioGroup, Switch, Tabs, TextField, Tooltip } from '@material-ui/core';
 import { Range } from 'react-date-range';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 import { CalendarIcon, DuplicateIcon } from 'icons';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -189,11 +190,6 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const initialRange = {
-    startDate: new Date(new Date().setDate(1)),
-    endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
-    key: 'selection'
-}
 interface LabelDaysProps {
     flag: Boolean;
     fieldsIntervals?: any;
@@ -617,6 +613,12 @@ const LabelDays: React.FC<LabelDaysProps> = ({ flag, fieldsIntervals, errors, in
 }
 
 const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation }, setViewSelected, multiData, fetchData }) => {
+    console.log(row?.startdate)
+    const initialRange = {
+        startDate: row?.startdate?new Date(row?.startdate + "T00:00:00"):new Date(new Date().setDate(1)),
+        endDate: row?.enddate?new Date(row?.enddate + "T00:00:00"): new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+        key: 'selection'
+    }
     const executeRes = useSelector(state => state.main.execute);
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
@@ -1344,8 +1346,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
 const IconOptions: React.FC<{
     onDelete?: (e?: any) => void;
     onDuplicate?: (e?: any) => void;
-    onCalc?: (e?: any) => void;
-}> = ({ onDelete, onDuplicate, onCalc }) => {
+    onCopyLink?: (e?: any) => void;
+}> = ({ onDelete, onDuplicate, onCopyLink }) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const { t } = useTranslation();
 
@@ -1392,6 +1394,18 @@ const IconOptions: React.FC<{
                         {t(langKeys.delete)}
                     </MenuItem>
                 }
+                {onCopyLink &&
+                    <MenuItem onClick={(e) => {
+                        e.stopPropagation();
+                        setAnchorEl(null);
+                        onCopyLink();
+                    }}>
+                        <ListItemIcon>
+                            <FileCopyIcon width={18} style={{ fill: '#7721AD' }} />
+                        </ListItemIcon>
+                        {t(langKeys.copyLink)}
+                    </MenuItem>
+                }
                 {onDuplicate &&
                     <MenuItem onClick={(e) => {
                         e.stopPropagation();
@@ -1404,24 +1418,13 @@ const IconOptions: React.FC<{
                         {t(langKeys.duplicate)}
                     </MenuItem>
                 }
-                {onCalc &&
-                    <MenuItem onClick={(e) => {
-                        e.stopPropagation();
-                        setAnchorEl(null);
-                        onCalc();
-                    }}>
-                        <ListItemIcon>
-                            <UpdateIcon width={18} style={{ fill: '#7721AD' }} />
-                        </ListItemIcon>
-                        {t(langKeys.calculate)}
-                    </MenuItem>
-                }
             </Menu>
         </>
     )
 }
 
 const Calendar: FC = () => {
+    const user = useSelector(state => state.login.validateToken.user);
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
@@ -1482,6 +1485,11 @@ const Calendar: FC = () => {
                             }}
                             onDuplicate={() => {
                                 handleDuplicate(row);
+                            }}
+                            onCopyLink={() => {
+                                let url = new URL(`events/${user?.orgid}/${row.code}`, window.location.origin)
+                                navigator.clipboard.writeText(url.href);
+                                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.linkcopysuccesfull) }))
                             }}
                         />
                     )

@@ -519,6 +519,7 @@ const translation: LangKeys = {
     businesshours: "Horario de atención",
     starttime: "Hora de inicio",
     finishtime: "Hora de fin",
+    linkcopysuccesfull:"Enlace copiado con éxito",
     newsupportplan: "Nuevo plan de soporte",
     newcontractedplanbyperiod: "Nuevo plan contratado",
     newconversationplan: "Nuevo costo WhatsApp basado en conversaciones",
@@ -630,6 +631,7 @@ const translation: LangKeys = {
     note: "Nota",
 
     username: 'Usuario',
+    copyLink: "Copiar enlace",
     password: 'Contraseña',
     confirmpassword: 'Confirmar contraseña',
 
