@@ -8,7 +8,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import TableZyx from '../components/fields/table-simple';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { TemplateIcons, TemplateBreadcrumbs, FieldEdit, FieldSelect, TitleDetail, RichText } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, FieldEdit, FieldSelect, TitleDetail, RichText, FieldMultiSelectFreeSolo } from 'components';
 import { getDomainValueSel, getReportSchedulerSel, getValuesFromDomain, reportSchedulerIns , getReportschedulerreportsSel} from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import { useTranslation } from 'react-i18next';
@@ -67,6 +67,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const [origin, setOrigin] = useState(row?.origin || '');
+    const [mailsto, setmailsto] = useState(row?.mailto || '');
     const [bodyobject, setBodyobject] = useState<Descendant[]>(row?.mailbodyobject || [{ "type": "paragraph", "children": [{ "text": row?.mailbody || "" }] }])
     const dataDomainStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataReportSimpleAll = multiData[1] && multiData[1].success ? multiData[1].data: [];
@@ -75,7 +76,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
     const [filterData, setfilterData] = useState(origin==="TICKET"?JSON.parse(dataReportSimpleAll.filter(x=>x.origin==="TICKET")?.[0].filterjson|| "[]"):JSON.parse(dataReportSimple.find(x=>(x.reportname===(row?.reportname)))?.filterjson|| "[]").filter((x:any)=>x.type!=="timestamp without time zone"));
     const [showError, setShowError] = useState(false);
 
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, getValues,trigger, formState: { errors } } = useForm({
         defaultValues: {
             id: row?.reportschedulerid || 0,
             title: row?.title || '',
@@ -126,7 +127,16 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
         register('datarange', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('mailto', { validate: {
             validation: (value) => (value && value.length) || t(langKeys.field_required) ,
-            isemail: (value)=> (value.includes('.') && value.includes('@')) || t(langKeys.emailverification)
+            isemail: (value)=> {
+                let valuelist=value.split(",");
+                let returnval = "";
+                valuelist.forEach((element:any) => {                    
+                    if(!element.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g)){ //validacion de email
+                        returnval = t(langKeys.emailverification)
+                    }
+                })
+                return returnval
+            }
         }});
         register('mailcc', { validate: {
             isemail: (value)=> ((value) ? (value.includes('.') && value.includes('@')) : true) || t(langKeys.emailverification)
@@ -379,40 +389,13 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                         />*/}
                     </div>
                     <div className="row-zyx">
-                        <FieldSelect
+                        <FieldEdit
                             label={t(langKeys.shippingschedule)}
                             className="col-6"
+                            type="time"
                             valueDefault={getValues("schedule")}
-                            onChange={(value) => setValue('schedule', value?.value || "")}
+                            onChange={(value) => setValue('schedule', value)}
                             error={errors?.schedule?.message}
-                            data={[
-                                {value: "00:00:00", desc: "00:00"},
-                                {value: "01:00:00", desc: "01:00"},
-                                {value: "02:00:00", desc: "02:00"},
-                                {value: "03:00:00", desc: "03:00"},
-                                {value: "04:00:00", desc: "04:00"},
-                                {value: "05:00:00", desc: "05:00"},
-                                {value: "06:00:00", desc: "06:00"},
-                                {value: "07:00:00", desc: "07:00"},
-                                {value: "08:00:00", desc: "08:00"},
-                                {value: "09:00:00", desc: "09:00"},
-                                {value: "10:00:00", desc: "10:00"},
-                                {value: "11:00:00", desc: "11:00"},
-                                {value: "12:00:00", desc: "12:00"},
-                                {value: "13:00:00", desc: "13:00"},
-                                {value: "14:00:00", desc: "14:00"},
-                                {value: "15:00:00", desc: "15:00"},
-                                {value: "16:00:00", desc: "16:00"},
-                                {value: "17:00:00", desc: "17:00"},
-                                {value: "18:00:00", desc: "18:00"},
-                                {value: "19:00:00", desc: "19:00"},
-                                {value: "20:00:00", desc: "20:00"},
-                                {value: "21:00:00", desc: "21:00"},
-                                {value: "22:00:00", desc: "22:00"},
-                                {value: "23:00:00", desc: "23:00"},
-                            ]}
-                            optionDesc="desc"
-                            optionValue="value"
                         />
                         <FieldSelect
                             label={t(langKeys.shippingrange)}
@@ -431,12 +414,23 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                 <div className={classes.containerDetail}>
                     <div className={classes.subtitle}>{t(langKeys.reportschedulerdetail2)}</div>
                     <div className="row-zyx">
-                        <FieldEdit
+                        <FieldMultiSelectFreeSolo
                             label={t(langKeys.to)}
                             className="col-12"
-                            valueDefault={row?.mailto || ""}
-                            onChange={(value) => setValue('mailto', value)}
+                            valueDefault={getValues("mailto")}
+                            onChange={(value: ({domaindesc: string} | string)[]) => {
+                                const mailto = value.map((o: any) => o).join();
+                                setmailsto(mailto);
+                                setValue('mailto', mailto);
+                            }}
+                            onBlur={e => {
+                                trigger('mailto');
+                            }}
+                            data={[].concat(getValues('mailto').split(',').filter((i: any) => i !== '').map((domaindesc: any) => ({ domaindesc })))}
+                            optionValue={"domaindesc"}
+                            optionDesc={"domaindesc"}
                             error={errors?.mailto?.message}
+                            loading={false}
                         />
                         <FieldEdit
                             label="Cc"

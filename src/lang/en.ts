@@ -1629,6 +1629,7 @@ const translation: LangKeys = {
     report_loginhistory_user: 'User',
     report_loginhistory_username: 'Username',
     report_loginhistory_status: 'Status',
+    shippingchannel: "Shipping channel",
     uniqueclients: "Unique contacts",
     report_loginhistory_status_help: `- Inbox: In receipt tray.
 - Login: Session initiated.

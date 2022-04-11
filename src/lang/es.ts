@@ -630,6 +630,7 @@ const translation: LangKeys = {
     graphic_report_of: 'Reporte gráfico de {{report}} por {{column}}',
     grid_view: 'Vista lista',
     in_white: 'En blanco',
+    shippingchannel: "Canal de envío",
     view_table: 'Ver tabla',
     reportscheduler: "Envíos Automáticos",
     reportscheduler_singular: "Envío Automático",
