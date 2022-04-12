@@ -29,7 +29,6 @@ import {
 
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import DeleteIcon from '@material-ui/icons/Delete';
-import UpdateIcon from '@material-ui/icons/Update';
 import { Descendant } from 'slate';
 import { ColorChangeHandler } from 'react-color';
 import Schedule from 'components/fields/Schedule';
