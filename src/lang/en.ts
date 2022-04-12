@@ -1485,6 +1485,7 @@ const translation: LangKeys = {
     prepare_meeting: "Please share anything that will help prepare for our meeting.",
     no_event_found: "No event found",
     invitation_email: "A calendar invitation has been sent to your email address.",
+    invitation_phone: "A calendar invitation has been sent to your registered phone",
     schedule_event: "Programar evento",
     successfully_scheduled: "You have successfully scheduled an appointment",
     confirmed: "Confirmed",

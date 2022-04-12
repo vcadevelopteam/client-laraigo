@@ -23,6 +23,7 @@ export const langKeys = {
     prepare_meeting: "prepare_meeting",
     no_event_found: "no event found",
     invitation_email: "invitation_email",
+    invitation_phone: "invitation_phone",
     schedule_event: "schedule_event",
     successfully_scheduled: "successfully_scheduled",
     linkcopysuccesfull:"linkcopysuccesfull",
