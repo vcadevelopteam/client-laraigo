@@ -288,7 +288,6 @@ const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, dis
                                 <CssPhonemui
                                     {...field}
                                     variant="outlined"
-                                    margin="normal"
                                     fullWidth
                                     size="small"
                                     defaultCountry={phoneCountry.toLowerCase()}
