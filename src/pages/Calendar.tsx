@@ -568,7 +568,10 @@ const LabelDays: React.FC<LabelDaysProps> = ({ flag, fieldsIntervals, errors, in
                                                 </div>
                                             </>
                                             {!!((getValues(`intervals.${i}.overlap`)) + 1) &&
+                                            <div style={{ gridColumnStart: "first" , gridColumn: "span 3", marginBottom: 5}}>
+
                                                 <p className={classes.errorclass} >{t(langKeys.errorhours)}</p>
+                                            </div>
                                             }
                                         </div>
                                     )
