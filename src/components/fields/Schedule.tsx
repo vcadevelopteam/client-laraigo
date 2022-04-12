@@ -244,7 +244,7 @@ const DialogDate: React.FC<{
         setDateSelected(p1)
     }
 
-    const { control, register, reset, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm<{ times: ISchedule[] }>({
+    const { control, register, reset, setValue, getValues, trigger, formState: { errors } } = useForm<{ times: ISchedule[] }>({
         defaultValues: {
             times: day?.data || []
         }
@@ -365,7 +365,7 @@ const DialogDate: React.FC<{
                                                     setValue(`times.${i}.overlap`, -1)
                                                     setValue(`times.${overlap}.overlap`, -1)
                                                 }
-                                                const exists = fieldstimes.findIndex((y: any, cont: number) => (
+                                                const exists = fieldstimes.findIndex((y: any, cont: number) => cont !== i && (
                                                     ((y.start < fieldEnd) && (y.start > fieldStart)) ||
                                                     ((y.end < fieldEnd) && (y.end > fieldStart)) ||
                                                     ((fieldEnd < y.end) && (fieldEnd > y.start)) ||
