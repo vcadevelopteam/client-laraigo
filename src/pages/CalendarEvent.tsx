@@ -394,7 +394,7 @@ export const CalendarEvent: FC = () => {
             phone: data.phone,
             name: data.name,
             parameters: [
-                { name: "timeevent", text: `${timeSelected?.localstarthour} - ${timeSelected?.localendhour}, ${t(dayNames[daySelected!!.dow])}, ${month} ${daySelected?.date.getDate()}, ${daySelected?.date.getFullYear()}` },
+                { name: "timeevent", text: `${t(dayNames[daySelected!!.dow])}, ${month} ${daySelected?.date.getDate()}, ${daySelected?.date.getFullYear()}` },
                 { name: "timestart", text: timeSelected?.localstarthour },
                 { name: "timeend", text: timeSelected?.localendhour },
                 { name: "eventname", text: event?.name },
@@ -438,7 +438,7 @@ export const CalendarEvent: FC = () => {
                             {timeSelected?.localstarthour} - {timeSelected?.localendhour}, {t(dayNames[daySelected!!.dow])}, {t(`month_${((daySelected!!.date.getMonth() + 1) + "").padStart(2, "0")}`)} {daySelected?.date.getDate()}, {daySelected?.date.getFullYear()}
                         </div>
                         <div style={{ marginTop: 4, fontWeight: 'bold', textAlign: 'start' }}>
-                            {t(langKeys.invitation_email)}
+                            {event?.notificationtype === "HSM" ? t(langKeys.invitation_phone) : t(langKeys.invitation_email)}
                         </div>
                     </div>
                     <div style={{ width: '70%', height: 1, backgroundColor: '#e1e1e1', marginTop: 24, marginBottom: 24 }}></div>
