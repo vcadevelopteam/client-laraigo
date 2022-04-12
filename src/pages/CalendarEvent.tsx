@@ -239,7 +239,7 @@ const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, dis
     }, [dispatch]);
 
     const onSubmit = handleSubmit((data) => {
-        handlerOnSubmit({...data, phone: data.phone.replace("+","")})
+        handlerOnSubmit({...data, phone: data.phone?.replace("+","")})
     });
 
     return (
