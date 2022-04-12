@@ -239,7 +239,7 @@ const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, dis
     }, [dispatch]);
 
     const onSubmit = handleSubmit((data) => {
-        handlerOnSubmit({...data, phone: data.phone.replace("+","")})
+        handlerOnSubmit({...data, phone: data.phone?.replace("+","")})
     });
 
     return (
@@ -453,6 +453,7 @@ export const CalendarEvent: FC = () => {
                 { name: "eventname", text: event?.name },
                 { name: "personname", text: data.name },
                 { name: "personcontact", text: data.email || data.phone },
+                { name: "eventcode", text: eventcode },
             ]
         }
         dispatch(getCollEventBooking(insBookingCalendar(dataToSend)))
