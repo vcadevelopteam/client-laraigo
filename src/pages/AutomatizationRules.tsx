@@ -395,6 +395,7 @@ const AutomatizationRules: FC = () => {
     const [waitSave, setWaitSave] = useState(false);
     const user = useSelector(state => state.login.validateToken.user);
     const superadmin = user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMINISTRADOR"
+    const [dataGrid, setDataGrid] = useState<any[]>([]);
 
     const arrayBread = [
         { id: "view-1", name: t(langKeys.automatizationrules) },
@@ -402,6 +403,11 @@ const AutomatizationRules: FC = () => {
     function redirectFunc(view:string){
         setViewSelected(view)
     }
+    useEffect(() => {
+        let data = mainResult.mainData.data
+        data = data.map(x=>({...x,columnamefilter: (t(`${x.columnname?.toLowerCase()}`.toLowerCase()) || "").toUpperCase()}))
+        setDataGrid(data)
+    }, [mainResult.mainData.data])
     const columns = React.useMemo(
         () => [
             {
@@ -428,13 +434,8 @@ const AutomatizationRules: FC = () => {
             },
             {
                 Header: t(langKeys.whensettingstate),
-                accessor: 'columnname',
+                accessor: 'columnamefilter',
                 NoFilter: false,
-                prefixTranslation: '',
-                Cell: (props: any) => {
-                    const { columnname } = props.cell.row.original;
-                    return (t(`${columnname?.toLowerCase()}`.toLowerCase()) || "").toUpperCase()
-                }
             },
             {
                 Header: t(langKeys.conditional),
@@ -563,7 +564,7 @@ const AutomatizationRules: FC = () => {
                 <TableZyx
                     columns={columns}
                     titlemodule={t(langKeys.automatizationrules, { count: 2 })}
-                    data={mainResult.mainData.data}
+                    data={dataGrid}
                     download={false}
                     //fetchData={fetchData}
                     onClickRow={handleEdit}
