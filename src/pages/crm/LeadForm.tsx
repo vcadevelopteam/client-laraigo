@@ -1743,9 +1743,9 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
 
         if (activity?.type === "automated") {
             register('hsmtemplateid', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
-            register('communicationchannelid', { validate: (value) => value && value > 0 ? undefined : t(langKeys.field_required) + "" })
-            register('communicationchannelid', { validate: (value) => value && value > 0 ? undefined : t(langKeys.field_required) + "" })
+            register('communicationchannelid', { validate: (value) => (template?.hsmtemplatetype !== "HSM") || (value && value > 0 ? undefined : t(langKeys.field_required) + "") })
         } else {
+            register('communicationchannelid', { validate: (v) => true })
             register('hsmtemplateid', { validate: () => true })
             register('communicationchannelid', { validate: (value) => true })
             register('communicationchannelid', { validate: (value) => true })
@@ -1845,6 +1845,8 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
 
     const onSelectTemplate = (value: Dictionary) => {
         if (value) {
+            register('communicationchannelid', { validate: (v) => (value?.type !== "HSM") || (v && v > 0 ? undefined : t(langKeys.field_required) + "") })
+
             setBodyMessage(value.body);
             setValue('hsmtemplateid', value?.id || 0);
             setValue('hsmtemplatename', value?.name || '');
@@ -1894,6 +1896,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                                     register('hsmtemplateid', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) })
                                                 } else {
                                                     register('hsmtemplateid', { validate: () => true })
+                                                    register('communicationchannelid', { validate: (v) => true })
                                                 }
                                             }}
                                             error={errors?.type?.message}
