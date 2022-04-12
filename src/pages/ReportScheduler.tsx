@@ -67,8 +67,6 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const [origin, setOrigin] = useState(row?.origin || '');
-    const [mailsto, setmailsto] = useState(row?.mailto || '');
-    const [mailscc, setmailscc] = useState(row?.mailcc || '');
     const [bodyobject, setBodyobject] = useState<Descendant[]>(row?.mailbodyobject || [{ "type": "paragraph", "children": [{ "text": row?.mailbody || "" }] }])
     const dataDomainStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataReportSimpleAll = multiData[1] && multiData[1].success ? multiData[1].data: [];
@@ -430,7 +428,6 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                             valueDefault={getValues("mailto")}
                             onChange={(value: ({domaindesc: string} | string)[]) => {
                                 const mailto = value.map((o: any) => o.domaindesc || o).join();
-                                setmailsto(mailto);
                                 setValue('mailto', mailto);
                             }}
                             data={[].concat(getValues('mailto').split(',').filter((i: any) => i !== '').map((domaindesc: any) => ({ domaindesc })))}
@@ -445,7 +442,6 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                             valueDefault={getValues("mailcc")}
                             onChange={(value: ({domaindesc: string} | string)[]) => {
                                 const mailcc = value.map((o: any) => o.domaindesc || o).join();
-                                setmailscc(mailcc);
                                 setValue('mailcc', mailcc);
                             }}
                             data={[].concat(getValues('mailcc').split(',').filter((i: any) => i !== '').map((domaindesc: any) => ({ domaindesc })))}

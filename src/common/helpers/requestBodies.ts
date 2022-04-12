@@ -2819,7 +2819,7 @@ export const insCommentsBooking = (parameters: Dictionary) => ({
 });
 
 export const insCalendar = ({
-    id = 0, description, status, type,
+    id = 0, description, descriptionobject, status, type,
     code, name, locationtype, location, eventlink, color, notificationtype, messagetemplateid,
     daterange, daysduration, startdate, enddate,
     timeduration, timeunit,
@@ -2832,7 +2832,8 @@ export const insCalendar = ({
     method: "UFN_CALENDAREVENT_INS",
     key: "UFN_CALENDAREVENT_INS",
     parameters: {
-        id, description, status, type,
+        id, description,
+        descriptionobject: JSON.stringify(descriptionobject), status, type,
         code, name, locationtype, location, eventlink, color, notificationtype, messagetemplateid,
         daterange, daysduration, daystype: "CALENDAR", startdate, enddate,
         timeduration, timeunit,

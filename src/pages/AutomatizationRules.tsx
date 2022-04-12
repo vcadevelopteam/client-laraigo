@@ -64,6 +64,7 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
     const dataProducts = multiData[0] && multiData[1].success ? (useradmin?multiData[1].data.filter(x=>x.domainvalue === "BOT"):multiData[1].data) : [];
     const dataCommChannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const dataLeads = multiData[3] && multiData[3].success ? multiData[3].data : [];
+    console.log(dataLeads)
     const dataTags = multiData[4] && multiData[4].success ? multiData[4].data : [];
 
     const { register, handleSubmit, setValue,control, getValues,trigger, formState: { errors } } = useForm<AutomatizationRuleSave>({
@@ -72,7 +73,8 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
             operation: row ? "EDIT" : "INSERT",
             description: row?.description || '',
             communicationchannelid: row?.communicationchannelid || 0,
-            columnid: row?.columnid|| NaN,
+            columnid: row?.columnid|| 0,
+            columnname: row?.columnname|| 0,
             shippingtype: row?.shippingtype || "",
             xdays: row?.xdays || 0,
             status: row?.status || 'ACTIVO',
@@ -222,14 +224,17 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
                         <FieldSelect
                             label={t(langKeys.whensettingstate)}
                             className="col-6"
-                            valueDefault={getValues('columnid')}
-                            onChange={(value) => {setValue('columnid', value?.columnid || 0)}}
-                            error={errors?.columnid?.message}
+                            valueDefault={row?.columnname||""}
+                            onChange={(value) => {
+                                setValue('columnname', value?.description || "")
+                                setValue('columnid', value?.columnid || 0)
+                            }}
+                            error={errors?.columnname?.message}
                             data={dataLeads}
                             prefixTranslation=""
                             optionDesc="description"
                             uset={true}
-                            optionValue="columnid"
+                            optionValue="description"
                         />
                     </div>
                     <div className="row-zyx">

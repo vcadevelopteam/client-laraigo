@@ -22,6 +22,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { renderToString, toElement } from 'components/fields/RichText';
 import {
     Search as SearchIcon,
 } from '@material-ui/icons';
@@ -65,7 +66,7 @@ type FormFields = {
     eventcode: string,
     eventname: string,
     location: string,
-    mailbody: string,
+    description: string,
     color: string,
     status: string,
     notificationtype: string,
@@ -427,8 +428,8 @@ const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = 
                                 <div>{x.hourstart.substring(0, 5)} - {x.hourend.substring(0, 5)}</div>
                             </div>
                             <div>
-                                <div>{x.personname}</div>
-                                <div>Evento: {event.name}</div>
+                                <div>{x?.personname}</div>
+                                <div>Evento: {event?.name}</div>
                             </div>
                             <div></div>
                         </div>
@@ -625,7 +626,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const user = useSelector(state => state.login.validateToken.user);
-    const [bodyobject, setBodyobject] = useState<Descendant[]>(row?.description || [{ "type": "paragraph", "children": [{ "text": row?.description || "" }] }])
+    const [bodyobject, setBodyobject] = useState<Descendant[]>(row?.descriptionobject || [{ "type": "paragraph", "children": [{ "text": row?.description || "" }] }])
     const [color, setColor] = useState(row?.color || "#aa53e0");
     const [tabIndex, setTabIndex] = useState(0);
     const [dateinterval, setdateinterval] = useState(row?.daterange || 'DAYS');
@@ -634,6 +635,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     const dataTemplates = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataChannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const [bodyMessage, setBodyMessage] = useState(row?.messagetemplateid ? (dataTemplates.filter(x => x.id === row.messagetemplateid)[0]?.body || "") : "");
+    const [showError, setShowError] = useState(false);
     const [generalstate, setgeneralstate] = useState({
         eventcode: row?.code || '',
         duration: row?.timeduration || 0,
@@ -669,7 +671,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
             eventcode: row?.code || "",
             eventname: row?.name || "",
             location: row?.location || "",
-            mailbody: row?.mailbody || "",
+            description: row?.description || "",
             color: row?.color || "#aa53e0",
             status: row?.status || "ACTIVO",
             notificationtype: row?.notificationtype || "",
@@ -760,18 +762,26 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     }
 
     const onSubmit = handleSubmit((data) => {
+        data.description = renderToString(toElement(bodyobject));
+        if (data.description === `<div data-reactroot=""><p><span></span></p></div>`) {
+            setShowError(true);
+            return
+        }
+        setShowError(false);
         const callback = () => {
             if (data.intervals.some(x => (x.overlap || -1) !== -1)) {
                 console.log("error overlap")
             } else {
-                console.log(data)
+                data.description = renderToString(toElement(bodyobject));
+                if (data.description === '<div data-reactroot=""><p><span></span></p></div>')
+                    return;
                 const date1 = Number(dateRangeCreateDate.startDate);
                 const date2 = Number(dateRangeCreateDate.endDate);
                 const diffTime = Math.abs(date2 - date1);
                 const diffDays = (dateinterval==="DAYS")? data.daysintothefuture: Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 let datatosend = {
                     ...data,
-                    description: "",
+                    descriptionobject: bodyobject,
                     type: "",
                     code: data.eventcode,
                     name: data.eventname,
@@ -929,6 +939,13 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                 />
                             </React.Fragment>
                         </div>
+                        <FieldEdit
+                            label={''}
+                            className="col-12"
+                            valueDefault={''}
+                            error={showError ? t(langKeys.field_required) : ''}
+                            disabled={true}
+                        />
                         <div className="row-zyx" >
                             <FieldView
                                 label={t(langKeys.eventlink)}

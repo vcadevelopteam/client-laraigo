@@ -113,6 +113,7 @@ export interface AutomatizationRuleSave {
     description: string,
     communicationchannelid: number,
     columnid: number,
+    columnname: string,
     shippingtype: string,
     xdays: string,
     status: string,
