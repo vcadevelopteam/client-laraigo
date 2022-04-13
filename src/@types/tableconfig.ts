@@ -69,6 +69,7 @@ export interface TableConfig {
         [key: string]: IFilters;
     };
     registertext?: string;
+    useFooter?: boolean;
 }
 
 export interface Pagination {

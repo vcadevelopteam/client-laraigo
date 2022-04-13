@@ -56,6 +56,7 @@ import {
     KeyboardTimePicker,
     KeyboardDatePicker,
 } from '@material-ui/pickers';
+import { TableFooter } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     footerTable: {
@@ -334,6 +335,7 @@ const TableZyx = React.memo(({
     helperText = "",
     initialStateFilter,
     registertext,
+    useFooter = false
 }: TableConfig) => {
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -608,6 +610,7 @@ const TableZyx = React.memo(({
         getTableProps,
         getTableBodyProps,
         headerGroups,
+        footerGroups,
         prepareRow,
         page, // Instead of using 'rows', we'll use page,
         canPreviousPage,
@@ -948,6 +951,23 @@ const TableZyx = React.memo(({
                                     })
                             }
                         </TableBody>
+                        {useFooter && <TableFooter>
+                            {footerGroups.map(group => (
+                                <TableRow {...group.getFooterGroupProps()}>
+                                    {group.headers.map(column => (
+                                        <TableCell {...column.getFooterProps({
+                                            style: {
+                                                fontWeight: "bold",
+                                                color: "black",
+                                                textAlign: column.type === "number" ? "right" : (column.type?.includes('centered') ? "center" : "left"),
+                                            }
+                                        })}>
+                                            {column.render('Footer')}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            ))}
+                        </TableFooter>}
                     </Table>
                 </Box>
                 {toolsFooter && (

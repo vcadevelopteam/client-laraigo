@@ -2540,6 +2540,7 @@ const translation: LangKeys = {
     shippingdate: "Shipping Date",
     shippingtype: "Shipping type",
     report_recordhsmreport: "Shipment history report",
+    report_invoice: "Invoice report",
     unitaryprice:"Unit price",
     calculate:"Calculate",
     parameters:"Parameters",

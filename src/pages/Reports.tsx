@@ -38,6 +38,7 @@ import AssessmentIcon from '@material-ui/icons/Assessment';
 import { Range } from 'react-date-range';
 import { CalendarIcon } from 'icons';
 import { Search as SearchIcon } from '@material-ui/icons';
+import Invoice from 'components/report/Invoice';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -990,6 +991,24 @@ const Reports: FC = () => {
                                         </CardActionArea>
                                     </Card>
                                 </Grid>
+                                <Grid item key={"invoice"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                                    <Card >
+                                        <CardActionArea onClick={() => handleSelectedString("reportinvoice")}>
+                                            <CardMedia
+                                                component="img"
+                                                height="140"
+                                                className={classes.media}
+                                                image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/03reportepersonalizado.png'}
+                                                title={t(langKeys.invoice)}
+                                            />
+                                            <CardContent>
+                                                <Typography gutterBottom variant="h6" component="div">
+                                                    {t(langKeys.invoice)}
+                                                </Typography>
+                                            </CardContent>
+                                        </CardActionArea>
+                                    </Card>
+                                </Grid>
                                 {allReportsToShow.filter(x => !x.image).map((report, index) => (
                                     <Grid item key={"report_" + report.reporttemplateid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
                                         <Card style={{ position: 'relative' }}>
@@ -1126,6 +1145,18 @@ const Reports: FC = () => {
                         handleClick={handleSelectedString}
                     />
                     <ReportConversationWhatsapp />
+                </div>
+            </>
+        )
+    } else if (viewSelected === "reportinvoice") {
+        return (
+            <>
+                <div style={{ width: '100%' }}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={getArrayBread(t('report_invoice'), t(langKeys.report_plural))}
+                        handleClick={handleSelectedString}
+                    />
+                    <Invoice />
                 </div>
             </>
         )

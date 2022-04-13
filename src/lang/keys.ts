@@ -280,6 +280,7 @@ export const langKeys = {
     clientadditionalfee:"clientadditionalfee",
     recordhsmreport: "recordhsmreport",
     report_recordhsmreport: "report_recordhsmreport",
+    report_invoice: "report_invoice",
     origin: "origin",
     unitaryprice:"unitaryprice",
     tmeexpected: "tmeexpected",

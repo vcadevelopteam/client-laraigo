@@ -2923,3 +2923,12 @@ export const paymentCardInsert = ({ corpid, orgid, paymentcardid, cardnumber, ca
         operation: paymentcardid ? 'UPDATE' : 'INSERT',
     },
 });
+
+export const getInvoiceReportSummary = ({ year, currency }: Dictionary): IRequestBody => ({
+    method: "UFN_REPORT_INVOICE_SUMMARY_SEL",
+    key: "UFN_REPORT_INVOICE_SUMMARY_SEL",
+    parameters: {
+        year, currency,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
