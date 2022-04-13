@@ -1040,6 +1040,7 @@ const translation: LangKeys = {
     correlative: "Correlative",
     concept: "Concept",
     invoicedate: "Invoice date",
+    dateofissue: "Date of issue",
     expirationdate: "Expiration Date",
     subtotal: "Subtotal",
     taxes: "Taxes",
@@ -1050,6 +1051,7 @@ const translation: LangKeys = {
     informationrespsunat: "Information resp sunat",
     optionalfields: "Optional fields",
     paymentinformation: "Payment information",
+    statusofinvoice: "Invoice status",
     invoicestatus: "Billing status",
     errordescription: "Error description",
     qrcode: "Qr Code",
@@ -1912,6 +1914,8 @@ const translation: LangKeys = {
     report_sentmessages_satisfactoryp: 'Failed',
     report_sentmessages_failedp: '% Failed',
 
+    report_conversationwhatsapp: 'Whatsapp conversations',
+
     "personalizedreport_conversation.userjoy": "conversation user joy",
     "personalizedreport_conversation.userfear": "conversation user fear",
     "personalizedreport_conversation.userdisgust": "conversation user disgust",
@@ -2729,7 +2733,6 @@ const translation: LangKeys = {
     autosendinvoice: 'Auto send invoice',
 
     customer: 'Customer',
-    dateofissue: "Date of issue",
     logAnInternalNote: 'Log an internal note',
     newActivity: 'New activity',
     markDone: 'Mark done',
@@ -3262,6 +3265,7 @@ const translation: LangKeys = {
     saveasdraft: 'Save Draft',
     deleteinvoicesuccess: 'Invoice deleted successfully',
     field_required_shorter: '10 characters minimum',
+    receipt: 'Receipt',
     billinginvoicedata: 'Invoice',
     billingadditionalinfo: 'Additional information',
     INVOICED: 'Invoiced',

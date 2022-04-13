@@ -39,6 +39,14 @@ export const reportsImage = [
     {
       name: "reports_user_connections_report",
       image: user_connections
+    },
+    {
+      name: "reports_conversationwhatsapp_report",
+      image: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/whatsapp_PNG95151.png'
+    },
+    {
+      name: "reports_invoice_report",
+      image: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/03reportepersonalizado.png'
     }
   ];
 

@@ -2932,3 +2932,12 @@ export const getInvoiceReportSummary = ({ year, currency }: Dictionary): IReques
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
+
+export const getInvoiceReportDetail = ({ corpid, year, month, currency }: Dictionary): IRequestBody => ({
+    method: "UFN_REPORT_INVOICE_DETAIL_SEL",
+    key: "UFN_REPORT_INVOICE_DETAIL_SEL",
+    parameters: {
+        corpid, year, month, currency,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});

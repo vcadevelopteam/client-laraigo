@@ -941,7 +941,7 @@ const TableZyx = React.memo(({
                                                                 textAlign: cell.column.type === "number" ? "right" : (cell.column.type?.includes('centered') ? "center" : "left"),
                                                             },
                                                         })}
-                                                        onClick={() => cell.column.id !== "selection" ? onClickRow && onClickRow(row.original) : null}
+                                                        onClick={() => cell.column.id !== "selection" ? onClickRow && onClickRow(row.original, cell?.column?.id) : null}
                                                     >
                                                         {cell.render('Cell')}
                                                     </TableCell>
