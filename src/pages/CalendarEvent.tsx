@@ -448,7 +448,8 @@ export const CalendarEvent: FC = () => {
             phone: data.phone,
             name: data.name,
             parameters: [
-                { name: "timeevent", text: `${t(dayNames[daySelected!!.dow])}, ${daySelected?.date.getDate()} ${month}, ${daySelected?.date.getFullYear()}` },
+                // { name: "timeevent", text: `${t(dayNames[daySelected!!.dow])}, ${daySelected?.date.getDate()} ${month}, ${daySelected?.date.getFullYear()}` },
+                { name: "timeevent", text: t(langKeys.invitation_date, { month, year: daySelected?.date.getFullYear(), day: t(dayNames[daySelected!!.dow]), date: daySelected?.date.getDate() }) },
                 { name: "timestart", text: timeSelected?.localstarthour },
                 { name: "timeend", text: timeSelected?.localendhour },
                 { name: "eventname", text: event?.name },

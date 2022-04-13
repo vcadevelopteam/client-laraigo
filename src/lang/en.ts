@@ -3486,6 +3486,8 @@ const translation: LangKeys = {
     automaticpayment: 'Automatic Payment',
     scheduled_events: 'Scheduled events',
     event: 'Event',
+
+    invitation_date: "{{date}}, {{month}} {{day}}, {{year}}",
 };
 
 const enResource: ResourceLanguage = {

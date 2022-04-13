@@ -37,17 +37,38 @@ const useChannelAddStyles = makeStyles(theme => ({
     buttonfacebook: {
         display: 'flex',
         justifyContent: 'center',
+        alignItems: 'center',
+        width: 400,
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        '& span': {
+            width: '100%'
+        },
+        [theme.breakpoints.down('xs')]: {
+            width: '100%',
+            '& span': {
+                width: '100%'
+            }
+        },
     },
     buttonGoogle: {
         display: 'flex',
         justifyContent: 'center',
+        alignItems: 'center',
+        width: 400,
+        marginLeft: 'auto',
+        marginRight: 'auto',
         '& button': {
-            fontSize: '24px!important',
+            fontSize: '20px!important',
             justifyContent: 'center',
-            width: 400,
+            alignItems: 'center',
+            width: '100%',
             height: 50,
             color: '#FFF',
-        }
+        },
+        [theme.breakpoints.down('xs')]: {
+            width: '100%'
+        },
     },
     separator: {
         width: 82,
@@ -67,16 +88,17 @@ const useChannelAddStyles = makeStyles(theme => ({
 
 const FBButtonStyle2: CSSProperties = {
     borderRadius: '3px',
-    width: "400px",
+    width: "100%",
     height: 50,
     display: 'flex',
     alignItems: 'center',
-    fontSize: '24px',
+    fontSize: 20,
     fontStyle: 'normal',
     fontWeight: 400,
     textTransform: 'none',
     justifyContent: 'center',
     marginBottom: 16,
+    
 }
 
 const FirstStep: FC = () => {
@@ -190,7 +212,7 @@ const FirstStep: FC = () => {
                     fields="name,email,picture"
                     buttonStyle={FBButtonStyle2}
                     textButton={t(langKeys.signup_with_facebook)}
-                    icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
+                    icon={<FacebookIcon style={{ color: 'white', marginRight: '8px'}} />}
                     isDisabled={false}
                 />
             </div>
@@ -203,6 +225,7 @@ const FirstStep: FC = () => {
                     onFailure={onGoogleLoginFailure}
                     cookiePolicy={'single_host_origin'}
                     accessType='online'
+                    
                     autoLoad={false}
                 />
             </div>

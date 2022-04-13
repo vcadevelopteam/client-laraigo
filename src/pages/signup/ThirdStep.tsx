@@ -74,7 +74,7 @@ const useChannelAddStyles = makeStyles(theme => ({
         color: theme.palette.primary.main,
     },
     subtitle: {
-        margin: '1em 0 8px 4px',
+        margin: '8px 0 8px 4px',
         fontSize: 20,
         fontWeight: 500,
         width: '100%',
@@ -231,7 +231,7 @@ const ThirdStep: FC = () => {
 
     return (
         <div className={classes.root}>
-            <LaraigoLogo style={{ width: '25%', height: 'auto', marginBottom: '1.58em' }} />
+            <LaraigoLogo style={{ width: '25%', height: 'auto', marginBottom: 10 }} />
             <div className={classes.title}>
                 {planData.plan!.plan}
             </div>
