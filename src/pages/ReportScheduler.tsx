@@ -73,7 +73,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
     const dataReportSimple = dataReportSimpleAll.filter(x=>x.origin !== "TICKET") 
     const dataRanges = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const [filterData, setfilterData] = useState(origin==="TICKET"?JSON.parse(dataReportSimpleAll.filter(x=>x.origin==="TICKET")?.[0].filterjson|| "[]"):JSON.parse(dataReportSimple.find(x=>(x.reportname===(row?.reportname)))?.filterjson|| "[]").filter((x:any)=>x.type!=="timestamp without time zone"));
-    const [showError, setShowError] = useState(false);
+    const [showError, setShowError] = useState("");
 
     const { register, handleSubmit, setValue, getValues,trigger, formState: { errors } } = useForm({
         defaultValues: {
@@ -126,28 +126,10 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
         register('datarange', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('mailto', { validate: {
             validation: (value) => (value && value.length) || t(langKeys.field_required) ,
-            isemail: (value)=> {
-                let valuelist=value.split(",");
-                let returnval = "";
-                valuelist.forEach((element:any) => {                    
-                    if(!element.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g)){ //validacion de email
-                        returnval = t(langKeys.emailverification)
-                    }
-                })
-                return returnval
-            }
+            isemail: (value)=> (value.split(",").some((x:any)=>x.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g))) || t(langKeys.emailverification) 
         }});
         register('mailcc', { validate: {
-            isemail: (value)=> {
-                let valuelist=value.split(",");
-                let returnval = "";
-                valuelist.forEach((element:any) => {                    
-                    if(!element.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g)){ //validacion de email
-                        returnval = t(langKeys.emailverification)
-                    }
-                })
-                return returnval
-            }
+            isemail: (value)=> (value.split(",").some((x:any)=>x.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g))) || t(langKeys.emailverification) 
         }});
         register('mailsubject', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
 
@@ -169,11 +151,11 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
     const onSubmit = handleSubmit((data) => {
         data.mailbody = renderToString(toElement(bodyobject));
         if (data.mailbody === `<div data-reactroot=""><p><span></span></p></div>`) {
-            setShowError(true);
+            setShowError(t(langKeys.field_required));
             return
         }
 
-        setShowError(false);
+        setShowError("");
 
         const callback = () => {
             data.mailbody = renderToString(toElement(bodyobject));
@@ -215,7 +197,8 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                             color="primary"
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => setViewSelected("view-1")}>
+                            onClick={() => console.log(errors)//setViewSelected("view-1")
+                            }>
                             {t(langKeys.cancel)}
                         </Button>
                         {edit &&
@@ -474,7 +457,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                             label={''}
                             className="col-12"
                             valueDefault={''}
-                            error={showError ? t(langKeys.field_required) : ''}
+                            error={showError}
                             disabled={true}
                         />
                     </div>
