@@ -270,6 +270,16 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
             </div>
         );
+    else if (interactiontype === "html")
+        return (
+            <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
+                [classes.interactionTextAgent]: userType !== 'client',
+            })}>
+                <div dangerouslySetInnerHTML={{ __html: interactiontext }} />
+                <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
+                <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
+            </div>
+        );
     else if (interactiontype === "image")
         return (
             <div title={convertLocalDate(createdate).toLocaleString()} className={classes.interactionImage}>
