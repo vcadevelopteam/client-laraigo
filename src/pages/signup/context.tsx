@@ -233,7 +233,7 @@ export const SubscriptionContext = createContext<Subscription>({
 
 const useStyles = makeStyles(theme => ({
     root: {
-        padding: '2em 15%',
+        padding: '3.5em 5%',
         border: '1px solid black',
         borderRadius: 4,
         display: 'flex',

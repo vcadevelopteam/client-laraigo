@@ -185,3 +185,4 @@ export { ReactComponent as DuplicateIcon } from './duplicate.svg';
 
 export { ReactComponent as LaraigoLogo } from './Laraigo-logo.svg';
 export { ReactComponent as EnvioIcon } from './envioAuto-01.svg';
+export { ReactComponent as TeamsIcon } from './teams.svg';

@@ -200,8 +200,8 @@ const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, dis
     const classes = useStyles();
     const [phoneCountry, setPhoneCountry] = useState('');
     const dispatch = useDispatch();
-    
-    const { register, handleSubmit, setValue, getValues,control, formState: { errors } } = useForm({
+
+    const { register, handleSubmit, setValue, getValues, control, formState: { errors } } = useForm({
         defaultValues: {
             name: event?.personname,
             email: event?.email,
@@ -209,7 +209,7 @@ const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, dis
             notes: '',
         }
     })
-    
+
 
     React.useEffect(() => {
         register('notes');
@@ -239,7 +239,7 @@ const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, dis
     }, [dispatch]);
 
     const onSubmit = handleSubmit((data) => {
-        handlerOnSubmit({...data, phone: data.phone?.replace("+","")})
+        handlerOnSubmit({ ...data, phone: data.phone?.replace("+", "") })
     });
 
     return (
@@ -279,7 +279,7 @@ const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, dis
                                 validate: (value) => {
                                     if (value.length === 0) {
                                         return t(langKeys.field_required) as string;
-                                    }else if(value.length<10){
+                                    } else if (value.length < 10) {
                                         return t(langKeys.validationphone) as string;
                                     }
                                 }
@@ -290,7 +290,7 @@ const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, dis
                                     variant="outlined"
                                     fullWidth
                                     size="small"
-                                    defaultCountry={phoneCountry.toLowerCase()}
+                                    defaultCountry={getValues('phone') ? undefined : phoneCountry.toLowerCase()}
                                     error={!!errors?.phone}
                                     helperText={errors?.phone?.message}
                                 />
@@ -407,6 +407,7 @@ export const CalendarEvent: FC = () => {
                     })));
                 }
             } else {
+                debugger
                 if (resMain.key === "UFN_CALENDARYBOOKING_INS") {
                     const errormessage = t(resMain.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() });
                     setError(errormessage);
@@ -447,7 +448,8 @@ export const CalendarEvent: FC = () => {
             phone: data.phone,
             name: data.name,
             parameters: [
-                { name: "timeevent", text: `${t(dayNames[daySelected!!.dow])}, ${month} ${daySelected?.date.getDate()}, ${daySelected?.date.getFullYear()}` },
+                // { name: "timeevent", text: `${t(dayNames[daySelected!!.dow])}, ${daySelected?.date.getDate()} ${month}, ${daySelected?.date.getFullYear()}` },
+                { name: "timeevent", text: t(langKeys.invitation_date, { month, year: daySelected?.date.getFullYear(), day: t(dayNames[daySelected!!.dow]), date: daySelected?.date.getDate() }) },
                 { name: "timestart", text: timeSelected?.localstarthour },
                 { name: "timeend", text: timeSelected?.localendhour },
                 { name: "eventname", text: event?.name },
@@ -489,7 +491,7 @@ export const CalendarEvent: FC = () => {
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 'bold' }}>
                             <CalendarTodayIcon />
-                            {timeSelected?.localstarthour} - {timeSelected?.localendhour}, {t(dayNames[daySelected!!.dow])}, {t(`month_${((daySelected!!.date.getMonth() + 1) + "").padStart(2, "0")}`)} {daySelected?.date.getDate()}, {daySelected?.date.getFullYear()}
+                            {timeSelected?.localstarthour} - {timeSelected?.localendhour}, {t(langKeys.invitation_date, { month: t(`month_${((daySelected!!.date.getMonth() + 1) + "").padStart(2, "0")}`), year: daySelected?.date.getFullYear(), day: t(dayNames[daySelected!!.dow]), date: daySelected?.date.getDate() })}
                         </div>
                         <div style={{ marginTop: 4, fontWeight: 'bold', textAlign: 'start' }}>
                             {event?.notificationtype === "HSM" ? t(langKeys.invitation_phone) : t(langKeys.invitation_email)}
@@ -504,7 +506,7 @@ export const CalendarEvent: FC = () => {
     return (
         <div className={classes.back}>
             <div className={classes.container}>
-                <div className={classes.panel}>
+                <div className={classes.panel} style={{ maxWidth: 300 }}>
                     {timeSelected?.confirm && (
                         <IconButton
                             style={{ border: '1px solid #e1e1e1' }}
@@ -524,7 +526,7 @@ export const CalendarEvent: FC = () => {
                     {timeSelected?.confirm && (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12 }}>
                             <CalendarTodayIcon color="action" />
-                            {timeSelected?.localstarthour} - {timeSelected?.localendhour}, {t(dayNames[daySelected!!.dow])}, {t(`month_${((daySelected!!.date.getMonth() + 1) + "").padStart(2, "0")}`)} {daySelected?.date.getDate()}, {daySelected?.date.getFullYear()}
+                            {timeSelected?.localstarthour} - {timeSelected?.localendhour}, {t(langKeys.invitation_date, { month: t(`month_${((daySelected!!.date.getMonth() + 1) + "").padStart(2, "0")}`), year: daySelected?.date.getFullYear(), day: t(dayNames[daySelected!!.dow]), date: daySelected?.date.getDate() })}
                         </div>
                     )}
                 </div>
@@ -533,7 +535,7 @@ export const CalendarEvent: FC = () => {
                     {timeSelected?.confirm && (
                         <div style={{ flex: '0 0 590px' }}>
                             <div style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 16 }}>
-                                {t(langKeys.enter_details)} 
+                                {t(langKeys.enter_details)}
                             </div>
                             <FormToSend
                                 event={event!!}
@@ -567,7 +569,7 @@ export const CalendarEvent: FC = () => {
                                 {!!daySelected && (
                                     <div className={classes.panelDays}>
                                         <div>
-                                            {t(dayNames[daySelected?.dow])}, {t(`month_${((daySelected?.date.getMonth() + 1) + "").padStart(2, "0")}`)} {daySelected?.date.getDate()}
+                                            {t(langKeys.invitation_date, { month: t(`month_${((daySelected?.date.getMonth() + 1) + "").padStart(2, "0")}`), year: daySelected?.date.getFullYear(), day: t(dayNames[daySelected!!.dow]), date: daySelected?.date.getDate() })}
                                         </div>
                                         <div className={classes.containerTimes}>
                                             {timesDateSelected.map((x, index) => (

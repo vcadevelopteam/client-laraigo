@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useContext, useEffect, useMemo, useState } from "react";
 import { Breadcrumbs, Button, Link, makeStyles, TextField } from "@material-ui/core";
 import { ChannelAddFacebook } from './ChannelAddFacebook'
@@ -37,6 +38,13 @@ const useLeftSideStyles = makeStyles(theme => ({
         flexDirection: 'column',
         gap: '2em',
     },
+    containerInfoPay: {
+        width: '50%',
+
+        [theme.breakpoints.down('xs')]: {
+            width: '100%',
+        },
+    }
 }));
 
 interface LeftSideProps {
@@ -49,7 +57,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
     const [waitSave, setWaitSave] = useState(false);
     const [limitnumbers, setlimitnumbers] = useState(16);
     const [icon, setIcon] = useState(<></>);
-    const { getValues, control, trigger, setValue } = useFormContext<MainData>();
+    const { getValues, control, setValue } = useFormContext<MainData>();
     const executeResultValidation = useSelector(state => state.subscription.requestValidateChannels);
     const classes = useLeftSideStyles();
     const {
@@ -58,8 +66,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
         selectedChannels,
         finishreg,
         valchannels,
-        commonClasses,
-        form
+        commonClasses
     } = useContext(SubscriptionContext);  
     const executeResult = useSelector(state => state.signup.insertChannel);
     const datamonth = useMemo(() => ([
@@ -126,7 +133,6 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [listchannels, foreground]);
     
-
     return (
         <div className={classes.root}>
             <div hidden={currentView !== "view-1"}>
@@ -258,13 +264,13 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                 />
                 <h3>{t(langKeys.creditcard)}</h3>
                 <div style={{display:"flex"}}>
-                    <img src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{padding: 5}}></img>
-                    <img src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{padding: 5}}></img>
-                    <img src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{padding: 5}}></img>
-                    <img src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{padding: 5}}></img>
+                    <img alt="visa" src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{padding: 5}}></img>
+                    <img alt="mastercard" src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{padding: 5}}></img>
+                    <img alt="ammex" src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{padding: 5}}></img>
+                    <img alt="dinners" src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{padding: 5}}></img>
                 </div>
-                <div style={{display: "flex",width:"100%"}}>
-                    <div style={{width:"50%"}}>
+                <div style={{display: "flex",width:"100%", flexWrap: 'wrap'}}>
+                    <div className={classes.containerInfoPay}>
                         <Controller
                             name="creditcard"
                             control={control}
@@ -303,16 +309,16 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                     }}
                                     onInput={(e:any) => {
                                         if(e.target.value.slice(0,1)==="4"){
-                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{padding: 5}}></img>)
+                                            setIcon(<img alt="visa" src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{padding: 5}}></img>)
                                             setlimitnumbers(19)
                                         }else if(e.target.value.slice(0,2)==="51"||e.target.value.slice(0,2)==="55"){
-                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{padding: 5}}></img>)
+                                            setIcon(<img alt="mastercard" src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{padding: 5}}></img>)
                                             setlimitnumbers(19)
                                         }else if(e.target.value.slice(0,2)==="37"||e.target.value.slice(0,2)==="34"){
-                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{padding: 5}}></img>)
+                                            setIcon(<img alt="ammex" src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{padding: 5}}></img>)
                                             setlimitnumbers(18)
                                         }else if(e.target.value.slice(0,2)==="36"||e.target.value.slice(0,2)==="38"||e.target.value.slice(0,3)==="300"||e.target.value.slice(0,3)==="305"){
-                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{padding: 5}}></img>)
+                                            setIcon(<img alt="dinners" src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{padding: 5}}></img>)
                                             setlimitnumbers(17)
                                         }else{
                                             setIcon(<></>)
@@ -423,7 +429,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                             )}
                         /> 
                     </div>   
-                    <div style={{width:"50%"}} >
+                    <div className={classes.containerInfoPay} >
                         <div style={{ textAlign: "center", padding: "20px", border: "1px solid #7721ad", borderRadius: "15px", margin: "10px" }}>{t(langKeys.finishregwarn)}</div>
                         <div style={{ textAlign: "center", padding: "20px", color: "#7721ad", margin: "10px" }}>{t(langKeys.finishregwarn2)}</div>
                     </div>                

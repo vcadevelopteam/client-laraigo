@@ -74,7 +74,7 @@ const useChannelAddStyles = makeStyles(theme => ({
         color: theme.palette.primary.main,
     },
     subtitle: {
-        margin: '1em 0 8px 4px',
+        margin: '8px 0 8px 4px',
         fontSize: 20,
         fontWeight: 500,
         width: '100%',
@@ -92,7 +92,8 @@ const useChannelAddStyles = makeStyles(theme => ({
         flexWrap: 'wrap',
         alignItems: 'center',
         justifyContent: 'center',
-        width: '100%'
+        width: '100%',
+        gap: 8
     },
 }));
 
@@ -231,7 +232,7 @@ const ThirdStep: FC = () => {
 
     return (
         <div className={classes.root}>
-            <LaraigoLogo style={{ width: '25%', height: 'auto', marginBottom: '1.58em' }} />
+            <LaraigoLogo style={{ width: '25%', height: 'auto', marginBottom: 10 }} />
             <div className={classes.title}>
                 {planData.plan!.plan}
             </div>
@@ -292,7 +293,6 @@ const useOptionClasses = makeStyles(theme => ({
         width: '100%'
     },
     optionContainer: {
-        margin: theme.spacing(1),
         padding: '0 8px',
         display: 'flex',
         flexDirection: 'column',
@@ -314,6 +314,9 @@ const useOptionClasses = makeStyles(theme => ({
         '-moz-user-select': 'none', /* Old versions of Firefox */
         '-ms-user-select': 'none', /* Internet Explorer/Edge */
         userSelect: 'none',
+        [theme.breakpoints.down('xs')]: {
+            width: 110,
+        },
     },
     optionContainerHover: {
         '&:hover': {
