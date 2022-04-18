@@ -2600,6 +2600,9 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     channellimit: 'Se alcanzo el maximo número de canales, mejora tu plan para continuar',
     userlimit: 'Se alcanzo el maximo número de usuarios({{limit}}), mejora tu plan para continuar',
     error_estructure_user: 'El usuario {{email}} no fue procesado por que tiene una estructura no válida',
+
+    invitation_date: "{{day}} {{date}} de {{month}} de {{year}}",
+
     type_activitylead_call: 'Llamada',
     'type_activitylead_call for demo': 'Demo de llamada',
     'type_activitylead_email: welcome demo': 'Correo: Demostración de bienvenida',

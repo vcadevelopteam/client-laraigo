@@ -448,7 +448,8 @@ export const CalendarEvent: FC = () => {
             phone: data.phone,
             name: data.name,
             parameters: [
-                { name: "timeevent", text: `${t(dayNames[daySelected!!.dow])}, ${daySelected?.date.getDate()} ${month}, ${daySelected?.date.getFullYear()}` },
+                // { name: "timeevent", text: `${t(dayNames[daySelected!!.dow])}, ${daySelected?.date.getDate()} ${month}, ${daySelected?.date.getFullYear()}` },
+                { name: "timeevent", text: t(langKeys.invitation_date, { month, year: daySelected?.date.getFullYear(), day: t(dayNames[daySelected!!.dow]), date: daySelected?.date.getDate() }) },
                 { name: "timestart", text: timeSelected?.localstarthour },
                 { name: "timeend", text: timeSelected?.localendhour },
                 { name: "eventname", text: event?.name },
@@ -490,7 +491,7 @@ export const CalendarEvent: FC = () => {
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 'bold' }}>
                             <CalendarTodayIcon />
-                            {timeSelected?.localstarthour} - {timeSelected?.localendhour}, {t(dayNames[daySelected!!.dow])}, {t(`month_${((daySelected!!.date.getMonth() + 1) + "").padStart(2, "0")}`)} {daySelected?.date.getDate()}, {daySelected?.date.getFullYear()}
+                            {timeSelected?.localstarthour} - {timeSelected?.localendhour}, {t(langKeys.invitation_date, { month: t(`month_${((daySelected!!.date.getMonth() + 1) + "").padStart(2, "0")}`), year: daySelected?.date.getFullYear(), day: t(dayNames[daySelected!!.dow]), date: daySelected?.date.getDate() })}
                         </div>
                         <div style={{ marginTop: 4, fontWeight: 'bold', textAlign: 'start' }}>
                             {event?.notificationtype === "HSM" ? t(langKeys.invitation_phone) : t(langKeys.invitation_email)}
@@ -525,7 +526,7 @@ export const CalendarEvent: FC = () => {
                     {timeSelected?.confirm && (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12 }}>
                             <CalendarTodayIcon color="action" />
-                            {timeSelected?.localstarthour} - {timeSelected?.localendhour}, {t(dayNames[daySelected!!.dow])},  {daySelected?.date.getDate()} {t(`month_${((daySelected!!.date.getMonth() + 1) + "").padStart(2, "0")}`)}, {daySelected?.date.getFullYear()}
+                            {timeSelected?.localstarthour} - {timeSelected?.localendhour}, {t(langKeys.invitation_date, { month: t(`month_${((daySelected!!.date.getMonth() + 1) + "").padStart(2, "0")}`), year: daySelected?.date.getFullYear(), day: t(dayNames[daySelected!!.dow]), date: daySelected?.date.getDate() })}
                         </div>
                     )}
                 </div>
@@ -568,7 +569,7 @@ export const CalendarEvent: FC = () => {
                                 {!!daySelected && (
                                     <div className={classes.panelDays}>
                                         <div>
-                                            {t(dayNames[daySelected?.dow])}, {daySelected?.date.getDate()} {t(`month_${((daySelected?.date.getMonth() + 1) + "").padStart(2, "0")}`)}
+                                            {t(langKeys.invitation_date, { month: t(`month_${((daySelected?.date.getMonth() + 1) + "").padStart(2, "0")}`), year: daySelected?.date.getFullYear(), day: t(dayNames[daySelected!!.dow]), date: daySelected?.date.getDate() })}
                                         </div>
                                         <div className={classes.containerTimes}>
                                             {timesDateSelected.map((x, index) => (

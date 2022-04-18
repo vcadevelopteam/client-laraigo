@@ -21,14 +21,15 @@ const useSignUpStyles = makeStyles(theme => ({
     purplecircle: {
         background: "#7721ad",
         borderRadius: "50%",
-        width: 43,
-        height: 43,
+        width: 35,
+        minWidth: 35,
+        height: 35,
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
         textAlign: "center",
         color: "white",
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: 700
     },
     containerHead: {
@@ -54,14 +55,15 @@ const useSignUpStyles = makeStyles(theme => ({
     notthisstep: {
         background: "#e5e5e5",
         borderRadius: "50%",
-        width: 43,
+        width: 35,
+        minWidth: 35,
+        height: 35,
         display: "flex",
         justifyContent: "center",
-        height: 43,
         alignItems: "center",
         textAlign: "center",
         color: "#a59f9f",
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: 700
     },
     separator: {
@@ -187,7 +189,7 @@ const SignUpFunc: FC = () => {
             </Dialog>
             <div className={classes.containerHead}>
                 <div className={classes.emptyspacenumber}></div>
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 10, marginLeft: 10 }}>
                     <div className={step === 1 ? classes.purplecircle : classes.notthisstep}> 1 </div>
                     <div className={classes.separator}> </div>
                     <div className={step === 2 ? classes.purplecircle : classes.notthisstep}> 2 </div>
@@ -218,7 +220,7 @@ const SignUpFunc: FC = () => {
                 )}
                 <div style={{
                     flex: 1,
-                    padding: 40,
+                    padding: 28,
                     overflowY: 'auto',
                 }}>
                     {!planDataLoading
