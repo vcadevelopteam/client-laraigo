@@ -232,6 +232,18 @@ export const secondsToTime = (seconds: number): string => {
     return `${hh.toString().padStart(2, "0")}:${mm.toString().padStart(2, "0")}:${ss.toString().padStart(2, "0")}`;
 }
 
+export function formatCurrency(num: number) {
+    if (num)
+        return num.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+    return "0.00"
+}
+
+export function formatCurrencyNoDecimals(num: number) {
+    if (num)
+        return num.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+    return "0"
+}
+
 export const getSecondsUntelNow = (date: Date, regressive: boolean = false): number => !regressive ? Math.floor((new Date().getTime() - date.getTime()) / 1000) : Math.floor((date.getTime() - new Date().getTime()) / 1000);
 
 export const getDateCleaned = (date: Date): string => new Date(date.setHours(10)).toISOString().substring(0, 10)

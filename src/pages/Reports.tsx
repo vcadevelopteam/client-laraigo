@@ -38,6 +38,7 @@ import AssessmentIcon from '@material-ui/icons/Assessment';
 import { Range } from 'react-date-range';
 import { CalendarIcon } from 'icons';
 import { Search as SearchIcon } from '@material-ui/icons';
+import ReportInvoice from 'components/report/ReportInvoice';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -756,6 +757,8 @@ const Reports: FC = () => {
     const executeRes = useSelector(state => state.main.execute);
     const [allReports, setAllReports] = useState<Dictionary[]>([]);
     const [allReportsToShow, setallReportsToShow] = useState<Dictionary[]>([]);
+    const user = useSelector(state => state.login.validateToken.user);
+    const superadmin = user?.roledesc === "SUPERADMIN"
 
     const fetchData = () => {
         dispatch(getCollection(getReportSel('')))
@@ -766,12 +769,15 @@ const Reports: FC = () => {
         if (!reportsResult.mainData.loading && !reportsResult.mainData.error && !reportsResult.mainAux.loading && !reportsResult.mainAux.error && reportsResult.mainAux.key === "UFN_REPORTTEMPLATE_SEL") {
             if (searchValue === null || searchValue.trim().length === 0) {
                 if (allReports.length === 0 || !waitSave) {
-                    const rr = [...reportsResult.mainData.data, ...reportsResult.mainAux.data.map(x => ({
-                        ...x,
-                        columns: x.columnjson ? JSON.parse(x.columnjson) : [],
-                        filters: x.filterjson ? JSON.parse(x.filterjson) : [],
-                        summaries: x.summaryjson ? JSON.parse(x.summaryjson) : [],
-                    }))];
+                    const rr = [
+                        ...reportsResult.mainData.data,
+                        ...reportsResult.mainAux.data.map(x => ({
+                            ...x,
+                            columns: x.columnjson ? JSON.parse(x.columnjson) : [],
+                            filters: x.filterjson ? JSON.parse(x.filterjson) : [],
+                            summaries: x.summaryjson ? JSON.parse(x.summaryjson) : [],
+                        }))
+                    ].filter(x => superadmin ? true : !['invoice'].includes(x.origin));
                     setAllReports(rr);
                     setallReportsToShow(rr);
                 }
@@ -873,12 +879,122 @@ const Reports: FC = () => {
         setViewSelected(key);
     }
 
+    const reportSwitch = (report: any, index: number) => {
+        switch (report.reportname) {
+            case 'HEATMAP':
+                return (
+                    <Grid item key={"heatmap"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                        <Card >
+                            <CardActionArea onClick={() => handleSelectedString("heatmap")}>
+                                <CardMedia
+                                    component="img"
+                                    height="140"
+                                    className={classes.media}
+                                    image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/01mapadecalor.png'}
+                                    title={t(langKeys.heatmap)}
+                                />
+                                <CardContent>
+                                    <Typography gutterBottom variant="h6" component="div">
+                                        {t(langKeys.heatmap)}
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                )
+            case 'RECORDHSMREPORT':
+                return (
+                    <Grid item key={"recordhsmreport"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                        <Card >
+                            <CardActionArea onClick={() => handleSelectedString("recordhsmreport")}>
+                                <CardMedia
+                                    component="img"
+                                    height="140"
+                                    className={classes.media}
+                                    image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/02reportehsm.png"
+                                    title={t(langKeys.recordhsmreport)}
+                                />
+                                <CardContent>
+                                    <Typography gutterBottom variant="h6" component="div">
+                                        {t(langKeys.recordhsmreport)}
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                )
+            case 'CONVERSATIONWHATSAPP':
+                return (
+                    <Grid item key={"reportconversationwhatsapp"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                        <Card >
+                            <CardActionArea onClick={() => handleSelectedString("reportconversationwhatsapp")}>
+                                <CardMedia
+                                    component="img"
+                                    height="140"
+                                    className={classes.media}
+                                    image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/whatsapp_PNG95151.png'}
+                                    title={t(langKeys.conversation_plural) + " Whatsapp"}
+                                />
+                                <CardContent>
+                                    <Typography gutterBottom variant="h6" component="div">
+                                        {t(langKeys.conversation_plural) + " Whatsapp"}
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                )
+            case 'INVOICE':
+                return (
+                    superadmin && <Grid item key={"invoice"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                        <Card >
+                            <CardActionArea onClick={() => handleSelectedString("reportinvoice")}>
+                                <CardMedia
+                                    component="img"
+                                    height="140"
+                                    className={classes.media}
+                                    image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/03reportepersonalizado.png'}
+                                    title={t(langKeys.invoice)}
+                                />
+                                <CardContent>
+                                    <Typography gutterBottom variant="h6" component="div">
+                                        {t(langKeys.invoice)}
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                )
+            default:
+                return (
+                    <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                        <Card >
+                            <CardActionArea onClick={() => handleSelected(report, report.filters)}>
+                                <CardMedia
+                                    component="img"
+                                    height="140"
+                                    className={classes.media}
+                                    image={reportsImage.find(x => x.name === report.image)?.image || 'no_data.png'}
+                                    title={t('report_' + report?.origin)}
+                                />
+                                <CardContent>
+                                    <Typography gutterBottom variant="h6" component="div">
+                                        {t('report_' + report?.origin)}
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                )
+        }
+    }
+
     if (viewSelected === "view-1") {
         return (
             <div className={classes.container}>
                 <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" style={{ marginBottom: 8 }}>
                     <span className={classes.title}>
-                        {t(langKeys.report_plural)} ({allReportsToShow.length + 1})
+                        {t(langKeys.report_plural)} ({allReportsToShow.length})
                     </span>
                 </Box>
                 {(reportsResult.mainData.loading || reportsResult.mainAux.loading) ? (
@@ -913,83 +1029,8 @@ const Reports: FC = () => {
                         <div className={classes.containerDetails}>
                             <Grid container spacing={3} >
                                 {allReportsToShow.filter(x => !!x.image).map((report, index) => (
-                                    report.reportname === 'HEATMAP' ?
-                                        <Grid item key={"heatmap"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
-                                            <Card >
-                                                <CardActionArea onClick={() => handleSelectedString("heatmap")}>
-                                                    <CardMedia
-                                                        component="img"
-                                                        height="140"
-                                                        className={classes.media}
-                                                        image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/01mapadecalor.png'}
-                                                        title={t(langKeys.heatmap)}
-                                                    />
-                                                    <CardContent>
-                                                        <Typography gutterBottom variant="h6" component="div">
-                                                            {t(langKeys.heatmap)}
-                                                        </Typography>
-                                                    </CardContent>
-                                                </CardActionArea>
-                                            </Card>
-                                        </Grid>
-                                        :
-                                        report.reportname === 'RECORDHSMREPORT' ?
-                                            <Grid item key={"recordhsmreport"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
-                                                <Card >
-                                                    <CardActionArea onClick={() => handleSelectedString("recordhsmreport")}>
-                                                        <CardMedia
-                                                            component="img"
-                                                            height="140"
-                                                            className={classes.media}
-                                                            image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/02reportehsm.png"
-                                                            title={t(langKeys.recordhsmreport)}
-                                                        />
-                                                        <CardContent>
-                                                            <Typography gutterBottom variant="h6" component="div">
-                                                                {t(langKeys.recordhsmreport)}
-                                                            </Typography>
-                                                        </CardContent>
-                                                    </CardActionArea>
-                                                </Card>
-                                            </Grid>
-                                            :
-                                            <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
-                                                <Card >
-                                                    <CardActionArea onClick={() => handleSelected(report, report.filters)}>
-                                                        <CardMedia
-                                                            component="img"
-                                                            height="140"
-                                                            className={classes.media}
-                                                            image={reportsImage.find(x => x.name === report.image)?.image || 'no_data.png'}
-                                                            title={t('report_' + report?.origin)}
-                                                        />
-                                                        <CardContent>
-                                                            <Typography gutterBottom variant="h6" component="div">
-                                                                {t('report_' + report?.origin)}
-                                                            </Typography>
-                                                        </CardContent>
-                                                    </CardActionArea>
-                                                </Card>
-                                            </Grid>
+                                    reportSwitch(report, index)
                                 ))}
-                                <Grid item key={"heatmap"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
-                                    <Card >
-                                        <CardActionArea onClick={() => handleSelectedString("reportconversationwhatsapp")}>
-                                            <CardMedia
-                                                component="img"
-                                                height="140"
-                                                className={classes.media}
-                                                image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/whatsapp_PNG95151.png'}
-                                                title={t(langKeys.conversation_plural) + " Whatsapp"}
-                                            />
-                                            <CardContent>
-                                                <Typography gutterBottom variant="h6" component="div">
-                                                    {t(langKeys.conversation_plural) + " Whatsapp"}
-                                                </Typography>
-                                            </CardContent>
-                                        </CardActionArea>
-                                    </Card>
-                                </Grid>
                                 {allReportsToShow.filter(x => !x.image).map((report, index) => (
                                     <Grid item key={"report_" + report.reporttemplateid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
                                         <Card style={{ position: 'relative' }}>
@@ -1126,6 +1167,18 @@ const Reports: FC = () => {
                         handleClick={handleSelectedString}
                     />
                     <ReportConversationWhatsapp />
+                </div>
+            </>
+        )
+    } else if (viewSelected === "reportinvoice") {
+        return (
+            <>
+                <div style={{ width: '100%' }}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={getArrayBread(t('report_invoice'), t(langKeys.report_plural))}
+                        handleClick={handleSelectedString}
+                    />
+                    <ReportInvoice />
                 </div>
             </>
         )
