@@ -2923,3 +2923,27 @@ export const paymentCardInsert = ({ corpid, orgid, paymentcardid, cardnumber, ca
         operation: paymentcardid ? 'UPDATE' : 'INSERT',
     },
 });
+
+export const getInvoiceReportSummary = ({ year, currency = '' }: Dictionary): IRequestBody => ({
+    method: "UFN_REPORT_INVOICE_SUMMARY_SEL",
+    key: "UFN_REPORT_INVOICE_SUMMARY_SEL",
+    parameters: {
+        year, currency,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+
+export const getInvoiceReportDetail = ({ corpid, year, month, currency }: Dictionary): IRequestBody => ({
+    method: "UFN_REPORT_INVOICE_DETAIL_SEL",
+    key: "UFN_REPORT_INVOICE_DETAIL_SEL",
+    parameters: {
+        corpid, year, month, currency,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+
+export const getCurrencyList = (): IRequestBody => ({
+    method: "UFN_CURRENCY_SEL",
+    key: "UFN_CURRENCY_SEL",
+    parameters: { }
+});

@@ -281,6 +281,7 @@ export const langKeys = {
     clientadditionalfee:"clientadditionalfee",
     recordhsmreport: "recordhsmreport",
     report_recordhsmreport: "report_recordhsmreport",
+    report_invoice: "report_invoice",
     origin: "origin",
     unitaryprice:"unitaryprice",
     tmeexpected: "tmeexpected",
@@ -333,6 +334,7 @@ export const langKeys = {
     subtotal: "subtotal",
     taxes: "taxes",
     totalamount: "totalamount",
+    statusofinvoice: "statusofinvoice",
     invoicestatus: "invoicestatus",
     errordescription: "errordescription",
     qrcode: "qrcode",
@@ -1986,6 +1988,8 @@ export const langKeys = {
     report_sentmessages_satisfactoryp: 'report_sentmessages_satisfactoryp',
     report_sentmessages_failedp: 'report_sentmessages_failedp',
 
+    report_conversationwhatsapp: 'report_conversationwhatsapp',
+
     "personalizedreport_conversation.userjoy": "personalizedreport_conversation.userjoy",
     "personalizedreport_conversation.userfear": "personalizedreport_conversation.userfear",
     "personalizedreport_conversation.userdisgust": "personalizedreport_conversation.userdisgust",
@@ -3240,6 +3244,7 @@ export const langKeys = {
     saveasdraft: 'saveasdraft',
     deleteinvoicesuccess: 'deleteinvoicesuccess',
     field_required_shorter: 'field_required_shorter',
+    receipt: 'receipt',
     billinginvoicedata: 'billinginvoicedata',
     billingadditionalinfo: 'billingadditionalinfo',
     INVOICED: 'INVOICED',
@@ -3465,6 +3470,7 @@ export const langKeys = {
     automaticpayment: 'automaticpayment',
     scheduled_events: 'scheduled_events',
     event: 'event',
+    xfield_ismissing: 'xfield_ismissing'
 };
 
 export type LangKeys = typeof langKeys;
