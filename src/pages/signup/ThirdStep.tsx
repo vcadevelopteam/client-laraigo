@@ -92,7 +92,8 @@ const useChannelAddStyles = makeStyles(theme => ({
         flexWrap: 'wrap',
         alignItems: 'center',
         justifyContent: 'center',
-        width: '100%'
+        width: '100%',
+        gap: 8
     },
 }));
 
@@ -292,7 +293,6 @@ const useOptionClasses = makeStyles(theme => ({
         width: '100%'
     },
     optionContainer: {
-        margin: theme.spacing(1),
         padding: '0 8px',
         display: 'flex',
         flexDirection: 'column',
@@ -314,6 +314,9 @@ const useOptionClasses = makeStyles(theme => ({
         '-moz-user-select': 'none', /* Old versions of Firefox */
         '-ms-user-select': 'none', /* Internet Explorer/Edge */
         userSelect: 'none',
+        [theme.breakpoints.down('xs')]: {
+            width: 110,
+        },
     },
     optionContainerHover: {
         '&:hover': {
