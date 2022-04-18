@@ -83,6 +83,15 @@ const useSignUpStyles = makeStyles(theme => ({
         [theme.breakpoints.down("sm")]: {
             display: "none"
         },
+    },
+    containerLeft: {
+        flex: 1,
+        padding: 24,
+        overflowY: 'auto',
+        [theme.breakpoints.down('xs')]: {
+            minWidth: '100vw',
+            height: '100vh',
+        },
     }
 }));
 
@@ -205,29 +214,27 @@ const SignUpFunc: FC = () => {
             </div>
             <div style={{
                 display: "flex",
-                flexDirection: step === 3 ? 'row-reverse' : 'row',
+                flexDirection: 'row',
                 height: '100%',
-                flexGrow: 1,
-                overflow: 'hidden',
+                // flexGrow: 1,
+                overflow: 'overlay',
+                flexWrap: 'wrap'
             }}>
-                {step === 3 ? (
-                    <LeftSide setOpenWarning={setOpenWarning} />
-                ) : (
+                {step !== 3 && (
                     <div className={classes.containerLogo}>
                         {/* containerlogo tiene flex 1, para q se divida con el texto */}
                         <LaraigoLogo style={{ width: '50%' }} />
                     </div>
                 )}
-                <div style={{
-                    flex: 1,
-                    padding: 28,
-                    overflowY: 'auto',
-                }}>
+                <div className={classes.containerLeft}>
                     {!planDataLoading
                         ? <RightSideMenu setOpenWarning={setOpenWarning} />
                         : <CircularProgress />
                     }
                 </div>
+                {step === 3 && (
+                    <LeftSide setOpenWarning={setOpenWarning} />
+                )}
             </div>
         </div>
     );
