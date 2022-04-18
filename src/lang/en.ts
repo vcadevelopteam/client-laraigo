@@ -3491,6 +3491,7 @@ const translation: LangKeys = {
     automaticpayment: 'Automatic Payment',
     scheduled_events: 'Scheduled events',
     event: 'Event',
+    xfield_ismissing: '{{field}} is missing'
 };
 
 const enResource: ResourceLanguage = {

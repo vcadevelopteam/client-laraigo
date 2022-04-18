@@ -5,18 +5,18 @@ import { useDispatch } from "react-redux";
 import { useSelector } from 'hooks';
 import { showBackdrop } from "store/popus/actions";
 import { makeStyles } from '@material-ui/core/styles';
-import { getMultiCollection, getMultiCollectionAux2, resetMultiMain } from "store/main/actions";
+import { getCollectionAux2, getMultiCollection, getMultiCollectionAux2, resetMultiMain } from "store/main/actions";
 import { langKeys } from "lang/keys";
 import TableZyx from "components/fields/table-simple";
 import { Button, } from "@material-ui/core";
-import { getInvoiceReportSummary, formatCurrencyNoDecimals, getInvoiceReportDetail } from 'common/helpers';
+import { getInvoiceReportSummary, formatCurrencyNoDecimals, getInvoiceReportDetail, getCurrencyList } from 'common/helpers';
 import { Search as SearchIcon } from '@material-ui/icons';
 import { FieldSelect } from "components/fields/templates";
 import { Dictionary } from "@types";
 import ClearIcon from '@material-ui/icons/Clear';
+import { showSnackbar } from 'store/popus/actions';
 
 interface RowSelected {
-    year: string,
     row: Dictionary | null,
     columnid: string | null,
     edit: boolean
@@ -90,17 +90,12 @@ const useStyles = makeStyles((theme) => ({
 
 const dataYears = Array.from(Array(21).keys()).map(x => ({value: `${new Date().getFullYear() + x - 10}`}))
 
-const currencyList = [
-    { key: "USD", value:"USD" },
-    { key: "PEN", value:"PEN" }
-];
-
 interface DetailReportInvoiceProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
 }
 
-const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { year, row, columnid }, setViewSelected }) => {
+const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, columnid }, setViewSelected }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -112,7 +107,7 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { year,
         dispatch(getMultiCollectionAux2([
             getInvoiceReportDetail({
                 corpid: row?.corpid || 0,
-                year: +year || 0,
+                year: row?.year || 0,
                 month: columnid?.includes('month_') ? +columnid.replace('month_','') : 0,
                 currency: row?.currency || ""
             })
@@ -122,6 +117,8 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { year,
         if (!multiDataAux2.loading){
             setGridData((multiDataAux2.data[0]?.data||[]).map(x => ({
                 ...x,
+                invoicestatus: (t(`${x.invoicestatus}`) || ""),
+                paymentstatus: (t(`${x.paymentstatus}`) || ""),
                 paymentdate: x.paymentdate ? new Date(x.paymentdate).toLocaleString() : '',
             }))||[]);
             dispatch(showBackdrop(false))
@@ -226,7 +223,7 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { year,
         <div style={{width: '100%'}}>
             <div className={classes.containerDetail}>
                 <TableZyx
-                    titlemodule={`${row?.corpdesc} (${year}${columnid?.includes('month_') ? `-${columnid.replace('month_','')}` : ''})`}
+                    titlemodule={`${row?.corpdesc} (${row?.year}${columnid?.includes('month_') ? `-${columnid.replace('month_','')}` : ''})`}
                     ButtonsElement={() => (
                         <Button
                             variant="contained"
@@ -253,13 +250,16 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { year,
 const ReportInvoice: FC = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
+    const mainAux2 = useSelector(state => state.main.mainAux2);
     const multiData = useSelector(state => state.main.multiData);
     const classes = useStyles()
     const [year, setYear] = useState(`${new Date().getFullYear()}`);
-    const [currency, setCurrency] = useState("USD");
+    const [currency, setCurrency] = useState("");
     const [viewSelected, setViewSelected] = useState("view-1");
-    const [rowSelected, setRowSelected] = useState<RowSelected>({ year: `${new Date().getFullYear()}`, row: null, columnid: null, edit: false });
-    const [gridData, setGridData] = useState<any[]>([]);
+    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, columnid: null, edit: false });
+    const [currencyList, setCurrencyList] = useState<any[]>([]);
+    const [gridDataCurrencyList, setGridDataCurrencyList] = useState<string[]>([]);
+    const [gridData, setGridData] = useState<any>({});
 
     const columns = React.useMemo(
         () => [
@@ -275,9 +275,6 @@ const ReportInvoice: FC = () => {
                 Header: t(langKeys.currency),
                 accessor: 'currency',
                 NoFilter: true,
-                Footer: (props: any) => {
-                    return <>{currency}</>
-                },
             },
             ...([...Array.from(Array(12).keys())].map((c, i) => ({
                 Header: t((langKeys as any)[`month_${(''+(i+1)).padStart(2,'0')}`]),
@@ -324,29 +321,42 @@ const ReportInvoice: FC = () => {
     );
 
     const search = () => {
-        dispatch(showBackdrop(true))
-        dispatch(getMultiCollection([
-            getInvoiceReportSummary(
-                {
-                    year: year,
-                    currency: currency
-                }
-            )
-        ]))
+        if (!!year) {
+            dispatch(showBackdrop(true))
+            dispatch(getCollectionAux2(
+                getInvoiceReportSummary(
+                    {
+                        year: year,
+                        currency: currency
+                    }
+                )
+            ))
+        }
+        else {
+            dispatch(showSnackbar({
+                message: t(langKeys.xfield_ismissing, {field: t(langKeys.year)}),
+                show: true,
+                success: false,
+            }));
+        }
     }
 
     useEffect(() => {
+        dispatch(showBackdrop(true));
+        dispatch(getMultiCollection([
+            getCurrencyList()
+        ]))
         return () => {
             dispatch(resetMultiMain());
         }
     }, [])
 
     useEffect(() => {
-        if (!multiData.loading) {
+        if (!mainAux2.loading) {
+            setGridDataCurrencyList(Array.from(new Set((mainAux2?.data || []).map(item => item.currency))));
             const initialmonth = [...Array.from(Array(12).keys())].reduce((acc, item) => ({...acc, [`month_${item + 1}`]: 0, [`color_${item + 1}`]: 'black'}), {})
             setGridData(
-                Object.values(
-                    (multiData.data[0]?.data || []).reduce((acc, item) => ({
+                Object.values((mainAux2?.data || []).reduce((acc, item) => ({
                     ...acc,
                     ["corp_" + item.corpid]: acc["corp_" + item.corpid] ? {
                         ...acc["corp_" + item.corpid],
@@ -360,71 +370,85 @@ const ReportInvoice: FC = () => {
                         corpdesc: item.corpdesc,
                         currency: item.currency,
                         [`color_${item.month}`]: item.color,
+                        year: item.year,
                         [`month_${item.month}`]: item.totalamount,
                         total: item.totalamount,
                     }
-                }),{}))
+                }),{})).reduce((acc, item) => ({
+                    ...acc,
+                    [item.currency]: [...(acc[item.currency] || []), item]
+                }),{})
             )
             dispatch(showBackdrop(false));
+        }
+    }, [mainAux2])
+
+    useEffect(() => {
+        if (!multiData.loading){
+            setCurrencyList((multiData.data[0]?.data||[]));
+            dispatch(showBackdrop(false))
         }
     }, [multiData])
 
     const handleView = (row: Dictionary, columnid: string) => {
         setViewSelected("view-2");
-        setRowSelected({ year, row, columnid, edit: false });
+        setRowSelected({ row, columnid, edit: false });
     }
 
     if (viewSelected === "view-1") {
         return (
             <React.Fragment>
                 <div style={{ height: 10 }}></div>
-                <TableZyx
-                    onClickRow={handleView}
-                    columns={columns}
-                    data={gridData}
-                    ButtonsElement={() => (
-                        <div className={classes.containerHeader} style={{display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'space-between'}}>
-                            <div style={{display: 'flex', gap: 8}}>
-                                <FieldSelect
-                                    label={t(langKeys.year)}
-                                    style={{width: 140}}
-                                    variant="outlined"
-                                    valueDefault={year}
-                                    onChange={(value) => setYear(value?.value)}
-                                    data={dataYears}
-                                    optionDesc="value"
-                                    optionValue="value"
-                                />
-                                <FieldSelect
-                                    label={t(langKeys.currency)}
-                                    style={{width: 140}}
-                                    variant="outlined"
-                                    valueDefault={currency}
-                                    onChange={(value) => setCurrency(value?.key)}
-                                    data={currencyList}
-                                    optionValue="key"
-                                    optionDesc="value"
-                                />
-                                <div>
-                                    <Button
-                                        disabled={multiData.loading}
-                                        variant="contained"
-                                        color="primary"
-                                        startIcon={<SearchIcon style={{ color: 'white' }} />}
-                                        style={{ width: 120, backgroundColor: "#55BD84" }}
-                                        onClick={() => search()}
-                                    >{t(langKeys.search)}
-                                    </Button>
-                                </div>
-                            </div>
+                <div className={classes.containerHeader} style={{display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'space-between'}}>
+                    <div style={{display: 'flex', gap: 8}}>
+                        <FieldSelect
+                            label={t(langKeys.year)}
+                            style={{width: 140}}
+                            variant="outlined"
+                            valueDefault={year}
+                            onChange={(value) => setYear(value?.value)}
+                            data={dataYears}
+                            optionDesc="value"
+                            optionValue="value"
+                        />
+                        <FieldSelect
+                            label={t(langKeys.currency)}
+                            style={{width: 140}}
+                            variant="outlined"
+                            valueDefault={currency}
+                            onChange={(value) => setCurrency(value?.code)}
+                            data={currencyList}
+                            optionValue="code"
+                            optionDesc="code"
+                        />
+                        <div>
+                            <Button
+                                disabled={multiData.loading}
+                                variant="contained"
+                                color="primary"
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                onClick={() => search()}
+                            >{t(langKeys.search)}
+                            </Button>
                         </div>
-                    )}
-                    download={true}
-                    filterGeneral={false}
-                    loading={multiData.loading}
-                    register={false}
-                    useFooter={true}
-                />
+                    </div>
+                </div>
+                
+                {gridDataCurrencyList.map(crcy => {
+                    return (
+                        <TableZyx
+                            onClickRow={handleView}
+                            columns={columns}
+                            data={gridData[crcy]}
+                            download={true}
+                            filterGeneral={false}
+                            loading={multiData.loading}
+                            register={false}
+                            useFooter={true}
+                        />
+                    )
+                })}
             </React.Fragment>
         )
     }

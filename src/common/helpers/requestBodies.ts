@@ -2924,7 +2924,7 @@ export const paymentCardInsert = ({ corpid, orgid, paymentcardid, cardnumber, ca
     },
 });
 
-export const getInvoiceReportSummary = ({ year, currency }: Dictionary): IRequestBody => ({
+export const getInvoiceReportSummary = ({ year, currency = '' }: Dictionary): IRequestBody => ({
     method: "UFN_REPORT_INVOICE_SUMMARY_SEL",
     key: "UFN_REPORT_INVOICE_SUMMARY_SEL",
     parameters: {
@@ -2940,4 +2940,10 @@ export const getInvoiceReportDetail = ({ corpid, year, month, currency }: Dictio
         corpid, year, month, currency,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
+});
+
+export const getCurrencyList = (): IRequestBody => ({
+    method: "UFN_CURRENCY_SEL",
+    key: "UFN_CURRENCY_SEL",
+    parameters: { }
 });

@@ -3481,6 +3481,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     automaticpayment: 'Cobro automático',
     scheduled_events: 'Eventos programados',
     event: 'Evento',
+    xfield_ismissing: 'Falta el campo {{field}}'
 };
 
 const esResource: ResourceLanguage = {
