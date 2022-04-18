@@ -17,7 +17,6 @@ import { getCollection, getMultiCollection, execute, resetAllMain } from 'store/
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { getLeadTemplates } from 'store/lead/actions';
 
-const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'custom'].map(x => ({ key: x }))
 
 interface RowSelected {
     row: Dictionary | null;
@@ -51,6 +50,7 @@ const useStyles = makeStyles((theme) => ({
 
 const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainname, edit }, setViewSelected, multiData, fetchData,arrayBread }) => {
     const { t } = useTranslation();
+    const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'custom'].map(x => ({ key: x, value: t(x) }))
     const dispatch = useDispatch();
     const user = useSelector(state => state.login.validateToken.user);
     const useradmin = user?.roledesc === "ADMINISTRADOR"
@@ -113,6 +113,7 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
         register('description', { validate: (value:any) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('communicationchannelid', { validate: (value:any) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
         register('columnid');
+        register('columnname', { validate: (value:any) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('shippingtype', { validate: (value:any) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('schedule', { validate: (value:any) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('tags');
@@ -360,9 +361,7 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
                                     }}
                                     error={errors?.variables?.[i]?.variable?.message}
                                     data={variables}
-                                    uset={true}
-                                    prefixTranslation=""
-                                    optionDesc="key"
+                                    optionDesc="value"
                                     optionValue="key"
                                 />
                                 {getValues(`variables.${i}.variable`) === 'custom' &&
