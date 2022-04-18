@@ -438,6 +438,7 @@ const ReportInvoice: FC = () => {
                 {gridDataCurrencyList.map(crcy => {
                     return (
                         <TableZyx
+                            key={crcy}
                             onClickRow={handleView}
                             columns={columns}
                             data={gridData[crcy]}
