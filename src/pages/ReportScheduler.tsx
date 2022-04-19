@@ -129,7 +129,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
             isemail: (value)=> (value.split(",").some((x:any)=>x.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g))) || t(langKeys.emailverification) 
         }});
         register('mailcc', { validate: {
-            isemail: (value)=> (value.split(",").some((x:any)=>x.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g))) || t(langKeys.emailverification) 
+            isemail: (value)=> value?(value.split(",").some((x:any)=>x.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g))) || t(langKeys.emailverification) : true
         }});
         register('mailsubject', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
 
