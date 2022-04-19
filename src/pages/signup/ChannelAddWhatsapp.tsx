@@ -42,8 +42,15 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
     fields3: {
         flex: 1,
-        marginLeft: "15px"
+        // marginLeft: "15px"
     },
+    fieldG: {
+        margin: 0,
+        width: '48%',
+        [theme.breakpoints.down('xs')]: {
+            width: '100%',
+        },
+    }
 }));
 
 const CssPhonemui = styled(MuiPhoneNumber)({
@@ -203,9 +210,9 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                 </Breadcrumbs>
                 <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", marginBottom: 10 }}>{t(langKeys.brandpointcontact)}</div>
                 <div style={{ textAlign: "center", fontWeight: 500, fontSize: 16, color: "grey" }}>{t(langKeys.brandpointcontact2)}</div>
-                <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display: "flex" }}>
+                <div style={{ textAlign: "center", marginBottom: 16, marginTop: 16, fontWeight: 500, fontSize: 32, color: "#7721ad", display: "flex", flexWrap: 'wrap', gap: 16, width: '100%' }}>
                     <TextField
-                        className={classes.fields1}
+                        className={classes.fieldG}
                         variant="outlined"
                         margin="normal"
                         fullWidth
@@ -218,7 +225,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                         onChange={(e) => setValue('channels.whatsapp.firstName', e.target.value)}
                     />
                     <TextField
-                        className={classes.fields2}
+                        className={classes.fieldG}
                         variant="outlined"
                         margin="normal"
                         fullWidth
@@ -230,10 +237,8 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                         helperText={errors.channels?.whatsapp?.lastName?.message}
                         onChange={(e) => setValue('channels.whatsapp.lastName', e.target.value)}
                     />
-                </div>
-                <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display: "flex" }}>
                     <TextField
-                        className={classes.fields1}
+                        className={classes.fieldG}
                         style={{ marginBottom: 0 }}
                         variant="outlined"
                         margin="normal"
@@ -247,7 +252,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                         onChange={(e) => setValue('channels.whatsapp.email', e.target.value)}
                     />
                     <CssPhonemui
-                        className={classes.fields2}
+                        className={classes.fieldG}
                         variant="outlined"
                         margin="normal"
                         size="small"
@@ -262,7 +267,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                         onChange={(e: string) => setValue('channels.whatsapp.phone', e)}
                     />
                 </div>
-                <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginLeft: "15px", marginBottom: "15px" }}>{t(langKeys.emailcondition)}</div>
+                <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginBottom: "15px" }}>{t(langKeys.emailcondition)}</div>
                 <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", marginBottom: 10 }}>{t(langKeys.whatsappinformation)}</div>
                 <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display: "flex" }}>
                     <TextField
@@ -279,7 +284,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                         onChange={e => setValue('channels.whatsapp.phonenumberwhatsappbusiness', e.target.value)}
                     />
                 </div>
-                <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginLeft: "15px", marginBottom: "15px" }}>
+                <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginBottom: "15px" }}>
                     {t(langKeys.whatsappinformation3)+" "}
                     <Link href="http://africau.edu/images/default/sample.pdf">
                         {t(langKeys.whatsappguidedownload)}
@@ -300,9 +305,9 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                         onChange={e => setValue('channels.whatsapp.nameassociatednumber', e.target.value)}
                     />
                 </div>
-                <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginLeft: "15px", marginBottom: "20px" }}>{t(langKeys.whatsappinformation4)}</div>
-                <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginLeft: "15px", marginBottom: "15px" }}><b>*{t(langKeys.whatsappsubtitle1)}</b></div>
-                <div style={{ width: "100%", margin: "0px 15px" }}>
+                <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginBottom: "20px" }}>{t(langKeys.whatsappinformation4)}</div>
+                <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginBottom: "15px" }}><b>*{t(langKeys.whatsappsubtitle1)}</b></div>
+                <div style={{ width: "100%", margin: "0px 15px", marginLeft: 0 }}>
                     <Button
                         onClick={async () => {
                             const v1 = await trigger('channels.whatsapp.description');
