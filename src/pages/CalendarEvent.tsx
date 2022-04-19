@@ -339,6 +339,7 @@ export const CalendarEvent: FC = () => {
     const [timesDateSelected, setTimesDateSelected] = useState<ITime[]>([]);
     const [daysAvailable, setDaysAvailable] = useState<string[]>([]);
     const [error, setError] = useState('');
+    const refContainerHours = React.useRef<null | HTMLDivElement>(null);
     const [ticket, setTicket] = useState({
         conversationid: 0,
         personid: 0
@@ -419,8 +420,12 @@ export const CalendarEvent: FC = () => {
 
     const handlerSelectDate = (p: IDay[]) => {
         setDaySelected(p[0]);
-        setTimeSelected(null)
-        setTimesDateSelected(times.filter(x => x.localyeardate === p[0].dateString))
+        setTimeSelected(null);
+        setTimesDateSelected(times.filter(x => x.localyeardate === p[0].dateString));
+
+        setTimeout(() => {
+            refContainerHours?.current?.scrollIntoView({ behavior: 'smooth' })
+        }, 100);
     }
 
     const handlerOnSubmit = (data: Dictionary) => {
@@ -567,7 +572,7 @@ export const CalendarEvent: FC = () => {
                                     </Backdrop>
                                 </div>
                                 {!!daySelected && (
-                                    <div className={classes.panelDays}>
+                                    <div className={classes.panelDays} ref={refContainerHours}>
                                         <div>
                                             {t(langKeys.invitation_date, { month: t(`month_${((daySelected?.date.getMonth() + 1) + "").padStart(2, "0")}`), year: daySelected?.date.getFullYear(), day: t(dayNames[daySelected!!.dow]), date: daySelected?.date.getDate() })}
                                         </div>
