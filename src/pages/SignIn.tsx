@@ -73,6 +73,7 @@ export const useStyles = makeStyles((theme) => ({
     childContainer: {
         display: 'flex',
         flexDirection: 'column',
+        width: '100%'
     },
     buttonGoogle: {
         '& button': {
@@ -171,7 +172,7 @@ const SignIn = () => {
         if (!!ff?.showSnackbar) {
             dispatch(showSnackbar({ show: true, success: true, message: ff?.message || "" }))
         }
-     }, [location]);
+    }, [location]);
 
     useEffect(() => {
         if (getAccessToken()) {
@@ -192,8 +193,9 @@ const SignIn = () => {
             <script src="https://apis.google.com/js/platform.js" async defer></script>
             <Container component="main" maxWidth="xs" className={classes.containerLogin}>
                 <div className={classes.childContainer}>
-                    {/* <img src="./Laraigo-vertical-logo-name.svg" style={{ height: 200 }} alt="logo" /> */}
-                    <LaraigoLogo style={{ height: 200 }} />
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <LaraigoLogo style={{ height: 200 }} />
+                    </div>
                     <div className={classes.paper}>
                         <RecoverModal
                             openModal={openModal}
@@ -299,12 +301,12 @@ const SignIn = () => {
                 <Popus />
             </Container>
         </>
-        )
+    )
 }
 
 const RecoverModal: FC<{ openModal: boolean, setOpenModal: (param: any) => void, onTrigger: () => void }> = ({ openModal, setOpenModal, onTrigger }) => {
     const dispatch = useDispatch();
-    
+
     const { t } = useTranslation();
 
     const recoverResult = useSelector(state => state.subscription.requestRecoverPassword);
