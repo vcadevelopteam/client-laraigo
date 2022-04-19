@@ -368,15 +368,15 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
                                     <FieldEditArray
                                         key={"custom_" + item.id}
                                         fregister={{
-                                            ...register(`variables.${i}.variable`, {
+                                            ...register(`variables.${i}.text`, {
                                                 validate: (value: any) => (value && value.length) || t(langKeys.field_required)
                                             })
                                         }}
                                         prefixTranslation=""
                                         className={classes.field}
                                         valueDefault={item.value}
-                                        error={errors?.variables?.[i]?.variable?.message}
-                                        onChange={(value) => setValue(`variables.${i}.variable`, "" + value)}
+                                        error={errors?.variables?.[i]?.text?.message}
+                                        onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
                                     />
                                 }
                             </div>
