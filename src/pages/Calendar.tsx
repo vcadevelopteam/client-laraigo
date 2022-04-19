@@ -362,10 +362,7 @@ const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = 
             setDataBooking(mainAux.data.map(x => {
                 const datessplit = x.monthdate.split("-");
                 const date = new Date(parseInt(datessplit[0]), parseInt(datessplit[1]) - 1, parseInt(datessplit[2]));
-
-                const month = t(`month_${((date.getMonth() + 1) + "").padStart(2, "0")}`);
-                const dayofweek = t(dayNames[date.getDay()] || "");
-                const dateString =  `${dayofweek}, ${month} ${date.getDate()}, ${date.getFullYear()}`;
+                const dateString =  t(langKeys.invitation_date, { month: t(`month_${((date.getMonth() + 1) + "").padStart(2, "0")}`), year: date.getFullYear(), day: t(dayNames[date.getDay()]), date: date.getDate() })
 
                 return {
                     ...x,

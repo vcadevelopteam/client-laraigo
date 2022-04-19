@@ -50,7 +50,7 @@ export interface TableConfig {
     autoRefresh?: { value: boolean, callback: (value: boolean) => void };
     // onClickRow?: (param?: any) => void
     // autoRefresh?: {value: boolean, callback: (value: boolean) => void};
-    onClickRow?: (param?: any) => void;
+    onClickRow?: (param?: any, columnid?: any) => void;
     /**cualquier filtro */
     onFilterChange?: (filter: ITablePaginatedFilter) => void;
     helperText?:string;
@@ -69,6 +69,7 @@ export interface TableConfig {
         [key: string]: IFilters;
     };
     registertext?: string;
+    useFooter?: boolean;
 }
 
 export interface Pagination {
