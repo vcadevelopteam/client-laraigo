@@ -339,6 +339,7 @@ export const CalendarEvent: FC = () => {
     const [timesDateSelected, setTimesDateSelected] = useState<ITime[]>([]);
     const [daysAvailable, setDaysAvailable] = useState<string[]>([]);
     const [error, setError] = useState('');
+    const refContainerHours = React.useRef<null | HTMLDivElement>(null);
     const [ticket, setTicket] = useState({
         conversationid: 0,
         personid: 0
@@ -419,8 +420,12 @@ export const CalendarEvent: FC = () => {
 
     const handlerSelectDate = (p: IDay[]) => {
         setDaySelected(p[0]);
-        setTimeSelected(null)
-        setTimesDateSelected(times.filter(x => x.localyeardate === p[0].dateString))
+        setTimeSelected(null);
+        setTimesDateSelected(times.filter(x => x.localyeardate === p[0].dateString));
+
+        setTimeout(() => {
+            refContainerHours?.current?.scrollIntoView({ behavior: 'smooth' })
+        }, 100);
     }
 
     const handlerOnSubmit = (data: Dictionary) => {
@@ -493,9 +498,6 @@ export const CalendarEvent: FC = () => {
                             <CalendarTodayIcon />
                             {timeSelected?.localstarthour} - {timeSelected?.localendhour}, {t(langKeys.invitation_date, { month: t(`month_${((daySelected!!.date.getMonth() + 1) + "").padStart(2, "0")}`), year: daySelected?.date.getFullYear(), day: t(dayNames[daySelected!!.dow]), date: daySelected?.date.getDate() })}
                         </div>
-                        <div style={{ marginTop: 4, fontWeight: 'bold', textAlign: 'start' }}>
-                            {event?.notificationtype === "HSM" ? t(langKeys.invitation_phone) : t(langKeys.invitation_email)}
-                        </div>
                     </div>
                     <div style={{ width: '70%', height: 1, backgroundColor: '#e1e1e1', marginTop: 24, marginBottom: 24 }}></div>
                 </div>
@@ -567,7 +569,7 @@ export const CalendarEvent: FC = () => {
                                     </Backdrop>
                                 </div>
                                 {!!daySelected && (
-                                    <div className={classes.panelDays}>
+                                    <div className={classes.panelDays} ref={refContainerHours}>
                                         <div>
                                             {t(langKeys.invitation_date, { month: t(`month_${((daySelected?.date.getMonth() + 1) + "").padStart(2, "0")}`), year: daySelected?.date.getFullYear(), day: t(dayNames[daySelected!!.dow]), date: daySelected?.date.getDate() })}
                                         </div>

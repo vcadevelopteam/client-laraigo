@@ -22,42 +22,9 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import SettingsIcon from '@material-ui/icons/Settings';
 import Tooltip from "@material-ui/core/Tooltip"
 import InfoIcon from '@material-ui/icons/Info';
+import { formatNumber,formattime, timetoseconds, timetomin } from 'common/helpers';
 
 const COLORS = ['#22b66e', '#b41a1a', '#ffcd56'];
-
-function formatNumber(num: any) {
-    if (num)
-        return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
-    return "0"
-}
-function formattime(cc: any) {
-    if (!cc)
-        return "0";
-    let hh = Math.floor(cc / 3600) > 0 ? `${Math.floor(cc / 3600)}h ` : ""
-    let mm = Math.floor((cc % 3600) / 60) > 0 ? `${Math.floor((cc % 3600) / 60)}m ` : ""
-    let ss = `${cc % 60}s`
-    return `${hh}${mm}${ss}`
-}
-
-function timetoseconds(cc: any) {
-    if (!cc)
-        return 0;
-    const times = cc.split(":");
-
-    const hour = parseInt(times[0]);
-    const minutes = parseInt(times[1]);
-    const seconds = times[2] ? parseInt(times[2]) : 0;
-    return (hour * 60 * 60) + (minutes * 60) + seconds;
-}
-function timetomin(cc: any) {
-    if (!cc)
-        return 0;
-    const times = cc.split(":");
-    const hour = parseInt(times[0]);
-    const minutes = parseInt(times[1]);
-    const seconds = parseInt(times[2]);
-    return hour * 60 + minutes + (seconds >= 30 ? 1 : 0);
-}
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
