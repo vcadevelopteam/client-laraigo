@@ -18,6 +18,7 @@ import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/acti
 import ClearIcon from '@material-ui/icons/Clear';
 import { Box, FormControlLabel, Tabs, TextField } from '@material-ui/core';
 import { getCountryList } from 'store/signup/actions';
+import { dataYears, dataMonths } from 'common/helpers';
 import * as locale from "date-fns/locale";
 import {
     Search as SearchIcon,
@@ -25,7 +26,7 @@ import {
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import Typography from '@material-ui/core/Typography';
-
+import { formatNumber,formatNumberFourDecimals,formatNumberNoDecimals } from 'common/helpers';
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
@@ -36,24 +37,6 @@ interface DetailSupportPlanProps {
     setViewSelected: (view: string) => void;
     fetchData: () => void,
     dataPlan: any[];
-}
-
-function formatNumber(num: number) {
-    if (num)
-        return num.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
-    return "0.00"
-}
-
-function formatNumberFourDecimals(num: number) {
-    if (num)
-        return num.toFixed(4).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1')
-    return "0.0000"
-}
-
-function formatNumberNoDecimals(num: number) {
-    if (num)
-        return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
-    return "0"
 }
 
 export const DateOptionsMenuComponent = (value: any, handleClickItemMenu: (key: any) => void) => {
@@ -929,8 +912,7 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitSave, setWaitSave] = useState(false);
 
-    const dataYears = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }];
-    const dataMonths =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
+    
 
     function search() {
         dispatch(showBackdrop(true))
@@ -1205,10 +1187,10 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                                 style={{ width: 150 }}
                                 valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev => ({ ...prev, year: value?.desc || 0 }))}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, year: value?.value || 0 }))}
                                 data={dataYears}
-                                optionDesc="desc"
-                                optionValue="desc"
+                                optionDesc="value"
+                                optionValue="value"
                             />
                             <FieldMultiSelect
                                 label={t(langKeys.month)}
@@ -1605,9 +1587,6 @@ const ConversationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitSave, setWaitSave] = useState(false);
 
-    const dataYears = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }];
-    const dataMonths =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
-
     function search() {
         dispatch(showBackdrop(true))
         dispatch(getCollection(getBillingConversationSel(dataMain)))
@@ -1753,10 +1732,10 @@ const ConversationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                                 style={{ width: 150 }}
                                 valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev => ({ ...prev, year: value?.desc || 0 }))}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, year: value?.value || 0 }))}
                                 data={dataYears}
-                                optionDesc="desc"
-                                optionValue="desc"
+                                optionDesc="value"
+                                optionValue="value"
                             />
                             <FieldMultiSelect
                                 label={t(langKeys.month)}
@@ -2030,9 +2009,6 @@ const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitSave, setWaitSave] = useState(false);
 
-    const dataYears = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }];
-    const dataMonths =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
-
     function search() {
         dispatch(showBackdrop(true))
         dispatch(getCollection(getBillingSupportSel(dataMain)))
@@ -2172,10 +2148,10 @@ const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                                 style={{ width: 150 }}
                                 valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev => ({ ...prev, year: value?.desc || 0 }))}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, year: value?.value || 0 }))}
                                 data={dataYears}
-                                optionDesc="desc"
-                                optionValue="desc"
+                                optionDesc="value"
+                                optionValue="value"
                             />
                             <FieldMultiSelect
                                 label={t(langKeys.month)}
@@ -2453,9 +2429,6 @@ const MessagingCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitSave, setWaitSave] = useState(false);
 
-    const dataYears = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }];
-    const dataMonths =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
-
     function search() {
         dispatch(showBackdrop(true))
         dispatch(getCollection(getBillingMessagingSel(dataMain)))
@@ -2613,10 +2586,10 @@ const MessagingCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                                 style={{ width: 150 }}
                                 valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev => ({ ...prev, year: value?.desc || 0 }))}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, year: value?.value || 0 }))}
                                 data={dataYears}
-                                optionDesc="desc"
-                                optionValue="desc"
+                                optionDesc="value"
+                                optionValue="value"
                             />
                             <FieldMultiSelect
                                 label={t(langKeys.month)}
