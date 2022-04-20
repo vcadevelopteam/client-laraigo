@@ -3023,16 +3023,16 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             const receiverdoctypeList = [{ value: 0, description: "NO DOMICILIADO" }, { value: 1, description: "DNI" }, { value: 4, description: "CARNE EXT." }, { value: 6, description: "RUC" }, { value: 7, description: "PASAPORTE" }]
             const invoicetypeList = [{ value: "01", description: "FACTURA" }, { value: "03", description: "BOLETA" }]
 
-            let data: any = (await uploadExcel(file, undefined) as any[])
-            .filter((d: any) => !['', null, undefined].includes(d.description)
+            let data: any = (await uploadExcel(file, undefined) as any[]);
+            data = data.filter((d: any) => !['', null, undefined].includes(d.description)
                 && !['', null, undefined].includes(d.receiverdocnum)
                 && !['', null, undefined].includes(d.receiverbusinessname)
                 && !['', null, undefined].includes(d.receiverfiscaladdress)
                 && !['', null, undefined].includes(d.receivercountry)
                 && !['', null, undefined].includes(d.receivermail)
-                && !['', null, undefined].includes(d.serie)
-                && !['', null, undefined].includes(d.correlative)
-                && !['', null, undefined].includes(d.invoicedate)
+                // && !['', null, undefined].includes(d.serie)
+                // && !['', null, undefined].includes(d.correlative)
+                // && !['', null, undefined].includes(d.invoicedate)
                 && !['', null, undefined].includes(d.invoicestatus)
                 && !['', null, undefined].includes(d.paymentstatus)
                 && !['', null, undefined].includes(d.totalamount)
@@ -3063,23 +3063,23 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         receivercountry: String(x.receivercountry),
                         receivermail: String(x.receivermail),
                         invoicetype: String(x.invoicetype),
-                        serie: String(x.serie),
+                        serie: String(x.serie || ''),
                         correlative: Number(x.correlative)||0,
                         invoicedate: new Date(x.invoicedate),
                         expirationdate: new Date(x.expirationdate),
                         invoicestatus: String(x.invoicestatus),
                         paymentstatus: String(x.paymentstatus),
                         paymentdate: new Date(x.paymentdate),
-                        paidby: String(x.paidby),
-                        paymenttype: String(x.paymenttype),
+                        paidby: String(x.paidby || ''),
+                        paymenttype: String(x.paymenttype || ''),
                         totalamount: Number(x.totalamount),
                         exchangerate: Number(x.exchangerate),
                         currency: String(x.currency),
-                        urlcdr: String(x.urlcdr),
-                        urlpdf: String(x.urlpdf),
-                        urlxml: String(x.urlxml),
-                        purchaseorder: String(x.purchaseorder),
-                        comments: String(x.comments),
+                        urlcdr: String(x.urlcdr || ''),
+                        urlpdf: String(x.urlpdf || ''),
+                        urlxml: String(x.urlxml || ''),
+                        purchaseorder: String(x.purchaseorder || ''),
+                        comments: String(x.comments || ''),
                         credittype: String(x.credittype),
                         description: String(x.description),
                         status: "ACTIVO",

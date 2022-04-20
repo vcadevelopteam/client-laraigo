@@ -9,7 +9,7 @@ import { getCollectionAux2, getMultiCollection, getMultiCollectionAux2, resetMul
 import { langKeys } from "lang/keys";
 import TableZyx from "components/fields/table-simple";
 import { Button, } from "@material-ui/core";
-import { getInvoiceReportSummary, formatCurrencyNoDecimals, getInvoiceReportDetail, getCurrencyList } from 'common/helpers';
+import { getInvoiceReportSummary, formatCurrencyNoDecimals, getInvoiceReportDetail, getCurrencyList, formatCurrency } from 'common/helpers';
 import { Search as SearchIcon } from '@material-ui/icons';
 import { FieldSelect } from "components/fields/templates";
 import { Dictionary } from "@types";
@@ -137,32 +137,12 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 NoFilter: true,
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    return <>{row.corpdesc}</>
+                    return <span style={{color: row["color"]}}>{row.corpdesc}</span>
                 },
             },
             {
                 Header: t(langKeys.year),
                 accessor: 'year',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.month),
-                accessor: 'month',
-                NoFilter: true
-            },
-            {
-                Header: `${t(langKeys.corporation)}`,
-                accessor: 'corpdesc',
-                NoFilter: true
-            },
-            {
-                Header: `${t(langKeys.organization)}`,
-                accessor: 'orgdesc',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.receipt),
-                accessor: 'urlpdf',
                 NoFilter: true,
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
@@ -171,49 +151,154 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 },
             },
             {
+                Header: t(langKeys.month),
+                accessor: 'month',
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const column = props.cell.column.id;
+                    return <span style={{color: row["color"]}}>{row[column]}</span>
+                },
+            },
+            {
+                Header: `${t(langKeys.corporation)}`,
+                accessor: 'corpdesc',
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const column = props.cell.column.id;
+                    return <span style={{color: row["color"]}}>{row[column]}</span>
+                },
+            },
+            {
+                Header: `${t(langKeys.organization)}`,
+                accessor: 'orgdesc',
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const column = props.cell.column.id;
+                    return <span style={{color: row["color"]}}>{row[column]}</span>
+                },
+            },
+            {
+                Header: t(langKeys.receipt),
+                accessor: 'seriecorrelative',
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const urlpdf = props.cell.row.original.urlpdf;
+                    const docnumber = (props.cell.row.original.serie && props.cell.row.original.correlative) ? (props.cell.row.original.serie + '-' + props.cell.row.original.correlative.toString().padStart(8, '0')) : null;
+                    return <>
+                        {urlpdf ?
+                            <a
+                                onClick={(e) => { e.stopPropagation(); }}
+                                style={{color: row["color"]}}
+                                href={urlpdf}
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                {docnumber}
+                            </a>
+                            :
+                            <span style={{color: row["color"]}}>
+                                {docnumber}
+                            </span>
+                        }
+                    </>
+                },
+            },
+            {
                 Header: t(langKeys.currency),
                 accessor: 'currency',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const column = props.cell.column.id;
+                    return <span style={{color: row["color"]}}>{row[column]}</span>
+                },
             },
             {
                 Header: t(langKeys.taxbase),
                 accessor: 'subtotal',
-                NoFilter: true
+                NoFilter: true,
+                type: 'number',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const column = props.cell.column.id;
+                    return <span style={{color: row["color"]}}>{formatCurrency(row[column])}</span>
+                },
             },
             {
                 Header: "IGV",
                 accessor: 'taxes',
-                NoFilter: true
+                NoFilter: true,
+                type: 'number',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const column = props.cell.column.id;
+                    return <span style={{color: row["color"]}}>{formatCurrency(row[column])}</span>
+                },
             },
             {
                 Header: t(langKeys.totalamount),
                 accessor: 'totalamount',
-                NoFilter: true
+                NoFilter: true,
+                type: 'number',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const column = props.cell.column.id;
+                    return <span style={{color: row["color"]}}>{formatCurrency(row[column])}</span>
+                },
             },
             {
                 Header: t(langKeys.statusofinvoice),
                 accessor: 'invoicestatus',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const column = props.cell.column.id;
+                    return <span style={{color: row["color"]}}>{row[column]}</span>
+                },
             },
             {
                 Header: t(langKeys.paymentstatus),
                 accessor: 'paymentstatus',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const column = props.cell.column.id;
+                    return <span style={{color: row["color"]}}>{row[column]}</span>
+                },
             },
             {
                 Header: t(langKeys.dateofissue),
                 accessor: 'invoicedate',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const column = props.cell.column.id;
+                    return <span style={{color: row["color"]}}>{row[column]}</span>
+                },
             },
             {
                 Header: t(langKeys.dueDate),
                 accessor: 'expirationdate',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const column = props.cell.column.id;
+                    return <span style={{color: row["color"]}}>{row[column]}</span>
+                },
             },
             {
                 Header: t(langKeys.paymentdate),
                 accessor: 'paymentdate',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const column = props.cell.column.id;
+                    return <span style={{color: row["color"]}}>{row[column]}</span>
+                },
             },
         ],
         [t]

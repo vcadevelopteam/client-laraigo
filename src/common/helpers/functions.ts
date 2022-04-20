@@ -184,8 +184,12 @@ export function uploadExcel(file: any, owner: any = {}) {
             const wsname = workbook.SheetNames[0];
             // const ws = workbook.Sheets[wsname];
             // sheet_to_row_object_array
-            let rowsx = XLSX.utils.sheet_to_json(
-                workbook.Sheets[wsname]
+            let rowsx = XLSX.utils.sheet_to_json(workbook.Sheets[wsname])
+            .map((row: any) =>
+                Object.keys(row).reduce((obj: any, key: any) => {
+                    obj[key.trim()] = row[key];
+                    return obj;
+                }, {})
             );
             res(rowsx)
         };
