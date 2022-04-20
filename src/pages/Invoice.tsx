@@ -2943,7 +2943,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         const indexOrg = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_ORG_SEL'));
         const dataCurrency = [{ value: "PEN", description: "PEN" }, { value: "USD", description: "USD" }]
         const receiverdoctype = [{ value: 0, description: "NO DOMICILIADO" }, { value: 1, description: "DNI" }, { value: 4, description: "CARNE EXT." }, { value: 6, description: "RUC" }, { value: 7, description: "PASAPORTE" }]
-        const invoicetype = [{ value: "1", description: "FACTURA" }, { value: "3", description: "BOLETA" }]
+        const invoicetype = [{ value: "01", description: "FACTURA" }, { value: "03", description: "BOLETA" }]
         const indexCreditType = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_DOMAIN_LST_VALORES'));
         let credittypelist = multiResult.data[indexCreditType] && multiResult.data[indexCreditType].success ? multiResult.data[indexCreditType].data : []
         let corplist = multiResult.data[indexCorp] && multiResult.data[indexCorp].success ? multiResult.data[indexCorp].data : [] 
