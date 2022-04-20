@@ -9,7 +9,7 @@ import { getCollectionAux2, getMultiCollection, getMultiCollectionAux2, resetMul
 import { langKeys } from "lang/keys";
 import TableZyx from "components/fields/table-simple";
 import { Button, } from "@material-ui/core";
-import { getInvoiceReportSummary, formatCurrencyNoDecimals, getInvoiceReportDetail, getCurrencyList } from 'common/helpers';
+import { getInvoiceReportSummary, formatCurrencyNoDecimals, getInvoiceReportDetail, getCurrencyList, formatCurrency } from 'common/helpers';
 import { Search as SearchIcon } from '@material-ui/icons';
 import { FieldSelect } from "components/fields/templates";
 import { Dictionary } from "@types";
@@ -162,12 +162,19 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
             },
             {
                 Header: t(langKeys.receipt),
-                accessor: 'urlpdf',
+                accessor: 'seriecorrelative',
                 NoFilter: true,
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    const column = props.cell.column.id;
-                    return <span style={{color: row["color"]}}>{row[column]}</span>
+                    const urlpdf = props.cell.row.original.urlpdf;
+                    const docnumber = (props.cell.row.original.serie ? props.cell.row.original.serie : 'X000') + '-' + (props.cell.row.original.correlative ? props.cell.row.original.correlative.toString().padStart(8, '0') : '00000000');
+                    return <a
+                        onClick={(e) => e.stopPropagation() }
+                        style={{color: row["color"]}}
+                        href={urlpdf}
+                        target="_blank"
+                        rel="noreferrer"
+                    >{docnumber}</a>
                 },
             },
             {
@@ -178,17 +185,35 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
             {
                 Header: t(langKeys.taxbase),
                 accessor: 'subtotal',
-                NoFilter: true
+                NoFilter: true,
+                type: 'number',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const column = props.cell.column.id;
+                    return <>{formatCurrency(row[column])}</>
+                },
             },
             {
                 Header: "IGV",
                 accessor: 'taxes',
-                NoFilter: true
+                NoFilter: true,
+                type: 'number',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const column = props.cell.column.id;
+                    return <>{formatCurrency(row[column])}</>
+                },
             },
             {
                 Header: t(langKeys.totalamount),
                 accessor: 'totalamount',
-                NoFilter: true
+                NoFilter: true,
+                type: 'number',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const column = props.cell.column.id;
+                    return <>{formatCurrency(row[column])}</>
+                },
             },
             {
                 Header: t(langKeys.statusofinvoice),
