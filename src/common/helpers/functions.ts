@@ -1,6 +1,72 @@
 import { Dictionary } from "@types";
 import * as XLSX from 'xlsx';
 
+export const dataMonths =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
+export const dataYears = Array.from(Array(21).keys()).map(x => ({value: `${new Date().getFullYear() + x - 10}`}))
+
+
+export function formatNumber(num: number) {
+    if (num)
+        return num.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+    return "0.00"
+}
+
+export function formatNumberFourDecimals(num: number) {
+    if (num)
+        return num.toFixed(4).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1')
+    return "0.0000"
+}
+
+export function formatNumberNoDecimals(num: number) {
+    if (num)
+        return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+    return "0"
+}
+
+export function formattime(cc: any) {
+    if (!cc)
+        return "0";
+    let hh = Math.floor(cc / 3600) > 0 ? `${Math.floor(cc / 3600)}h ` : ""
+    let mm = Math.floor((cc % 3600) / 60) > 0 ? `${Math.floor((cc % 3600) / 60)}m ` : ""
+    let ss = `${cc % 60}s`
+    return `${hh}${mm}${ss}`
+}
+
+export function timetoseconds(cc: any) {
+    if (!cc)
+        return 0;
+    const times = cc.split(":");
+
+    const hour = parseInt(times[0]);
+    const minutes = parseInt(times[1]);
+    const seconds = times[2] ? parseInt(times[2]) : 0;
+    return (hour * 60 * 60) + (minutes * 60) + seconds;
+}
+export function timetomin(cc: any) {
+    if (!cc)
+        return 0;
+    const times = cc.split(":");
+    const hour = parseInt(times[0]);
+    const minutes = parseInt(times[1]);
+    const seconds = parseInt(times[2]);
+    return hour * 60 + minutes + (seconds >= 30 ? 1 : 0);
+}
+export function formatname(cc: any) {
+    if (cc) {
+        let newname = cc.toLowerCase();
+        let names = newname.split(" ");
+        for (let i = 0; i < names.length; i++) {
+            names[i] = (names[i] ? names[i][0].toUpperCase() : "") + names[i].substr(1);
+        }
+        return names.join(" ")
+    }
+    else {
+        return ''
+    }
+}
+
+
+
 export function uuidv4(): string {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
         var r = Math.random() * 16 | 0, v = c === 'x' ? r : ((r & 0x3) | 0x8);

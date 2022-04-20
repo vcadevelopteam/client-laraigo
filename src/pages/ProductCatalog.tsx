@@ -21,6 +21,7 @@ import { DuplicateIcon } from 'icons';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
+import { formatNumber } from 'common/helpers';
 
 interface RowSelected {
     row: Dictionary | null;
@@ -33,12 +34,6 @@ interface DetailProps {
     multiData: MultiData[];
     fetchData?: () => void;
     arrayBread: any;
-}
-
-function formatNumber(num: number) {
-    if (num)
-        return num.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
-    return "0.00"
 }
 
 const useStyles = makeStyles((theme) => ({

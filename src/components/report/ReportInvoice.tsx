@@ -15,6 +15,7 @@ import { FieldSelect } from "components/fields/templates";
 import { Dictionary } from "@types";
 import ClearIcon from '@material-ui/icons/Clear';
 import { showSnackbar } from 'store/popus/actions';
+import { dataYears } from 'common/helpers';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -87,8 +88,6 @@ const useStyles = makeStyles((theme) => ({
         color: 'rgb(143, 146, 161)'
     },
 }));
-
-const dataYears = Array.from(Array(21).keys()).map(x => ({value: `${new Date().getFullYear() + x - 10}`}))
 
 interface DetailReportInvoiceProps {
     data: RowSelected;
