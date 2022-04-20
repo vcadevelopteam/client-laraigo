@@ -2947,7 +2947,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     useEffect(() => {
         if (waitSaveImport) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(insertexcel?langKeys.successful_edit: langKeys.successful_delete) }))
+                dispatch(showSnackbar({ show: true, success: true, message: t(insertexcel ? langKeys.successful_import : langKeys.successful_delete) }))
                 setinsertexcel(false)
                 fetchData();
                 dispatch(showBackdrop(false));
@@ -3085,7 +3085,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         status: "ACTIVO",
                     }))
                 }, true));
-                setWaitSave(true)
+                setwaitSaveImport(true)
             }
         }
     }
