@@ -473,7 +473,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
         >
             <div className="row-zyx">
                 <FieldSelect
-                    label={t(langKeys.user_plural)}
+                    label={t(langKeys.advisor)}
                     className="col-12"
                     valueDefault={getValues('newUserId')}
                     onChange={(value) => {
