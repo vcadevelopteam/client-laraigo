@@ -498,9 +498,6 @@ export const CalendarEvent: FC = () => {
                             <CalendarTodayIcon />
                             {timeSelected?.localstarthour} - {timeSelected?.localendhour}, {t(langKeys.invitation_date, { month: t(`month_${((daySelected!!.date.getMonth() + 1) + "").padStart(2, "0")}`), year: daySelected?.date.getFullYear(), day: t(dayNames[daySelected!!.dow]), date: daySelected?.date.getDate() })}
                         </div>
-                        <div style={{ marginTop: 4, fontWeight: 'bold', textAlign: 'start' }}>
-                            {event?.notificationtype === "HSM" ? t(langKeys.invitation_phone) : t(langKeys.invitation_email)}
-                        </div>
                     </div>
                     <div style={{ width: '70%', height: 1, backgroundColor: '#e1e1e1', marginTop: 24, marginBottom: 24 }}></div>
                 </div>
