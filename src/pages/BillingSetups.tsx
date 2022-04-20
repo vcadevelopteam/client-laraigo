@@ -90,6 +90,9 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+const dataYears = Array.from(Array(21).keys()).map(x => ({desc: `${new Date().getFullYear() + x - 10}`}))
+const dataMonths =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
+
 const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const dispatch = useDispatch();
 

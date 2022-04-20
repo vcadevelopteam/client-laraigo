@@ -2989,7 +2989,6 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         setinsertexcel(true)
         const file = files[0];
         if (file) {
-            
             const indexCorp = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_CORP_SEL'));
             const dataCurrency = [{ value: "PEN", description: "PEN" }, { value: "USD", description: "USD" }]
             let corplist = multiResult.data[indexCorp] && multiResult.data[indexCorp].success ? multiResult.data[indexCorp].data : [] 
