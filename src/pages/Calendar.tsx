@@ -211,6 +211,7 @@ const DialogBooking: React.FC<{
     booking: Dictionary | null;
     fetchData: () => void
 }> = ({ setOpenModal, openModal, event, booking, fetchData }) => {
+    console.log(event)
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
@@ -283,11 +284,14 @@ const DialogBooking: React.FC<{
                                 value={event?.location}
                                 className={classes.colInput}
                             />
-                            <FieldView
-                                label={t(langKeys.description)}
-                                value={event?.description}
-                                className={classes.colInput}
-                            />
+                            <div className={classes.colInput}>
+                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                    {t(langKeys.description)}
+                                </Box>
+                                <Box lineHeight="20px" fontSize={15} color="textPrimary">
+                                    <div dangerouslySetInnerHTML={{ __html: event?.description }} />
+                                </Box>
+                            </div>
                         </div>
                         <div style={{display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
                             <FieldView
@@ -300,11 +304,12 @@ const DialogBooking: React.FC<{
                                 value={booking?.personname}
                                 className={classes.colInput}
                             />
-                            <FieldView
-                                label={t(langKeys.note)}
-                                value={booking?.notes}
-                                className={classes.colInput}
-                            />
+                            <div className={classes.colInput}>
+                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                    {t(langKeys.note)}
+                                </Box>
+                                <Box lineHeight="20px" fontSize={15} color="textPrimary" style={{overflowWrap: "anywhere"}}>{booking?.notes}</Box>
+                            </div>
                         </div>
                     </div>
                     <FieldEditMulti
