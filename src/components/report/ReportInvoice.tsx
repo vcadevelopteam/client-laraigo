@@ -137,28 +137,48 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 NoFilter: true,
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    return <>{row.corpdesc}</>
+                    return <span style={{color: row["color"]}}>{row.corpdesc}</span>
                 },
             },
             {
                 Header: t(langKeys.year),
                 accessor: 'year',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const column = props.cell.column.id;
+                    return <span style={{color: row["color"]}}>{row[column]}</span>
+                },
             },
             {
                 Header: t(langKeys.month),
                 accessor: 'month',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const column = props.cell.column.id;
+                    return <span style={{color: row["color"]}}>{row[column]}</span>
+                },
             },
             {
                 Header: `${t(langKeys.corporation)}`,
                 accessor: 'corpdesc',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const column = props.cell.column.id;
+                    return <span style={{color: row["color"]}}>{row[column]}</span>
+                },
             },
             {
                 Header: `${t(langKeys.organization)}`,
                 accessor: 'orgdesc',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const column = props.cell.column.id;
+                    return <span style={{color: row["color"]}}>{row[column]}</span>
+                },
             },
             {
                 Header: t(langKeys.receipt),
@@ -167,20 +187,35 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     const urlpdf = props.cell.row.original.urlpdf;
-                    const docnumber = (props.cell.row.original.serie ? props.cell.row.original.serie : 'X000') + '-' + (props.cell.row.original.correlative ? props.cell.row.original.correlative.toString().padStart(8, '0') : '00000000');
-                    return <a
-                        onClick={(e) => e.stopPropagation() }
-                        style={{color: row["color"]}}
-                        href={urlpdf}
-                        target="_blank"
-                        rel="noreferrer"
-                    >{docnumber}</a>
+                    const docnumber = (props.cell.row.original.serie && props.cell.row.original.correlative) ? (props.cell.row.original.serie + '-' + props.cell.row.original.correlative.toString().padStart(8, '0')) : null;
+                    return <>
+                        {urlpdf ?
+                            <a
+                                onClick={(e) => { e.stopPropagation(); }}
+                                style={{color: row["color"]}}
+                                href={urlpdf}
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                {docnumber}
+                            </a>
+                            :
+                            <span style={{color: row["color"]}}>
+                                {docnumber}
+                            </span>
+                        }
+                    </>
                 },
             },
             {
                 Header: t(langKeys.currency),
                 accessor: 'currency',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const column = props.cell.column.id;
+                    return <span style={{color: row["color"]}}>{row[column]}</span>
+                },
             },
             {
                 Header: t(langKeys.taxbase),
@@ -190,7 +225,7 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     const column = props.cell.column.id;
-                    return <>{formatCurrency(row[column])}</>
+                    return <span style={{color: row["color"]}}>{formatCurrency(row[column])}</span>
                 },
             },
             {
@@ -201,7 +236,7 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     const column = props.cell.column.id;
-                    return <>{formatCurrency(row[column])}</>
+                    return <span style={{color: row["color"]}}>{formatCurrency(row[column])}</span>
                 },
             },
             {
@@ -212,33 +247,58 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     const column = props.cell.column.id;
-                    return <>{formatCurrency(row[column])}</>
+                    return <span style={{color: row["color"]}}>{formatCurrency(row[column])}</span>
                 },
             },
             {
                 Header: t(langKeys.statusofinvoice),
                 accessor: 'invoicestatus',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const column = props.cell.column.id;
+                    return <span style={{color: row["color"]}}>{row[column]}</span>
+                },
             },
             {
                 Header: t(langKeys.paymentstatus),
                 accessor: 'paymentstatus',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const column = props.cell.column.id;
+                    return <span style={{color: row["color"]}}>{row[column]}</span>
+                },
             },
             {
                 Header: t(langKeys.dateofissue),
                 accessor: 'invoicedate',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const column = props.cell.column.id;
+                    return <span style={{color: row["color"]}}>{row[column]}</span>
+                },
             },
             {
                 Header: t(langKeys.dueDate),
                 accessor: 'expirationdate',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const column = props.cell.column.id;
+                    return <span style={{color: row["color"]}}>{row[column]}</span>
+                },
             },
             {
                 Header: t(langKeys.paymentdate),
                 accessor: 'paymentdate',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const column = props.cell.column.id;
+                    return <span style={{color: row["color"]}}>{row[column]}</span>
+                },
             },
         ],
         [t]
