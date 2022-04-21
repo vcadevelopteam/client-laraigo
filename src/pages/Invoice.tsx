@@ -2943,7 +2943,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         const indexOrg = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_ORG_SEL'));
         const dataCurrency = [{ value: "PEN", description: "PEN" }, { value: "USD", description: "USD" }]
         const receiverdoctype = [{ value: 0, description: "NO DOMICILIADO" }, { value: 1, description: "DNI" }, { value: 4, description: "CARNE EXT." }, { value: 6, description: "RUC" }, { value: 7, description: "PASAPORTE" }]
-        const invoicetype = [{ value: "1", description: "FACTURA" }, { value: "3", description: "BOLETA" }]
+        const invoicetype = [{ value: "01", description: "FACTURA" }, { value: "03", description: "BOLETA" }]
         const indexCreditType = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_DOMAIN_LST_VALORES'));
         let credittypelist = multiResult.data[indexCreditType] && multiResult.data[indexCreditType].success ? multiResult.data[indexCreditType].data : []
         let corplist = multiResult.data[indexCorp] && multiResult.data[indexCorp].success ? multiResult.data[indexCorp].data : [] 
@@ -2953,7 +2953,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             corplist.reduce((a,d) => ({...a, [d.corpid]: t(`${d.description}`)}),{}), //"corpid"
             orglist.reduce((a,d) => ({...a, [d.orgid]: t(`${d.orgdesc}`)}),{}), //"orgid"
             dataYears.reduce((a,d) => ({...a, [d?.value]: t(`${d?.value}`)}),{}), //"year"
-            dataMonths.reduce((a,d) => ({...a, [d.val]: t(`${d.val}`)}),{}), //"month"
+            dataMonths.reduce((a,d) => ({...a, [+d.val]: t(`${+d.val}`)}),{}), //"month"
             {}, //"description"
             receiverdoctype.reduce((a,d) => ({...a, [d.value]: t(`${d.description}`)}),{}), //"receiverdoctype"
             {}, //"receiverdocnum"
@@ -3009,11 +3009,11 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 && !['', null, undefined].includes(d.paymentstatus)
                 && !['', null, undefined].includes(d.totalamount)
                 && !['', null, undefined].includes(d.exchangerate)
-                && Object.keys(invoicetypeList.reduce((a,d) => ({...a, [d.value]: d.description}), {})).includes('0' + d.invoicetype)
+                && Object.keys(invoicetypeList.reduce((a,d) => ({...a, [d.value]: d.description}), {})).includes(d.invoicetype)
                 && Object.keys(receiverdoctypeList.reduce((a,d) => ({...a, [d.value]: d.description}), {})).includes('' + d.receiverdoctype)
                 && Object.keys(corplist.reduce((a,d) => ({...a, [d.corpid]: d.description}), {})).includes('' + d.corpid)
                 && Object.keys(dataYears.reduce((a,d) => ({...a, [d.value]: d.value}), {})).includes('' + d.year)
-                && Object.keys(dataMonths.reduce((a,d) => ({...a, [d.val]: d.val}), {})).includes('' + d.month)
+                && Object.keys(dataMonths.reduce((a,d) => ({...a, [d.val]: d.val}), {})).includes(`${d.month}`.padStart(2,'0'))
                 && Object.keys(dataCurrency.reduce((a,d) => ({...a, [d.value]: d.description}), {})).includes('' + d.currency)
             );
             console.log(data)
