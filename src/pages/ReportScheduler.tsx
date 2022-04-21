@@ -197,8 +197,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
                             color="primary"
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => console.log(errors)//setViewSelected("view-1")
-                            }>
+                            onClick={() => setViewSelected("view-1")}>
                             {t(langKeys.cancel)}
                         </Button>
                         {edit &&
