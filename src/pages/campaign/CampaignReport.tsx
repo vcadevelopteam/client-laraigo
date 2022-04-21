@@ -2,17 +2,20 @@
 import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { convertLocalDate, dictToArrayKV, getCampaignReportExport, getCampaignReportPaginated, getCampaignReportProactiveExport } from 'common/helpers';
+import { convertLocalDate, dictToArrayKV, getCampaignReportExport, getCampaignReportPaginated, getCampaignReportProactiveExport, getDateCleaned } from 'common/helpers';
 import { Dictionary, IFetchData } from "@types";
 import { exportData, getCollectionAux, getCollectionPaginated, resetCollectionPaginated, resetMainAux } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { TemplateBreadcrumbs, TitleDetail, DialogZyx, FieldSelect } from 'components';
+import { TemplateBreadcrumbs, TitleDetail, DialogZyx, FieldSelect, DateRangePicker } from 'components';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Button } from '@material-ui/core';
 import TablePaginated from 'components/fields/table-paginated';
 import TableZyx from 'components/fields/table-simple';
+import { Range } from 'react-date-range';
+import { CalendarIcon } from 'icons';
+import { Search as SearchIcon } from '@material-ui/icons';
 
 interface DetailProps {
     setViewSelected: (view: string) => void;
@@ -40,7 +43,14 @@ const useStyles = makeStyles((theme) => ({
     },
     flexgrow1: {
         flexGrow: 1
-    }
+    },
+    itemDate: {
+        minHeight: 40,
+        height: 40,
+        border: '1px solid #bfbfc0',
+        borderRadius: 4,
+        color: 'rgb(143, 146, 161)'
+    },
 }));
 
 const dataReportType = {
@@ -49,6 +59,12 @@ const dataReportType = {
 }
 
 const selectionKey = 'id';
+
+const initialRange = {
+    startDate: new Date(new Date().setDate(1)),
+    endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+    key: 'selection'
+}
 
 export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
     const classes = useStyles();
@@ -66,6 +82,9 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
     
     const [selectedRows, setSelectedRows] = useState<any>({});
     const [reportType, setReportType] = useState<string>('default');
+
+    const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
+    const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
     
     const cell = (props: any) => {
         const column = props.cell.column;
@@ -179,9 +198,12 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
     );
 
     const fetchData = ({ pageSize, pageIndex, filters, sorts }: IFetchData) => {
+        dispatch(showBackdrop(true))
         setfetchDataAux({...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts }});
         dispatch(getCollectionPaginated(getCampaignReportPaginated(
             {
+                startdate: dateRangeCreateDate.startDate,
+                enddate: dateRangeCreateDate.endDate,
                 sorts: sorts,
                 filters: filters,
                 take: pageSize,
@@ -260,21 +282,48 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
         if (!mainPaginated.loading && !mainPaginated.error) {
             setPageCount(Math.ceil(mainPaginated.count / fetchDataAux.pageSize));
             settotalrow(mainPaginated.count);
+            dispatch(showBackdrop(false));
         }
     }, [mainPaginated]);
 
     const ButtonsElement = () => {
         return (
-            <FieldSelect
-                uset={true}
-                label={t(langKeys.reporttype)}
-                className={classes.select}
-                valueDefault={reportType}
-                onChange={(value) => setReportType(value?.key)}
-                data={dictToArrayKV(dataReportType)}
-                optionDesc="value"
-                optionValue="key"
-            />
+            <div style={{display: 'flex', gap: '4px'}}>
+                <DateRangePicker
+                    open={openDateRangeCreateDateModal}
+                    setOpen={setOpenDateRangeCreateDateModal}
+                    range={dateRangeCreateDate}
+                    onSelect={setDateRangeCreateDate}
+                >
+                    <Button
+                        className={classes.itemDate}
+                        startIcon={<CalendarIcon />}
+                        onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
+                    >
+                        {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
+                    </Button>
+                </DateRangePicker>
+                <Button
+                    disabled={mainPaginated.loading}
+                    variant="contained"
+                    color="primary"
+                    startIcon={<SearchIcon style={{ color: 'white' }} />}
+                    style={{ width: 120, backgroundColor: "#55BD84" }}
+                    onClick={() => fetchData(fetchDataAux)}
+                >{t(langKeys.search)}
+                </Button>
+                <FieldSelect
+                    uset={true}
+                    variant="outlined"
+                    label={t(langKeys.reporttype)}
+                    className={classes.select}
+                    valueDefault={reportType}
+                    onChange={(value) => setReportType(value?.key)}
+                    data={dictToArrayKV(dataReportType)}
+                    optionDesc="value"
+                    optionValue="key"
+                />
+            </div>
         )
     }
 
