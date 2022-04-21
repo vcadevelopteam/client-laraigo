@@ -283,11 +283,14 @@ const DialogBooking: React.FC<{
                                 value={event?.location}
                                 className={classes.colInput}
                             />
-                            <FieldView
-                                label={t(langKeys.description)}
-                                value={event?.description}
-                                className={classes.colInput}
-                            />
+                            <div className={classes.colInput}>
+                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                    {t(langKeys.description)}
+                                </Box>
+                                <Box lineHeight="20px" fontSize={15} color="textPrimary">
+                                    <div dangerouslySetInnerHTML={{ __html: event?.description }} />
+                                </Box>
+                            </div>
                         </div>
                         <div style={{display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
                             <FieldView
@@ -300,11 +303,12 @@ const DialogBooking: React.FC<{
                                 value={booking?.personname}
                                 className={classes.colInput}
                             />
-                            <FieldView
-                                label={t(langKeys.note)}
-                                value={booking?.notes}
-                                className={classes.colInput}
-                            />
+                            <div className={classes.colInput}>
+                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                    {t(langKeys.note)}
+                                </Box>
+                                <Box lineHeight="20px" fontSize={15} color="textPrimary" style={{overflowWrap: "anywhere"}}>{booking?.notes}</Box>
+                            </div>
                         </div>
                     </div>
                     <FieldEditMulti
@@ -447,7 +451,6 @@ const LabelDays: React.FC<LabelDaysProps> = ({ flag, fieldsIntervals, errors, in
     const { t } = useTranslation();
     const classes = useStyles();
     let hoursvalue = hours.map((x: any) => (x.value))
-    console.log(dow)
     let dowfields = fieldsIntervals?.filter((x: any) => ((x.dow === dow) && (!x.date)))
 
 
@@ -613,7 +616,6 @@ const LabelDays: React.FC<LabelDaysProps> = ({ flag, fieldsIntervals, errors, in
 }
 
 const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation }, setViewSelected, multiData, fetchData }) => {
-    console.log(row?.startdate)
     const initialRange = {
         startDate: row?.startdate?new Date(row?.startdate + "T00:00:00"):new Date(new Date().setDate(1)),
         endDate: row?.enddate?new Date(row?.enddate + "T00:00:00"): new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
@@ -709,9 +711,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         register('status', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('notificationtype', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
 
-        register('communicationchannelid', { validate: (value) => Boolean(getValues('notificationtype') !== 'HSM' || (value && value > 0)) || String(t(langKeys.field_required)) });
-
-        register('hsmtemplateid', { validate: (value) => Boolean(value && value > 0) || String(t(langKeys.field_required)) });
+        register('communicationchannelid', { validate: (value) => getValues("notificationtype")!=="HSM"?true:(Boolean(value && value > 0) || String(t(langKeys.field_required)))});
+        register('hsmtemplateid', { validate: (value) => getValues("notificationtype")==="HSM"?true:(Boolean(value && value > 0) || String(t(langKeys.field_required)))});
         register('durationtype', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('duration', { validate: (value) => Boolean(value && value > 0) || String(t(langKeys.field_required)) });
         register('timebeforeeventunit', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
@@ -799,7 +800,6 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                 dispatch(execute(insCalendar(datatosend)));
                 dispatch(showBackdrop(true));
                 setWaitSave(true)
-                console.log("submitted")
             }
         }
 
@@ -845,7 +845,6 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                             variant="contained"
                             color="primary"
                             type="submit"
-                            onClick={() => { console.log(errors) }}
                             startIcon={<SaveIcon color="secondary" />}
                             style={{ backgroundColor: "#55BD84" }}>
                             {t(langKeys.save)}

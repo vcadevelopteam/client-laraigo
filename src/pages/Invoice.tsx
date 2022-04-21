@@ -21,6 +21,7 @@ import { CircularProgress, IconButton, Tabs, TextField, Box, FormControlLabel } 
 import * as locale from "date-fns/locale";
 import { DownloadIcon } from 'icons';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
+import { dataYears, dataMonths } from 'common/helpers';
 import {
     Close,
     FileCopy,
@@ -48,6 +49,8 @@ import AttachFileIcon from '@material-ui/icons/AttachFile';
 import { Trans } from 'react-i18next';
 import DomToImage from 'dom-to-image';
 import { charge, resetCharge, balance, resetBalance } from 'store/culqi/actions';
+import { formatNumber,formatNumberFourDecimals,formatNumberNoDecimals } from 'common/helpers';
+
 
 interface RowSelected {
     row: Dictionary | null,
@@ -89,12 +92,6 @@ const StyledTableCell = withStyles((theme) => ({
 const StyledTableRow = withStyles((theme) => ({
 }))(TableRow);
 
-function formatNumber(num: number) {
-    if (num)
-        return num.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
-    return "0.00"
-}
-
 function getTaxableAmount(igv: number, num: number) {
     if (num && igv)
         return (num / (igv + 1)).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
@@ -105,18 +102,6 @@ function getIgv(igv: number, num: number) {
     if (num && igv)
         return (num - (num / (igv + 1))).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
     return "0.00"
-}
-
-function formatNumberFourDecimals(num: number) {
-    if (num)
-        return num.toFixed(4).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1')
-    return "0.0000"
-}
-
-function formatNumberNoDecimals(num: number) {
-    if (num)
-        return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
-    return "0"
 }
 
 function toISOLocalString(date: { getTimezoneOffset: () => number; getTime: () => number; }) {
@@ -214,8 +199,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const IDCOSTPERPERIOD = "IDCOSTPERPERIOD";
-const dataYears = Array.from(Array(21).keys()).map(x => ({desc: `${new Date().getFullYear() + x - 10}`}))
-const dataMonths =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
 
 const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const dispatch = useDispatch();
@@ -371,10 +354,10 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 style={{width: 140}}
                                 valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc || 0}))}
+                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.value || 0}))}
                                 data={dataYears}
-                                optionDesc="desc"
-                                optionValue="desc"
+                                optionDesc="value"
+                                optionValue="value"
                             />
                             <FieldMultiSelect
                                 label={t(langKeys.month)}
@@ -1927,9 +1910,6 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
     const [modalRowSelect, setModalRowSelect] = useState<Dictionary | null>(null);
     const [modalRowSend, setModalRowSend] = useState(false);
 
-    const dataYears = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }];
-    const dataMonths =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
-
     const dataCurrency = [{ value: "PEN", description: "PEN" }, { value: "USD", description: "USD" }]
     const dataPayment = [{ value: "PENDING", description: t(langKeys.PENDING) }, { value: "PAID", description: t(langKeys.PAID) }, { value:"NONE", description: t(langKeys.NONE) }]
 
@@ -2202,10 +2182,10 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                                 style={{width: 140}}
                                 valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc || 0}))}
+                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.value || 0}))}
                                 data={dataYears}
-                                optionDesc="desc"
-                                optionValue="desc"
+                                optionDesc="value"
+                                optionValue="value"
                             />
                             <FieldMultiSelect
                                 label={t(langKeys.month)}
@@ -2727,9 +2707,6 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const [waitSave, setWaitSave] = useState(false);
     const [waitSaveImport, setwaitSaveImport] = useState(false);
 
-    const dataYears = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }];
-    const dataMonths =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
-
     const dataCurrency = [{ value: "PEN", description: "PEN" }, { value: "USD", description: "USD" }]
     const dataPayment = [{ value: "PENDING", description: t(langKeys.PENDING) }, { value: "PAID", description: t(langKeys.PAID) }, { value:"NONE", description: t(langKeys.NONE) }]
 
@@ -2947,7 +2924,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     useEffect(() => {
         if (waitSaveImport) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(insertexcel?langKeys.successful_edit: langKeys.successful_delete) }))
+                dispatch(showSnackbar({ show: true, success: true, message: t(insertexcel ? langKeys.successful_import : langKeys.successful_delete) }))
                 setinsertexcel(false)
                 fetchData();
                 dispatch(showBackdrop(false));
@@ -2964,11 +2941,9 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const handleTemplate = () => {
         const indexCorp = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_CORP_SEL'));
         const indexOrg = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_ORG_SEL'));
-        const dataYears = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }];
-        const dataMonths =[{ val: "1" }, { val: "2" }, { val: "3" }, { val: "4" }, { val: "5" }, { val: "6" }, { val: "7" }, { val: "8" }, { val: "9" }, { val: "10" }, { val: "11" }, { val: "12" }];
         const dataCurrency = [{ value: "PEN", description: "PEN" }, { value: "USD", description: "USD" }]
         const receiverdoctype = [{ value: 0, description: "NO DOMICILIADO" }, { value: 1, description: "DNI" }, { value: 4, description: "CARNE EXT." }, { value: 6, description: "RUC" }, { value: 7, description: "PASAPORTE" }]
-        const invoicetype = [{ value: "1", description: "FACTURA" }, { value: "3", description: "BOLETA" }]
+        const invoicetype = [{ value: "01", description: "FACTURA" }, { value: "03", description: "BOLETA" }]
         const indexCreditType = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_DOMAIN_LST_VALORES'));
         let credittypelist = multiResult.data[indexCreditType] && multiResult.data[indexCreditType].success ? multiResult.data[indexCreditType].data : []
         let corplist = multiResult.data[indexCorp] && multiResult.data[indexCorp].success ? multiResult.data[indexCorp].data : [] 
@@ -2977,8 +2952,8 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         const data = [
             corplist.reduce((a,d) => ({...a, [d.corpid]: t(`${d.description}`)}),{}), //"corpid"
             orglist.reduce((a,d) => ({...a, [d.orgid]: t(`${d.orgdesc}`)}),{}), //"orgid"
-            dataYears.reduce((a,d) => ({...a, [d.desc]: t(`${d.desc}`)}),{}), //"year"
-            dataMonths.reduce((a,d) => ({...a, [d.val]: t(`${d.val}`)}),{}), //"month"
+            dataYears.reduce((a,d) => ({...a, [d?.value]: t(`${d?.value}`)}),{}), //"year"
+            dataMonths.reduce((a,d) => ({...a, [+d.val]: t(`${+d.val}`)}),{}), //"month"
             {}, //"description"
             receiverdoctype.reduce((a,d) => ({...a, [d.value]: t(`${d.description}`)}),{}), //"receiverdoctype"
             {}, //"receiverdocnum"
@@ -3014,34 +2989,31 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         setinsertexcel(true)
         const file = files[0];
         if (file) {
-            
             const indexCorp = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_CORP_SEL'));
-            const dataYears = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }];
-            const dataMonths =[{ val: "1" }, { val: "2" }, { val: "3" }, { val: "4" }, { val: "5" }, { val: "6" }, { val: "7" }, { val: "8" }, { val: "9" }, { val: "10" }, { val: "11" }, { val: "12" }];
             const dataCurrency = [{ value: "PEN", description: "PEN" }, { value: "USD", description: "USD" }]
             let corplist = multiResult.data[indexCorp] && multiResult.data[indexCorp].success ? multiResult.data[indexCorp].data : [] 
             const receiverdoctypeList = [{ value: 0, description: "NO DOMICILIADO" }, { value: 1, description: "DNI" }, { value: 4, description: "CARNE EXT." }, { value: 6, description: "RUC" }, { value: 7, description: "PASAPORTE" }]
             const invoicetypeList = [{ value: "01", description: "FACTURA" }, { value: "03", description: "BOLETA" }]
 
-            let data: any = (await uploadExcel(file, undefined) as any[])
-            .filter((d: any) => !['', null, undefined].includes(d.description)
+            let data: any = (await uploadExcel(file, undefined) as any[]);
+            data = data.filter((d: any) => !['', null, undefined].includes(d.description)
                 && !['', null, undefined].includes(d.receiverdocnum)
                 && !['', null, undefined].includes(d.receiverbusinessname)
                 && !['', null, undefined].includes(d.receiverfiscaladdress)
                 && !['', null, undefined].includes(d.receivercountry)
                 && !['', null, undefined].includes(d.receivermail)
-                && !['', null, undefined].includes(d.serie)
-                && !['', null, undefined].includes(d.correlative)
-                && !['', null, undefined].includes(d.invoicedate)
+                // && !['', null, undefined].includes(d.serie)
+                // && !['', null, undefined].includes(d.correlative)
+                // && !['', null, undefined].includes(d.invoicedate)
                 && !['', null, undefined].includes(d.invoicestatus)
                 && !['', null, undefined].includes(d.paymentstatus)
                 && !['', null, undefined].includes(d.totalamount)
                 && !['', null, undefined].includes(d.exchangerate)
-                && Object.keys(invoicetypeList.reduce((a,d) => ({...a, [d.value]: d.description}), {})).includes('0' + d.invoicetype)
+                && Object.keys(invoicetypeList.reduce((a,d) => ({...a, [d.value]: d.description}), {})).includes(d.invoicetype)
                 && Object.keys(receiverdoctypeList.reduce((a,d) => ({...a, [d.value]: d.description}), {})).includes('' + d.receiverdoctype)
                 && Object.keys(corplist.reduce((a,d) => ({...a, [d.corpid]: d.description}), {})).includes('' + d.corpid)
-                && Object.keys(dataYears.reduce((a,d) => ({...a, [d.desc]: d.desc}), {})).includes('' + d.year)
-                && Object.keys(dataMonths.reduce((a,d) => ({...a, [d.val]: d.val}), {})).includes('' + d.month)
+                && Object.keys(dataYears.reduce((a,d) => ({...a, [d.value]: d.value}), {})).includes('' + d.year)
+                && Object.keys(dataMonths.reduce((a,d) => ({...a, [d.val]: d.val}), {})).includes(`${d.month}`.padStart(2,'0'))
                 && Object.keys(dataCurrency.reduce((a,d) => ({...a, [d.value]: d.description}), {})).includes('' + d.currency)
             );
             console.log(data)
@@ -3063,29 +3035,29 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         receivercountry: String(x.receivercountry),
                         receivermail: String(x.receivermail),
                         invoicetype: String(x.invoicetype),
-                        serie: String(x.serie),
+                        serie: String(x.serie || ''),
                         correlative: Number(x.correlative)||0,
                         invoicedate: new Date(x.invoicedate),
                         expirationdate: new Date(x.expirationdate),
                         invoicestatus: String(x.invoicestatus),
                         paymentstatus: String(x.paymentstatus),
                         paymentdate: new Date(x.paymentdate),
-                        paidby: String(x.paidby),
-                        paymenttype: String(x.paymenttype),
+                        paidby: String(x.paidby || ''),
+                        paymenttype: String(x.paymenttype || ''),
                         totalamount: Number(x.totalamount),
                         exchangerate: Number(x.exchangerate),
                         currency: String(x.currency),
-                        urlcdr: String(x.urlcdr),
-                        urlpdf: String(x.urlpdf),
-                        urlxml: String(x.urlxml),
-                        purchaseorder: String(x.purchaseorder),
-                        comments: String(x.comments),
+                        urlcdr: String(x.urlcdr || ''),
+                        urlpdf: String(x.urlpdf || ''),
+                        urlxml: String(x.urlxml || ''),
+                        purchaseorder: String(x.purchaseorder || ''),
+                        comments: String(x.comments || ''),
                         credittype: String(x.credittype),
                         description: String(x.description),
                         status: "ACTIVO",
                     }))
                 }, true));
-                setWaitSave(true)
+                setwaitSaveImport(true)
             }
         }
     }
@@ -3156,10 +3128,10 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             style={{width: 140}}
                             valueDefault={dataMain.year}
                             variant="outlined"
-                            onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc || 0}))}
+                            onChange={(value) => setdataMain(prev=>({...prev,year:value?.value || 0}))}
                             data={dataYears}
-                            optionDesc="desc"
-                            optionValue="desc"
+                            optionDesc="value"
+                            optionValue="value"
                         />
                         <FieldMultiSelect
                             label={t(langKeys.month)}
@@ -4172,8 +4144,6 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
     const [amountTotal, setAmountTotal] = useState(0);
 
     const dataCurrency = [{ value: "PEN", description: "PEN" }, { value: "USD", description: "USD" }]
-    const dataYears = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }];
-    const dataMonths =[{ val: "1" }, { val: "2" }, { val: "3" }, { val: "4" }, { val: "5" }, { val: "6" }, { val: "7" }, { val: "8" }, { val: "9" }, { val: "10" }, { val: "11" }, { val: "12" }];
 
     const invocesBread = [
         { id: "view-1", name: t(langKeys.billingtitle) },
@@ -4656,12 +4626,12 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                         />
                         <FieldSelect
                             label={t(langKeys.invoice_serviceyear)}
-                            onChange={(value) => { setValue('year', parseInt(value?.desc || '0')); }}
+                            onChange={(value) => { setValue('year', parseInt(value?.value || '0')); }}
                             className="col-3"
                             valueDefault={data?.row?.year ? data?.row?.year.toString() : getValues('year')}
                             data={dataYears}
-                            optionDesc="desc"
-                            optionValue="desc"
+                            optionDesc="value"
+                            optionValue="value"
                             error={errors?.year?.message}
                         />
                         <FieldSelect
