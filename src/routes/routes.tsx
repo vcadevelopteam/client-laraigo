@@ -9,7 +9,11 @@ import {
     AIModelsIcon,
     ClientIcon,
     CRMIcon,
-    EnvioIcon
+    EnvioIcon,
+    KPIIcon,
+    CalendaryIcon,
+    RulesIcon,
+    ProductsIcon
 
 } from 'icons';
 import { langKeys } from "lang/keys";
@@ -42,14 +46,14 @@ export const routes: RouteConfig[] = [
         description: <Trans i18nKey={langKeys.kpimanager_plural} />,
         tooltip: <Trans i18nKey={langKeys.kpimanager} />,
         path: paths.KPIMANAGER,
-        icon: (className) => <DashboardIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
+        icon: (className) => <KPIIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
     },
     {
         key: paths.CALENDAR,
         description: <Trans i18nKey={langKeys.calendar_plural} />,
         tooltip: <Trans i18nKey={langKeys.calendar} />,
         path: paths.CALENDAR,
-        icon: (className) => <DashboardIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
+        icon: (className) => <CalendaryIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
     },
     // {
     //     key: paths.REPORTDESIGNER,
@@ -84,14 +88,14 @@ export const routes: RouteConfig[] = [
         description: <Trans i18nKey={langKeys.automatizationrules} count={2} />,
         tooltip: <Trans i18nKey={langKeys.automatizationrules} count={2} />,
         path: paths.AUTOMATIZATIONRULES,
-        icon: (className) => <CRMIcon style={{ width: 22, height: 26 }} className={className} />,
+        icon: (className) => <RulesIcon style={{ width: 22, height: 26 }} className={className} />,
     },
     {
         key: paths.PRODUCTCATALOG,
         description: <Trans i18nKey={langKeys.productcatalog} count={2} />,
         tooltip: <Trans i18nKey={langKeys.productcatalog} count={2} />,
         path: paths.PRODUCTCATALOG,
-        icon: (className) => <CRMIcon style={{ width: 22, height: 26 }} className={className} />,
+        icon: (className) => <ProductsIcon style={{ width: 22, height: 26 }} className={className} />,
     },
     // {
     //     key: paths.EMAIL_INBOX,
