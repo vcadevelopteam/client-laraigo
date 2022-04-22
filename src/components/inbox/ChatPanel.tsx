@@ -11,8 +11,8 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent, sendHSM, updatePerson, hideLogInteractions } from 'store/inbox/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { changeStatus, insertClassificationConversation, insLeadPerson } from 'common/helpers';
-import { execute } from 'store/main/actions';
+import { changeStatus, getConversationClassification2, insertClassificationConversation, insLeadPerson } from 'common/helpers';
+import { execute, getCollectionAux2 } from 'store/main/actions';
 import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView, FieldMultiSelect, FieldMultiSelectFreeSolo } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
@@ -868,11 +868,21 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     const [typeStatus, setTypeStatus] = useState('');
     const [openModalLead, setOpenModalLead] = useState(false);
     const [openModalHSM, setOpenModalHSM] = useState(false);
+    const multiData = useSelector(state => state.main.multiData);
+    const [checkTipification, setCheckTipification] = useState(false);
+    const mainAux2 = useSelector(state => state.main.mainAux2);
     // const [showLogs, setShowLogs] = React.useState<boolean>(false)
 
     const closeTicket = (newstatus: string) => {
-        setOpenModalCloseticket(true);
-        setTypeStatus(newstatus);
+        let tipificationproperty = (multiData?.data?.[12]?.data || [])[0];
+        if (tipificationproperty?.propertyvalue === "1") {
+            setCheckTipification(true);
+            dispatch(getCollectionAux2(getConversationClassification2(ticketSelected?.conversationid!!)))
+        }
+        else {
+            setOpenModalCloseticket(true);
+            setTypeStatus(newstatus);
+        }
     };
     console.log(hideLogs)
 
@@ -884,6 +894,23 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
         // setShowLogs(e.target.checked);
         dispatch(hideLogInteractions(e.target.checked))
     }
+
+    useEffect(() => {
+        if (checkTipification) {
+            if (!mainAux2.loading) {
+                if (mainAux2.data?.length > 0) {
+                    setCheckTipification(true);
+                    setOpenModalCloseticket(true);
+                    // setTypeStatus(newstatus);
+                    setTypeStatus("CERRADO");
+                }
+                else {
+                    setCheckTipification(false);
+                    dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.tipify_ticket) }))
+                }
+            }
+        }
+    }, [mainAux2])
 
     return (
         <>

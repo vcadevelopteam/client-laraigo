@@ -1656,6 +1656,22 @@ export const gerencialasesoresconectadosbarseldata = ({ startdate, enddate, chan
     }
 });
 
+export const getPropertySelByName = (propertyname: string): IRequestBody => ({
+    method: 'UFN_PROPERTY_SELBYNAME',
+    key: "UFN_PROPERTY_SELBYNAME",
+    parameters: {
+        propertyname
+    }
+});
+
+export const getConversationClassification2 = (conversationid: number): IRequestBody => ({
+    method: 'UFN_CONVERSATIONCLASSIFICATION_SEL2',
+    key: "UFN_CONVERSATIONCLASSIFICATION_SEL2",
+    parameters: {
+        conversationid
+    }
+});
+
 /// Settings tab (drawer)
 export const getCountConfigurationsBody = (): IRequestBody => ({
     method: "UFN_COUNT_CONFIGURATION",
