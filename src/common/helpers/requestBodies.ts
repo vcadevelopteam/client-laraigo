@@ -1350,11 +1350,13 @@ export const getBlacklistExport = ({ filters, sorts }: Dictionary): IRequestBody
     }
 });
 
-export const getCampaignReportPaginated = ({ filters, sorts, take, skip }: Dictionary): IRequestBodyPaginated => ({
+export const getCampaignReportPaginated = ({ startdate, enddate, filters, sorts, take, skip }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_CAMPAIGNREPORT_SEL",
     methodCount: "UFN_CAMPAIGNREPORT_TOTALRECORDS",
     parameters: {
         origin: "campaignreport",
+        startdate,
+        enddate,
         filters,
         sorts,
         take,
@@ -1902,6 +1904,22 @@ export const getdashboardoperativoEncuesta2Seldata = ({ startdate, enddate, chan
         startdate, enddate, channel, group, company, label, question, closedby: "ASESOR,BOT", target: 0,
         offset: (new Date().getTimezoneOffset() / 60) * -1,
         supervisorid: supervisor
+    }
+});
+
+export const getPropertySelByName = (propertyname: string): IRequestBody => ({
+    method: 'UFN_PROPERTY_SELBYNAME',
+    key: "UFN_PROPERTY_SELBYNAME",
+    parameters: {
+        propertyname
+    }
+});
+
+export const getConversationClassification2 = (conversationid: number): IRequestBody => ({
+    method: 'UFN_CONVERSATIONCLASSIFICATION_SEL2',
+    key: "UFN_CONVERSATIONCLASSIFICATION_SEL2",
+    parameters: {
+        conversationid
     }
 });
 

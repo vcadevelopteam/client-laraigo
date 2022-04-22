@@ -24,7 +24,7 @@ interface TabPanelProps {
 
 interface FieldTemplate {
     text: React.ReactNode;
-    node: (onClose: (key: string) => void, data: IChatWebAddFormField) => React.ReactNode;
+    node: (onClose: (key: string) => void, data: IChatWebAddFormField, form:UseFormReturn<IChatWebAdd>, index:number) => React.ReactNode;
     data: IChatWebAddFormField;
 }
 
@@ -542,13 +542,20 @@ const useTemplateStyles = makeStyles(theme => ({
         border: `${theme.palette.primary.main} 1px solid`,
     },
 }));
+interface NameTemplateProps {
+    onClose: () => void;
+    form: UseFormReturn<IChatWebAdd>;
+    title: React.ReactNode;
+    data: IChatWebAddFormField;
+    index: number;
+}
 
-const NameTemplate: FC<{ onClose: () => void, title: React.ReactNode, data: IChatWebAddFormField }> = ({ data, onClose, title }) => {
+const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form,index }) => {
     const classes = useTemplateStyles();
     const { t } = useTranslation();
-    const [required, setRequired] = useState(true);
+    const [required, setRequired] = useState(data.required);
 
-    const handleRequired = (checked: boolean) => {
+    const handleRequired = (checked: boolean) =>{
         setRequired(checked);
         data.required = checked;
     }
@@ -578,7 +585,7 @@ const NameTemplate: FC<{ onClose: () => void, title: React.ReactNode, data: ICha
                                                 </label>
                                             </Grid>
                                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                                <IOSSwitch checked={required} onChange={(_, v) => handleRequired(v)} />
+                                                <IOSSwitch checked={required} onChange={(_, v) => {handleRequired(v);form.setValue(`form.${index}.required`, v)}} />
                                             </Grid>
                                         </Grid>
                                     </Box>
@@ -597,7 +604,11 @@ const NameTemplate: FC<{ onClose: () => void, title: React.ReactNode, data: ICha
                                                     variant="outlined"
                                                     size="small"
                                                     fullWidth
-                                                    onChange={e => data.label = e.target.value}
+                                                    onChange={e => {
+                                                        form.setValue(`form.${index}.label`, e.target.value)
+                                                        data.label = e.target.value
+                                                    }}
+                                                    defaultValue={data.label}
                                                 />
                                             </Grid>
                                         </Grid>
@@ -619,7 +630,11 @@ const NameTemplate: FC<{ onClose: () => void, title: React.ReactNode, data: ICha
                                                     variant="outlined"
                                                     size="small"
                                                     fullWidth
-                                                    onChange={e => data.placeholder = e.target.value}
+                                                    onChange={e => {
+                                                        form.setValue(`form.${index}.placeholder`, e.target.value)
+                                                        data.placeholder = e.target.value
+                                                    }}
+                                                    defaultValue={data.placeholder}
                                                 />
                                             </Grid>
                                         </Grid>
@@ -639,7 +654,11 @@ const NameTemplate: FC<{ onClose: () => void, title: React.ReactNode, data: ICha
                                                     variant="outlined"
                                                     size="small"
                                                     fullWidth
-                                                    onChange={e => data.validationtext = e.target.value}
+                                                    onChange={e => {
+                                                        form.setValue(`form.${index}.validationtext`, e.target.value)
+                                                        data.validationtext = e.target.value
+                                                    }}
+                                                    defaultValue={data.validationtext}
                                                 />
                                             </Grid>
                                         </Grid>
@@ -664,7 +683,11 @@ const NameTemplate: FC<{ onClose: () => void, title: React.ReactNode, data: ICha
                                     variant="outlined"
                                     size="small"
                                     fullWidth
-                                    onChange={e => data.inputvalidation = e.target.value}
+                                    onChange={e => {
+                                        form.setValue(`form.${index}.inputvalidation`, e.target.value)
+                                        data.inputvalidation = e.target.value
+                                    }}
+                                    defaultValue={data.inputvalidation}
                                 />
                             </Grid>
                         </Grid>
@@ -684,7 +707,11 @@ const NameTemplate: FC<{ onClose: () => void, title: React.ReactNode, data: ICha
                                     variant="outlined"
                                     size="small"
                                     fullWidth
-                                    onChange={e => data.keyvalidation = e.target.value}
+                                    onChange={e => {
+                                        form.setValue(`form.${index}.keyvalidation`, e.target.value)
+                                        data.keyvalidation = e.target.value
+                                    }}
+                                    defaultValue={data.keyvalidation}
                                 />
                             </Grid>
                         </Grid>
@@ -714,7 +741,18 @@ const CONTACT = "CONTACT";
 const templates: { [x: string]: FieldTemplate } = {
     [NAME_FIELD]: {
         text: <Trans i18nKey={langKeys.name} />,
-        node: (onClose, data) => <NameTemplate data={data} onClose={() => onClose(NAME_FIELD)} key={NAME_FIELD} title={<Trans i18nKey={langKeys.name} />} />,
+        node: (onClose, data, form,index) => {
+            return (
+                <NameTemplate
+                    form={form}
+                    index={index}
+                    data={data}
+                    onClose={() => onClose(NAME_FIELD)}
+                    key={NAME_FIELD}
+                    title={<Trans i18nKey={langKeys.name} />}
+                />
+            );
+        },
         data: {
             field: "FIRSTNAME",
             type: "text",
@@ -728,7 +766,18 @@ const templates: { [x: string]: FieldTemplate } = {
     },
     [LASTNAME_FIELD]: {
         text: <Trans i18nKey={langKeys.lastname} />,
-        node: (onClose, data) => <NameTemplate data={data} onClose={() => onClose(LASTNAME_FIELD)} key={LASTNAME_FIELD} title={<Trans i18nKey={langKeys.lastname} />} />,
+        node: (onClose, data, form, index) => {
+            return (
+                <NameTemplate
+                    form={form}
+                    index={index}
+                    data={data}
+                    onClose={() => onClose(LASTNAME_FIELD)}
+                    key={LASTNAME_FIELD}
+                    title={<Trans i18nKey={langKeys.lastname} />}
+                />
+            );
+        },
         data: {
             field: "LASTNAME",
             type: "text",
@@ -742,7 +791,18 @@ const templates: { [x: string]: FieldTemplate } = {
     },
     [PHONE_FIELD]: {
         text: <Trans i18nKey={langKeys.phone} />,
-        node: (onClose, data) => <NameTemplate data={data} onClose={() => onClose(PHONE_FIELD)} key={PHONE_FIELD} title={<Trans i18nKey={langKeys.phone} />} />,
+        node: (onClose, data, form,index) => {
+            return (
+                <NameTemplate
+                    form={form}
+                    index={index}
+                    data={data}
+                    onClose={() => onClose(PHONE_FIELD)}
+                    key={PHONE_FIELD}
+                    title={<Trans i18nKey={langKeys.phone} />}
+                />
+            );
+        },
         data: {
             field: "PHONE",
             type: "phone",
@@ -756,7 +816,18 @@ const templates: { [x: string]: FieldTemplate } = {
     },
     [EMAIL_FIELD]: {
         text: <Trans i18nKey={langKeys.email} />,
-        node: (onClose, data) => <NameTemplate data={data} onClose={() => onClose(EMAIL_FIELD)} key={EMAIL_FIELD} title={<Trans i18nKey={langKeys.email} />} />,
+        node: (onClose, data, form,index) => {
+            return (
+                <NameTemplate
+                    form={form}
+                    index={index}
+                    data={data}
+                    onClose={() => onClose(EMAIL_FIELD)}
+                    key={EMAIL_FIELD}
+                    title={<Trans i18nKey={langKeys.email} />}
+                />
+            );
+        },
         data: {
             field: "EMAIL",
             type: "text",
@@ -770,7 +841,18 @@ const templates: { [x: string]: FieldTemplate } = {
     },
     [DOCUMENT_FIELD]: {
         text: <Trans i18nKey={langKeys.document} />,
-        node: (onClose, data) => <NameTemplate data={data} onClose={() => onClose(DOCUMENT_FIELD)} key={DOCUMENT_FIELD} title={<Trans i18nKey={langKeys.document} />} />,
+        node: (onClose, data, form,index) => {
+            return (
+                <NameTemplate
+                    form={form}
+                    index={index}
+                    data={data}
+                    onClose={() => onClose(DOCUMENT_FIELD)}
+                    key={DOCUMENT_FIELD}
+                    title={<Trans i18nKey={langKeys.document} />}
+                />
+            );
+        },
         data: {
             field: "DOCUMENT",
             type: "text",
@@ -784,7 +866,18 @@ const templates: { [x: string]: FieldTemplate } = {
     },
     [SUPPLUNUMBER_FIELD]: {
         text: <Trans i18nKey={langKeys.supplynumber} />,
-        node: (onClose, data) => <NameTemplate data={data} onClose={() => onClose(SUPPLUNUMBER_FIELD)} key={SUPPLUNUMBER_FIELD} title={<Trans i18nKey={langKeys.supplynumber} />} />,
+        node: (onClose, data, form,index) => {
+            return (
+                <NameTemplate
+                    form={form}
+                    index={index}
+                    data={data}
+                    onClose={() => onClose(SUPPLUNUMBER_FIELD)}
+                    key={SUPPLUNUMBER_FIELD}
+                    title={<Trans i18nKey={langKeys.supplynumber} />}
+                />
+            );
+        },
         data: {
             field: "SUPPLYNUMBER",
             type: "text",
@@ -798,9 +891,11 @@ const templates: { [x: string]: FieldTemplate } = {
     },
     [CONTACT]: {
         text: <Trans i18nKey={langKeys.contact} />,
-        node: (onClose, data) => {
+        node: (onClose, data, form,index) => {
             return (
                 <NameTemplate
+                    form={form}
+                    index={index}
                     data={data}
                     onClose={() => onClose(CONTACT)}
                     key={CONTACT}
@@ -902,7 +997,7 @@ const TabPanelForm: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
                     </Grid>
                 </Grid>
             </Grid>
-            {fields.map(e => e.node(handleCloseTemplate, e.data))}
+            {fields.map((e,i) => e.node(handleCloseTemplate, e.data, form, i))}
         </div>
     );
 }
