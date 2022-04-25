@@ -215,7 +215,7 @@ const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, dis
         register('notes');
         register('name', { validate: (value) => (!!value && value.length > 0) || (t(langKeys.field_required) + "") });
         register('email', { validate: (value) => event?.notificationtype === "HSM" || !!value || (t(langKeys.field_required) + "") });
-        register('phone', { validate: (value) => event?.notificationtype !== "HSM" || !!value || (t(langKeys.field_required) + "") });
+        register('phone');
     }, [register, t, event])
 
     useEffect(() => {
@@ -256,7 +256,7 @@ const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, dis
                         error={errors?.name?.message}
                     />
                 </div>
-                {event.notificationtype !== "HSM" && (
+                {true && (
                     <div>
                         <div style={{ marginBottom: 8, fontSize: 14, fontWeight: 'bold' }}>{t(langKeys.email)}</div>
                         <FieldEdit
@@ -269,7 +269,7 @@ const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, dis
                         />
                     </div>
                 )}
-                {event.notificationtype === "HSM" && (
+                {/* {event.notificationtype === "HSM" && (
                     <div>
                         <div style={{ marginBottom: 8, fontSize: 14, fontWeight: 'bold' }}>{t(langKeys.phone)}</div>
                         <Controller
@@ -297,7 +297,7 @@ const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, dis
                             )}
                         />
                     </div>
-                )}
+                )} */}
                 <div>
                     <div style={{ marginBottom: 8, fontSize: 14, fontWeight: 'bold' }}> {t(langKeys.prepare_meeting)} </div>
                     <FieldEditMulti
