@@ -3,6 +3,8 @@ import { apiUrls } from 'common/constants';
 import { Middleware, Dispatch } from 'redux';
 import typesInbox from 'store/inbox/actionTypes';
 import typesLogin from 'store/login/actionTypes';
+import  * as VoxImplant from 'voximplant-websdk'
+import { Call } from 'voximplant-websdk/Call/Call';
 
 const eventsListeners = [
     { event: 'deleteTicket', type: typesInbox.DELETE_TICKET },
@@ -18,6 +20,7 @@ const eventsListeners = [
 const socket = io(apiUrls.WS_URL, {
     autoConnect: false
 });
+const sdk = VoxImplant.getInstance();
 
 declare module 'socket.io-client' {
     interface Socket {
@@ -29,8 +32,31 @@ const callWSMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async
     const { type, payload } = action;
 
     if (type === typesInbox.WS_CONNECT) {
+        try {
+            console.log("sdk", sdk)
+            await sdk.init({
+                micRequired: true,
+                showDebugInfo: true,
+                progressTone: true,
+                progressToneCountry: 'US',
+            });
+            try {
+                await sdk.connect();
+                console.log("Connected");
+            } catch (e) {
+                console.log("Connection failed!");
+            }
+            try {
+                await sdk.login("fdcarlosd1@app-test.fdcarlosdz1.n2.voximplant.com","12345678");
+                console.log("Logged in!");
+            } catch (e) {
+                console.log("Login failure!");
+            }
+        } catch (e) {
+            console.log("SDK init failure!");
+        }
         const loginData = { data: payload };
-        
+
         if (socket.connected) {
             // console.log("vamos a desconectar")
             socket.disconnect();
