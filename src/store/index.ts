@@ -1,5 +1,6 @@
 import callAPIMiddleware from 'middlewares/apiMiddleware';
 import callWSMiddleware from 'middlewares/wsMiddleware';
+import voximplantMiddleware from 'middlewares/voximplantMiddleware';
 import { applyMiddleware, compose, createStore, combineReducers, Middleware } from 'redux';
 import thunk from 'redux-thunk';
 import channelReducer, { IState as IChannelState } from './channel/reducer';
@@ -64,7 +65,7 @@ const rootReducer = combineReducers<IRootState>({
 });
 
 export default function configureStore(preloadedState?: IRootState) {
-    const middleware: Middleware[] = [callAPIMiddleware, callWSMiddleware];
+    const middleware: Middleware[] = [callAPIMiddleware, callWSMiddleware, voximplantMiddleware];
 
     const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 

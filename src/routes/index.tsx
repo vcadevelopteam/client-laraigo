@@ -17,6 +17,7 @@ import { useForcedDisconnection, useSelector } from 'hooks';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { wsConnect } from "store/inbox/actions";
+import { voximplantConnect } from "store/voximplant/actions";
 import { getAccessToken } from 'common/helpers';
 import { Redirect } from 'react-router-dom';
 import { logout, validateToken } from 'store/login/actions';
@@ -62,6 +63,7 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 			const fromLogin = !!resLogin.user;
 			const { userid, orgid, roledesc } = resValidateToken.user!!
 			dispatch(wsConnect({ userid, orgid, usertype: 'PLATFORM', automaticConnection, fromLogin, roledesc  }));
+			dispatch(voximplantConnect());
 		}
 	}, [resValidateToken.loading])
 	
