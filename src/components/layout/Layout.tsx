@@ -8,6 +8,7 @@ import { useSelector } from 'hooks';
 import { CssBaseline } from '@material-ui/core';
 import { routes } from 'routes/routes';
 import Popus from 'components/layout/Popus';
+import ManageCall from 'components/inbox/ManageCall';
 
 const drawerWidth = 240;
 const drawerWidthCompressed = 73;
@@ -222,6 +223,7 @@ const Layout: FC<LayoutProps> = ({ children, mainClasses }) => {
     const classes = useStyles(theme);
     const dataRes = useSelector(state => state.login);
     const openDrawer = useSelector(state => state.popus.openDrawer);
+    
 
     return (
         <>
@@ -252,6 +254,7 @@ const Layout: FC<LayoutProps> = ({ children, mainClasses }) => {
                     </>
                 }
             </div>
+            <ManageCall />
             <Popus />
         </>
     );

@@ -2,17 +2,10 @@ import io from 'socket.io-client';
 import { apiUrls } from 'common/constants';
 import { Middleware, Dispatch } from 'redux';
 import typeVoximplant from 'store/voximplant/actionTypes';
-import typesLogin from 'store/login/actionTypes';
 import * as VoxImplant from 'voximplant-websdk'
 import { Call } from 'voximplant-websdk/Call/Call';
 
 const sdk = VoxImplant.getInstance();
-
-declare module 'socket.io-client' {
-    interface Socket {
-        _callbacks?: any
-    }
-}
 
 const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async (action) => {
     const { type, payload } = action;
@@ -36,12 +29,28 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
             }
             try {
                 await sdk.login("fdcarlosd1@app-test.fdcarlosdz1.n2.voximplant.com", "12345678");
+                
+                if (payload?.automaticConnection) {
+                    sdk.setOperatorACDStatus(VoxImplant.OperatorACDStatuses.Ready);
+                }
+
+                sdk.on(VoxImplant.Events.ACDStatusUpdated, (e) => {
+                    console.log("voximplant: status->", e);
+                })
+                
                 dispatch({ type: typeVoximplant.MANAGE_CONNECTION, payload: { error: false, message: "", loading: false } })
-                console.log("voximplant: Logged in!");
+                console.log("voximplant: Logged in!", typeVoximplant.MANAGE_CONNECTION);
 
                 sdk.on(VoxImplant.Events.IncomingCall, (e) => {
-                    console.log("llamada entrante!!")
+                    console.log("voximplant: llamada entrante!!")
                     dispatch({ type: typeVoximplant.INIT_CALL, payload: { call: e.call, type: "INBOUND", number: e.call.number() }})
+
+                    e.call.on(VoxImplant.CallEvents.Disconnected, () => {
+                        dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "DISCONNECTED" });
+                    });
+                    e.call.on(VoxImplant.CallEvents.Failed, () => {
+                        dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "DISCONNECTED" });
+                    });
                 })
 
                 return
@@ -64,6 +73,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
             }
         };
         const call = sdk?.call(callSettings);
+        
         dispatch({ type: typeVoximplant.INIT_CALL, payload: { call, type: "OUTBOUND", number: payload.number } })
 
         call.on(VoxImplant.CallEvents.Connected, () => {
@@ -77,15 +87,22 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         });
         return
     } else if (type === typeVoximplant.ANSWER_CALL) {
-        const call = payload.call;
+        const call = payload;
         call?.answer();
         dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "CONNECTED" });
         return
     } else if (type === typeVoximplant.REJECT_CALL) {
-        const call = payload.call;
+        const call = payload;
         call?.reject();
         dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "DISCONNECTED" });
         return
+    }  else if (type === typeVoximplant.HANGUP_CALL) {
+        const call = payload;
+        call?.hangup();
+        dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "DISCONNECTED" });
+        return
+    } else if (type === typeVoximplant.MANAGE_STATUS_VOX) {
+        sdk.setOperatorACDStatus(payload ? VoxImplant.OperatorACDStatuses.Ready : VoxImplant.OperatorACDStatuses.Offline);
     }
 
     return next(action)

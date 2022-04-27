@@ -3,11 +3,13 @@ const actionType = {
     MAKE_CALL: 'voximplant/MAKE_CALL',
     INIT_CALL: 'voximplant/INIT_CALL',
     MANAGE_STATUS_CALL: 'voximplant/MANAGE_STATUS_CALL',
+    MANAGE_STATUS_VOX: 'voximplant/MANAGE_STATUS_VOX',
 
 
     MANAGE_CONNECTION: 'voximplant/MANAGE_CONNECTION',
     ANSWER_CALL: 'voximplant/ANSWER_CALL',
     REJECT_CALL: 'voximplant/REJECT_CALL',
+    HANGUP_CALL: 'voximplant/HANGUP_CALL',
 
 };
 

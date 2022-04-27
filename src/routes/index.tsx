@@ -5,9 +5,9 @@ import Popus from 'components/layout/Popus';
 import {
 	Users, SignIn, SignUp, Properties, Quickreplies, Groupconfig, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
 	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger, ChannelAddInstagram, ChannelAddWhatsapp, ChannelAddTelegram,
-	Reports, Tickets, MessageInbox, BotDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail, Iaservices,UserSettings,
-	Corporations, Settings, Dashboard, ChannelEdit, ChannelAddIos, ChannelAddAndroid, ChannelAddInstagramDM , Privacy, CRM, ActivateUser, RecoverPassword, LeadForm, ChangePwdFirstLogin, BillingSetups, DashboardAdd,
-	InputValidation, DashboardLayout, Invoice, KPIManager,GetLocations, ReportScheduler, ProductCatalog, Calendar, CalendarEvent
+	Reports, Tickets, MessageInbox, BotDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail, Iaservices, UserSettings,
+	Corporations, Settings, Dashboard, ChannelEdit, ChannelAddIos, ChannelAddAndroid, ChannelAddInstagramDM, Privacy, CRM, ActivateUser, RecoverPassword, LeadForm, ChangePwdFirstLogin, BillingSetups, DashboardAdd,
+	InputValidation, DashboardLayout, Invoice, KPIManager, GetLocations, ReportScheduler, ProductCatalog, Calendar, CalendarEvent
 } from 'pages';
 
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
@@ -62,11 +62,11 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 			const automaticConnection = resLogin.user?.automaticConnection || false;
 			const fromLogin = !!resLogin.user;
 			const { userid, orgid, roledesc } = resValidateToken.user!!
-			dispatch(wsConnect({ userid, orgid, usertype: 'PLATFORM', automaticConnection, fromLogin, roledesc  }));
-			dispatch(voximplantConnect());
+			dispatch(wsConnect({ userid, orgid, usertype: 'PLATFORM', automaticConnection, fromLogin, roledesc }));
+			dispatch(voximplantConnect({ automaticConnection: automaticConnection || !!localStorage.getItem("agentConnected") || false }));
 		}
 	}, [resValidateToken.loading])
-	
+
 	if (!existToken) {
 		return <Redirect to={{ pathname: paths.SIGNIN }} />;
 	} else if (resValidateToken.loading && !applications) {
@@ -173,7 +173,7 @@ const RouterApp: FC = () => {
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CHANNELS_ADD_WHATSAPP.path}>
 					<Layout mainClasses={classes.main}>
-						<ChannelAddWhatsapp edit={false}/>
+						<ChannelAddWhatsapp edit={false} />
 					</Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CHANNELS_ADD_TELEGRAM.path}>
@@ -263,9 +263,9 @@ const RouterApp: FC = () => {
 				<ProtectRoute exact path={paths.GROUPCONFIG}>
 					<Layout mainClasses={classes.main}><Groupconfig /></Layout>
 				</ProtectRoute>
-					<ProtectRoute exact path={paths.USERSETTINGS}>
-						<Layout mainClasses={classes.main}><UserSettings /></Layout>
-					</ProtectRoute>
+				<ProtectRoute exact path={paths.USERSETTINGS}>
+					<Layout mainClasses={classes.main}><UserSettings /></Layout>
+				</ProtectRoute>
 				<ProtectRoute exact path={paths.INAPPROPRIATEWORDS}>
 					<Layout mainClasses={classes.main}><InappropriateWords /></Layout>
 				</ProtectRoute>
