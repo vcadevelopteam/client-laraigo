@@ -83,6 +83,11 @@ export const ChannelAddInstagramDM: FC = () => {
         setWaitSave(true);
         setViewSelected("main")
     }
+
+    useEffect(() => {
+        console.log(`CHANNEL ADD INSTAGRAM DM: ${window.location.href}`);
+    }, [])
+
     useEffect(() => {
         if (!mainResult.loading && setins){
             if (executeResult) {
@@ -99,6 +104,7 @@ export const ChannelAddInstagramDM: FC = () => {
             }
         }
     }, [mainResult])
+
     useEffect(() => {
         if (waitSave) {
             dispatch(showBackdrop(false));
@@ -114,6 +120,7 @@ export const ChannelAddInstagramDM: FC = () => {
             setWaitSave(true);
         }
     }
+
     function setValueField(value: any) {
         setNextbutton(value === null)
         let partialf = fields;
@@ -124,12 +131,14 @@ export const ChannelAddInstagramDM: FC = () => {
 
         setFields(partialf)
     }
+
     function setnameField(value: any) {
         setChannelreg(value === "")
         let partialf = fields;
         partialf.parameters.description = value
         setFields(partialf)
     }
+
     if(viewSelected==="view1"){
         return (
             <div style={{ width: '100%' }}>
@@ -160,6 +169,7 @@ export const ChannelAddInstagramDM: FC = () => {
                                     version: 'v8.0'
                                 });
                             }}
+                            disableMobileRedirect={true}
                         />
     
                     <div style={{ textAlign: "center", color: "#969ea5", fontStyle: "italic" }}>{t(langKeys.connectinsta4)}</div>

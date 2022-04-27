@@ -79,6 +79,11 @@ export const ChannelAddMessenger: FC = () => {
         setWaitSave(true);
         setViewSelected("main")
     }
+
+    useEffect(() => {
+        console.log(`CHANNEL ADD MESSENGER: ${window.location.href}`);
+    }, [])
+
     useEffect(() => {
         if (!mainResult.loading && setins){
             if (executeResult) {
@@ -95,6 +100,7 @@ export const ChannelAddMessenger: FC = () => {
             }
         }
     }, [mainResult])
+
     useEffect(() => {
         if (waitSave) {
             dispatch(showBackdrop(false));
@@ -110,6 +116,7 @@ export const ChannelAddMessenger: FC = () => {
             setWaitSave(true);
         }
     }
+
     function setValueField(value: any) {
         setNextbutton(value === null)
         let partialf = fields;
@@ -120,12 +127,14 @@ export const ChannelAddMessenger: FC = () => {
 
         setFields(partialf)
     }
+
     function setnameField(value: any) {
         setChannelreg(value === "")
         let partialf = fields;
         partialf.parameters.description = value
         setFields(partialf)
     }
+
     if(viewSelected==="view1"){
         return (
             <div style={{ width: '100%' }}>
@@ -156,6 +165,7 @@ export const ChannelAddMessenger: FC = () => {
                                     version: 'v8.0'
                                 });
                             }}
+                            disableMobileRedirect={true}
                         />
     
                     <div style={{ textAlign: "center", paddingBottom: "80px", color: "#969ea5", fontStyle: "italic" }}>{t(langKeys.connectface4)}</div>

@@ -76,6 +76,10 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
     }, [register, unregister, dispatch]);
 
     useEffect(() => {
+        console.log(`SIGNUP ADD FACEBOOK: ${window.location.href}`);
+    }, [])
+
+    useEffect(() => {
         if (waitSave) {
             dispatch(showBackdrop(false));
             setWaitSave(false);
@@ -91,6 +95,7 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
             setHasFinished(true);
         }
     }
+
     function setValueField(value: any) {
         setValue('channels.facebook.communicationchannelsite', value?.id || "");
         setValue('channels.facebook.communicationchannelowner', value?.name || "");
@@ -199,6 +204,7 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
                         });
                     }}
                     isDisabled={mainResult.loading}
+                    disableMobileRedirect={true}
                 />
             )}
         </div>
