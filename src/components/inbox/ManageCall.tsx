@@ -5,17 +5,25 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { Button, Fab, IconButton, makeStyles, Typography } from "@material-ui/core";
 import { useTranslation } from 'react-i18next';
-import { langKeys } from 'lang/keys';
 import { useSelector } from 'hooks';
+import PersonIcon from '@material-ui/icons/Person';
 import { useDispatch } from 'react-redux';
-import { answerCall, hangupCall, rejectCall } from 'store/voximplant/actions';
+import { answerCall, hangupCall, rejectCall, makeCall, holdCall, muteCall,unmuteCall } from 'store/voximplant/actions';
 import TextField from '@material-ui/core/TextField';
+import PhoneIcon from '@material-ui/icons/Phone';
+import CallEndIcon from '@material-ui/icons/CallEnd';
+import MicIcon from '@material-ui/icons/Mic';
+import PauseIcon from '@material-ui/icons/Pause';
+import HeadsetMicIcon from '@material-ui/icons/HeadsetMic';
+import MicOffIcon from '@material-ui/icons/MicOff';
 
 const ManageCall: React.FC<{}> = ({ }) => {
     const [openDialog, setOpenDialog] = useState(false)
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [numberVox, setNumberVox] = useState("");
+    const [hold, sethold] = useState(false);
+    const [mute, setmute] = useState(false);
     const ringtone = React.useRef<HTMLAudioElement>(null);
     const call = useSelector(state => state.voximplant.call);
     const statusCall = useSelector(state => state.voximplant.statusCall);
@@ -42,64 +50,105 @@ const ManageCall: React.FC<{}> = ({ }) => {
                 fullWidth
                 maxWidth={"xs"}
                 style={{ zIndex: 99999999 }}>
-                <DialogTitle>{"Test"}</DialogTitle>
-                <DialogContent>
-                    <div>
-                        <TextField
-                            label="Call from"
-                            value={numberVox}
-                            fullWidth
-                            disabled={statusCall !== "DISCONNECTED"}
-                        />
+                <DialogTitle>
+                    <div style={{ marginLeft: "auto", marginRight: "auto", width: "100px", height: "100px", borderRadius: "50%", backgroundColor: "#bdbdbd" }}>
+                        <PersonIcon style={{color: "white", width: "100px", height: "100px"}}/>    
                     </div>
+                </DialogTitle>
+                <DialogContent>
+                    { statusCall === "DISCONNECTED"?
+                        (<div>
+                            <TextField
+                                label="Call to"
+                                value={numberVox}
+                                fullWidth
+                                onChange={(e) => setNumberVox(e.target.value)}
+                                disabled={statusCall !== "DISCONNECTED"}
+                            />
+                        </div>):(
+                        <div style={{ marginLeft: "auto", marginRight: "auto", textAlign: "center", fontSize: "20px" }}>
+                            {numberVox}
+                        </div>
+                        )
+                    }
                 </DialogContent>
                 <DialogActions style={{ justifyContent: 'center', marginBottom: 12 }}>
+                    
                     {statusCall === "CONNECTING" && (
-                        <Button
-                            color="primary"
-                            variant="contained"
-                            onClick={() => dispatch(answerCall(call.call))}
-                        >
-                            {"Answer"}
-                        </Button>
-                    )}
-                    {statusCall === "CONNECTING" && (
-                        <Button
-                            color="primary"
-                            variant="contained"
-                            style={{ backgroundColor: 'rgb(180, 26, 26)' }}
-                            onClick={() => dispatch(rejectCall(call.call))}
-                        >
-                            {"Reject"}
-                        </Button>
+                        <>
+                            <IconButton //answercall
+                                style={{ marginLeft: "10px",marginRight: "auto",width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#00a884' }}
+                                onClick={() => dispatch(answerCall(call.call))}
+                            >
+                                <PhoneIcon style={{color: "white", width: "35px", height: "35px"}}/> 
+                            </IconButton>
+                            <IconButton //rejectcall
+                                style={{ marginLeft: "auto",marginRight: "10px",width: "50px", height: "50px", borderRadius: "50%", backgroundColor: 'rgb(180, 26, 26)' }}
+                                onClick={() => dispatch(rejectCall(call.call))}
+                            >
+                                <CallEndIcon style={{color: "white", width: "35px", height: "35px"}}/> 
+                            </IconButton>
+                        </>
                     )}
                     {statusCall === "CONNECTED" && (
-                        <Button
-                            color="primary"
-                            variant="contained"
-                            onClick={() => dispatch(hangupCall(call.call))}
-                        >
-                            {"Hangup"}
-                        </Button>
+                        <div style={{display:"grid", width: "100%", gridTemplateColumns: 'auto [col1] 50px auto [col3] 50px auto [col4] 50px auto', }}>
+                            {mute?(
+                            <IconButton //unmuteself
+                                style={{ gridColumnStart: "col1", marginLeft: "auto",marginRight: "10px",width: "50px", height: "50px", borderRadius: "50%", backgroundColor: 'rgb(180, 26, 26)' }}
+                                onClick={()=>{dispatch(unmuteCall(call.call));setmute(false)}}>
+                                <MicOffIcon style={{color: "white", width: "35px", height: "35px"}}/> 
+                            </IconButton>
+                            ):(
+                            <IconButton //muteself
+                                style={{ gridColumnStart: "col1", marginLeft: "auto",marginRight: "10px",width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#bdbdbd' }}
+                                onClick={()=>{dispatch(muteCall(call.call));setmute(true)}}>
+                                <MicIcon style={{color: "white", width: "35px", height: "35px"}}/> 
+                            </IconButton>
+                            )}
+                            {
+
+                              /*  <IconButton //holdcall
+                                    style={{ gridColumnStart: "col2", marginLeft: "auto",marginRight: "10px",width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#bdbdbd' }}
+                                    onClick={() => {
+                                        dispatch(holdCall({call: call.call, flag: !hold})); 
+                                        sethold(!hold)
+                                    }}
+                                >
+                                    <PauseIcon style={{color: "white", width: "35px", height: "35px"}}/> 
+                                </IconButton>
+                                */
+                            }
+                            <IconButton //derivar
+                                style={{ gridColumnStart: "col3", marginLeft: "auto",marginRight: "10px",width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#bdbdbd' }}
+                                onClick={() => dispatch(hangupCall(call.call))}
+                            >
+                                <HeadsetMicIcon style={{color: "white", width: "35px", height: "35px"}}/> 
+                            </IconButton>
+                            <IconButton //hangupcall
+                                style={{ gridColumnStart: "col4", marginLeft: "auto",marginRight: "10px",width: "50px", height: "50px", borderRadius: "50%", backgroundColor: 'rgb(180, 26, 26)' }}
+                                onClick={() => dispatch(hangupCall(call.call))}
+                            >
+                                <CallEndIcon style={{color: "white", width: "35px", height: "35px"}}/> 
+                            </IconButton>
+
+                        </div>
                     )}
                     {statusCall === "DISCONNECTED" && (
-                        <Button
-                            color="primary"
-                            variant="contained"
-                            style={{ backgroundColor: 'rgb(180, 26, 26)' }}
-                            onClick={() => setOpenDialog(false)}
-                        >
-                            {"Call"}
-                        </Button>
-                    )}
-                    {statusCall === "DISCONNECTED" && (
-                        <Button
-                            color="primary"
-                            variant="contained"
-                            onClick={() => setOpenDialog(false)}
-                        >
-                            {"Close"}
-                        </Button>
+                        <>
+                            <IconButton//makecall
+                                style={{ marginLeft: "10px",marginRight: "auto",width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#00a884' }}
+                                onClick={() => dispatch(makeCall(numberVox))}
+                            >
+                                <PhoneIcon style={{color: "white", width: "35px", height: "35px"}}/> 
+                            </IconButton>
+                            <Button
+                                color="primary"
+                                variant="contained"
+                                onClick={() => setOpenDialog(false)}
+                            >
+                                {"Close"}
+                            </Button>
+                        </>
                     )}
                 </DialogActions>
             </Dialog>

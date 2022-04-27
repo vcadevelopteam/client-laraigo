@@ -10,4 +10,12 @@ export const rejectCall = (payload?: Call | null): IActionCall => ({ type: actio
 
 export const hangupCall = (payload?: Call | null): IActionCall => ({ type: actionTypes.HANGUP_CALL, payload });
 
+export const muteCall = (payload?: Call | null): IActionCall => ({ type: actionTypes.MUTE_CALL, payload });
+
+export const unmuteCall = (payload?: Call | null): IActionCall => ({ type: actionTypes.UNMUTE_CALL, payload });
+
+export const holdCall = (payload?:  Dictionary): IActionCall => ({ type: actionTypes.HOLD_CALL, payload });
+
+export const makeCall = (payload?: string): IActionCall => ({ type: actionTypes.MAKE_CALL, payload });
+
 export const manageStatusVox = (payload: boolean): IActionCall => ({ type: actionTypes.MANAGE_STATUS_VOX, payload });

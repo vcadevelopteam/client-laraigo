@@ -28,7 +28,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                 return;
             }
             try {
-                await sdk.login("fdcarlosd1@app-test.fdcarlosdz1.n2.voximplant.com", "12345678");
+                await sdk.login("josevara11111@testapp.josevara11111.n2.voximplant.com", "password");
                 
                 if (payload?.automaticConnection) {
                     sdk.setOperatorACDStatus(VoxImplant.OperatorACDStatuses.Ready);
@@ -66,7 +66,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         }
     } else if (type === typeVoximplant.MAKE_CALL) {
         const callSettings = {
-            number: payload.number,
+            number: payload,
             videoFlags: {
                 sendVideo: false,
                 receiveVideo: false
@@ -100,6 +100,19 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         const call = payload;
         call?.hangup();
         dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "DISCONNECTED" });
+        return
+    }  else if (type === typeVoximplant.HOLD_CALL) {
+        const call = payload.call;
+        console.log(call)
+        await call?.hold(payload.hold);
+        return
+    }  else if (type === typeVoximplant.MUTE_CALL) {
+        const call = payload;
+        call?.muteMicrophone();
+        return
+    }  else if (type === typeVoximplant.UNMUTE_CALL) {
+        const call = payload;
+        call?.unmuteMicrophone();
         return
     } else if (type === typeVoximplant.MANAGE_STATUS_VOX) {
         sdk.setOperatorACDStatus(payload ? VoxImplant.OperatorACDStatuses.Ready : VoxImplant.OperatorACDStatuses.Offline);
