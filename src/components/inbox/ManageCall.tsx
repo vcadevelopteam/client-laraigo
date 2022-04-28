@@ -24,7 +24,7 @@ const ManageCall: React.FC<{}> = ({ }) => {
     const phoneinbox = useSelector(state => state.inbox.person.data?.phone);
     const [numberVox, setNumberVox] = useState("");
     console.log(phoneinbox)
-    const [hold, sethold] = useState(false);
+    const [hold, sethold] = useState(true);
     const [mute, setmute] = useState(false);
     const ringtone = React.useRef<HTMLAudioElement>(null);
     const call = useSelector(state => state.voximplant.call);

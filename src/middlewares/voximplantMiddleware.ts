@@ -103,8 +103,10 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         return
     }  else if (type === typeVoximplant.HOLD_CALL) {
         const call = payload.call;
-        console.log(call)
-        await call?.hold(payload.hold);
+
+        
+        debugger
+        await call?.setActive(payload.flag);
         return
     }  else if (type === typeVoximplant.MUTE_CALL) {
         const call = payload;
@@ -116,6 +118,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         return
     } else if (type === typeVoximplant.MANAGE_STATUS_VOX) {
         sdk.setOperatorACDStatus(payload ? VoxImplant.OperatorACDStatuses.Ready : VoxImplant.OperatorACDStatuses.Offline);
+        return
     }
 
     return next(action)
