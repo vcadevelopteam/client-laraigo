@@ -12,13 +12,24 @@ import { answerCall, hangupCall, rejectCall, makeCall, holdCall, setModalCall, m
 import TextField from '@material-ui/core/TextField';
 import PhoneIcon from '@material-ui/icons/Phone';
 import CallEndIcon from '@material-ui/icons/CallEnd';
+import clsx from 'clsx';
 import MicIcon from '@material-ui/icons/Mic';
 import PauseIcon from '@material-ui/icons/Pause';
 import HeadsetMicIcon from '@material-ui/icons/HeadsetMic';
 import MicOffIcon from '@material-ui/icons/MicOff';
 import { langKeys } from 'lang/keys';
 
+const useStyles = makeStyles(theme => ({
+    grey: {
+        backgroundColor: '#bdbdbd'
+    },
+    red: {
+        backgroundColor: 'rgb(180, 26, 26)'
+    },
+}));
+
 const ManageCall: React.FC<{}> = ({ }) => {
+    const classes = useStyles();
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const phoneinbox = useSelector(state => state.inbox.person.data?.phone);
@@ -116,7 +127,11 @@ const ManageCall: React.FC<{}> = ({ }) => {
                             </IconButton>
                             )}
                             <IconButton //holdcall
-                                style={{ gridColumnStart: "col2", marginLeft: "auto",marginRight: "10px",width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#bdbdbd' }}
+                                style={{ gridColumnStart: "col2", marginLeft: "auto",marginRight: "10px",width: "50px", height: "50px", borderRadius: "50%"}}
+                                className={clsx({
+                                    [classes.grey]: hold,
+                                    [classes.red]: !hold,
+                                })}
                                 onClick={() => {
                                     dispatch(holdCall({call: call.call, flag: !hold})); 
                                     sethold(!hold)
