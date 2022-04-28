@@ -169,7 +169,7 @@ export const ChannelAdd: FC = () => {
         {
             icon: c => <EmailColor className={c} />,
             label: 'Email',
-            onClick: () => { },
+            onClick: () => {history.push(paths.CHANNELS_ADD_EMAIL.path, whatsAppData)},
         },
         {
             icon: c => <CallIcon className={c} />,
@@ -179,7 +179,7 @@ export const ChannelAdd: FC = () => {
         {
             icon: c => <SmsColor className={c} />,
             label: 'Sms',
-            onClick: () => { },
+            onClick: () => {history.push(paths.CHANNELS_ADD_SMS.path, whatsAppData)},
         },
         {
             icon: c => <IosColor className={c} />,

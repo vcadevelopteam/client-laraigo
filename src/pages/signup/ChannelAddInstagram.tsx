@@ -81,6 +81,10 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
         }
     }, [mainResult, waitSave])
 
+    useEffect(() => {
+        console.log(`SIGNUP ADD INSTAGRAM: ${window.location.href}`);
+    }, [])
+
     const processFacebookCallback = async (r: any) => {
         if (r.status !== "unknown" && !r.error) {
             dispatch(getInstagramPages(r.accessToken, apiUrls.INSTAGRAMAPP))
@@ -89,6 +93,7 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
             setHasFinished(true);
         }
     }
+
     function setValueField(value: any) {
         setValue('channels.instagram.communicationchannelsite', value?.id || "");
         setValue('channels.instagram.communicationchannelowner', value?.name || "");
@@ -195,6 +200,7 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
                         });
                     }}
                     isDisabled={mainResult.loading}
+                    disableMobileRedirect={true}
                 />
             )}
         </div>

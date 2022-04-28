@@ -130,6 +130,10 @@ const FirstStep: FC = () => {
         }
     }, [rescheckuser])
 
+    useEffect(() => {
+        console.log(`FACEBOOK SIGNUP: ${window.location.href}`);
+    }, [])
+
     const openprivacypolicies = () => {
         window.open("/privacy", '_blank');
     }
@@ -214,6 +218,7 @@ const FirstStep: FC = () => {
                     textButton={t(langKeys.signup_with_facebook)}
                     icon={<FacebookIcon style={{ color: 'white', marginRight: '8px'}} />}
                     isDisabled={false}
+                    disableMobileRedirect={true}
                 />
             </div>
             <div className={classes.buttonGoogle}>
