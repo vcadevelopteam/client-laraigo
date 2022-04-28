@@ -101,7 +101,7 @@ const ManageCall: React.FC<{}> = ({ }) => {
                         </>
                     )}
                     {statusCall === "CONNECTED" && (
-                        <div style={{display:"grid", width: "100%", gridTemplateColumns: 'auto [col1] 50px auto [col3] 50px auto [col4] 50px auto', }}>
+                        <div style={{display:"grid", width: "100%", gridTemplateColumns: 'auto [col1] 50px auto [col2] 50px auto [col3] 50px auto [col4] 50px auto', }}>
                             {mute?(
                             <IconButton //unmuteself
                                 style={{ gridColumnStart: "col1", marginLeft: "auto",marginRight: "10px",width: "50px", height: "50px", borderRadius: "50%", backgroundColor: 'rgb(180, 26, 26)' }}
@@ -115,19 +115,15 @@ const ManageCall: React.FC<{}> = ({ }) => {
                                 <MicIcon style={{color: "white", width: "35px", height: "35px"}}/> 
                             </IconButton>
                             )}
-                            {
-
-                              /*  <IconButton //holdcall
-                                    style={{ gridColumnStart: "col2", marginLeft: "auto",marginRight: "10px",width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#bdbdbd' }}
-                                    onClick={() => {
-                                        dispatch(holdCall({call: call.call, flag: !hold})); 
-                                        sethold(!hold)
-                                    }}
-                                >
-                                    <PauseIcon style={{color: "white", width: "35px", height: "35px"}}/> 
-                                </IconButton>
-                                */
-                            }
+                            <IconButton //holdcall
+                                style={{ gridColumnStart: "col2", marginLeft: "auto",marginRight: "10px",width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#bdbdbd' }}
+                                onClick={() => {
+                                    dispatch(holdCall({call: call.call, flag: !hold})); 
+                                    sethold(!hold)
+                                }}
+                            >
+                                <PauseIcon style={{color: "white", width: "35px", height: "35px"}}/> 
+                            </IconButton>
                             <IconButton //derivar
                                 style={{ gridColumnStart: "col3", marginLeft: "auto",marginRight: "10px",width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#bdbdbd' }}
                                 onClick={() => dispatch(hangupCall(call.call))}
