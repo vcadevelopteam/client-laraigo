@@ -59,7 +59,7 @@ export const ChannelAddEmail: FC = () => {
             "apikey": "",
             "coloricon": "#1D9BF0",
         },
-        "type": "EMAIL",
+        "type": "INFOBIPEMAIL",
         "service": {
             "apikey": "",
             "url": "",

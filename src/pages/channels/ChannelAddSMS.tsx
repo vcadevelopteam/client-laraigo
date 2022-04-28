@@ -59,7 +59,7 @@ export const ChannelAddSMS: FC = () => {
             "apikey": "",
             "coloricon": "#1D9BF0",
         },
-        "type": "SMS",
+        "type": "INFOBIPSMS",
         "service": {
             "apikey": "",
             "url": "",
