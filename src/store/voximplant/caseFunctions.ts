@@ -15,6 +15,12 @@ export const manageConnection = (state: IState, action: IAction): IState => {
     }
 };
 
+export const setModalCall = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        showcall: action.payload,
+    }
+}
 export const initCall = (state: IState, action: IAction): IState => {
     console.log("voximplant: manageConnection", action.payload)
 

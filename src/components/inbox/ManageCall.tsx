@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'hooks';
 import PersonIcon from '@material-ui/icons/Person';
 import { useDispatch } from 'react-redux';
-import { answerCall, hangupCall, rejectCall, makeCall, holdCall, muteCall,unmuteCall } from 'store/voximplant/actions';
+import { answerCall, hangupCall, rejectCall, makeCall, holdCall, setModalCall, muteCall,unmuteCall } from 'store/voximplant/actions';
 import TextField from '@material-ui/core/TextField';
 import PhoneIcon from '@material-ui/icons/Phone';
 import CallEndIcon from '@material-ui/icons/CallEnd';
@@ -16,21 +16,25 @@ import MicIcon from '@material-ui/icons/Mic';
 import PauseIcon from '@material-ui/icons/Pause';
 import HeadsetMicIcon from '@material-ui/icons/HeadsetMic';
 import MicOffIcon from '@material-ui/icons/MicOff';
+import { langKeys } from 'lang/keys';
 
 const ManageCall: React.FC<{}> = ({ }) => {
-    const [openDialog, setOpenDialog] = useState(false)
     const { t } = useTranslation();
     const dispatch = useDispatch();
+    const phoneinbox = useSelector(state => state.inbox.person.data?.phone);
     const [numberVox, setNumberVox] = useState("");
+    console.log(phoneinbox)
     const [hold, sethold] = useState(false);
     const [mute, setmute] = useState(false);
     const ringtone = React.useRef<HTMLAudioElement>(null);
     const call = useSelector(state => state.voximplant.call);
+    const showcall = useSelector(state => state.voximplant.showcall);
     const statusCall = useSelector(state => state.voximplant.statusCall);
+    console.log("voxinbox: " + statusCall)
 
     React.useEffect(() => {
         if (call.type === "INBOUND" && statusCall === "CONNECTING") {
-            setOpenDialog(true);
+            dispatch(setModalCall(true))
             ringtone.current?.pause();
             if (ringtone.current) {
                 ringtone.current.currentTime = 0;
@@ -42,11 +46,16 @@ const ManageCall: React.FC<{}> = ({ }) => {
             ringtone.current?.pause();
         }
     }, [call, statusCall])
+    React.useEffect(() => {
+        if(phoneinbox){
+            setNumberVox(phoneinbox)
+        }
+    }, [phoneinbox])
 
     return (
         <>
             <Dialog
-                open={openDialog}
+                open={showcall}
                 fullWidth
                 maxWidth={"xs"}
                 style={{ zIndex: 99999999 }}>
@@ -59,9 +68,10 @@ const ManageCall: React.FC<{}> = ({ }) => {
                     { statusCall === "DISCONNECTED"?
                         (<div>
                             <TextField
-                                label="Call to"
+                                label={t(langKeys.phone)}
                                 value={numberVox}
                                 fullWidth
+                                type="number"
                                 onChange={(e) => setNumberVox(e.target.value)}
                                 disabled={statusCall !== "DISCONNECTED"}
                             />
@@ -144,7 +154,7 @@ const ManageCall: React.FC<{}> = ({ }) => {
                             <Button
                                 color="primary"
                                 variant="contained"
-                                onClick={() => setOpenDialog(false)}
+                                onClick={() => dispatch(setModalCall(false))}
                             >
                                 {"Close"}
                             </Button>

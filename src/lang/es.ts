@@ -1306,6 +1306,7 @@ const translation: LangKeys = {
     apply: 'Aplicar',
     close: 'Cerrar',
     closetype: 'Tipo de cierre',
+    make_call: "Realizar Llamada",
     tipify_ticket: 'Clasificar ticket',
     today: 'Hoy',
     yesterday: 'Ayer',

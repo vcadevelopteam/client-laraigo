@@ -13,6 +13,7 @@ const actionType = {
     HOLD_CALL: 'voximplant/HOLD_CALL',
     MUTE_CALL: 'voximplant/MUTE_CALL',
     UNMUTE_CALL: 'voximplant/UNMUTE_CALL',
+    SET_MODAL_CALL: 'voximplant/SET_MODAL_CALL',
 
 };
 

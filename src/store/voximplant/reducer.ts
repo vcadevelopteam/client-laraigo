@@ -10,19 +10,22 @@ export interface IState {
     call: { call?: Call | null, type: string, number: string };
     statusCall: string;
     connection: { error: boolean; message: string; loading: boolean };
+    showcall: boolean;
     error: string;
 }
 
 export const initialState: IState = {
     sdk: null,
     call: { call: null, type: "", number: "" },
-    statusCall: "",
+    statusCall: "DISCONNECTED",
     connection: { error: false, message: "", loading: false },
+    showcall: false,
     error: ""
 };
 
 export default createReducer<IState>(initialState, {
     [actionTypes.INIT_CALL]: caseFUnctions.initCall,
+    [actionTypes.SET_MODAL_CALL]: caseFUnctions.setModalCall,
     [actionTypes.MANAGE_STATUS_CALL]: caseFUnctions.manageStatusCall,
     [actionTypes.MANAGE_CONNECTION]: caseFUnctions.manageConnection,
 });
