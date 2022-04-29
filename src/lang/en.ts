@@ -1236,6 +1236,8 @@ const translation: LangKeys = {
     consumerapikey: "Enter the Consumer Api Key",
     consumerapisecret: "Enter the Consumer Api Secret",
     authenticationtoken: "Enter the Authentication Token",
+    outboundcall: "Outbound call",
+    inboundcall: "Inbound call",
     authenticationsecret: "Enter the Authentication Secret",
     consumerpageid: "Enter the Consumer Page id",
     channeladdtitle: "We want to know how you communicate",

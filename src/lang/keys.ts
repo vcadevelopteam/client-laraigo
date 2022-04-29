@@ -26,6 +26,8 @@ export const langKeys = {
     invitation_phone: "invitation_phone",
     invitation_date: "invitation_date",
     make_call: "make_call",
+    outboundcall: "outboundcall",
+    inboundcall: "inboundcall",
     schedule_event: "schedule_event",
     successfully_scheduled: "successfully_scheduled",
     linkcopysuccesfull:"linkcopysuccesfull",

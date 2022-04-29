@@ -602,6 +602,8 @@ const translation: LangKeys = {
     authenticationsecret: "Ingrese el Secret de autenticación",
     consumerpageid: "Ingrese el Page id del consumidor",
     socialmediachannel: "Canales de redes sociales",
+    outboundcall: "Llamada saliente",
+    inboundcall: "Llamada entrante",
     businesschannel: "Canales de negocios",
     channeladdtitle: "Queremos saber cómo te comunicas",
     status: 'Estado',

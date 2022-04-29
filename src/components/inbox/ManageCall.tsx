@@ -76,6 +76,16 @@ const ManageCall: React.FC<{}> = ({ }) => {
                     </div>
                 </DialogTitle>
                 <DialogContent>
+                    {(call.type === "OUTBOUND" && statusCall === "CONNECTING")&&(
+                        <div style={{ width: "100%", textAlign: "center"}}>
+                            {t(langKeys.outboundcall)}
+                        </div>
+                    )} 
+                    {(call.type === "INBOUND" && statusCall === "CONNECTING")&&(
+                        <div style={{ width: "100%", textAlign: "center"}}>
+                            {t(langKeys.inboundcall)}
+                        </div>
+                    )} 
                     { statusCall === "DISCONNECTED"?
                         (<div>
                             <TextField
@@ -95,7 +105,17 @@ const ManageCall: React.FC<{}> = ({ }) => {
                 </DialogContent>
                 <DialogActions style={{ justifyContent: 'center', marginBottom: 12 }}>
                     
-                    {statusCall === "CONNECTING" && (
+                    {(call.type === "OUTBOUND" && statusCall === "CONNECTING") && (
+                        <>
+                            <IconButton //rejectcall
+                                style={{ marginLeft: "auto",marginRight: "auto",width: "50px", height: "50px", borderRadius: "50%", backgroundColor: 'rgb(180, 26, 26)' }}
+                                onClick={() => dispatch(hangupCall(call.call))}
+                            >
+                                <CallEndIcon style={{color: "white", width: "35px", height: "35px"}}/> 
+                            </IconButton>
+                        </>
+                    )}
+                    {(call.type === "INBOUND" && statusCall === "CONNECTING") && (
                         <>
                             <IconButton //answercall
                                 style={{ marginLeft: "10px",marginRight: "auto",width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#00a884' }}
