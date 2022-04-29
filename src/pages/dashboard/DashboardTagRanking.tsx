@@ -279,15 +279,9 @@ const DashboardTagRanking: FC = () => {
             category: searchfields.categoriaHSM,
         }
         setdownloaddatafile(true)
-        if (tipeoffilter === "SUMMARY") {
-            settitlefile(t(langKeys.messagesentreceivedfailedanswered));
-            setSection('summary')
-            dispatch(getCollectionAux(getdashboardPushSUMMARYSelData(tosend)))
-        }else{
-            settitlefile(t(langKeys.numberofHSMShipments));
-            setSection('application')
-            dispatch(getCollectionAux(getdashboardRankingPushDataSel(tosend)))
-        }
+        settitlefile(t(langKeys.tagranking));
+        setSection('application')
+        dispatch(getCollectionAux(getdashboardRankingPushDataSel(tosend)))
     }
     return (
         <Fragment>
