@@ -1,6 +1,9 @@
 import { Dictionary } from "@types";
 import * as XLSX from 'xlsx';
 
+export const dataMonths =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
+export const dataYears = Array.from(Array(21).keys()).map(x => ({value: `${new Date().getFullYear() + x - 10}`}))
+
 export function uuidv4(): string {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
         var r = Math.random() * 16 | 0, v = c === 'x' ? r : ((r & 0x3) | 0x8);
@@ -184,8 +187,12 @@ export function uploadExcel(file: any, owner: any = {}) {
             const wsname = workbook.SheetNames[0];
             // const ws = workbook.Sheets[wsname];
             // sheet_to_row_object_array
-            let rowsx = XLSX.utils.sheet_to_json(
-                workbook.Sheets[wsname]
+            let rowsx = XLSX.utils.sheet_to_json(workbook.Sheets[wsname])
+            .map((row: any) =>
+                Object.keys(row).reduce((obj: any, key: any) => {
+                    obj[key.trim()] = row[key];
+                    return obj;
+                }, {})
             );
             res(rowsx)
         };
