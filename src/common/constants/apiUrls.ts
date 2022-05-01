@@ -1,4 +1,4 @@
-const ENV = "PRODUCTION";
+const ENV = "LOCAL";
 
 const APIS_URL = {
     DEVELOP: {
