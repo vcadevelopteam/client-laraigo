@@ -46,6 +46,7 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
         date: {
             fontSize: 11,
             color: 'grey',
+            textAlign: 'right',
         },
         textOneLine: {
             flexGrow: 1,
@@ -81,13 +82,10 @@ const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description,
                         </Avatar>
                     </Tooltip>
                 </div>
-                <div style={{ flex: 1 }}>
-                    <div className={classes.row}>
-                        <div className={classes.textOneLine}>
-                            <span className={classes.title}>{title}</span>
-                        </div>
-                        <div style={{ width: 12 }} />
-                        <span className={classes.date}>{date}</span>
+                <div style={{width:"calc(100% - 40px)"}}>
+                    <div className={classes.date}>{date}</div>
+                    <div className={classes.textOneLine}>
+                        <span className={classes.title}>{title}</span>
                     </div>
                     <div className={clsx(classes.description, classes.textOneLine)}>
                         <span>{description}</span>
