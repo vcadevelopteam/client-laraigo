@@ -39,6 +39,7 @@ const translation: LangKeys = {
     type_activitylead_automatedmail: 'Automatizar mensaje Email',
     type_activitylead_automatedhsm: 'Automatizar mensaje HSM',
     type_activitylead_automatedsms: 'Automatizar mensaje SMS',
+    duein: "duein",
 
     lead: 'Oportunidad',
     sunday: "Domingo",

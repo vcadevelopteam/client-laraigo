@@ -1458,7 +1458,7 @@ export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({
                                     <div className={classes.column}>
                                         <div className={clsx(classes.row, classes.centerRow)}>
                                             <span className={classes.activityDate}>
-                                                {`Due in ${formatDate(activity.duedate, { withTime: true })}`}
+                                                {`${t(langKeys.duein)} ${formatDate(activity.duedate, { withTime: true })}`}
                                             </span>
                                             <div style={{ width: '1em' }} />
                                             <span className={classes.activityName}>

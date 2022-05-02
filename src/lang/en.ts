@@ -2708,6 +2708,7 @@ const translation: LangKeys = {
     type_activitylead_call: 'Call',
     type_activitylead_automatedmail: 'Automate message email',
     type_activitylead_automatedhsm: 'Automate message hsm',
+    duein: "Vence en",
     type_activitylead_automatedsms: 'Automate message sms',
     'type_activitylead_call for demo': 'Call for demo',
     'type_activitylead_email: welcome demo': 'Email: Welcome demo',
