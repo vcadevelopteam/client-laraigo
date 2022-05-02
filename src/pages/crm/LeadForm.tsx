@@ -1429,6 +1429,7 @@ export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({
 }) => {
     const classes = useTabPanelScheduleActivityStyles();
     const dispatch = useDispatch();
+    const { t } = useTranslation();
     const [openModal, setOpenModal] = useState<OpenModal>({ value: false, payload: null });
     const [openDoneModal, setOpenDoneModal] = useState<OpenModal>({ value: false, payload: null });
 
