@@ -42,6 +42,8 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
         },
         title: {
             fontWeight: 'bold',
+            whiteSpace: "initial",
+            width:"calc(100% - 40px)"
         },
         date: {
             fontSize: 11,
@@ -54,7 +56,8 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
             overflow: 'hidden',
         },
         description: {
-            width: '100%',
+            whiteSpace: "initial",
+            width:"calc(100% - 40px)"
         },
     }),
 );
@@ -85,7 +88,7 @@ const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description,
                 <div style={{width:"calc(100% - 40px)"}}>
                     <div className={classes.date}>{date}</div>
                     <div className={classes.textOneLine}>
-                        <span className={classes.title}>{title}</span>
+                        <div className={classes.title}>{title}</div>
                     </div>
                     <div className={clsx(classes.description, classes.textOneLine)}>
                         <span>{description}</span>
