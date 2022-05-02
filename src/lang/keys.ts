@@ -2727,6 +2727,7 @@ export const langKeys = {
     userlimit: 'userlimit',
     type_activitylead_call: 'type_activitylead_call',
     type_activitylead_automatedmail: 'type_activitylead_automatedmail',
+    duein: "duein",
     type_activitylead_automatedhsm: 'type_activitylead_automatedhsm',
     type_activitylead_automatedsms: 'type_activitylead_automatedsms',
     'type_activitylead_call for demo': 'type_activitylead_call for demo',

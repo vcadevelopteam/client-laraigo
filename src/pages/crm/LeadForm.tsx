@@ -825,7 +825,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     className={classes.field}
                                     valueDefault={getValues('leadproduct')}
                                     onChange={(v, value2: { action: "remove-option" | "select-option", option: { option: any } }) => {
-                                        const products = v?.map((o: Dictionary) => o['productcatalogid']).join(',') || '';
+                                        const products = v?.map((o: Dictionary) => o['code']).join(',') || '';
                                         setValue('leadproduct', products);
 
                                         handleUpdateLeadProducts(
@@ -836,7 +836,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     data={leadProductsDomain.data}
                                     loading={leadProductsDomain.loading}
                                     optionDesc="description"
-                                    optionValue="productcatalogid"
+                                    optionValue="code"
                                     error={errors?.leadproduct?.message}
                                 />
                             </Grid>
@@ -1429,6 +1429,7 @@ export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({
 }) => {
     const classes = useTabPanelScheduleActivityStyles();
     const dispatch = useDispatch();
+    const { t } = useTranslation();
     const [openModal, setOpenModal] = useState<OpenModal>({ value: false, payload: null });
     const [openDoneModal, setOpenDoneModal] = useState<OpenModal>({ value: false, payload: null });
 
@@ -1458,7 +1459,7 @@ export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({
                                     <div className={classes.column}>
                                         <div className={clsx(classes.row, classes.centerRow)}>
                                             <span className={classes.activityDate}>
-                                                {`Due in ${formatDate(activity.duedate, { withTime: true })}`}
+                                                {`${t(langKeys.duein)} ${formatDate(activity.duedate, { withTime: true })}`}
                                             </span>
                                             <div style={{ width: '1em' }} />
                                             <span className={classes.activityName}>
