@@ -100,7 +100,7 @@ const DraggablesCategories : FC<{column:any,deletable:boolean, index:number, han
           ref={provided.innerRef}
         >
           <DraggableLeadColumn 
-            title={t(column.description)}
+            title={t(column.description.toLowerCase())}
             key={index+1} 
             snapshot={null} 
             provided={provided} 
