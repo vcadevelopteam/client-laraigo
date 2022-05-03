@@ -499,7 +499,7 @@ const CRM: FC = () => {
             <Rating
                 name="simple-controlled"
                 max={3}
-                defaultValue={row['priority'] === 'LOW' ? 1 : row['priority'] === 'MEDIUM' ? 2 : row['priority'] === 'HIGH' ? 3 : 1}
+                value={row['priority'] === 'LOW' ? 1 : row['priority'] === 'MEDIUM' ? 2 : row['priority'] === 'HIGH' ? 3 : 1}
                 readOnly={true}
             />
             <div>{t(langKeys.assignedTo)}: {row['asesorname']}</div>
