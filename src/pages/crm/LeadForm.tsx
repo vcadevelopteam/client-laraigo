@@ -7,7 +7,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useRouteMatch } from 'react-router';
 import {
     insLead2, adviserSel, getPaginatedPerson as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSel, insArchiveLead, leadHistorySel,
-    getLeadsSel, leadHistoryIns, getProductCatalogSel
+    getLeadsSel, leadHistoryIns
 } from 'common/helpers';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
@@ -909,7 +909,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     <Rating
                                         name="simple-controlled"
                                         max={3}
-                                        defaultValue={lead.value?.priority === 'LOW' ? 1 : lead.value?.priority === 'MEDIUM' ? 2 : lead.value?.priority === 'HIGH' ? 3 : 1}
+                                        value={lead.value?.priority === 'LOW' ? 1 : lead.value?.priority === 'MEDIUM' ? 2 : lead.value?.priority === 'HIGH' ? 3 : 1}
                                         onChange={(event, newValue) => {
                                             const priority = (newValue) ? urgencyLevels[newValue] : 'LOW';
                                             setValue('priority', priority)
@@ -1966,7 +1966,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                     {getValues('type').includes("automated") &&
                                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                                             <FieldSelect
-                                                label={t(langKeys.hsm_template)}
+                                                label={t(langKeys.communicationtemplate)}
                                                 className={classes.field}
                                                 valueDefault={getValues('hsmtemplateid')}
                                                 onChange={onSelectTemplate}

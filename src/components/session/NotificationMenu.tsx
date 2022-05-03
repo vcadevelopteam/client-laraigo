@@ -176,7 +176,7 @@ const NotificationMenu: FC<BoxProps> = (boxProps) => {
                 }}
             >
                 <div style={{ fontWeight: 'bold', marginLeft: 10, fontSize: 20 }}>{"Notifications"}</div>
-                {notifications.map((e, i) => {
+                {notifications.sort((a, b) => (a.duedate < b.duedate)? 1 : -1).map((e, i) => {
                     if (e.notificationtype === "LEADACTIVITY") {
                         const not = e as LeadActivityNotification;
                         return (

@@ -169,7 +169,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
                 <div className={classes.footer}>
                     <Rating
                         name="hover-feedback"
-                        defaultValue={urgencyLevels.findIndex(x => x === lead.priority)}
+                        value={urgencyLevels.findIndex(x => x === lead.priority)}
                         max={3}
                         readOnly
                     />
