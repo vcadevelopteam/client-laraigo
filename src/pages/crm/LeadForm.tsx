@@ -1467,7 +1467,7 @@ export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({
                                             </span>
                                             <div style={{ width: '1em' }} />
                                             <span className={classes.activityFor}>
-                                                {`for ${activity.assignto}`}
+                                                {`${t(langKeys.duein)} ${activity.assignto}`}
                                             </span>
                                             <div style={{ width: '0.5em' }} />
                                             <Info style={{ height: 18, width: 18, fill: 'grey' }} />
