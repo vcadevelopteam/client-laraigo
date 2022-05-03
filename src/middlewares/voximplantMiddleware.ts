@@ -4,6 +4,7 @@ import { Middleware, Dispatch } from 'redux';
 import typeVoximplant from 'store/voximplant/actionTypes';
 import * as VoxImplant from 'voximplant-websdk'
 import { Call } from 'voximplant-websdk/Call/Call';
+import { CallSettings } from 'voximplant-websdk/Structures';
 
 const sdk = VoxImplant.getInstance();
 let alreadyLoad = false;
@@ -70,12 +71,13 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
             return;
         }
     } else if (type === typeVoximplant.MAKE_CALL) {
-        const callSettings = {
+        const callSettings: CallSettings = {
             number: payload,
-            videoFlags: {
+            video: {
                 sendVideo: false,
                 receiveVideo: false
-            }
+            },
+            customData: "16502672010"
         };
         const call = sdk?.call(callSettings);
         
