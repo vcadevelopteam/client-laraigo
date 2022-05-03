@@ -109,7 +109,11 @@ const ManageCall: React.FC<{}> = ({ }) => {
                         <>
                             <IconButton //rejectcall
                                 style={{ marginLeft: "auto",marginRight: "auto",width: "50px", height: "50px", borderRadius: "50%", backgroundColor: 'rgb(180, 26, 26)' }}
-                                onClick={() => dispatch(hangupCall(call.call))}
+                                onClick={() => {
+                                    dispatch(holdCall({call: call.call, flag: false})); 
+                                    sethold(false)
+                                    dispatch(hangupCall(call.call))
+                                }}
                             >
                                 <CallEndIcon style={{color: "white", width: "35px", height: "35px"}}/> 
                             </IconButton>
