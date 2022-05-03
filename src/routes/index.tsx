@@ -67,7 +67,7 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 				dispatch(voximplantConnect({
 					automaticConnection: automaticConnection || !!localStorage.getItem("agentConnected") || false,
 					user: `user${userid}.${orgid}`,
-					application: sitevoxi
+					application: ownervoxi
 				}));
 			}
 		}
