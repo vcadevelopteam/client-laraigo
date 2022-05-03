@@ -61,9 +61,15 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 		if (!resValidateToken.error && !resValidateToken.loading) {
 			const automaticConnection = resLogin.user?.automaticConnection || false;
 			const fromLogin = !!resLogin.user;
-			const { userid, orgid, roledesc } = resValidateToken.user!!
+			const { userid, orgid, roledesc, ownervoxi, sitevoxi } = resValidateToken.user!!
 			dispatch(wsConnect({ userid, orgid, usertype: 'PLATFORM', automaticConnection, fromLogin, roledesc }));
-			dispatch(voximplantConnect({ automaticConnection: automaticConnection || !!localStorage.getItem("agentConnected") || false }));
+			if (sitevoxi && ownervoxi) {
+				dispatch(voximplantConnect({
+					automaticConnection: automaticConnection || !!localStorage.getItem("agentConnected") || false,
+					user: `user${userid}.${orgid}`,
+					application: sitevoxi
+				}));
+			}
 		}
 	}, [resValidateToken.loading])
 

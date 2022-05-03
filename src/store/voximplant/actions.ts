@@ -21,3 +21,5 @@ export const makeCall = (payload?: string): IActionCall => ({ type: actionTypes.
 export const setModalCall = (payload?: Boolean): IActionCall => ({ type: actionTypes.SET_MODAL_CALL, payload });
 
 export const manageStatusVox = (payload: boolean): IActionCall => ({ type: actionTypes.MANAGE_STATUS_VOX, payload });
+
+export const disconnectVoxi = (): IActionCall => ({ type: actionTypes.DISCONNECT });

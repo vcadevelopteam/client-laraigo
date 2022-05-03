@@ -12,6 +12,7 @@ import Avatar from '@material-ui/core/Avatar';
 import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import { ManageOrganization, BadgeGo, StatusConnection } from 'components';
 import { connectAgentAPI, connectAgentUI, disconnectSocket, emitEvent } from "store/inbox/actions";
+import { disconnectVoxi } from "store/voximplant/actions";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -79,9 +80,9 @@ const AccountMenu: FC = () => {
     };
 
     const signOut = () => {
-        
         dispatch(connectAgentAPI(false))
         dispatch(connectAgentUI(false))
+        dispatch(disconnectVoxi())
         dispatch(emitEvent({
             event: 'connectAgent',
             data: {

@@ -42,6 +42,8 @@ export interface IUser {
     /**SUPERADMIN | ASESOR | ... */
     roledesc: string;
     corpdesc: string;
+    ownervoxi: string | null;
+    sitevoxi: string | null;
     plan: string;
     orgdesc: string;
     redirect: string;

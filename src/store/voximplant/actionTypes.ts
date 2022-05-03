@@ -14,6 +14,7 @@ const actionType = {
     MUTE_CALL: 'voximplant/MUTE_CALL',
     UNMUTE_CALL: 'voximplant/UNMUTE_CALL',
     SET_MODAL_CALL: 'voximplant/SET_MODAL_CALL',
+    DISCONNECT: 'voximplant/DISCONNECT',
 
 };
 
