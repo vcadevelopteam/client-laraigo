@@ -329,6 +329,7 @@ interface TemplateAutocompleteProps extends InputProps {
     readOnly?: boolean;
     limitTags?: number;
     multiline?: boolean;
+    orderbylabel?: boolean;
 }
 
 export const FieldEdit: React.FC<InputProps> = ({ width="100%",label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard" }) => {
@@ -506,9 +507,22 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     return <TelegramIcon style={{ color, width, height }} />
 }
 
-export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({multiline=false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false }) => {
+export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({multiline=false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false }) => {
     const { t } = useTranslation();
     const [value, setValue] = useState<Dictionary | null>(null);
+
+    useEffect(() => {
+        if (orderbylabel) {
+            if (data.length > 0) {
+                if (uset) {
+                    data = data.sort((a, b) => t(prefixTranslation + a[optionDesc]?.toLowerCase()).toUpperCase().localeCompare(t(prefixTranslation + b[optionDesc]?.toLowerCase()).toUpperCase()));
+                }
+                else {
+                    data = data.sort((a, b) => (a[optionDesc] || '').localeCompare(b[optionDesc] || ''));
+                }
+            }
+        }
+    }, [data]);
 
     useEffect(() => {
         if (valueDefault && data.length > 0) {

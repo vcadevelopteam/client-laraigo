@@ -74,16 +74,19 @@ interface DetailSupportPlanProps2 {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     fetchData: () => void,
+    dataCorp: any;
+    dataOrg: any;
+    dataPaymentPlan: any;
     dataPlan: any;
 }
 
 const StyledTableCell = withStyles((theme) => ({
     head: {
-      backgroundColor: "#7721ad",
-      color: theme.palette.common.white,
+        backgroundColor: "#7721ad",
+        color: theme.palette.common.white,
     },
     body: {
-      fontSize: 14,
+        fontSize: 14,
     },
 }))(TableCell);
 
@@ -126,7 +129,7 @@ function toISOLocalString(date: { getTimezoneOffset: () => number; getTime: () =
     const sign = off < 0 ? '+' : '-';
     off = Math.abs(off);
     return new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().slice(0, -1) + sign + z(off / 60 | 0) + ':' + z(off % 60);
-  }
+}
 
 export const DateOptionsMenuComponent = (value: any, handleClickItemMenu: (key: any) => void) => {
     return (
@@ -143,7 +146,7 @@ export const DateOptionsMenuComponent = (value: any, handleClickItemMenu: (key: 
 }
 
 const useStyles = makeStyles((theme) => ({
-    
+
     fieldView: {
     },
     container: {
@@ -204,32 +207,27 @@ const useStyles = makeStyles((theme) => ({
         width: 220,
     },
     transparent: {
-        color:"transparent",
+        color: "transparent",
     },
     commentary: {
-        fontStyle:"italic"
+        fontStyle: "italic"
     },
     section: {
-        fontWeight:"bold"
+        fontWeight: "bold"
     }
 }));
 
 const IDCOSTPERPERIOD = "IDCOSTPERPERIOD";
-const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
+const CostPerPeriod: React.FC<{ dataCorp: any, dataOrg: any, dataPaymentPlan: any, dataPlan: any }> = ({ dataCorp, dataOrg, dataPaymentPlan, dataPlan }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
-    const user = useSelector(state => state.login.validateToken.user);
-
     const classes = useStyles();
-    const dataCorpList = dataPlan.data[2] && dataPlan.data[2].success? dataPlan.data[2].data : []
-    const dataOrgList = dataPlan.data[1] && dataPlan.data[1].success? dataPlan.data[1].data : []
-    const dataPaymentPlanList = dataPlan.data[3] && dataPlan.data[3].success? dataPlan.data[3].data : []
-    const dataPlanList = dataPlan.data[0] && dataPlan.data[0].success? dataPlan.data[0].data : []
     const executeResult = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main);
     const memoryTable = useSelector(state => state.main.memoryTable);
+    const user = useSelector(state => state.login.validateToken.user);
 
     const [dataMain, setdataMain] = useState({
         billingplan: "",
@@ -246,7 +244,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const [waitCalculate, setWaitCalculate] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
 
-    function search(){
+    function search() {
         dispatch(showBackdrop(true))
         dispatch(getCollection(getBillingPeriodSel(dataMain)))
     }
@@ -262,7 +260,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     }, [])
 
     useEffect(() => {
-        if (!mainResult.mainData.loading){
+        if (!mainResult.mainData.loading) {
             dispatch(showBackdrop(false))
         }
     }, [mainResult])
@@ -310,7 +308,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const fetchData = () => dispatch(getCollection(getBillingPeriodSel(dataMain)));
 
     useEffect(() => {
-        setdisableSearch(dataMain.year === "") 
+        setdisableSearch(dataMain.year === "")
     }, [dataMain])
 
     useEffect(() => {
@@ -363,23 +361,23 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                     columns={columns}
                     onClickRow={handleEdit}
                     ButtonsElement={() => (
-                        <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
+                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                             <FieldSelect
                                 label={t(langKeys.year)}
-                                style={{width: 140}}
+                                style={{ width: 140 }}
                                 valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.value || 0}))}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, year: value?.value || 0 }))}
                                 data={dataYears}
                                 optionDesc="value"
                                 optionValue="value"
                             />
                             <FieldMultiSelect
                                 label={t(langKeys.month)}
-                                style={{width: 214}}
+                                style={{ width: 214 }}
                                 valueDefault={dataMain.month}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, month: value.map((o: Dictionary) => o.val).join() }))}
                                 data={dataMonths}
                                 uset={true}
                                 prefixTranslation="month_"
@@ -391,41 +389,45 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.corpid}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,corpid:value?.corpid || 0,orgid:0}))}
-                                data={dataCorpList}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, corpid: value?.corpid || 0, orgid: 0 }))}
+                                data={dataCorp}
                                 optionDesc="description"
                                 optionValue="corpid"
                                 disabled={user?.roledesc === "ADMINISTRADOR"}
+                                orderbylabel={true}
                             />
                             <FieldSelect
                                 label={t(langKeys.organization)}
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.orgid}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,orgid:value?.orgid || 0}))}
-                                data={dataOrgList.filter((e:any)=>{return e.corpid===dataMain.corpid})}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, orgid: value?.orgid || 0 }))}
+                                data={dataOrg.filter((e: any) => { return e.corpid === dataMain.corpid })}
                                 optionDesc="orgdesc"
                                 optionValue="orgid"
+                                orderbylabel={true}
                             />
                             <FieldSelect
                                 label={t(langKeys.contractedplan)}
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.billingplan}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,billingplan:value?value.plan:""}))}
-                                data={dataPaymentPlanList}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, billingplan: value ? value.plan : "" }))}
+                                data={dataPaymentPlan}
                                 optionDesc="plan"
                                 optionValue="plan"
+                                orderbylabel={true}
                             />
                             <FieldSelect
                                 label={t(langKeys.supportplan)}
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.supportplan}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,supportplan:value?value.description:""}))}
-                                data={dataPlanList}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, supportplan: value ? value.description : "" }))}
+                                data={dataPlan}
                                 optionDesc="description"
                                 optionValue="description"
+                                orderbylabel={true}
                             />
                             <Button
                                 disabled={mainResult.mainData.loading || disableSearch}
@@ -458,21 +460,22 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 data={rowSelected}
                 setViewSelected={setViewSelected}
                 fetchData={fetchData}
-                dataPlan = {dataPlan}
+                dataCorp={dataCorp}
+                dataOrg={dataOrg}
+                dataPaymentPlan={dataPaymentPlan}
+                dataPlan={dataPlan}
             />
         )
     } else
         return null;
 }
 
-const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, edit }, setViewSelected, fetchData, dataPlan }) => {
+const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, edit }, setViewSelected, fetchData, dataCorp, dataOrg, dataPaymentPlan, dataPlan }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const dataPaymentPlanList = dataPlan.data[3] && dataPlan.data[3].success? dataPlan.data[3].data : [];
-    const dataPlanList = dataPlan.data[0] && dataPlan.data[0].success? dataPlan.data[0].data : [];
     const executeRes = useSelector(state => state.main.execute);
 
     const [checkeduser, setCheckeduser] = useState(row?.usercreateoverride || false);
@@ -485,7 +488,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
         { id: "view-1", name: t(langKeys.costperperiod) },
         { id: "view-2", name: t(langKeys.costperperioddetail) }
     ];
-    
+
     useEffect(() => {
         if (row?.invoicestatus && row?.paymentstatus) {
             if (row?.invoicestatus !== "INVOICED" && row?.paymentstatus !== "PAID") {
@@ -498,7 +501,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
     }, [])
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
-        defaultValues: {            
+        defaultValues: {
             corpid: row?.corpid || 0,
             orgid: row?.orgid || 0,
             corpdesc: row?.corpdesc || "",
@@ -509,7 +512,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
             supportplan: row?.supportplan || "",
             basicfee: row?.basicfee || 0,
             userfreequantity: row?.userfreequantity || 0,
-            useradditionalfee : row?.useradditionalfee || 0,
+            useradditionalfee: row?.useradditionalfee || 0,
             supervisorquantity: row?.supervisorquantity || 0,
             asesorquantity: row?.asesorquantity || 0,
             userquantity: row?.userquantity || 0,
@@ -570,15 +573,15 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
         register('month');
         register('billingplan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('supportplan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('basicfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
-        register('userfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
-        register('useradditionalfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
-        register('channelfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
-        register('channelwhatsappfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
-        register('channelotherfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
-        register('clientfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
-        register('clientadditionalfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
-        register('supportbasicfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('basicfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('userfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('useradditionalfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('channelfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('channelwhatsappfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('channelotherfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('clientfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('clientadditionalfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('supportbasicfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
         register('additionalservicename1');
         register('additionalservicefee1');
         register('additionalservicename2');
@@ -597,18 +600,18 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
         register('vcacomissionpermail');
         register('mailquantity');
         register('mailcost');
-        register('freewhatsappchannel', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('freewhatsappchannel', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
         register('freewhatsappconversations');
         register('usercreateoverride');
         register('channelcreateoverride');
         register('vcacomissionperconversation');
-        register('vcacomissionperhsm', { validate: (value) => ((value || String(value)) && parseFloat(String(value))>=0) || t(langKeys.field_required) });
+        register('vcacomissionperhsm', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
     }, [edit, register]);
 
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row? langKeys.successful_edit : langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
@@ -642,10 +645,10 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                     <div>
                         <TemplateBreadcrumbs
                             breadcrumbs={arrayBreadCostPerPeriod}
-                            handleClick={(id) => {setViewSelected(id); fetchData();}}
+                            handleClick={(id) => { setViewSelected(id); fetchData(); }}
                         />
                         <TitleDetail
-                            title={row? `${row.corpdesc} - ${row.orgdesc}` : t(langKeys.neworganization)}
+                            title={row ? `${row.corpdesc} - ${row.orgdesc}` : t(langKeys.neworganization)}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -678,15 +681,15 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                     textColor="primary"
                     onChange={(_, value) => setPageSelected(value)}
                 >
-                    <AntTab label={t(langKeys.generalinformation)}/>
-                    <AntTab label={t(langKeys.agents_plural)}/>
-                    <AntTab label={t(langKeys.channel_plural)}/>
-                    <AntTab label={t(langKeys.conversation_plural)}/>
-                    <AntTab label={t(langKeys.contact_plural)}/>
-                    <AntTab label={t(langKeys.messaging)}/>
-                    <AntTab label="Extras"/>
+                    <AntTab label={t(langKeys.generalinformation)} />
+                    <AntTab label={t(langKeys.agents_plural)} />
+                    <AntTab label={t(langKeys.channel_plural)} />
+                    <AntTab label={t(langKeys.conversation_plural)} />
+                    <AntTab label={t(langKeys.contact_plural)} />
+                    <AntTab label={t(langKeys.messaging)} />
+                    <AntTab label="Extras" />
                 </Tabs>
-                {pageSelected === 0  && <div className={classes.containerDetail}>
+                {pageSelected === 0 && <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         <FieldView
                             className="col-6"
@@ -717,16 +720,17 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             className="col-6"
                             valueDefault={getValues("billingplan")}
                             variant="outlined"
-                            onChange={(value) => setValue('billingplan',value?.plan)}
-                            data={dataPaymentPlanList}
+                            onChange={(value) => setValue('billingplan', value?.plan)}
+                            data={dataPaymentPlan}
                             error={errors?.billingplan?.message}
                             optionDesc="plan"
                             optionValue="plan"
-                        /> : 
+                            orderbylabel={true}
+                        /> :
                             <FieldView
-                            className="col-6"
-                            label={t(langKeys.contractedplan)}
-                            value={getValues("billingplan")}
+                                className="col-6"
+                                label={t(langKeys.contractedplan)}
+                                value={getValues("billingplan")}
                             />
                         }
                         {canEdit ? <FieldSelect
@@ -734,19 +738,20 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             className="col-6"
                             valueDefault={getValues("supportplan")}
                             variant="outlined"
-                            onChange={(value) => setValue('supportplan',value?.description)}
-                            data={dataPlanList}
+                            onChange={(value) => setValue('supportplan', value?.description)}
+                            data={dataPlan}
                             error={errors?.supportplan?.message}
                             optionDesc="description"
                             optionValue="description"
+                            orderbylabel={true}
                         /> :
                             <FieldView
-                            className="col-6"
-                            label={t(langKeys.contractedsupportplan)}
-                            value={getValues("supportplan")}
+                                className="col-6"
+                                label={t(langKeys.contractedsupportplan)}
+                                value={getValues("supportplan")}
                             />
                         }
-                        
+
                     </div>
                     <div className="row-zyx">
                         {canEdit ? <FieldEdit
@@ -759,9 +764,9 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             inputProps={{ step: "any" }}
                         /> :
                             <FieldView
-                            className="col-6"
-                            label={t(langKeys.costbasedonthecontractedplan)}
-                            value={getValues('basicfee')}
+                                className="col-6"
+                                label={t(langKeys.costbasedonthecontractedplan)}
+                                value={getValues('basicfee')}
                             />
                         }
                         {canEdit ? <FieldEdit
@@ -772,11 +777,11 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             type="number"
                             className="col-6"
                             inputProps={{ step: "any" }}
-                        />:
+                        /> :
                             <FieldView
-                            className="col-6"
-                            label={t(langKeys.costbasedonthesupportplan)}
-                            value={formatNumber(getValues('supportbasicfee') || 0)}
+                                className="col-6"
+                                label={t(langKeys.costbasedonthesupportplan)}
+                                value={formatNumber(getValues('supportbasicfee') || 0)}
                             />
                         }
                     </div>
@@ -855,7 +860,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         </div>
                     </div>
                 </div>}
-                {pageSelected === 2  && <div className={classes.containerDetail}>
+                {pageSelected === 2 && <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         {canEdit ? <FieldEdit
                             label={t(langKeys.channelfreequantity)}
@@ -897,10 +902,10 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             className="col-6"
                         /> :
                             <FieldView
-                            className="col-6"
-                            label={t(langKeys.contractedplanfreewhatsappchannel)}
-                            value={getValues("freewhatsappchannel").toString()}
-                        />
+                                className="col-6"
+                                label={t(langKeys.contractedplanfreewhatsappchannel)}
+                                value={getValues("freewhatsappchannel").toString()}
+                            />
                         }
                         {canEdit ? <FieldEdit
                             label={t(langKeys.channelwhatsappfee)}
@@ -953,7 +958,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         </div>
                     </div>
                 </div>}
-                {pageSelected === 3  && <div className={classes.containerDetail}>
+                {pageSelected === 3 && <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         <FieldView
                             className="col-6"
@@ -1026,7 +1031,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         />
                     </div>
                 </div>}
-                {pageSelected === 4  && <div className={classes.containerDetail}>
+                {pageSelected === 4 && <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         {canEdit ? <FieldEdit
                             label={t(langKeys.clientfreequantity)}
@@ -1071,7 +1076,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         />
                     </div>
                 </div>}
-                {pageSelected === 5  && <div className={classes.containerDetail}>
+                {pageSelected === 5 && <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         {canEdit ? <FieldEdit
                             label={t(langKeys.unitpricepersms)}
@@ -1161,7 +1166,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         />
                     </div>
                 </div>}
-                {pageSelected === 6  && <div className={classes.containerDetail}>
+                {pageSelected === 6 && <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         {canEdit ? <FieldEdit
                             label={`${t(langKeys.additionalservicename)} 1`}
@@ -1258,21 +1263,19 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
     );
 }
 
-const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPlan, customSearch }) => {
+const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }> = ({ dataCorp, dataOrg, customSearch }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const dataCorpList = dataPlan.data[2] && dataPlan.data[2].success? dataPlan.data[2].data : [];
-    const dataOrgList = dataPlan.data[1] && dataPlan.data[1].success? dataPlan.data[1].data : [];
     const executeCalculate = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main);
     const resExportData = useSelector(state => state.main.exportData);
     const user = useSelector(state => state.login.validateToken.user);
 
     const [dataMain, setdataMain] = useState({
-        datetoshow: `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`,
+        datetoshow: `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth() + 1).padStart(2, '0')}`,
         year: new Date().getFullYear(),
         month: new Date().getMonth() + 1,
         corpid: user?.corpid || 0,
@@ -1280,6 +1283,8 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
         totalize: 2,
     });
 
+    const [canSearch, setCanSearch] = useState(false);
+    const [disableOrg, setDisableOrg] = useState(false);
     const [datareport, setdatareport] = useState<any>([]);
     const [requesttipe, setrequesttipe] = useState(2)
     const [waitCalculate, setWaitCalculate] = useState(false);
@@ -1290,22 +1295,22 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
 
     const datatotalize = [{ value: 1, description: t(langKeys.corporation) }, { value: 2, description: t(langKeys.organization) }]
 
-    function handleDateChange(e: any){
-        if(e!==""){
-            let datetochange = new Date(e+"-02")
-            let mes = datetochange?.getMonth()+1
+    function handleDateChange(e: any) {
+        if (e !== "") {
+            let datetochange = new Date(e + "-02")
+            let mes = datetochange?.getMonth() + 1
             let year = datetochange?.getFullYear()
             let datetoshow = `${year}-${String(mes).padStart(2, '0')}`
-            setdataMain(prev=>({...prev,datetoshow,year,month:mes}))
+            setdataMain(prev => ({ ...prev, datetoshow, year, month: mes }))
         }
     }
 
-    function search(){
+    function search() {
         dispatch(showBackdrop(true))
         setrequesttipe(dataMain.totalize)
-        if(dataMain.totalize===2){
+        if (dataMain.totalize === 2) {
             dispatch(getCollection(getBillingPeriodSummarySel(dataMain)))
-        }else{
+        } else {
             dispatch(getCollection(getBillingPeriodSummarySelCorp(dataMain)))
         }
     }
@@ -1315,8 +1320,32 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
     }, [])
 
     useEffect(() => {
+        setCanSearch(false);
+
+        if (dataMain) {
+            if (dataMain.totalize) {
+                if (dataMain.totalize === 1) {
+                    setDisableOrg(true);
+
+                    if (dataMain.corpid) {
+                        setCanSearch(true);
+                    }
+                }
+                if (dataMain.totalize === 2) {
+                    setDisableOrg(false);
+
+                    if (dataMain.corpid && dataMain.orgid) {
+                        setCanSearch(true);
+                    }
+                }
+            }
+        }
+    }, [dataMain])
+
+    useEffect(() => {
         if (customSearch?.corpid !== 0) {
-            setdataMain( prev => ({...prev,
+            setdataMain(prev => ({
+                ...prev,
                 datetoshow: `${customSearch?.year}-${String(customSearch?.month).padStart(2, '0')}`,
                 year: customSearch?.year,
                 month: customSearch?.month,
@@ -1336,9 +1365,12 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
     }, [dataMain, waitSearch])
 
     useEffect(() => {
-        if (!mainResult.mainData.loading){
-            if(mainResult.mainData.data.length){
+        if (!mainResult.mainData.loading) {
+            if (mainResult.mainData.data.length) {
                 setdatareport(mainResult.mainData.data[0])
+            }
+            else {
+                setdatareport(null);
             }
             dispatch(showBackdrop(false))
         }
@@ -1361,19 +1393,19 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
     }, [executeCalculate, waitCalculate])
 
     const triggerExportDataPerson = () => {
-        dispatch(exportData(billingpersonreportsel(dataMain),"BillingPersonReport","excel",true))
+        dispatch(exportData(billingpersonreportsel(dataMain), "BillingPersonReport", "excel", true))
         dispatch(showBackdrop(true));
         setWaitExport(true);
     };
 
     const triggerExportDataUser = () => {
-        dispatch(exportData(billinguserreportsel(dataMain),"BillingUserReport","excel",true))
+        dispatch(exportData(billinguserreportsel(dataMain), "BillingUserReport", "excel", true))
         dispatch(showBackdrop(true));
         setWaitExport(true);
     };
 
     const triggerExportDataConversation = () => {
-        dispatch(exportData(billingReportConversationWhatsApp(dataMain),"BillingUserConversation","excel",true))
+        dispatch(exportData(billingReportConversationWhatsApp(dataMain), "BillingUserConversation", "excel", true))
         dispatch(showBackdrop(true));
         setWaitExport(true);
     };
@@ -1463,13 +1495,13 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
     return (
         <Fragment>
             <div>
-                <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                     <TextField
                         id="date"
                         className={classes.fieldsfilter}
                         type="month"
                         variant="outlined"
-                        onChange={(e)=>handleDateChange(e.target.value)}
+                        onChange={(e) => handleDateChange(e.target.value)}
                         value={dataMain.datetoshow}
                         size="small"
                     />
@@ -1478,43 +1510,47 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
                         className={classes.fieldsfilter}
                         valueDefault={dataMain.corpid}
                         variant="outlined"
-                        onChange={(value) => setdataMain(prev=>({...prev,corpid:value?.corpid || 0,orgid:0}))}
-                        data={dataCorpList}
+                        onChange={(value) => setdataMain(prev => ({ ...prev, corpid: value?.corpid || 0, orgid: 0 }))}
+                        data={dataCorp}
                         optionDesc="description"
                         optionValue="corpid"
                         disabled={user?.roledesc === "ADMINISTRADOR"}
+                        orderbylabel={true}
                     />
                     <FieldSelect
                         label={t(langKeys.organization)}
                         className={classes.fieldsfilter}
                         valueDefault={dataMain.orgid}
                         variant="outlined"
-                        onChange={(value) => setdataMain(prev=>({...prev,orgid:value?.orgid || 0}))}
-                        data={dataOrgList.filter((e:any)=>{return e.corpid===dataMain.corpid})}
+                        onChange={(value) => setdataMain(prev => ({ ...prev, orgid: value?.orgid || 0 }))}
+                        data={dataOrg.filter((e: any) => { return e.corpid === dataMain.corpid })}
                         optionDesc="orgdesc"
                         optionValue="orgid"
+                        orderbylabel={true}
+                        disabled={disableOrg}
                     />
                     <FieldSelect
                         label={t(langKeys.totalize)}
                         className={classes.fieldsfilter}
                         valueDefault={dataMain.totalize}
                         variant="outlined"
-                        onChange={(value) => setdataMain(prev=>({...prev,totalize:value?.value || 0}))}
+                        onChange={(value) => setdataMain(prev => ({ ...prev, totalize: value?.value || 0 }))}
                         data={datatotalize}
                         optionDesc="description"
                         optionValue="value"
+                        orderbylabel={true}
                     />
                     <Button
                         variant="contained"
                         color="primary"
-                        disabled={mainResult.mainData.loading}
+                        disabled={mainResult.mainData.loading || !canSearch}
                         startIcon={<SearchIcon style={{ color: 'white' }} />}
                         style={{ width: 120, backgroundColor: "#55BD84" }}
                         onClick={() => search()}
                     >{t(langKeys.search)}
                     </Button>
-                    {!mainResult.mainData.loading && mainResult.mainData.data.length &&(
-                        <Fragment>
+                    {!mainResult.mainData.loading && (
+                        datareport && <Fragment>
                             <Button
                                 className={classes.button}
                                 variant="contained"
@@ -1561,331 +1597,339 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
             </div>
             {
                 !mainResult.mainData.loading && (
-                <div style={{width:"100%"}} ref={el}>
-                    <div className={classes.containerDetail}>
-                        <div className="row-zyx" >
-                            <FieldView
-                                className="col-6"
-                                label={t(langKeys.client)}
-                                value={requesttipe===2?datareport.orgdesc:datareport.corpdesc}
-                            />
-                        </div>
-                        <div className="row-zyx">
-                            <FieldView
-                                className="col-6"
-                                label={"Plan"}
-                                value={datareport.billingplan}
-                            />
-                        </div>
-                        <div className="row-zyx">
-                            <FieldView
-                                className="col-6"
-                                label={t(langKeys.period)}
-                                value={`${datareport.year}-${String(datareport.month).padStart(2, '0')}`}
-                            />
-                        </div>
-                        <TableContainer component={Paper} style={{overflow: "hidden"}}>
-                            <Table aria-label="customized table">
-                                <TableHead>
-                                <TableRow>
-                                    <StyledTableCell align="left">{t(langKeys.billingreportitem)}</StyledTableCell>
-                                    <StyledTableCell align="right">{t(langKeys.billingreportquantity)}</StyledTableCell>
-                                    <StyledTableCell align="right">{t(langKeys.billingreportrate)}</StyledTableCell>
-                                    <StyledTableCell align="right">{t(langKeys.billingreporttaxableamount)}</StyledTableCell>
-                                    <StyledTableCell align="right">{t(langKeys.billingreporttaxableiva)}</StyledTableCell>
-                                    <StyledTableCell align="right">{t(langKeys.billingreportamount)}</StyledTableCell>
-                                </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    <StyledTableRow>
-                                        <StyledTableCell><b>{t(langKeys.basecost)}</b></StyledTableCell>
-                                        <StyledTableCell></StyledTableCell>
-                                        <StyledTableCell></StyledTableCell>
-                                        <StyledTableCell align="right">${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.basicfee || 0) : formatNumber(datareport.basicfee)}</StyledTableCell>
-                                        <StyledTableCell align="right">${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.basicfee || 0) : "0.00"}</StyledTableCell>
-                                        <StyledTableCell align="right">${datareport.basicfee ? formatNumber(datareport.basicfee || 0) : "0.00"}</StyledTableCell>
-                                    </StyledTableRow>
-                                    <StyledTableRow>
-                                        <StyledTableCell>
-                                            <div><b>{t(langKeys.agents_plural)}</b></div>
-                                            <div>{t(langKeys.contracted)}</div>
-                                            <div>{t(langKeys.additional)}</div>
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div>{formatNumberNoDecimals(datareport.userfreequantity || 0)}</div>
-                                            <div>{formatNumberNoDecimals(datareport.useradditionalquantity || 0)}</div>
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div>${formatNumber(datareport.useradditionalfee || 0)}</div>
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.useradditionalcharge || 0) : formatNumber(datareport.useradditionalcharge)}</div>
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.useradditionalcharge || 0) : "0.00"}</div>
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div style={{color:"transparent"}}>.</div>                                            
-                                            <div>${formatNumber(datareport.useradditionalcharge || 0)}</div>
-                                        </StyledTableCell>
-                                    </StyledTableRow>
-                                    <StyledTableRow>
-                                        <StyledTableCell>
-                                            <div><b>{t(langKeys.channel_plural)}</b></div>
-                                            <div>{t(langKeys.contracted)}</div>
-                                            <div>{t(langKeys.whatsappfreechannel)}</div>
-                                            <div>{t(langKeys.whatsappchannel)}</div>
-                                            <div>{t(langKeys.whatsappadditionalchannel)}</div>
-                                            <div>{t(langKeys.otherchannels)}</div>
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div>{formatNumberNoDecimals(datareport.channelfreequantity || 0)}</div>
-                                            <div>{formatNumberNoDecimals(datareport.freewhatsappchannel || 0)}</div>
-                                            <div>{formatNumberNoDecimals(datareport.channelwhatsappquantity || 0)}</div>
-                                            <div>{formatNumberNoDecimals(((datareport.channelwhatsappquantity - datareport.freewhatsappchannel) < 0 ? 0 : (datareport.channelwhatsappquantity - datareport.freewhatsappchannel)) || 0)}</div>
-                                            <div>{formatNumberNoDecimals(datareport.channelotherquantity || 0)}</div>
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div>${formatNumber(datareport.channelwhatsappfee || 0)}</div>
-                                            <div>${formatNumber(datareport.channelotherfee || 0)}</div>
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.channelwhatsappcharge || 0) : formatNumber(datareport.channelwhatsappcharge)}</div>
-                                            <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.channelothercharge || 0) : formatNumber(datareport.channelothercharge)}</div>
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.channelwhatsappcharge || 0) : "0.00"}</div>
-                                            <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.channelothercharge || 0) : "0.00"}</div>
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div>${formatNumber(datareport.channelwhatsappcharge || 0)}</div>
-                                            <div>${formatNumber(datareport.channelothercharge || 0)}</div>
-                                        </StyledTableCell>
-                                    </StyledTableRow>
-                                    <StyledTableRow>
-                                        <StyledTableCell>
-                                            <div><b>{t(langKeys.billingreportconversations)}</b></div>
-                                            <div>{t(langKeys.reportfreeconversations)}</div>
-                                            <div>{t(langKeys.userinitiatedconversations)}</div>
-                                            <div>{t(langKeys.businessinitiatedconversations)}</div>
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div>{formatNumberNoDecimals((datareport.channelwhatsappquantity || 0) * (datareport.freewhatsappconversations || 0))}</div>
-                                            <div>{formatNumberNoDecimals(datareport.conversationclientwhatquantity || 0)}</div>
-                                            <div>{formatNumberNoDecimals(datareport.conversationcompanywhatquantity || 0)}</div>
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div style={{color:"transparent"}}>.</div>
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.conversationclientwhatcharge || 0) : formatNumber(datareport.conversationclientwhatcharge)}</div>
-                                            <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.conversationcompanywhatcharge || 0) : formatNumber(datareport.conversationcompanywhatcharge)}</div>
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.conversationclientwhatcharge || 0) : "0.00"}</div>
-                                            <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.conversationcompanywhatcharge || 0) : "0.00"}</div>
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div>${formatNumber(datareport.conversationclientwhatcharge || 0)}</div>
-                                            <div>${formatNumber(datareport.conversationcompanywhatcharge || 0)}</div>
-                                        </StyledTableCell>
-                                    </StyledTableRow>
-                                    <StyledTableRow>
-                                        <StyledTableCell>
-                                            <div><b>{t(langKeys.billingreportmessaging)}</b></div>
-                                            <div>{t(langKeys.billingreportsms)}</div>
-                                            <div>{t(langKeys.billingreportmail)}</div>
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div>{formatNumberNoDecimals(datareport.smsquantity || 0)}</div>
-                                            <div>{formatNumberNoDecimals(datareport.mailquantity || 0)}</div>
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div>${formatNumber((datareport.unitpricepersms || 0) + (datareport.vcacomissionpersms || 0))}</div>
-                                            <div>${formatNumber((datareport.unitepricepermail || 0) + (datareport.vcacomissionpermail || 0))}</div>
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.smscost || 0) : formatNumber(datareport.smscost)}</div>
-                                            <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.mailcost || 0) : formatNumber(datareport.mailcost)}</div>
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.smscost || 0) : "0.00"}</div>
-                                            <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.mailcost || 0) : "0.00"}</div>
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div>${formatNumber(datareport.smscost || 0)}</div>
-                                            <div>${formatNumber(datareport.mailcost || 0)}</div>
-                                        </StyledTableCell>
-                                    </StyledTableRow>
-                                    <StyledTableRow>
-                                        <StyledTableCell>
-                                            <div><b>{t(langKeys.billingreportcontacts)}</b></div>
-                                            <div>{t(langKeys.freecontacts)}</div>
-                                            <div>{t(langKeys.billingreporttotalcontacts)}</div>
-                                            <div>{t(langKeys.billingreportadditionalcontacts)}</div>
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div>{formatNumberNoDecimals(datareport.clientfreequantity || 0)}</div>
-                                            <div>{formatNumberNoDecimals(datareport.clientquantity || 0)}</div>
-                                            <div>{formatNumberNoDecimals(datareport.clientadditionalquantity || 0)}</div>
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div>${formatNumber(datareport.clientadditionalfee || 0)}</div>
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.clientadditionalcharge || 0) : formatNumber(datareport.clientadditionalcharge)}</div>
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv, datareport.clientadditionalcharge) : "0.00"}</div>
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div style={{color:"transparent"}}>.</div>
-                                            <div>${formatNumber(datareport.clientadditionalcharge || 0)}</div>
-                                        </StyledTableCell>
-                                    </StyledTableRow>
-                                    <StyledTableRow>
-                                        <StyledTableCell><b>{t(langKeys.supportplan)} {datareport.supportplan}</b></StyledTableCell>
-                                        <StyledTableCell></StyledTableCell>
-                                        <StyledTableCell></StyledTableCell>
-                                        <StyledTableCell align="right">${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv, datareport.supportbasicfee) : formatNumber(datareport.supportbasicfee)}</StyledTableCell>
-                                        <StyledTableCell align="right">${datareport.sunatcountry === "PE" ? getIgv(datareport.igv, datareport.supportbasicfee) : "0.00"}</StyledTableCell>
-                                        <StyledTableCell align="right">${formatNumber(datareport.supportbasicfee)}</StyledTableCell>
-                                    </StyledTableRow>
-                                    <StyledTableRow>
-                                        <StyledTableCell>
-                                            {datareport.additionalservicefee1 ? <div className={clsx({[classes.transparent]: datareport.additionalservicename1 === ""})}>{datareport.additionalservicename1 === "" ? <div style={{color:"transparent"}}>.</div> : datareport.additionalservicename1}</div> : <div style={{color:"transparent"}}>.</div>}
-                                            {datareport.additionalservicefee2 ? <div className={clsx({[classes.transparent]: datareport.additionalservicename2 === ""})}>{datareport.additionalservicename2 === "" ? <div style={{color:"transparent"}}>.</div> : datareport.additionalservicename2}</div> : <div style={{color:"transparent"}}>.</div>}
-                                            {datareport.additionalservicefee3 ? <div className={clsx({[classes.transparent]: datareport.additionalservicename3 === ""})}>{datareport.additionalservicename3 === "" ? <div style={{color:"transparent"}}>.</div> : datareport.additionalservicename3}</div> : <div style={{color:"transparent"}}>.</div>}
-                                        </StyledTableCell>
-                                        <StyledTableCell>
-                                        </StyledTableCell>
-                                        <StyledTableCell>
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                            {datareport.additionalservicefee1 ? <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.additionalservicefee1 || 0) : formatNumber(datareport.additionalservicefee1)}</div> : <div style={{color:"transparent"}}>.</div>}
-                                            {datareport.additionalservicefee2 ? <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.additionalservicefee2 || 0) : formatNumber(datareport.additionalservicefee2)}</div> : <div style={{color:"transparent"}}>.</div>}
-                                            {datareport.additionalservicefee3 ? <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.additionalservicefee3 || 0) : formatNumber(datareport.additionalservicefee3)}</div> : <div style={{color:"transparent"}}>.</div>}
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                            {datareport.additionalservicefee1 ? <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv, datareport.additionalservicefee1) : "0.00"}</div> : <div style={{color:"transparent"}}>.</div>}
-                                            {datareport.additionalservicefee2 ? <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv, datareport.additionalservicefee2) : "0.00"}</div> : <div style={{color:"transparent"}}>.</div>}
-                                            {datareport.additionalservicefee3 ? <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv, datareport.additionalservicefee3) : "0.00"}</div> : <div style={{color:"transparent"}}>.</div>}
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                            {datareport.additionalservicefee1 ? <div>${formatNumber(datareport.additionalservicefee1 || 0)}</div> : <div style={{color:"transparent"}}>.</div>}
-                                            {datareport.additionalservicefee2 ? <div>${formatNumber(datareport.additionalservicefee2 || 0)}</div> : <div style={{color:"transparent"}}>.</div>}
-                                            {datareport.additionalservicefee3 ? <div>${formatNumber(datareport.additionalservicefee3 || 0)}</div> : <div style={{color:"transparent"}}>.</div>}
-                                        </StyledTableCell>
-                                    </StyledTableRow>
-                                    <StyledTableRow>
-                                        <StyledTableCell>
-                                            <b>{t(langKeys.periodamount)}</b>
-                                        </StyledTableCell>
-                                        <StyledTableCell>
-                                        </StyledTableCell>
-                                        <StyledTableCell>
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                        ${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.totalcharge || 0) : formatNumber(datareport.totalcharge)}
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                        ${datareport.sunatcountry === "PE" ? getIgv(datareport.igv, datareport.totalcharge) : "0.00"}
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">
-                                        ${formatNumber(datareport.totalcharge || 0)}
-                                        </StyledTableCell>
-                                    </StyledTableRow>
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                        <div style={{paddingTop: 30, fontWeight: "bold", fontSize: "1.5em"}}>{t(langKeys.servicedata)}</div>
-                        <TableContainer component={Paper} style={{overflow: "hidden"}}>
-                            <Table aria-label="customized table">
-                                <TableHead>
-                                <TableRow>
-                                    <StyledTableCell align="center">
-                                        <div>{datareport.clientwhatquantity}</div>
-                                        <div>{t(langKeys.uniquecontacts)} Whatsapp</div>
-                                    </StyledTableCell>
-                                    <StyledTableCell align="center">
-                                        <div>{datareport.clientquantity - datareport.clientwhatquantity}</div>
-                                        <div>{t(langKeys.uniquecontacts)} {t(langKeys.others)}</div>
-                                    </StyledTableCell>
-                                    <StyledTableCell align="center">
-                                        <div>{datareport.conversationquantity}</div>
-                                        <div>{t(langKeys.conversation_plural)}</div>
-                                    </StyledTableCell>
-                                    <StyledTableCell align="center">
-                                        <div>{datareport.interactionquantity}</div>
-                                        <div>{t(langKeys.interaction_plural)}</div>
-                                    </StyledTableCell>
-                                    <StyledTableCell align="center">
-                                        <div>{datareport.supervisorquantity}</div>
-                                        <div>{t(langKeys.supervisor_plural)}</div>
-                                    </StyledTableCell>
-                                    <StyledTableCell align="center">
-                                        <div>{datareport.asesorquantity}</div>
-                                        <div>{t(langKeys.assesor_plural)}</div>
-                                    </StyledTableCell>
-                                </TableRow>
-                                </TableHead>
-                            </Table>
-                        </TableContainer>
+                    <div style={{ width: "100%" }} ref={el}>
+                        {datareport && <div className={classes.containerDetail}>
+                            <div className="row-zyx" >
+                                <FieldView
+                                    className="col-6"
+                                    label={t(langKeys.client)}
+                                    value={requesttipe === 2 ? datareport.orgdesc : datareport.corpdesc}
+                                />
+                            </div>
+                            <div className="row-zyx">
+                                <FieldView
+                                    className="col-6"
+                                    label={"Plan"}
+                                    value={datareport.billingplan}
+                                />
+                            </div>
+                            <div className="row-zyx">
+                                <FieldView
+                                    className="col-6"
+                                    label={t(langKeys.period)}
+                                    value={`${datareport.year}-${String(datareport.month).padStart(2, '0')}`}
+                                />
+                            </div>
+                            <TableContainer component={Paper} style={{ overflow: "hidden" }}>
+                                <Table aria-label="customized table">
+                                    <TableHead>
+                                        <TableRow>
+                                            <StyledTableCell align="left">{t(langKeys.billingreportitem)}</StyledTableCell>
+                                            <StyledTableCell align="right">{t(langKeys.billingreportquantity)}</StyledTableCell>
+                                            <StyledTableCell align="right">{t(langKeys.billingreportrate)}</StyledTableCell>
+                                            <StyledTableCell align="right">{t(langKeys.billingreporttaxableamount)}</StyledTableCell>
+                                            <StyledTableCell align="right">{t(langKeys.billingreporttaxableiva)}</StyledTableCell>
+                                            <StyledTableCell align="right">{t(langKeys.billingreportamount)}</StyledTableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        <StyledTableRow>
+                                            <StyledTableCell><b>{t(langKeys.basecost)}</b></StyledTableCell>
+                                            <StyledTableCell></StyledTableCell>
+                                            <StyledTableCell></StyledTableCell>
+                                            <StyledTableCell align="right">${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.basicfee || 0) : formatNumber(datareport.basicfee)}</StyledTableCell>
+                                            <StyledTableCell align="right">${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.basicfee || 0) : "0.00"}</StyledTableCell>
+                                            <StyledTableCell align="right">${datareport.basicfee ? formatNumber(datareport.basicfee || 0) : "0.00"}</StyledTableCell>
+                                        </StyledTableRow>
+                                        <StyledTableRow>
+                                            <StyledTableCell>
+                                                <div><b>{t(langKeys.agents_plural)}</b></div>
+                                                <div>{t(langKeys.contracted)}</div>
+                                                <div>{t(langKeys.additional)}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>{formatNumberNoDecimals(datareport.userfreequantity || 0)}</div>
+                                                <div>{formatNumberNoDecimals(datareport.useradditionalquantity || 0)}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>${formatNumber(datareport.useradditionalfee || 0)}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.useradditionalcharge || 0) : formatNumber(datareport.useradditionalcharge)}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.useradditionalcharge || 0) : "0.00"}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>${formatNumber(datareport.useradditionalcharge || 0)}</div>
+                                            </StyledTableCell>
+                                        </StyledTableRow>
+                                        <StyledTableRow>
+                                            <StyledTableCell>
+                                                <div><b>{t(langKeys.channel_plural)}</b></div>
+                                                <div>{t(langKeys.contracted)}</div>
+                                                <div>{t(langKeys.whatsappfreechannel)}</div>
+                                                <div>{t(langKeys.whatsappchannel)}</div>
+                                                <div>{t(langKeys.whatsappadditionalchannel)}</div>
+                                                <div>{t(langKeys.otherchannels)}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>{formatNumberNoDecimals(datareport.channelfreequantity || 0)}</div>
+                                                <div>{formatNumberNoDecimals(datareport.freewhatsappchannel || 0)}</div>
+                                                <div>{formatNumberNoDecimals(datareport.channelwhatsappquantity || 0)}</div>
+                                                <div>{formatNumberNoDecimals(((datareport.channelwhatsappquantity - datareport.freewhatsappchannel) < 0 ? 0 : (datareport.channelwhatsappquantity - datareport.freewhatsappchannel)) || 0)}</div>
+                                                <div>{formatNumberNoDecimals(datareport.channelotherquantity || 0)}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>${formatNumber(datareport.channelwhatsappfee || 0)}</div>
+                                                <div>${formatNumber(datareport.channelotherfee || 0)}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.channelwhatsappcharge || 0) : formatNumber(datareport.channelwhatsappcharge)}</div>
+                                                <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.channelothercharge || 0) : formatNumber(datareport.channelothercharge)}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.channelwhatsappcharge || 0) : "0.00"}</div>
+                                                <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.channelothercharge || 0) : "0.00"}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>${formatNumber(datareport.channelwhatsappcharge || 0)}</div>
+                                                <div>${formatNumber(datareport.channelothercharge || 0)}</div>
+                                            </StyledTableCell>
+                                        </StyledTableRow>
+                                        <StyledTableRow>
+                                            <StyledTableCell>
+                                                <div><b>{t(langKeys.billingreportconversations)}</b></div>
+                                                <div>{t(langKeys.reportfreeconversations)}</div>
+                                                <div>{t(langKeys.userinitiatedconversations)}</div>
+                                                <div>{t(langKeys.businessinitiatedconversations)}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>{formatNumberNoDecimals((datareport.channelwhatsappquantity || 0) * (datareport.freewhatsappconversations || 0))}</div>
+                                                <div>{formatNumberNoDecimals(datareport.conversationclientwhatquantity || 0)}</div>
+                                                <div>{formatNumberNoDecimals(datareport.conversationcompanywhatquantity || 0)}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.conversationclientwhatcharge || 0) : formatNumber(datareport.conversationclientwhatcharge)}</div>
+                                                <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.conversationcompanywhatcharge || 0) : formatNumber(datareport.conversationcompanywhatcharge)}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.conversationclientwhatcharge || 0) : "0.00"}</div>
+                                                <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.conversationcompanywhatcharge || 0) : "0.00"}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>${formatNumber(datareport.conversationclientwhatcharge || 0)}</div>
+                                                <div>${formatNumber(datareport.conversationcompanywhatcharge || 0)}</div>
+                                            </StyledTableCell>
+                                        </StyledTableRow>
+                                        <StyledTableRow>
+                                            <StyledTableCell>
+                                                <div><b>{t(langKeys.billingreportmessaging)}</b></div>
+                                                <div>{t(langKeys.billingreportsms)}</div>
+                                                <div>{t(langKeys.billingreportmail)}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>{formatNumberNoDecimals(datareport.smsquantity || 0)}</div>
+                                                <div>{formatNumberNoDecimals(datareport.mailquantity || 0)}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>${formatNumber((datareport.unitpricepersms || 0) + (datareport.vcacomissionpersms || 0))}</div>
+                                                <div>${formatNumber((datareport.unitepricepermail || 0) + (datareport.vcacomissionpermail || 0))}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.smscost || 0) : formatNumber(datareport.smscost)}</div>
+                                                <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.mailcost || 0) : formatNumber(datareport.mailcost)}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.smscost || 0) : "0.00"}</div>
+                                                <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.mailcost || 0) : "0.00"}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>${formatNumber(datareport.smscost || 0)}</div>
+                                                <div>${formatNumber(datareport.mailcost || 0)}</div>
+                                            </StyledTableCell>
+                                        </StyledTableRow>
+                                        <StyledTableRow>
+                                            <StyledTableCell>
+                                                <div><b>{t(langKeys.billingreportcontacts)}</b></div>
+                                                <div>{t(langKeys.freecontacts)}</div>
+                                                <div>{t(langKeys.billingreporttotalcontacts)}</div>
+                                                <div>{t(langKeys.billingreportadditionalcontacts)}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>{formatNumberNoDecimals(datareport.clientfreequantity || 0)}</div>
+                                                <div>{formatNumberNoDecimals(datareport.clientquantity || 0)}</div>
+                                                <div>{formatNumberNoDecimals(datareport.clientadditionalquantity || 0)}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>${formatNumber(datareport.clientadditionalfee || 0)}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.clientadditionalcharge || 0) : formatNumber(datareport.clientadditionalcharge)}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv, datareport.clientadditionalcharge) : "0.00"}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>${formatNumber(datareport.clientadditionalcharge || 0)}</div>
+                                            </StyledTableCell>
+                                        </StyledTableRow>
+                                        <StyledTableRow>
+                                            <StyledTableCell><b>{t(langKeys.supportplan)} {datareport.supportplan}</b></StyledTableCell>
+                                            <StyledTableCell></StyledTableCell>
+                                            <StyledTableCell></StyledTableCell>
+                                            <StyledTableCell align="right">${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv, datareport.supportbasicfee) : formatNumber(datareport.supportbasicfee)}</StyledTableCell>
+                                            <StyledTableCell align="right">${datareport.sunatcountry === "PE" ? getIgv(datareport.igv, datareport.supportbasicfee) : "0.00"}</StyledTableCell>
+                                            <StyledTableCell align="right">${formatNumber(datareport.supportbasicfee)}</StyledTableCell>
+                                        </StyledTableRow>
+                                        <StyledTableRow>
+                                            <StyledTableCell>
+                                                {datareport.additionalservicefee1 ? <div className={clsx({ [classes.transparent]: datareport.additionalservicename1 === "" })}>{datareport.additionalservicename1 === "" ? <div style={{ color: "transparent" }}>.</div> : datareport.additionalservicename1}</div> : <div style={{ color: "transparent" }}>.</div>}
+                                                {datareport.additionalservicefee2 ? <div className={clsx({ [classes.transparent]: datareport.additionalservicename2 === "" })}>{datareport.additionalservicename2 === "" ? <div style={{ color: "transparent" }}>.</div> : datareport.additionalservicename2}</div> : <div style={{ color: "transparent" }}>.</div>}
+                                                {datareport.additionalservicefee3 ? <div className={clsx({ [classes.transparent]: datareport.additionalservicename3 === "" })}>{datareport.additionalservicename3 === "" ? <div style={{ color: "transparent" }}>.</div> : datareport.additionalservicename3}</div> : <div style={{ color: "transparent" }}>.</div>}
+                                            </StyledTableCell>
+                                            <StyledTableCell>
+                                            </StyledTableCell>
+                                            <StyledTableCell>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                {datareport.additionalservicefee1 ? <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.additionalservicefee1 || 0) : formatNumber(datareport.additionalservicefee1)}</div> : <div style={{ color: "transparent" }}>.</div>}
+                                                {datareport.additionalservicefee2 ? <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.additionalservicefee2 || 0) : formatNumber(datareport.additionalservicefee2)}</div> : <div style={{ color: "transparent" }}>.</div>}
+                                                {datareport.additionalservicefee3 ? <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.additionalservicefee3 || 0) : formatNumber(datareport.additionalservicefee3)}</div> : <div style={{ color: "transparent" }}>.</div>}
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                {datareport.additionalservicefee1 ? <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv, datareport.additionalservicefee1) : "0.00"}</div> : <div style={{ color: "transparent" }}>.</div>}
+                                                {datareport.additionalservicefee2 ? <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv, datareport.additionalservicefee2) : "0.00"}</div> : <div style={{ color: "transparent" }}>.</div>}
+                                                {datareport.additionalservicefee3 ? <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv, datareport.additionalservicefee3) : "0.00"}</div> : <div style={{ color: "transparent" }}>.</div>}
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                {datareport.additionalservicefee1 ? <div>${formatNumber(datareport.additionalservicefee1 || 0)}</div> : <div style={{ color: "transparent" }}>.</div>}
+                                                {datareport.additionalservicefee2 ? <div>${formatNumber(datareport.additionalservicefee2 || 0)}</div> : <div style={{ color: "transparent" }}>.</div>}
+                                                {datareport.additionalservicefee3 ? <div>${formatNumber(datareport.additionalservicefee3 || 0)}</div> : <div style={{ color: "transparent" }}>.</div>}
+                                            </StyledTableCell>
+                                        </StyledTableRow>
+                                        <StyledTableRow>
+                                            <StyledTableCell>
+                                                <b>{t(langKeys.periodamount)}</b>
+                                            </StyledTableCell>
+                                            <StyledTableCell>
+                                            </StyledTableCell>
+                                            <StyledTableCell>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                ${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.totalcharge || 0) : formatNumber(datareport.totalcharge)}
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                ${datareport.sunatcountry === "PE" ? getIgv(datareport.igv, datareport.totalcharge) : "0.00"}
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                ${formatNumber(datareport.totalcharge || 0)}
+                                            </StyledTableCell>
+                                        </StyledTableRow>
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                            <div style={{ paddingTop: 30, fontWeight: "bold", fontSize: "1.5em" }}>{t(langKeys.servicedata)}</div>
+                            <TableContainer component={Paper} style={{ overflow: "hidden" }}>
+                                <Table aria-label="customized table">
+                                    <TableHead>
+                                        <TableRow>
+                                            <StyledTableCell align="center">
+                                                <div>{datareport.clientwhatquantity}</div>
+                                                <div>{t(langKeys.uniquecontacts)} Whatsapp</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="center">
+                                                <div>{datareport.clientquantity - datareport.clientwhatquantity}</div>
+                                                <div>{t(langKeys.uniquecontacts)} {t(langKeys.others)}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="center">
+                                                <div>{datareport.conversationquantity}</div>
+                                                <div>{t(langKeys.conversation_plural)}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="center">
+                                                <div>{datareport.interactionquantity}</div>
+                                                <div>{t(langKeys.interaction_plural)}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="center">
+                                                <div>{datareport.supervisorquantity}</div>
+                                                <div>{t(langKeys.supervisor_plural)}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="center">
+                                                <div>{datareport.asesorquantity}</div>
+                                                <div>{t(langKeys.assesor_plural)}</div>
+                                            </StyledTableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                </Table>
+                            </TableContainer>
+                        </div>}
+                        {!datareport && <div className={classes.containerDetail}>
+                            <div className="row-zyx" >
+                                <FieldView
+                                    className="col-6"
+                                    label={""}
+                                    value={t(langKeys.billingperiodnotfound)}
+                                />
+                            </div>
+                        </div>}
                     </div>
-
-                </div>
                 )
             }
         </Fragment>
@@ -1893,14 +1937,12 @@ const PeriodReport: React.FC <{ dataPlan: any, customSearch: any }> = ({ dataPla
 }
 
 const IDPAYMENTS = "IDPAYMENTS";
-const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStateAction<{ year: number; month: number; corpid: number; orgid: number; totalize: number; }>): void }> = ({ dataPlan, setCustomSearch }) => {
+const Payments: React.FC<{ dataCorp: any, dataOrg: any, setCustomSearch(value: React.SetStateAction<{ year: number; month: number; corpid: number; orgid: number; totalize: number; }>): void }> = ({ dataCorp, dataOrg, setCustomSearch }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const dataCorpList = dataPlan.data[2] && dataPlan.data[2].success? dataPlan.data[2].data : [];
-    const dataOrgList = dataPlan.data[1] && dataPlan.data[1].success? dataPlan.data[1].data : [];
     const executeRes = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main.mainData);
     const memoryTable = useSelector(state => state.main.memoryTable);
@@ -1926,7 +1968,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
     const [modalRowSend, setModalRowSend] = useState(false);
 
     const dataCurrency = [{ value: "PEN", description: "PEN" }, { value: "USD", description: "USD" }]
-    const dataPayment = [{ value: "PENDING", description: t(langKeys.PENDING) }, { value: "PAID", description: t(langKeys.PAID) }, { value:"NONE", description: t(langKeys.NONE) }]
+    const dataPayment = [{ value: "PENDING", description: t(langKeys.PENDING) }, { value: "PAID", description: t(langKeys.PAID) }, { value: "NONE", description: t(langKeys.NONE) }]
 
     const fetchData = () => dispatch(getCollection(selInvoiceClient(dataMain)));
 
@@ -1959,7 +2001,8 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
     useEffect(() => {
         if (rowSelect) {
             if (rowSelected) {
-                setCustomSearch( prev => ({...prev,
+                setCustomSearch(prev => ({
+                    ...prev,
                     year: rowSelected?.year,
                     month: rowSelected?.month,
                     corpid: rowSelected?.corpid,
@@ -1980,7 +2023,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
     }, [modalRowSelect, modalRowSend])
 
     useEffect(() => {
-        setdisableSearch(dataMain.year === "" ) 
+        setdisableSearch(dataMain.year === "")
     }, [dataMain])
 
     useEffect(() => {
@@ -2055,17 +2098,17 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                             {showPayButton && <Button
                                 variant="contained"
                                 color="primary"
-                                style={{ backgroundColor: "#55BD84", marginRight: "10px"}}
+                                style={{ backgroundColor: "#55BD84", marginRight: "10px" }}
                                 startIcon={<PaymentIcon style={{ color: 'white' }} />}
-                                onClick={() => {setModalRowSelect(row); setModalRowSend(true)}}
+                                onClick={() => { setModalRowSelect(row); setModalRowSend(true) }}
                             >{t(langKeys.pay)}
                             </Button>}
                             {showUpdateButton && <Button
                                 variant="contained"
                                 color="primary"
-                                style={{ backgroundColor: "#55BD84"}}
+                                style={{ backgroundColor: "#55BD84" }}
                                 startIcon={<RefreshIcon style={{ color: 'white' }} />}
-                                onClick={() => {refreshInvoice(row)}}
+                                onClick={() => { refreshInvoice(row) }}
                             >{t(langKeys.refresh)}
                             </Button>}
                         </>
@@ -2112,12 +2155,12 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                 Cell: (props: any) => {
                     const selectedrow = props.cell.row.original;
                     const hasreport = selectedrow?.hasreport;
-                    
+
                     if (hasreport) {
                         return (
                             <Fragment>
                                 <div>
-                                    {<span onClick={() => {setRowSelected(selectedrow); setRowSelect(true)}} style={{ display: "block", cursor: "pointer", color: "blue", textDecoration: "underline" }}>{t(langKeys.toreport)}</span>}
+                                    {<span onClick={() => { setRowSelected(selectedrow); setRowSelect(true) }} style={{ display: "block", cursor: "pointer", color: "blue", textDecoration: "underline" }}>{t(langKeys.toreport)}</span>}
                                 </div>
                             </Fragment>
                         )
@@ -2135,7 +2178,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                     return (
                         <Fragment>
                             <div>
-                                { (urlpdf ?
+                                {(urlpdf ?
                                     <a href={urlpdf} target="_blank" style={{ display: "block" }} rel="noreferrer">{docnumber}</a>
                                     :
                                     <span style={{ display: "block" }}>{docnumber}</span>)
@@ -2153,7 +2196,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                     return (
                         <Fragment>
                             <div>
-                                { (urlxml ?
+                                {(urlxml ?
                                     <a href={urlxml} target="_blank" style={{ display: "block" }} rel="noreferrer">{t(langKeys.xmldocumentopen)}</a>
                                     :
                                     <span style={{ display: "block" }}>{t(langKeys.pendingpayment)}</span>)
@@ -2171,7 +2214,7 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                     return (
                         <Fragment>
                             <div>
-                                { (urlcdr ?
+                                {(urlcdr ?
                                     <a href={urlcdr} target="_blank" style={{ display: "block" }} rel="noreferrer">{t(langKeys.cdrdocumentopen)}</a>
                                     :
                                     <span style={{ display: "block" }}>{t(langKeys.pendingpayment)}</span>)
@@ -2194,20 +2237,20 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                             <FieldSelect
                                 label={t(langKeys.year)}
-                                style={{width: 140}}
+                                style={{ width: 140 }}
                                 valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.value || 0}))}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, year: value?.value || 0 }))}
                                 data={dataYears}
                                 optionDesc="value"
                                 optionValue="value"
                             />
                             <FieldMultiSelect
                                 label={t(langKeys.month)}
-                                style={{width: 214}}
+                                style={{ width: 214 }}
                                 valueDefault={dataMain.month}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, month: value.map((o: Dictionary) => o.val).join() }))}
                                 data={dataMonths}
                                 uset={true}
                                 prefixTranslation="month_"
@@ -2219,41 +2262,45 @@ const Payments: React.FC <{ dataPlan: any, setCustomSearch (value: React.SetStat
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.corpid}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,corpid:value?.corpid || 0,orgid:0}))}
-                                data={dataCorpList}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, corpid: value?.corpid || 0, orgid: 0 }))}
+                                data={dataCorp}
                                 optionDesc="description"
                                 optionValue="corpid"
                                 disabled={user?.roledesc === "ADMINISTRADOR"}
+                                orderbylabel={true}
                             />
                             <FieldSelect
                                 label={t(langKeys.organization)}
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.orgid}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,orgid:value?.orgid || 0}))}
-                                data={dataOrgList.filter((e:any)=>{return e.corpid===dataMain.corpid})}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, orgid: value?.orgid || 0 }))}
+                                data={dataOrg.filter((e: any) => { return e.corpid === dataMain.corpid })}
                                 optionDesc="orgdesc"
                                 optionValue="orgid"
+                                orderbylabel={true}
                             />
                             <FieldSelect
                                 label={t(langKeys.currency)}
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.currency}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,currency:value?.value || ''}))}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, currency: value?.value || '' }))}
                                 data={dataCurrency}
                                 optionDesc="description"
                                 optionValue="value"
+                                orderbylabel={true}
                             />
                             <FieldSelect
                                 label={t(langKeys.paymentstatus)}
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.paymentstatus}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,paymentstatus:value?.value || ''}))}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, paymentstatus: value?.value || '' }))}
                                 data={dataPayment}
                                 optionDesc="description"
                                 optionValue="value"
+                                orderbylabel={true}
                             />
                             <Button
                                 disabled={mainResult.loading || disableSearch}
@@ -2322,7 +2369,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
     const [favoriteCardNumber, setFavoriteCardNumber] = useState('');
     const [favoriteCardCode, setFavoriteCardCode] = useState('');
 
-    const dataPayment =[{ val: "FAVORITE", description: t(langKeys.paymentfavorite) }, { val: "CARD", description: t(langKeys.paymentcard) }, { val: "CULQI", description: t(langKeys.paymentculqi) }];
+    const dataPayment = [{ val: "FAVORITE", description: t(langKeys.paymentfavorite) }, { val: "CARD", description: t(langKeys.paymentcard) }, { val: "CULQI", description: t(langKeys.paymentculqi) }];
 
     const handlePay = () => {
         const callback = () => {
@@ -2426,21 +2473,21 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
         if (waitSave) {
             if (!mainResult.mainData.loading && !exchangeRequest.loading) {
                 dispatch(showBackdrop(false));
-    
+
                 if (mainResult.mainData.data) {
                     if (mainResult.mainData.data[0]) {
                         var appsetting = mainResult.mainData.data[0];
                         var country = (data?.orgcountry || data?.corpcountry);
                         var doctype = (data?.orgdoctype || data?.corpdoctype);
-    
+
                         if (country && doctype) {
                             if (country === 'PE' && doctype === '6') {
                                 var compareamount = (data?.totalamount || 0);
-    
+
                                 if (data?.currency === 'USD') {
                                     compareamount = compareamount * (exchangeRequest?.exchangerate || 0);
                                 }
-    
+
                                 if (compareamount > appsetting.detractionminimum) {
                                     setTotalPay(Math.round(((data?.totalamount || 0) - ((data?.totalamount || 0) * (appsetting.detraction || 0)) + Number.EPSILON) * 100) / 100);
                                     setTotalAmount(Math.round(((data?.totalamount || 0) + Number.EPSILON) * 100) / 100);
@@ -2461,7 +2508,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                                 setShowCulqi(true);
                             }
                         }
-    
+
                         setPublicKey(appsetting.publickey);
                     }
                 }
@@ -2514,7 +2561,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                     <div>
                         <TemplateBreadcrumbs
                             breadcrumbs={paymentBread}
-                            handleClick={(id) => {setViewSelected(id); fetchData();}}
+                            handleClick={(id) => { setViewSelected(id); fetchData(); }}
                         />
                         <TitleDetail
                             title={data?.description}
@@ -2560,7 +2607,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                                 style={{ backgroundColor: "#55BD84" }}
                                 onClick={handlePay}
                                 disabled={paymentDisabled || !paymentCardId || !paymentCardCode}
-                                >{t(langKeys.proceedpayment)}
+                            >{t(langKeys.proceedpayment)}
                             </Button>
                         }
                     </div>
@@ -2582,6 +2629,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                             data={dataPayment}
                             optionDesc="description"
                             optionValue="val"
+                            orderbylabel={true}
                         />
                         {(paymentType === "CARD") && <FieldSelect
                             label={t(langKeys.paymentmethodcard)}
@@ -2592,6 +2640,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                             optionDesc="cardnumber"
                             optionValue="paymentcardid"
                             loading={cardList.loading}
+                            orderbylabel={true}
                         />}
                         {(paymentType === "FAVORITE") && <FieldEdit
                             className="col-6"
@@ -2616,12 +2665,12 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                         <FieldView
                             className="col-4"
                             label={t(langKeys.totalamount)}
-                            value={(data?.currency === 'USD' ? '$' : 'S/')+formatNumber((totalAmount || 0))}
+                            value={(data?.currency === 'USD' ? '$' : 'S/') + formatNumber((totalAmount || 0))}
                         />
                         <FieldView
                             className="col-4"
                             label={t(langKeys.totaltopay)}
-                            value={(data?.currency === 'USD' ? '$' : 'S/')+formatNumber((totalPay || 0))}
+                            value={(data?.currency === 'USD' ? '$' : 'S/') + formatNumber((totalPay || 0))}
                         />
                     </div>
                     {detractionAlert && <div className="row-zyx">
@@ -2638,7 +2687,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                             value={t(langKeys.additional_information)}
                         />
                     </div>
-                    {data?.invoicestatus === "DRAFT"  && <div className="row-zyx">
+                    {data?.invoicestatus === "DRAFT" && <div className="row-zyx">
                         <FieldView
                             className={classes.commentary}
                             label={''}
@@ -2687,14 +2736,12 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
 }
 
 const IDBILLING = "IDBILLING";
-const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
+const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const dataCorpList = dataPlan.data[2] && dataPlan.data[2].success? dataPlan.data[2].data : [];
-    const dataOrgList = dataPlan.data[1] && dataPlan.data[1].success? dataPlan.data[1].data : [];
     const executeRes = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main.mainData);
     const multiResult = useSelector(state => state.main.multiData);
@@ -2723,7 +2770,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const [waitSaveImport, setwaitSaveImport] = useState(false);
 
     const dataCurrency = [{ value: "PEN", description: "PEN" }, { value: "USD", description: "USD" }]
-    const dataPayment = [{ value: "PENDING", description: t(langKeys.PENDING) }, { value: "PAID", description: t(langKeys.PAID) }, { value:"NONE", description: t(langKeys.NONE) }]
+    const dataPayment = [{ value: "PENDING", description: t(langKeys.PENDING) }, { value: "PAID", description: t(langKeys.PAID) }, { value: "NONE", description: t(langKeys.NONE) }]
 
     const fetchData = () => dispatch(getCollection(selInvoice(dataMain)));
 
@@ -2753,7 +2800,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             dispatch(cleanMemoryTable());
             dispatch(getMultiCollection([
                 getCorpSel(user?.roledesc === "ADMINISTRADOR" ? user?.corpid : 0),
-                getMeasureUnit(), 
+                getMeasureUnit(),
                 getValuesFromDomain("TYPECREDIT", null, user?.orgid, user?.corpid),
                 getAppsettingInvoiceSel()]));
         }
@@ -2872,7 +2919,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                     return (
                         <Fragment>
                             <div>
-                                { (urlpdf ?
+                                {(urlpdf ?
                                     <a onClick={(e) => { e.stopPropagation(); }} href={urlpdf} target="_blank" style={{ display: "block" }} rel="noreferrer">{docnumber}</a>
                                     :
                                     <span style={{ display: "block" }}>{docnumber}</span>)
@@ -2935,7 +2982,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         ],
         []
     );
-    
+
     useEffect(() => {
         if (waitSaveImport) {
             if (!executeRes.loading && !executeRes.error) {
@@ -2961,42 +3008,42 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         const invoicetype = [{ value: "01", description: "FACTURA" }, { value: "03", description: "BOLETA" }]
         const indexCreditType = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_DOMAIN_LST_VALORES'));
         let credittypelist = multiResult.data[indexCreditType] && multiResult.data[indexCreditType].success ? multiResult.data[indexCreditType].data : []
-        let corplist = multiResult.data[indexCorp] && multiResult.data[indexCorp].success ? multiResult.data[indexCorp].data : [] 
-        let orglist = multiResult.data[indexOrg] && multiResult.data[indexOrg].success ? multiResult.data[indexOrg].data : [] 
-        
+        let corplist = multiResult.data[indexCorp] && multiResult.data[indexCorp].success ? multiResult.data[indexCorp].data : []
+        let orglist = multiResult.data[indexOrg] && multiResult.data[indexOrg].success ? multiResult.data[indexOrg].data : []
+
         const data = [
-            corplist.reduce((a,d) => ({...a, [d.corpid]: t(`${d.description}`)}),{}), //"corpid"
-            orglist.reduce((a,d) => ({...a, [d.orgid]: t(`${d.orgdesc}`)}),{}), //"orgid"
-            dataYears.reduce((a,d) => ({...a, [d?.value]: t(`${d?.value}`)}),{}), //"year"
-            dataMonths.reduce((a,d) => ({...a, [+d.val]: t(`${+d.val}`)}),{}), //"month"
+            corplist.reduce((a, d) => ({ ...a, [d.corpid]: t(`${d.description}`) }), {}), //"corpid"
+            orglist.reduce((a, d) => ({ ...a, [d.orgid]: t(`${d.orgdesc}`) }), {}), //"orgid"
+            dataYears.reduce((a, d) => ({ ...a, [d?.value]: t(`${d?.value}`) }), {}), //"year"
+            dataMonths.reduce((a, d) => ({ ...a, [+d.val]: t(`${+d.val}`) }), {}), //"month"
             {}, //"description"
-            receiverdoctype.reduce((a,d) => ({...a, [d.value]: t(`${d.description}`)}),{}), //"receiverdoctype"
+            receiverdoctype.reduce((a, d) => ({ ...a, [d.value]: t(`${d.description}`) }), {}), //"receiverdoctype"
             {}, //"receiverdocnum"
             {}, //"receiverbusinessname"
             {}, //"receiverfiscaladdress"
-            {"CODIGO DE PAIS": "CODIGO DE PAIS"}, //"receivercountry"
+            { "CODIGO DE PAIS": "CODIGO DE PAIS" }, //"receivercountry"
             {}, //"receivermail"
-            invoicetype.reduce((a,d) => ({...a, [d.value]: t(`${d.description}`)}),{}), //"invoicetype"
+            invoicetype.reduce((a, d) => ({ ...a, [d.value]: t(`${d.description}`) }), {}), //"invoicetype"
             {}, //"serie"
             {}, //"correlative"
             {}, //"invoicedate"
             {}, //"expirationdate"
-            {"DRAFT": "DRAFT", "INVOICED": "INVOICED", "ERROR":"ERROR"}, //"invoicestatus"
-            {"PENDING":"PENDING","PAID":"PAID"}, //"paymentstatus"
+            { "DRAFT": "DRAFT", "INVOICED": "INVOICED", "ERROR": "ERROR" }, //"invoicestatus"
+            { "PENDING": "PENDING", "PAID": "PAID" }, //"paymentstatus"
             {}, //"paymentdate"
             {}, //"paidby"
-            {"CARD":"CARD", "REGISTEREDCARD":"REGISTEREDCARD"}, //"paymenttype"
+            { "CARD": "CARD", "REGISTEREDCARD": "REGISTEREDCARD" }, //"paymenttype"
             {}, //"totalamount"
             {}, //"exchangerate"
-            dataCurrency.reduce((a,d) => ({...a, [d.value]: t(`${d.description}`)}),{}), //"currency"
+            dataCurrency.reduce((a, d) => ({ ...a, [d.value]: t(`${d.description}`) }), {}), //"currency"
             {}, //"urlcdr"
             {}, //"urlpdf"
             {}, //"urlxml"
             {}, //"purchaseorder"
             {}, //"comments"
-            {"typecredit_alcontado": "typecredit_alcontado","typecredit_15": "typecredit_15","typecredit_30":"typecredit_30","typecredit_45":"typecredit_45","typecredit_60":"typecredit_60","typecredit_90":"typecredit_90"}, //"credittype"
+            { "typecredit_alcontado": "typecredit_alcontado", "typecredit_15": "typecredit_15", "typecredit_30": "typecredit_30", "typecredit_45": "typecredit_45", "typecredit_60": "typecredit_60", "typecredit_90": "typecredit_90" }, //"credittype"
         ];
-        const header = ["corpid","orgid","year","month","description","receiverdoctype","receiverdocnum","receiverbusinessname","receiverfiscaladdress","receivercountry","receivermail","invoicetype","serie","correlative","invoicedate","expirationdate","invoicestatus","paymentstatus","paymentdate","paidby","paymenttype","totalamount","exchangerate","currency","urlcdr","urlpdf","urlxml","purchaseorder","comments","credittype"];
+        const header = ["corpid", "orgid", "year", "month", "description", "receiverdoctype", "receiverdocnum", "receiverbusinessname", "receiverfiscaladdress", "receivercountry", "receivermail", "invoicetype", "serie", "correlative", "invoicedate", "expirationdate", "invoicestatus", "paymentstatus", "paymentdate", "paidby", "paymenttype", "totalamount", "exchangerate", "currency", "urlcdr", "urlpdf", "urlxml", "purchaseorder", "comments", "credittype"];
         exportExcel(`${t(langKeys.template)} - ${t(langKeys.invoice)}`, templateMaker(data, header));
     }
 
@@ -3006,10 +3053,10 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         if (file) {
             const indexCorp = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_CORP_SEL'));
             const dataCurrency = [{ value: "PEN", description: "PEN" }, { value: "USD", description: "USD" }]
-            let corplist = multiResult.data[indexCorp] && multiResult.data[indexCorp].success ? multiResult.data[indexCorp].data : [] 
+            let corplist = multiResult.data[indexCorp] && multiResult.data[indexCorp].success ? multiResult.data[indexCorp].data : []
             const receiverdoctypeList = [{ value: 0, description: "NO DOMICILIADO" }, { value: 1, description: "DNI" }, { value: 4, description: "CARNE EXT." }, { value: 6, description: "RUC" }, { value: 7, description: "PASAPORTE" }]
             const invoicetypeList = [{ value: "01", description: "FACTURA" }, { value: "03", description: "BOLETA" }]
-    
+
             let data: any = (await uploadExcel(file, undefined) as any[]);
             data = data.filter((d: any) => !['', null, undefined].includes(d.description)
                 && !['', null, undefined].includes(d.receiverdocnum)
@@ -3024,14 +3071,13 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 && !['', null, undefined].includes(d.paymentstatus)
                 && !['', null, undefined].includes(d.totalamount)
                 && !['', null, undefined].includes(d.exchangerate)
-                && Object.keys(invoicetypeList.reduce((a,d) => ({...a, [d.value]: d.description}), {})).includes(d.invoicetype)
-                && Object.keys(receiverdoctypeList.reduce((a,d) => ({...a, [d.value]: d.description}), {})).includes('' + d.receiverdoctype)
-                && Object.keys(corplist.reduce((a,d) => ({...a, [d.corpid]: d.description}), {})).includes('' + d.corpid)
-                && Object.keys(dataYears.reduce((a,d) => ({...a, [d.value]: d.value}), {})).includes('' + d.year)
-                && Object.keys(dataMonths.reduce((a,d) => ({...a, [d.val]: d.val}), {})).includes(`${d.month}`.padStart(2,'0'))
-                && Object.keys(dataCurrency.reduce((a,d) => ({...a, [d.value]: d.description}), {})).includes('' + d.currency)
+                && Object.keys(invoicetypeList.reduce((a, d) => ({ ...a, [d.value]: d.description }), {})).includes(d.invoicetype)
+                && Object.keys(receiverdoctypeList.reduce((a, d) => ({ ...a, [d.value]: d.description }), {})).includes('' + d.receiverdoctype)
+                && Object.keys(corplist.reduce((a, d) => ({ ...a, [d.corpid]: d.description }), {})).includes('' + d.corpid)
+                && Object.keys(dataYears.reduce((a, d) => ({ ...a, [d.value]: d.value }), {})).includes('' + d.year)
+                && Object.keys(dataMonths.reduce((a, d) => ({ ...a, [d.val]: d.val }), {})).includes(`${d.month}`.padStart(2, '0'))
+                && Object.keys(dataCurrency.reduce((a, d) => ({ ...a, [d.value]: d.description }), {})).includes('' + d.currency)
             );
-            console.log(data)
             debugger
             if (data.length > 0) {
                 dispatch(showBackdrop(true));
@@ -3039,8 +3085,8 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                     header: null,
                     detail: data.map((x: any) => insInvoice({
                         ...x,
-                        corpid:Number(x.corpid)||0,
-                        orgid:Number(x.orgid)||0,
+                        corpid: Number(x.corpid) || 0,
+                        orgid: Number(x.orgid) || 0,
                         year: Number(x.year),
                         month: Number(x.month),
                         receiverdoctype: String(x.receiverdoctype),
@@ -3051,7 +3097,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         receivermail: String(x.receivermail),
                         invoicetype: String(x.invoicetype),
                         serie: String(x.serie || ''),
-                        correlative: Number(x.correlative)||0,
+                        correlative: Number(x.correlative) || 0,
                         invoicedate: new Date(x.invoicedate),
                         expirationdate: new Date(x.expirationdate),
                         invoicestatus: String(x.invoicestatus),
@@ -3130,7 +3176,7 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 return 'emissornone';
         }
     }
-    
+
     if (viewSelected === "view-1") {
         return (
             <TableZyx
@@ -3140,20 +3186,20 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                         <FieldSelect
                             label={t(langKeys.year)}
-                            style={{width: 140}}
+                            style={{ width: 140 }}
                             valueDefault={dataMain.year}
                             variant="outlined"
-                            onChange={(value) => setdataMain(prev=>({...prev,year:value?.value || 0}))}
+                            onChange={(value) => setdataMain(prev => ({ ...prev, year: value?.value || 0 }))}
                             data={dataYears}
                             optionDesc="value"
                             optionValue="value"
                         />
                         <FieldMultiSelect
                             label={t(langKeys.month)}
-                            style={{width: 214}}
+                            style={{ width: 214 }}
                             valueDefault={dataMain.month}
                             variant="outlined"
-                            onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
+                            onChange={(value) => setdataMain(prev => ({ ...prev, month: value.map((o: Dictionary) => o.val).join() }))}
                             data={dataMonths}
                             uset={true}
                             prefixTranslation="month_"
@@ -3165,41 +3211,45 @@ const Billing: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             className={classes.fieldsfilter}
                             valueDefault={dataMain.corpid}
                             variant="outlined"
-                            onChange={(value) => setdataMain(prev=>({...prev,corpid:value?.corpid || 0,orgid:0}))}
-                            data={dataCorpList}
+                            onChange={(value) => setdataMain(prev => ({ ...prev, corpid: value?.corpid || 0, orgid: 0 }))}
+                            data={dataCorp}
                             optionDesc="description"
                             optionValue="corpid"
                             disabled={user?.roledesc === "ADMINISTRADOR"}
+                            orderbylabel={true}
                         />
                         <FieldSelect
                             label={t(langKeys.organization)}
                             className={classes.fieldsfilter}
                             valueDefault={dataMain.orgid}
                             variant="outlined"
-                            onChange={(value) => setdataMain(prev=>({...prev,orgid:value?.orgid || 0}))}
-                            data={dataOrgList.filter((e:any)=>{return e.corpid===dataMain.corpid})}
+                            onChange={(value) => setdataMain(prev => ({ ...prev, orgid: value?.orgid || 0 }))}
+                            data={dataOrg.filter((e: any) => { return e.corpid === dataMain.corpid })}
                             optionDesc="orgdesc"
                             optionValue="orgid"
+                            orderbylabel={true}
                         />
                         <FieldSelect
                             label={t(langKeys.currency)}
                             className={classes.fieldsfilter}
                             valueDefault={dataMain.currency}
                             variant="outlined"
-                            onChange={(value) => setdataMain(prev=>({...prev,currency:value?.value || ''}))}
+                            onChange={(value) => setdataMain(prev => ({ ...prev, currency: value?.value || '' }))}
                             data={dataCurrency}
                             optionDesc="description"
                             optionValue="value"
+                            orderbylabel={true}
                         />
                         <FieldSelect
                             label={t(langKeys.paymentstatus)}
                             className={classes.fieldsfilter}
                             valueDefault={dataMain.paymentstatus}
                             variant="outlined"
-                            onChange={(value) => setdataMain(prev=>({...prev,paymentstatus:value?.value || ''}))}
+                            onChange={(value) => setdataMain(prev => ({ ...prev, paymentstatus: value?.value || '' }))}
                             data={dataPayment}
                             optionDesc="description"
                             optionValue="value"
+                            orderbylabel={true}
                         />
                         <Button
                             disabled={mainResult.loading || disableSearch}
@@ -3257,7 +3307,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
     const culqiResult = useSelector(state => state.culqi.requestCreateCreditNote);
     const emitResult = useSelector(state => state.culqi.requestEmitInvoice);
     const multiResult = useSelector(state => state.main.multiDataAux);
-    
+
     const [measureList, setMeasureList] = useState<any>([]);
     const [openModal, setOpenModal] = useState(false);
     const [pageSelected, setPageSelected] = useState(0);
@@ -3271,10 +3321,10 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
     ];
 
     const datacreditnote = [
-        { value:"01", description: t(langKeys.billingcreditnote01) },
-        { value:"04", description: t(langKeys.billingcreditnote04) }
+        { value: "01", description: t(langKeys.billingcreditnote01) },
+        { value: "04", description: t(langKeys.billingcreditnote04) }
     ]
-    
+
     useEffect(() => {
         if (!data) {
             setViewSelected("view-1");
@@ -3293,7 +3343,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
 
         if (productList) {
             if (productList.data) {
-                var productInformationList: Partial<unknown> [] = [];
+                var productInformationList: Partial<unknown>[] = [];
 
                 productList.data.forEach((element: { description: any; productcode: any; measureunit: any; quantity: any; productnetprice: any; }) => {
                     productInformationList.push({
@@ -3333,7 +3383,8 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
             creditnotemotive: '',
             creditnotediscount: 0.0,
             invoicestatus: data?.invoicestatus,
-            productdetail: []
+            productdetail: [],
+            hasreport: data?.hasreport,
         }
     });
 
@@ -3393,16 +3444,16 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
     }
 
     const onSubmit = handleSubmit((data) => {
-        if (data?.invoicestatus === 'ERROR') {
+        if (data?.invoicestatus === 'ERROR' || ((data?.invoicestatus !== 'INVOICED' && data?.invoicestatus !== 'ERROR') && data?.hasreport)) {
             const callback = () => {
                 dispatch(emitInvoice(data));
                 dispatch(showBackdrop(true));
                 setWaitSave(true);
             }
-    
+
             dispatch(manageConfirmation({
                 visible: true,
-                question: t(langKeys.confirmatiom_reemit),
+                question: data?.invoicestatus === 'ERROR' ? t(langKeys.confirmatiom_reemit) : t(langKeys.confirmation_emit),
                 callback
             }))
         }
@@ -3413,14 +3464,14 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                     dispatch(showBackdrop(true));
                     setWaitSave(true);
                 }
-        
+
                 dispatch(manageConfirmation({
                     visible: true,
                     question: t(langKeys.confirmation_save),
                     callback
                 }))
             }
-    
+
             if (regularize) {
                 setOpenModal(true);
             }
@@ -3435,7 +3486,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
 
     useEffect(() => {
         if (waitSave) {
-            if (data?.invoicestatus === 'ERROR') {
+            if (data?.invoicestatus === 'ERROR' || ((data?.invoicestatus !== 'INVOICED' && data?.invoicestatus !== 'ERROR') && data?.hasreport)) {
                 if (!emitResult.loading && !emitResult.error) {
                     dispatch(showSnackbar({ show: true, success: true, message: t(emitResult.code || "success") }))
                     dispatch(showBackdrop(false));
@@ -3483,7 +3534,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                     <div>
                         <TemplateBreadcrumbs
                             breadcrumbs={invocesBread}
-                            handleClick={(id) => {setViewSelected(id); fetchData();}}
+                            handleClick={(id) => { setViewSelected(id); fetchData(); }}
                         />
                         <TitleDetail
                             title={operationName ? t(operationName) : t(langKeys.billinginvoiceview)}
@@ -3498,7 +3549,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                             style={{ backgroundColor: "#FB5F5F" }}
                             onClick={() => { setViewSelected("view-1"); fetchData(); }}
                         >{t(langKeys.back)}</Button>
-                        { (data?.invoicestatus === 'ERROR' && data?.invoicetype !== '07') ? (
+                        {(data?.invoicestatus === 'ERROR' && data?.invoicetype !== '07') ? (
                             <Button
                                 className={classes.button}
                                 variant="contained"
@@ -3508,9 +3559,9 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                                 style={{ backgroundColor: "#55BD84" }}
                             >{t(langKeys.reemitinvoice)}
                             </Button>
-                            ) : null
+                        ) : null
                         }
-                        { (data?.invoicestatus === 'INVOICED' && creditNote) ? (
+                        {((data?.invoicestatus !== 'INVOICED' && data?.invoicestatus !== 'ERROR') && data?.invoicetype !== '07' && data?.hasreport) ? (
                             <Button
                                 className={classes.button}
                                 variant="contained"
@@ -3520,9 +3571,21 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                                 style={{ backgroundColor: "#55BD84" }}
                             >{t(langKeys.emitinvoice)}
                             </Button>
-                            ) : null
+                        ) : null
                         }
-                        { (data?.invoicestatus === 'INVOICED' && data?.paymentstatus !== 'PAID' && data?.invoicetype !== '07' && regularize) ? (
+                        {(data?.invoicestatus === 'INVOICED' && creditNote) ? (
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                type='submit'
+                                startIcon={<PaymentIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >{t(langKeys.emitinvoice)}
+                            </Button>
+                        ) : null
+                        }
+                        {(data?.invoicestatus === 'INVOICED' && data?.paymentstatus !== 'PAID' && data?.invoicetype !== '07' && regularize) ? (
                             <Button
                                 className={classes.button}
                                 variant="contained"
@@ -3532,7 +3595,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                                 style={{ backgroundColor: "#55BD84" }}
                             >{t(langKeys.regulatepayment)}
                             </Button>
-                            ) : null
+                        ) : null
                         }
                     </div>
                 </div>
@@ -3545,10 +3608,22 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                         textColor="primary"
                         onChange={(_, value) => setPageSelected(value)}
                     >
-                        <AntTab label={t(langKeys.billinginvoicedata)}/>
-                        <AntTab label={t(langKeys.billingadditionalinfo)}/>
+                        <AntTab label={t(langKeys.billinginvoicedata)} />
+                        <AntTab label={t(langKeys.billingadditionalinfo)} />
                     </Tabs>
-                    {pageSelected === 0  && <div className={classes.containerDetail}>
+                    {pageSelected === 0 && <div className={classes.containerDetail}>
+                        <div className="row-zyx">
+                            <FieldView
+                                label={t(langKeys.invoice_serviceyear)}
+                                value={data?.year}
+                                className="col-6"
+                            />
+                            <FieldView
+                                label={t(langKeys.invoice_servicemonth)}
+                                value={data?.month}
+                                className="col-6"
+                            />
+                        </div>
                         <div className="row-zyx">
                             <FieldView
                                 label={t(langKeys.docType)}
@@ -3680,6 +3755,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                                     optionDesc="description"
                                     optionValue="value"
                                     error={errors?.creditnotetype?.message}
+                                    orderbylabel={true}
                                 />
                                 <FieldEdit
                                     label={t(langKeys.ticket_reason)}
@@ -3762,6 +3838,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                                                         optionDesc="description"
                                                         optionValue="code"
                                                         disabled={true}
+                                                        orderbylabel={true}
                                                     />
                                                 </TableCell>
                                                 <TableCell>
@@ -3792,7 +3869,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                             </TableContainer>
                         </div>
                     </div>}
-                    {pageSelected === 1  && <div className={classes.containerDetail}>
+                    {pageSelected === 1 && <div className={classes.containerDetail}>
                         <div className="row-zyx">
                             <FieldView
                                 label={''}
@@ -3843,7 +3920,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                                     className="col-12"
                                 />
                             </div>
-                        ) : null }
+                        ) : null}
                         <div className="row-zyx">
                             <FieldView
                                 label={''}
@@ -3859,7 +3936,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                             />
                             <FieldView
                                 label={t(langKeys.paymentdate)}
-                                value={data?.paymentdate ? toISOLocalString(new Date(data?.paymentdate)).replace("T"," ").substring(0, 19) : t(langKeys.none)}
+                                value={data?.paymentdate ? toISOLocalString(new Date(data?.paymentdate)).replace("T", " ").substring(0, 19) : t(langKeys.none)}
                                 className="col-4"
                             />
                             <FieldView
@@ -3882,7 +3959,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                             {(data?.invoicereferencefile) ? (
                                 <div className='col-4'>
                                     <a href={data?.invoicereferencefile} target="_blank" rel="noreferrer">{t(langKeys.paymentreferenceview)}</a>
-                                 </div>
+                                </div>
                             ) : (
                                 <FieldView
                                     label={t(langKeys.paymentfile)}
@@ -3900,7 +3977,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
 
 const RegularizeModal: FC<{ data: any, openModal: boolean, setOpenModal: (param: any) => void, onTrigger: () => void }> = ({ data, openModal, setOpenModal, onTrigger }) => {
     const dispatch = useDispatch();
-    
+
     const { t } = useTranslation();
 
     const culqiResult = useSelector(state => state.culqi.requestRegularizeInvoice);
@@ -4027,7 +4104,7 @@ const RegularizeModal: FC<{ data: any, openModal: boolean, setOpenModal: (param:
                 valueDefault={getValues('invoicereferencefile')}
                 error={errors?.invoicereferencefile?.message}
                 disabled={true}
-             />
+            />
             <React.Fragment>
                 <input
                     accept="image/*"
@@ -4196,7 +4273,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                     if (corpList) {
                         if (corpList.data) {
                             corporationdata = corpList.data.find((x: { corpid: any; }) => x.corpid === data?.row.corpid);
-                            
+
                             setSubmitData(corporationdata);
                             setValue('billbyorg', corporationdata?.billbyorg);
                             setSavedCorp(null);
@@ -4230,7 +4307,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
         if (data?.row) {
             if (productList) {
                 if (productList.data) {
-                    var productInformationList: Partial<unknown> [] = [];
+                    var productInformationList: Partial<unknown>[] = [];
 
                     productList.data.forEach((element: { description: any; productcode: any; measureunit: any; quantity: any; netamount: any; }) => {
                         productInformationList.push({
@@ -4354,7 +4431,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
         setValue('clientmail', data?.contactemail || '');
         setValue('clientcredittype', data?.credittype || '');
         setValue('autosendinvoice', data?.autosendinvoice);
-        
+
         if (data?.credittype) {
             var dueDate = new Date(getValues('invoicecreatedate'));
 
@@ -4565,7 +4642,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                     <div>
                         <TemplateBreadcrumbs
                             breadcrumbs={invocesBread}
-                            handleClick={(id) => {setViewSelected(id); fetchData();}}
+                            handleClick={(id) => { setViewSelected(id); fetchData(); }}
                         />
                         <TitleDetail
                             title={t(langKeys.emiteinvoicetitle)}
@@ -4612,7 +4689,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                         <FieldView
                             className={classes.commentary}
                             label={''}
-                            value={t(langKeys.billingtypevalidation)+((getValues('corpid') && getValues('orgid')) ? t(langKeys.organization) : ((getValues('corpid')) ? t(langKeys.corporation) : ''))}
+                            value={t(langKeys.billingtypevalidation) + ((getValues('corpid') && getValues('orgid')) ? t(langKeys.organization) : ((getValues('corpid')) ? t(langKeys.corporation) : ''))}
                         />
                     </div>
                     <div className='row-zyx'>
@@ -4626,6 +4703,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             optionDesc="description"
                             optionValue="corpid"
                             error={errors?.corpid?.message}
+                            orderbylabel={true}
                         />
                         <FieldSelect
                             label={t(langKeys.organization)}
@@ -4638,6 +4716,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             optionValue="orgid"
                             disabled={(getValues('billbyorg') === false)}
                             error={errors?.orgid?.message}
+                            orderbylabel={true}
                         />
                         <FieldSelect
                             label={t(langKeys.invoice_serviceyear)}
@@ -4653,7 +4732,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             label={t(langKeys.invoice_servicemonth)}
                             onChange={(value) => { setValue('month', parseInt(value?.val || '0')); }}
                             className="col-3"
-                            valueDefault={data?.row?.month ? data?.row?.month.toString() : getValues('month')}
+                            valueDefault={(data?.row?.month ? data?.row?.month.toString() : getValues('month')).padStart(2, "0")}
                             data={dataMonths}
                             optionDesc="val"
                             optionValue="val"
@@ -4670,9 +4749,9 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                         textColor="primary"
                         onChange={(_, value) => setPageSelected(value)}
                     >
-                        <AntTab label={t(langKeys.billinginvoicedata)}/>
+                        <AntTab label={t(langKeys.billinginvoicedata)} />
                     </Tabs>
-                    {pageSelected === 0  && <div className={classes.containerDetail}>
+                    {pageSelected === 0 && <div className={classes.containerDetail}>
                         <div className="row-zyx">
                             <FieldEdit
                                 label={t(langKeys.docType)}
@@ -4735,6 +4814,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                 optionValue="domainvalue"
                                 error={errors?.clientcredittype?.message}
                                 uset={true}
+                                orderbylabel={true}
                             />
                             <FieldView
                                 label={t(langKeys.dueDate)}
@@ -4766,6 +4846,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                 optionDesc="description"
                                 optionValue="value"
                                 error={errors?.invoicecurrency?.message}
+                                orderbylabel={true}
                             />
                             <FieldEdit
                                 label={t(langKeys.taxbase)}
@@ -4876,6 +4957,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                                         optionDesc="description"
                                                         optionValue="code"
                                                         error={errors?.productdetail?.[i]?.productmeasure?.message}
+                                                        orderbylabel={true}
                                                     />
                                                 </TableCell>
                                                 <TableCell>
@@ -4940,18 +5022,16 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
 }
 
 const IDMESSAGINGPACKAGES = "IDMESSAGINGPACKAGES";
-const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
+const MessagingPackages: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const dataCorpList = dataPlan.data[2] && dataPlan.data[2].success? dataPlan.data[2].data : [];
-    const dataOrgList = dataPlan.data[1] && dataPlan.data[1].success? dataPlan.data[1].data : [];
     const mainResult = useSelector(state => state.main.mainData);
     const memoryTable = useSelector(state => state.main.memoryTable);
     const user = useSelector(state => state.login.validateToken.user);
-    
+
     const [dataBalance, setDataBalance] = useState<Dictionary[]>([]);
     const [canRegister, setCanRegister] = useState(false);
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
@@ -4967,7 +5047,7 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     });
 
     const transactionType = [{ value: "HSM", description: t(langKeys.HSM) }, { value: "MAIL", description: t(langKeys.MAIL) }, { value: "SMS", description: t(langKeys.SMS) }, { value: "GENERAL", description: t(langKeys.GENERAL) }]
-    const operationType = [{ value: "ENVIO", description: t(langKeys.ENVIO) }, { value:"COMPRA", description: t(langKeys.COMPRA) }]
+    const operationType = [{ value: "ENVIO", description: t(langKeys.ENVIO) }, { value: "COMPRA", description: t(langKeys.COMPRA) }]
 
     const fetchData = () => dispatch(getCollection(selBalanceData(dataMain)));
 
@@ -5092,7 +5172,7 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                     return (
                         <Fragment>
                             <div>
-                                { (urlpdf ?
+                                {(urlpdf ?
                                     <a onClick={(e) => { e.stopPropagation(); }} href={urlpdf} target="_blank" style={{ display: "block" }} rel="noreferrer">{docnumber}</a>
                                     :
                                     <span style={{ display: "block" }}>{docnumber}</span>)
@@ -5119,41 +5199,45 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.corpid}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev => ({...prev, corpid: value?.corpid || 0, orgid: 0}))}
-                                data={dataCorpList}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, corpid: value?.corpid || 0, orgid: 0 }))}
+                                data={dataCorp}
                                 optionDesc="description"
                                 optionValue="corpid"
                                 disabled={user?.roledesc === "ADMINISTRADOR"}
+                                orderbylabel={true}
                             />
                             <FieldSelect
                                 label={t(langKeys.organization)}
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.orgid}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev => ({...prev, orgid: value?.orgid || 0}))}
-                                data={dataOrgList.filter((e:any)=>{ return e.corpid === dataMain.corpid })}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, orgid: value?.orgid || 0 }))}
+                                data={dataOrg.filter((e: any) => { return e.corpid === dataMain.corpid })}
                                 optionDesc="orgdesc"
                                 optionValue="orgid"
+                                orderbylabel={true}
                             />
                             <FieldSelect
                                 label={t(langKeys.transactionmessagetype)}
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.type}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev => ({...prev, type: value?.value || ''}))}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, type: value?.value || '' }))}
                                 data={transactionType}
                                 optionDesc="description"
                                 optionValue="value"
+                                orderbylabel={true}
                             />
                             <FieldSelect
                                 label={t(langKeys.transactionoperationtype)}
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.operationtype}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev => ({...prev, operationtype: value?.value || ''}))}
+                                onChange={(value) => setdataMain(prev => ({ ...prev, operationtype: value?.value || '' }))}
                                 data={operationType}
                                 optionDesc="description"
                                 optionValue="value"
+                                orderbylabel={true}
                             />
                             <Button
                                 disabled={mainResult.loading || false}
@@ -5176,7 +5260,7 @@ const MessagingPackages: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                     pageSizeDefault={IDMESSAGINGPACKAGES === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
                     initialPageIndex={IDMESSAGINGPACKAGES === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
                     initialStateFilter={IDMESSAGINGPACKAGES === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
-                    
+
                 />
             </div>
         )
@@ -5247,7 +5331,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
     const [favoriteCardNumber, setFavoriteCardNumber] = useState('');
     const [favoriteCardCode, setFavoriteCardCode] = useState('');
 
-    const dataPayment =[{ val: "FAVORITE", description: t(langKeys.paymentfavorite) }, { val: "CARD", description: t(langKeys.paymentcard) }, { val: "CULQI", description: t(langKeys.paymentculqi) }];
+    const dataPayment = [{ val: "FAVORITE", description: t(langKeys.paymentfavorite) }, { val: "CARD", description: t(langKeys.paymentcard) }, { val: "CULQI", description: t(langKeys.paymentculqi) }];
 
     const handlePay = () => {
         const callback = () => {
@@ -5421,7 +5505,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
         if (waitSave) {
             if (!mainResult.mainData.loading && !exchangeRequest.loading) {
                 dispatch(showBackdrop(false));
-    
+
                 if (mainResult.mainData.data) {
                     if (mainResult.mainData.data[0]) {
                         var appsetting = mainResult.mainData.data[0];
@@ -5441,7 +5525,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                     var compareamount = (buyAmount || 0) * (exchangeRequest?.exchangerate || 0);
 
                     if (compareamount > mainResult.mainData.data[0].detractionminimum) {
-                        setTotalPay(Math.round(((((buyAmount || 0) * (1 + (mainResult.mainData.data[0].igv || 0))) - (((buyAmount || 0) * (1 + (mainResult.mainData.data[0].igv || 0))) * (mainResult.mainData.data[0].detraction || 0))) + Number.EPSILON) * 100) / 100);                                 ;
+                        setTotalPay(Math.round(((((buyAmount || 0) * (1 + (mainResult.mainData.data[0].igv || 0))) - (((buyAmount || 0) * (1 + (mainResult.mainData.data[0].igv || 0))) * (mainResult.mainData.data[0].detraction || 0))) + Number.EPSILON) * 100) / 100);;
                         setDetractionAlert(true);
                         setDetractionAmount(Math.round((((mainResult.mainData.data[0].detraction || 0) * 100) + Number.EPSILON) * 100) / 100);
                         setPaymentTax(Math.round((((buyAmount || 0) * (mainResult.mainData.data[0].igv || 0)) + Number.EPSILON) * 100) / 100);
@@ -5568,7 +5652,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                     <div>
                         <TemplateBreadcrumbs
                             breadcrumbs={paymentBread}
-                            handleClick={(id) => {setViewSelected(id); fetchData();}}
+                            handleClick={(id) => { setViewSelected(id); fetchData(); }}
                         />
                         <TitleDetail
                             title={(data?.edit ? t(langKeys.messagingpackagesnew) : t(langKeys.messagingpackagesdetail))}
@@ -5624,7 +5708,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                                 style={{ backgroundColor: "#55BD84" }}
                                 onClick={handlePay}
                                 disabled={paymentDisabled || !paymentCardId || !paymentCardCode}
-                                >{t(langKeys.proceedpayment)}
+                            >{t(langKeys.proceedpayment)}
                             </Button>
                         }
                     </div>
@@ -5644,6 +5728,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                                     optionValue="corpid"
                                     error={corpError}
                                     disabled={disableInput}
+                                    orderbylabel={true}
                                 />
                             ) : (
                                 <FieldView
@@ -5664,6 +5749,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                                     optionValue="orgid"
                                     error={orgError}
                                     disabled={disableInput}
+                                    orderbylabel={true}
                                 />
                             ) : (
                                 <FieldView
@@ -5714,26 +5800,26 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                                 <FieldView
                                     className="col-4"
                                     label={t(langKeys.billingtaxes)}
-                                    value={'$'+formatNumber(paymentTax || 0)}
+                                    value={'$' + formatNumber(paymentTax || 0)}
                                 />
                             ) : (
                                 <FieldView
                                     className="col-4"
                                     label={t(langKeys.billingtaxes)}
-                                    value={'$'+formatNumber(data?.row?.taxes || 0)}
+                                    value={'$' + formatNumber(data?.row?.taxes || 0)}
                                 />
                             )}
                             {data?.edit ? (
                                 <FieldView
                                     className="col-4"
                                     label={t(langKeys.totalamount)}
-                                    value={'$'+formatNumber((totalAmount || 0))}
+                                    value={'$' + formatNumber((totalAmount || 0))}
                                 />
                             ) : (
                                 <FieldView
                                     className="col-4"
                                     label={t(langKeys.totalamount)}
-                                    value={'$'+formatNumber((data?.row?.amount || 0))}
+                                    value={'$' + formatNumber((data?.row?.amount || 0))}
                                 />
                             )}
                         </div>}
@@ -5742,39 +5828,39 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                                 <FieldView
                                     className="col-4"
                                     label={t(langKeys.transactionlastbalance)}
-                                    value={'$'+formatNumber(beforeAmount || 0)}
+                                    value={'$' + formatNumber(beforeAmount || 0)}
                                 />
                             ) : (
                                 <FieldView
                                     className="col-4"
                                     label={t(langKeys.transactionlastbalance)}
-                                    value={'$'+formatNumber((data?.row?.balance - data?.row?.amount) || 0)}
+                                    value={'$' + formatNumber((data?.row?.balance - data?.row?.amount) || 0)}
                                 />
                             )}
                             {data?.edit ? (
                                 <FieldView
                                     className="col-4"
                                     label={t(langKeys.totalamount)}
-                                    value={'$'+formatNumber((totalAmount || 0))}
+                                    value={'$' + formatNumber((totalAmount || 0))}
                                 />
                             ) : (
                                 <FieldView
                                     className="col-4"
                                     label={t(langKeys.totalamount)}
-                                    value={'$'+formatNumber((data?.row?.amount || 0))}
+                                    value={'$' + formatNumber((data?.row?.amount || 0))}
                                 />
                             )}
                             {data?.edit ? (
                                 <FieldView
                                     className="col-4"
                                     label={t(langKeys.transactionafterbalance)}
-                                    value={'$'+formatNumber(afterAmount || 0)}
+                                    value={'$' + formatNumber(afterAmount || 0)}
                                 />
                             ) : (
                                 <FieldView
                                     className="col-4"
                                     label={t(langKeys.transactionafterbalance)}
-                                    value={'$'+formatNumber(data?.row?.balance || 0)}
+                                    value={'$' + formatNumber(data?.row?.balance || 0)}
                                 />
                             )}
                         </div>
@@ -5796,6 +5882,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                                 data={dataPayment}
                                 optionDesc="description"
                                 optionValue="val"
+                                orderbylabel={true}
                             />
                             {(paymentType === "CARD") && <FieldSelect
                                 label={t(langKeys.paymentmethodcard)}
@@ -5806,6 +5893,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                                 optionDesc="cardnumber"
                                 optionValue="paymentcardid"
                                 loading={cardList.loading}
+                                orderbylabel={true}
                             />}
                             {(paymentType === "FAVORITE") && <FieldEdit
                                 className="col-6"
@@ -5835,22 +5923,22 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                             {data?.edit && <FieldView
                                 className="col-4"
                                 label={t(langKeys.totalamount)}
-                                value={'$'+formatNumber((totalAmount || 0))}
+                                value={'$' + formatNumber((totalAmount || 0))}
                             />}
                             {data?.row?.operationtype === "COMPRA" && <FieldView
                                 className="col-4"
                                 label={t(langKeys.totalamount)}
-                                value={'$'+formatNumber((data?.row?.amount || 0))}
+                                value={'$' + formatNumber((data?.row?.amount || 0))}
                             />}
                             {data?.edit && <FieldView
                                 className="col-4"
                                 label={t(langKeys.totaltopay)}
-                                value={'$'+formatNumber((totalPay || 0))}
+                                value={'$' + formatNumber((totalPay || 0))}
                             />}
                             {data?.row?.operationtype === "COMPRA" && <FieldView
                                 className="col-4"
                                 label={t(langKeys.totaltopay)}
-                                value={'$'+formatNumber((data?.row?.culqiamount || 0))}
+                                value={'$' + formatNumber((data?.row?.culqiamount || 0))}
                             />}
                         </div>}
                     </div>}
@@ -5942,7 +6030,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                                             <TableCell>
                                                 <FieldView
                                                     label={''}
-                                                    value={toISOLocalString(new Date(file?.createdate)).replace("T"," ").substring(0, 19)}
+                                                    value={toISOLocalString(new Date(file?.createdate)).replace("T", " ").substring(0, 19)}
                                                     className={classes.fieldView}
                                                 />
                                             </TableCell>
@@ -5954,7 +6042,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                                                 />
                                             </TableCell>
                                         </TableRow>
-                                    })} 
+                                    })}
                                 </TableBody>
                             </Table>
                         </TableContainer>
@@ -5971,17 +6059,17 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                             <FieldView
                                 className="col-4"
                                 label={t(langKeys.pricemessagesms)}
-                                value={'$'+formatNumberFourDecimals((priceSms || 0))}
+                                value={'$' + formatNumberFourDecimals((priceSms || 0))}
                             />
                             <FieldView
                                 className="col-4"
                                 label={t(langKeys.pricemessagemail)}
-                                value={'$'+formatNumberFourDecimals((priceMail || 0))}
+                                value={'$' + formatNumberFourDecimals((priceMail || 0))}
                             />
                             <FieldView
                                 className="col-4"
                                 label={t(langKeys.pricemessagehsm)}
-                                value={'$'+formatNumberFourDecimals((priceHsm || 0))}
+                                value={'$' + formatNumberFourDecimals((priceHsm || 0))}
                             />
                         </div>
                         <div className="row-zyx">
@@ -6064,7 +6152,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
 }
 
 const IDPAYMENTMETHODS = "IDPAYMENTMETHODS";
-const PaymentMethods: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
+const PaymentMethods: React.FC<{}> = () => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -6120,7 +6208,7 @@ const PaymentMethods: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 dispatch(showBackdrop(true));
                 setWaitDelete(true);
             }
-    
+
             dispatch(manageConfirmation({
                 visible: true,
                 question: t(langKeys.confirmation_delete),
@@ -6282,9 +6370,9 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
         { id: 7, desc: "07" },
         { id: 8, desc: "08" },
         { id: 9, desc: "09" },
-        { id:10, desc: "10" },
-        { id:11, desc: "11" },
-        { id:12, desc: "12" },
+        { id: 10, desc: "10" },
+        { id: 11, desc: "11" },
+        { id: 12, desc: "12" },
     ]), [t]);
 
     const arrayBreadPaymentMethods = [
@@ -6317,23 +6405,23 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
     React.useEffect(() => {
         if (!edit) {
             if (row?.cardnumber) {
-                if(row.cardnumber.slice(0,1)==="4"){
-                    setIcon(<img src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{padding: 5}}></img>)
+                if (row.cardnumber.slice(0, 1) === "4") {
+                    setIcon(<img src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{ padding: 5 }}></img>)
                     setLimitNumbers(19);
                     setValue('cardlimit', 19);
-                }else if(row.cardnumber.slice(0,2)==="51"||row.cardnumber.slice(0,2)==="55"){
-                    setIcon(<img src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{padding: 5}}></img>)
+                } else if (row.cardnumber.slice(0, 2) === "51" || row.cardnumber.slice(0, 2) === "55") {
+                    setIcon(<img src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{ padding: 5 }}></img>)
                     setLimitNumbers(19);
                     setValue('cardlimit', 19);
-                }else if(row.cardnumber.slice(0,2)==="37"||row.cardnumber.slice(0,2)==="34"){
-                    setIcon(<img src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{padding: 5}}></img>)
+                } else if (row.cardnumber.slice(0, 2) === "37" || row.cardnumber.slice(0, 2) === "34") {
+                    setIcon(<img src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{ padding: 5 }}></img>)
                     setLimitNumbers(18);
                     setValue('cardlimit', 18);
-                }else if(row.cardnumber.slice(0,2)==="36"||row.cardnumber.slice(0,2)==="38"||row.cardnumber.slice(0,3)==="300"||row.cardnumber.slice(0,3)==="305"){
-                    setIcon(<img src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{padding: 5}}></img>)
+                } else if (row.cardnumber.slice(0, 2) === "36" || row.cardnumber.slice(0, 2) === "38" || row.cardnumber.slice(0, 3) === "300" || row.cardnumber.slice(0, 3) === "305") {
+                    setIcon(<img src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{ padding: 5 }}></img>)
                     setLimitNumbers(17);
                     setValue('cardlimit', 17);
-                }else{
+                } else {
                     setIcon(<></>)
                     setLimitNumbers(10);
                     setValue('cardlimit', 10);
@@ -6450,14 +6538,14 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
                         />
                     </div>
                     <h3>{t(langKeys.creditcard)}</h3>
-                    {edit && <div style={{display:"flex"}}>
-                        <img src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{padding: 5}}></img>
-                        <img src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{padding: 5}}></img>
-                        <img src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{padding: 5}}></img>
-                        <img src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{padding: 5}}></img>
+                    {edit && <div style={{ display: "flex" }}>
+                        <img src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{ padding: 5 }}></img>
+                        <img src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{ padding: 5 }}></img>
+                        <img src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{ padding: 5 }}></img>
+                        <img src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{ padding: 5 }}></img>
                     </div>}
-                    <div style={{display: "flex",width:"100%"}}>
-                        <div style={{width:"50%"}}>
+                    <div style={{ display: "flex", width: "100%" }}>
+                        <div style={{ width: "50%" }}>
                             <div className="row-zyx">
                                 <TextField
                                     variant="outlined"
@@ -6469,15 +6557,15 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
                                     helperText={errors.cardnumber?.message}
                                     disabled={!edit}
                                     defaultValue={getValues('cardnumber')}
-                                    onPaste={e=>{
+                                    onPaste={e => {
                                         e.preventDefault()
                                     }}
                                     onChange={(e) => {
                                         let val = e.target.value.replace(/[^0-9]/g, '');
-                                        let spaces = Math.floor(val.length/4)
-                                        let partialvalue = val.slice(0,4)
-                                        for(let i=1;i<=spaces;i++){
-                                            partialvalue += " " + val.slice(i*4,(i+1)*4)
+                                        let spaces = Math.floor(val.length / 4)
+                                        let partialvalue = val.slice(0, 4)
+                                        for (let i = 1; i <= spaces; i++) {
+                                            partialvalue += " " + val.slice(i * 4, (i + 1) * 4)
                                         }
                                         if (partialvalue.slice(-1) === " ") {
                                             partialvalue = partialvalue.slice(0, -1);
@@ -6486,24 +6574,24 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
 
                                         setValue("cardnumber", partialvalue.trim());
                                     }}
-                                    onInput={(e:any) => {
-                                        if(e.target.value.slice(0,1)==="4"){
-                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{padding: 5}}></img>)
+                                    onInput={(e: any) => {
+                                        if (e.target.value.slice(0, 1) === "4") {
+                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{ padding: 5 }}></img>)
                                             setLimitNumbers(19);
                                             setValue('cardlimit', 19);
-                                        }else if(e.target.value.slice(0,2)==="51"||e.target.value.slice(0,2)==="55"){
-                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{padding: 5}}></img>)
+                                        } else if (e.target.value.slice(0, 2) === "51" || e.target.value.slice(0, 2) === "55") {
+                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{ padding: 5 }}></img>)
                                             setLimitNumbers(19);
                                             setValue('cardlimit', 19);
-                                        }else if(e.target.value.slice(0,2)==="37"||e.target.value.slice(0,2)==="34"){
-                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{padding: 5}}></img>)
+                                        } else if (e.target.value.slice(0, 2) === "37" || e.target.value.slice(0, 2) === "34") {
+                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{ padding: 5 }}></img>)
                                             setLimitNumbers(18);
                                             setValue('cardlimit', 18);
-                                        }else if(e.target.value.slice(0,2)==="36"||e.target.value.slice(0,2)==="38"||e.target.value.slice(0,3)==="300"||e.target.value.slice(0,3)==="305"){
-                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{padding: 5}}></img>)
+                                        } else if (e.target.value.slice(0, 2) === "36" || e.target.value.slice(0, 2) === "38" || e.target.value.slice(0, 3) === "300" || e.target.value.slice(0, 3) === "305") {
+                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{ padding: 5 }}></img>)
                                             setLimitNumbers(17);
                                             setValue('cardlimit', 17);
-                                        }else{
+                                        } else {
                                             setIcon(<></>)
                                             setLimitNumbers(10);
                                             setValue('cardlimit', 10);
@@ -6527,7 +6615,7 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
                                 </div>
                             </div>
                             {edit && <h3>{t(langKeys.dueDate)}</h3>}
-                            {edit && <div style={{display:"flex"}}>
+                            {edit && <div style={{ display: "flex" }}>
                                 <FieldSelect
                                     onChange={(data: typeof datamonth[number]) => {
                                         setValue('expirationmonth', data?.desc || "");
@@ -6578,7 +6666,7 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
                                 }}
                             />}
                         </div>
-                        <div style={{width:"50%"}}>
+                        <div style={{ width: "50%" }}>
                             {edit && <div style={{ textAlign: "center", padding: "20px", border: "1px solid #7721ad", borderRadius: "15px", margin: "10px" }}>{t(langKeys.finishregwarn)}</div>}
                             {edit && <div style={{ textAlign: "center", padding: "20px", color: "#7721ad", margin: "10px" }}>{t(langKeys.finishregwarn2)}</div>}
                         </div>
@@ -6597,6 +6685,10 @@ const Invoice: FC = () => {
     const multiData = useSelector(state => state.main.multiData);
     const user = useSelector(state => state.login.validateToken.user);
 
+    const [dataCorp, setDataCorp] = useState<any>([]);
+    const [dataOrg, setDataOrg] = useState<any>([]);
+    const [dataPaymentPlan, setDataPaymentPlan] = useState<any>([]);
+    const [dataPlan, setDataPlan] = useState<any>([]);
     const [pageSelected, setPageSelected] = useState(0);
     const [sentfirstinfo, setsentfirstinfo] = useState(false);
 
@@ -6615,12 +6707,16 @@ const Invoice: FC = () => {
     }, [customSearch])
 
     useEffect(() => {
-        if(!multiData.loading && sentfirstinfo) {
+        if (!multiData.loading && sentfirstinfo) {
             setsentfirstinfo(false);
+            setDataPlan(multiData.data[0] && multiData.data[0].success ? multiData.data[0].data : []);
+            setDataOrg(multiData.data[1] && multiData.data[1].success ? multiData.data[1].data : []);
+            setDataCorp(multiData.data[2] && multiData.data[2].success ? multiData.data[2].data : []);
+            setDataPaymentPlan(multiData.data[3] && multiData.data[3].success ? multiData.data[3].data : []);
         }
     }, [multiData])
 
-    useEffect(()=>{
+    useEffect(() => {
         setsentfirstinfo(true)
         dispatch(getCountryList())
         if (user?.roledesc === "SUPERADMIN") {
@@ -6639,7 +6735,7 @@ const Invoice: FC = () => {
                 getPaymentPlanSel(),
             ]));
         }
-    },[])
+    }, [])
 
     return (
         <div style={{ width: '100%' }}>
@@ -6661,32 +6757,32 @@ const Invoice: FC = () => {
                 </Tabs>
                 {pageSelected === 0 &&
                     <div style={{ marginTop: 16 }}>
-                        <CostPerPeriod dataPlan={multiData}/>
+                        <CostPerPeriod dataCorp={dataCorp} dataOrg={dataOrg} dataPaymentPlan={dataPaymentPlan} dataPlan={dataPlan} />
                     </div>
                 }
                 {pageSelected === 1 &&
                     <div style={{ marginTop: 16 }}>
-                        <PeriodReport dataPlan={multiData} customSearch={customSearch}/>
+                        <PeriodReport dataCorp={dataCorp} dataOrg={dataOrg} customSearch={customSearch} />
                     </div>
                 }
                 {pageSelected === 2 &&
                     <div style={{ marginTop: 16 }}>
-                        <Payments dataPlan={multiData} setCustomSearch={setCustomSearch}/>
+                        <Payments dataCorp={dataCorp} dataOrg={dataOrg} setCustomSearch={setCustomSearch} />
                     </div>
                 }
                 {pageSelected === 3 &&
                     <div style={{ marginTop: 16 }}>
-                        <Billing dataPlan={multiData}/>
+                        <Billing dataCorp={dataCorp} dataOrg={dataOrg} />
                     </div>
                 }
                 {pageSelected === 4 &&
                     <div style={{ marginTop: 16 }}>
-                        <MessagingPackages dataPlan={multiData}/>
+                        <MessagingPackages dataCorp={dataCorp} dataOrg={dataOrg} />
                     </div>
                 }
                 {pageSelected === 5 &&
                     <div style={{ marginTop: 16 }}>
-                        <PaymentMethods dataPlan={multiData}/>
+                        <PaymentMethods />
                     </div>
                 }
             </div>}
@@ -6706,27 +6802,27 @@ const Invoice: FC = () => {
                 </Tabs>
                 {pageSelected === 0 &&
                     <div style={{ marginTop: 16 }}>
-                        <PeriodReport dataPlan={multiData} customSearch={customSearch}/>
+                        <PeriodReport dataCorp={dataCorp} dataOrg={dataOrg} customSearch={customSearch} />
                     </div>
                 }
                 {pageSelected === 1 &&
                     <div style={{ marginTop: 16 }}>
-                        <Payments dataPlan={multiData} setCustomSearch={setCustomSearch}/>
+                        <Payments dataCorp={dataCorp} dataOrg={dataOrg} setCustomSearch={setCustomSearch} />
                     </div>
                 }
                 {pageSelected === 2 &&
                     <div style={{ marginTop: 16 }}>
-                        <MessagingPackages dataPlan={multiData}/>
+                        <MessagingPackages dataCorp={dataCorp} dataOrg={dataOrg} />
                     </div>
                 }
                 {pageSelected === 3 &&
                     <div style={{ marginTop: 16 }}>
-                        <PaymentMethods dataPlan={multiData}/>
+                        <PaymentMethods />
                     </div>
                 }
             </div>}
         </div>
-        
+
     );
 }
 

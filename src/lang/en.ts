@@ -3350,6 +3350,8 @@ const translation: LangKeys = {
     confirmation_payment: 'The selected information will be used to proceed with the payment ¿Do you wish to continue?',
     error_card_nofavorite: 'You need at least one card selected as preferred',
     automaticpayment: 'Automatic Payment',
+    billingperiodnotfound: 'No period information was found.',
+    confirmation_emit: 'Are you sure you want to emit the document?',
 };
 
 const enResource: ResourceLanguage = {

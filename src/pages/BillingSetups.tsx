@@ -295,18 +295,15 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
 
                     setShowCountry(true);
                 }
-                else
-                {
+                else {
                     setShowCountry(false);
                 }
             }
-            else
-            {
+            else {
                 setShowCountry(false);
             }
         }
-        else
-        {
+        else {
             setShowCountry(false);
         }
     }, [mainResult])
@@ -439,18 +436,18 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
         register('ticketcreditserie', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('ticketcreditcorrelative');
         register('detraction');
-        register('detractioncode', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('detractionaccount', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
+        register('detractioncode', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('detractionaccount', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('detractionminimum');
-        register('operationcodeperu', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('operationcodeother', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('culqiurl', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('culqiurlcardcreate', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('culqiurlclient', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('culqiurltoken', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('culqiurlcharge', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('culqiurlcardget', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('culqiurlcarddelete', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
+        register('operationcodeperu', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('operationcodeother', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('culqiurl', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('culqiurlcardcreate', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('culqiurlclient', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('culqiurltoken', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('culqiurlcharge', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('culqiurlcardget', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('culqiurlcarddelete', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
     }, [register]);
 
     const onSubmit = handleSubmit((data) => {
@@ -535,6 +532,7 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                             data={dataPlan}
                             optionDesc="description"
                             optionValue="code"
+                            orderbylabel={true}
                         /> : <FieldEdit
                             label={t(langKeys.billingcountry)}
                             className="col-6"
@@ -553,26 +551,28 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                             loading={domainDocument.loading}
                             className="col-6"
                             valueDefault={getValues('emittertype')}
-                            onChange={(value) => setValue('emittertype', value.domainvalue)}
+                            onChange={(value) => setValue('emittertype', value?.domainvalue)}
                             error={errors?.emittertype?.message}
                             data={domainDocument.data}
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
                             uset={true}
                             prefixTranslation='billingfield_'
+                            orderbylabel={true}
                         />
                         <FieldSelect
                             label={t(langKeys.billingcurrency)}
                             loading={domainCurrency.loading}
                             className="col-6"
                             valueDefault={getValues('currency')}
-                            onChange={(value) => setValue('currency', value.domainvalue)}
+                            onChange={(value) => setValue('currency', value?.domainvalue)}
                             error={errors?.currency?.message}
                             data={domainCurrency.data}
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
                             uset={true}
                             prefixTranslation='billingfield_'
+                            orderbylabel={true}
                         />
                     </div>
                     <div className="row-zyx">
@@ -723,13 +723,14 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                             loading={domainPrinting.loading}
                             className="col-6"
                             valueDefault={getValues('printingformat')}
-                            onChange={(value) => setValue('printingformat', value.domainvalue)}
+                            onChange={(value) => setValue('printingformat', value?.domainvalue)}
                             error={errors?.printingformat?.message}
                             data={domainPrinting.data}
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
                             uset={true}
                             prefixTranslation='billingfield_'
+                            orderbylabel={true}
                         />
                         <FieldEdit
                             label={t(langKeys.billingxmlversion)}
@@ -778,13 +779,14 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                             loading={domainInvoiceProvider.loading}
                             className="col-6"
                             valueDefault={getValues('invoiceprovider')}
-                            onChange={(value) => setValue('invoiceprovider', value.domainvalue)}
+                            onChange={(value) => setValue('invoiceprovider', value?.domainvalue)}
                             error={errors?.invoiceprovider?.message}
                             data={domainInvoiceProvider.data}
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
                             uset={true}
                             prefixTranslation='billingfield_'
+                            orderbylabel={true}
                         />
                         <FieldEdit
                             label={t(langKeys.billingapiendpoint)}
@@ -820,13 +822,14 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                             loading={domainPaymentProvider.loading}
                             className="col-6"
                             valueDefault={getValues('paymentprovider')}
-                            onChange={(value) => setValue('paymentprovider', value.domainvalue)}
+                            onChange={(value) => setValue('paymentprovider', value?.domainvalue)}
                             error={errors?.paymentprovider?.message}
                             data={domainPaymentProvider.data}
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
                             uset={true}
                             prefixTranslation='billingfield_'
+                            orderbylabel={true}
                         />
                         <FieldEdit
                             label={t(langKeys.billingpaymentendpoint)}
@@ -930,7 +933,7 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const [waitSave, setWaitSave] = useState(false);
 
     const dataYears = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }];
-    const dataMonths =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
+    const dataMonths = [{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
 
     function search() {
         dispatch(showBackdrop(true))
@@ -970,8 +973,8 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                         <TemplateIcons
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
-                            //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
-                            //extraOption={t(langKeys.duplicate)}
+                        //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
+                        //extraOption={t(langKeys.duplicate)}
                         />
                     )
                 }
@@ -1231,6 +1234,7 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                                 data={dataPlan}
                                 optionDesc="plan"
                                 optionValue="plan"
+                                orderbylabel={true}
                             />
                             <Button
                                 disabled={mainResult.mainData.loading || disableSearch}
@@ -1437,11 +1441,12 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             label="Plan"
                             className="col-6"
                             valueDefault={getValues("plan")}
-                            onChange={(value) => setValue('plan', value.plan)}
+                            onChange={(value) => setValue('plan', value?.plan)}
                             data={dataPlan}
                             optionDesc="plan"
                             optionValue="plan"
                             error={errors?.plan?.message}
+                            orderbylabel={true}
                         />
                         <FieldEdit
                             label={t(langKeys.costbasedonthecontractedplan)}
@@ -1606,7 +1611,7 @@ const ConversationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const [waitSave, setWaitSave] = useState(false);
 
     const dataYears = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }];
-    const dataMonths =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
+    const dataMonths = [{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
 
     function search() {
         dispatch(showBackdrop(true))
@@ -1646,8 +1651,8 @@ const ConversationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                         <TemplateIcons
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
-                            //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
-                            //extraOption={t(langKeys.duplicate)}
+                        //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
+                        //extraOption={t(langKeys.duplicate)}
                         />
                     )
                 }
@@ -1959,11 +1964,12 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                             className="col-12"
                             valueDefault={getValues("countrycode")}
                             variant="outlined"
-                            onChange={(value) => setValue("countrycode", value.code)}
+                            onChange={(value) => setValue("countrycode", value?.code)}
                             error={errors?.countrycode?.message}
                             data={dataPlan}
                             optionDesc="description"
                             optionValue="code"
+                            orderbylabel={true}
                         />
                     </div>
                     <div className="row-zyx">
@@ -2031,7 +2037,7 @@ const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const [waitSave, setWaitSave] = useState(false);
 
     const dataYears = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }];
-    const dataMonths =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
+    const dataMonths = [{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
 
     function search() {
         dispatch(showBackdrop(true))
@@ -2067,8 +2073,8 @@ const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                         <TemplateIcons
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
-                            //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
-                            //extraOption={t(langKeys.duplicate)}
+                        //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
+                        //extraOption={t(langKeys.duplicate)}
                         />
                     )
                 }
@@ -2198,6 +2204,7 @@ const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                                 data={dataPlan}
                                 optionDesc="description"
                                 optionValue="description"
+                                orderbylabel={true}
                             />
 
                             <Button
@@ -2391,11 +2398,12 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({ data: { row, edit
                             label="Plan"
                             className="col-6"
                             valueDefault={getValues("plan")}
-                            onChange={(value) => setValue('plan', value.description)}
+                            onChange={(value) => setValue('plan', value?.description)}
                             data={dataPlan}
                             optionDesc="description"
                             optionValue="description"
                             error={errors?.plan?.message}
+                            orderbylabel={true}
                         />
                         <FieldEdit
                             label={t(langKeys.supportprice)}
@@ -2454,7 +2462,7 @@ const MessagingCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const [waitSave, setWaitSave] = useState(false);
 
     const dataYears = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }];
-    const dataMonths =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
+    const dataMonths = [{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
 
     function search() {
         dispatch(showBackdrop(true))
@@ -2494,8 +2502,8 @@ const MessagingCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                         <TemplateIcons
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
-                            //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
-                            //extraOption={t(langKeys.duplicate)}
+                        //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
+                        //extraOption={t(langKeys.duplicate)}
                         />
                     )
                 }
@@ -2894,15 +2902,15 @@ const BillingSetup: FC = () => {
 
     useEffect(() => {
         if (!multiData.loading && sentfirstinfo) {
-            setsentfirstinfo(false)
-            setdataPlan(multiData.data[0] && multiData.data[0].success ? multiData.data[0].data : [])
-            setdataPaymentPlan(multiData.data[3] && multiData.data[3].success ? multiData.data[3].data : [])
+            setsentfirstinfo(false);
+            setdataPlan(multiData.data[0] && multiData.data[0].success ? multiData.data[0].data : []);
+            setdataPaymentPlan(multiData.data[3] && multiData.data[3].success ? multiData.data[3].data : []);
         }
     }, [multiData])
 
     useEffect(() => {
         if (!countryListreq.loading && countryListreq.data.length) {
-            setcountryList(countryListreq.data)
+            setcountryList(countryListreq.data);
         }
     }, [countryListreq])
 

@@ -3328,6 +3328,8 @@ export const langKeys = {
     confirmation_payment: 'confirmation_payment',
     error_card_nofavorite: 'error_card_nofavorite',
     automaticpayment: 'automaticpayment',
+    billingperiodnotfound: 'billingperiodnotfound',
+    confirmation_emit: 'confirmation_emit',
 };
 
 export type LangKeys = typeof langKeys;
