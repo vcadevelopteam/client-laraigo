@@ -72,3 +72,41 @@ export const saveUserReset = (state: IState): IState => ({
     ...state,
     saveUser: initialState.saveUser,
 });
+
+export const delUser = (state: IState): IState => ({
+    ...state,
+    delUser: {
+        ...state.delUser,
+        loading: true,
+        error: false,
+        success: undefined
+    }
+});
+
+export const delUserSuccess = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        delUser: {
+            ...state.delUser,
+            data: action.payload,
+            loading: false,
+            error: false,
+        }
+    }
+};
+
+export const delUserFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    delUser: {
+        ...state.delUser,
+        data: action.payload,
+        loading: false,
+        error: true,
+        success: false,
+    }
+});
+
+export const delUserReset = (state: IState): IState => ({
+    ...state,
+    delUser: initialState.delUser,
+});

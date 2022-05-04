@@ -10,11 +10,13 @@ export interface IRequest extends ITemplate {
 export interface IState {
     activation: IRequest;
     saveUser: IListStatePaginated<Dictionary> & { success: boolean | undefined | null };
+    delUser: IListStatePaginated<Dictionary> & { success: boolean | undefined | null };
 }
 
 export const initialState: IState = {
     activation: { ...initialCommon, data: null, loading: false, error: false },
     saveUser: { success: undefined, ...initialListPaginatedState },
+    delUser: { success: undefined, ...initialListPaginatedState }
 };
 
 export default createReducer<IState>(initialState, {
@@ -27,4 +29,9 @@ export default createReducer<IState>(initialState, {
     [actionTypes.EXECUTE_MAIN_SUCCESS]: caseFunctions.saveUserSuccess,
     [actionTypes.EXECUTE_MAIN_FAILURE]: caseFunctions.saveUserFailure,
     [actionTypes.EXECUTE_MAIN_RESET]: caseFunctions.saveUserReset,
+
+    [actionTypes.DELUSER_SEND]: caseFunctions.delUser,
+    [actionTypes.DELUSER_SUCCESS]: caseFunctions.delUserSuccess,
+    [actionTypes.DELUSER_FAILURE]: caseFunctions.delUserFailure,
+    [actionTypes.DELUSER_RESET]: caseFunctions.delUserReset,
 });
