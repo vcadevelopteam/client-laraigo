@@ -84,6 +84,10 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
         }
     }, [mainResult, waitSave])
 
+    useEffect(() => {
+        console.log(`SIGNUP ADD MESSENGER: ${window.location.href}`);
+    }, [])
+
     const processFacebookCallback = async (r: any) => {
         if (r.status !== "unknown" && !r.error) {
             dispatch(getMessengerPages(r.accessToken, apiUrls.FACEBOOKAPP))
@@ -92,6 +96,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
             setHasFinished(true);
         }
     }
+
     function setValueField(value: any) {
         setValue('channels.messenger.communicationchannelsite', value?.id || "");
         setValue('channels.messenger.communicationchannelowner', value?.name || "");
@@ -200,6 +205,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
                         });
                     }}
                     isDisabled={mainResult.loading}
+                    disableMobileRedirect={true}
                 />
             )}
         </div>

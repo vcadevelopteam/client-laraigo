@@ -7,7 +7,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useRouteMatch } from 'react-router';
 import {
     insLead2, adviserSel, getPaginatedPerson as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSel, insArchiveLead, leadHistorySel,
-    getLeadsSel, leadHistoryIns, getProductCatalogSel
+    getLeadsSel, leadHistoryIns
 } from 'common/helpers';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
@@ -120,6 +120,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const { t } = useTranslation();
     const history = useHistory();
     const match = useRouteMatch<{ id: string, columnid?: string, columnuuid?: string }>();
+    const [phasemenu, setphasemenu] = useState<any[]>([])
     const [values, setValues] = useState<ICrmLead>({
         column_uuid: match.params.columnuuid || '',
         columnid: Number(match.params.columnid),
@@ -631,13 +632,32 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
 
         return false;
     }, [lead, phases]);
+    function getOrderindex(type:string) {
+        switch (type){
+            case "NEW":
+                return 0;
+            case "QUALIFIED":
+                return 1;
+            case "PROPOSITION":
+                return 2;
+            case "WON":
+                return 3;
+            default:
+                return 4;
+        }
+    }
 
     const translatedPhases = useMemo(() => phases.data.map(x => ({
         columnid: x.columnid,
         column_uuid: x.column_uuid,
         description: t(x.description.toLowerCase()),
+        type: x.type,
+        index: getOrderindex(x.type),
         // eslint-disable-next-line react-hooks/exhaustive-deps
     })), [phases]);
+    React.useEffect(() => {
+        setphasemenu(translatedPhases.sort((a, b) => (a.index > b.index) ? 1 : -1));
+    }, [translatedPhases]);
 
     if (edit === true && lead.loading && advisers.loading) {
         return <Loading />;
@@ -805,7 +825,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     className={classes.field}
                                     valueDefault={getValues('leadproduct')}
                                     onChange={(v, value2: { action: "remove-option" | "select-option", option: { option: any } }) => {
-                                        const products = v?.map((o: Dictionary) => o['productcatalogid']).join(',') || '';
+                                        const products = v?.map((o: Dictionary) => o['code']).join(',') || '';
                                         setValue('leadproduct', products);
 
                                         handleUpdateLeadProducts(
@@ -816,7 +836,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     data={leadProductsDomain.data}
                                     loading={leadProductsDomain.loading}
                                     optionDesc="description"
-                                    optionValue="productcatalogid"
+                                    optionValue="code"
                                     error={errors?.leadproduct?.message}
                                 />
                             </Grid>
@@ -889,7 +909,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     <Rating
                                         name="simple-controlled"
                                         max={3}
-                                        defaultValue={lead.value?.priority === 'LOW' ? 1 : lead.value?.priority === 'MEDIUM' ? 2 : lead.value?.priority === 'HIGH' ? 3 : 1}
+                                        value={lead.value?.priority === 'LOW' ? 1 : lead.value?.priority === 'MEDIUM' ? 2 : lead.value?.priority === 'HIGH' ? 3 : 1}
                                         onChange={(event, newValue) => {
                                             const priority = (newValue) ? urgencyLevels[newValue] : 'LOW';
                                             setValue('priority', priority)
@@ -911,11 +931,11 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     row
                                     optionDesc="description"
                                     optionValue="columnid"
-                                    data={translatedPhases}
+                                    data={phasemenu}
                                     // data={phases.data}
                                     onChange={(e) => {
-                                        setValue('column_uuid', e.column_uuid);
-                                        setValue('columnid', Number(e.columnid));
+                                        setValue('column_uuid', e?.column_uuid||"");
+                                        setValue('columnid', Number(e?.columnid||"0"));
                                         setValues(prev => ({ ...prev })); // refrescar
                                     }}
                                     label={<Trans i18nKey={langKeys.phase} />}
@@ -1409,6 +1429,7 @@ export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({
 }) => {
     const classes = useTabPanelScheduleActivityStyles();
     const dispatch = useDispatch();
+    const { t } = useTranslation();
     const [openModal, setOpenModal] = useState<OpenModal>({ value: false, payload: null });
     const [openDoneModal, setOpenDoneModal] = useState<OpenModal>({ value: false, payload: null });
 
@@ -1438,7 +1459,7 @@ export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({
                                     <div className={classes.column}>
                                         <div className={clsx(classes.row, classes.centerRow)}>
                                             <span className={classes.activityDate}>
-                                                {`Due in ${formatDate(activity.duedate, { withTime: true })}`}
+                                                {`${t(langKeys.duein)} ${formatDate(activity.duedate, { withTime: true })}`}
                                             </span>
                                             <div style={{ width: '1em' }} />
                                             <span className={classes.activityName}>
@@ -1446,7 +1467,7 @@ export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({
                                             </span>
                                             <div style={{ width: '1em' }} />
                                             <span className={classes.activityFor}>
-                                                {`for ${activity.assignto}`}
+                                                {`${t(langKeys.duein)} ${activity.assignto}`}
                                             </span>
                                             <div style={{ width: '0.5em' }} />
                                             <Info style={{ height: 18, width: 18, fill: 'grey' }} />
@@ -1480,7 +1501,6 @@ export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({
                                                 {activity.status === "PROGRAMADO" && <div
                                                     className={clsx(classes.activityFor, classes.row, classes.centerRow, classes.hoverCursor)}
                                                     onClick={() => {
-                                                        console.log(activity)
                                                         const body = leadActivityIns({
                                                             ...activity,
                                                             sendhsm: '{}',
@@ -1594,9 +1614,19 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
         if (!domains.loading && !domains.error) {
             setDomainsTotal([
                 ...domains.data, {
-                    domaindesc: 'automated',
-                    domainvalue: 'automated'
-                }])
+                    domaindesc: 'automatedmail',
+                    domainvalue: 'automatedmail'
+                },
+                {
+                    domaindesc: 'automatedhsm',
+                    domainvalue: 'automatedhsm'
+                },
+                {
+                    domaindesc: 'automatedsms',
+                    domainvalue: 'automatedsms'
+                },
+            ]
+                )
         }
     }, [domains])
 
@@ -1741,7 +1771,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             setassigntoinitial(activity?.assigneduser || 0)
         }
 
-        if (activity?.type === "automated") {
+        if (activity?.type.includes("automated")) {
             register('hsmtemplateid', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
             register('communicationchannelid', { validate: (value) => (template?.hsmtemplatetype !== "HSM") || (value && value > 0 ? undefined : t(langKeys.field_required) + "") })
         } else {
@@ -1771,7 +1801,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             // const month = dueate.toLocaleDateString("en-US", { month: '2-digit' });
             // const year = dueate.toLocaleDateString("en-US", { year: 'numeric' });
             // const time = dueate.toLocaleDateString("en-US", { hour: '2-digit', minute: '2-digit' });
-            if (values.type === "automated") {
+            if (values.type.includes("automated")) {
                 setBodyMessage(body => {
                     values?.variables?.forEach((x: Dictionary) => {
                         body = body.replace(`{{${x.name}}}`, x.variable !== 'custom' ? (lead.value as Dictionary)[x.variable] : x.text)
@@ -1779,7 +1809,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                     return body
                 })
             }
-            const bb = values.type === "automated" ? {
+            const bb = values.type.includes("automated") ? {
                 hsmtemplatename: values.hsmtemplatename,
                 hsmtemplateid: values.hsmtemplateid,
                 communicationchannelid: values?.communicationchannelid || "",
@@ -1830,7 +1860,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                 detailjson: JSON.stringify(detail),
                 hsmtemplateid: values.hsmtemplateid,
                 communicationchannelid: values?.communicationchannelid || 0,
-                sendhsm: values.type === "automated" ? JSON.stringify(bb) : "",
+                sendhsm: values.type.includes("automated") ? JSON.stringify(bb) : "",
                 // duedate: dueate.toUTCString()
                 // duedate: `${year}-${month}-${day}T${time.split(",")[1]}`,
             });
@@ -1891,6 +1921,10 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                             valueDefault={getValues('type')}
                                             onChange={(v: IDomain) => {
                                                 setValue('type', v?.domainvalue || "");
+                                                setValue('hsmtemplatename', '');
+                                                setValue('variables', []);
+                                                setBodyMessage('');
+                                                setValue('hsmtemplateid', 0);
                                                 trigger('type');
                                                 if ((v?.domainvalue || "") === "automated") {
                                                     register('hsmtemplateid', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) })
@@ -1911,7 +1945,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                             error={errors?.description?.message}
                                         />
                                     </Grid>
-                                    {(getValues('type') === "automated" && getValues("hsmtemplatetype") === "HSM") &&
+                                    {(getValues('type').includes("automated") && getValues("hsmtemplatetype") === "HSM") &&
                                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ paddingTop: 8, marginTop: 8 }}>
                                             <FieldSelect
                                                 label={t(langKeys.channel)}
@@ -1929,21 +1963,21 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                             />
                                         </Grid>
                                     }
-                                    {getValues('type') === "automated" &&
+                                    {getValues('type').includes("automated") &&
                                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                                             <FieldSelect
-                                                label={t(langKeys.hsm_template)}
+                                                label={t(langKeys.communicationtemplate)}
                                                 className={classes.field}
                                                 valueDefault={getValues('hsmtemplateid')}
                                                 onChange={onSelectTemplate}
                                                 error={errors?.hsmtemplateid?.message}
-                                                data={templates.data}
+                                                data={templates.data.filter(x=>x.type === getValues("type").replace("automated","").toUpperCase())}
                                                 optionDesc="name"
                                                 optionValue="id"
                                             />
                                         </Grid>
                                     }
-                                    {getValues('type') === "automated" &&
+                                    {getValues('type').includes("automated") &&
                                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                                             <FieldView
                                                 className={classes.field}
@@ -1983,7 +2017,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                         />
                                     </Grid>
 
-                                    {getValues('type') === "automated" &&
+                                    {getValues('type').includes("automated") &&
                                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ paddingTop: 8, marginTop: 8 }}>
                                             {fields.map((item: Dictionary, i) => (
                                                 <div key={item.id}>

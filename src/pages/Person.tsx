@@ -2574,7 +2574,7 @@ const OpportunitiesTab: FC<OpportunitiesTabProps> = ({ person }) => {
                         <Rating
                             name="simple-controlled"
                             max={3}
-                            defaultValue={urgencyLevels.findIndex(x => x === priority)}
+                            value={urgencyLevels.findIndex(x => x === priority)}
                             readOnly={true}
                         />
                     )

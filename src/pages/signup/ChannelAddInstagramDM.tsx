@@ -80,6 +80,10 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
         }
     }, [mainResult, waitSave])
 
+    useEffect(() => {
+        console.log(`SIGNUP ADD INSTAGRAM DM: ${window.location.href}`);
+    }, [])
+
     const processFacebookCallback = async (r: any) => {
         if (r.status !== "unknown" && !r.error) {
             dispatch(getInstagramDMPages(r.accessToken, apiUrls.INSTAGRAMAPP))
@@ -88,6 +92,7 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
             setHasFinished(true);
         }
     }
+
     function setValueField(value: any) {
         setValue('channels.instagramDM.communicationchannelsite', value?.id || "");
         setValue('channels.instagramDM.communicationchannelowner', value?.name || "");
@@ -194,6 +199,7 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
                         });
                     }}
                     isDisabled={mainResult.loading}
+                    disableMobileRedirect={true}
                 />
             )}
         </div>
