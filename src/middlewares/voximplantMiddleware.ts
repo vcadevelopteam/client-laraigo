@@ -29,7 +29,13 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                 })
 
                 sdk.on(VoxImplant.Events.IncomingCall, (e) => {
-                    console.log("voximplant: llamada entrante!!")
+                    console.log("voximplant: llamada entrante!!", JSON.stringify(e))
+                    try {
+                        console.log("voximplant: llamada entrante-customdata", e.call?.customData())
+                        
+                    } catch (error) {
+                        
+                    }
                     dispatch({ type: typeVoximplant.INIT_CALL, payload: { call: e.call, type: "INBOUND", number: e.call.number() }})
 
                     e.call.on(VoxImplant.CallEvents.Disconnected, () => {
