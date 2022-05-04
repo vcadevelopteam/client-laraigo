@@ -26,7 +26,7 @@ import {
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import Typography from '@material-ui/core/Typography';
-import { formatNumber,formatNumberFourDecimals,formatNumberNoDecimals } from 'common/helpers';
+import { formatNumber, formatNumberFourDecimals, formatNumberNoDecimals } from 'common/helpers';
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
@@ -278,18 +278,15 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
 
                     setShowCountry(true);
                 }
-                else
-                {
+                else {
                     setShowCountry(false);
                 }
             }
-            else
-            {
+            else {
                 setShowCountry(false);
             }
         }
-        else
-        {
+        else {
             setShowCountry(false);
         }
     }, [mainResult])
@@ -422,18 +419,18 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
         register('ticketcreditserie', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('ticketcreditcorrelative');
         register('detraction');
-        register('detractioncode', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('detractionaccount', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
+        register('detractioncode', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('detractionaccount', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('detractionminimum');
-        register('operationcodeperu', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('operationcodeother', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('culqiurl', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('culqiurlcardcreate', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('culqiurlclient', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('culqiurltoken', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('culqiurlcharge', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('culqiurlcardget', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
-        register('culqiurlcarddelete', { validate: (value) => (value && value.length>0) || "" + t(langKeys.field_required) });
+        register('operationcodeperu', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('operationcodeother', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('culqiurl', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('culqiurlcardcreate', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('culqiurlclient', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('culqiurltoken', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('culqiurlcharge', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('culqiurlcardget', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('culqiurlcarddelete', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
     }, [register]);
 
     const onSubmit = handleSubmit((data) => {
@@ -912,7 +909,7 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitSave, setWaitSave] = useState(false);
 
-    
+
 
     function search() {
         dispatch(showBackdrop(true))
@@ -952,8 +949,8 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                         <TemplateIcons
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
-                            //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
-                            //extraOption={t(langKeys.duplicate)}
+                        //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
+                        //extraOption={t(langKeys.duplicate)}
                         />
                     )
                 }
@@ -1625,8 +1622,8 @@ const ConversationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                         <TemplateIcons
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
-                            //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
-                            //extraOption={t(langKeys.duplicate)}
+                        //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
+                        //extraOption={t(langKeys.duplicate)}
                         />
                     )
                 }
@@ -2043,8 +2040,8 @@ const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                         <TemplateIcons
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
-                            //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
-                            //extraOption={t(langKeys.duplicate)}
+                        //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
+                        //extraOption={t(langKeys.duplicate)}
                         />
                     )
                 }
@@ -2467,8 +2464,8 @@ const MessagingCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                         <TemplateIcons
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
-                            //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
-                            //extraOption={t(langKeys.duplicate)}
+                        //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
+                        //extraOption={t(langKeys.duplicate)}
                         />
                     )
                 }
