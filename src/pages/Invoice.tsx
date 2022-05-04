@@ -51,7 +51,6 @@ import DomToImage from 'dom-to-image';
 import { charge, resetCharge, balance, resetBalance } from 'store/culqi/actions';
 import { formatNumber, formatNumberFourDecimals, formatNumberNoDecimals } from 'common/helpers';
 
-
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
@@ -76,6 +75,9 @@ interface DetailSupportPlanProps2 {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     fetchData: () => void,
+    dataCorp: any;
+    dataOrg: any;
+    dataPaymentPlan: any;
     dataPlan: any;
 }
 
@@ -199,22 +201,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const IDCOSTPERPERIOD = "IDCOSTPERPERIOD";
-
-const CostPerPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
+const CostPerPeriod: React.FC<{ dataCorp: any, dataOrg: any, dataPaymentPlan: any, dataPlan: any }> = ({ dataCorp, dataOrg, dataPaymentPlan, dataPlan }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
-    const user = useSelector(state => state.login.validateToken.user);
-
     const classes = useStyles();
-    const dataCorpList = dataPlan.data[2] && dataPlan.data[2].success ? dataPlan.data[2].data : []
-    const dataOrgList = dataPlan.data[1] && dataPlan.data[1].success ? dataPlan.data[1].data : []
-    const dataPaymentPlanList = dataPlan.data[3] && dataPlan.data[3].success ? dataPlan.data[3].data : []
-    const dataPlanList = dataPlan.data[0] && dataPlan.data[0].success ? dataPlan.data[0].data : []
     const executeResult = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main);
     const memoryTable = useSelector(state => state.main.memoryTable);
+    const user = useSelector(state => state.login.validateToken.user);
 
     const [dataMain, setdataMain] = useState({
         billingplan: "",
@@ -377,10 +373,11 @@ const CostPerPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                                 valueDefault={dataMain.corpid}
                                 variant="outlined"
                                 onChange={(value) => setdataMain(prev => ({ ...prev, corpid: value?.corpid || 0, orgid: 0 }))}
-                                data={dataCorpList}
+                                data={dataCorp}
                                 optionDesc="description"
                                 optionValue="corpid"
                                 disabled={user?.roledesc === "ADMINISTRADOR"}
+                                orderbylabel={true}
                             />
                             <FieldSelect
                                 label={t(langKeys.organization)}
@@ -388,9 +385,10 @@ const CostPerPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                                 valueDefault={dataMain.orgid}
                                 variant="outlined"
                                 onChange={(value) => setdataMain(prev => ({ ...prev, orgid: value?.orgid || 0 }))}
-                                data={dataOrgList.filter((e: any) => { return e.corpid === dataMain.corpid })}
+                                data={dataOrg.filter((e: any) => { return e.corpid === dataMain.corpid })}
                                 optionDesc="orgdesc"
                                 optionValue="orgid"
+                                orderbylabel={true}
                             />
                             <FieldSelect
                                 label={t(langKeys.contractedplan)}
@@ -398,9 +396,10 @@ const CostPerPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                                 valueDefault={dataMain.billingplan}
                                 variant="outlined"
                                 onChange={(value) => setdataMain(prev => ({ ...prev, billingplan: value ? value.plan : "" }))}
-                                data={dataPaymentPlanList}
+                                data={dataPaymentPlan}
                                 optionDesc="plan"
                                 optionValue="plan"
+                                orderbylabel={true}
                             />
                             <FieldSelect
                                 label={t(langKeys.supportplan)}
@@ -408,9 +407,10 @@ const CostPerPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                                 valueDefault={dataMain.supportplan}
                                 variant="outlined"
                                 onChange={(value) => setdataMain(prev => ({ ...prev, supportplan: value ? value.description : "" }))}
-                                data={dataPlanList}
+                                data={dataPlan}
                                 optionDesc="description"
                                 optionValue="description"
+                                orderbylabel={true}
                             />
                             <Button
                                 disabled={mainResult.mainData.loading || disableSearch}
@@ -443,6 +443,9 @@ const CostPerPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 data={rowSelected}
                 setViewSelected={setViewSelected}
                 fetchData={fetchData}
+                dataCorp={dataCorp}
+                dataOrg={dataOrg}
+                dataPaymentPlan={dataPaymentPlan}
                 dataPlan={dataPlan}
             />
         )
@@ -450,14 +453,12 @@ const CostPerPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
         return null;
 }
 
-const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, edit }, setViewSelected, fetchData, dataPlan }) => {
+const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, edit }, setViewSelected, fetchData, dataCorp, dataOrg, dataPaymentPlan, dataPlan }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const dataPaymentPlanList = dataPlan.data[3] && dataPlan.data[3].success ? dataPlan.data[3].data : [];
-    const dataPlanList = dataPlan.data[0] && dataPlan.data[0].success ? dataPlan.data[0].data : [];
     const executeRes = useSelector(state => state.main.execute);
 
     const [checkeduser, setCheckeduser] = useState(row?.usercreateoverride || false);
@@ -703,10 +704,11 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             valueDefault={getValues("billingplan")}
                             variant="outlined"
                             onChange={(value) => setValue('billingplan', value?.plan)}
-                            data={dataPaymentPlanList}
+                            data={dataPaymentPlan}
                             error={errors?.billingplan?.message}
                             optionDesc="plan"
                             optionValue="plan"
+                            orderbylabel={true}
                         /> :
                             <FieldView
                                 className="col-6"
@@ -720,10 +722,11 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             valueDefault={getValues("supportplan")}
                             variant="outlined"
                             onChange={(value) => setValue('supportplan', value?.description)}
-                            data={dataPlanList}
+                            data={dataPlan}
                             error={errors?.supportplan?.message}
                             optionDesc="description"
                             optionValue="description"
+                            orderbylabel={true}
                         /> :
                             <FieldView
                                 className="col-6"
@@ -1243,14 +1246,12 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
     );
 }
 
-const PeriodReport: React.FC<{ dataPlan: any, customSearch: any }> = ({ dataPlan, customSearch }) => {
+const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }> = ({ dataCorp, dataOrg, customSearch }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const dataCorpList = dataPlan.data[2] && dataPlan.data[2].success ? dataPlan.data[2].data : [];
-    const dataOrgList = dataPlan.data[1] && dataPlan.data[1].success ? dataPlan.data[1].data : [];
     const executeCalculate = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main);
     const resExportData = useSelector(state => state.main.exportData);
@@ -1265,6 +1266,8 @@ const PeriodReport: React.FC<{ dataPlan: any, customSearch: any }> = ({ dataPlan
         totalize: 2,
     });
 
+    const [canSearch, setCanSearch] = useState(false);
+    const [disableOrg, setDisableOrg] = useState(false);
     const [datareport, setdatareport] = useState<any>([]);
     const [requesttipe, setrequesttipe] = useState(2)
     const [waitCalculate, setWaitCalculate] = useState(false);
@@ -1300,6 +1303,29 @@ const PeriodReport: React.FC<{ dataPlan: any, customSearch: any }> = ({ dataPlan
     }, [])
 
     useEffect(() => {
+        setCanSearch(false);
+
+        if (dataMain) {
+            if (dataMain.totalize) {
+                if (dataMain.totalize === 1) {
+                    setDisableOrg(true);
+
+                    if (dataMain.corpid) {
+                        setCanSearch(true);
+                    }
+                }
+                if (dataMain.totalize === 2) {
+                    setDisableOrg(false);
+
+                    if (dataMain.corpid && dataMain.orgid) {
+                        setCanSearch(true);
+                    }
+                }
+            }
+        }
+    }, [dataMain])
+
+    useEffect(() => {
         if (customSearch?.corpid !== 0) {
             setdataMain(prev => ({
                 ...prev,
@@ -1325,6 +1351,9 @@ const PeriodReport: React.FC<{ dataPlan: any, customSearch: any }> = ({ dataPlan
         if (!mainResult.mainData.loading) {
             if (mainResult.mainData.data.length) {
                 setdatareport(mainResult.mainData.data[0])
+            }
+            else {
+                setdatareport(null);
             }
             dispatch(showBackdrop(false))
         }
@@ -1465,10 +1494,11 @@ const PeriodReport: React.FC<{ dataPlan: any, customSearch: any }> = ({ dataPlan
                         valueDefault={dataMain.corpid}
                         variant="outlined"
                         onChange={(value) => setdataMain(prev => ({ ...prev, corpid: value?.corpid || 0, orgid: 0 }))}
-                        data={dataCorpList}
+                        data={dataCorp}
                         optionDesc="description"
                         optionValue="corpid"
                         disabled={user?.roledesc === "ADMINISTRADOR"}
+                        orderbylabel={true}
                     />
                     <FieldSelect
                         label={t(langKeys.organization)}
@@ -1476,9 +1506,11 @@ const PeriodReport: React.FC<{ dataPlan: any, customSearch: any }> = ({ dataPlan
                         valueDefault={dataMain.orgid}
                         variant="outlined"
                         onChange={(value) => setdataMain(prev => ({ ...prev, orgid: value?.orgid || 0 }))}
-                        data={dataOrgList.filter((e: any) => { return e.corpid === dataMain.corpid })}
+                        data={dataOrg.filter((e: any) => { return e.corpid === dataMain.corpid })}
                         optionDesc="orgdesc"
                         optionValue="orgid"
+                        orderbylabel={true}
+                        disabled={disableOrg}
                     />
                     <FieldSelect
                         label={t(langKeys.totalize)}
@@ -1489,18 +1521,19 @@ const PeriodReport: React.FC<{ dataPlan: any, customSearch: any }> = ({ dataPlan
                         data={datatotalize}
                         optionDesc="description"
                         optionValue="value"
+                        orderbylabel={true}
                     />
                     <Button
                         variant="contained"
                         color="primary"
-                        disabled={mainResult.mainData.loading}
+                        disabled={mainResult.mainData.loading || !canSearch}
                         startIcon={<SearchIcon style={{ color: 'white' }} />}
                         style={{ width: 120, backgroundColor: "#55BD84" }}
                         onClick={() => search()}
                     >{t(langKeys.search)}
                     </Button>
-                    {!mainResult.mainData.loading && mainResult.mainData.data.length && (
-                        <Fragment>
+                    {!mainResult.mainData.loading && (
+                        datareport && <Fragment>
                             <Button
                                 className={classes.button}
                                 variant="contained"
@@ -1548,7 +1581,7 @@ const PeriodReport: React.FC<{ dataPlan: any, customSearch: any }> = ({ dataPlan
             {
                 !mainResult.mainData.loading && (
                     <div style={{ width: "100%" }} ref={el}>
-                        <div className={classes.containerDetail}>
+                        {datareport && <div className={classes.containerDetail}>
                             <div className="row-zyx" >
                                 <FieldView
                                     className="col-6"
@@ -1869,8 +1902,16 @@ const PeriodReport: React.FC<{ dataPlan: any, customSearch: any }> = ({ dataPlan
                                     </TableHead>
                                 </Table>
                             </TableContainer>
-                        </div>
-
+                        </div>}
+                        {!datareport && <div className={classes.containerDetail}>
+                            <div className="row-zyx" >
+                                <FieldView
+                                    className="col-6"
+                                    label={""}
+                                    value={t(langKeys.billingperiodnotfound)}
+                                />
+                            </div>
+                        </div>}
                     </div>
                 )
             }
@@ -1879,14 +1920,12 @@ const PeriodReport: React.FC<{ dataPlan: any, customSearch: any }> = ({ dataPlan
 }
 
 const IDPAYMENTS = "IDPAYMENTS";
-const Payments: React.FC<{ dataPlan: any, setCustomSearch(value: React.SetStateAction<{ year: number; month: number; corpid: number; orgid: number; totalize: number; }>): void }> = ({ dataPlan, setCustomSearch }) => {
+const Payments: React.FC<{ dataCorp: any, dataOrg: any, setCustomSearch(value: React.SetStateAction<{ year: number; month: number; corpid: number; orgid: number; totalize: number; }>): void }> = ({ dataCorp, dataOrg, setCustomSearch }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const dataCorpList = dataPlan.data[2] && dataPlan.data[2].success ? dataPlan.data[2].data : [];
-    const dataOrgList = dataPlan.data[1] && dataPlan.data[1].success ? dataPlan.data[1].data : [];
     const executeRes = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main.mainData);
     const memoryTable = useSelector(state => state.main.memoryTable);
@@ -2207,10 +2246,11 @@ const Payments: React.FC<{ dataPlan: any, setCustomSearch(value: React.SetStateA
                                 valueDefault={dataMain.corpid}
                                 variant="outlined"
                                 onChange={(value) => setdataMain(prev => ({ ...prev, corpid: value?.corpid || 0, orgid: 0 }))}
-                                data={dataCorpList}
+                                data={dataCorp}
                                 optionDesc="description"
                                 optionValue="corpid"
                                 disabled={user?.roledesc === "ADMINISTRADOR"}
+                                orderbylabel={true}
                             />
                             <FieldSelect
                                 label={t(langKeys.organization)}
@@ -2218,9 +2258,10 @@ const Payments: React.FC<{ dataPlan: any, setCustomSearch(value: React.SetStateA
                                 valueDefault={dataMain.orgid}
                                 variant="outlined"
                                 onChange={(value) => setdataMain(prev => ({ ...prev, orgid: value?.orgid || 0 }))}
-                                data={dataOrgList.filter((e: any) => { return e.corpid === dataMain.corpid })}
+                                data={dataOrg.filter((e: any) => { return e.corpid === dataMain.corpid })}
                                 optionDesc="orgdesc"
                                 optionValue="orgid"
+                                orderbylabel={true}
                             />
                             <FieldSelect
                                 label={t(langKeys.currency)}
@@ -2231,6 +2272,7 @@ const Payments: React.FC<{ dataPlan: any, setCustomSearch(value: React.SetStateA
                                 data={dataCurrency}
                                 optionDesc="description"
                                 optionValue="value"
+                                orderbylabel={true}
                             />
                             <FieldSelect
                                 label={t(langKeys.paymentstatus)}
@@ -2241,6 +2283,7 @@ const Payments: React.FC<{ dataPlan: any, setCustomSearch(value: React.SetStateA
                                 data={dataPayment}
                                 optionDesc="description"
                                 optionValue="value"
+                                orderbylabel={true}
                             />
                             <Button
                                 disabled={mainResult.loading || disableSearch}
@@ -2569,6 +2612,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                             data={dataPayment}
                             optionDesc="description"
                             optionValue="val"
+                            orderbylabel={true}
                         />
                         {(paymentType === "CARD") && <FieldSelect
                             label={t(langKeys.paymentmethodcard)}
@@ -2579,6 +2623,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                             optionDesc="cardnumber"
                             optionValue="paymentcardid"
                             loading={cardList.loading}
+                            orderbylabel={true}
                         />}
                         {(paymentType === "FAVORITE") && <FieldEdit
                             className="col-6"
@@ -2674,14 +2719,12 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
 }
 
 const IDBILLING = "IDBILLING";
-const Billing: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
+const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const dataCorpList = dataPlan.data[2] && dataPlan.data[2].success ? dataPlan.data[2].data : [];
-    const dataOrgList = dataPlan.data[1] && dataPlan.data[1].success ? dataPlan.data[1].data : [];
     const executeRes = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main.mainData);
     const multiResult = useSelector(state => state.main.multiData);
@@ -3018,7 +3061,6 @@ const Billing: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 && Object.keys(dataMonths.reduce((a, d) => ({ ...a, [d.val]: d.val }), {})).includes(`${d.month}`.padStart(2, '0'))
                 && Object.keys(dataCurrency.reduce((a, d) => ({ ...a, [d.value]: d.description }), {})).includes('' + d.currency)
             );
-            console.log(data)
             debugger
             if (data.length > 0) {
                 dispatch(showBackdrop(true));
@@ -3153,10 +3195,11 @@ const Billing: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                             valueDefault={dataMain.corpid}
                             variant="outlined"
                             onChange={(value) => setdataMain(prev => ({ ...prev, corpid: value?.corpid || 0, orgid: 0 }))}
-                            data={dataCorpList}
+                            data={dataCorp}
                             optionDesc="description"
                             optionValue="corpid"
                             disabled={user?.roledesc === "ADMINISTRADOR"}
+                            orderbylabel={true}
                         />
                         <FieldSelect
                             label={t(langKeys.organization)}
@@ -3164,9 +3207,10 @@ const Billing: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                             valueDefault={dataMain.orgid}
                             variant="outlined"
                             onChange={(value) => setdataMain(prev => ({ ...prev, orgid: value?.orgid || 0 }))}
-                            data={dataOrgList.filter((e: any) => { return e.corpid === dataMain.corpid })}
+                            data={dataOrg.filter((e: any) => { return e.corpid === dataMain.corpid })}
                             optionDesc="orgdesc"
                             optionValue="orgid"
+                            orderbylabel={true}
                         />
                         <FieldSelect
                             label={t(langKeys.currency)}
@@ -3177,6 +3221,7 @@ const Billing: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                             data={dataCurrency}
                             optionDesc="description"
                             optionValue="value"
+                            orderbylabel={true}
                         />
                         <FieldSelect
                             label={t(langKeys.paymentstatus)}
@@ -3187,6 +3232,7 @@ const Billing: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                             data={dataPayment}
                             optionDesc="description"
                             optionValue="value"
+                            orderbylabel={true}
                         />
                         <Button
                             disabled={mainResult.loading || disableSearch}
@@ -3320,7 +3366,8 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
             creditnotemotive: '',
             creditnotediscount: 0.0,
             invoicestatus: data?.invoicestatus,
-            productdetail: []
+            productdetail: [],
+            hasreport: data?.hasreport,
         }
     });
 
@@ -3380,7 +3427,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
     }
 
     const onSubmit = handleSubmit((data) => {
-        if (data?.invoicestatus === 'ERROR') {
+        if (data?.invoicestatus === 'ERROR' || ((data?.invoicestatus !== 'INVOICED' && data?.invoicestatus !== 'ERROR') && data?.hasreport)) {
             const callback = () => {
                 dispatch(emitInvoice(data));
                 dispatch(showBackdrop(true));
@@ -3389,7 +3436,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
 
             dispatch(manageConfirmation({
                 visible: true,
-                question: t(langKeys.confirmatiom_reemit),
+                question: data?.invoicestatus === 'ERROR' ? t(langKeys.confirmatiom_reemit) : t(langKeys.confirmation_emit),
                 callback
             }))
         }
@@ -3422,7 +3469,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
 
     useEffect(() => {
         if (waitSave) {
-            if (data?.invoicestatus === 'ERROR') {
+            if (data?.invoicestatus === 'ERROR' || ((data?.invoicestatus !== 'INVOICED' && data?.invoicestatus !== 'ERROR') && data?.hasreport)) {
                 if (!emitResult.loading && !emitResult.error) {
                     dispatch(showSnackbar({ show: true, success: true, message: t(emitResult.code || "success") }))
                     dispatch(showBackdrop(false));
@@ -3497,6 +3544,18 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                             </Button>
                         ) : null
                         }
+                        {((data?.invoicestatus !== 'INVOICED' && data?.invoicestatus !== 'ERROR') && data?.invoicetype !== '07' && data?.hasreport) ? (
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                type='submit'
+                                startIcon={<PaymentIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >{t(langKeys.emitinvoice)}
+                            </Button>
+                        ) : null
+                        }
                         {(data?.invoicestatus === 'INVOICED' && creditNote) ? (
                             <Button
                                 className={classes.button}
@@ -3536,6 +3595,18 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                         <AntTab label={t(langKeys.billingadditionalinfo)} />
                     </Tabs>
                     {pageSelected === 0 && <div className={classes.containerDetail}>
+                        <div className="row-zyx">
+                            <FieldView
+                                label={t(langKeys.invoice_serviceyear)}
+                                value={data?.year}
+                                className="col-6"
+                            />
+                            <FieldView
+                                label={t(langKeys.invoice_servicemonth)}
+                                value={data?.month}
+                                className="col-6"
+                            />
+                        </div>
                         <div className="row-zyx">
                             <FieldView
                                 label={t(langKeys.docType)}
@@ -3667,6 +3738,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                                     optionDesc="description"
                                     optionValue="value"
                                     error={errors?.creditnotetype?.message}
+                                    orderbylabel={true}
                                 />
                                 <FieldEdit
                                     label={t(langKeys.ticket_reason)}
@@ -3749,6 +3821,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
                                                         optionDesc="description"
                                                         optionValue="code"
                                                         disabled={true}
+                                                        orderbylabel={true}
                                                     />
                                                 </TableCell>
                                                 <TableCell>
@@ -4613,6 +4686,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             optionDesc="description"
                             optionValue="corpid"
                             error={errors?.corpid?.message}
+                            orderbylabel={true}
                         />
                         <FieldSelect
                             label={t(langKeys.organization)}
@@ -4625,6 +4699,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             optionValue="orgid"
                             disabled={(getValues('billbyorg') === false)}
                             error={errors?.orgid?.message}
+                            orderbylabel={true}
                         />
                         <FieldSelect
                             label={t(langKeys.invoice_serviceyear)}
@@ -4640,7 +4715,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             label={t(langKeys.invoice_servicemonth)}
                             onChange={(value) => { setValue('month', parseInt(value?.val || '0')); }}
                             className="col-3"
-                            valueDefault={data?.row?.month ? data?.row?.month.toString() : getValues('month')}
+                            valueDefault={(data?.row?.month ? data?.row?.month.toString() : getValues('month')).padStart(2, "0")}
                             data={dataMonths}
                             optionDesc="val"
                             optionValue="val"
@@ -4722,6 +4797,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                 optionValue="domainvalue"
                                 error={errors?.clientcredittype?.message}
                                 uset={true}
+                                orderbylabel={true}
                             />
                             <FieldView
                                 label={t(langKeys.dueDate)}
@@ -4753,6 +4829,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                 optionDesc="description"
                                 optionValue="value"
                                 error={errors?.invoicecurrency?.message}
+                                orderbylabel={true}
                             />
                             <FieldEdit
                                 label={t(langKeys.taxbase)}
@@ -4863,6 +4940,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                                         optionDesc="description"
                                                         optionValue="code"
                                                         error={errors?.productdetail?.[i]?.productmeasure?.message}
+                                                        orderbylabel={true}
                                                     />
                                                 </TableCell>
                                                 <TableCell>
@@ -4927,14 +5005,12 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
 }
 
 const IDMESSAGINGPACKAGES = "IDMESSAGINGPACKAGES";
-const MessagingPackages: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
+const MessagingPackages: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const dataCorpList = dataPlan.data[2] && dataPlan.data[2].success ? dataPlan.data[2].data : [];
-    const dataOrgList = dataPlan.data[1] && dataPlan.data[1].success ? dataPlan.data[1].data : [];
     const mainResult = useSelector(state => state.main.mainData);
     const memoryTable = useSelector(state => state.main.memoryTable);
     const user = useSelector(state => state.login.validateToken.user);
@@ -5107,10 +5183,11 @@ const MessagingPackages: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                                 valueDefault={dataMain.corpid}
                                 variant="outlined"
                                 onChange={(value) => setdataMain(prev => ({ ...prev, corpid: value?.corpid || 0, orgid: 0 }))}
-                                data={dataCorpList}
+                                data={dataCorp}
                                 optionDesc="description"
                                 optionValue="corpid"
                                 disabled={user?.roledesc === "ADMINISTRADOR"}
+                                orderbylabel={true}
                             />
                             <FieldSelect
                                 label={t(langKeys.organization)}
@@ -5118,9 +5195,10 @@ const MessagingPackages: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                                 valueDefault={dataMain.orgid}
                                 variant="outlined"
                                 onChange={(value) => setdataMain(prev => ({ ...prev, orgid: value?.orgid || 0 }))}
-                                data={dataOrgList.filter((e: any) => { return e.corpid === dataMain.corpid })}
+                                data={dataOrg.filter((e: any) => { return e.corpid === dataMain.corpid })}
                                 optionDesc="orgdesc"
                                 optionValue="orgid"
+                                orderbylabel={true}
                             />
                             <FieldSelect
                                 label={t(langKeys.transactionmessagetype)}
@@ -5131,6 +5209,7 @@ const MessagingPackages: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                                 data={transactionType}
                                 optionDesc="description"
                                 optionValue="value"
+                                orderbylabel={true}
                             />
                             <FieldSelect
                                 label={t(langKeys.transactionoperationtype)}
@@ -5141,6 +5220,7 @@ const MessagingPackages: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                                 data={operationType}
                                 optionDesc="description"
                                 optionValue="value"
+                                orderbylabel={true}
                             />
                             <Button
                                 disabled={mainResult.loading || false}
@@ -5631,6 +5711,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                                     optionValue="corpid"
                                     error={corpError}
                                     disabled={disableInput}
+                                    orderbylabel={true}
                                 />
                             ) : (
                                 <FieldView
@@ -5651,6 +5732,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                                     optionValue="orgid"
                                     error={orgError}
                                     disabled={disableInput}
+                                    orderbylabel={true}
                                 />
                             ) : (
                                 <FieldView
@@ -5783,6 +5865,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                                 data={dataPayment}
                                 optionDesc="description"
                                 optionValue="val"
+                                orderbylabel={true}
                             />
                             {(paymentType === "CARD") && <FieldSelect
                                 label={t(langKeys.paymentmethodcard)}
@@ -5793,6 +5876,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                                 optionDesc="cardnumber"
                                 optionValue="paymentcardid"
                                 loading={cardList.loading}
+                                orderbylabel={true}
                             />}
                             {(paymentType === "FAVORITE") && <FieldEdit
                                 className="col-6"
@@ -6051,7 +6135,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
 }
 
 const IDPAYMENTMETHODS = "IDPAYMENTMETHODS";
-const PaymentMethods: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
+const PaymentMethods: React.FC<{}> = () => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -6584,6 +6668,10 @@ const Invoice: FC = () => {
     const multiData = useSelector(state => state.main.multiData);
     const user = useSelector(state => state.login.validateToken.user);
 
+    const [dataCorp, setDataCorp] = useState<any>([]);
+    const [dataOrg, setDataOrg] = useState<any>([]);
+    const [dataPaymentPlan, setDataPaymentPlan] = useState<any>([]);
+    const [dataPlan, setDataPlan] = useState<any>([]);
     const [pageSelected, setPageSelected] = useState(0);
     const [sentfirstinfo, setsentfirstinfo] = useState(false);
 
@@ -6604,6 +6692,10 @@ const Invoice: FC = () => {
     useEffect(() => {
         if (!multiData.loading && sentfirstinfo) {
             setsentfirstinfo(false);
+            setDataPlan(multiData.data[0] && multiData.data[0].success ? multiData.data[0].data : []);
+            setDataOrg(multiData.data[1] && multiData.data[1].success ? multiData.data[1].data : []);
+            setDataCorp(multiData.data[2] && multiData.data[2].success ? multiData.data[2].data : []);
+            setDataPaymentPlan(multiData.data[3] && multiData.data[3].success ? multiData.data[3].data : []);
         }
     }, [multiData])
 
@@ -6648,32 +6740,32 @@ const Invoice: FC = () => {
                 </Tabs>
                 {pageSelected === 0 &&
                     <div style={{ marginTop: 16 }}>
-                        <CostPerPeriod dataPlan={multiData} />
+                        <CostPerPeriod dataCorp={dataCorp} dataOrg={dataOrg} dataPaymentPlan={dataPaymentPlan} dataPlan={dataPlan} />
                     </div>
                 }
                 {pageSelected === 1 &&
                     <div style={{ marginTop: 16 }}>
-                        <PeriodReport dataPlan={multiData} customSearch={customSearch} />
+                        <PeriodReport dataCorp={dataCorp} dataOrg={dataOrg} customSearch={customSearch} />
                     </div>
                 }
                 {pageSelected === 2 &&
                     <div style={{ marginTop: 16 }}>
-                        <Payments dataPlan={multiData} setCustomSearch={setCustomSearch} />
+                        <Payments dataCorp={dataCorp} dataOrg={dataOrg} setCustomSearch={setCustomSearch} />
                     </div>
                 }
                 {pageSelected === 3 &&
                     <div style={{ marginTop: 16 }}>
-                        <Billing dataPlan={multiData} />
+                        <Billing dataCorp={dataCorp} dataOrg={dataOrg} />
                     </div>
                 }
                 {pageSelected === 4 &&
                     <div style={{ marginTop: 16 }}>
-                        <MessagingPackages dataPlan={multiData} />
+                        <MessagingPackages dataCorp={dataCorp} dataOrg={dataOrg} />
                     </div>
                 }
                 {pageSelected === 5 &&
                     <div style={{ marginTop: 16 }}>
-                        <PaymentMethods dataPlan={multiData} />
+                        <PaymentMethods />
                     </div>
                 }
             </div>}
@@ -6693,22 +6785,22 @@ const Invoice: FC = () => {
                 </Tabs>
                 {pageSelected === 0 &&
                     <div style={{ marginTop: 16 }}>
-                        <PeriodReport dataPlan={multiData} customSearch={customSearch} />
+                        <PeriodReport dataCorp={dataCorp} dataOrg={dataOrg} customSearch={customSearch} />
                     </div>
                 }
                 {pageSelected === 1 &&
                     <div style={{ marginTop: 16 }}>
-                        <Payments dataPlan={multiData} setCustomSearch={setCustomSearch} />
+                        <Payments dataCorp={dataCorp} dataOrg={dataOrg} setCustomSearch={setCustomSearch} />
                     </div>
                 }
                 {pageSelected === 2 &&
                     <div style={{ marginTop: 16 }}>
-                        <MessagingPackages dataPlan={multiData} />
+                        <MessagingPackages dataCorp={dataCorp} dataOrg={dataOrg} />
                     </div>
                 }
                 {pageSelected === 3 &&
                     <div style={{ marginTop: 16 }}>
-                        <PaymentMethods dataPlan={multiData} />
+                        <PaymentMethods />
                     </div>
                 }
             </div>}

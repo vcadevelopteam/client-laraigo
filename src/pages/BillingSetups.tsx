@@ -27,6 +27,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import Typography from '@material-ui/core/Typography';
 import { formatNumber, formatNumberFourDecimals, formatNumberNoDecimals } from 'common/helpers';
+
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
@@ -515,6 +516,7 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                             data={dataPlan}
                             optionDesc="description"
                             optionValue="code"
+                            orderbylabel={true}
                         /> : <FieldEdit
                             label={t(langKeys.billingcountry)}
                             className="col-6"
@@ -533,26 +535,28 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                             loading={domainDocument.loading}
                             className="col-6"
                             valueDefault={getValues('emittertype')}
-                            onChange={(value) => setValue('emittertype', value.domainvalue)}
+                            onChange={(value) => setValue('emittertype', value?.domainvalue)}
                             error={errors?.emittertype?.message}
                             data={domainDocument.data}
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
                             uset={true}
                             prefixTranslation='billingfield_'
+                            orderbylabel={true}
                         />
                         <FieldSelect
                             label={t(langKeys.billingcurrency)}
                             loading={domainCurrency.loading}
                             className="col-6"
                             valueDefault={getValues('currency')}
-                            onChange={(value) => setValue('currency', value.domainvalue)}
+                            onChange={(value) => setValue('currency', value?.domainvalue)}
                             error={errors?.currency?.message}
                             data={domainCurrency.data}
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
                             uset={true}
                             prefixTranslation='billingfield_'
+                            orderbylabel={true}
                         />
                     </div>
                     <div className="row-zyx">
@@ -703,13 +707,14 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                             loading={domainPrinting.loading}
                             className="col-6"
                             valueDefault={getValues('printingformat')}
-                            onChange={(value) => setValue('printingformat', value.domainvalue)}
+                            onChange={(value) => setValue('printingformat', value?.domainvalue)}
                             error={errors?.printingformat?.message}
                             data={domainPrinting.data}
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
                             uset={true}
                             prefixTranslation='billingfield_'
+                            orderbylabel={true}
                         />
                         <FieldEdit
                             label={t(langKeys.billingxmlversion)}
@@ -758,13 +763,14 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                             loading={domainInvoiceProvider.loading}
                             className="col-6"
                             valueDefault={getValues('invoiceprovider')}
-                            onChange={(value) => setValue('invoiceprovider', value.domainvalue)}
+                            onChange={(value) => setValue('invoiceprovider', value?.domainvalue)}
                             error={errors?.invoiceprovider?.message}
                             data={domainInvoiceProvider.data}
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
                             uset={true}
                             prefixTranslation='billingfield_'
+                            orderbylabel={true}
                         />
                         <FieldEdit
                             label={t(langKeys.billingapiendpoint)}
@@ -800,13 +806,14 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                             loading={domainPaymentProvider.loading}
                             className="col-6"
                             valueDefault={getValues('paymentprovider')}
-                            onChange={(value) => setValue('paymentprovider', value.domainvalue)}
+                            onChange={(value) => setValue('paymentprovider', value?.domainvalue)}
                             error={errors?.paymentprovider?.message}
                             data={domainPaymentProvider.data}
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
                             uset={true}
                             prefixTranslation='billingfield_'
+                            orderbylabel={true}
                         />
                         <FieldEdit
                             label={t(langKeys.billingpaymentendpoint)}
@@ -908,8 +915,6 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitSave, setWaitSave] = useState(false);
-
-
 
     function search() {
         dispatch(showBackdrop(true))
@@ -1210,6 +1215,7 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                                 data={dataPlan}
                                 optionDesc="plan"
                                 optionValue="plan"
+                                orderbylabel={true}
                             />
                             <Button
                                 disabled={mainResult.mainData.loading || disableSearch}
@@ -1416,11 +1422,12 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             label="Plan"
                             className="col-6"
                             valueDefault={getValues("plan")}
-                            onChange={(value) => setValue('plan', value.plan)}
+                            onChange={(value) => setValue('plan', value?.plan)}
                             data={dataPlan}
                             optionDesc="plan"
                             optionValue="plan"
                             error={errors?.plan?.message}
+                            orderbylabel={true}
                         />
                         <FieldEdit
                             label={t(langKeys.costbasedonthecontractedplan)}
@@ -1935,11 +1942,12 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                             className="col-12"
                             valueDefault={getValues("countrycode")}
                             variant="outlined"
-                            onChange={(value) => setValue("countrycode", value.code)}
+                            onChange={(value) => setValue("countrycode", value?.code)}
                             error={errors?.countrycode?.message}
                             data={dataPlan}
                             optionDesc="description"
                             optionValue="code"
+                            orderbylabel={true}
                         />
                     </div>
                     <div className="row-zyx">
@@ -2171,6 +2179,7 @@ const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                                 data={dataPlan}
                                 optionDesc="description"
                                 optionValue="description"
+                                orderbylabel={true}
                             />
 
                             <Button
@@ -2364,11 +2373,12 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({ data: { row, edit
                             label="Plan"
                             className="col-6"
                             valueDefault={getValues("plan")}
-                            onChange={(value) => setValue('plan', value.description)}
+                            onChange={(value) => setValue('plan', value?.description)}
                             data={dataPlan}
                             optionDesc="description"
                             optionValue="description"
                             error={errors?.plan?.message}
+                            orderbylabel={true}
                         />
                         <FieldEdit
                             label={t(langKeys.supportprice)}
@@ -2864,15 +2874,15 @@ const BillingSetup: FC = () => {
 
     useEffect(() => {
         if (!multiData.loading && sentfirstinfo) {
-            setsentfirstinfo(false)
-            setdataPlan(multiData.data[0] && multiData.data[0].success ? multiData.data[0].data : [])
-            setdataPaymentPlan(multiData.data[3] && multiData.data[3].success ? multiData.data[3].data : [])
+            setsentfirstinfo(false);
+            setdataPlan(multiData.data[0] && multiData.data[0].success ? multiData.data[0].data : []);
+            setdataPaymentPlan(multiData.data[3] && multiData.data[3].success ? multiData.data[3].data : []);
         }
     }, [multiData])
 
     useEffect(() => {
         if (!countryListreq.loading && countryListreq.data.length) {
-            setcountryList(countryListreq.data)
+            setcountryList(countryListreq.data);
         }
     }, [countryListreq])
 
