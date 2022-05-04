@@ -175,6 +175,7 @@ const SignIn = () => {
     }, [location]);
 
     useEffect(() => {
+        console.log(`FACEBOOK SIGNIN: ${window.location.href}`);
         if (getAccessToken()) {
             history.push('/');
         }
@@ -261,9 +262,9 @@ const SignIn = () => {
                                         appId={apiUrls.FACEBOOKAPP}
                                         callback={onAuthWithFacebook}
                                         buttonStyle={{ borderRadius: '3px', height: '48px', display: 'flex', alignItems: 'center', 'fontSize': '14px', fontStyle: 'normal', fontWeight: 600, textTransform: 'none', justifyContent: 'center', width: '100%', marginBottom: '16px' }}
-
                                         textButton={t(langKeys.login_with_facebook)}
                                         icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
+                                        disableMobileRedirect={true}
                                     />
                                     <div className={classes.buttonGoogle}>
                                         <GoogleLogin

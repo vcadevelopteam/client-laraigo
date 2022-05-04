@@ -17,6 +17,7 @@ import MicIcon from '@material-ui/icons/Mic';
 import PauseIcon from '@material-ui/icons/Pause';
 import HeadsetMicIcon from '@material-ui/icons/HeadsetMic';
 import MicOffIcon from '@material-ui/icons/MicOff';
+import { convertLocalDate, secondsToTime, getSecondsUntelNow } from 'common/helpers';
 import { langKeys } from 'lang/keys';
 
 const useStyles = makeStyles(theme => ({
@@ -34,29 +35,55 @@ const ManageCall: React.FC<{}> = ({ }) => {
     const dispatch = useDispatch();
     const phoneinbox = useSelector(state => state.inbox.person.data?.phone);
     const [numberVox, setNumberVox] = useState("");
-    console.log(phoneinbox)
     const [hold, sethold] = useState(true);
     const [mute, setmute] = useState(false);
     const ringtone = React.useRef<HTMLAudioElement>(null);
     const call = useSelector(state => state.voximplant.call);
     const showcall = useSelector(state => state.voximplant.showcall);
     const statusCall = useSelector(state => state.voximplant.statusCall);
-    console.log("voxinbox: " + statusCall)
+    const [date, setdate] = useState(new Date());
+    const [time, settime] = useState(0);
+    
 
     React.useEffect(() => {
         if (call.type === "INBOUND" && statusCall === "CONNECTING") {
+            setdate(new Date())
+            settime(0)
             dispatch(setModalCall(true))
+            sethold(true)
+            setmute(false)
             ringtone.current?.pause();
             if (ringtone.current) {
                 ringtone.current.currentTime = 0;
             }
             setNumberVox(call.number.split("@")[0].split(":")?.[1] || "")
             ringtone.current?.play();
+
         } else if (call.type === "INBOUND" && statusCall !== "CONNECTING") {
             setNumberVox(call.number.split("@")[0].split(":")?.[1] || "")
             ringtone.current?.pause();
         }
     }, [call, statusCall])
+    React.useEffect(() => {
+        if(statusCall === "CONNECTED"){
+            setdate(new Date())
+            settime(0)
+        }
+    }, [statusCall])
+    React.useEffect(() => {
+        let timer = setTimeout(() => {
+            settime(getSecondsUntelNow(convertLocalDate(String(date))));
+            if(time>=30 && (call.type === "INBOUND" && statusCall === "CONNECTING")){
+                dispatch(rejectCall(call.call))
+                settime(0)
+            }
+        }, 1000)
+        
+        return () => {
+            timer && clearTimeout(timer);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [time]);
     React.useEffect(() => {
         if(phoneinbox){
             setNumberVox(phoneinbox)
@@ -74,6 +101,7 @@ const ManageCall: React.FC<{}> = ({ }) => {
                     <div style={{ marginLeft: "auto", marginRight: "auto", width: "100px", height: "100px", borderRadius: "50%", backgroundColor: "#bdbdbd" }}>
                         <PersonIcon style={{color: "white", width: "100px", height: "100px"}}/>    
                     </div>
+                    {statusCall === "CONNECTED" && <div style={{ fontSize: "15px",marginLeft: "auto", marginRight: "auto", width: "100px",textAlign:"center"}}>{(secondsToTime(time || 0))}</div>}
                 </DialogTitle>
                 <DialogContent>
                     {(call.type === "OUTBOUND" && statusCall === "CONNECTING")&&(
@@ -110,8 +138,9 @@ const ManageCall: React.FC<{}> = ({ }) => {
                             <IconButton //rejectcall
                                 style={{ marginLeft: "auto",marginRight: "auto",width: "50px", height: "50px", borderRadius: "50%", backgroundColor: 'rgb(180, 26, 26)' }}
                                 onClick={() => {
-                                    dispatch(holdCall({call: call.call, flag: false})); 
-                                    sethold(false)
+                                    dispatch(holdCall({call: call.call, flag: true})); 
+                                    sethold(true)
+                                    setmute(false)
                                     dispatch(hangupCall(call.call))
                                 }}
                             >
@@ -151,11 +180,7 @@ const ManageCall: React.FC<{}> = ({ }) => {
                             </IconButton>
                             )}
                             <IconButton //holdcall
-                                style={{ gridColumnStart: "col2", marginLeft: "auto",marginRight: "10px",width: "50px", height: "50px", borderRadius: "50%"}}
-                                className={clsx({
-                                    [classes.grey]: hold,
-                                    [classes.red]: !hold,
-                                })}
+                                style={{ gridColumnStart: "col2", marginLeft: "auto",marginRight: "10px",width: "50px", height: "50px", borderRadius: "50%", backgroundColor: hold?'#bdbdbd':'rgb(180, 26, 26)' }}
                                 onClick={() => {
                                     dispatch(holdCall({call: call.call, flag: !hold})); 
                                     sethold(!hold)
@@ -182,7 +207,11 @@ const ManageCall: React.FC<{}> = ({ }) => {
                         <>
                             <IconButton//makecall
                                 style={{ marginLeft: "10px",marginRight: "auto",width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#00a884' }}
-                                onClick={() => dispatch(makeCall(numberVox))}
+                                onClick={() => {
+                                    dispatch(makeCall(numberVox))
+                                    sethold(true)
+                                    setmute(false)
+                                }}
                             >
                                 <PhoneIcon style={{color: "white", width: "35px", height: "35px"}}/> 
                             </IconButton>

@@ -42,10 +42,13 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
         },
         title: {
             fontWeight: 'bold',
+            whiteSpace: "initial",
+            width:"calc(100% - 40px)"
         },
         date: {
             fontSize: 11,
             color: 'grey',
+            textAlign: 'right',
         },
         textOneLine: {
             flexGrow: 1,
@@ -53,7 +56,8 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
             overflow: 'hidden',
         },
         description: {
-            width: '100%',
+            whiteSpace: "initial",
+            width:"calc(100% - 40px)"
         },
     }),
 );
@@ -81,13 +85,10 @@ const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description,
                         </Avatar>
                     </Tooltip>
                 </div>
-                <div style={{ flex: 1 }}>
-                    <div className={classes.row}>
-                        <div className={classes.textOneLine}>
-                            <span className={classes.title}>{title}</span>
-                        </div>
-                        <div style={{ width: 12 }} />
-                        <span className={classes.date}>{date}</span>
+                <div style={{width:"calc(100% - 40px)"}}>
+                    <div className={classes.date}>{date}</div>
+                    <div className={classes.textOneLine}>
+                        <div className={classes.title}>{title}</div>
                     </div>
                     <div className={clsx(classes.description, classes.textOneLine)}>
                         <span>{description}</span>
@@ -175,7 +176,7 @@ const NotificationMenu: FC<BoxProps> = (boxProps) => {
                 }}
             >
                 <div style={{ fontWeight: 'bold', marginLeft: 10, fontSize: 20 }}>{"Notifications"}</div>
-                {notifications.map((e, i) => {
+                {notifications.sort((a, b) => (a.duedate < b.duedate)? 1 : -1).map((e, i) => {
                     if (e.notificationtype === "LEADACTIVITY") {
                         const not = e as LeadActivityNotification;
                         return (

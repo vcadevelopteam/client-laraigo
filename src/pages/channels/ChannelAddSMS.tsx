@@ -3,18 +3,15 @@ import { FC, useEffect, useState } from "react";
 import { makeStyles, Breadcrumbs, Button, Box } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { Facebook as FacebookIcon} from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { ColorInput, FieldEdit, FieldSelect } from "components";
+import { FieldEdit, ColorInput } from "components";
 import { useHistory, useLocation } from "react-router";
 import paths from "common/constants/paths";
-import FacebookLogin from 'react-facebook-login';
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { getChannelsList, insertChannel } from "store/channel/actions";
-import { InstagramIcon } from "icons";
-import { apiUrls } from 'common/constants';
+import { insertChannel } from "store/channel/actions";
+import SmsIcon from '@material-ui/icons/Sms';
 
 interface whatsAppData {
     typeWhatsApp?: string;
@@ -31,18 +28,19 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const ChannelAddInstagramDM: FC = () => {
+export const ChannelAddSMS: FC = () => {
     const [viewSelected, setViewSelected] = useState("view1");
     const [waitSave, setWaitSave] = useState(false);
     const [setins, setsetins] = useState(false);
     const [nextbutton, setNextbutton] = useState(true);
+    const [nextbutton2, setNextbutton2] = useState(true);
     const [channelreg, setChannelreg] = useState(true);
     const mainResult = useSelector(state => state.channel.channelList)
     const executeResult = useSelector(state => state.channel.successinsert)
     const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const [coloricon, setcoloricon] = useState("#F56040");
+    const [coloricon, setcoloricon] = useState("#1D9BF0");
     const classes = useChannelAddStyles();
     const [fields, setFields] = useState({
         "method": "UFN_COMMUNICATIONCHANNEL_INS",
@@ -59,13 +57,13 @@ export const ChannelAddInstagramDM: FC = () => {
             "other": "",
             "form": "",
             "apikey": "",
-            "coloricon": "#F56040",
+            "coloricon": "#1D9BF0",
         },
-        "type": "INSTAMESSENGER",
+        "type": "INFOBIPSMS",
         "service": {
-            "accesstoken": "",
-            "siteid": "",
-            "appid": apiUrls.INSTAGRAMAPP
+            "apikey": "",
+            "url": "",
+            "emittername": "",
         }
     })
 
@@ -73,21 +71,12 @@ export const ChannelAddInstagramDM: FC = () => {
 
     const whatsAppData = location.state as whatsAppData | null;
 
-    const openprivacypolicies = () => {
-        window.open("/privacy", '_blank');
-    }
-    
     async function finishreg() {
         setsetins(true)
         dispatch(insertChannel(fields))
         setWaitSave(true);
         setViewSelected("main")
     }
-
-    useEffect(() => {
-        console.log(`CHANNEL ADD INSTAGRAM DM: ${window.location.href}`);
-    }, [])
-
     useEffect(() => {
         if (!mainResult.loading && setins){
             if (executeResult) {
@@ -112,102 +101,73 @@ export const ChannelAddInstagramDM: FC = () => {
         }
     }, [mainResult])
 
-    const processFacebookCallback = async (r: any) => {
-        if (r.status !== "unknown" && !r.error) {
-            dispatch(getChannelsList(r.accessToken, apiUrls.INSTAGRAMAPP))
-            setViewSelected("view2")
-            dispatch(showBackdrop(true));
-            setWaitSave(true);
-        }
-    }
-
-    function setValueField(value: any) {
-        setNextbutton(value === null)
-        let partialf = fields;
-        partialf.parameters.communicationchannelsite = value?.id||""
-        partialf.parameters.communicationchannelowner = value?.name||""
-        partialf.service.siteid = value?.id||""
-        partialf.service.accesstoken = value?.access_token||""
-
-        setFields(partialf)
-    }
-
     function setnameField(value: any) {
         setChannelreg(value === "")
         let partialf = fields;
         partialf.parameters.description = value
         setFields(partialf)
     }
-
     if(viewSelected==="view1"){
         return (
             <div style={{ width: '100%' }}>
                 <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => {e.preventDefault();history.push(paths.CHANNELS_ADD, whatsAppData)}}>
+                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD, whatsAppData)}}>
                         {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.connectinsta)}</div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px" }}>{t(langKeys.connectinsta2)}</div>
-                    <div style={{ textAlign: "center", padding: "20px", color: "#969ea5" }}>{t(langKeys.connectinsta3)}</div>
-    
-                        <FacebookLogin
-                            appId={apiUrls.INSTAGRAMAPP}
-                            autoLoad={false}
-                            buttonStyle={{ marginLeft: "calc(50% - 174px)", marginTop: "16px", marginBottom: "16px", backgroundColor: "#7721ad", textTransform: "none", display: "flex", textAlign: "center", justifyItems: "center", alignItems: "center", justifyContent: "center" }}
-                            fields="name,email,picture"
-                            scope="instagram_basic,instagram_manage_comments,instagram_manage_messages,pages_manage_metadata,pages_read_engagement,pages_show_list,public_profile"
-                            callback={processFacebookCallback}
-                            textButton={t(langKeys.linkinstagrampage)}
-                            icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
-                            onClick={(e: any) => {
-                                e.view.window.FB.init({
-                                    appId: apiUrls.INSTAGRAMAPP,
-                                    cookie: true,
-                                    xfbml: true,
-                                    version: 'v8.0'
-                                });
-                            }}
-                            disableMobileRedirect={true}
-                        />
-    
-                    <div style={{ textAlign: "center", color: "#969ea5", fontStyle: "italic" }}>{t(langKeys.connectinsta4)}</div>
-                    {/* eslint-disable-next-line jsx-a11y/anchor-is-valid*/}
-                    <div style={{ textAlign: "center", paddingBottom: "80px", color: "#969ea5" }}><a style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={openprivacypolicies} rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
-    
-                </div>
-            </div>
-        )
-    }else if(viewSelected==="view2"){
-        return (
-            <div style={{ width: '100%' }}>
-                <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view1") }}>
-                        {t(langKeys.previoustext)}
-                    </Link>
-                </Breadcrumbs>
-                <div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.connectinsta)}</div>
+                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.smstitle)}</div>
+                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>{t(langKeys.smstitle2)}</div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
-                        <FieldSelect
-                            onChange={(value) => setValueField(value)}
-                            label={t(langKeys.selectpagelink)}
+                        <FieldEdit
+                            onChange={(value) => {
+                                setNextbutton(value==="" || fields.service.emittername===""||fields.service.url==="")
+                                let partialf = fields;
+                                partialf.service.apikey= value
+                                setFields(partialf)
+                            }}
+                            valueDefault={fields.service.apikey}
+                            label={t(langKeys.apikey)}
                             className="col-6"
-                            data={mainResult.data}
-                            optionDesc="name"
-                            optionValue="id"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <div className="col-3"></div>
+                        <FieldEdit
+                            onChange={(value) => {
+                                setNextbutton(value==="" || fields.service.emittername===""||fields.service.apikey==="")
+                                let partialf = fields;
+                                partialf.service.url= value
+                                setFields(partialf)
+                            }}
+                            valueDefault={fields.service.url}
+                            label={t(langKeys.url)}
+                            className="col-6"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <div className="col-3"></div>
+                        <FieldEdit
+                            onChange={(value) => {
+                                setNextbutton(value==="" || fields.service.apikey===""||fields.service.url==="")
+                                let partialf = fields;
+                                partialf.service.emittername= value
+                                setFields(partialf)
+                            }}
+                            valueDefault={fields.service.emittername}
+                            label={t(langKeys.emittername)}
+                            className="col-6"
                         />
                     </div>
 
                     <div style={{ paddingLeft: "80%" }}>
                         <Button
-                            onClick={() => { setViewSelected("viewfinishreg") }}
+                            disabled={nextbutton}
+                            onClick={() => { setViewSelected("view2") }}
                             className={classes.button}
                             variant="contained"
                             color="primary"
-                            disabled={nextbutton}
                         >{t(langKeys.next)}
                         </Button>
 
@@ -242,7 +202,7 @@ export const ChannelAddInstagramDM: FC = () => {
                             {t(langKeys.givechannelcolor)}
                             </Box>
                             <div style={{display:"flex",justifyContent:"space-around", alignItems: "center"}}>
-                                <InstagramIcon style={{fill: `${coloricon}`, width: "100px" }}/>
+                                <SmsIcon style={{fill: `${coloricon}`, width: "100px", height: "100px" }}/>
                                 <ColorInput
                                     hex={fields.parameters.coloricon}
                                     onChange={e => {

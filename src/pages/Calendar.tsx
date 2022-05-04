@@ -709,10 +709,10 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         register('eventname', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('location', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('status', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
-        register('notificationtype', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
+        register('notificationtype');
 
-        register('communicationchannelid', { validate: (value) => getValues("notificationtype")!=="HSM"?true:(Boolean(value && value > 0) || String(t(langKeys.field_required)))});
-        register('hsmtemplateid', { validate: (value) => getValues("notificationtype")==="HSM"?true:(Boolean(value && value > 0) || String(t(langKeys.field_required)))});
+        register('hsmtemplateid', { validate: (value) => getValues("notificationtype")!=="EMAIL"?true:(Boolean(value && value > 0) || String(t(langKeys.field_required)))});
+        register('communicationchannelid');
         register('durationtype', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('duration', { validate: (value) => Boolean(value && value > 0) || String(t(langKeys.field_required)) });
         register('timebeforeeventunit', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
@@ -985,11 +985,14 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                     onSelectTemplate({ id: 0, name: '', body: '' })
                                 }}
                                 error={errors?.notificationtype?.message}
-                                data={[{ desc: "HSM", val: "HSM" }, { desc: t(langKeys.email), val: "EMAIL" }]}
+                                data={[
+                                    //{ desc: "HSM", val: "HSM" }, 
+                                    { desc: t(langKeys.email), val: "EMAIL" }
+                                ]}
                                 optionDesc="desc"
                                 optionValue="val"
                             />
-                            <FieldSelect
+                            {!!getValues("notificationtype") && <FieldSelect
                                 label={t(langKeys.notificationtemplate)}
                                 className="col-6"
                                 valueDefault={getValues('hsmtemplateid')}
@@ -998,7 +1001,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                 data={dataTemplates.filter(x => x.type === (getValues("notificationtype") === "EMAIL" ? "MAIL" : getValues("notificationtype")))}
                                 optionDesc="name"
                                 optionValue="id"
-                            />
+                            />}
                         </div>
                         {getValues("notificationtype") === 'HSM' && <div className="row-zyx" >
                             <FieldSelect

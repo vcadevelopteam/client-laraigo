@@ -315,14 +315,14 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
                             className="col-6"
                             valueDefault={getValues('products')}
                             onChange={(value: ({domaindesc: string} | string)[]) => {
-                                const products = value.map((o: any) => o.productcatalogid || o).join(',');
+                                const products = value.map((o: any) => o.code || o).join(',');
                                 setValue('products', products);
                             }}
                             error={errors?.products?.message}
                             loading={false}
                             data={dataProducts}
                             optionDesc="description"
-                            optionValue="productcatalogid"
+                            optionValue="code"
                         />
                     </div>
                     <div className="row-zyx">
