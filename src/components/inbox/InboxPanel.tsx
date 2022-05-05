@@ -261,6 +261,12 @@ const useStyles = makeStyles((theme) => ({
             backgroundColor: 'rgb(235, 234, 237, 0.18)'
         }
     },
+    ticketWithCall: {
+        width: 180
+    },
+    ticketWithoutCall: {
+        flex: 1
+    },
     containerNewMessages: {
         minWidth: '22px',
         padding: '0px 4px',

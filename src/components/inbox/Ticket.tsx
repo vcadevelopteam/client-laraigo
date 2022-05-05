@@ -75,7 +75,7 @@ const SmallAvatar = styled(Avatar)(() => ({
     fontSize: 11,
 }));
 
-const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { personlastreplydate, communicationchanneltype, lastmessage, displayname, imageurldef, ticketnum, firstconversationdate, countnewmessages, status, communicationchannelid, lastreplyuser } }) => {
+const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { call, personlastreplydate, communicationchanneltype, lastmessage, displayname, imageurldef, ticketnum, firstconversationdate, countnewmessages, status, communicationchannelid, lastreplyuser } }) => {
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const userType = useSelector(state => state.inbox.userType);
@@ -107,15 +107,16 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
         } else {
             setDateToClose(null)
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dictAutoClose, dictAutoCloseHolding, countnewmessages, userType, agentSelected?.userid, communicationchannelid, lastreplyuser])
 
 
     return (
         <div
-            className={clsx(classes.containerItemTicket, { [classes.itemSelected]: (ticketSelected?.conversationid === item.conversationid) })}
+            className={clsx(classes.containerItemTicket, {
+                [classes.itemSelected]: (ticketSelected?.conversationid === item.conversationid)
+            })}
             onClick={() => setTicketSelected(item)}>
-
             <Badge
                 overlap="circular"
                 anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
@@ -126,7 +127,10 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                 <Avatar src={imageurldef} />
             </Badge>
 
-            <div style={{ flex: 1 }}>
+            <div className={clsx({
+                [classes.ticketWithCall]: !!call,
+                [classes.ticketWithoutCall]: !call
+            })}>
                 <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
                     <GetIcon channelType={communicationchanneltype} color={iconColor} />
                     <div className={classes.name}>{displayname || "-"}</div>
@@ -166,6 +170,11 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                     }
                 </div>
             </div>
+            {!!call &&
+                <div style={{ flex: 1 }}>
+                    hola
+                </div>
+            }
         </div>
 
     )

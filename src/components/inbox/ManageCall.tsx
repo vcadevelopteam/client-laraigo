@@ -56,7 +56,8 @@ const ManageCall: React.FC<{}> = ({ }) => {
             setNumberVox(call.number.split("@")[0].split(":")?.[1] || "")
             ringtone.current?.pause();
         }
-    }, [call, statusCall])
+    }, [call, dispatch, statusCall])
+    
     React.useEffect(() => {
         if(phoneinbox){
             setNumberVox(phoneinbox)
@@ -66,7 +67,7 @@ const ManageCall: React.FC<{}> = ({ }) => {
     return (
         <>
             <Dialog
-                open={showcall}
+                open={false}
                 fullWidth
                 maxWidth={"xs"}
                 style={{ zIndex: 99999999 }}>

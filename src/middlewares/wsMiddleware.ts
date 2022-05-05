@@ -40,7 +40,7 @@ const callWSMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async
             console.log("load eventsListeners")
             eventsListeners.forEach(({ event, type, extra = {} }) => {
                 socket.on(event, (datatmp) => {
-                    console.log("event ", event, datatmp)
+                    console.log("voximplant: event ", event, datatmp)
                     dispatch({ type, payload: { ...datatmp, ...extra } })
                 });
             });

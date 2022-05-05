@@ -2,9 +2,12 @@ import io from 'socket.io-client';
 import { apiUrls } from 'common/constants';
 import { Middleware, Dispatch } from 'redux';
 import typeVoximplant from 'store/voximplant/actionTypes';
+import typeInbox from 'store/inbox/actionTypes';
 import * as VoxImplant from 'voximplant-websdk'
-import { Call } from 'voximplant-websdk/Call/Call';
 import { CallSettings } from 'voximplant-websdk/Structures';
+import { ITicket } from '@types';
+
+import { emitEvent } from 'store/inbox/actions';
 
 const sdk = VoxImplant.getInstance();
 let alreadyLoad = false;
@@ -29,14 +32,60 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                 })
 
                 sdk.on(VoxImplant.Events.IncomingCall, (e) => {
-                    console.log("voximplant: llamada entrante!!", JSON.stringify(e))
-                    try {
-                        console.log("voximplant: llamada entrante-customdata", e.call?.customData())
-                        
-                    } catch (error) {
-                        
+                    const headers = e.call?.headers();
+                    const splitIdentifier = headers["X-identifier"].split("-");
+
+                    const data: ITicket = {
+                        // corpid: parseInt(splitIdentifier[0]),
+                        // orgid: parseInt(splitIdentifier[1]),
+                        conversationid: parseInt(splitIdentifier[3]),
+                        ticketnum: splitIdentifier[5],
+                        personid: parseInt(splitIdentifier[4]),
+                        communicationchannelid: parseInt(splitIdentifier[2]),
+                        status: "ASIGNADO",
+                        imageurldef: "",
+                        firstconversationdate: headers["X-createdatecall"],
+                        personlastreplydate: new Date().toISOString(),
+                        countnewmessages: 1,
+                        usergroup: "",
+                        displayname: e.call.number().split("@")[0].split(":")?.[1] || "",
+                        coloricon: "",
+                        communicationchanneltype: "VOXI",
+                        lastmessage: "LLAMADA ENTRANTE",
+                        personcommunicationchannel: `${e.call.number()}_VOXI`,
+                        communicationchannelsite: headers["X-site"],
+                        lastreplyuser: "",
                     }
-                    dispatch({ type: typeVoximplant.INIT_CALL, payload: { call: e.call, type: "INBOUND", number: e.call.number() }})
+                    //enviar a los otros supervisores
+                    dispatch(emitEvent({
+                        event: 'newCallTicket',
+                        data: {
+                            ...data,
+                            newuserid: 0,
+                            orpid: parseInt(splitIdentifier[0]),
+                            orgid: parseInt(splitIdentifier[1]),
+                        }
+                    }));
+
+                    //iniciar la llamada en managecall
+                    dispatch({
+                        type: typeVoximplant.INIT_CALL,
+                        payload: {
+                            call: e.call,
+                            type: "INBOUND",
+                            number: e.call.number(),
+                            identifier: headers["X-identifier"],
+                            data
+                        }
+                    })
+                    //agregar el ticket con el control de llamada
+                    dispatch({
+                        type: typeInbox.NEW_TICKET_CALL,
+                        payload: {
+                            ...data,
+                            call: e.call
+                        }
+                    })
 
                     e.call.on(VoxImplant.CallEvents.Disconnected, () => {
                         dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "DISCONNECTED" });
@@ -57,7 +106,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
             try {
                 console.log(`voximplant: ${payload.user}@${payload.application}`)
                 await sdk.login(`${payload.user}@${payload.application}`, "Laraigo2022$CDFD");
-                
+
                 if (payload?.automaticConnection) {
                     sdk.setOperatorACDStatus(VoxImplant.OperatorACDStatuses.Ready);
                 }
@@ -86,7 +135,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
             customData: "16502672010"
         };
         const call = sdk?.call(callSettings);
-        
+
         dispatch({ type: typeVoximplant.INIT_CALL, payload: { call, type: "OUTBOUND", number: payload.number } })
 
         call.on(VoxImplant.CallEvents.Connected, () => {
@@ -109,20 +158,20 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         call?.reject();
         dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "DISCONNECTED" });
         return
-    }  else if (type === typeVoximplant.HANGUP_CALL) {
+    } else if (type === typeVoximplant.HANGUP_CALL) {
         const call = payload;
         call?.hangup();
         dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "DISCONNECTED" });
         return
-    }  else if (type === typeVoximplant.HOLD_CALL) {
+    } else if (type === typeVoximplant.HOLD_CALL) {
         const call = payload.call;
         await call?.setActive(payload.flag);
         return
-    }  else if (type === typeVoximplant.MUTE_CALL) {
+    } else if (type === typeVoximplant.MUTE_CALL) {
         const call = payload;
         call?.muteMicrophone();
         return
-    }  else if (type === typeVoximplant.UNMUTE_CALL) {
+    } else if (type === typeVoximplant.UNMUTE_CALL) {
         const call = payload;
         call?.unmuteMicrophone();
         return
@@ -133,7 +182,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         try {
             sdk?.disconnect();
         } catch (error) {
-            
+
         }
     }
 
