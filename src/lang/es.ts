@@ -36,6 +36,7 @@ const translation: LangKeys = {
     errorhours: "Las horas se solapan con otro conjunto de horas",
     errorhoursdontmatch: "Elija una hora de fin más tarde que la hora de inicio",
 
+    type_activitylead_automated: 'Automatizar mensaje',
     type_activitylead_automatedmail: 'Automatizar mensaje Email',
     type_activitylead_automatedhsm: 'Automatizar mensaje HSM',
     type_activitylead_automatedsms: 'Automatizar mensaje SMS',
