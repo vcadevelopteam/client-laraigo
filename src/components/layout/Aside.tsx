@@ -11,6 +11,7 @@ import { useSelector } from 'hooks';
 import { RouteConfig } from '@types';
 import { Tooltip, Typography } from '@material-ui/core';
 import { FC } from 'react';
+import PhoneInTalkIcon from '@material-ui/icons/PhoneInTalk';
 
 type IProps = {
     classes: any;
@@ -69,6 +70,8 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
     const openDrawer = useSelector(state => state.popus.openDrawer);
     const applications = useSelector(state => state.login?.validateToken?.user?.menu);
 
+    const voxiConnection = useSelector(state => state.voximplant.connection);
+
     return (
         <Drawer
             className={clsx(classes.drawer, {
@@ -78,6 +81,7 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
             variant="permanent"
             anchor="left"
             open={openDrawer}
+            style={{}}
             classes={{
                 paper: clsx("scroll-style-go", {
                     [classes.drawerOpen]: openDrawer,
@@ -85,11 +89,35 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
                 }),
             }}
         >
-            <div style={{ height: headerHeight }} />
-            <div style={{ height: 8, borderRight: '1px solid #EBEAED' }} />
-            <div style={{ overflowX: 'hidden', borderRight: '1px solid #EBEAED' }}>
+            <div style={{ overflowX: 'hidden', borderRight: '1px solid #EBEAED', marginTop: headerHeight }}>
                 {routes.map((ele) => (applications && applications[ele.key] && applications[ele.key][0]) ? <LinkList classes={classes} config={ele} key={ele.key} open={openDrawer} /> : null)}
+                {(!voxiConnection.error && !voxiConnection.loading && !openDrawer) && (
+                    <div>
+                        <ListItem
+                            button
+                            key={"phone-agent"}
+                            onClick={() => {
+                                console.log("click en el boton")
+                            }}
+                            className={clsx(true ? classes.drawerItemActive : classes.drawerItemInactive)}
+                            component="div"
+                        >
+                            <Tooltip title={"Teléfono"}>
+                                <ListItemIcon>
+                                    <PhoneInTalkIcon style={{ width: 22, height: 22, stroke: 'none' }} className={false ? classes.drawerCloseItemActive : classes.drawerCloseItemInactive} />
+                                </ListItemIcon>
+                            </Tooltip>
+                        </ListItem>
+                    </div>
+                )}
             </div>
+            {(!voxiConnection.error && !voxiConnection.loading && openDrawer) && (
+                <div>
+                    holaa!
+                </div>
+            )}
+
+            <Divider />
             <div style={{ flexGrow: 1, borderRight: '1px solid #EBEAED' }} />
         </Drawer>
     );

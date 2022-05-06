@@ -62,6 +62,12 @@ const useStyles = makeStyles((theme: Theme) =>
             fontWeight: 'normal',
             lineHeight: 'normal',
         },
+        statusConnection: {
+            display: 'none',
+            [theme.breakpoints.down('xs')]: {
+                display: 'block',
+            },
+        }
     }),
 );
 
@@ -69,10 +75,10 @@ const AccountMenu: FC = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const history = useHistory();
-    
+
     const user = useSelector(state => state.login.validateToken.user);
     const userConnected = useSelector(state => state.inbox.userConnected);
-    
+
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
     const handleClose = () => {
@@ -155,7 +161,9 @@ const AccountMenu: FC = () => {
                     <div className={classes.textNotPass}>
                         {user?.email}
                     </div>
-                    <StatusConnection />
+                    <div className={classes.statusConnection}>
+                        <StatusConnection />
+                    </div>
                     <ManageOrganization />
                     <Button
                         onClick={gotoSettings}
@@ -171,7 +179,7 @@ const AccountMenu: FC = () => {
                         variant="outlined"
                         color="primary"
                         fullWidth
-                        style={{ fontWeight: "normal"}}
+                        style={{ fontWeight: "normal" }}
                     >
                         <Trans i18nKey={langKeys.privacypoliciestitle} />
                     </Button>

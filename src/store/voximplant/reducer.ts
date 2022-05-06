@@ -11,7 +11,6 @@ export interface IState {
     statusCall: string;
     connection: { error: boolean; message: string; loading: boolean };
     showcall: boolean;
-    error: string;
 }
 
 export const initialState: IState = {
@@ -20,7 +19,6 @@ export const initialState: IState = {
     statusCall: "DISCONNECTED",
     connection: { error: false, message: "", loading: false },
     showcall: false,
-    error: ""
 };
 
 export default createReducer<IState>(initialState, {
