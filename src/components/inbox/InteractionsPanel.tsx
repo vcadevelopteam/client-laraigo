@@ -50,10 +50,10 @@ const InteractionPanel: React.FC<{ classes: any }> = React.memo(({ classes }) =>
 
     return (
         <div className={`scroll-style-go ${classes.containerInteractions}`} onScroll={handleScroll} ref={refContInteractions}>
-            {(ticketSelected?.conversationid === call.data?.conversationid && !!call?.call) && (
+            {(ticketSelected?.conversationid === call.data?.conversationid && !!call?.call && ticketSelected?.status === "ASIGNADO" ) && (
                 <ManageCallInfoTicket/> 
             )}
-            {!(ticketSelected?.conversationid === call.data?.conversationid && !!call?.call) && (groupInteractionList.loading ? <SkeletonInteraction /> :
+            {!(ticketSelected?.conversationid === call.data?.conversationid && !!call?.call && ticketSelected?.status === "ASIGNADO") && (groupInteractionList.loading ? <SkeletonInteraction /> :
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {groupInteractionList.data.map((groupInteraction) => (
                         <ItemGroupInteraction
