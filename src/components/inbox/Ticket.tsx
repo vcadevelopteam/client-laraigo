@@ -32,6 +32,23 @@ const useStyles = makeStyles((theme) => ({
         position: 'absolute',
         top: 0,
         left: 0
+    },
+    iconcall:{
+        color: "white", 
+        width: "25px", 
+        height: "25px", 
+        animationName: "$spin",
+        animationDuration: "5000ms",
+        animationIterationCount: "infinite",
+        animationTimingFunction: "linear",
+    },
+    "@keyframes spin": {
+        "from": {
+            transform:"rotate(0deg)"
+        },
+        "to": {
+            transform:"rotate(360deg)"
+        }
     }
 }));
 
@@ -81,7 +98,8 @@ const SmallAvatar = styled(Avatar)(() => ({
 }));
 
 const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { call, personlastreplydate, communicationchanneltype, lastmessage, displayname, imageurldef, ticketnum, firstconversationdate, countnewmessages, status, communicationchannelid, lastreplyuser } }) => {
-    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);    
+    const localclasses = useStyles({ color: "red" });
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const userType = useSelector(state => state.inbox.userType);
     const multiData = useSelector(state => state.main.multiData);
@@ -192,7 +210,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                     style={{ marginLeft: "10px", marginRight: "auto", width: "35px", height: "35px", borderRadius: "50%", backgroundColor: '#55bd84' }}
                     onClick={() => dispatch(answerCall(callVoxi))}
                 >
-                    <PhoneCallbackIcon style={{ color: "white", width: "25px", height: "25px" }} />
+                    <PhoneCallbackIcon className={localclasses.iconcall}/>
                 </IconButton>
             </div>
             }
