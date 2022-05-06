@@ -1159,7 +1159,10 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
     )
 }
 
-const ChatPanel: React.FC<{ classes: any }> = React.memo(({ classes }) => (
+const ChatPanel: React.FC<{ classes: any }> = React.memo(({ classes }) => {
+    
+    const call = useSelector(state => state.voximplant.call);
+    return (
     <div className={classes.containerChat}>
         <HeadChat
             classes={classes}
@@ -1167,9 +1170,9 @@ const ChatPanel: React.FC<{ classes: any }> = React.memo(({ classes }) => (
         <InteractionsPanel
             classes={classes}
         />
-        <ReplyPanel
-            classes={classes} />
+        {!call?.call &&(<ReplyPanel
+            classes={classes} />)}
     </div>
-))
+)})
 
 export default ChatPanel;

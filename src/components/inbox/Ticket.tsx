@@ -86,6 +86,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
     const multiData = useSelector(state => state.main.multiData);
     const [dateToClose, setDateToClose] = useState<Date | null>(null)
     const dictAutoClose = useSelector(state => state.login.validateToken.user?.properties?.auto_close);
+    const statusCall = useSelector(state => state.voximplant?.statusCall);
     const dictAutoCloseHolding = useSelector(state => state.login.validateToken.user?.properties?.auto_close_holding);
     const dispatch = useDispatch();
 
@@ -175,8 +176,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                     }
                 </div>
             </div>
-            {!!call &&
-                <div style={{ flex: 1 }}>
+            {(!!call && statusCall==="CONNECTING") && <div style={{ flex: 1 }}>
                     <IconButton //answercall
                         style={{ marginLeft: "10px",marginRight: "auto",width: "30px", height: "30px", borderRadius: "50%", backgroundColor: '#55bd84' }}
                         onClick={() => dispatch(answerCall(call))}
