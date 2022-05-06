@@ -12,7 +12,7 @@ import { convertLocalDate, secondsToTime, getSecondsUntelNow } from 'common/help
 import { answerCall } from 'store/voximplant/actions';
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
-import PhoneIcon from '@material-ui/icons/Phone';
+import PhoneCallbackIcon from '@material-ui/icons/PhoneCallback';
 import { IconButton } from '@material-ui/core';
 import { Call } from 'voximplant-websdk/Call/Call';
 
@@ -189,10 +189,10 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
             </div>
             {(!!callVoxi && statusCall === "CONNECTING") && <div style={{ flex: 1 }}>
                 <IconButton //answercall
-                    style={{ marginLeft: "10px", marginRight: "auto", width: "30px", height: "30px", borderRadius: "50%", backgroundColor: '#55bd84' }}
+                    style={{ marginLeft: "10px", marginRight: "auto", width: "35px", height: "35px", borderRadius: "50%", backgroundColor: '#55bd84' }}
                     onClick={() => dispatch(answerCall(callVoxi))}
                 >
-                    <PhoneIcon style={{ color: "white", width: "15px", height: "15px" }} />
+                    <PhoneCallbackIcon style={{ color: "white", width: "25px", height: "25px" }} />
                 </IconButton>
             </div>
             }
