@@ -207,7 +207,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
             </div>
             {(!!callVoxi && statusCall === "CONNECTING") && <div style={{ flex: 1 }}>
                 <IconButton //answercall
-                    style={{ marginLeft: "10px", marginRight: "auto", width: "35px", height: "35px", borderRadius: "50%", backgroundColor: '#55bd84' }}
+                    style={{ width: "35px", height: "35px", borderRadius: "50%", backgroundColor: '#55bd84' }}
                     onClick={() => dispatch(answerCall(callVoxi))}
                 >
                     <PhoneCallbackIcon className={localclasses.iconcall}/>
