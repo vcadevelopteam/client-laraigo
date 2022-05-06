@@ -36,6 +36,7 @@ export const langKeys = {
     emittername: "emittername",
     enter_details: "enter_details",
     confirm: "confirm",
+    transfercalltoadvisor: "transfercalltoadvisor",
     copyLink: "copyLink",
     actionplan: 'actionplan',
     organization: 'organization',

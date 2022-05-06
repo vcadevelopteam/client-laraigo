@@ -2711,6 +2711,7 @@ const translation: LangKeys = {
     type_activitylead_call: 'Call',
     type_activitylead_automatedmail: 'Automate message email',
     type_activitylead_automatedhsm: 'Automate message hsm',
+    transfercalltoadvisor: "Transfer call to advisor",
     duein: "Due in",
     type_activitylead_automatedsms: 'Automate message sms',
     'type_activitylead_call for demo': 'Call for demo',

@@ -35,6 +35,7 @@ const translation: LangKeys = {
     withinadaterange: "Rango de fechas",
     errorhours: "Las horas se solapan con otro conjunto de horas",
     errorhoursdontmatch: "Elija una hora de fin más tarde que la hora de inicio",
+    transfercalltoadvisor: "Transferir llamada a un asesor",
 
     type_activitylead_automatedmail: 'Automatizar mensaje Email',
     type_activitylead_automatedhsm: 'Automatizar mensaje HSM',
