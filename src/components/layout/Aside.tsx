@@ -92,23 +92,22 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
             <div style={{ overflowX: 'hidden', borderRight: '1px solid #EBEAED', marginTop: headerHeight }}>
                 {routes.map((ele) => (applications && applications[ele.key] && applications[ele.key][0]) ? <LinkList classes={classes} config={ele} key={ele.key} open={openDrawer} /> : null)}
                 {(!voxiConnection.error && !voxiConnection.loading && !openDrawer) && (
-                    <div>
-                        <ListItem
-                            button
-                            key={"phone-agent"}
-                            onClick={() => {
-                                console.log("click en el boton")
-                            }}
-                            className={clsx(true ? classes.drawerItemActive : classes.drawerItemInactive)}
-                            component="div"
-                        >
-                            <Tooltip title={"Teléfono"}>
-                                <ListItemIcon>
-                                    <PhoneInTalkIcon style={{ width: 22, height: 22, stroke: 'none' }} className={false ? classes.drawerCloseItemActive : classes.drawerCloseItemInactive} />
-                                </ListItemIcon>
-                            </Tooltip>
-                        </ListItem>
-                    </div>
+                    <ListItem
+                        button
+                        key={"phone-agent"}
+                        onClick={() => {
+                            console.log("click en el boton")
+                            // abrir el modal
+                        }}
+                        className={clsx(true ? classes.drawerItemActive : classes.drawerItemInactive)}
+                        component="div"
+                    >
+                        <Tooltip title={"Teléfono"}>
+                            <ListItemIcon>
+                                <PhoneInTalkIcon style={{ width: 22, height: 22, stroke: 'none' }} className={false ? classes.drawerCloseItemActive : classes.drawerCloseItemInactive} />
+                            </ListItemIcon>
+                        </Tooltip>
+                    </ListItem>
                 )}
             </div>
             {(!voxiConnection.error && !voxiConnection.loading && openDrawer) && (
