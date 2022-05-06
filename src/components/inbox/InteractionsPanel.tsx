@@ -5,6 +5,7 @@ import { goToBottom, showGoToBottom } from 'store/inbox/actions';
 import { useDispatch } from 'react-redux';
 import ItemGroupInteraction from 'components/inbox/Interaction';
 import { SkeletonInteraction } from 'components';
+import ManageCallInfoTicket from './ManageCallInfoTicket';
 
 const InteractionPanel: React.FC<{ classes: any }> = React.memo(({ classes }) => {
 
@@ -49,7 +50,7 @@ const InteractionPanel: React.FC<{ classes: any }> = React.memo(({ classes }) =>
     return (
         <div className={`scroll-style-go ${classes.containerInteractions}`} onScroll={handleScroll} ref={refContInteractions}>
             {!!ticketSelected?.call && (
-                <div>PINTAR LOS CONTROLES</div>
+                <ManageCallInfoTicket/>
             )}
             {(!!ticketSelected && !ticketSelected.call) && groupInteractionList.loading ? <SkeletonInteraction /> :
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>

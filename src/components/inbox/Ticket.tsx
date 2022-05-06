@@ -6,10 +6,14 @@ import { ITicket } from "@types";
 import { GetIcon } from 'components'
 import clsx from 'clsx';
 import Badge from '@material-ui/core/Badge';
+import { useDispatch } from 'react-redux';
 import Tooltip from '@material-ui/core/Tooltip';
 import { convertLocalDate, secondsToTime, getSecondsUntelNow } from 'common/helpers';
+import { answerCall} from 'store/voximplant/actions';
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
+import PhoneIcon from '@material-ui/icons/Phone';
+import { IconButton } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     label: {
@@ -83,6 +87,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
     const [dateToClose, setDateToClose] = useState<Date | null>(null)
     const dictAutoClose = useSelector(state => state.login.validateToken.user?.properties?.auto_close);
     const dictAutoCloseHolding = useSelector(state => state.login.validateToken.user?.properties?.auto_close_holding);
+    const dispatch = useDispatch();
 
     const [iconColor, setIconColor] = useState('#7721AD');
     const { t } = useTranslation();
@@ -172,7 +177,12 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
             </div>
             {!!call &&
                 <div style={{ flex: 1 }}>
-                    hola
+                    <IconButton //answercall
+                        style={{ marginLeft: "10px",marginRight: "auto",width: "30px", height: "30px", borderRadius: "50%", backgroundColor: '#55bd84' }}
+                        onClick={() => dispatch(answerCall(call))}
+                    >
+                        <PhoneIcon style={{color: "white", width: "15px", height: "15px"}}/> 
+                    </IconButton>
                 </div>
             }
         </div>
