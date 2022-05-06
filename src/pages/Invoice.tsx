@@ -2882,6 +2882,14 @@ const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg 
                 accessor: 'receiverbusinessnamecolumn',
             },
             {
+                Header: t(langKeys.invoice_serviceyear),
+                accessor: 'year',
+            },
+            {
+                Header: t(langKeys.invoice_servicemonth),
+                accessor: 'month',
+            },
+            {
                 Header: t(langKeys.invoicestatus),
                 accessor: 'invoicestatuscolumn',
             },
