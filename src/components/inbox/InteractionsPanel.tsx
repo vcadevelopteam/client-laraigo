@@ -10,6 +10,7 @@ import ManageCallInfoTicket from './ManageCallInfoTicket';
 const InteractionPanel: React.FC<{ classes: any }> = React.memo(({ classes }) => {
 
     const dispatch = useDispatch();
+    const call = useSelector(state => state.voximplant.call);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const groupInteractionList = useSelector(state => state.inbox.interactionList);
     const loadingInteractions = useSelector(state => state.inbox.interactionList.loading);
@@ -49,10 +50,10 @@ const InteractionPanel: React.FC<{ classes: any }> = React.memo(({ classes }) =>
 
     return (
         <div className={`scroll-style-go ${classes.containerInteractions}`} onScroll={handleScroll} ref={refContInteractions}>
-            {!!ticketSelected?.call && (
+            {(ticketSelected?.conversationid === call.data?.conversationid && !!call?.call) && (
                 <ManageCallInfoTicket/> 
             )}
-            {(!!ticketSelected && !ticketSelected.call) && groupInteractionList.loading ? <SkeletonInteraction /> :
+            {!(ticketSelected?.conversationid === call.data?.conversationid && !!call?.call) && (groupInteractionList.loading ? <SkeletonInteraction /> :
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {groupInteractionList.data.map((groupInteraction) => (
                         <ItemGroupInteraction
@@ -63,7 +64,7 @@ const InteractionPanel: React.FC<{ classes: any }> = React.memo(({ classes }) =>
                             key={groupInteraction.interactionid} />
                     ))}
                 </div>
-            }
+            )}
             <div ref={el} />
         </div>
     )

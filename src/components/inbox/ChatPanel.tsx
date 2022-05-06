@@ -32,7 +32,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import CloseIcon from '@material-ui/icons/Close';
 import IOSSwitch from "components/fields/IOSSwitch";
 import PhoneIcon from '@material-ui/icons/Phone';
-import {setModalCall} from 'store/voximplant/actions';
+import { setModalCall } from 'store/voximplant/actions';
 
 const dataPriority = [
     { option: 'HIGH' },
@@ -41,7 +41,7 @@ const dataPriority = [
     { option: 'HIGH' },
 ]
 
-const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'custom'].map(x => ({key: x}))
+const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'custom'].map(x => ({ key: x }))
 
 const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
     const { t } = useTranslation();
@@ -1160,19 +1160,23 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
 }
 
 const ChatPanel: React.FC<{ classes: any }> = React.memo(({ classes }) => {
-    
     const call = useSelector(state => state.voximplant.call);
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+
     return (
-    <div className={classes.containerChat}>
-        <HeadChat
-            classes={classes}
-        />
-        <InteractionsPanel
-            classes={classes}
-        />
-        {!call?.call &&(<ReplyPanel
-            classes={classes} />)}
-    </div>
-)})
+        <div className={classes.containerChat}>
+            <HeadChat
+                classes={classes}
+            />
+            <InteractionsPanel
+                classes={classes}
+            />
+            {(!(ticketSelected?.conversationid === call.data?.conversationid && !!call?.call)) && (
+                <ReplyPanel
+                    classes={classes} />
+            )}
+        </div>
+    )
+})
 
 export default ChatPanel;

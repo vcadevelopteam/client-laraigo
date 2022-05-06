@@ -9,11 +9,12 @@ import Badge from '@material-ui/core/Badge';
 import { useDispatch } from 'react-redux';
 import Tooltip from '@material-ui/core/Tooltip';
 import { convertLocalDate, secondsToTime, getSecondsUntelNow } from 'common/helpers';
-import { answerCall} from 'store/voximplant/actions';
+import { answerCall } from 'store/voximplant/actions';
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import PhoneIcon from '@material-ui/icons/Phone';
 import { IconButton } from '@material-ui/core';
+import { Call } from 'voximplant-websdk/Call/Call';
 
 const useStyles = makeStyles((theme) => ({
     label: {
@@ -88,11 +89,21 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
     const dictAutoClose = useSelector(state => state.login.validateToken.user?.properties?.auto_close);
     const statusCall = useSelector(state => state.voximplant?.statusCall);
     const dictAutoCloseHolding = useSelector(state => state.login.validateToken.user?.properties?.auto_close_holding);
+    const callVoxiTmp = useSelector(state => state.voximplant.call);
+    const [callVoxi, setCallVoxi] = useState<Call | null>(null);
     const dispatch = useDispatch();
 
     const [iconColor, setIconColor] = useState('#7721AD');
     const { t } = useTranslation();
 
+    useEffect(() => {
+        if (callVoxiTmp && callVoxiTmp.call && callVoxiTmp.data?.conversationid === item.conversationid && item.status === "ASIGNADO") {
+            setCallVoxi(callVoxiTmp.call);
+        } else {
+            setCallVoxi(null);
+        }
+    }, [callVoxiTmp]);
+    
     React.useEffect(() => {
         if (!multiData.error && !multiData.loading && multiData?.data[6] && multiData.data[6].success) {
             const channelSelected = multiData.data[6].data.find(x => x.communicationchannelid === communicationchannelid);
@@ -176,14 +187,14 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                     }
                 </div>
             </div>
-            {(!!call && statusCall==="CONNECTING") && <div style={{ flex: 1 }}>
-                    <IconButton //answercall
-                        style={{ marginLeft: "10px",marginRight: "auto",width: "30px", height: "30px", borderRadius: "50%", backgroundColor: '#55bd84' }}
-                        onClick={() => dispatch(answerCall(call))}
-                    >
-                        <PhoneIcon style={{color: "white", width: "15px", height: "15px"}}/> 
-                    </IconButton>
-                </div>
+            {(!!callVoxi && statusCall === "CONNECTING") && <div style={{ flex: 1 }}>
+                <IconButton //answercall
+                    style={{ marginLeft: "10px", marginRight: "auto", width: "30px", height: "30px", borderRadius: "50%", backgroundColor: '#55bd84' }}
+                    onClick={() => dispatch(answerCall(callVoxi))}
+                >
+                    <PhoneIcon style={{ color: "white", width: "15px", height: "15px" }} />
+                </IconButton>
+            </div>
             }
         </div>
 
