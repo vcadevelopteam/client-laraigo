@@ -79,7 +79,7 @@ const ManageCallInfoTicket: React.FC<{}> = ({ }) => {
         <>
             <div>
                 <div>
-                    <div style={{ marginLeft: "auto", marginRight: "auto", width: "100px", height: "100px", borderRadius: "50%", backgroundColor: "#bdbdbd" }}>
+                    <div style={{ marginLeft: "auto",marginTop: 20, marginRight: "auto", width: "100px", height: "100px", borderRadius: "50%", backgroundColor: "#bdbdbd" }}>
                         <PersonIcon style={{color: "white", width: "100px", height: "100px"}}/>    
                     </div>
                     {statusCall === "CONNECTED" && <div style={{ fontSize: "15px",marginLeft: "auto", marginRight: "auto", width: "100px",textAlign:"center"}}>{(secondsToTime(time || 0))}</div>}

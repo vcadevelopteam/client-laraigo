@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import ItemGroupInteraction from 'components/inbox/Interaction';
 import { SkeletonInteraction } from 'components';
 import ManageCallInfoTicket from './ManageCallInfoTicket';
+import { Card, CardContent } from '@material-ui/core';
 
 const InteractionPanel: React.FC<{ classes: any }> = React.memo(({ classes }) => {
 
@@ -50,7 +51,13 @@ const InteractionPanel: React.FC<{ classes: any }> = React.memo(({ classes }) =>
     return (
         <div className={`scroll-style-go ${classes.containerInteractions}`} onScroll={handleScroll} ref={refContInteractions}>
             {!!ticketSelected?.call && (
-                <ManageCallInfoTicket/>
+                <div style={{width: "100%"}}>
+                    <Card style={{maxWidth: "500px", marginLeft: "auto", marginRight: "auto"}}>
+                        <CardContent>
+                            <ManageCallInfoTicket/> 
+                        </CardContent>
+                    </Card>
+                </div>
             )}
             {(!!ticketSelected && !ticketSelected.call) && groupInteractionList.loading ? <SkeletonInteraction /> :
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
