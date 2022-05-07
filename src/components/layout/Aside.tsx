@@ -1,17 +1,22 @@
 import clsx from 'clsx';
 import Drawer from '@material-ui/core/Drawer';
 import Divider from '@material-ui/core/Divider';
+import { useTranslation } from 'react-i18next';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'hooks';
+import { useDispatch } from 'react-redux';
 
 import { RouteConfig } from '@types';
-import { Tooltip, Typography } from '@material-ui/core';
+import { IconButton, Tooltip, Typography } from '@material-ui/core';
 import { FC } from 'react';
+import { setModalCall } from 'store/voximplant/actions';
 import PhoneInTalkIcon from '@material-ui/icons/PhoneInTalk';
+import { langKeys } from 'lang/keys';
+import { WifiCalling } from 'icons';
 
 type IProps = {
     classes: any;
@@ -67,8 +72,10 @@ const LinkList: FC<{ config: RouteConfig, classes: any, open: boolean }> = ({ co
 };
 
 const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
+    const { t } = useTranslation();
     const openDrawer = useSelector(state => state.popus.openDrawer);
     const applications = useSelector(state => state.login?.validateToken?.user?.menu);
+    const dispatch = useDispatch();
 
     const voxiConnection = useSelector(state => state.voximplant.connection);
 
@@ -111,9 +118,23 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
                 )}
             </div>
             {(!voxiConnection.error && !voxiConnection.loading && openDrawer) && (
-                <div>
-                    holaa!
-                </div>
+                <>
+                    <div style={{display: "flex", width: "100%"}}>
+                        <IconButton //holdcall
+                            style={{marginLeft: "auto",marginTop: 20, marginRight: "auto", width: "100px", height: "100px", borderRadius: "50%", backgroundColor: "#bdbdbd" }}
+                            onClick={() => dispatch(setModalCall(true))}
+                        >
+                            <WifiCalling style={{color: "white", width: "80px", height: "80px"}}/>    
+                            <Typography gutterBottom variant="h6" component="div">
+                            </Typography>
+                        </IconButton>
+                    </div>
+                    <div style={{textAlign: "center", cursor: "pointer"}} onClick={()=>{dispatch(setModalCall(true))}}>
+                        <Typography gutterBottom variant="h6" component="div">
+                            {t(langKeys.phone)}
+                        </Typography>
+                    </div>
+                </>
             )}
 
             <Divider />
