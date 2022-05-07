@@ -1,7 +1,5 @@
 import { IAction } from "@types";
-import { initialState, IState } from "./reducer";
-import { saveAuthorizationToken } from "common/helpers";
-import * as VoxImplant from 'voximplant-websdk';
+import { IState } from "./reducer";
 
 export const manageConnection = (state: IState, action: IAction): IState => {
     console.log("voximplant: manageConnection", action.payload)

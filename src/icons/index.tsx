@@ -106,6 +106,7 @@ export { ReactComponent as CloseTicketIcon } from './close-ticket.svg';
 export { ReactComponent as RichResponseIcon } from './rich-response.svg';
 
 export { ReactComponent as GenderIcon } from './gender.svg';
+export { ReactComponent as WifiCalling } from './wifi_calling.svg';
 export { ReactComponent as BuildingIcon } from './building-city-town.svg';
 export { ReactComponent as EditPencilIcon } from './edit-pencil.svg';
 export { ReactComponent as InfoRoundedIcon } from './info-rounded.svg';
