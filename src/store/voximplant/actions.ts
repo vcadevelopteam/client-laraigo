@@ -1,5 +1,7 @@
-import { Dictionary, IActionCall } from "@types";
 import { Call } from "voximplant-websdk/Call/Call";
+import { Dictionary, IActionCall } from "@types";
+import { VoximplantService } from "network";
+
 import actionTypes from "./actionTypes";
 
 export const voximplantConnect = (payload: Dictionary): IActionCall => ({ type: actionTypes.INIT_SDK, payload });
@@ -23,3 +25,39 @@ export const setModalCall = (payload?: Boolean): IActionCall => ({ type: actionT
 export const manageStatusVox = (payload: boolean): IActionCall => ({ type: actionTypes.MANAGE_STATUS_VOX, payload });
 
 export const disconnectVoxi = (): IActionCall => ({ type: actionTypes.DISCONNECT });
+
+export const getCategories = (request: any): IActionCall => ({
+    callAPI: () => VoximplantService.getCategories(request),
+    types: {
+        loading: actionTypes.GET_CATEGORIES,
+        success: actionTypes.GET_CATEGORIES_SUCCESS,
+        failure: actionTypes.GET_CATEGORIES_FAILURE,
+    },
+    type: null,
+});
+
+export const resetGetCategories = (): IActionCall => ({ type: actionTypes.GET_CATEGORIES_RESET });
+
+export const getCountryStates = (request: any): IActionCall => ({
+    callAPI: () => VoximplantService.getCountryStates(request),
+    types: {
+        loading: actionTypes.GET_COUNTRYSTATES,
+        success: actionTypes.GET_COUNTRYSTATES_SUCCESS,
+        failure: actionTypes.GET_COUNTRYSTATES_FAILURE,
+    },
+    type: null,
+});
+
+export const resetGetCountryStates = (): IActionCall => ({ type: actionTypes.GET_COUNTRYSTATES_RESET });
+
+export const getRegions = (request: any): IActionCall => ({
+    callAPI: () => VoximplantService.getRegions(request),
+    types: {
+        loading: actionTypes.GET_REGIONS,
+        success: actionTypes.GET_REGIONS_SUCCESS,
+        failure: actionTypes.GET_REGIONS_FAILURE,
+    },
+    type: null,
+});
+
+export const resetGetRegions = (): IActionCall => ({ type: actionTypes.GET_REGIONS_RESET });

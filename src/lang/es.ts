@@ -3499,7 +3499,11 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     confirmation_emit: '¿Esta seguro que desea emitir el documento?',
     scheduled_events: 'Eventos programados',
     event: 'Evento',
-    xfield_ismissing: 'Falta el campo {{field}}'
+    xfield_ismissing: 'Falta el campo {{field}}',
+    voximplant_buynumber: 'Comprar Número',
+    voximplant_state: 'Estado',
+    voximplant_region: 'Región (No requerido)',
+    voximplant_pricealert: 'Precio mensual',
 };
 
 const esResource: ResourceLanguage = {

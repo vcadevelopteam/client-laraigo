@@ -1,4 +1,4 @@
-const ENV = "DEVELOP";
+const ENV = "LOCAL";
 
 const APIS_URL = {
     DEVELOP: {
@@ -117,4 +117,8 @@ export const apiUrls = {
     CARDCREATE: `${BASE_URL}/payment/cardcreate`,
     CARDDELETE: `${BASE_URL}/payment/carddelete`,
     CARDGET: `${BASE_URL}/payment/cardget`,
+
+    VOXIMPLANT_GET_CATEGORIES: `${BASE_URL}/voximplant/getphonenumbercategories`,
+    VOXIMPLANT_GET_COUNTRYSTATES: `${BASE_URL}/voximplant/getphonenumbercountrystates`,
+    VOXIMPLANT_GET_REGIONS: `${BASE_URL}/voximplant/getphonenumberregions`,
 };

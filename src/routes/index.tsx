@@ -7,7 +7,7 @@ import {
 	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger, ChannelAddInstagram, ChannelAddWhatsapp, ChannelAddTelegram,
 	Reports, Tickets, MessageInbox, BotDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail, Iaservices,UserSettings,
 	Corporations, Settings, Dashboard, ChannelEdit, ChannelAddIos, ChannelAddAndroid, ChannelAddInstagramDM , Privacy, CRM, ActivateUser, RecoverPassword, LeadForm, ChangePwdFirstLogin, BillingSetups, DashboardAdd,
-	InputValidation, DashboardLayout, Invoice, KPIManager,GetLocations, ReportScheduler, ProductCatalog, Calendar, CalendarEvent, ChannelAddEmail, ChannelAddSMS
+	InputValidation, DashboardLayout, Invoice, KPIManager,GetLocations, ReportScheduler, ProductCatalog, Calendar, CalendarEvent, ChannelAddEmail, ChannelAddSMS, ChannelAddPhone
 } from 'pages';
 
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
@@ -196,6 +196,11 @@ const RouterApp: FC = () => {
 				<ProtectRoute exact path={paths.CHANNELS_ADD_TWITTERDM.path}>
 					<Layout mainClasses={classes.main}>
 						<ChannelAddTwitterDM />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS_ADD_PHONE.path}>
+					<Layout mainClasses={classes.main}>
+						<ChannelAddPhone />
 					</Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CHANNELS_ADD_SMS.path}>

@@ -3507,8 +3507,11 @@ const translation: LangKeys = {
     scheduled_events: 'Scheduled events',
     event: 'Event',
     xfield_ismissing: '{{field}} is missing',
-
     invitation_date: "{{date}}, {{month}} {{day}}, {{year}}",
+    voximplant_buynumber: 'Buy Number',
+    voximplant_state: 'State',
+    voximplant_region: 'Region (Not required)',
+    voximplant_pricealert: 'Monthly price',
 };
 
 const enResource: ResourceLanguage = {

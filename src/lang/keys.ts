@@ -3485,7 +3485,11 @@ export const langKeys = {
     confirmation_emit: 'confirmation_emit',
     scheduled_events: 'scheduled_events',
     event: 'event',
-    xfield_ismissing: 'xfield_ismissing'
+    xfield_ismissing: 'xfield_ismissing',
+    voximplant_buynumber: 'voximplant_buynumber',
+    voximplant_state: 'voximplant_state',
+    voximplant_region: 'voximplant_region',
+    voximplant_pricealert: 'voximplant_pricealert',
 };
 
 export type LangKeys = typeof langKeys;

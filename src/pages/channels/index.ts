@@ -12,5 +12,6 @@ export { ChannelAddTelegram } from './ChannelAddTelegram';
 export { ChannelAddTwitter } from './ChannelAddTwitter';
 export { ChannelAddTwitterDM } from './ChannelAddTwitterDM';
 export { ChannelAddSMS } from './ChannelAddSMS';
+export { ChannelAddPhone } from './ChannelAddPhone';
 export { ChannelAddEmail } from './ChannelAddEmail';
 export { default as ChannelEdit } from './ChannelEdit';
