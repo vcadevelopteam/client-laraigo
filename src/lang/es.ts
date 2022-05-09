@@ -3496,7 +3496,9 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     confirmation_emit: '¿Esta seguro que desea emitir el documento?',
     scheduled_events: 'Eventos programados',
     event: 'Evento',
-    xfield_ismissing: 'Falta el campo {{field}}'
+    xfield_ismissing: 'Falta el campo {{field}}',
+    automaticperiod: 'Generación Automática de Periodo',
+    automaticinvoice: 'Generación Automática de Borradores',
 };
 
 const esResource: ResourceLanguage = {

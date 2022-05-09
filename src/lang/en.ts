@@ -3506,6 +3506,8 @@ const translation: LangKeys = {
     xfield_ismissing: '{{field}} is missing',
 
     invitation_date: "{{date}}, {{month}} {{day}}, {{year}}",
+    automaticperiod: 'Automatic Generation of Period',
+    automaticinvoice: 'Automatic Generation of Invoice',
 };
 
 const enResource: ResourceLanguage = {
