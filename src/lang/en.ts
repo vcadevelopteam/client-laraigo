@@ -3512,6 +3512,7 @@ const translation: LangKeys = {
     voximplant_state: 'State',
     voximplant_region: 'Region (Not required)',
     voximplant_pricealert: 'Monthly price',
+    voximplant_tooltip: 'Price depends on selected country and region',
 };
 
 const enResource: ResourceLanguage = {

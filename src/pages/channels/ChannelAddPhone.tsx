@@ -12,9 +12,12 @@ import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
+
+import InfoIcon from '@material-ui/icons/Info';
 import Link from '@material-ui/core/Link';
 import paths from "common/constants/paths";
 import PhoneIcon from '@material-ui/icons/Phone';
+import Tooltip from "@material-ui/core/Tooltip"
 
 interface whatsAppData {
     row?: any;
@@ -33,12 +36,12 @@ const useChannelAddStyles = makeStyles(theme => ({
         background: '#fff',
         borderRadius: '6px',
         boxShadow: '0px 5px 10px 0px rgba(0, 0, 0, 0.5)',
-        marginBottom: '20px',
+        marginBottom: '40px',
         marginLeft: 'auto',
         marginRight: 'auto',
         marginTop: theme.spacing(2),
         padding: theme.spacing(2),
-        width: "40%",
+        width: "50%",
     },
 }));
 
@@ -88,7 +91,8 @@ export const ChannelAddPhone: FC = () => {
     });
     const [hasStates, setHasStates] = useState(false);
     const [hasRegions, setHasRegions] = useState(false);
-    const [nextbutton, setNextbutton] = useState(true);
+    const [nextButton, setNextButton] = useState(true);
+    const [phoneBackup, setPhoneBackup] = useState(0.00);
     const [phonePrice, setPhonePrice] = useState(0.00);
     const [regionList, setRegionList] = useState<any>([]);
     const [setInsert, setSetInsert] = useState(false);
@@ -166,6 +170,24 @@ export const ChannelAddPhone: FC = () => {
         }
     }, [regionsResult, waitRegions])
 
+    function disableNextButton() {
+        setNextButton(true);
+        if (fields) {
+            if (fields.service) {
+                if (fields.service.category && fields.service.country) {
+                    if (hasStates) {
+                        if (fields.service.state) {
+                            setNextButton(false);
+                        }
+                    }
+                    else {
+                        setNextButton(false);
+                    }
+                }
+            }
+        }
+    }
+
     const handleCountry = (value: any) => {
         if (value) {
             setCategoryList(value.phone_categories || []);
@@ -177,16 +199,27 @@ export const ChannelAddPhone: FC = () => {
         else {
             setHasRegions(false);
             setHasStates(false);
+            setPhoneBackup(0.00);
             setPhonePrice(0.00);
             setCategoryList([]);
             setRegionList([]);
             setStateList([]);
+
+            let partialFields = fields;
+            partialFields.service.category = "";
+            partialFields.service.country = "";
+            partialFields.service.region = "";
+            partialFields.service.state = "";
+            setFields(partialFields);
         }
+
+        disableNextButton();
     }
 
     const handleCategory = (value: any) => {
         if (value) {
             setHasStates(value.country_has_states || false);
+            setPhoneBackup(value.phone_price || 0.00);
             setPhonePrice(value.phone_price || 0.00);
 
             if (value.country_has_states) {
@@ -211,10 +244,19 @@ export const ChannelAddPhone: FC = () => {
         else {
             setHasRegions(false);
             setHasStates(false);
+            setPhoneBackup(0.00);
             setPhonePrice(0.00);
             setRegionList([]);
             setStateList([]);
+
+            let partialFields = fields;
+            partialFields.service.category = "";
+            partialFields.service.region = "";
+            partialFields.service.state = "";
+            setFields(partialFields);
         }
+
+        disableNextButton();
     }
 
     const handleState = (value: any) => {
@@ -231,15 +273,33 @@ export const ChannelAddPhone: FC = () => {
         else {
             setHasRegions(false);
             setRegionList([]);
+
+            let partialFields = fields;
+            partialFields.service.region = "";
+            partialFields.service.state = "";
+            setFields(partialFields);
         }
+
+        disableNextButton();
     }
 
     const handleRegion = (value: any) => {
         if (value) {
+            setPhonePrice((value.phone_price || phoneBackup) || 0.00);
+
             let partialFields = fields;
             partialFields.service.region = value.phone_region_name;
             setFields(partialFields);
         }
+        else {
+            setPhonePrice(phoneBackup || 0.00);
+
+            let partialFields = fields;
+            partialFields.service.region = "";
+            setFields(partialFields);
+        }
+
+        disableNextButton();
     }
 
     async function finishRegister() {
@@ -265,91 +325,89 @@ export const ChannelAddPhone: FC = () => {
                         {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
-                <div className={classes.containerDetail}>
-                    <div style={{ textAlign: "left", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.voximplant_buynumber)}</div>
-                    <div className="row-zyx">
-                        <FieldSelect
-                            className="col-12"
-                            data={countryList}
-                            label={t(langKeys.country)}
-                            variant="outlined"
-                            loading={categoriesResult.loading}
-                            onChange={(value: any) => { handleCountry(value) }}
-                            optionDesc="country_name"
-                            optionValue="country_code"
-                            orderbylabel={true}
-                            valueDefault={fields?.service?.country || ""}
-                        />
+                <div>
+                    <div className={classes.containerDetail}>
+                        <div style={{ textAlign: "left", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.voximplant_buynumber)}</div>
+                        <div className="row-zyx">
+                            <FieldSelect
+                                className="col-12"
+                                data={countryList}
+                                label={t(langKeys.country)}
+                                loading={categoriesResult.loading}
+                                onChange={(value: any) => { handleCountry(value); }}
+                                optionDesc="country_name"
+                                optionValue="country_code"
+                                orderbylabel={true}
+                                variant="outlined"
+                                valueDefault={fields?.service?.country || ""}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldSelect
+                                className="col-12"
+                                data={categoryList}
+                                label={t(langKeys.category)}
+                                loading={categoriesResult.loading}
+                                onChange={(value: any) => { handleCategory(value); }}
+                                optionDesc="phone_category_name"
+                                optionValue="incoming_calls_resource_id"
+                                orderbylabel={true}
+                                variant="outlined"
+                                valueDefault={fields?.service?.category || ""}
+                            />
+                        </div>
+                        {hasStates && <div className="row-zyx">
+                            <FieldSelect
+                                className="col-12"
+                                data={stateList}
+                                label={t(langKeys.voximplant_state)}
+                                loading={countryStatesResult.loading}
+                                onChange={(value: any) => { handleState(value); }}
+                                optionDesc="country_state_name"
+                                optionValue="country_state"
+                                orderbylabel={true}
+                                variant="outlined"
+                                valueDefault={fields?.service?.state || ""}
+                            />
+                        </div>}
+                        {hasRegions && <div className="row-zyx">
+                            <FieldSelect
+                                className="col-12"
+                                data={regionList}
+                                label={t(langKeys.voximplant_region)}
+                                loading={regionsResult.loading}
+                                onChange={(value: any) => { handleRegion(value); }}
+                                optionDesc="phone_region_name"
+                                optionValue="phone_region_id"
+                                orderbylabel={true}
+                                variant="outlined"
+                                valueDefault={fields?.service?.region || ""}
+                            />
+                        </div>}
+                        <div className="row-zyx">
+                            <div>
+                                <div style={{ display: 'inline' }}>
+                                    <b style={{ paddingLeft: '6px' }}>{t(langKeys.voximplant_pricealert)}</b>
+                                    <Tooltip title={`${t(langKeys.voximplant_tooltip)}`} placement="top-start">
+                                        <InfoIcon style={{ padding: "5px 0 0 5px", color: 'rgb(119, 33, 173)' }} />
+                                    </Tooltip>
+                                </div>
+                                <div style={{ display: 'inline', alignContent: 'right', float: 'right' }}>
+                                    <b style={{ paddingRight: '20px', textAlign: 'right' }}>{`$${phonePrice}`}</b>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div className="row-zyx">
-                        <FieldSelect
-                            className="col-12"
-                            data={categoryList}
-                            label={t(langKeys.category)}
-                            variant="outlined"
-                            loading={categoriesResult.loading}
-                            onChange={(value: any) => { handleCategory(value) }}
-                            optionDesc="phone_category_name"
-                            optionValue="incoming_calls_resource_id"
-                            orderbylabel={true}
-                            valueDefault={fields?.service?.category || ""}
-                        />
+                    <div style={{ paddingLeft: "64%" }}>
+                        <Button
+                            disabled={nextButton}
+                            onClick={() => { setViewSelected("view2") }}
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                        >{t(langKeys.next)}
+                        </Button>
                     </div>
-                    {hasStates && <div className="row-zyx">
-                        <FieldSelect
-                            className="col-12"
-                            data={stateList}
-                            label={t(langKeys.voximplant_state)}
-                            loading={countryStatesResult.loading}
-                            onChange={(value: any) => { handleState(value) }}
-                            optionDesc="country_state_name"
-                            optionValue="country_state"
-                            orderbylabel={true}
-                            valueDefault={fields?.service?.state || ""}
-                            style={{ outline: "1px black solid", padding: "10px 10px 10px 10px", borderradius: "6px" }}
-                        />
-                    </div>}
-                    {hasRegions && <div className="row-zyx">
-                        <FieldSelect
-                            className="col-12"
-                            data={regionList}
-                            label={t(langKeys.voximplant_region)}
-                            loading={regionsResult.loading}
-                            onChange={(value: any) => { handleRegion(value) }}
-                            optionDesc="phone_region_name"
-                            optionValue="phone_region_id"
-                            orderbylabel={true}
-                            valueDefault={fields?.service?.region || ""}
-                            style={{ outline: "1px black solid", padding: "10px 10px 10px 10px", borderradius: "6px" }}
-                        />
-                    </div>}
-                    <div className="row-zyx">
-                        <FieldView
-                            className="col-8"
-                            label={""}
-                            value={t(langKeys.voximplant_pricealert)}
-                        />
-                        <FieldView
-                            className="col-3"
-                            label={""}
-                            value={""}
-                        />
-                        <FieldView
-                            className="col-1"
-                            label={""}
-                            value={`$${phonePrice}`}
-                        />
-                    </div>
-                </div>
-                <div style={{ paddingLeft: "58%" }}>
-                    <Button
-                        disabled={nextbutton}
-                        onClick={() => { setViewSelected("view2") }}
-                        className={classes.button}
-                        variant="contained"
-                        color="primary"
-                    >{t(langKeys.next)}
-                    </Button>
                 </div>
             </div>
         )
