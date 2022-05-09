@@ -1,5 +1,5 @@
 import { IAction } from "@types";
-import { IState } from "./reducer";
+import { initialState, IState } from "./reducer";
 
 export const manageConnection = (state: IState, action: IAction): IState => {
     console.log("voximplant: manageConnection", action.payload)
