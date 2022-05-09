@@ -433,18 +433,26 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
         if (data.newConversation) {
             if (!newticketList.some(x => x.conversationid === data.conversationid)) { // a veces se cruza cuando esta cargando al data
                 newticketList = [
-                    ...newticketList,
                     {
                         ...data,
-                        personlastreplydate: data.usertype === "client" ? new Date().toISOString() : null,
+                        lastconversationdate: data.usertype === "client" ? (data.lastconversationdate || new Date().toISOString()) : null,
                         firstconversationdate: data.firstconversationdate || new Date().toISOString(),
                         isAnswered: data.userid === 2
-                    }]
+                    },
+                    ...newticketList
+                ]
             }
         } else {
+            const conversation = newticketList.find(x => x.conversationid === data.conversationid);
+            if (conversation) {
+                newticketList = [
+                    conversation,
+                    ...newticketList.filter(x => x.conversationid !== data.conversationid)
+                ]    
+            }
             newticketList = newticketList.map((x: ITicket) => x.conversationid === data.conversationid ? ({
                 ...x,
-                personlastreplydate: data.usertype === "client" ? new Date().toISOString() : x.personlastreplydate,
+                lastconversationdate: data.usertype === "client" ? (x.lastconversationdate || new Date().toISOString()) : null,
                 lastreplyuser: data.usertype === "agent" ? new Date().toISOString() : x.lastreplyuser,
                 countnewmessages: data.usertype === "agent" ? 0 : x.countnewmessages + 1,
                 lastmessage: data.typemessage === "text" ? data.lastmessage : data.typemessage.toUpperCase(),
@@ -456,7 +464,7 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
             if (data.usertype === "agent" && data.ticketWasAnswered) {
                 newTicketSelected!!.isAnswered = true;
             } else if (data.usertype === "client") {
-                newTicketSelected!!.personlastreplydate = new Date().toISOString();
+                newTicketSelected!!.lastconversationdate = new Date().toISOString();
             }
             if (data.usertype === "agent") {
                 newTicketSelected!!.lastreplyuser = new Date().toISOString();
