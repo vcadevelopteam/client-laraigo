@@ -21,6 +21,13 @@ export const getOrgUserSel = (userid: number, orgid: number): IRequestBody => ({
         all: true
     }
 })
+export const getConversationSelVoxi = (): IRequestBody => ({
+    method: "UFN_CONVERSATION_SEL_VOXI",
+    key: "UFN_CONVERSATION_SEL_VOXI",
+    parameters: {
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
 export const getOrgsByCorp = (orgid: number, keytmp?: number): IRequestBody => ({
     method: "UFN_CORP_ORG_SEL",
     key: "UFN_CORP_ORG_SEL" + (keytmp || ""),

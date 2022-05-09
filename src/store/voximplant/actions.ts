@@ -1,8 +1,9 @@
 import { Call } from "voximplant-websdk/Call/Call";
 import { Dictionary, IActionCall } from "@types";
-import { VoximplantService } from "network";
+import { CommonService, VoximplantService } from "network";
 
 import actionTypes from "./actionTypes";
+import { getConversationSelVoxi } from "common/helpers";
 
 export const voximplantConnect = (payload: Dictionary): IActionCall => ({ type: actionTypes.INIT_SDK, payload });
 
@@ -56,6 +57,16 @@ export const getRegions = (request: any): IActionCall => ({
         loading: actionTypes.GET_REGIONS,
         success: actionTypes.GET_REGIONS_SUCCESS,
         failure: actionTypes.GET_REGIONS_FAILURE,
+    },
+    type: null,
+});
+
+export const getHistory = (): IActionCall => ({
+    callAPI: () => CommonService.main(getConversationSelVoxi()),
+    types: {
+        loading: actionTypes.GET_HISTORY,
+        success: actionTypes.GET_HISTORY_SUCCESS,
+        failure: actionTypes.GET_HISTORY_FAILURE,
     },
     type: null,
 });

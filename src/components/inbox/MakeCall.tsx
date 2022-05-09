@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'hooks';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import { useDispatch } from 'react-redux';
-import { answerCall, hangupCall, rejectCall, makeCall, holdCall, setModalCall, muteCall,unmuteCall } from 'store/voximplant/actions';
+import { answerCall, hangupCall, rejectCall, makeCall, holdCall, setModalCall, muteCall,unmuteCall, getHistory } from 'store/voximplant/actions';
 import TextField from '@material-ui/core/TextField';
 import PhoneIcon from '@material-ui/icons/Phone';
 import CallEndIcon from '@material-ui/icons/CallEnd';
@@ -102,6 +102,21 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
         },
     }),
 );
+function yesterdayOrToday(datadate:Date, t:any) {
+    console.log(datadate)
+    const date = new Date(datadate)
+    const yesterday = new Date();
+    if (yesterday.toDateString() === date.toDateString()) {
+        return t(langKeys.today);
+    }
+    yesterday.setDate(yesterday.getDate() - 1);
+    if (yesterday.toDateString() === date.toDateString()) {
+        return t(langKeys.yesterday);;
+    }else{
+        return formatDate(String(datadate))
+    }
+}
+  
 
 interface NotificaionMenuItemProps {
     title: React.ReactNode;
@@ -109,21 +124,23 @@ interface NotificaionMenuItemProps {
     // notification: LeadActivityNotification,
     image: string;
     user: string;
-    date: React.ReactNode;
+    date: Date;
     onClick?: MouseEventHandler<HTMLLIElement>;
 }
 
-const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description, onClick, user }) => {
+const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description, date, user, image }) => {
     const classes = useNotificaionStyles();
-
+    const { t } = useTranslation();
     return (
-        <MenuItem button className={classes.root} onClick={onClick}>
-            <div style={{gap: 8, alignItems: 'center', width: '100%', display:"grid", gridTemplateColumns: '[col1] 30px [col2] auto  5px [col3] 50px', }}>
+        <MenuItem button className={classes.root} >
+            <div style={{gap: 8, alignItems: 'center', width: '100%', display:"grid", gridTemplateColumns: '[col1] 30px [col2] auto  5px [col3] 100px', }}>
                 <div style={{gridColumnStart:"col1"}}>
                     <Tooltip title={user}>
-                        <Avatar style={{ width: 30, height: 30, fontSize: 18 }} >
-                            {user?.split(" ").reduce((acc, item) => acc + (acc.length < 2 ? item.substring(0, 1).toUpperCase() : ""), "")}
-                        </Avatar>
+                        {image?<Avatar style={{ width: 30, height: 30 }} src={image} />:
+                            <Avatar style={{ width: 30, height: 30, fontSize: 18 }} >
+                                {user?.split(" ").reduce((acc, item) => acc + (acc.length < 2 ? item.substring(0, 1).toUpperCase() : ""), "")}
+                            </Avatar>
+                        }
                     </Tooltip>
                 </div>
                 <div  style={{gridColumnStart:"col2"}}>
@@ -135,7 +152,7 @@ const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description,
                     </div>
                 </div>
                 <div  style={{gridColumnStart:"col3"}}>
-                    Ayer
+                    {yesterdayOrToday(date,t)}
                 </div>
             </div>
         </MenuItem>
@@ -159,8 +176,12 @@ const MakeCall: React.FC<{}> = ({ }) => {
     const statusCall = useSelector(state => state.voximplant.statusCall);
     const [date, setdate] = useState(new Date());
     const [time, settime] = useState(0);
+    const historial = useSelector(state => state.voximplant.requestGetHistory);
     
 
+    React.useEffect(() => {
+        dispatch(getHistory())
+    }, [])
     React.useEffect(() => {
         if (call.type === "INBOUND" && statusCall === "CONNECTING") {
             setdate(new Date())
@@ -381,14 +402,18 @@ const MakeCall: React.FC<{}> = ({ }) => {
                     </div>
                 }
                 {pageSelected === 2 &&
-                    <div style={{width:"100%"}}>
-                        <NotificaionMenuItem
-                            user={"none"}
-                            image={""}
-                            title={"none"}
-                            description={"none"}
-                            date={formatDate("10/04/1995")}
-                        />
+                    <div style={{width:"100%",overflow: 'auto', height: '50vh' }}>
+                        {historial.data?.map((e:any, i:number)=>
+                            {return (<NotificaionMenuItem
+                                user={"none"}
+                                image={e.imageurl}
+                                key={`history-${i}`}
+                                title={e.name}
+                                description={(e.origin==="INBOUND"?t(langKeys.inboundcall):t(langKeys.outboundcall))+" "+e?.totalduration||""}
+                                date={e.createdate}
+                            />)}
+                        )
+                        }
                     </div>
                 }
                 {/*<DialogActions style={{ justifyContent: 'center', marginBottom: 12 }}>

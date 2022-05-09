@@ -147,3 +147,41 @@ export const getRegionsReset = (state: IState): IState => ({
     ...state,
     requestGetRegions: initialState.requestGetRegions,
 })
+
+
+export const getHistory = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestGetHistory: {
+        ...state.requestGetHistory,
+        error: false,
+        loading: true,
+    }
+})
+
+export const getHistoryFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestGetHistory: {
+        ...state.requestGetHistory,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message || 'error_unexpected_error',
+    }
+})
+
+export const getHistorySuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestGetHistory: {
+        ...state.requestGetHistory,
+        code: action?.payload?.code,
+        data: action?.payload?.data,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message,
+    }
+})
+
+export const getHistoryReset = (state: IState): IState => ({
+    ...state,
+    requestGetHistory: initialState.requestGetHistory,
+})
