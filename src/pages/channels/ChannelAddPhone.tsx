@@ -272,13 +272,13 @@ export const ChannelAddPhone: FC = () => {
                             className="col-12"
                             data={countryList}
                             label={t(langKeys.country)}
+                            variant="outlined"
                             loading={categoriesResult.loading}
                             onChange={(value: any) => { handleCountry(value) }}
                             optionDesc="country_name"
                             optionValue="country_code"
                             orderbylabel={true}
                             valueDefault={fields?.service?.country || ""}
-                            style={{ outline: "1px black solid", padding: "10px 10px 10px 10px", borderradius: "6px" }}
                         />
                     </div>
                     <div className="row-zyx">
@@ -286,13 +286,13 @@ export const ChannelAddPhone: FC = () => {
                             className="col-12"
                             data={categoryList}
                             label={t(langKeys.category)}
+                            variant="outlined"
                             loading={categoriesResult.loading}
                             onChange={(value: any) => { handleCategory(value) }}
                             optionDesc="phone_category_name"
                             optionValue="incoming_calls_resource_id"
                             orderbylabel={true}
                             valueDefault={fields?.service?.category || ""}
-                            style={{ outline: "1px black solid", padding: "10px 10px 10px 10px", borderradius: "6px" }}
                         />
                     </div>
                     {hasStates && <div className="row-zyx">
