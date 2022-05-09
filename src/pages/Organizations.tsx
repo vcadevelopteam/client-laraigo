@@ -144,6 +144,8 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             contact: row?.contact || '',
             autosendinvoice: row?.autosendinvoice || false,
             automaticpayment: row?.automaticpayment || false,
+            automaticperiod: row?.automaticperiod || false,
+            automaticinvoice: row?.automaticinvoice || false,
             iconbot: row?.iconbot || "",
             iconadvisor: row?.iconadvisor || "",
             iconclient: row?.iconclient || "",
@@ -190,6 +192,8 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         register('ssl');
         register('private_mail');
         register('automaticpayment');
+        register('automaticperiod');
+        register('automaticinvoice');
     }, [edit, register, doctype, getValues, t]);
 
     useEffect(() => {
@@ -606,6 +610,20 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                             className="col-6"
                                             valueDefault={getValues('automaticpayment')}
                                             onChange={(value) => setValue('automaticpayment', value)}
+                                        />
+                                        <TemplateSwitch
+                                            label={t(langKeys.automaticperiod)}
+                                            className="col-6"
+                                            valueDefault={getValues('automaticperiod')}
+                                            onChange={(value) => setValue('automaticperiod', value)}
+                                        />
+                                    </div>
+                                    <div className="row-zyx">
+                                        <TemplateSwitch
+                                            label={t(langKeys.automaticinvoice)}
+                                            className="col-6"
+                                            valueDefault={getValues('automaticinvoice')}
+                                            onChange={(value) => setValue('automaticinvoice', value)}
                                         />
                                     </div>
                                 </>

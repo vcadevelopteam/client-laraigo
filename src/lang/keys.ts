@@ -3481,7 +3481,9 @@ export const langKeys = {
     confirmation_emit: 'confirmation_emit',
     scheduled_events: 'scheduled_events',
     event: 'event',
-    xfield_ismissing: 'xfield_ismissing'
+    xfield_ismissing: 'xfield_ismissing',
+    automaticperiod: 'automaticperiod',
+    automaticinvoice: 'automaticinvoice',
 };
 
 export type LangKeys = typeof langKeys;

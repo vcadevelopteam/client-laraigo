@@ -278,6 +278,8 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
             sunatcountry: row?.sunatcountry || '',
             contactemail: row?.contactemail || '',
             automaticpayment: row?.automaticpayment || false,
+            automaticperiod: row?.automaticperiod || false,
+            automaticinvoice: row?.automaticinvoice || false,
             contact: row?.contact || '',
             autosendinvoice: row?.autosendinvoice || false,
             credittype: row?.credittype || "typecredit_alcontado",
@@ -331,6 +333,8 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
         register('paymentmethod', { validate: (value) => user?.roledesc === "SUPERADMIN"? ((value && value.length) || t(langKeys.field_required)) : true });
         register('paymentplanid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
         register('automaticpayment');
+        register('automaticperiod');
+        register('automaticinvoice');
     }, [register, billbyorg, doctype, getValues, t]);
 
     useEffect(() => {
@@ -376,6 +380,8 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                     sunatcountry: "",
                     autosendinvoice: false,
                     automaticpayment: false,
+                    automaticperiod: true,
+                    automaticinvoice: true,
                 }
             }
             // console.log(data)
@@ -636,6 +642,22 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                             className="col-6"
                                             valueDefault={getValues('automaticpayment')}
                                             onChange={(value) => setValue('automaticpayment', value)}
+                                            disabled={user?.roledesc !== "SUPERADMIN"}
+                                        />
+                                        <TemplateSwitch
+                                            label={t(langKeys.automaticperiod)}
+                                            className="col-6"
+                                            valueDefault={getValues('automaticperiod')}
+                                            onChange={(value) => setValue('automaticperiod', value)}
+                                            disabled={user?.roledesc !== "SUPERADMIN"}
+                                        />
+                                    </div>
+                                    <div className="row-zyx">
+                                        <TemplateSwitch
+                                            label={t(langKeys.automaticinvoice)}
+                                            className="col-6"
+                                            valueDefault={getValues('automaticinvoice')}
+                                            onChange={(value) => setValue('automaticinvoice', value)}
                                             disabled={user?.roledesc !== "SUPERADMIN"}
                                         />
                                     </div>
