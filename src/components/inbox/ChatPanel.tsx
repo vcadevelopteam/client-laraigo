@@ -872,7 +872,6 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
             setTypeStatus(newstatus);
         }
     };
-    console.log(hideLogs)
 
     // useEffect(() => {
     //     setShowLogs(hideLogs);
