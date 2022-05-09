@@ -18,6 +18,7 @@ export interface IState {
     requestGetCategories: IRequest;
     requestGetCountryStates: IRequest;
     requestGetRegions: IRequest;
+    requestGetHistory: IRequest;
     sdk: Client | null;
     showcall: boolean;
     statusCall: string;
@@ -30,6 +31,7 @@ export const initialState: IState = {
     requestGetCategories: { ...initialCommon, data: null, loading: false, error: false },
     requestGetCountryStates: { ...initialCommon, data: null, loading: false, error: false },
     requestGetRegions: { ...initialCommon, data: null, loading: false, error: false },
+    requestGetHistory: { ...initialCommon, data: null, loading: false, error: false },
     sdk: null,
     showcall: false,
     statusCall: "DISCONNECTED",
@@ -55,4 +57,9 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_REGIONS_FAILURE]: caseFUnctions.getRegionsFailure,
     [actionTypes.GET_REGIONS_SUCCESS]: caseFUnctions.getRegionsSuccess,
     [actionTypes.GET_REGIONS_RESET]: caseFUnctions.getRegionsReset,
+
+    [actionTypes.GET_HISTORY]: caseFUnctions.getHistory,
+    [actionTypes.GET_HISTORY_FAILURE]: caseFUnctions.getHistoryFailure,
+    [actionTypes.GET_HISTORY_SUCCESS]: caseFUnctions.getHistorySuccess,
+    [actionTypes.GET_HISTORY_RESET]: caseFUnctions.getHistoryReset,
 });

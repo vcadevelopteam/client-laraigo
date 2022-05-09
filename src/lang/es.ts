@@ -3504,6 +3504,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     voximplant_state: 'Estado',
     voximplant_region: 'Región (No requerido)',
     voximplant_pricealert: 'Precio mensual',
+    voximplant_tooltip: 'El precio depende del páis y el estado seleccionado',
 };
 
 const esResource: ResourceLanguage = {

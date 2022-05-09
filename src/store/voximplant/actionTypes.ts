@@ -30,6 +30,11 @@ const actionType = {
     GET_REGIONS_FAILURE: 'voximplant/GET_REGIONS_FAILURE',
     GET_REGIONS_SUCCESS: 'voximplant/GET_REGIONS_SUCCESS',
     GET_REGIONS_RESET: 'voximplant/GET_REGIONS_RESET',
+
+    GET_HISTORY: 'voximplant/GET_HISTORY',
+    GET_HISTORY_FAILURE: 'voximplant/GET_HISTORY_FAILURE',
+    GET_HISTORY_SUCCESS: 'voximplant/GET_HISTORY_SUCCESS',
+    GET_HISTORY_RESET: 'voximplant/GET_HISTORY_RESET',
 };
 
 export default actionType;

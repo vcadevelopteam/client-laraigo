@@ -10,14 +10,10 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'hooks';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import { useDispatch } from 'react-redux';
-import { answerCall, hangupCall, rejectCall, makeCall, holdCall, setModalCall, muteCall,unmuteCall } from 'store/voximplant/actions';
+import { answerCall, hangupCall, rejectCall, makeCall, holdCall, setModalCall, muteCall,unmuteCall, getHistory } from 'store/voximplant/actions';
 import TextField from '@material-ui/core/TextField';
+import PhoneForwardedIcon from '@material-ui/icons/PhoneForwarded';
 import PhoneIcon from '@material-ui/icons/Phone';
-import CallEndIcon from '@material-ui/icons/CallEnd';
-import MicIcon from '@material-ui/icons/Mic';
-import PauseIcon from '@material-ui/icons/Pause';
-import HeadsetMicIcon from '@material-ui/icons/HeadsetMic';
-import MicOffIcon from '@material-ui/icons/MicOff';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch } from 'components';
 import { Box, Grid, IconButton, InputAdornment, Tabs } from '@material-ui/core';
 import { convertLocalDate, secondsToTime, getSecondsUntelNow } from 'common/helpers';
@@ -74,6 +70,7 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
             alignItems: 'flex-start',
             textAlign: 'start',
             width: "100%",
+            borderBottom: '1px solid #bfbfc0',
         },
         row: {
             display: 'flex',
@@ -98,10 +95,27 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
         },
         description: {
             whiteSpace: "initial",
-            width:"calc(100% - 40px)"
+            width:"calc(100% - 40px)",
+            color: "#c4c4c4",
+            fontWeight: "bold"
         },
     }),
 );
+function yesterdayOrToday(datadate:Date, t:any) {
+    console.log(datadate)
+    const date = new Date(datadate)
+    const yesterday = new Date();
+    if (yesterday.toDateString() === date.toDateString()) {
+        return t(langKeys.today);
+    }
+    yesterday.setDate(yesterday.getDate() - 1);
+    if (yesterday.toDateString() === date.toDateString()) {
+        return t(langKeys.yesterday);;
+    }else{
+        return formatDate(String(datadate))
+    }
+}
+  
 
 interface NotificaionMenuItemProps {
     title: React.ReactNode;
@@ -109,36 +123,41 @@ interface NotificaionMenuItemProps {
     // notification: LeadActivityNotification,
     image: string;
     user: string;
-    date: React.ReactNode;
+    origin: string;
+    date: Date;
     onClick?: MouseEventHandler<HTMLLIElement>;
 }
 
-const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description, onClick, user }) => {
+const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description, date, user, image,origin }) => {
     const classes = useNotificaionStyles();
-
+    const { t } = useTranslation();
     return (
-        <MenuItem button className={classes.root} onClick={onClick}>
-            <div style={{gap: 8, alignItems: 'center', width: '100%', display:"grid", gridTemplateColumns: '[col1] 30px [col2] auto  5px [col3] 50px', }}>
-                <div style={{gridColumnStart:"col1"}}>
-                    <Tooltip title={user}>
-                        <Avatar style={{ width: 30, height: 30, fontSize: 18 }} >
-                            {user?.split(" ").reduce((acc, item) => acc + (acc.length < 2 ? item.substring(0, 1).toUpperCase() : ""), "")}
-                        </Avatar>
-                    </Tooltip>
-                </div>
-                <div  style={{gridColumnStart:"col2"}}>
-                    <div className={classes.textOneLine}>
-                        <div className={classes.title}>{title}</div>
+        <>
+            <MenuItem button className={classes.root}>
+                <div style={{gap: 8, alignItems: 'center', width: '100%', display:"grid", gridTemplateColumns: '[col1] 30px [col2] auto  [col3] 90px'}}>
+                    <div style={{gridColumnStart:"col1"}}>
+                        <Tooltip title={user}>
+                            {image?<Avatar style={{ width: 30, height: 30 }} src={image} />:
+                                <Avatar style={{ width: 30, height: 30, fontSize: 18 }} >
+                                    {user?.split(" ").reduce((acc, item) => acc + (acc.length < 2 ? item.substring(0, 1).toUpperCase() : ""), "")}
+                                </Avatar>
+                            }
+                        </Tooltip>
                     </div>
-                    <div className={clsx(classes.description, classes.textOneLine)}>
-                        <span>{description}</span>
+                    <div  style={{gridColumnStart:"col2"}}>
+                        <div className={classes.textOneLine}>
+                            <div className={classes.title}>{title}</div>
+                        </div>
+                        <div className={clsx(classes.description, classes.textOneLine)}>
+                            <span>{origin=="INBOUND"? <PhoneCallbackIcon style={{width: 15, height: 15, color: "#c4c4c4"}}/>:<PhoneForwardedIcon style={{width: 15, height: 15, color: "#c4c4c4"}}/> } {description}</span>
+                        </div>
+                    </div>
+                    <div  style={{gridColumnStart:"col3", color: "#c4c4c4", fontWeight: "bold"}}>
+                        {yesterdayOrToday(date,t)}
                     </div>
                 </div>
-                <div  style={{gridColumnStart:"col3"}}>
-                    Ayer
-                </div>
-            </div>
-        </MenuItem>
+            </MenuItem>
+        </>
     );
 }
 
@@ -159,8 +178,12 @@ const MakeCall: React.FC<{}> = ({ }) => {
     const statusCall = useSelector(state => state.voximplant.statusCall);
     const [date, setdate] = useState(new Date());
     const [time, settime] = useState(0);
+    const historial = useSelector(state => state.voximplant.requestGetHistory);
     
 
+    React.useEffect(() => {
+        dispatch(getHistory())
+    }, [])
     React.useEffect(() => {
         if (call.type === "INBOUND" && statusCall === "CONNECTING") {
             setdate(new Date())
@@ -381,14 +404,19 @@ const MakeCall: React.FC<{}> = ({ }) => {
                     </div>
                 }
                 {pageSelected === 2 &&
-                    <div style={{width:"100%"}}>
-                        <NotificaionMenuItem
-                            user={"none"}
-                            image={""}
-                            title={"none"}
-                            description={"none"}
-                            date={formatDate("10/04/1995")}
-                        />
+                    <div style={{width:"100%",overflow: 'auto', height: '50vh' }}>
+                        {historial.data?.map((e:any, i:number)=>
+                            {return (<NotificaionMenuItem
+                                user={"none"}
+                                image={e.imageurl}
+                                key={`history-${i}`}
+                                title={e.name}
+                                description={(e.origin==="INBOUND"? t(langKeys.inboundcall) :t(langKeys.outboundcall))+" "+e?.totalduration||""}
+                                origin={e.origin}
+                                date={e.createdate}
+                            />)}
+                        )
+                        }
                     </div>
                 }
                 {/*<DialogActions style={{ justifyContent: 'center', marginBottom: 12 }}>
