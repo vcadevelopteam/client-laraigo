@@ -24,6 +24,7 @@ import { convertLocalDate, secondsToTime, getSecondsUntelNow } from 'common/help
 import { langKeys } from 'lang/keys';
 import ContactPhoneIcon from '@material-ui/icons/ContactPhone';
 import PhoneCallbackIcon from '@material-ui/icons/PhoneCallback';
+import BackspaceIcon from '@material-ui/icons/Backspace';
 import clsx from 'clsx';
 
 const useStyles = makeStyles(theme => ({
@@ -366,6 +367,15 @@ const MakeCall: React.FC<{}> = ({ }) => {
                                 }}
                             >
                                 <PhoneIcon style={{color: "white", width: "35px", height: "35px"}}/> 
+                            </IconButton>
+                            <IconButton
+                                className={classes.numpadbuttons}
+                                style={{ gridColumnStart: "col3"}}
+                                onClick={() => {
+                                    setNumberVox(numberVox.slice(0, -1))
+                                }}
+                            >
+                                <BackspaceIcon style={{color: "#707070", width: "35px", height: "35px", paddingRight: 5}}/> 
                             </IconButton>
                         </div>
                     </div>
