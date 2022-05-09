@@ -2882,6 +2882,14 @@ const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg 
                 accessor: 'receiverbusinessnamecolumn',
             },
             {
+                Header: t(langKeys.invoice_serviceyear),
+                accessor: 'year',
+            },
+            {
+                Header: t(langKeys.invoice_servicemonth),
+                accessor: 'month',
+            },
+            {
                 Header: t(langKeys.invoicestatus),
                 accessor: 'invoicestatuscolumn',
             },
@@ -4715,7 +4723,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             label={t(langKeys.invoice_servicemonth)}
                             onChange={(value) => { setValue('month', parseInt(value?.val || '0')); }}
                             className="col-3"
-                            valueDefault={(data?.row?.month ? data?.row?.month.toString() : getValues('month')).padStart(2, "0")}
+                            valueDefault={((data?.row?.month ? data?.row?.month.toString() : getValues('month')) || '').padStart(2, "0")}
                             data={dataMonths}
                             optionDesc="val"
                             optionValue="val"

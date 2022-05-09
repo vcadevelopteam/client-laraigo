@@ -97,7 +97,7 @@ const SmallAvatar = styled(Avatar)(() => ({
     fontSize: 11,
 }));
 
-const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { call, personlastreplydate, communicationchanneltype, lastmessage, displayname, imageurldef, ticketnum, firstconversationdate, countnewmessages, status, communicationchannelid, lastreplyuser } }) => {
+const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { call, personlastreplydate, communicationchanneltype, lastmessage, displayname, imageurldef, ticketnum, firstconversationdate, countnewmessages, status, communicationchannelid, lastreplyuser, lastconversationdate } }) => {
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);    
     const localclasses = useStyles({ color: "red" });
     const agentSelected = useSelector(state => state.inbox.agentSelected);
@@ -189,7 +189,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                         <LabelGo
                             isTimer={true}
                             tooltip={t(langKeys.waiting_person_time)}
-                            dateGo={personlastreplydate || new Date().toISOString()}
+                            dateGo={lastconversationdate || new Date().toISOString()}
                             color="#FB5F5F"
                         />
                     }
