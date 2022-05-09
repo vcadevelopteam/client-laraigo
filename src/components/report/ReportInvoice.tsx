@@ -442,11 +442,11 @@ const ReportInvoice: FC = () => {
             setGridData(
                 Object.values((mainAux2?.data || []).reduce((acc, item) => ({
                     ...acc,
-                    ["corp_" + item.corpid]: acc["corp_" + item.corpid] ? {
-                        ...acc["corp_" + item.corpid],
+                    [`corp_${item.corpid}_${item.currency}`] : acc[`corp_${item.corpid}_${item.currency}`] ? {
+                        ...acc[`corp_${item.corpid}_${item.currency}`],
                         [`color_${item.month}`]: item.color,
                         [`month_${item.month}`]: item.totalamount,
-                        total: acc["corp_" + item.corpid].total + item.totalamount,
+                        total: acc[`corp_${item.corpid}_${item.currency}`].total + item.totalamount,
                         
                     } : {
                         ...initialmonth,
