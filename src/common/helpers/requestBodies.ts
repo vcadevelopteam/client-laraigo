@@ -2972,3 +2972,26 @@ export const getCurrencyList = (): IRequestBody => ({
     key: "UFN_CURRENCY_SEL",
     parameters: { }
 });
+
+export const conversationOutboundIns = ({ number, communicationchannelid, personcommunicationchannelowner }: Dictionary) => ({
+    method: "UFN_CONVERSATION_OUTBOUND_INS",
+    key: "UFN_CONVERSATION_OUTBOUND_INS",
+    parameters: {
+        personid: 0, 
+        personcommunicationchannel:`${number}_VOXI`, 
+        communicationchannelid, 
+        closetype:"", 
+        status: 'ASIGNADO',
+        finishdate:false, 
+        handoff:false, 
+        usergroup:"", 
+        extradata:"", 
+        lastreplydate:true, 
+        personlastreplydate:false, 
+        origin:"OUTBOUND", 
+        firstname: number, 
+        lastname:"", 
+        communicationchanneltype: "VOXI", 
+        personcommunicationchannelowner
+    },
+});
