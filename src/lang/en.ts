@@ -32,6 +32,10 @@ const translation: LangKeys = {
     errorhours: "Hours overlap another set of hours",
     errorhoursdontmatch: "Choose an end time later than the start time",
 
+    app_automatizationrules: "Automatization rules",
+    app_calendar: "Calendar",
+    app_productcatalog: "Product catalog",
+    app_reportscheduler: "Report scheduler",
     model: 'Model',
     conditional: "Conditional",
     whensettingstate: "When setting state",

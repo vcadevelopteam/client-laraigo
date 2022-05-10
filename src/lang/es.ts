@@ -1059,6 +1059,10 @@ const translation: LangKeys = {
     send_hsm: 'Enviar HSM',
     send_mail: 'Enviar Correo',
     send_sms: 'Enviar SMS',
+    app_automatizationrules: "Reglas de automatización",
+    app_calendar: "Calendario",
+    app_productcatalog: "Catálogo de Productos",
+    app_reportscheduler: "Envíos Automáticos",
     observation: 'Observación',
     botdesigner: 'Diseñador de bots',
 
