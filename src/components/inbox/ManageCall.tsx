@@ -204,7 +204,7 @@ const ManageCall: React.FC<{}> = ({ }) => {
                     )}
                     {statusCall === "DISCONNECTED" && (
                         <>
-                            <IconButton
+                            {/* <IconButton
                                 style={{ marginLeft: "10px", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#00a884' }}
                                 onClick={() => {
                                     dispatch(makeCall({ number: numberVox, site: '' }))
@@ -213,7 +213,7 @@ const ManageCall: React.FC<{}> = ({ }) => {
                                 }}
                             >
                                 <PhoneIcon style={{ color: "white", width: "35px", height: "35px" }} />
-                            </IconButton>
+                            </IconButton> */}
                             <Button
                                 color="primary"
                                 variant="contained"

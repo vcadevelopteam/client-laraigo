@@ -551,7 +551,7 @@ export const newCallTicket = (state: IState, action: IAction): IState => ({
     ...state,
     ticketList: {
         ...state.ticketList,
-        data: state.userType === "AGENT" ? [action.payload, ...state.ticketList.data] : state.ticketList.data
+        data: state.ticketList.data.some(x => x.conversationid === action.payload.conversationid) ? state.ticketList.data : state.userType === "AGENT" ? [action.payload, ...state.ticketList.data] : state.ticketList.data
     },
 })
 

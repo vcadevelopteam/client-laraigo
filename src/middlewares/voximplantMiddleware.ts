@@ -134,9 +134,30 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
             },
             customData: payload.site
         };
+        console.log("payload.site", payload.site)
         const call = sdk?.call(callSettings);
 
-        dispatch({ type: typeVoximplant.INIT_CALL, payload: { call, type: "OUTBOUND", number: payload.number } })
+        dispatch(emitEvent({
+            event: 'newCallTicket',
+            data: {
+                ...action.payload.data,
+                newuserid: 0,
+                // orpid: parseInt(splitIdentifier[0]),
+                // orgid: parseInt(splitIdentifier[1]),
+            }
+        }));
+
+        //iniciar la llamada en managecall
+        //agregar el ticket con el control de llamada
+        dispatch({
+            type: typeInbox.NEW_TICKET_CALL,
+            payload: {
+                ...action.payload.data,
+                call: call
+            }
+        })
+
+        dispatch({ type: typeVoximplant.INIT_CALL, payload: { call, type: "OUTBOUND", number: payload.number, data: action.payload.data } })
 
         call.on(VoxImplant.CallEvents.Connected, () => {
             dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "CONNECTED" });

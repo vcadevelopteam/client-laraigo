@@ -23,6 +23,10 @@ import PhoneCallbackIcon from '@material-ui/icons/PhoneCallback';
 import BackspaceIcon from '@material-ui/icons/Backspace';
 import clsx from 'clsx';
 import { execute } from 'store/main/actions';
+import purple from '@material-ui/core/colors/red';
+import { ITicket } from '@types';
+import { emitEvent, newTicketCall } from 'store/inbox/actions';
+
 
 const useStyles = makeStyles(theme => ({
     grey: {
@@ -84,8 +88,8 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
         },
         title: {
             whiteSpace: "initial",
-            width:"calc(100% - 40px)",
-            color: "#a39e9e", 
+            width: "calc(100% - 40px)",
+            color: "#a39e9e",
         },
         date: {
             fontSize: 11,
@@ -102,13 +106,13 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
         },
         description: {
             whiteSpace: "initial",
-            width:"calc(100% - 40px)",
-            color: "#a39e9e",           
+            width: "calc(100% - 40px)",
+            color: "#a39e9e",
         },
         phoneicon: {
-            width: 15, 
-            height: 15, 
-            color: "#a39e9e",      
+            width: 15,
+            height: 15,
+            color: "#a39e9e",
         },
     }),
 );
@@ -160,11 +164,11 @@ const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description,
                             <div className={classes.title}>{title}</div>
                         </div>
                         <div className={clsx(classes.description, classes.textOneLine)}>
-                            {origin=="INBOUND"? <PhoneCallbackIcon className={classes.phoneicon}/>:<PhoneForwardedIcon className={classes.phoneicon}/> } {description}
+                            {origin === "INBOUND" ? <PhoneCallbackIcon className={classes.phoneicon} /> : <PhoneForwardedIcon className={classes.phoneicon} />} {description}
                         </div>
                     </div>
-                    <div  style={{gridColumnStart:"col3", color: "#a39e9e", }}>
-                        {yesterdayOrToday(date,t)}
+                    <div style={{ gridColumnStart: "col3", color: "#a39e9e", }}>
+                        {yesterdayOrToday(date, t)}
                     </div>
                 </div>
             </MenuItem>
@@ -172,17 +176,13 @@ const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description,
     );
 }
 
-
 const MakeCall: React.FC<{}> = ({ }) => {
     const classes = useStyles();
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const phoneinbox = useSelector(state => state.inbox.person.data?.phone);
     const [numberVox, setNumberVox] = useState("");
-    const resValidateToken = useSelector(state => state.login.validateToken);
-    const { ownervoxi} = resValidateToken.user!!
-    const [hold, sethold] = useState(true);
-    const [mute, setmute] = useState(false);
+    const resExecute = useSelector(state => state.main.execute);
     const [advisertodiver, setadvisertodiver] = useState("");
     const [pageSelected, setPageSelected] = useState(0);
     const ringtone = React.useRef<HTMLAudioElement>(null);
@@ -192,7 +192,40 @@ const MakeCall: React.FC<{}> = ({ }) => {
     const [date, setdate] = useState(new Date());
     const [time, settime] = useState(0);
     const historial = useSelector(state => state.voximplant.requestGetHistory);
+    const corpid = useSelector(state => state.login.validateToken?.user?.corpid);
+    const orgid = useSelector(state => state.login.validateToken?.user?.orgid);
     const sitevoxi = useSelector(state => state.login.validateToken?.user?.sitevoxi);
+    const ccidvoxi = useSelector(state => state.login.validateToken?.user?.ccidvoxi);
+
+    React.useEffect(() => {
+        if (!resExecute.loading && !resExecute.error) {
+            if (resExecute.key === "UFN_CONVERSATION_OUTBOUND_INS") {
+                const data: ITicket = {
+                    conversationid: parseInt(resExecute.data[0].v_conversationid),
+                    ticketnum: resExecute.data[0].v_ticketnum,
+                    personid: parseInt(resExecute.data[0].v_personid),
+                    communicationchannelid: ccidvoxi || 0,
+                    status: "ASIGNADO",
+                    imageurldef: "",
+                    firstconversationdate: resExecute.data[0].firstconversationdate,
+                    personlastreplydate: null,
+                    countnewmessages: 0,
+                    usergroup: "",
+                    displayname: numberVox,
+                    coloricon: '',
+                    communicationchanneltype: "VOXI",
+                    lastmessage: "LLAMADA SALIENTE",
+                    personcommunicationchannel: `${numberVox}_VOXI`,
+                    communicationchannelsite: sitevoxi || "",
+                    lastreplyuser: "",
+                }
+                dispatch(setModalCall(false));
+                const identifier = `${corpid}-${orgid}-${ccidvoxi}-${resExecute.data[0].v_conversationid}-${resExecute.data[0].v_personid}.${sitevoxi}`
+                dispatch(makeCall({ number: numberVox, site: identifier || "", data }));
+            }
+        }
+    }, [resExecute])
+
 
     React.useEffect(() => {
         dispatch(getHistory())
@@ -203,8 +236,6 @@ const MakeCall: React.FC<{}> = ({ }) => {
             setdate(new Date())
             settime(0)
             dispatch(setModalCall(true))
-            sethold(true)
-            setmute(false)
             ringtone.current?.pause();
             if (ringtone.current) {
                 ringtone.current.currentTime = 0;
@@ -293,130 +324,119 @@ const MakeCall: React.FC<{}> = ({ }) => {
                 }
                 {pageSelected === 1 &&
                     <div className={classes.tabs}>
-                        <div style={{ display: "flex", width: "100%" }}>
+                        <div style={{ display: "flex", marginLeft: 70, marginRight: 70 }}>
                             <TextField
                                 label={t(langKeys.phone)}
                                 value={numberVox}
+                                disabled={resExecute.loading || statusCall !== "DISCONNECTED"}
                                 style={{ marginRight: "auto", marginLeft: "auto", width: "400px", marginBottom: 25 }}
                                 type="tel"
                                 onChange={(e) => setNumberVox(e.target.value)}
-                                disabled={statusCall !== "DISCONNECTED"}
                             />
                         </div>
                         <div className={classes.gridlinebuttons}>
-                            <IconButton
-                                className={classes.numpadbuttons}
-                                style={{ gridColumnStart: "col1" }}
+                            <Fab
+                                style={{ gridColumnStart: "col1", fontSize: 20, color: "#707070" }}
                                 onClick={() => setNumberVox(numberVox + "1")}
                             >
                                 1
-                            </IconButton>
-                            <IconButton
-                                className={classes.numpadbuttons}
-                                style={{ gridColumnStart: "col2" }}
+                            </Fab>
+                            <Fab
+                                style={{ gridColumnStart: "col2", fontSize: 20, color: "#707070" }}
                                 onClick={() => setNumberVox(numberVox + "2")}
                             >
                                 2
-                            </IconButton>
-                            <IconButton
-                                className={classes.numpadbuttons}
-                                style={{ gridColumnStart: "col3" }}
+                            </Fab>
+                            <Fab
+                                style={{ gridColumnStart: "col3", fontSize: 20, color: "#707070" }}
                                 onClick={() => setNumberVox(numberVox + "3")}
                             >
                                 3
-                            </IconButton>
+                            </Fab>
                         </div>
                         <div className={classes.gridlinebuttons}>
-                            <IconButton
-                                className={classes.numpadbuttons}
-                                style={{ gridColumnStart: "col1" }}
+                            <Fab
+                                style={{ gridColumnStart: "col1", fontSize: 20, color: "#707070" }}
                                 onClick={() => setNumberVox(numberVox + "4")}
                             >
                                 4
-                            </IconButton>
-                            <IconButton
-                                className={classes.numpadbuttons}
-                                style={{ gridColumnStart: "col2" }}
+                            </Fab>
+                            <Fab
+                                style={{ gridColumnStart: "col2", fontSize: 20, color: "#707070" }}
                                 onClick={() => setNumberVox(numberVox + "5")}
                             >
                                 5
-                            </IconButton>
-                            <IconButton
-                                className={classes.numpadbuttons}
-                                style={{ gridColumnStart: "col3" }}
+                            </Fab>
+                            <Fab
+                                style={{ gridColumnStart: "col3", fontSize: 20, color: "#707070" }}
                                 onClick={() => setNumberVox(numberVox + "6")}
                             >
                                 6
-                            </IconButton>
+                            </Fab>
                         </div>
                         <div className={classes.gridlinebuttons}>
-                            <IconButton
-                                className={classes.numpadbuttons}
-                                style={{ gridColumnStart: "col1" }}
+                            <Fab
+                                style={{ gridColumnStart: "col1", fontSize: 20, color: "#707070" }}
                                 onClick={() => setNumberVox(numberVox + "7")}
                             >
                                 7
-                            </IconButton>
-                            <IconButton
-                                className={classes.numpadbuttons}
-                                style={{ gridColumnStart: "col2" }}
+                            </Fab>
+                            <Fab
+                                style={{ gridColumnStart: "col2", fontSize: 20, color: "#707070" }}
                                 onClick={() => setNumberVox(numberVox + "8")}
                             >
                                 8
-                            </IconButton>
-                            <IconButton
-                                className={classes.numpadbuttons}
-                                style={{ gridColumnStart: "col3" }}
+                            </Fab>
+                            <Fab
+                                style={{ gridColumnStart: "col3", fontSize: 20, color: "#707070" }}
                                 onClick={() => setNumberVox(numberVox + "9")}
                             >
                                 9
-                            </IconButton>
+                            </Fab>
                         </div>
                         <div className={classes.gridlinebuttons}>
-                            <IconButton
-                                className={classes.numpadbuttons}
-                                style={{ gridColumnStart: "col1" }}
+                            <Fab
+                                style={{ gridColumnStart: "col1", fontSize: 20, color: "#707070" }}
                                 onClick={() => setNumberVox(numberVox + "*")}
                             >
                                 *
-                            </IconButton>
-                            <IconButton
-                                className={classes.numpadbuttons}
-                                style={{ gridColumnStart: "col2" }}
+                            </Fab>
+                            <Fab
+                                style={{ gridColumnStart: "col2", fontSize: 20, color: "#707070" }}
                                 onClick={() => setNumberVox(numberVox + "0")}
                             >
                                 0
-                            </IconButton>
-                            <IconButton
-                                className={classes.numpadbuttons}
-                                style={{ gridColumnStart: "col3" }}
+                            </Fab>
+                            <Fab
+                                style={{ gridColumnStart: "col3", fontSize: 20, color: "#707070" }}
                                 onClick={() => setNumberVox(numberVox + "#")}
                             >
                                 #
-                            </IconButton>
+                            </Fab>
                         </div>
                         <div className={classes.gridlinebuttons}>
-                            <IconButton
-                                className={classes.numpadbuttons}
-                                style={{ gridColumnStart: "col2", backgroundColor: '#55bd84' }}
+                            <Fab
+                                style={{ gridColumnStart: "col2", fontSize: 20, color: "#707070" }}
+                                color="primary"
+                                disabled={resExecute.loading}
                                 onClick={() => {
-                                    dispatch(makeCall({ number: numberVox, site: sitevoxi || "" }))
-                                    sethold(true)
-                                    setmute(false)
+                                    dispatch(execute(conversationOutboundIns({
+                                        number: numberVox,
+                                        communicationchannelid: ccidvoxi,
+                                        personcommunicationchannelowner: numberVox,
+                                        interactiontype: 'text',
+                                        interactiontext: 'LLAMADA SALIENTE'
+                                    })))
                                 }}
                             >
                                 <PhoneIcon style={{ color: "white", width: "35px", height: "35px" }} />
-                            </IconButton>
-                            <IconButton
-                                className={classes.numpadbuttons}
-                                style={{ gridColumnStart: "col3"}}
-                                onClick={() => {                                    
-                                    dispatch(execute(conversationOutboundIns({number: numberVox,communicationchannelid:0, personcommunicationchannelowner: ownervoxi })))
-                                    setNumberVox(numberVox.slice(0, -1))
-                                }}
+                            </Fab>
+                            <Fab
+                                style={{ gridColumnStart: "col3", fontSize: 20, color: "#707070" }}
+                                onClick={() => setNumberVox(numberVox.slice(0, -1))}
                             >
                                 <BackspaceIcon style={{ color: "#707070", width: "35px", height: "35px", paddingRight: 5 }} />
-                            </IconButton>
+                            </Fab>
                         </div>
                     </div>
                 }
