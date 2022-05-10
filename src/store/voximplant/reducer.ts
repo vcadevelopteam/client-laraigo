@@ -26,7 +26,7 @@ export interface IState {
 
 export const initialState: IState = {
     call: { call: null, type: "", number: "", identifier: "" },
-    connection: { error: false, message: "", loading: false },
+    connection: { error: true, message: "", loading: false },
     error: "",
     requestGetCategories: { ...initialCommon, data: null, loading: false, error: false },
     requestGetCountryStates: { ...initialCommon, data: null, loading: false, error: false },

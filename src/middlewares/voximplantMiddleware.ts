@@ -127,12 +127,12 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         }
     } else if (type === typeVoximplant.MAKE_CALL) {
         const callSettings: CallSettings = {
-            number: payload,
+            number: payload.number,
             video: {
                 sendVideo: false,
                 receiveVideo: false
             },
-            customData: "16502672010"
+            customData: payload.site
         };
         const call = sdk?.call(callSettings);
 

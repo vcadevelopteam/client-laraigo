@@ -17,9 +17,9 @@ export const muteCall = (payload?: Call | null): IActionCall => ({ type: actionT
 
 export const unmuteCall = (payload?: Call | null): IActionCall => ({ type: actionTypes.UNMUTE_CALL, payload });
 
-export const holdCall = (payload?:  Dictionary): IActionCall => ({ type: actionTypes.HOLD_CALL, payload });
+export const holdCall = (payload?: Dictionary): IActionCall => ({ type: actionTypes.HOLD_CALL, payload });
 
-export const makeCall = (payload?: string): IActionCall => ({ type: actionTypes.MAKE_CALL, payload });
+export const makeCall = (payload: { number: string, site: string }): IActionCall => ({ type: actionTypes.MAKE_CALL, payload });
 
 export const setModalCall = (payload?: Boolean): IActionCall => ({ type: actionTypes.SET_MODAL_CALL, payload });
 

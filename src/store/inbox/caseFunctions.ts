@@ -446,17 +446,16 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
             const conversation = newticketList.find(x => x.conversationid === data.conversationid);
             if (conversation) {
                 newticketList = [
-                    conversation,
+                    {
+                        ...conversation,
+                        lastconversationdate: data.usertype === "client" ? (conversation.lastconversationdate || new Date().toISOString()) : null,
+                        lastreplyuser: data.usertype === "agent" ? new Date().toISOString() : conversation.lastreplyuser,
+                        countnewmessages: data.usertype === "agent" ? 0 : conversation.countnewmessages + 1,
+                        lastmessage: data.typemessage === "text" ? data.lastmessage : data.typemessage.toUpperCase(),
+                    },
                     ...newticketList.filter(x => x.conversationid !== data.conversationid)
                 ]    
             }
-            newticketList = newticketList.map((x: ITicket) => x.conversationid === data.conversationid ? ({
-                ...x,
-                lastconversationdate: data.usertype === "client" ? (x.lastconversationdate || new Date().toISOString()) : null,
-                lastreplyuser: data.usertype === "agent" ? new Date().toISOString() : x.lastreplyuser,
-                countnewmessages: data.usertype === "agent" ? 0 : x.countnewmessages + 1,
-                lastmessage: data.typemessage === "text" ? data.lastmessage : data.typemessage.toUpperCase(),
-            }) : x)
         }
 
         if (ticketSelected?.conversationid === data.conversationid) {

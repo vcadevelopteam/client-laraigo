@@ -414,13 +414,16 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     }, [dispatch]);
 
     useEffect(() => {
-        setPageSelected(0)
-        setCounterTickets({
-            assigned: -0,
-            paused: -0,
-            all: -0,
-        })
-        dispatch(getTickets(userType === "SUPERVISOR" ? agentSelected!.userid : null))
+        if (agentSelected) {
+            dispatch(getTickets(userType === "SUPERVISOR" ? agentSelected!.userid : null))
+            setPageSelected(0)
+            setCounterTickets({
+                assigned: -0,
+                paused: -0,
+                all: -0,
+            })
+        }
+
         return () => {
             dispatch(resetGetTickets())
         }
