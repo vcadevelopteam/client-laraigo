@@ -2973,7 +2973,7 @@ export const getCurrencyList = (): IRequestBody => ({
     parameters: { }
 });
 
-export const conversationOutboundIns = ({ number, communicationchannelid, personcommunicationchannelowner }: Dictionary) => ({
+export const conversationOutboundIns = ({ number, communicationchannelid, personcommunicationchannelowner, interactiontype, interactiontext }: Dictionary) => ({
     method: "UFN_CONVERSATION_OUTBOUND_INS",
     key: "UFN_CONVERSATION_OUTBOUND_INS",
     parameters: {
@@ -2991,7 +2991,9 @@ export const conversationOutboundIns = ({ number, communicationchannelid, person
         origin:"OUTBOUND", 
         firstname: number, 
         lastname:"", 
-        communicationchanneltype: "VOXI", 
+        communicationchanneltype: "VOXI",
+        interactiontype, 
+        interactiontext,
         personcommunicationchannelowner
     },
 });

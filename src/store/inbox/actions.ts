@@ -282,3 +282,5 @@ export const emitEvent = (payload: any): IActionCall => ({ type: actionTypes.EMI
 export const resetForcedDisconnection = (): IActionCall => ({ type: actionTypes.FORCEDDISCONECTION_RESET });
 
 export const disconnectSocket = (): IActionCall => ({ type: actionTypes.WS_DISCONNECT });
+
+export const newTicketCall = (payload: any): IActionCall => ({ type: actionTypes.NEW_TICKET_CALL, payload });

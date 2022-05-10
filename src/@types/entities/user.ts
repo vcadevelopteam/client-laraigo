@@ -44,6 +44,7 @@ export interface IUser {
     corpdesc: string;
     ownervoxi: string | null;
     sitevoxi: string | null;
+    ccidvoxi: number | null;
     plan: string;
     orgdesc: string;
     redirect: string;

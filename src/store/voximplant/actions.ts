@@ -1,5 +1,5 @@
 import { Call } from "voximplant-websdk/Call/Call";
-import { Dictionary, IActionCall } from "@types";
+import { Dictionary, IActionCall, ITicket } from "@types";
 import { CommonService, VoximplantService } from "network";
 
 import actionTypes from "./actionTypes";
@@ -19,7 +19,7 @@ export const unmuteCall = (payload?: Call | null): IActionCall => ({ type: actio
 
 export const holdCall = (payload?: Dictionary): IActionCall => ({ type: actionTypes.HOLD_CALL, payload });
 
-export const makeCall = (payload: { number: string, site: string }): IActionCall => ({ type: actionTypes.MAKE_CALL, payload });
+export const makeCall = (payload: { number: string, site: string, data: ITicket }): IActionCall => ({ type: actionTypes.MAKE_CALL, payload });
 
 export const setModalCall = (payload?: Boolean): IActionCall => ({ type: actionTypes.SET_MODAL_CALL, payload });
 

@@ -9,7 +9,7 @@ import Badge from '@material-ui/core/Badge';
 import { useDispatch } from 'react-redux';
 import Tooltip from '@material-ui/core/Tooltip';
 import { convertLocalDate, secondsToTime, getSecondsUntelNow } from 'common/helpers';
-import { answerCall } from 'store/voximplant/actions';
+import { answerCall, hangupCall } from 'store/voximplant/actions';
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import PhoneCallbackIcon from '@material-ui/icons/PhoneCallback';
@@ -33,10 +33,10 @@ const useStyles = makeStyles((theme) => ({
         top: 0,
         left: 0
     },
-    iconcall:{
-        color: "white", 
-        width: "25px", 
-        height: "25px", 
+    iconcall: {
+        color: "white",
+        width: "25px",
+        height: "25px",
         animationName: "$spin",
         animationDuration: "5000ms",
         animationIterationCount: "infinite",
@@ -44,10 +44,10 @@ const useStyles = makeStyles((theme) => ({
     },
     "@keyframes spin": {
         "from": {
-            transform:"rotate(0deg)"
+            transform: "rotate(0deg)"
         },
         "to": {
-            transform:"rotate(360deg)"
+            transform: "rotate(360deg)"
         }
     }
 }));
@@ -98,7 +98,7 @@ const SmallAvatar = styled(Avatar)(() => ({
 }));
 
 const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { call, personlastreplydate, communicationchanneltype, lastmessage, displayname, imageurldef, ticketnum, firstconversationdate, countnewmessages, status, communicationchannelid, lastreplyuser, lastconversationdate } }) => {
-    const ticketSelected = useSelector(state => state.inbox.ticketSelected);    
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const localclasses = useStyles({ color: "red" });
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const userType = useSelector(state => state.inbox.userType);
@@ -121,7 +121,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
             setCallVoxi(null);
         }
     }, [callVoxiTmp]);
-    
+
     React.useEffect(() => {
         if (!multiData.error && !multiData.loading && multiData?.data[6] && multiData.data[6].success) {
             const channelSelected = multiData.data[6].data.find(x => x.communicationchannelid === communicationchannelid);
@@ -205,14 +205,28 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                     }
                 </div>
             </div>
-            {(!!callVoxi && statusCall === "CONNECTING") && <div style={{ flex: 1 }}>
-                <IconButton //answercall
-                    style={{ width: "35px", height: "35px", borderRadius: "50%", backgroundColor: '#55bd84' }}
-                    onClick={() => dispatch(answerCall(callVoxi))}
-                >
-                    <PhoneCallbackIcon className={localclasses.iconcall}/>
-                </IconButton>
-            </div>
+            {(!!callVoxi && statusCall === "CONNECTING" && callVoxiTmp.type === "INBOUND") &&
+                <div style={{ flex: 1 }}>
+                    <IconButton //answercall
+                        style={{ width: "35px", height: "35px", borderRadius: "50%", backgroundColor: '#55bd84' }}
+                        onClick={() => dispatch(answerCall(callVoxi))}
+                    >
+                        <PhoneCallbackIcon className={localclasses.iconcall} />
+                    </IconButton>
+                </div>
+            }
+            {(!!callVoxi && statusCall === "CONNECTING" && callVoxiTmp.type === "OUTBOUND") && (
+                <div>ICONO SALIENTE</div>
+            )}
+            {(!!callVoxi && statusCall === "CONNECTED") &&
+                <div style={{ flex: 1 }}>
+                    <IconButton //answercall
+                        style={{ width: "35px", height: "35px", borderRadius: "50%", backgroundColor: "red" }}
+                        onClick={() => dispatch(hangupCall(callVoxi))}
+                    >
+                        <PhoneCallbackIcon />
+                    </IconButton>
+                </div>
             }
         </div>
 

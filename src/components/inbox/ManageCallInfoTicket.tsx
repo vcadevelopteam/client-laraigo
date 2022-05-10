@@ -196,7 +196,7 @@ const ManageCallInfoTicket: React.FC<{}> = ({ }) => {
 
                                     </div>
                                 )}
-                                {statusCall === "DISCONNECTED" && (
+                                {/* {statusCall === "DISCONNECTED" && (
                                     <>
                                         <IconButton
                                             style={{ marginLeft: "auto", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#55bd84' }}
@@ -209,7 +209,7 @@ const ManageCallInfoTicket: React.FC<{}> = ({ }) => {
                                             <PhoneIcon style={{ color: "white", width: "35px", height: "35px" }} />
                                         </IconButton>
                                     </>
-                                )}
+                                )} */}
                             </div>
                         </div>
                         <audio ref={ringtone} src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/7120-download-iphone-6-original-ringtone-42676.mp3" />
