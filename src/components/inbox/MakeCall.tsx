@@ -16,12 +16,13 @@ import PhoneForwardedIcon from '@material-ui/icons/PhoneForwarded';
 import PhoneIcon from '@material-ui/icons/Phone';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch } from 'components';
 import { Box, Grid, IconButton, InputAdornment, Tabs } from '@material-ui/core';
-import { convertLocalDate, secondsToTime, getSecondsUntelNow } from 'common/helpers';
+import { convertLocalDate, secondsToTime, getSecondsUntelNow, conversationOutboundIns } from 'common/helpers';
 import { langKeys } from 'lang/keys';
 import ContactPhoneIcon from '@material-ui/icons/ContactPhone';
 import PhoneCallbackIcon from '@material-ui/icons/PhoneCallback';
 import BackspaceIcon from '@material-ui/icons/Backspace';
 import clsx from 'clsx';
+import { execute } from 'store/main/actions';
 
 const useStyles = makeStyles(theme => ({
     grey: {
@@ -69,7 +70,10 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
             flexDirection: 'column',
             alignItems: 'flex-start',
             textAlign: 'start',
-            width: "100%",
+            fontSize: '0.8rem',
+            marginRight: 15,
+            marginLeft: 15,
+            width: "calc(100% - 30px)",
             borderBottom: '1px solid #bfbfc0',
         },
         row: {
@@ -79,9 +83,9 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
             width: '100%',
         },
         title: {
-            fontWeight: 'bold',
             whiteSpace: "initial",
-            width: "calc(100% - 40px)"
+            width:"calc(100% - 40px)",
+            color: "#a39e9e", 
         },
         date: {
             fontSize: 11,
@@ -92,12 +96,19 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
             flexGrow: 1,
             lineHeight: 1.1,
             overflow: 'hidden',
+            display: "flex",
+            alignItems: "center",
+            gap: 8
         },
         description: {
             whiteSpace: "initial",
-            width: "calc(100% - 40px)",
-            color: "#c4c4c4",
-            fontWeight: "bold"
+            width:"calc(100% - 40px)",
+            color: "#a39e9e",           
+        },
+        phoneicon: {
+            width: 15, 
+            height: 15, 
+            color: "#a39e9e",      
         },
     }),
 );
@@ -149,11 +160,11 @@ const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description,
                             <div className={classes.title}>{title}</div>
                         </div>
                         <div className={clsx(classes.description, classes.textOneLine)}>
-                            <span>{origin == "INBOUND" ? <PhoneCallbackIcon style={{ width: 15, height: 15, color: "#c4c4c4" }} /> : <PhoneForwardedIcon style={{ width: 15, height: 15, color: "#c4c4c4" }} />} {description}</span>
+                            {origin=="INBOUND"? <PhoneCallbackIcon className={classes.phoneicon}/>:<PhoneForwardedIcon className={classes.phoneicon}/> } {description}
                         </div>
                     </div>
-                    <div style={{ gridColumnStart: "col3", color: "#c4c4c4", fontWeight: "bold" }}>
-                        {yesterdayOrToday(date, t)}
+                    <div  style={{gridColumnStart:"col3", color: "#a39e9e", }}>
+                        {yesterdayOrToday(date,t)}
                     </div>
                 </div>
             </MenuItem>
@@ -168,6 +179,8 @@ const MakeCall: React.FC<{}> = ({ }) => {
     const dispatch = useDispatch();
     const phoneinbox = useSelector(state => state.inbox.person.data?.phone);
     const [numberVox, setNumberVox] = useState("");
+    const resValidateToken = useSelector(state => state.login.validateToken);
+    const { ownervoxi} = resValidateToken.user!!
     const [hold, sethold] = useState(true);
     const [mute, setmute] = useState(false);
     const [advisertodiver, setadvisertodiver] = useState("");
@@ -396,8 +409,9 @@ const MakeCall: React.FC<{}> = ({ }) => {
                             </IconButton>
                             <IconButton
                                 className={classes.numpadbuttons}
-                                style={{ gridColumnStart: "col3" }}
-                                onClick={() => {
+                                style={{ gridColumnStart: "col3"}}
+                                onClick={() => {                                    
+                                    dispatch(execute(conversationOutboundIns({number: numberVox,communicationchannelid:0, personcommunicationchannelowner: ownervoxi })))
                                     setNumberVox(numberVox.slice(0, -1))
                                 }}
                             >
