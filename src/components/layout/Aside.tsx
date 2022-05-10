@@ -76,7 +76,8 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
     const openDrawer = useSelector(state => state.popus.openDrawer);
     const applications = useSelector(state => state.login?.validateToken?.user?.menu);
     const dispatch = useDispatch();
-
+    const showcall = useSelector(state => state.voximplant.showcall);
+    const statusCall = useSelector(state => state.voximplant.statusCall);
     const voxiConnection = useSelector(state => state.voximplant.connection);
 
     return (
@@ -121,8 +122,9 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
                 <>
                     <div style={{ display: "flex", width: "100%", borderRight: '1px solid #EBEAED' }}>
                         <IconButton //holdcall
-                            style={{ marginLeft: "auto", marginTop: 20, marginRight: "auto", width: "100px", height: "100px", borderRadius: "50%", backgroundColor: "#bdbdbd" }}
+                            style={{marginLeft: "auto",marginTop: 20, marginRight: "auto", width: "100px", height: "100px", borderRadius: "50%", backgroundColor: showcall?"#7721ad":"#bdbdbd" }}
                             onClick={() => dispatch(setModalCall(true))}
+                            disabled={statusCall==="CONNECTED"||statusCall==="CONNECTING"}
                         >
                             <WifiCalling style={{ color: "white", width: "80px", height: "80px" }} />
                             <Typography gutterBottom variant="h6" component="div">

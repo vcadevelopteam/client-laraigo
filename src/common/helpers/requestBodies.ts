@@ -2985,6 +2985,7 @@ export const conversationOutboundIns = ({ number, communicationchannelid, person
         finishdate:false, 
         handoff:false, 
         usergroup:"", 
+        phone:number,
         extradata:"", 
         lastreplydate:true, 
         personlastreplydate:false, 

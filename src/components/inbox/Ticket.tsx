@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import PhoneCallbackIcon from '@material-ui/icons/PhoneCallback';
 import { IconButton } from '@material-ui/core';
 import { Call } from 'voximplant-websdk/Call/Call';
+import CallEndIcon from '@material-ui/icons/CallEnd';
 
 const useStyles = makeStyles((theme) => ({
     label: {
@@ -216,15 +217,26 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                 </div>
             }
             {(!!callVoxi && statusCall === "CONNECTING" && callVoxiTmp.type === "OUTBOUND") && (
-                <div>ICONO SALIENTE</div>
+                <div style={{ flex: 1 }}>
+                    <IconButton //rejectcall
+                            style={{ width: "35px", height: "35px", borderRadius: "50%", backgroundColor: 'rgb(180, 26, 26)' }}
+                            onClick={() => {
+                                dispatch(hangupCall(callVoxi))
+                            }}
+                        >
+                            <CallEndIcon style={{ color: "white", width: "30px", height: "30px" }} />
+                    </IconButton>
+                </div>
             )}
             {(!!callVoxi && statusCall === "CONNECTED") &&
                 <div style={{ flex: 1 }}>
-                    <IconButton //answercall
-                        style={{ width: "35px", height: "35px", borderRadius: "50%", backgroundColor: "red" }}
-                        onClick={() => dispatch(hangupCall(callVoxi))}
-                    >
-                        <PhoneCallbackIcon />
+                    <IconButton //rejectcall
+                            style={{ width: "35px", height: "35px", borderRadius: "50%", backgroundColor: 'rgb(180, 26, 26)' }}
+                            onClick={() => {
+                                dispatch(hangupCall(callVoxi))
+                            }}
+                        >
+                            <CallEndIcon style={{ color: "white", width: "30px", height: "30px" }} />
                     </IconButton>
                 </div>
             }
