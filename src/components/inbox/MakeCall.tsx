@@ -117,7 +117,6 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
     }),
 );
 function yesterdayOrToday(datadate:Date, t:any) {
-    console.log(datadate)
     const date = new Date(datadate)
     const yesterday = new Date();
     if (yesterday.toDateString() === date.toDateString()) {
@@ -143,12 +142,12 @@ interface NotificaionMenuItemProps {
     onClick?: MouseEventHandler<HTMLLIElement>;
 }
 
-const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description, date, user, image,origin }) => {
+const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description, date, user, image,origin,onClick }) => {
     const classes = useNotificaionStyles();
     const { t } = useTranslation();
     return (
         <>
-            <MenuItem button className={classes.root}>
+            <MenuItem button className={classes.root} onClick={onClick}>
                 <div style={{gap: 8, alignItems: 'center', width: '100%', display:"grid", gridTemplateColumns: '[col1] 30px [col2] auto  [col3] 90px'}}>
                     <div style={{gridColumnStart:"col1"}}>
                         <Tooltip title={user}>
@@ -192,6 +191,7 @@ const MakeCall: React.FC<{}> = ({ }) => {
     const [date, setdate] = useState(new Date());
     const [time, settime] = useState(0);
     const historial = useSelector(state => state.voximplant.requestGetHistory);
+    console.log(historial)
     const corpid = useSelector(state => state.login.validateToken?.user?.corpid);
     const orgid = useSelector(state => state.login.validateToken?.user?.orgid);
     const sitevoxi = useSelector(state => state.login.validateToken?.user?.sitevoxi);
@@ -284,7 +284,10 @@ const MakeCall: React.FC<{}> = ({ }) => {
                 style={{ zIndex: 99999999 }}>
                 <MuiDialogTitle disableTypography className={classes.root}>
                     <Typography variant="h6">{t(langKeys.phone)}</Typography>
-                    <IconButton aria-label="close" className={classes.closeButton} onClick={()=>{dispatch(setModalCall(false))}}>
+                    <IconButton aria-label="close" className={classes.closeButton} onClick={()=>{
+                        dispatch(setModalCall(false))
+                        setNumberVox("");
+                    }}>
                         <HighlightOffIcon style={{width: 30, height: 30}} />
                     </IconButton>
                 </MuiDialogTitle>
@@ -422,7 +425,7 @@ const MakeCall: React.FC<{}> = ({ }) => {
                                         communicationchannelid: ccidvoxi,
                                         personcommunicationchannelowner: numberVox,
                                         interactiontype: 'text',
-                                        interactiontext: 'LLAMADA SALIENTE'
+                                        interactiontext: 'LLAMADA SALIENTE',
                                     })))
                                 }}
                             >
@@ -441,6 +444,15 @@ const MakeCall: React.FC<{}> = ({ }) => {
                     <div style={{width:"100%",overflow: 'auto', height: '50vh' }}>
                         {historial.data?.map((e:any, i:number)=>
                             {return (<NotificaionMenuItem
+                                onClick={()=>{
+                                    dispatch(execute(conversationOutboundIns({
+                                        number: e.personcommunicationchannelowner,
+                                        communicationchannelid: ccidvoxi,
+                                        personcommunicationchannelowner: e.personcommunicationchannelowner,
+                                        interactiontype: 'text',
+                                        interactiontext: 'LLAMADA SALIENTE'
+                                    })))
+                                }}
                                 user={"none"}
                                 image={e.imageurl}
                                 key={`history-${i}`}
