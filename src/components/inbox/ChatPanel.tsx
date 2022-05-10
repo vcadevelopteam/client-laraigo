@@ -31,8 +31,6 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import CloseIcon from '@material-ui/icons/Close';
 import IOSSwitch from "components/fields/IOSSwitch";
-import PhoneIcon from '@material-ui/icons/Phone';
-import { setModalCall } from 'store/voximplant/actions';
 
 const dataPriority = [
     { option: 'HIGH' },
@@ -908,11 +906,6 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <IOSSwitch checked={hideLogs} onChange={handlerShowLogs} name="checkedB" />
                     </div>
-                </Tooltip>
-                <Tooltip title={t(langKeys.make_call) + ""} arrow placement="top">
-                    <IconButton onClick={() => dispatch(setModalCall(true))}>
-                        <PhoneIcon width={24} height={24} fill="#8F92A1" />
-                    </IconButton>
                 </Tooltip>
                 <Tooltip title={t(langKeys.search_ticket) + ""} arrow placement="top">
                     <IconButton onClick={() => setShowSearcher(true)}>

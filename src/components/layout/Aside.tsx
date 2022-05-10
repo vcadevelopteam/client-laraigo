@@ -119,17 +119,17 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
             </div>
             {(!voxiConnection.error && !voxiConnection.loading && openDrawer) && (
                 <>
-                    <div style={{display: "flex", width: "100%"}}>
+                    <div style={{ display: "flex", width: "100%", borderRight: '1px solid #EBEAED' }}>
                         <IconButton //holdcall
-                            style={{marginLeft: "auto",marginTop: 20, marginRight: "auto", width: "100px", height: "100px", borderRadius: "50%", backgroundColor: "#bdbdbd" }}
+                            style={{ marginLeft: "auto", marginTop: 20, marginRight: "auto", width: "100px", height: "100px", borderRadius: "50%", backgroundColor: "#bdbdbd" }}
                             onClick={() => dispatch(setModalCall(true))}
                         >
-                            <WifiCalling style={{color: "white", width: "80px", height: "80px"}}/>    
+                            <WifiCalling style={{ color: "white", width: "80px", height: "80px" }} />
                             <Typography gutterBottom variant="h6" component="div">
                             </Typography>
                         </IconButton>
                     </div>
-                    <div style={{textAlign: "center", cursor: "pointer"}} onClick={()=>{dispatch(setModalCall(true))}}>
+                    <div style={{ textAlign: "center", cursor: "pointer", borderRight: '1px solid #EBEAED' }} onClick={() => { dispatch(setModalCall(true)) }}>
                         <Typography gutterBottom variant="h6" component="div">
                             {t(langKeys.phone)}
                         </Typography>
