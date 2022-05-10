@@ -69,7 +69,10 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
             flexDirection: 'column',
             alignItems: 'flex-start',
             textAlign: 'start',
-            width: "100%",
+            fontSize: '0.8rem',
+            marginRight: 15,
+            marginLeft: 15,
+            width: "calc(100% - 30px)",
             borderBottom: '1px solid #bfbfc0',
         },
         row: {
@@ -79,9 +82,9 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
             width: '100%',
         },
         title: {
-            fontWeight: 'bold',
             whiteSpace: "initial",
-            width:"calc(100% - 40px)"
+            width:"calc(100% - 40px)",
+            color: "#a39e9e", 
         },
         date: {
             fontSize: 11,
@@ -92,12 +95,19 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
             flexGrow: 1,
             lineHeight: 1.1,
             overflow: 'hidden',
+            display: "flex",
+            alignItems: "center",
+            gap: 8
         },
         description: {
             whiteSpace: "initial",
             width:"calc(100% - 40px)",
-            color: "#c4c4c4",
-            fontWeight: "bold"
+            color: "#a39e9e",           
+        },
+        phoneicon: {
+            width: 15, 
+            height: 15, 
+            color: "#a39e9e",      
         },
     }),
 );
@@ -149,10 +159,10 @@ const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description,
                             <div className={classes.title}>{title}</div>
                         </div>
                         <div className={clsx(classes.description, classes.textOneLine)}>
-                            <span>{origin=="INBOUND"? <PhoneCallbackIcon style={{width: 15, height: 15, color: "#c4c4c4"}}/>:<PhoneForwardedIcon style={{width: 15, height: 15, color: "#c4c4c4"}}/> } {description}</span>
+                            {origin=="INBOUND"? <PhoneCallbackIcon className={classes.phoneicon}/>:<PhoneForwardedIcon className={classes.phoneicon}/> } {description}
                         </div>
                     </div>
-                    <div  style={{gridColumnStart:"col3", color: "#c4c4c4", fontWeight: "bold"}}>
+                    <div  style={{gridColumnStart:"col3", color: "#a39e9e", }}>
                         {yesterdayOrToday(date,t)}
                     </div>
                 </div>
