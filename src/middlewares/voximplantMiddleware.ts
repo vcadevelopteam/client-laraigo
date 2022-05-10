@@ -5,20 +5,15 @@ import typeVoximplant from 'store/voximplant/actionTypes';
 import typeInbox from 'store/inbox/actionTypes';
 import * as VoxImplant from 'voximplant-websdk'
 import { CallSettings } from 'voximplant-websdk/Structures';
-import { useSelector } from "hooks";
 import { ITicket } from '@types';
 
-import { execute } from 'store/main/actions';
 import { emitEvent } from 'store/inbox/actions';
-import { conversationOutboundIns } from 'common/helpers';
 
 const sdk = VoxImplant.getInstance();
 let alreadyLoad = false;
 
 const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async (action) => {
     const { type, payload } = action;
-    const resValidateToken = useSelector(state => state.login.validateToken);
-    const { ownervoxi} = resValidateToken.user!!
 
     if (type === typeVoximplant.INIT_SDK) {
         console.log("voximplant: alreadyLoad", alreadyLoad)
@@ -140,7 +135,6 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
             customData: "16502672010"
         };
         const call = sdk?.call(callSettings);
-        dispatch(execute(conversationOutboundIns({number: payload.number,communicationchannelid:0, personcommunicationchannelowner: ownervoxi })))
 
         dispatch({ type: typeVoximplant.INIT_CALL, payload: { call, type: "OUTBOUND", number: payload.number } })
 

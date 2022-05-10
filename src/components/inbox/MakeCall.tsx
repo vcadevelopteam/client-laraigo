@@ -16,12 +16,13 @@ import PhoneForwardedIcon from '@material-ui/icons/PhoneForwarded';
 import PhoneIcon from '@material-ui/icons/Phone';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch } from 'components';
 import { Box, Grid, IconButton, InputAdornment, Tabs } from '@material-ui/core';
-import { convertLocalDate, secondsToTime, getSecondsUntelNow } from 'common/helpers';
+import { convertLocalDate, secondsToTime, getSecondsUntelNow, conversationOutboundIns } from 'common/helpers';
 import { langKeys } from 'lang/keys';
 import ContactPhoneIcon from '@material-ui/icons/ContactPhone';
 import PhoneCallbackIcon from '@material-ui/icons/PhoneCallback';
 import BackspaceIcon from '@material-ui/icons/Backspace';
 import clsx from 'clsx';
+import { execute } from 'store/main/actions';
 
 const useStyles = makeStyles(theme => ({
     grey: {
@@ -178,6 +179,8 @@ const MakeCall: React.FC<{}> = ({ }) => {
     const dispatch = useDispatch();
     const phoneinbox = useSelector(state => state.inbox.person.data?.phone);
     const [numberVox, setNumberVox] = useState("");
+    const resValidateToken = useSelector(state => state.login.validateToken);
+    const { ownervoxi} = resValidateToken.user!!
     const [hold, sethold] = useState(true);
     const [mute, setmute] = useState(false);
     const [advisertodiver, setadvisertodiver] = useState("");
@@ -404,7 +407,8 @@ const MakeCall: React.FC<{}> = ({ }) => {
                             <IconButton
                                 className={classes.numpadbuttons}
                                 style={{ gridColumnStart: "col3"}}
-                                onClick={() => {
+                                onClick={() => {                                    
+                                    dispatch(execute(conversationOutboundIns({number: numberVox,communicationchannelid:0, personcommunicationchannelowner: ownervoxi })))
                                     setNumberVox(numberVox.slice(0, -1))
                                 }}
                             >
