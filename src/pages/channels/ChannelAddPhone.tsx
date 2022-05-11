@@ -174,7 +174,7 @@ export const ChannelAddPhone: FC = () => {
         setNextButton(true);
         if (fields) {
             if (fields.service) {
-                if (fields.service.category && fields.service.country) {
+                if (fields.service.category && fields.service.country && fields.service.region) {
                     if (hasStates) {
                         if (fields.service.state) {
                             setNextButton(false);
@@ -288,7 +288,7 @@ export const ChannelAddPhone: FC = () => {
             setPhonePrice((value.phone_price || phoneBackup) || 0.00);
 
             let partialFields = fields;
-            partialFields.service.region = value.phone_region_name;
+            partialFields.service.region = value.phone_region_id;
             setFields(partialFields);
         }
         else {
