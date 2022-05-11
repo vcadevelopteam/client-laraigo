@@ -210,7 +210,10 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                 <div style={{ flex: 1 }}>
                     <IconButton //answercall
                         style={{ width: "35px", height: "35px", borderRadius: "50%", backgroundColor: '#55bd84' }}
-                        onClick={() => dispatch(answerCall(callVoxi))}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            dispatch(answerCall(callVoxi));
+                        }}
                     >
                         <PhoneCallbackIcon className={localclasses.iconcall} />
                     </IconButton>
@@ -218,10 +221,11 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
             }
             {(!!callVoxi && statusCall === "CONNECTING" && callVoxiTmp.type === "OUTBOUND") && (
                 <div style={{ flex: 1 }}>
-                    <IconButton //rejectcall
+                    <IconButton
                             style={{ width: "35px", height: "35px", borderRadius: "50%", backgroundColor: 'rgb(180, 26, 26)' }}
-                            onClick={() => {
-                                dispatch(hangupCall(callVoxi))
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                dispatch(hangupCall(callVoxi));
                             }}
                         >
                             <CallEndIcon style={{ color: "white", width: "30px", height: "30px" }} />
@@ -230,10 +234,11 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
             )}
             {(!!callVoxi && statusCall === "CONNECTED") &&
                 <div style={{ flex: 1 }}>
-                    <IconButton //rejectcall
+                    <IconButton
                             style={{ width: "35px", height: "35px", borderRadius: "50%", backgroundColor: 'rgb(180, 26, 26)' }}
-                            onClick={() => {
-                                dispatch(hangupCall(callVoxi))
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                dispatch(hangupCall(callVoxi));
                             }}
                         >
                             <CallEndIcon style={{ color: "white", width: "30px", height: "30px" }} />

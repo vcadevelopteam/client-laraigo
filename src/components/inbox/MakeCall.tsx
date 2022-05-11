@@ -16,17 +16,15 @@ import PhoneForwardedIcon from '@material-ui/icons/PhoneForwarded';
 import PhoneIcon from '@material-ui/icons/Phone';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch } from 'components';
 import { Box, Grid, IconButton, InputAdornment, Tabs } from '@material-ui/core';
-import { convertLocalDate, secondsToTime, getSecondsUntelNow, conversationOutboundIns } from 'common/helpers';
+import { convertLocalDate, getSecondsUntelNow, conversationOutboundIns } from 'common/helpers';
 import { langKeys } from 'lang/keys';
 import ContactPhoneIcon from '@material-ui/icons/ContactPhone';
 import PhoneCallbackIcon from '@material-ui/icons/PhoneCallback';
 import BackspaceIcon from '@material-ui/icons/Backspace';
 import clsx from 'clsx';
 import { execute } from 'store/main/actions';
-import purple from '@material-ui/core/colors/red';
 import { ITicket } from '@types';
-import { emitEvent, newTicketCall } from 'store/inbox/actions';
-
+import { ListItemSkeleton } from 'components';
 
 const useStyles = makeStyles(theme => ({
     grey: {
@@ -192,10 +190,7 @@ const MakeCall: React.FC<{}> = ({ }) => {
     const [time, settime] = useState(0);
     const historial = useSelector(state => state.voximplant.requestGetHistory);
     console.log(historial)
-    const corpid = useSelector(state => state.login.validateToken?.user?.corpid);
-    const orgid = useSelector(state => state.login.validateToken?.user?.orgid);
-    const sitevoxi = useSelector(state => state.login.validateToken?.user?.sitevoxi);
-    const ccidvoxi = useSelector(state => state.login.validateToken?.user?.ccidvoxi);
+    const { corpid, orgid, sitevoxi, ccidvoxi, userid } = useSelector(state => state.login.validateToken?.user!!);
 
     React.useEffect(() => {
         if (!resExecute.loading && !resExecute.error) {
@@ -212,7 +207,7 @@ const MakeCall: React.FC<{}> = ({ }) => {
                     personlastreplydate: null,
                     countnewmessages: 0,
                     usergroup: "",
-                    displayname: v_personname,
+                    displayname: v_personname || numberVox,
                     coloricon: '',
                     communicationchanneltype: "VOXI",
                     lastmessage: "LLAMADA SALIENTE",
@@ -221,7 +216,7 @@ const MakeCall: React.FC<{}> = ({ }) => {
                     lastreplyuser: "",
                 }
                 dispatch(setModalCall(false));
-                const identifier = `${corpid}-${orgid}-${ccidvoxi}-${resExecute.data[0].v_conversationid}-${resExecute.data[0].v_personid}.${sitevoxi}`
+                const identifier = `${corpid}-${orgid}-${ccidvoxi}-${resExecute.data[0].v_conversationid}-${resExecute.data[0].v_personid}.${sitevoxi}.${userid}`
                 dispatch(makeCall({ number: numberVox, site: identifier || "", data }));
             }
         }
@@ -229,8 +224,11 @@ const MakeCall: React.FC<{}> = ({ }) => {
 
 
     React.useEffect(() => {
-        dispatch(getHistory())
-    }, [])
+        if (showcall && pageSelected === 2) {
+            dispatch(getHistory())
+        }
+    }, [showcall, pageSelected, dispatch])
+
     React.useEffect(() => {
         if (call.type === "INBOUND" && statusCall === "CONNECTING") {
             setdate(new Date())
@@ -255,6 +253,7 @@ const MakeCall: React.FC<{}> = ({ }) => {
             settime(0)
         }
     }, [statusCall])
+
     React.useEffect(() => {
         let timer = setTimeout(() => {
             settime(getSecondsUntelNow(convertLocalDate(String(date))));
@@ -269,12 +268,12 @@ const MakeCall: React.FC<{}> = ({ }) => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [time]);
+
     React.useEffect(() => {
         if (phoneinbox) {
             setNumberVox(phoneinbox)
         }
     }, [phoneinbox])
-
 
     return (
         <>
@@ -442,14 +441,15 @@ const MakeCall: React.FC<{}> = ({ }) => {
                     </div>
                 }
                 {pageSelected === 2 &&
-                    <div style={{ width: "100%", overflow: 'auto', height: '50vh' }}>
-                        {historial.data.map((e: any, i: number) => (
+                    <div style={{ width: "100%", overflow: 'auto', height: '50vh', marginTop: 8 }}>
+                        {historial?.loading ? <ListItemSkeleton /> : historial.data?.map((e: any, i: number) => (
                             <NotificaionMenuItem
                                 onClick={() => {
+                                    setNumberVox(e.phone)
                                     dispatch(execute(conversationOutboundIns({
-                                        number: e.personcommunicationchannelowner,
+                                        number: e.phone,
                                         communicationchannelid: ccidvoxi,
-                                        personcommunicationchannelowner: e.personcommunicationchannelowner,
+                                        personcommunicationchannelowner: e.phone,
                                         interactiontype: 'text',
                                         interactiontext: 'LLAMADA SALIENTE'
                                     })))
@@ -465,100 +465,6 @@ const MakeCall: React.FC<{}> = ({ }) => {
                         ))}
                     </div>
                 }
-                {/*<DialogActions style={{ justifyContent: 'center', marginBottom: 12 }}>
-                    
-                    {(call.type === "OUTBOUND" && statusCall === "CONNECTING") && (
-                        <>
-                            <IconButton //rejectcall
-                                style={{ marginLeft: "auto",marginRight: "auto",width: "50px", height: "50px", borderRadius: "50%", backgroundColor: 'rgb(180, 26, 26)' }}
-                                onClick={() => {
-                                    dispatch(holdCall({call: call.call, flag: true})); 
-                                    sethold(true)
-                                    setmute(false)
-                                    dispatch(hangupCall(call.call))
-                                }}
-                            >
-                                <CallEndIcon style={{color: "white", width: "35px", height: "35px"}}/> 
-                            </IconButton>
-                        </>
-                    )}
-                    {(call.type === "INBOUND" && statusCall === "CONNECTING") && (
-                        <>
-                            <IconButton //answercall
-                                style={{ marginLeft: "10px",marginRight: "auto",width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#00a884' }}
-                                onClick={() => dispatch(answerCall(call.call))}
-                            >
-                                <PhoneIcon style={{color: "white", width: "35px", height: "35px"}}/> 
-                            </IconButton>
-                            <IconButton //rejectcall
-                                style={{ marginLeft: "auto",marginRight: "10px",width: "50px", height: "50px", borderRadius: "50%", backgroundColor: 'rgb(180, 26, 26)' }}
-                                onClick={() => dispatch(rejectCall(call.call))}
-                            >
-                                <CallEndIcon style={{color: "white", width: "35px", height: "35px"}}/> 
-                            </IconButton>
-                        </>
-                    )}
-                    {statusCall === "CONNECTED" && (
-                        <div style={{display:"grid", width: "100%", gridTemplateColumns: 'auto [col1] 50px auto [col2] 50px auto [col3] 50px auto [col4] 50px auto', }}>
-                            {mute?(
-                            <IconButton //unmuteself
-                                style={{ gridColumnStart: "col1", marginLeft: "auto",marginRight: "10px",width: "50px", height: "50px", borderRadius: "50%", backgroundColor: 'rgb(180, 26, 26)' }}
-                                onClick={()=>{dispatch(unmuteCall(call.call));setmute(false)}}>
-                                <MicOffIcon style={{color: "white", width: "35px", height: "35px"}}/> 
-                            </IconButton>
-                            ):(
-                            <IconButton //muteself
-                                style={{ gridColumnStart: "col1", marginLeft: "auto",marginRight: "10px",width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#bdbdbd' }}
-                                onClick={()=>{dispatch(muteCall(call.call));setmute(true)}}>
-                                <MicIcon style={{color: "white", width: "35px", height: "35px"}}/> 
-                            </IconButton>
-                            )}
-                            <IconButton //holdcall
-                                style={{ gridColumnStart: "col2", marginLeft: "auto",marginRight: "10px",width: "50px", height: "50px", borderRadius: "50%", backgroundColor: hold?'#bdbdbd':'rgb(180, 26, 26)' }}
-                                onClick={() => {
-                                    dispatch(holdCall({call: call.call, flag: !hold})); 
-                                    sethold(!hold)
-                                }}
-                            >
-                                <PauseIcon style={{color: "white", width: "35px", height: "35px"}}/> 
-                            </IconButton>
-                            <IconButton //derivar
-                                style={{ gridColumnStart: "col3", marginLeft: "auto",marginRight: "10px",width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#bdbdbd' }}
-                                onClick={() => dispatch(hangupCall(call.call))}
-                            >
-                                <HeadsetMicIcon style={{color: "white", width: "35px", height: "35px"}}/> 
-                            </IconButton>
-                            <IconButton //hangupcall
-                                style={{ gridColumnStart: "col4", marginLeft: "auto",marginRight: "10px",width: "50px", height: "50px", borderRadius: "50%", backgroundColor: 'rgb(180, 26, 26)' }}
-                                onClick={() => dispatch(hangupCall(call.call))}
-                            >
-                                <CallEndIcon style={{color: "white", width: "35px", height: "35px"}}/> 
-                            </IconButton>
-
-                        </div>
-                    )}
-                    {statusCall === "DISCONNECTED" && (
-                        <>
-                            <IconButton//makecall
-                                style={{ marginLeft: "10px",marginRight: "auto",width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#00a884' }}
-                                onClick={() => {
-                                    dispatch(makeCall(numberVox))
-                                    sethold(true)
-                                    setmute(false)
-                                }}
-                            >
-                                <PhoneIcon style={{color: "white", width: "35px", height: "35px"}}/> 
-                            </IconButton>
-                            <Button
-                                color="primary"
-                                variant="contained"
-                                onClick={() => dispatch(setModalCall(false))}
-                            >
-                                {"Close"}
-                            </Button>
-                        </>
-                    )}
-                </DialogActions>*/}
             </Dialog>
             <audio ref={ringtone} src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/7120-download-iphone-6-original-ringtone-42676.mp3" />
         </>
