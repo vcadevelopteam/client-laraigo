@@ -4723,7 +4723,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             label={t(langKeys.invoice_servicemonth)}
                             onChange={(value) => { setValue('month', parseInt(value?.val || '0')); }}
                             className="col-3"
-                            valueDefault={((data?.row?.month ? data?.row?.month.toString() : getValues('month')) || '').padStart(2, "0")}
+                            valueDefault={((data?.row?.month || 0) || getValues('month')).toString().padStart(2, "0")}
                             data={dataMonths}
                             optionDesc="val"
                             optionValue="val"
