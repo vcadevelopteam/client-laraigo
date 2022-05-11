@@ -3477,9 +3477,13 @@ export const langKeys = {
     confirmation_payment: 'confirmation_payment',
     error_card_nofavorite: 'error_card_nofavorite',
     automaticpayment: 'automaticpayment',
+    billingperiodnotfound: 'billingperiodnotfound',
+    confirmation_emit: 'confirmation_emit',
     scheduled_events: 'scheduled_events',
     event: 'event',
-    xfield_ismissing: 'xfield_ismissing'
+    xfield_ismissing: 'xfield_ismissing',
+    automaticperiod: 'automaticperiod',
+    automaticinvoice: 'automaticinvoice',
 };
 
 export type LangKeys = typeof langKeys;
