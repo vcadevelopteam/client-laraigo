@@ -16,7 +16,7 @@ import { useSelector } from 'hooks';
 import {
     archiveLead, getAdvisers, getLead, getLeadActivities, getLeadHistory, getLeadLogNotes, getLeadPhases, markDoneActivity, resetArchiveLead, resetGetLead, resetGetLeadActivities, resetGetLeadHistory,
     resetGetLeadLogNotes, resetGetLeadPhases, resetMarkDoneActivity, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLeadActivity, saveLeadLogNote, saveLeadWithFiles, saveLead as saveLeadAction,
-    resetGetLeadProductsDomain, getLeadProductsDomain, getLeadTagsDomain,resetGetLeadTagsDomain, getLeadTemplates, resetGetLeadTemplates, getLeadChannels, resetGetLeadChannels
+    resetGetLeadProductsDomain, getLeadProductsDomain, getLeadTagsDomain,resetGetLeadTagsDomain, getLeadTemplates, getLeadChannels, resetGetLeadChannels
 } from 'store/lead/actions';
 import { Dictionary, ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, ICrmLeadHistory, ICrmLeadHistoryIns, ICrmLeadNote, ICrmLeadNoteSave, IDomain, IFetchData, IPerson } from '@types';
 import { manageConfirmation, showSnackbar } from 'store/popus/actions';
@@ -1780,6 +1780,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             register('communicationchannelid', { validate: (value) => true })
             register('communicationchannelid', { validate: (value) => true })
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activity, reset, register]);
 
     useEffect(() => {
@@ -1791,6 +1792,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             setValue('assigneduser', userid);
             refresh(prev => !prev);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open, userid, leadid, advisers, setValue]);
 
     const handleSave = useCallback((status: "PROGRAMADO" | "REALIZADO" | "ELIMINADO") => {

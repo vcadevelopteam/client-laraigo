@@ -370,7 +370,6 @@ const OnlyURLInsertImageButton: FC = ({ children }) => {
     const classes = useInsertImageButtonStyles();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [url, setUrl] = useState('');
-    const [tabIndex, setTabIndex] = useState(0);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
     const upload = useSelector(state => state.main.uploadFile);
     const open = Boolean(anchorEl);
@@ -441,7 +440,7 @@ const OnlyURLInsertImageButton: FC = ({ children }) => {
                 }}
             >
                 <div className={classes.rootPopup}>
-                    <div role="tabpanel" className={clsx(classes.rootTab, tabIndex !== 0 && classes.hidden)}>
+                    <div role="tabpanel" className={clsx(classes.rootTab)}>
                         <TextField
                             placeholder={t(langKeys.enterTheUrl)}
                             value={url}

@@ -121,6 +121,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
         } else {
             setCallVoxi(null);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [callVoxiTmp]);
 
     React.useEffect(() => {

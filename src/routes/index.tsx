@@ -64,7 +64,6 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 			const { userid, orgid, roledesc, ownervoxi, sitevoxi } = resValidateToken.user!!
 			dispatch(wsConnect({ userid, orgid, usertype: 'PLATFORM', automaticConnection, fromLogin, roledesc }));
 			if (sitevoxi && ownervoxi) {
-				console.log("vox::1")
 				dispatch(voximplantConnect({
 					automaticConnection: automaticConnection || !!localStorage.getItem("agentConnected") || false,
 					user: `user${userid}.${orgid}`,

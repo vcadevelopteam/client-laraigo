@@ -1,5 +1,3 @@
-import io from 'socket.io-client';
-import { apiUrls } from 'common/constants';
 import { Middleware, Dispatch } from 'redux';
 import typeVoximplant from 'store/voximplant/actionTypes';
 import typeInbox from 'store/inbox/actionTypes';
@@ -16,13 +14,12 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
     const { type, payload } = action;
 
     if (type === typeVoximplant.INIT_SDK) {
-        console.log("voximplant: alreadyLoad", alreadyLoad)
         try {
             dispatch({ type: typeVoximplant.MANAGE_CONNECTION, payload: { error: false, message: "", loading: true } })
             if (!alreadyLoad) {
                 await sdk.init({
                     micRequired: true,
-                    showDebugInfo: true,
+                    showDebugInfo: false,
                     progressTone: true,
                     progressToneCountry: 'US',
                 });
@@ -102,7 +99,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                 return;
             }
             try {
-                console.log(`voximplant: ${payload.user}@${payload.application}`)
+                // console.log(`voximplant: ${payload.user}@${payload.application}`)
                 await sdk.login(`${payload.user}@${payload.application}`, "Laraigo2022$CDFD");
 
                 if (payload?.automaticConnection) {
@@ -110,7 +107,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                 }
 
                 dispatch({ type: typeVoximplant.MANAGE_CONNECTION, payload: { error: false, message: "", loading: false } })
-                console.log("voximplant: Logged in!", typeVoximplant.MANAGE_CONNECTION);
+                console.log("voximplant: Logged in!");
 
                 return
             } catch (e) {

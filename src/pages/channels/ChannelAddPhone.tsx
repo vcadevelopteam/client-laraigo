@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import { Box, Breadcrumbs, Button, makeStyles } from "@material-ui/core";
-import { ColorInput, FieldEdit, FieldSelect, FieldView } from "components";
+import { ColorInput, FieldEdit, FieldSelect } from "components";
 import { FC, useEffect, useState } from "react";
 import { getCategories, getCountryStates, getRegions } from "store/voximplant/actions";
 import { getName } from "country-list";

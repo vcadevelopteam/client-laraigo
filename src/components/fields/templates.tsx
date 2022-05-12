@@ -521,18 +521,25 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
 export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({multiline=false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false }) => {
     const { t } = useTranslation();
     const [value, setValue] = useState<Dictionary | null>(null);
+    const [dataG, setDataG] = useState<Dictionary[]>([])
 
     useEffect(() => {
         if (orderbylabel) {
             if (data.length > 0) {
                 if (uset) {
-                    data = data.sort((a, b) => t(prefixTranslation + a[optionDesc]?.toLowerCase()).toUpperCase().localeCompare(t(prefixTranslation + b[optionDesc]?.toLowerCase()).toUpperCase()));
+                    const datatmp = data.sort((a, b) => t(prefixTranslation + a[optionDesc]?.toLowerCase()).toUpperCase().localeCompare(t(prefixTranslation + b[optionDesc]?.toLowerCase()).toUpperCase()));
+                    setDataG(datatmp);
+                    return;
                 }
                 else {
-                    data = data.sort((a, b) => (a[optionDesc] || '').localeCompare(b[optionDesc] || ''));
+                    const datatmp = data.sort((a, b) => (a[optionDesc] || '').localeCompare(b[optionDesc] || ''));
+                    setDataG(datatmp);
+                    return;
                 }
             }
         }
+        setDataG(data);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data]);
 
     useEffect(() => {
@@ -567,7 +574,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({multiline=fals
                     onChange && onChange(newValue);
                 }}
                 getOptionLabel={option => option ? (uset ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')) : ''}
-                options={data}
+                options={dataG}
                 loading={loading}
                 size="small"
                 renderInput={(params) => (

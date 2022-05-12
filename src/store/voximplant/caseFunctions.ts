@@ -2,7 +2,6 @@ import { IAction } from "@types";
 import { initialState, IState } from "./reducer";
 
 export const manageConnection = (state: IState, action: IAction): IState => {
-    console.log("voximplant: manageConnection", action.payload)
     return {
         ...state,
         connection: {
@@ -20,7 +19,6 @@ export const setModalCall = (state: IState, action: IAction): IState => {
     }
 }
 export const initCall = (state: IState, action: IAction): IState => {
-    console.log("voximplant: manageConnection", action.payload)
 
     return {
         ...state,
@@ -30,7 +28,6 @@ export const initCall = (state: IState, action: IAction): IState => {
 }
 
 export const manageStatusCall = (state: IState, action: IAction): IState => {
-    console.log("voximplant: manageConnection", action.payload)
     return {
         ...state,
         statusCall: action.payload
