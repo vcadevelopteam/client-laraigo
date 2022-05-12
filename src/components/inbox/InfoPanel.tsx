@@ -589,7 +589,7 @@ const Classifications: React.FC = () => {
                         return (
                             <div className={classes.containerPreviewTicket} style={{flexDirection:"initial", alignItems:"center"}} key={x.classificationid}>
                                 <div style={{ flex: 1 }}>
-                                    <div>- {x.path}</div>
+                                    <div>- {x.path.replace("/"," / ")}</div>
                                 </div>
                                 <DeleteIcon style={{color:"#B6B4BA"}} onClick={()=>{handleDelete(x)}}/>
                             </div>
