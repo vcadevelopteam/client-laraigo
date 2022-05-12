@@ -82,6 +82,7 @@ export interface ListChannels {
     sms: boolean;
     android: boolean;
     apple: boolean;
+    voximplantphone: boolean;
 }
 
 export interface FacebookChannel {
@@ -136,6 +137,15 @@ export interface ChatWebChannel {
     description: string;
     build: (v: Omit<ChatWebChannel, 'build'>) => IRequestBody;
 }
+export interface VoxImplantPhoneChannel {
+    description: string;
+    country: string;
+    category: string;
+    region: string;
+    state: string;
+    cost: number;
+    build: (v: Omit<VoxImplantPhoneChannel, 'build'>) => IRequestBody;
+}
 
 export interface Channels {
     facebook: FacebookChannel;
@@ -152,6 +162,7 @@ export interface Channels {
     sms: any;
     android: MobileChannel;
     apple: MobileChannel;
+    voximplantphone: VoxImplantPhoneChannel;
 }
 
 export interface MainData {
@@ -207,6 +218,7 @@ const defaultListChannels: ListChannels = {
     sms: false,
     android: false,
     apple: false,
+    voximplantphone: false,
 };
 
 export const SubscriptionContext = createContext<Subscription>({
