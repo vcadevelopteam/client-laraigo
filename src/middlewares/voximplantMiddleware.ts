@@ -36,8 +36,6 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                     const splitIdentifier = headers["X-identifier"].split("-");
 
                     const data: ITicket = {
-                        // corpid: parseInt(splitIdentifier[0]),
-                        // orgid: parseInt(splitIdentifier[1]),
                         conversationid: parseInt(splitIdentifier[3]),
                         ticketnum: splitIdentifier[5],
                         personid: parseInt(splitIdentifier[4]),
@@ -48,7 +46,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                         personlastreplydate: new Date().toISOString(),
                         countnewmessages: 1,
                         usergroup: "",
-                        displayname: e.call.number().split("@")[0].split(":")?.[1] || "",
+                        displayname: headers["X-personname"],
                         coloricon: "",
                         communicationchanneltype: "VOXI",
                         lastmessage: "LLAMADA ENTRANTE",
@@ -134,7 +132,6 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
             },
             customData: payload.site
         };
-        console.log("payload.site", payload.site)
         const call = sdk?.call(callSettings);
 
         dispatch(emitEvent({
@@ -142,8 +139,6 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
             data: {
                 ...action.payload.data,
                 newuserid: 0,
-                // orpid: parseInt(splitIdentifier[0]),
-                // orgid: parseInt(splitIdentifier[1]),
             }
         }));
 

@@ -122,19 +122,17 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
                 <>
                     <div style={{ display: "flex", width: "100%", borderRight: '1px solid #EBEAED' }}>
                         <IconButton //holdcall
-                            style={{marginLeft: "auto",marginTop: 20, marginRight: "auto", width: "100px", height: "100px", borderRadius: "50%", backgroundColor: showcall?"#7721ad":"#bdbdbd" }}
+                            style={{ marginLeft: "auto", marginTop: 20, marginRight: "auto", width: "100px", height: "100px", borderRadius: "50%", backgroundColor: showcall ? "#7721ad" : "#bdbdbd" }}
                             onClick={() => dispatch(setModalCall(true))}
-                            disabled={statusCall==="CONNECTED"||statusCall==="CONNECTING"}
+                            disabled={statusCall === "CONNECTED" || statusCall === "CONNECTING"}
                         >
                             <WifiCalling style={{ color: "white", width: "80px", height: "80px" }} />
                             <Typography gutterBottom variant="h6" component="div">
                             </Typography>
                         </IconButton>
                     </div>
-                    <div style={{ textAlign: "center", cursor: "pointer", borderRight: '1px solid #EBEAED' }} onClick={() => { dispatch(setModalCall(true)) }}>
-                        <Typography gutterBottom variant="h6" component="div">
-                            {t(langKeys.phone)}
-                        </Typography>
+                    <div style={{ textAlign: "center", cursor: "pointer", borderRight: '1px solid #EBEAED', fontSize: 20, fontWeight: 500 }} onClick={() => { dispatch(setModalCall(true)) }}>
+                        {t(langKeys.phone)}
                     </div>
                 </>
             )}

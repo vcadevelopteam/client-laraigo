@@ -34,8 +34,8 @@ const useStyles = makeStyles(theme => ({
         backgroundColor: 'rgb(180, 26, 26)'
     },
     tabs: {
-        paddingTop: 15,
-        paddingBottom: 15,
+        paddingTop: 10,
+        paddingBottom: 10,
     },
     root: {
         margin: 0,
@@ -66,17 +66,18 @@ const useStyles = makeStyles(theme => ({
 const useNotificaionStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
-            padding: theme.spacing(1),
+            padding: `${theme.spacing(1.5)}px ${theme.spacing(3)}px`,
             backgroundColor: 'inherit',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'flex-start',
             textAlign: 'start',
             fontSize: '0.8rem',
-            marginRight: 15,
-            marginLeft: 15,
-            width: "calc(100% - 30px)",
-            borderBottom: '1px solid #bfbfc0',
+            
+            // marginRight: 15,
+            // marginLeft: 15,
+            //width: "calc(100% - 30px)",
+            //borderBottom: '1px solid #bfbfc0',
         },
         row: {
             display: 'flex',
@@ -106,12 +107,20 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
             whiteSpace: "initial",
             width: "calc(100% - 40px)",
             color: "#a39e9e",
+            marginTop: 4
         },
         phoneicon: {
             width: 15,
             height: 15,
             color: "#a39e9e",
         },
+        line: {
+            backgroundColor: "#bfbfc0",
+            width: '90%',
+            height: 1,
+            marginLeft: 'auto',
+            marginRight: 'auto'
+        }
     }),
 );
 function yesterdayOrToday(datadate: Date, t: any) {
@@ -144,7 +153,7 @@ const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description,
     const classes = useNotificaionStyles();
     const { t } = useTranslation();
     return (
-        <>
+        <div>
             <MenuItem button className={classes.root} onClick={onClick}>
                 <div style={{ gap: 8, alignItems: 'center', width: '100%', display: "grid", gridTemplateColumns: '[col1] 30px [col2] auto  [col3] 90px' }}>
                     <div style={{ gridColumnStart: "col1" }}>
@@ -164,12 +173,13 @@ const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description,
                             {origin === "INBOUND" ? <PhoneCallbackIcon className={classes.phoneicon} /> : <PhoneForwardedIcon className={classes.phoneicon} />} {description}
                         </div>
                     </div>
-                    <div style={{ gridColumnStart: "col3", color: "#a39e9e", }}>
+                    <div style={{ gridColumnStart: "col3", color: "#a39e9e", textAlign: 'right' }}>
                         {yesterdayOrToday(date, t)}
                     </div>
                 </div>
             </MenuItem>
-        </>
+            <div className={classes.line}></div>
+        </div>
     );
 }
 
@@ -181,7 +191,7 @@ const MakeCall: React.FC<{}> = ({ }) => {
     const [numberVox, setNumberVox] = useState("");
     const resExecute = useSelector(state => state.main.execute);
     const [advisertodiver, setadvisertodiver] = useState("");
-    const [pageSelected, setPageSelected] = useState(0);
+    const [pageSelected, setPageSelected] = useState(1);
     const ringtone = React.useRef<HTMLAudioElement>(null);
     const call = useSelector(state => state.voximplant.call);
     const showcall = useSelector(state => state.voximplant.showcall);
@@ -189,7 +199,6 @@ const MakeCall: React.FC<{}> = ({ }) => {
     const [date, setdate] = useState(new Date());
     const [time, settime] = useState(0);
     const historial = useSelector(state => state.voximplant.requestGetHistory);
-    console.log(historial)
     const { corpid, orgid, sitevoxi, ccidvoxi, userid } = useSelector(state => state.login.validateToken?.user!!);
 
     React.useEffect(() => {
@@ -228,6 +237,14 @@ const MakeCall: React.FC<{}> = ({ }) => {
             dispatch(getHistory())
         }
     }, [showcall, pageSelected, dispatch])
+
+    React.useEffect(() => {
+        if (showcall) {
+            setNumberVox("")
+        } else {
+            setPageSelected(1)
+        }
+    }, [showcall])
 
     React.useEffect(() => {
         if (call.type === "INBOUND" && statusCall === "CONNECTING") {
@@ -305,166 +322,168 @@ const MakeCall: React.FC<{}> = ({ }) => {
                         <AntTab label={<PhoneCallbackIcon style={{ color: pageSelected === 2 ? "gold" : "white" }} />} />
                     </Tabs>
                 </DialogContent>
-                {pageSelected === 0 &&
-                    <div className={classes.tabs}>
-                        <div style={{ display: "flex", width: "100%", justifyContent: "center", marginTop: 15 }}>
-                            <FieldSelect
-                                label={t(langKeys.advisor)}
-                                className="col-12"
-                                valueDefault={advisertodiver}
-                                style={{ marginRight: "auto", marginLeft: "auto", width: "400px" }}
-                                onChange={(value) => setadvisertodiver(value?.userid || '')}
-                                error={advisertodiver ? "" : t(langKeys.required)}
-                                data={[]}
-                                optionDesc="displayname"
-                                optionValue="userid"
-                            />
+                <div style={{ height: 500 }}>
+                    {pageSelected === 0 &&
+                        <div className={classes.tabs}>
+                            <div style={{ display: "flex", width: "100%", justifyContent: "center", marginTop: 15 }}>
+                                <FieldSelect
+                                    label={t(langKeys.advisor)}
+                                    className="col-12"
+                                    valueDefault={advisertodiver}
+                                    style={{ marginRight: "auto", marginLeft: "auto", width: "400px" }}
+                                    onChange={(value) => setadvisertodiver(value?.userid || '')}
+                                    error={advisertodiver ? "" : t(langKeys.required)}
+                                    data={[]}
+                                    optionDesc="displayname"
+                                    optionValue="userid"
+                                />
+                            </div>
                         </div>
-                    </div>
-                }
-                {pageSelected === 1 &&
-                    <div className={classes.tabs}>
-                        <div style={{ display: "flex", marginLeft: 70, marginRight: 70 }}>
-                            <TextField
-                                label={t(langKeys.phone)}
-                                value={numberVox}
-                                disabled={resExecute.loading || statusCall !== "DISCONNECTED"}
-                                style={{ marginRight: "auto", marginLeft: "auto", width: "400px", marginBottom: 25 }}
-                                type="tel"
-                                onChange={(e) => setNumberVox(e.target.value)}
-                            />
+                    }
+                    {pageSelected === 1 &&
+                        <div className={classes.tabs}>
+                            <div style={{ display: "flex", marginLeft: 70, marginRight: 70 }}>
+                                <TextField
+                                    label={t(langKeys.phone)}
+                                    value={numberVox}
+                                    disabled={resExecute.loading || statusCall !== "DISCONNECTED"}
+                                    style={{ marginRight: "auto", marginLeft: "auto", width: "400px", marginBottom: 25 }}
+                                    type="tel"
+                                    onChange={(e) => setNumberVox(e.target.value)}
+                                />
+                            </div>
+                            <div className={classes.gridlinebuttons}>
+                                <Fab
+                                    style={{ gridColumnStart: "col1", fontSize: 20, color: "#707070" }}
+                                    onClick={() => setNumberVox(numberVox + "1")}
+                                >
+                                    1
+                                </Fab>
+                                <Fab
+                                    style={{ gridColumnStart: "col2", fontSize: 20, color: "#707070" }}
+                                    onClick={() => setNumberVox(numberVox + "2")}
+                                >
+                                    2
+                                </Fab>
+                                <Fab
+                                    style={{ gridColumnStart: "col3", fontSize: 20, color: "#707070" }}
+                                    onClick={() => setNumberVox(numberVox + "3")}
+                                >
+                                    3
+                                </Fab>
+                            </div>
+                            <div className={classes.gridlinebuttons}>
+                                <Fab
+                                    style={{ gridColumnStart: "col1", fontSize: 20, color: "#707070" }}
+                                    onClick={() => setNumberVox(numberVox + "4")}
+                                >
+                                    4
+                                </Fab>
+                                <Fab
+                                    style={{ gridColumnStart: "col2", fontSize: 20, color: "#707070" }}
+                                    onClick={() => setNumberVox(numberVox + "5")}
+                                >
+                                    5
+                                </Fab>
+                                <Fab
+                                    style={{ gridColumnStart: "col3", fontSize: 20, color: "#707070" }}
+                                    onClick={() => setNumberVox(numberVox + "6")}
+                                >
+                                    6
+                                </Fab>
+                            </div>
+                            <div className={classes.gridlinebuttons}>
+                                <Fab
+                                    style={{ gridColumnStart: "col1", fontSize: 20, color: "#707070" }}
+                                    onClick={() => setNumberVox(numberVox + "7")}
+                                >
+                                    7
+                                </Fab>
+                                <Fab
+                                    style={{ gridColumnStart: "col2", fontSize: 20, color: "#707070" }}
+                                    onClick={() => setNumberVox(numberVox + "8")}
+                                >
+                                    8
+                                </Fab>
+                                <Fab
+                                    style={{ gridColumnStart: "col3", fontSize: 20, color: "#707070" }}
+                                    onClick={() => setNumberVox(numberVox + "9")}
+                                >
+                                    9
+                                </Fab>
+                            </div>
+                            <div className={classes.gridlinebuttons}>
+                                <Fab
+                                    style={{ gridColumnStart: "col1", fontSize: 20, color: "#707070" }}
+                                    onClick={() => setNumberVox(numberVox + "*")}
+                                >
+                                    *
+                                </Fab>
+                                <Fab
+                                    style={{ gridColumnStart: "col2", fontSize: 20, color: "#707070" }}
+                                    onClick={() => setNumberVox(numberVox + "0")}
+                                >
+                                    0
+                                </Fab>
+                                <Fab
+                                    style={{ gridColumnStart: "col3", fontSize: 20, color: "#707070" }}
+                                    onClick={() => setNumberVox(numberVox + "#")}
+                                >
+                                    #
+                                </Fab>
+                            </div>
+                            <div className={classes.gridlinebuttons}>
+                                <Fab
+                                    style={{ gridColumnStart: "col2", fontSize: 20, color: "#707070" }}
+                                    color="primary"
+                                    disabled={resExecute.loading}
+                                    onClick={() => {
+                                        dispatch(execute(conversationOutboundIns({
+                                            number: numberVox,
+                                            communicationchannelid: ccidvoxi,
+                                            personcommunicationchannelowner: numberVox,
+                                            interactiontype: 'text',
+                                            interactiontext: 'LLAMADA SALIENTE',
+                                        })))
+                                    }}
+                                >
+                                    <PhoneIcon style={{ color: "white", width: "35px", height: "35px" }} />
+                                </Fab>
+                                <Fab
+                                    style={{ gridColumnStart: "col3", fontSize: 20, color: "#707070" }}
+                                    onClick={() => setNumberVox(numberVox.slice(0, -1))}
+                                >
+                                    <BackspaceIcon style={{ color: "#707070", width: "35px", height: "35px", paddingRight: 5 }} />
+                                </Fab>
+                            </div>
                         </div>
-                        <div className={classes.gridlinebuttons}>
-                            <Fab
-                                style={{ gridColumnStart: "col1", fontSize: 20, color: "#707070" }}
-                                onClick={() => setNumberVox(numberVox + "1")}
-                            >
-                                1
-                            </Fab>
-                            <Fab
-                                style={{ gridColumnStart: "col2", fontSize: 20, color: "#707070" }}
-                                onClick={() => setNumberVox(numberVox + "2")}
-                            >
-                                2
-                            </Fab>
-                            <Fab
-                                style={{ gridColumnStart: "col3", fontSize: 20, color: "#707070" }}
-                                onClick={() => setNumberVox(numberVox + "3")}
-                            >
-                                3
-                            </Fab>
+                    }
+                    {pageSelected === 2 &&
+                        <div style={{ width: "100%", height: '100%', overflow: 'overlay' }}>
+                            {historial?.loading ? <ListItemSkeleton /> : historial.data?.map((e: any, i: number) => (
+                                <NotificaionMenuItem
+                                    onClick={() => {
+                                        setNumberVox(e.phone)
+                                        dispatch(execute(conversationOutboundIns({
+                                            number: e.phone,
+                                            communicationchannelid: ccidvoxi,
+                                            personcommunicationchannelowner: e.phone,
+                                            interactiontype: 'text',
+                                            interactiontext: 'LLAMADA SALIENTE'
+                                        })))
+                                    }}
+                                    user={"none"}
+                                    image={e.imageurl}
+                                    key={`history-${i}`}
+                                    title={e.name}
+                                    description={(e.origin === "INBOUND" ? t(langKeys.inboundcall) : t(langKeys.outboundcall)) + " " + e?.totalduration || ""}
+                                    origin={e.origin}
+                                    date={e.createdate}
+                                />
+                            ))}
                         </div>
-                        <div className={classes.gridlinebuttons}>
-                            <Fab
-                                style={{ gridColumnStart: "col1", fontSize: 20, color: "#707070" }}
-                                onClick={() => setNumberVox(numberVox + "4")}
-                            >
-                                4
-                            </Fab>
-                            <Fab
-                                style={{ gridColumnStart: "col2", fontSize: 20, color: "#707070" }}
-                                onClick={() => setNumberVox(numberVox + "5")}
-                            >
-                                5
-                            </Fab>
-                            <Fab
-                                style={{ gridColumnStart: "col3", fontSize: 20, color: "#707070" }}
-                                onClick={() => setNumberVox(numberVox + "6")}
-                            >
-                                6
-                            </Fab>
-                        </div>
-                        <div className={classes.gridlinebuttons}>
-                            <Fab
-                                style={{ gridColumnStart: "col1", fontSize: 20, color: "#707070" }}
-                                onClick={() => setNumberVox(numberVox + "7")}
-                            >
-                                7
-                            </Fab>
-                            <Fab
-                                style={{ gridColumnStart: "col2", fontSize: 20, color: "#707070" }}
-                                onClick={() => setNumberVox(numberVox + "8")}
-                            >
-                                8
-                            </Fab>
-                            <Fab
-                                style={{ gridColumnStart: "col3", fontSize: 20, color: "#707070" }}
-                                onClick={() => setNumberVox(numberVox + "9")}
-                            >
-                                9
-                            </Fab>
-                        </div>
-                        <div className={classes.gridlinebuttons}>
-                            <Fab
-                                style={{ gridColumnStart: "col1", fontSize: 20, color: "#707070" }}
-                                onClick={() => setNumberVox(numberVox + "*")}
-                            >
-                                *
-                            </Fab>
-                            <Fab
-                                style={{ gridColumnStart: "col2", fontSize: 20, color: "#707070" }}
-                                onClick={() => setNumberVox(numberVox + "0")}
-                            >
-                                0
-                            </Fab>
-                            <Fab
-                                style={{ gridColumnStart: "col3", fontSize: 20, color: "#707070" }}
-                                onClick={() => setNumberVox(numberVox + "#")}
-                            >
-                                #
-                            </Fab>
-                        </div>
-                        <div className={classes.gridlinebuttons}>
-                            <Fab
-                                style={{ gridColumnStart: "col2", fontSize: 20, color: "#707070" }}
-                                color="primary"
-                                disabled={resExecute.loading}
-                                onClick={() => {
-                                    dispatch(execute(conversationOutboundIns({
-                                        number: numberVox,
-                                        communicationchannelid: ccidvoxi,
-                                        personcommunicationchannelowner: numberVox,
-                                        interactiontype: 'text',
-                                        interactiontext: 'LLAMADA SALIENTE',
-                                    })))
-                                }}
-                            >
-                                <PhoneIcon style={{ color: "white", width: "35px", height: "35px" }} />
-                            </Fab>
-                            <Fab
-                                style={{ gridColumnStart: "col3", fontSize: 20, color: "#707070" }}
-                                onClick={() => setNumberVox(numberVox.slice(0, -1))}
-                            >
-                                <BackspaceIcon style={{ color: "#707070", width: "35px", height: "35px", paddingRight: 5 }} />
-                            </Fab>
-                        </div>
-                    </div>
-                }
-                {pageSelected === 2 &&
-                    <div style={{ width: "100%", overflow: 'auto', height: '50vh', marginTop: 8 }}>
-                        {historial?.loading ? <ListItemSkeleton /> : historial.data?.map((e: any, i: number) => (
-                            <NotificaionMenuItem
-                                onClick={() => {
-                                    setNumberVox(e.phone)
-                                    dispatch(execute(conversationOutboundIns({
-                                        number: e.phone,
-                                        communicationchannelid: ccidvoxi,
-                                        personcommunicationchannelowner: e.phone,
-                                        interactiontype: 'text',
-                                        interactiontext: 'LLAMADA SALIENTE'
-                                    })))
-                                }}
-                                user={"none"}
-                                image={e.imageurl}
-                                key={`history-${i}`}
-                                title={e.name}
-                                description={(e.origin === "INBOUND" ? t(langKeys.inboundcall) : t(langKeys.outboundcall)) + " " + e?.totalduration || ""}
-                                origin={e.origin}
-                                date={e.createdate}
-                            />
-                        ))}
-                    </div>
-                }
+                    }
+                </div>
             </Dialog>
             <audio ref={ringtone} src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/7120-download-iphone-6-original-ringtone-42676.mp3" />
         </>
