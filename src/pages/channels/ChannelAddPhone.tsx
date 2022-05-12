@@ -1,22 +1,22 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import { Box, Breadcrumbs, Button, makeStyles } from '@material-ui/core';
+import { Box, Breadcrumbs, Button, makeStyles } from "@material-ui/core";
 import { ColorInput, FieldEdit, FieldSelect, FieldView } from "components";
 import { FC, useEffect, useState } from "react";
-import { getCategories, getCountryStates, getRegions } from 'store/voximplant/actions';
-import { getName } from 'country-list';
+import { getCategories, getCountryStates, getRegions } from "store/voximplant/actions";
+import { getName } from "country-list";
 import { insertChannel } from "store/channel/actions";
 import { langKeys } from "lang/keys";
-import { showBackdrop, showSnackbar } from 'store/popus/actions';
+import { showBackdrop, showSnackbar } from "store/popus/actions";
 import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
 
-import InfoIcon from '@material-ui/icons/Info';
-import Link from '@material-ui/core/Link';
+import InfoIcon from "@material-ui/icons/Info";
+import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
-import PhoneIcon from '@material-ui/icons/Phone';
+import PhoneIcon from "@material-ui/icons/Phone";
 import Tooltip from "@material-ui/core/Tooltip"
 
 interface whatsAppData {
@@ -26,19 +26,19 @@ interface whatsAppData {
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
-        fontSize: '14px',
+        fontSize: "14px",
         fontWeight: 500,
         padding: 12,
-        textTransform: 'initial',
+        textTransform: "initial",
         width: "180px",
     },
     containerDetail: {
-        background: '#fff',
-        borderRadius: '6px',
-        boxShadow: '0px 5px 10px 0px rgba(0, 0, 0, 0.5)',
-        marginBottom: '40px',
-        marginLeft: 'auto',
-        marginRight: 'auto',
+        background: "#fff",
+        borderRadius: "6px",
+        boxShadow: "0px 5px 10px 0px rgba(0, 0, 0, 0.5)",
+        marginBottom: "40px",
+        marginLeft: "auto",
+        marginRight: "auto",
         marginTop: theme.spacing(2),
         padding: theme.spacing(2),
         width: "50%",
@@ -86,6 +86,7 @@ export const ChannelAddPhone: FC = () => {
             "country": "",
             "region": "",
             "state": "",
+            "cost": "",
         },
         "type": "VOXIMPLANTPHONE",
     });
@@ -98,14 +99,28 @@ export const ChannelAddPhone: FC = () => {
     const [setInsert, setSetInsert] = useState(false);
     const [stateList, setStateList] = useState<any>([]);
     const [viewSelected, setViewSelected] = useState("view1");
-    const [waitCategories, setWaitCategories] = useState(true);
+    const [waitCategories, setWaitCategories] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
     const [waitRegions, setWaitRegions] = useState(false);
     const [waitStates, setWaitStates] = useState(false);
 
     useEffect(() => {
         dispatch(getCategories({}));
+        setWaitCategories(true);
     }, [])
+
+    useEffect(() => {
+        if (phonePrice) {
+            let partialFields = fields;
+            partialFields.service.cost = (phonePrice || 0).toString();
+            setFields(partialFields);
+        }
+        else {
+            let partialFields = fields;
+            partialFields.service.cost = "0";
+            setFields(partialFields);
+        }
+    }, [phonePrice])
 
     useEffect(() => {
         if (waitSave) {
@@ -163,7 +178,7 @@ export const ChannelAddPhone: FC = () => {
         if (waitRegions) {
             if (!regionsResult.loading) {
                 if (regionsResult.data) {
-                    setRegionList(regionsResult.data);
+                    setRegionList(regionsResult.data.filter((data: { phone_count: number; }) => data.phone_count > 0));
                 }
                 setWaitRegions(false);
             }
@@ -319,7 +334,7 @@ export const ChannelAddPhone: FC = () => {
 
     if (viewSelected === "view1") {
         return (
-            <div style={{ width: '100%' }}>
+            <div style={{ width: "100%" }}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD, whatsAppData) }}>
                         {t(langKeys.previoustext)}
@@ -386,14 +401,14 @@ export const ChannelAddPhone: FC = () => {
                         </div>}
                         <div className="row-zyx">
                             <div>
-                                <div style={{ display: 'inline' }}>
-                                    <b style={{ paddingLeft: '6px' }}>{t(langKeys.voximplant_pricealert)}</b>
+                                <div style={{ display: "inline" }}>
+                                    <b style={{ paddingLeft: "6px" }}>{t(langKeys.voximplant_pricealert)}</b>
                                     <Tooltip title={`${t(langKeys.voximplant_tooltip)}`} placement="top-start">
-                                        <InfoIcon style={{ padding: "5px 0 0 5px", color: 'rgb(119, 33, 173)' }} />
+                                        <InfoIcon style={{ padding: "5px 0 0 5px", color: "rgb(119, 33, 173)" }} />
                                     </Tooltip>
                                 </div>
-                                <div style={{ display: 'inline', alignContent: 'right', float: 'right' }}>
-                                    <b style={{ paddingRight: '20px', textAlign: 'right' }}>{`$${phonePrice}`}</b>
+                                <div style={{ display: "inline", alignContent: "right", float: "right" }}>
+                                    <b style={{ paddingRight: "20px", textAlign: "right" }}>{`$${phonePrice}`}</b>
                                 </div>
                             </div>
                         </div>
@@ -413,7 +428,7 @@ export const ChannelAddPhone: FC = () => {
         )
     } else {
         return (
-            <div style={{ width: '100%' }}>
+            <div style={{ width: "100%" }}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view2") }}>
                         {t(langKeys.previoustext)}
