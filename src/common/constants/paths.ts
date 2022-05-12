@@ -111,7 +111,7 @@ const paths = {
     QUICKREPLIES: '/extras/quickreplies',
     USERS: '/extras/users',
     GROUPCONFIG: '/extras/groupconfig',    
-    //WHITELIST: '/extras/whitelist',    
+    WHITELIST: '/extras/whitelist',    
     USERSETTINGS: '/usersettings',    
     INAPPROPRIATEWORDS: '/extras/inappropriatewords',
     INTELLIGENTMODELS: '/extras/intelligentmodels',

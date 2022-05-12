@@ -35,6 +35,7 @@ export const langKeys = {
     confirm: "confirm",
     copyLink: "copyLink",
     actionplan: 'actionplan',
+    manageWhitelist: "manageWhitelist",
     organization: 'organization',
     iaservices: 'iaservices',
     iaservices_plural: 'iaservices_plural',

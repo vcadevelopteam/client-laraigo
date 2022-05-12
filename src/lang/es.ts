@@ -1064,6 +1064,7 @@ const translation: LangKeys = {
     app_calendar: "Calendario",
     app_productcatalog: "Catálogo de Productos",
     app_reportscheduler: "Envíos Automáticos",
+    manageWhitelist: "Gestionar Whitelists",
     observation: 'Observación',
     botdesigner: 'Diseñador de bots',
 
