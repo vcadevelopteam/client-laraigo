@@ -3510,7 +3510,7 @@ const translation: LangKeys = {
     invitation_date: "{{date}}, {{month}} {{day}}, {{year}}",
     voximplant_buynumber: 'Buy Number',
     voximplant_state: 'State',
-    voximplant_region: 'Region (Not required)',
+    voximplant_region: 'Region',
     voximplant_pricealert: 'Monthly price',
     voximplant_tooltip: 'Price depends on selected country and region',
 };
