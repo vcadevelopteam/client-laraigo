@@ -454,7 +454,7 @@ const Settings: FC = () => {
                                 <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                                     <ItemTile
                                         title={<Trans i18nKey={langKeys.whitelist} count={2} />}
-                                        subtitle={<SubtitleText value={value?.num_classification} i18nKey={langKeys.whitelist} />}
+                                        subtitle={<SubtitleText value={value?.num_whitelist} i18nKey={langKeys.whitelist} />}
                                         icon={<ClassificationIcon fill="inherit" stroke="inherit" />}
                                         helpText={
                                             <HelpText
