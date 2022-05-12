@@ -36,6 +36,7 @@ const translation: LangKeys = {
     app_calendar: "Calendar",
     app_productcatalog: "Product catalog",
     app_reportscheduler: "Report scheduler",
+    manageWhitelist: "Manage Whitelist",
     model: 'Model',
     conditional: "Conditional",
     whensettingstate: "When setting state",
