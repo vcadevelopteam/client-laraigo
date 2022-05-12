@@ -535,6 +535,7 @@ const Classifications: React.FC = () => {
     const [view, setView] = useState('view');
     const [classifications, setClassifications] = useState<any[]>([]);
     const [waitSave, setWaitSave] = useState(false);
+    const tipifyRes = useSelector(state => state.main.execute);
 
     const mainAux2 = useSelector(state => state.main.mainAux2);
     const { setValue, getValues, trigger, register, formState: { errors } } = useForm<any>({
@@ -545,6 +546,11 @@ const Classifications: React.FC = () => {
     useEffect(() => {
         dispatch(getCollectionAux2(getConversationClassification2(ticketSelected?.conversationid!!)))
     }, [])
+    useEffect(() => {
+        if (!tipifyRes.loading && !tipifyRes.error) {
+            fetchData()
+        }
+    }, [tipifyRes])
 
     useEffect(() => {
         setClassifications(mainAux2?.data?.reverse()||[])
@@ -553,7 +559,6 @@ const Classifications: React.FC = () => {
     useEffect(() => {
         if (waitSave) {
             dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
-            fetchData();
             dispatch(showBackdrop(false));
             setWaitSave(false);
         }
