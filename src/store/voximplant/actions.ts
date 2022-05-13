@@ -3,7 +3,7 @@ import { Dictionary, IActionCall, ITicket } from "@types";
 import { CommonService, VoximplantService } from "network";
 
 import actionTypes from "./actionTypes";
-import { getConversationSelVoxi } from "common/helpers";
+import { getConversationSelVoxi,getAdvisorListVoxi } from "common/helpers";
 
 export const voximplantConnect = (payload: Dictionary): IActionCall => ({ type: actionTypes.INIT_SDK, payload });
 
@@ -67,6 +67,15 @@ export const getHistory = (): IActionCall => ({
         loading: actionTypes.GET_HISTORY,
         success: actionTypes.GET_HISTORY_SUCCESS,
         failure: actionTypes.GET_HISTORY_FAILURE,
+    },
+    type: null,
+});
+export const geAdvisors = (): IActionCall => ({
+    callAPI: () => CommonService.main(getAdvisorListVoxi()),
+    types: {
+        loading: actionTypes.GET_ADVISORS,
+        success: actionTypes.GET_ADVISORS_SUCCESS,
+        failure: actionTypes.GET_ADVISORS_FAILURE,
     },
     type: null,
 });

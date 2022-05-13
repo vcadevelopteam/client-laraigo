@@ -35,6 +35,11 @@ const actionType = {
     GET_HISTORY_FAILURE: 'voximplant/GET_HISTORY_FAILURE',
     GET_HISTORY_SUCCESS: 'voximplant/GET_HISTORY_SUCCESS',
     GET_HISTORY_RESET: 'voximplant/GET_HISTORY_RESET',
+
+    GET_ADVISORS: 'voximplant/GET_ADVISORS',
+    GET_ADVISORS_FAILURE: 'voximplant/GET_ADVISORS_FAILURE',
+    GET_ADVISORS_SUCCESS: 'voximplant/GET_ADVISORS_SUCCESS',
+    GET_ADVISORS_RESET: 'voximplant/GET_ADVISORS_RESET',
 };
 
 export default actionType;

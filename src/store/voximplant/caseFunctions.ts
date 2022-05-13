@@ -182,3 +182,40 @@ export const getHistoryReset = (state: IState): IState => ({
     ...state,
     requestGetHistory: initialState.requestGetHistory,
 })
+
+export const getAdvisors = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestGetAdvisors: {
+        ...state.requestGetAdvisors,
+        error: false,
+        loading: true,
+    }
+})
+
+export const getAdvisorsFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestGetAdvisors: {
+        ...state.requestGetAdvisors,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message || 'error_unexpected_error',
+    }
+})
+
+export const getAdvisorsSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestGetAdvisors: {
+        ...state.requestGetAdvisors,
+        code: action?.payload?.code,
+        data: action?.payload?.data,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message,
+    }
+})
+
+export const getAdvisorsReset = (state: IState): IState => ({
+    ...state,
+    requestGetAdvisors: initialState.requestGetAdvisors,
+})
