@@ -8,8 +8,6 @@ import { useHistory } from "react-router";
 import clsx from 'clsx';
 import Avatar from '@material-ui/core/Avatar';
 import Tooltip from '@material-ui/core/Tooltip';
-import { langKeys } from "lang/keys";
-import { useTranslation } from 'react-i18next';
 
 const StyledBadge = styled(Badge)<BadgeProps>(() => ({
     '& .MuiBadge-badge': {

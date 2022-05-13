@@ -121,10 +121,10 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
             {(!voxiConnection.error && !voxiConnection.loading && openDrawer) && (
                 <>
                     <div style={{ display: "flex", width: "100%", borderRight: '1px solid #EBEAED' }}>
-                        <IconButton //holdcall
+                        <IconButton 
                             style={{ marginLeft: "auto", marginTop: 20, marginRight: "auto", width: "100px", height: "100px", borderRadius: "50%", backgroundColor: showcall ? "#7721ad" : "#bdbdbd" }}
                             onClick={() => dispatch(setModalCall(true))}
-                            disabled={statusCall === "CONNECTED" || statusCall === "CONNECTING"}
+                            disabled={statusCall !== "DISCONNECTED"}
                         >
                             <WifiCalling style={{ color: "white", width: "80px", height: "80px" }} />
                             <Typography gutterBottom variant="h6" component="div">

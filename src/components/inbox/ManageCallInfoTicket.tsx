@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
-import { Button, IconButton, makeStyles, Typography } from "@material-ui/core";
+import { IconButton, Typography } from "@material-ui/core";
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'hooks';
 import PersonIcon from '@material-ui/icons/Person';
 import { useDispatch } from 'react-redux';
-import { answerCall, hangupCall, rejectCall, makeCall, holdCall, setModalCall, muteCall, unmuteCall } from 'store/voximplant/actions';
+import { answerCall, hangupCall, rejectCall, holdCall, muteCall, unmuteCall } from 'store/voximplant/actions';
 import TextField from '@material-ui/core/TextField';
 import PhoneIcon from '@material-ui/icons/Phone';
 import CallEndIcon from '@material-ui/icons/CallEnd';
@@ -18,14 +18,13 @@ import { convertLocalDate, secondsToTime, getSecondsUntelNow } from 'common/help
 import { langKeys } from 'lang/keys';
 import DialpadIcon from '@material-ui/icons/Dialpad';
 
-const ManageCallInfoTicket: React.FC<{}> = ({ }) => {
+const ManageCallInfoTicket: React.FC = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const phoneinbox = useSelector(state => state.inbox.person.data?.phone);
     const [numberVox, setNumberVox] = useState("");
     const [hold, sethold] = useState(true);
     const [mute, setmute] = useState(false);
-    const ringtone = React.useRef<HTMLAudioElement>(null);
     const call = useSelector(state => state.voximplant.call);
     const statusCall = useSelector(state => state.voximplant.statusCall);
     const [date, setdate] = useState(new Date());
@@ -36,21 +35,11 @@ const ManageCallInfoTicket: React.FC<{}> = ({ }) => {
 
     React.useEffect(() => {
         if (call.type === "INBOUND" && statusCall === "CONNECTING") {
-            setdate(new Date())
-            settime(0)
-            dispatch(setModalCall(true))
             sethold(true)
             setmute(false)
-            ringtone.current?.pause();
-            if (ringtone.current) {
-                ringtone.current.currentTime = 0;
-            }
             setNumberVox(call.number.split("@")[0].split(":")?.[1] || "")
-            ringtone.current?.play();
-
         } else if (call.type === "INBOUND" && statusCall !== "CONNECTING") {
             setNumberVox(call.number.split("@")[0].split(":")?.[1] || "")
-            ringtone.current?.pause();
         }
     }, [call, dispatch, statusCall])
 
@@ -64,20 +53,17 @@ const ManageCallInfoTicket: React.FC<{}> = ({ }) => {
             setadvisertodiver("")
         }
     }, [statusCall])
-    React.useEffect(() => {
-        let timer = setTimeout(() => {
-            settime(getSecondsUntelNow(convertLocalDate(String(date))));
-            if (time >= 30 && (call.type === "INBOUND" && statusCall === "CONNECTING")) {
-                dispatch(rejectCall(call.call))
-                settime(0)
-            }
-        }, 1000)
 
-        return () => {
-            timer && clearTimeout(timer);
+    React.useEffect(() => {
+        if (statusCall === "CONNECTED") {
+            setTimeout(() => {
+                settime(getSecondsUntelNow(convertLocalDate(date.toISOString())));
+            }, 1000)
+        } else {
+            settime(0)
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [time]);
+    }, [time, statusCall, date]);
+    
     React.useEffect(() => {
         if (phoneinbox) {
             setNumberVox(phoneinbox)
@@ -115,7 +101,7 @@ const ManageCallInfoTicket: React.FC<{}> = ({ }) => {
                                             style={{ marginRight: "auto", marginLeft: "auto", width: "400px" }}
                                             type="number"
                                             onChange={(e) => setNumberVox(e.target.value)}
-                                            disabled={statusCall !== "DISCONNECTED"}
+                                            disabled={true}
                                         />
                                     </div>) : (
                                         <div style={{ marginLeft: "auto", marginRight: "auto", textAlign: "center", fontSize: "20px" }}>
@@ -196,23 +182,9 @@ const ManageCallInfoTicket: React.FC<{}> = ({ }) => {
 
                                     </div>
                                 )}
-                                {/* {statusCall === "DISCONNECTED" && (
-                                    <>
-                                        <IconButton
-                                            style={{ marginLeft: "auto", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#55bd84' }}
-                                            onClick={() => {
-                                                dispatch(makeCall({ number: numberVox, site: '' }))
-                                                sethold(true)
-                                                setmute(false)
-                                            }}
-                                        >
-                                            <PhoneIcon style={{ color: "white", width: "35px", height: "35px" }} />
-                                        </IconButton>
-                                    </>
-                                )} */}
                             </div>
                         </div>
-                        <audio ref={ringtone} src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/7120-download-iphone-6-original-ringtone-42676.mp3" />
+                        
                     </>
                 </CardContent>
             </Card>

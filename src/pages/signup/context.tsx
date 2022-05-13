@@ -384,6 +384,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
                 message: errormessage,
             }))
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [executeResult, form.getValues, t, dispatch])
 
     useEffect(() => {
@@ -411,6 +412,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
                 dispatch(showBackdrop(false));
             }
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [executeResultValidation, validateBool])
 
     const deleteChannel = (option: keyof ListChannels) => {

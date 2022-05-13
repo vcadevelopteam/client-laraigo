@@ -33,7 +33,6 @@ export const ChannelAddSMS: FC = () => {
     const [waitSave, setWaitSave] = useState(false);
     const [setins, setsetins] = useState(false);
     const [nextbutton, setNextbutton] = useState(true);
-    const [nextbutton2, setNextbutton2] = useState(true);
     const [channelreg, setChannelreg] = useState(true);
     const mainResult = useSelector(state => state.channel.channelList)
     const executeResult = useSelector(state => state.channel.successinsert)

@@ -26,6 +26,7 @@ interface Properties {
     hide_log_conversation: boolean;
     auto_close: Dictionary;
     auto_close_holding: Dictionary;
+    time_reassign_call: number | undefined;
 }
 
 interface Domains {

@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Box, Button } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { useHistory, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { useDispatch } from 'react-redux';
 import { sendActivation } from 'store/activationuser/actions';
 import { useSelector } from 'hooks';
@@ -47,14 +47,10 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export const ActivateUser: FC = () => {
-    // const location = useLocation();
-    // const query = new URLSearchParams(location.search)
-    // const tk = query.get('t');
     const classes = useStyles();
     const { t } = useTranslation();
     const { token }: any = useParams();
     const dispatch = useDispatch();
-    const history = useHistory();
     const activationRes = useSelector(state => state.activationuser.activation);
     const [loading, setLoading] = useState<boolean>(true);
     const [valid, setValid] = useState<boolean | null>(null);

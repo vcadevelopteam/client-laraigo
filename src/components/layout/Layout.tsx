@@ -8,7 +8,7 @@ import { useSelector } from 'hooks';
 import { CssBaseline } from '@material-ui/core';
 import { routes } from 'routes/routes';
 import Popus from 'components/layout/Popus';
-import ManageCall from 'components/inbox/ManageCall';
+// import ManageCall from 'components/inbox/ManageCall';
 import MakeCall from 'components/inbox/MakeCall';
 
 const drawerWidth = 240;
@@ -255,7 +255,7 @@ const Layout: FC<LayoutProps> = ({ children, mainClasses }) => {
                     </>
                 }
             </div>
-            <ManageCall />
+            {/* <ManageCall /> */}
             <MakeCall />
             <Popus />
         </>

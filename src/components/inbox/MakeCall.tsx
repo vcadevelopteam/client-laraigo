@@ -1,22 +1,21 @@
-import React, { useEffect, FC, useState, useRef, MouseEventHandler } from 'react'
+import React, { FC, useState, MouseEventHandler } from 'react'
 import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import { createStyles, Theme, withStyles } from '@material-ui/core/styles';
-import { Avatar, Button, Fab, makeStyles, MenuItem, Tooltip, Typography } from "@material-ui/core";
+import { createStyles, Theme } from '@material-ui/core/styles';
+import { Avatar, Fab, makeStyles, MenuItem, Tooltip, Typography } from "@material-ui/core";
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import DialpadIcon from '@material-ui/icons/Dialpad';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'hooks';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import { useDispatch } from 'react-redux';
-import { answerCall, hangupCall, rejectCall, makeCall, holdCall, setModalCall, muteCall, unmuteCall, getHistory } from 'store/voximplant/actions';
+import { makeCall, setModalCall, getHistory, rejectCall } from 'store/voximplant/actions';
 import TextField from '@material-ui/core/TextField';
 import PhoneForwardedIcon from '@material-ui/icons/PhoneForwarded';
 import PhoneIcon from '@material-ui/icons/Phone';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch } from 'components';
-import { Box, Grid, IconButton, InputAdornment, Tabs } from '@material-ui/core';
-import { convertLocalDate, getSecondsUntelNow, conversationOutboundIns } from 'common/helpers';
+import { FieldSelect, AntTab } from 'components';
+import { IconButton, Tabs } from '@material-ui/core';
+import { conversationOutboundIns, convertLocalDate, getSecondsUntelNow } from 'common/helpers';
 import { langKeys } from 'lang/keys';
 import ContactPhoneIcon from '@material-ui/icons/ContactPhone';
 import PhoneCallbackIcon from '@material-ui/icons/PhoneCallback';
@@ -73,7 +72,7 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
             alignItems: 'flex-start',
             textAlign: 'start',
             fontSize: '0.8rem',
-            
+
             // marginRight: 15,
             // marginLeft: 15,
             //width: "calc(100% - 30px)",
@@ -183,21 +182,22 @@ const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description,
     );
 }
 
-const MakeCall: React.FC<{}> = ({ }) => {
+const MakeCall: React.FC = () => {
     const classes = useStyles();
     const { t } = useTranslation();
     const dispatch = useDispatch();
-    const phoneinbox = useSelector(state => state.inbox.person.data?.phone);
+    
     const [numberVox, setNumberVox] = useState("");
     const resExecute = useSelector(state => state.main.execute);
     const [advisertodiver, setadvisertodiver] = useState("");
     const [pageSelected, setPageSelected] = useState(1);
-    const ringtone = React.useRef<HTMLAudioElement>(null);
     const call = useSelector(state => state.voximplant.call);
+    const [timeWaiting, setTimeWaiting] = useState(0);
+    const [waitingDate, setWaitingDate] = useState<string | null>(null);
+    const user = useSelector(state => state.login.validateToken.user);
+    const ringtone = React.useRef<HTMLAudioElement>(null);
     const showcall = useSelector(state => state.voximplant.showcall);
     const statusCall = useSelector(state => state.voximplant.statusCall);
-    const [date, setdate] = useState(new Date());
-    const [time, settime] = useState(0);
     const historial = useSelector(state => state.voximplant.requestGetHistory);
     const { corpid, orgid, sitevoxi, ccidvoxi, userid } = useSelector(state => state.login.validateToken?.user!!);
 
@@ -229,8 +229,37 @@ const MakeCall: React.FC<{}> = ({ }) => {
                 dispatch(makeCall({ number: numberVox, site: identifier || "", data }));
             }
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [resExecute])
 
+    //ring when the customer call
+    React.useEffect(() => {
+        if (call.type === "INBOUND" && statusCall === "CONNECTING") {
+            setTimeWaiting(0);
+            setWaitingDate(new Date().toISOString())
+            ringtone.current?.pause();
+            if (ringtone.current) {
+                ringtone.current.currentTime = 0;
+            }
+            ringtone.current?.play();
+
+        } else if (call.type === "INBOUND" && statusCall !== "CONNECTING") {
+            ringtone.current?.pause();
+        }
+    }, [call, statusCall])
+
+
+    React.useEffect(() => {
+        if (timeWaiting >= (user?.properties.time_reassign_call || 30) && (call.type === "INBOUND" && statusCall === "CONNECTING")) {
+            dispatch(rejectCall(call.call));
+            setTimeWaiting(0);
+            return;
+        }
+        setTimeout(() => {
+            setTimeWaiting(getSecondsUntelNow(convertLocalDate(waitingDate)));
+        }, 1000)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [timeWaiting]);
 
     React.useEffect(() => {
         if (showcall && pageSelected === 2) {
@@ -245,52 +274,6 @@ const MakeCall: React.FC<{}> = ({ }) => {
             setPageSelected(1)
         }
     }, [showcall])
-
-    React.useEffect(() => {
-        if (call.type === "INBOUND" && statusCall === "CONNECTING") {
-            setdate(new Date())
-            settime(0)
-            dispatch(setModalCall(true))
-            ringtone.current?.pause();
-            if (ringtone.current) {
-                ringtone.current.currentTime = 0;
-            }
-            setNumberVox(call.number.split("@")[0].split(":")?.[1] || "")
-            ringtone.current?.play();
-
-        } else if (call.type === "INBOUND" && statusCall !== "CONNECTING") {
-            setNumberVox(call.number.split("@")[0].split(":")?.[1] || "")
-            ringtone.current?.pause();
-        }
-    }, [call, dispatch, statusCall])
-
-    React.useEffect(() => {
-        if (statusCall === "CONNECTED") {
-            setdate(new Date())
-            settime(0)
-        }
-    }, [statusCall])
-
-    React.useEffect(() => {
-        let timer = setTimeout(() => {
-            settime(getSecondsUntelNow(convertLocalDate(String(date))));
-            if (time >= 30 && (call.type === "INBOUND" && statusCall === "CONNECTING")) {
-                dispatch(rejectCall(call.call))
-                settime(0)
-            }
-        }, 1000)
-
-        return () => {
-            timer && clearTimeout(timer);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [time]);
-
-    React.useEffect(() => {
-        if (phoneinbox) {
-            setNumberVox(phoneinbox)
-        }
-    }, [phoneinbox])
 
     return (
         <>
@@ -436,15 +419,17 @@ const MakeCall: React.FC<{}> = ({ }) => {
                                 <Fab
                                     style={{ gridColumnStart: "col2", fontSize: 20, color: "#707070" }}
                                     color="primary"
-                                    disabled={resExecute.loading}
+                                    disabled={resExecute.loading || statusCall !== "DISCONNECTED"}
                                     onClick={() => {
-                                        dispatch(execute(conversationOutboundIns({
-                                            number: numberVox,
-                                            communicationchannelid: ccidvoxi,
-                                            personcommunicationchannelowner: numberVox,
-                                            interactiontype: 'text',
-                                            interactiontext: 'LLAMADA SALIENTE',
-                                        })))
+                                        if (statusCall === "DISCONNECTED") {
+                                            dispatch(execute(conversationOutboundIns({
+                                                number: numberVox,
+                                                communicationchannelid: ccidvoxi,
+                                                personcommunicationchannelowner: numberVox,
+                                                interactiontype: 'text',
+                                                interactiontext: 'LLAMADA SALIENTE',
+                                            })))
+                                        }
                                     }}
                                 >
                                     <PhoneIcon style={{ color: "white", width: "35px", height: "35px" }} />
@@ -463,14 +448,16 @@ const MakeCall: React.FC<{}> = ({ }) => {
                             {historial?.loading ? <ListItemSkeleton /> : historial.data?.map((e: any, i: number) => (
                                 <NotificaionMenuItem
                                     onClick={() => {
-                                        setNumberVox(e.phone)
-                                        dispatch(execute(conversationOutboundIns({
-                                            number: e.phone,
-                                            communicationchannelid: ccidvoxi,
-                                            personcommunicationchannelowner: e.phone,
-                                            interactiontype: 'text',
-                                            interactiontext: 'LLAMADA SALIENTE'
-                                        })))
+                                        if (statusCall === "DISCONNECTED") {
+                                            setNumberVox(e.phone)
+                                            dispatch(execute(conversationOutboundIns({
+                                                number: e.phone,
+                                                communicationchannelid: ccidvoxi,
+                                                personcommunicationchannelowner: e.phone,
+                                                interactiontype: 'text',
+                                                interactiontext: 'LLAMADA SALIENTE'
+                                            })))
+                                        }
                                     }}
                                     user={"none"}
                                     image={e.imageurl}

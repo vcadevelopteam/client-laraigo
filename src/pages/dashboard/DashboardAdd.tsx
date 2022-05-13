@@ -530,7 +530,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
     const { t } = useTranslation();
     const [selectedIndex, setSelectedIndex] = useState(-1);
     const [contentType, setContentType] = useState('');
-    const [graphicType, setgraphicType] = useState(getValues(`${key}.graph`));
+    // const [graphicType, setgraphicType] = useState(getValues(`${key}.graph`));
     const [columns, setColumns] = useState<ColumnTemplate[]>([]);
 
     useEffect(() => {
@@ -548,7 +548,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
 
         const defaultGraphicType = getValues(`${key}.contentType`);
         if (defaultGraphicType !== undefined || defaultGraphicType !== null) {
-            setgraphicType(defaultGraphicType);
+            // setgraphicType(defaultGraphicType);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [edit, getValues]);
@@ -605,8 +605,9 @@ export const LayoutItem: FC<LayoutItemProps> = ({
         }})
         console.log(summary)
         setColumns(summary.concat(columnas));
-        console.log(summary.concat(columnas))
-        console.log(getValues(`${key}.column`))
+        // console.log(summary.concat(columnas))
+        // console.log(getValues(`${key}.column`))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedIndex, templates]);
 
     const mandatoryReportTemplate = (value: number) => {
@@ -736,7 +737,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                         onChange={(v: typeof graphTypes[number]) => {
                             setValue(`${key}.graph`, v?.key || '')
                             setValue(`${key}.interval`, "")
-                            setgraphicType(v?.key || '')
+                            // setgraphicType(v?.key || '')
                         }}
                         error={errors[key]?.graph?.message}
                         disabled={loading}

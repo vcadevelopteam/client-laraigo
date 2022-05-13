@@ -18,7 +18,7 @@ import { uploadFile } from 'store/main/actions';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import {
     getCollection, resetAllMain, getMultiCollection,
-    execute, getCollectionAux, resetMainAux, getMultiCollectionAux
+    getCollectionAux, resetMainAux, getMultiCollectionAux
 } from 'store/main/actions';
 import { saveUser, delUser } from 'store/activationuser/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
@@ -975,7 +975,6 @@ const Users: FC = () => {
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main.mainData);
     const mainMultiResult = useSelector(state => state.main.multiData);
-    const executeResult = useSelector(state => state.main.execute);
     const executeRes = useSelector(state => state.activationuser.saveUser);
     const deleteResult = useSelector(state => state.activationuser.delUser);
     const [dataUsers, setdataUsers] = useState<Dictionary[]>([]);
