@@ -453,14 +453,14 @@ const MakeCall: React.FC = () => {
                                             dispatch(execute(conversationOutboundIns({
                                                 number: e.phone,
                                                 communicationchannelid: ccidvoxi,
-                                                personcommunicationchannelowner: e.phone,
+                                                personcommunicationchannelowner: e.personcommunicationchannelowner,
                                                 interactiontype: 'text',
                                                 interactiontext: 'LLAMADA SALIENTE'
                                             })))
                                         }
                                     }}
                                     user={"none"}
-                                    image={e.imageurl}
+                                    image={e.imageurldef}
                                     key={`history-${i}`}
                                     title={e.name}
                                     description={(e.origin === "INBOUND" ? t(langKeys.inboundcall) : t(langKeys.outboundcall)) + " " + e?.totalduration || ""}
