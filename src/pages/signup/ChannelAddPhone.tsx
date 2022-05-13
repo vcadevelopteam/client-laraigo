@@ -14,8 +14,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon, LinkOff as LinkOffIcon } from '@material-ui/icons';
 import { MainData, SubscriptionContext, usePlanData } from "./context";
 import { useFormContext } from "react-hook-form";
-import { getMultiCollection } from "store/main/actions";
-import { formatNumber, getPaymentPlanSel } from "common/helpers";
+import { formatNumber } from "common/helpers";
 
 import InfoIcon from "@material-ui/icons/Info";
 import paths from "common/constants/paths";
@@ -70,12 +69,10 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     const whatsAppData = location.state as whatsAppData | null;
     const { getValues, setValue, register, unregister, formState: { errors } } = useFormContext<MainData>();
 
-    const [dataPaymentPlan, setDataPaymentPlan] = useState<any>([]);
-    const [phoneTax, setPhoneTax] = useState(0.00);
-    const [waitPlan, setWaitPlan] = useState(false);
-
     const planData = usePlanData();
-    const multiResult = useSelector(state => state.main.multiData);
+
+    const [phoneTax, setPhoneTax] = useState(planData?.plan?.phonetax || 0);
+    const [waitPlan, setWaitPlan] = useState(false);
 
     const [categoryList, setCategoryList] = useState<any>([]);
     const [countryList, setCountryList] = useState<any>([]);
@@ -94,33 +91,8 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     const [waitStates, setWaitStates] = useState(false);
     const [hasFinished, setHasFinished] = useState(false)
 
-
-    useEffect(() => {
-        setPhoneTax(0.00);
-        if (dataPaymentPlan) {
-            if (dataPaymentPlan.length > 0) {
-                var currentPlan = dataPaymentPlan.find((data: { plan: string | undefined; }) => data.plan === planData?.plan?.plan);
-
-                if (currentPlan) {
-                    setPhoneTax(currentPlan.phonetax || 0);
-                }
-            }
-        }
-    }, [dataPaymentPlan])
-
-
-    useEffect(() => {
-        if (!multiResult.loading && waitPlan) {
-            setWaitPlan(false);
-            setDataPaymentPlan(multiResult.data[0] && multiResult.data[0].success ? multiResult.data[0].data : []);
-        }
-    }, [multiResult])
-
     useEffect(() => {
         dispatch(getCategories({}));
-        dispatch(getMultiCollection([
-            getPaymentPlanSel(),
-        ]));
         setWaitCategories(true);
         setWaitPlan(true);
     }, [])

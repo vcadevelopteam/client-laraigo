@@ -600,6 +600,7 @@ interface PlanData {
         limitChannels: number,
         plan: PlanType,
         provider: string,
+        phonetax: number,
     } | null
 }
 
@@ -621,6 +622,7 @@ export function usePlanData(): PlanData {
                 limitChannels: planData.data[0]?.channelscontracted || 0,
                 plan: match.params.token as PlanType,
                 provider: planData.data[0]?.providerwhatsapp || "",
+                phonetax: planData.data[0]?.phonetax || "",
             },
         };
     }, [planData, match.params.token]);
