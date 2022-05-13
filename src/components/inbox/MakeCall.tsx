@@ -192,7 +192,7 @@ const MakeCall: React.FC = () => {
     const [advisertodiver, setadvisertodiver] = useState("");
     const [pageSelected, setPageSelected] = useState(1);
     const call = useSelector(state => state.voximplant.call);
-    const [timeWaiting, setTimeWaiting] = useState(0);
+    const [timeWaiting, setTimeWaiting] = useState(-1);
     const [waitingDate, setWaitingDate] = useState<string | null>(null);
     const user = useSelector(state => state.login.validateToken.user);
     const ringtone = React.useRef<HTMLAudioElement>(null);
@@ -235,8 +235,8 @@ const MakeCall: React.FC = () => {
     //ring when the customer call
     React.useEffect(() => {
         if (call.type === "INBOUND" && statusCall === "CONNECTING") {
-            setTimeWaiting(0);
             setWaitingDate(new Date().toISOString())
+            setTimeWaiting(0);
             ringtone.current?.pause();
             if (ringtone.current) {
                 ringtone.current.currentTime = 0;
@@ -248,16 +248,21 @@ const MakeCall: React.FC = () => {
         }
     }, [call, statusCall])
 
-
+    //reassign if the call overload time limit
     React.useEffect(() => {
-        if (timeWaiting >= (user?.properties.time_reassign_call || 30) && (call.type === "INBOUND" && statusCall === "CONNECTING")) {
-            dispatch(rejectCall(call.call));
-            setTimeWaiting(0);
-            return;
+        console.log("user?.properties.time_reassign_call", user?.properties.time_reassign_call)
+        if (timeWaiting >= 0) {
+            if (timeWaiting >= (user?.properties.time_reassign_call || 30) && (call.type === "INBOUND" && statusCall === "CONNECTING")) {
+                dispatch(rejectCall(call.call));
+                setTimeWaiting(-1);
+                return;
+            }
+            if (waitingDate) {
+                setTimeout(() => {
+                    setTimeWaiting(getSecondsUntelNow(convertLocalDate(waitingDate)));
+                }, 1000)
+            }
         }
-        setTimeout(() => {
-            setTimeWaiting(getSecondsUntelNow(convertLocalDate(waitingDate)));
-        }, 1000)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [timeWaiting]);
 
