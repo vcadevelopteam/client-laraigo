@@ -6,11 +6,12 @@ import { editChannel, resetEditChannel } from 'store/channel/actions';
 import { getEditChannel } from 'common/helpers';
 import { useHistory, useLocation } from 'react-router';
 import { IChannel } from '@types';
-import paths from 'common/constants/paths';
 import { Box, Breadcrumbs, Button, Link, makeStyles } from '@material-ui/core';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { ColorInput, FieldEdit } from 'components';
+import { ColorInput, FieldEdit, FieldView } from 'components';
+
+import paths from 'common/constants/paths';
 
 const useFinalStepStyles = makeStyles(theme => ({
     title: {
@@ -33,18 +34,19 @@ const useFinalStepStyles = makeStyles(theme => ({
 }));
 
 const ChannelEdit: FC = () => {
-    const classes = useFinalStepStyles();
     const { t } = useTranslation();
+
     const dispatch = useDispatch();
+
+    const classes = useFinalStepStyles();
+    const edit = useSelector(state => state.channel.editChannel);
     const history = useHistory();
     const location = useLocation();
-    const edit = useSelector(state => state.channel.editChannel);
+    const channel = location.state as IChannel | null;
 
     const [name, setName] = useState("");
     const [auto, setAuto] = useState(false);
     const [hexIconColor, setHexIconColor] = useState("");
-
-    const channel = location.state as IChannel | null;
 
     useEffect(() => {
         if (!channel) {
@@ -70,7 +72,7 @@ const ChannelEdit: FC = () => {
             }));
         } else if (edit.success) {
             dispatch(showSnackbar({
-                message: "Se edito con exito",
+                message: t(langKeys.communicationchannel_editsuccess),
                 show: true,
                 success: true,
             }));
@@ -103,7 +105,7 @@ const ChannelEdit: FC = () => {
             </Breadcrumbs>
             <div>
                 <div className={classes.title}>
-                    Edita el canal de comunicación
+                    {t(langKeys.communicationchannel_edit)}
                 </div>
                 <div className="row-zyx">
                     <div className="col-3"></div>
@@ -115,11 +117,21 @@ const ChannelEdit: FC = () => {
                         valueDefault={channel!.communicationchanneldesc}
                     />
                 </div>
+                {channel?.phone && <>
+                    <div className="row-zyx">
+                        <div className="col-3"></div>
+                        <FieldView
+                            label={t(langKeys.phone)}
+                            className="col-6"
+                            value={channel!.phone}
+                        />
+                    </div>
+                </>}
                 <div className="row-zyx">
                     <div className="col-3"></div>
                     <div className="col-6">
                         <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                        {t(langKeys.givechannelcolor)}
+                            {t(langKeys.givechannelcolor)}
                         </Box>
                         <ColorInput hex={hexIconColor} onChange={e => setHexIconColor(e.hex)} />
                     </div>

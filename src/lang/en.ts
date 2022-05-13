@@ -3513,6 +3513,8 @@ const translation: LangKeys = {
     voximplant_region: 'Region',
     voximplant_pricealert: 'Monthly price',
     voximplant_tooltip: 'Price depends on selected country and region',
+    communicationchannel_edit: 'Communication channel edit',
+    communicationchannel_editsuccess: 'The communication channel was edited',
 };
 
 const enResource: ResourceLanguage = {
