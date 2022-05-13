@@ -3493,6 +3493,10 @@ export const langKeys = {
     voximplant_tooltip: 'voximplant_tooltip',
     communicationchannel_edit: 'communicationchannel_edit',
     communicationchannel_editsuccess: 'communicationchannel_editsuccess',
+    voximplantcategory_geographic: 'voximplantcategory_geographic',
+    voximplantcategory_tollfree: 'voximplantcategory_tollfree',
+    voximplantcategory_special: 'voximplantcategory_special',
+    voximplantcategory_mobile: 'mobile',
 };
 
 export type LangKeys = typeof langKeys;

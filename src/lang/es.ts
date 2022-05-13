@@ -3507,6 +3507,10 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     voximplant_tooltip: 'El precio depende del páis y el estado seleccionado',
     communicationchannel_edit: 'Edita el canal de comunicación',
     communicationchannel_editsuccess: 'Se edito con exito',
+    voximplantcategory_geographic: 'Geographic',
+    voximplantcategory_tollfree: 'Toll-free',
+    voximplantcategory_special: 'Special',
+    voximplantcategory_mobile: 'Mobile',
 };
 
 const esResource: ResourceLanguage = {

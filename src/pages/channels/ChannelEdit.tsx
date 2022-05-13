@@ -10,6 +10,7 @@ import { Box, Breadcrumbs, Button, Link, makeStyles } from '@material-ui/core';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { ColorInput, FieldEdit, FieldView } from 'components';
+import { formatNumber } from 'common/helpers';
 
 import paths from 'common/constants/paths';
 
@@ -47,6 +48,7 @@ const ChannelEdit: FC = () => {
     const [name, setName] = useState("");
     const [auto, setAuto] = useState(false);
     const [hexIconColor, setHexIconColor] = useState("");
+    const [serviceCredentials, setServiceCredentials] = useState<any>({});
 
     useEffect(() => {
         if (!channel) {
@@ -55,6 +57,9 @@ const ChannelEdit: FC = () => {
             setName(channel.communicationchanneldesc);
             setAuto(true);
             channel.coloricon && setHexIconColor(channel.coloricon);
+            if (channel.servicecredentials) {
+                setServiceCredentials(JSON.parse(channel.servicecredentials));
+            }
         }
 
         return () => {
@@ -126,6 +131,58 @@ const ChannelEdit: FC = () => {
                             value={channel!.phone}
                         />
                     </div>
+                </>}
+                {channel?.type === "VOXI" && <>
+                    {serviceCredentials?.countryname && <div className="row-zyx">
+                        <div className="col-3"></div>
+                        <FieldView
+                            label={t(langKeys.country)}
+                            className="col-6"
+                            value={serviceCredentials?.countryname}
+                        />
+                    </div>}
+                    {serviceCredentials?.categoryname && <div className="row-zyx">
+                        <div className="col-3"></div>
+                        <FieldView
+                            label={t(langKeys.category)}
+                            className="col-6"
+                            value={t(serviceCredentials?.categoryname)}
+                        />
+                    </div>}
+                    {serviceCredentials?.statename && <div className="row-zyx">
+                        <div className="col-3"></div>
+                        <FieldView
+                            label={t(langKeys.voximplant_state)}
+                            className="col-6"
+                            value={serviceCredentials?.statename}
+                        />
+                    </div>}
+                    {serviceCredentials?.regionname && <div className="row-zyx">
+                        <div className="col-3"></div>
+                        <FieldView
+                            label={t(langKeys.voximplant_region)}
+                            className="col-6"
+                            value={serviceCredentials?.regionname}
+                        />
+                    </div>}
+                    {serviceCredentials?.costvca && <div className="row-zyx">
+                        <div className="col-3"></div>
+                        <FieldView
+                            label={t(langKeys.voximplant_pricealert)}
+                            className="col-6"
+                            value={`$${formatNumber(parseFloat(serviceCredentials?.costvca || 0))}`}
+                        />
+                    </div>}
+                </>}
+                {(channel?.type === "FBDM" || channel?.type === "FBWA") && <>
+                    {serviceCredentials?.siteId && <div className="row-zyx">
+                        <div className="col-3"></div>
+                        <FieldView
+                            label={t(langKeys.url)}
+                            className="col-6"
+                            value={`https://www.facebook.com/${serviceCredentials?.siteId}`}
+                        />
+                    </div>}
                 </>}
                 <div className="row-zyx">
                     <div className="col-3"></div>

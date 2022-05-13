@@ -3515,6 +3515,10 @@ const translation: LangKeys = {
     voximplant_tooltip: 'Price depends on selected country and region',
     communicationchannel_edit: 'Communication channel edit',
     communicationchannel_editsuccess: 'The communication channel was edited',
+    voximplantcategory_geographic: 'Geographic',
+    voximplantcategory_tollfree: 'Toll-free',
+    voximplantcategory_special: 'Special',
+    voximplantcategory_mobile: 'Mobile',
 };
 
 const enResource: ResourceLanguage = {
