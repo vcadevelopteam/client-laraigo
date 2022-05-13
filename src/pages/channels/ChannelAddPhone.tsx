@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import { Box, Breadcrumbs, Button, makeStyles } from "@material-ui/core";
-import { ColorInput, FieldEdit, FieldSelect } from "components";
+import { ColorInput, FieldEdit, FieldSelect, FieldView } from "components";
 import { FC, useEffect, useState } from "react";
 import { formatNumber } from 'common/helpers';
 import { getCategories, getCountryStates, getRegions } from "store/voximplant/actions";
@@ -57,6 +57,7 @@ export const ChannelAddPhone: FC = () => {
     const classes = useChannelAddStyles();
     const countryStatesResult = useSelector(state => state.voximplant.requestGetCountryStates);
     const executeResult = useSelector(state => state.channel.successinsert);
+    const insertResult = useSelector(state => state.channel.insertChannel);
     const multiResult = useSelector(state => state.main.multiData);
     const history = useHistory();
     const location = useLocation<whatsAppData>();
@@ -102,9 +103,11 @@ export const ChannelAddPhone: FC = () => {
         "type": "VOXIMPLANTPHONE",
     });
     const [hasStates, setHasStates] = useState(false);
+    const [hasNumber, setHasNumber] = useState(false);
     const [hasRegions, setHasRegions] = useState(false);
     const [nextButton, setNextButton] = useState(true);
     const [phoneBackup, setPhoneBackup] = useState(0.00);
+    const [phoneNumber, setPhoneNumber] = useState("");
     const [phonePrice, setPhonePrice] = useState(0.00);
     const [phoneTax, setPhoneTax] = useState(0.00);
     const [regionList, setRegionList] = useState<any>([]);
@@ -177,7 +180,12 @@ export const ChannelAddPhone: FC = () => {
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }));
                 dispatch(showBackdrop(false));
 
-                history.push(paths.CHANNELS);
+                if (mainResult.data) {
+                    if (mainResult.data[0]) {
+                        setHasNumber(true);
+                        setPhoneNumber(mainResult.data[0].integrationId);
+                    }
+                }
             } else if (!executeResult) {
                 setWaitSave(false);
 
@@ -393,7 +401,6 @@ export const ChannelAddPhone: FC = () => {
 
         setSetInsert(true);
         setWaitSave(true);
-        setViewSelected("main");
     }
 
     function setNameField(value: any) {
@@ -502,53 +509,112 @@ export const ChannelAddPhone: FC = () => {
     } else {
         return (
             <div style={{ width: "100%" }}>
-                <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view1") }}>
-                        {t(langKeys.previoustext)}
-                    </Link>
-                </Breadcrumbs>
-                <div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.commchannelfinishreg)}</div>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldEdit
-                            onChange={(value) => setNameField(value)}
-                            label={t(langKeys.givechannelname)}
-                            className="col-6"
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <div className="col-6">
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                                {t(langKeys.givechannelcolor)}
-                            </Box>
-                            <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                                <PhoneIcon style={{ fill: `${coloricon}`, width: "100px", height: "100px" }} />
-                                <ColorInput
-                                    hex={fields.parameters.coloricon}
-                                    onChange={e => {
-                                        setFields(prev => ({
-                                            ...prev,
-                                            parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
-                                        }));
-                                        setcoloricon(e.hex)
-                                    }}
-                                />
+                {hasNumber === false && <>
+                    <Breadcrumbs aria-label="breadcrumb">
+                        <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view1") }}>
+                            {t(langKeys.previoustext)}
+                        </Link>
+                    </Breadcrumbs>
+                    <div>
+                        <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.commchannelfinishreg)}</div>
+                        <div className="row-zyx">
+                            <div className="col-3"></div>
+                            <FieldEdit
+                                onChange={(value) => setNameField(value)}
+                                label={t(langKeys.givechannelname)}
+                                className="col-6"
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <div className="col-3"></div>
+                            <div className="col-6">
+                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                    {t(langKeys.givechannelcolor)}
+                                </Box>
+                                <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
+                                    <PhoneIcon style={{ fill: `${coloricon}`, width: "100px", height: "100px" }} />
+                                    <ColorInput
+                                        hex={fields.parameters.coloricon}
+                                        onChange={e => {
+                                            setFields(prev => ({
+                                                ...prev,
+                                                parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
+                                            }));
+                                            setcoloricon(e.hex)
+                                        }}
+                                    />
+                                </div>
                             </div>
                         </div>
+                        <div style={{ paddingLeft: "80%" }}>
+                            <Button
+                                onClick={() => { finishRegister() }}
+                                className={classes.button}
+                                disabled={channelreg}
+                                variant="contained"
+                                color="primary"
+                            >{t(langKeys.finishreg)}
+                            </Button>
+                        </div>
                     </div>
-                    <div style={{ paddingLeft: "80%" }}>
-                        <Button
-                            onClick={() => { finishRegister() }}
-                            className={classes.button}
-                            disabled={channelreg}
-                            variant="contained"
-                            color="primary"
-                        >{t(langKeys.finishreg)}
-                        </Button>
+                </>}
+                {hasNumber === true && <>
+                    <Breadcrumbs aria-label="breadcrumb">
+                        <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS); }}>
+                            {t(langKeys.previoustext)}
+                        </Link>
+                    </Breadcrumbs>
+                    <div>
+                        <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.commchannelfinishreg)}</div>
+                        <div className="row-zyx">
+                            <div className="col-3"></div>
+                            <FieldView
+                                label={t(langKeys.givechannelname)}
+                                value={fields?.parameters?.description}
+                                className="col-6"
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <div className="col-3"></div>
+                            <div className="col-6">
+                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                    {t(langKeys.givechannelcolor)}
+                                </Box>
+                                <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
+                                    <PhoneIcon style={{ fill: `${coloricon}`, width: "100px", height: "100px" }} />
+                                    <ColorInput
+                                        hex={fields.parameters.coloricon}
+                                        onChange={e => {
+                                            setFields(prev => ({
+                                                ...prev,
+                                                parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
+                                            }));
+                                            setcoloricon(e.hex)
+                                        }}
+                                        disabled={true}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', marginLeft: 200, marginRight: 200, marginBottom: 20 }}>
+                            <pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word' }}>
+                                <code>
+                                    {`${t(langKeys.voximplant_numberbought)}${phoneNumber}`}
+                                </code>
+                            </pre>
+                        </div>
+                        <div style={{ paddingLeft: "80%" }}>
+                            <Button
+                                onClick={() => { history.push(paths.CHANNELS); }}
+                                className={classes.button}
+                                disabled={channelreg}
+                                variant="contained"
+                                color="primary"
+                            >{t(langKeys.close)}
+                            </Button>
+                        </div>
                     </div>
-                </div>
+                </>}
             </div>
         )
     }

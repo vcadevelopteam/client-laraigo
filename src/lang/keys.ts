@@ -3497,6 +3497,7 @@ export const langKeys = {
     voximplantcategory_tollfree: 'voximplantcategory_tollfree',
     voximplantcategory_special: 'voximplantcategory_special',
     voximplantcategory_mobile: 'mobile',
+    voximplant_numberbought: 'voximplant_numberbought',
 };
 
 export type LangKeys = typeof langKeys;

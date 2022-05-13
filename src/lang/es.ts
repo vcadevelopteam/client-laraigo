@@ -3511,6 +3511,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     voximplantcategory_tollfree: 'Toll-free',
     voximplantcategory_special: 'Special',
     voximplantcategory_mobile: 'Mobile',
+    voximplant_numberbought: 'El siguiente número fue comprado: ',
 };
 
 const esResource: ResourceLanguage = {

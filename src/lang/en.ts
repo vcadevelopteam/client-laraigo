@@ -3519,6 +3519,7 @@ const translation: LangKeys = {
     voximplantcategory_tollfree: 'Toll-free',
     voximplantcategory_special: 'Special',
     voximplantcategory_mobile: 'Mobile',
+    voximplant_numberbought: 'The following phone number was bought: ',
 };
 
 const enResource: ResourceLanguage = {
