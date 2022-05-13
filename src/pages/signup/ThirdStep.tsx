@@ -4,6 +4,7 @@ import { makeStyles, Typography, Paper } from '@material-ui/core';
 import { langKeys } from "lang/keys";
 import { Trans } from "react-i18next";
 import clsx from "clsx";
+import PhoneIcon from '@material-ui/icons/Phone';
 import { ControlPoint as ControlPointIcon } from "@material-ui/icons";
 import {
     LaraigoLogo,
@@ -190,14 +191,14 @@ const ThirdStep: FC = () => {
             onClick: () => toggleChannel('email'),
             selected: listchannels.email
 
-        },
-        {
-            icon: <SmsIcon className={classes.icon} />,
-            label: 'Sms',
-            key: 'sms',
-            onClick: () => toggleChannel('sms'),
-            selected: listchannels.sms
         },*/
+        {
+            icon: <PhoneIcon className={classes.icon} />,
+            label: 'phone',
+            key: 'phone',
+            onClick: () => toggleChannel('phone'),
+            selected: listchannels.voximplantphone
+        },
         {
             icon: <IosColor className={classes.icon} />,
             label: 'iOS SDk',
