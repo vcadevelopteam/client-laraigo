@@ -143,7 +143,12 @@ export interface VoxImplantPhoneChannel {
     category: string;
     region: string;
     state: string;
+    countryname: string;
+    categoryname: string;
+    regionname: string;
+    statename: string;
     cost: number;
+    costvca: string;
     build: (v: Omit<VoxImplantPhoneChannel, 'build'>) => IRequestBody;
 }
 

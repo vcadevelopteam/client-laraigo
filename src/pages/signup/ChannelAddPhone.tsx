@@ -19,8 +19,10 @@ import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
 import PhoneIcon from "@material-ui/icons/Phone";
 import Tooltip from "@material-ui/core/Tooltip"
-import { MainData, SubscriptionContext } from "./context";
+import { MainData, SubscriptionContext, usePlanData } from "./context";
 import { useFormContext } from "react-hook-form";
+import { getMultiCollection } from "store/main/actions";
+import { formatNumber, getPaymentPlanSel } from "common/helpers";
 
 interface whatsAppData {
     row?: any;
@@ -70,10 +72,15 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     const whatsAppData = location.state as whatsAppData | null;
     const { getValues, setValue, register, unregister, formState: { errors } } = useFormContext<MainData>();
 
+    const [dataPaymentPlan, setDataPaymentPlan] = useState<any>([]);
+    const [phoneTax, setPhoneTax] = useState(0.00);
+    const [waitPlan, setWaitPlan] = useState(false);
+    
+    const planData = usePlanData();
+    const multiResult = useSelector(state => state.main.multiData);
+
     const [categoryList, setCategoryList] = useState<any>([]);
     const [countryList, setCountryList] = useState<any>([]);
-    const [channelreg, setChannelreg] = useState(true);
-    const [coloricon, setcoloricon] = useState("#1D9BF0");
     const [hasStates, setHasStates] = useState(false);
     const [hasRegions, setHasRegions] = useState(false);
     const [nextButton, setNextButton] = useState(true);
@@ -88,6 +95,49 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     const [waitRegions, setWaitRegions] = useState(false);
     const [waitStates, setWaitStates] = useState(false);
     const [hasFinished, setHasFinished] = useState(false)
+
+
+    useEffect(() => {
+        setPhoneTax(0.00);
+        if (dataPaymentPlan) {
+            if (dataPaymentPlan.length > 0) {
+                var currentPlan = dataPaymentPlan.find((data: { plan: string | undefined; }) => data.plan === planData?.plan?.plan);
+
+                if (currentPlan) {
+                    setPhoneTax(currentPlan.phonetax || 0);
+                }
+            }
+        }
+    }, [dataPaymentPlan])
+
+    
+    useEffect(() => {
+        if (!multiResult.loading && waitPlan) {
+            setWaitPlan(false);
+            setDataPaymentPlan(multiResult.data[0] && multiResult.data[0].success ? multiResult.data[0].data : []);
+        }
+    }, [multiResult])
+
+    useEffect(() => {
+        dispatch(getCategories({}));
+        dispatch(getMultiCollection([
+            getPaymentPlanSel(),
+        ]));
+        setWaitCategories(true);
+        setWaitPlan(true);
+    }, [])
+
+    
+    useEffect(() => {
+        if (phonePrice) {
+            setValue("channels.voximplantphone.cost",(phonePrice || 0))
+            setValue("channels.voximplantphone.costvca", (formatNumber((phonePrice || 0) * (1 + (phoneTax || 0)))).toString())
+        }
+        else {
+            setValue("channels.voximplantphone.cost",(0))
+            setValue("channels.voximplantphone.costvca", "0")
+        }
+    }, [phonePrice])
 
     useEffect(() => {
         const strRequired = (value: string) => {
@@ -122,7 +172,12 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                 "country": values.country,
                 "region": values.region,
                 "state": values.state,
+                "categoryname": values.categoryname,
+                "countryname": values.countryname,
+                "regionname": values.regionname,
+                "statename": values.statename,
                 "cost": values.cost,
+                "costvca": values.costvca,
             },
             "type": "VOXIMPLANTPHONE",
         })});
@@ -226,8 +281,8 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     const handleCountry = (value: any) => {
         if (value) {
             setCategoryList(value.phone_categories || []);
-
             setValue('channels.voximplantphone.country', value.country_code)
+            setValue('channels.voximplantphone.countryname', value.country_name)
         }else {
             setHasRegions(false);
             setHasStates(false);
@@ -236,11 +291,15 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
             setCategoryList([]);
             setRegionList([]);
             setStateList([]);
-            setValue('channels.voximplantphone.category', "")
-            setValue('channels.voximplantphone.region', "")
-            setValue('channels.voximplantphone.state', "")
             setValue('channels.voximplantphone.country', "")
+            setValue('channels.voximplantphone.countryname', "")
         }
+        setValue('channels.voximplantphone.category', "")
+        setValue('channels.voximplantphone.region', "")
+        setValue('channels.voximplantphone.state', "")
+        setValue('channels.voximplantphone.categoryname', "")
+        setValue('channels.voximplantphone.regionname', "")
+        setValue('channels.voximplantphone.statename', "")
         disableNextButton();
     }
 
@@ -264,6 +323,7 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                 setWaitRegions(true);
             }
             setValue('channels.voximplantphone.category', value.phone_category_name)
+            setValue('channels.voximplantphone.categoryname', value.phone_category_name)
         }
         else {
             setHasRegions(false);
@@ -273,15 +333,19 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
             setRegionList([]);
             setStateList([]);
             setValue('channels.voximplantphone.category', "")
-            setValue('channels.voximplantphone.region', "")
-            setValue('channels.voximplantphone.state', "")
+            setValue('channels.voximplantphone.categoryname', "")
         }
+        setValue('channels.voximplantphone.region', "")
+        setValue('channels.voximplantphone.state', "")
+        setValue('channels.voximplantphone.regionname', "")
+        setValue('channels.voximplantphone.statename', "")
         disableNextButton();
     }
 
     const handleState = (value: any) => {
         if (value) {
             setValue('channels.voximplantphone.state', value.country_state)
+            setValue('channels.voximplantphone.statename', value.country_state_name)
             setHasRegions(true);
 
             dispatch(getRegions({ country_code: getValues('channels.voximplantphone.country'), phone_category_name: getValues('channels.voximplantphone.category'), country_state: value.country_state }));
@@ -290,9 +354,11 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
         else {
             setHasRegions(false);
             setRegionList([]);
-            setValue('channels.voximplantphone.region', "")
             setValue('channels.voximplantphone.state', "")
+            setValue('channels.voximplantphone.statename', "")
         }
+        setValue('channels.voximplantphone.region', "")
+        setValue('channels.voximplantphone.regionname', "")
         disableNextButton();
     }
 
@@ -300,10 +366,12 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
         if (value) {
             setPhonePrice((value.phone_price || phoneBackup) || 0.00);
             setValue('channels.voximplantphone.region', value.phone_region_id)
+            setValue('channels.voximplantphone.regionname', value.phone_region_name)
         }
         else {
             setPhonePrice(phoneBackup || 0.00);
             setValue('channels.voximplantphone.region', "")
+            setValue('channels.voximplantphone.regionname', "")
         }
         disableNextButton();
     }
@@ -384,7 +452,7 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                                     </Tooltip>
                                 </div>
                                 <div style={{ display: "inline", alignContent: "right", float: "right" }}>
-                                    <b style={{ paddingRight: "20px", textAlign: "right" }}>{`$${phonePrice}`}</b>
+                                    <b style={{ paddingRight: "20px", textAlign: "right" }}>{`$${formatNumber(phonePrice * (1 + (phoneTax || 0)))}`}</b>
                                 </div>
                             </div>
                         </div>
