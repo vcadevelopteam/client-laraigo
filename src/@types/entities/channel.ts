@@ -34,4 +34,5 @@ export interface IChannel {
     type: string;
     typedesc: string;
     updintegration: string;
+    phone: string;
 }

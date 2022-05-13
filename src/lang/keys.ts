@@ -3491,6 +3491,8 @@ export const langKeys = {
     voximplant_region: 'voximplant_region',
     voximplant_pricealert: 'voximplant_pricealert',
     voximplant_tooltip: 'voximplant_tooltip',
+    communicationchannel_edit: 'communicationchannel_edit',
+    communicationchannel_editsuccess: 'communicationchannel_editsuccess',
 };
 
 export type LangKeys = typeof langKeys;

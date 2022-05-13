@@ -430,7 +430,7 @@ export const ChannelAddPhone: FC = () => {
         return (
             <div style={{ width: "100%" }}>
                 <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view2") }}>
+                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view1") }}>
                         {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
