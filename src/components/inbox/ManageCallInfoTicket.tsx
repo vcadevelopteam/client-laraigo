@@ -144,7 +144,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                     </>
                                 )}
                                 {statusCall === "CONNECTED" && (
-                                    <div style={{ display: "grid", width: "100%", gridTemplateColumns: 'auto [col1] 50px 50px [col2] 50px 50px [col3] 50px 50px [col4] 50px auto', }}>
+                                    <div style={{ display: "grid", width: "100%", gridTemplateColumns: 'auto [col1] 50px 50px [col2] 50px 50px [col4] 50px auto', }}>
                                         {mute ? (
                                             <IconButton //unmuteself
                                                 style={{ gridColumnStart: "col1", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#fa6262' }}
@@ -167,12 +167,14 @@ const ManageCallInfoTicket: React.FC = () => {
                                         >
                                             <PauseIcon style={{ color: "white", width: "35px", height: "35px" }} />
                                         </IconButton>
-                                        <IconButton //derivar
+                                        {
+                                        /*<IconButton //derivar
                                             style={{ gridColumnStart: "col3", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: divertcall ? '#7721ad' : '#bdbdbd' }}
                                             onClick={() => setdivertcall(true)}
-                                        >
+                                            >
                                             <HeadsetMicIcon style={{ color: "white", width: "35px", height: "35px" }} />
-                                        </IconButton>
+                                        </IconButton>*/
+                                        }
                                         <IconButton //hangupcall
                                             style={{ gridColumnStart: "col4", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#fa6262' }}
                                             onClick={() => dispatch(hangupCall(call.call))}
