@@ -9,13 +9,13 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'hooks';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import { useDispatch } from 'react-redux';
-import { makeCall, setModalCall, getHistory, rejectCall } from 'store/voximplant/actions';
+import { makeCall, setModalCall, getHistory, geAdvisors, rejectCall } from 'store/voximplant/actions';
 import TextField from '@material-ui/core/TextField';
 import PhoneForwardedIcon from '@material-ui/icons/PhoneForwarded';
 import PhoneIcon from '@material-ui/icons/Phone';
 import { FieldSelect, AntTab } from 'components';
 import { IconButton, Tabs } from '@material-ui/core';
-import { conversationOutboundIns, convertLocalDate, getSecondsUntelNow } from 'common/helpers';
+import { conversationOutboundIns, convertLocalDate, getSecondsUntelNow,getAdvisorListVoxi } from 'common/helpers';
 import { langKeys } from 'lang/keys';
 import ContactPhoneIcon from '@material-ui/icons/ContactPhone';
 import PhoneCallbackIcon from '@material-ui/icons/PhoneCallback';
@@ -102,6 +102,16 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
             alignItems: "center",
             gap: 8
         },
+        textOneLineplus: {
+            flexGrow: 1,
+            lineHeight: 1.1,
+            overflow: 'hidden',
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            fontSize: "1.2rem",
+            gridColumn: "span 2"
+        },
         description: {
             whiteSpace: "initial",
             width: "calc(100% - 40px)",
@@ -144,7 +154,7 @@ interface NotificaionMenuItemProps {
     image: string;
     user: string;
     origin: string;
-    date: Date;
+    date?: Date;
     onClick?: MouseEventHandler<HTMLLIElement>;
 }
 
@@ -165,16 +175,21 @@ const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description,
                         </Tooltip>
                     </div>
                     <div style={{ gridColumnStart: "col2" }}>
-                        <div className={classes.textOneLine}>
+                        <div className={clsx({
+                            [classes.textOneLine]:origin!=="CONTACT",
+                            [classes.textOneLineplus]:origin==="CONTACT"
+                        })}>
                             <div className={classes.title}>{title}</div>
                         </div>
                         <div className={clsx(classes.description, classes.textOneLine)}>
-                            {origin === "INBOUND" ? <PhoneCallbackIcon className={classes.phoneicon} /> : <PhoneForwardedIcon className={classes.phoneicon} />} {description}
+                            {origin === "INBOUND" ? <PhoneCallbackIcon className={classes.phoneicon} />:origin==="CONTACT"?null:<PhoneForwardedIcon className={classes.phoneicon}/>} {description}
                         </div>
                     </div>
-                    <div style={{ gridColumnStart: "col3", color: "#a39e9e", textAlign: 'right' }}>
-                        {yesterdayOrToday(date, t)}
-                    </div>
+                    {date &&
+                        <div style={{ gridColumnStart: "col3", color: "#a39e9e", textAlign: 'right' }}>
+                            {yesterdayOrToday(date, t)}
+                        </div>
+                    }
                 </div>
             </MenuItem>
             <div className={classes.line}></div>
@@ -192,13 +207,14 @@ const MakeCall: React.FC = () => {
     const [advisertodiver, setadvisertodiver] = useState("");
     const [pageSelected, setPageSelected] = useState(1);
     const call = useSelector(state => state.voximplant.call);
-    const [timeWaiting, setTimeWaiting] = useState(0);
+    const [timeWaiting, setTimeWaiting] = useState(-1);
     const [waitingDate, setWaitingDate] = useState<string | null>(null);
     const user = useSelector(state => state.login.validateToken.user);
     const ringtone = React.useRef<HTMLAudioElement>(null);
     const showcall = useSelector(state => state.voximplant.showcall);
     const statusCall = useSelector(state => state.voximplant.statusCall);
     const historial = useSelector(state => state.voximplant.requestGetHistory);
+    const advisors = useSelector(state => state.voximplant.requestGetAdvisors);
     const { corpid, orgid, sitevoxi, ccidvoxi, userid } = useSelector(state => state.login.validateToken?.user!!);
 
     React.useEffect(() => {
@@ -235,8 +251,8 @@ const MakeCall: React.FC = () => {
     //ring when the customer call
     React.useEffect(() => {
         if (call.type === "INBOUND" && statusCall === "CONNECTING") {
-            setTimeWaiting(0);
             setWaitingDate(new Date().toISOString())
+            setTimeWaiting(0);
             ringtone.current?.pause();
             if (ringtone.current) {
                 ringtone.current.currentTime = 0;
@@ -248,22 +264,32 @@ const MakeCall: React.FC = () => {
         }
     }, [call, statusCall])
 
-
+    //reassign if the call overload time limit
     React.useEffect(() => {
-        if (timeWaiting >= (user?.properties.time_reassign_call || 30) && (call.type === "INBOUND" && statusCall === "CONNECTING")) {
-            dispatch(rejectCall(call.call));
-            setTimeWaiting(0);
-            return;
+        console.log("user?.properties.time_reassign_call", user?.properties.time_reassign_call)
+        if (timeWaiting >= 0) {
+            if (timeWaiting >= (user?.properties.time_reassign_call || 30) && (call.type === "INBOUND" && statusCall === "CONNECTING")) {
+                dispatch(rejectCall(call.call));
+                setTimeWaiting(-1);
+                return;
+            }
+            if (waitingDate) {
+                setTimeout(() => {
+                    setTimeWaiting(getSecondsUntelNow(convertLocalDate(waitingDate)));
+                }, 1000)
+            }
         }
-        setTimeout(() => {
-            setTimeWaiting(getSecondsUntelNow(convertLocalDate(waitingDate)));
-        }, 1000)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [timeWaiting]);
 
     React.useEffect(() => {
         if (showcall && pageSelected === 2) {
             dispatch(getHistory())
+        }
+    }, [showcall, pageSelected, dispatch])
+    React.useEffect(() => {
+        if (showcall && pageSelected === 0) {
+            dispatch(geAdvisors())
         }
     }, [showcall, pageSelected, dispatch])
 
@@ -307,20 +333,29 @@ const MakeCall: React.FC = () => {
                 </DialogContent>
                 <div style={{ height: 500 }}>
                     {pageSelected === 0 &&
-                        <div className={classes.tabs}>
-                            <div style={{ display: "flex", width: "100%", justifyContent: "center", marginTop: 15 }}>
-                                <FieldSelect
-                                    label={t(langKeys.advisor)}
-                                    className="col-12"
-                                    valueDefault={advisertodiver}
-                                    style={{ marginRight: "auto", marginLeft: "auto", width: "400px" }}
-                                    onChange={(value) => setadvisertodiver(value?.userid || '')}
-                                    error={advisertodiver ? "" : t(langKeys.required)}
-                                    data={[]}
-                                    optionDesc="displayname"
-                                    optionValue="userid"
+                        <div style={{ width: "100%", height: '100%', overflow: 'overlay' }}>
+                            {advisors?.loading ? <ListItemSkeleton /> : advisors.data?.map((e: any, i: number) => (
+                                <NotificaionMenuItem
+                                    onClick={() => {
+                                        if (statusCall === "DISCONNECTED") {
+                                            setNumberVox(e.phone)
+                                            dispatch(execute(conversationOutboundIns({
+                                                number: e.phone,
+                                                communicationchannelid: ccidvoxi,
+                                                personcommunicationchannelowner: e.personcommunicationchannelowner,
+                                                interactiontype: 'text',
+                                                interactiontext: 'LLAMADA SALIENTE'
+                                            })))
+                                        }
+                                    }}
+                                    user={"none"}
+                                    image={e.imageurldef}
+                                    key={`advisor-${i}`}
+                                    title={e.personname}
+                                    description={e.phone}
+                                    origin={"CONTACT"}
                                 />
-                            </div>
+                            ))}
                         </div>
                     }
                     {pageSelected === 1 &&
@@ -453,14 +488,14 @@ const MakeCall: React.FC = () => {
                                             dispatch(execute(conversationOutboundIns({
                                                 number: e.phone,
                                                 communicationchannelid: ccidvoxi,
-                                                personcommunicationchannelowner: e.phone,
+                                                personcommunicationchannelowner: e.personcommunicationchannelowner,
                                                 interactiontype: 'text',
                                                 interactiontext: 'LLAMADA SALIENTE'
                                             })))
                                         }
                                     }}
                                     user={"none"}
-                                    image={e.imageurl}
+                                    image={e.imageurldef}
                                     key={`history-${i}`}
                                     title={e.name}
                                     description={(e.origin === "INBOUND" ? t(langKeys.inboundcall) : t(langKeys.outboundcall)) + " " + e?.totalduration || ""}

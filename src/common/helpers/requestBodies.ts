@@ -2998,3 +2998,9 @@ export const conversationOutboundIns = ({ number, communicationchannelid, person
         personcommunicationchannelowner
     },
 });
+
+export const getAdvisorListVoxi = (): IRequestBody => ({
+    method: "UFN_PERSONCOMMUNICATIONCHANNEL_SEL_VOXI",
+    key: "UFN_PERSONCOMMUNICATIONCHANNEL_SEL_VOXI",
+    parameters: { }
+});
