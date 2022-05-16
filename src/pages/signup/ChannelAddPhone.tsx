@@ -1,26 +1,25 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import { Box, Breadcrumbs, Button, IconButton, InputAdornment, makeStyles, Typography } from "@material-ui/core";
-import { ColorInput, FieldEdit, FieldSelect, FieldView } from "components";
-import { FC, useEffect, useState,useContext } from "react";
+import { Button, IconButton, InputAdornment, makeStyles, Typography } from "@material-ui/core";
+import { FieldEdit, FieldSelect } from "components";
+import { FC, useEffect, useState, useContext } from "react";
 import { getCategories, getCountryStates, getRegions } from "store/voximplant/actions";
 import { getName } from "country-list";
-import { insertChannel } from "store/channel/actions";
 import { langKeys } from "lang/keys";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router";
 import { useSelector } from "hooks";
 import { Trans, useTranslation } from "react-i18next";
-
 import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon, LinkOff as LinkOffIcon } from '@material-ui/icons';
+import { MainData, SubscriptionContext, usePlanData } from "./context";
+import { useFormContext } from "react-hook-form";
+import { formatNumber } from "common/helpers";
+
 import InfoIcon from "@material-ui/icons/Info";
-import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
 import PhoneIcon from "@material-ui/icons/Phone";
-import Tooltip from "@material-ui/core/Tooltip"
-import { MainData, SubscriptionContext } from "./context";
-import { useFormContext } from "react-hook-form";
+import Tooltip from "@material-ui/core/Tooltip";
 
 interface whatsAppData {
     row?: any;
@@ -70,10 +69,13 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     const whatsAppData = location.state as whatsAppData | null;
     const { getValues, setValue, register, unregister, formState: { errors } } = useFormContext<MainData>();
 
+    const planData = usePlanData();
+
+    const [phoneTax, setPhoneTax] = useState(planData?.plan?.phonetax || 0);
+    const [waitPlan, setWaitPlan] = useState(false);
+
     const [categoryList, setCategoryList] = useState<any>([]);
     const [countryList, setCountryList] = useState<any>([]);
-    const [channelreg, setChannelreg] = useState(true);
-    const [coloricon, setcoloricon] = useState("#1D9BF0");
     const [hasStates, setHasStates] = useState(false);
     const [hasRegions, setHasRegions] = useState(false);
     const [nextButton, setNextButton] = useState(true);
@@ -90,6 +92,24 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     const [hasFinished, setHasFinished] = useState(false)
 
     useEffect(() => {
+        dispatch(getCategories({}));
+        setWaitCategories(true);
+        setWaitPlan(true);
+    }, [])
+
+
+    useEffect(() => {
+        if (phonePrice) {
+            setValue("channels.voximplantphone.cost", (phonePrice || 0))
+            setValue("channels.voximplantphone.costvca", (formatNumber((phonePrice || 0) * (1 + (phoneTax || 0)))).toString())
+        }
+        else {
+            setValue("channels.voximplantphone.cost", (0))
+            setValue("channels.voximplantphone.costvca", "0")
+        }
+    }, [phonePrice])
+
+    useEffect(() => {
         const strRequired = (value: string) => {
             if (!value) {
                 return t(langKeys.field_required);
@@ -100,32 +120,39 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
         register('channels.voximplantphone.region', { validate: strRequired, value: '' });
         register('channels.voximplantphone.state', { validate: strRequired, value: '' });
         register('channels.voximplantphone.description', { validate: strRequired, value: '' });
-        register('channels.voximplantphone.build', { value: values => ({
-            "method": "UFN_COMMUNICATIONCHANNEL_INS",
-            "parameters": {
-                "id": 0,
-                "description": values.description,
-                "type": "",
-                "communicationchannelsite": "",
-                "communicationchannelowner": "",
-                "chatflowenabled": true,
-                "integrationid": "",
-                "color": "",
-                "icons": "",
-                "other": "",
-                "form": "",
-                "apikey": "",
-                "coloricon": "#90c900",
-            },
-            "service": {
-                "category": values.category,
-                "country": values.country,
-                "region": values.region,
-                "state": values.state,
-                "cost": values.cost,
-            },
-            "type": "VOXIMPLANTPHONE",
-        })});
+        register('channels.voximplantphone.build', {
+            value: values => ({
+                "method": "UFN_COMMUNICATIONCHANNEL_INS",
+                "parameters": {
+                    "id": 0,
+                    "description": values.description,
+                    "type": "",
+                    "communicationchannelsite": "",
+                    "communicationchannelowner": "",
+                    "chatflowenabled": true,
+                    "integrationid": "",
+                    "color": "",
+                    "icons": "",
+                    "other": "",
+                    "form": "",
+                    "apikey": "",
+                    "coloricon": "#90c900",
+                },
+                "service": {
+                    "category": values.category,
+                    "country": values.country,
+                    "region": values.region,
+                    "state": values.state,
+                    "categoryname": values.categoryname,
+                    "countryname": values.countryname,
+                    "regionname": values.regionname,
+                    "statename": values.statename,
+                    "cost": values.cost,
+                    "costvca": values.costvca,
+                },
+                "type": "VOXIMPLANTPHONE",
+            })
+        });
 
         return () => {
             unregister('channels.voximplantphone')
@@ -142,7 +169,7 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
             setValue('channels.voximplantphone.cost', phonePrice || 0)
         }
         else {
-            setValue('channels.voximplantphone.cost',0)
+            setValue('channels.voximplantphone.cost', 0)
         }
     }, [phonePrice])
 
@@ -226,9 +253,9 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     const handleCountry = (value: any) => {
         if (value) {
             setCategoryList(value.phone_categories || []);
-
             setValue('channels.voximplantphone.country', value.country_code)
-        }else {
+            setValue('channels.voximplantphone.countryname', value.country_name)
+        } else {
             setHasRegions(false);
             setHasStates(false);
             setPhoneBackup(0.00);
@@ -236,11 +263,15 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
             setCategoryList([]);
             setRegionList([]);
             setStateList([]);
-            setValue('channels.voximplantphone.category', "")
-            setValue('channels.voximplantphone.region', "")
-            setValue('channels.voximplantphone.state', "")
             setValue('channels.voximplantphone.country', "")
+            setValue('channels.voximplantphone.countryname', "")
         }
+        setValue('channels.voximplantphone.category', "")
+        setValue('channels.voximplantphone.region', "")
+        setValue('channels.voximplantphone.state', "")
+        setValue('channels.voximplantphone.categoryname', "")
+        setValue('channels.voximplantphone.regionname', "")
+        setValue('channels.voximplantphone.statename', "")
         disableNextButton();
     }
 
@@ -264,6 +295,7 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                 setWaitRegions(true);
             }
             setValue('channels.voximplantphone.category', value.phone_category_name)
+            setValue('channels.voximplantphone.categoryname', value.phone_category_name)
         }
         else {
             setHasRegions(false);
@@ -273,15 +305,19 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
             setRegionList([]);
             setStateList([]);
             setValue('channels.voximplantphone.category', "")
-            setValue('channels.voximplantphone.region', "")
-            setValue('channels.voximplantphone.state', "")
+            setValue('channels.voximplantphone.categoryname', "")
         }
+        setValue('channels.voximplantphone.region', "")
+        setValue('channels.voximplantphone.state', "")
+        setValue('channels.voximplantphone.regionname', "")
+        setValue('channels.voximplantphone.statename', "")
         disableNextButton();
     }
 
     const handleState = (value: any) => {
         if (value) {
             setValue('channels.voximplantphone.state', value.country_state)
+            setValue('channels.voximplantphone.statename', value.country_state_name)
             setHasRegions(true);
 
             dispatch(getRegions({ country_code: getValues('channels.voximplantphone.country'), phone_category_name: getValues('channels.voximplantphone.category'), country_state: value.country_state }));
@@ -290,9 +326,11 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
         else {
             setHasRegions(false);
             setRegionList([]);
-            setValue('channels.voximplantphone.region', "")
             setValue('channels.voximplantphone.state', "")
+            setValue('channels.voximplantphone.statename', "")
         }
+        setValue('channels.voximplantphone.region', "")
+        setValue('channels.voximplantphone.regionname', "")
         disableNextButton();
     }
 
@@ -300,10 +338,12 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
         if (value) {
             setPhonePrice((value.phone_price || phoneBackup) || 0.00);
             setValue('channels.voximplantphone.region', value.phone_region_id)
+            setValue('channels.voximplantphone.regionname', value.phone_region_name)
         }
         else {
             setPhonePrice(phoneBackup || 0.00);
             setValue('channels.voximplantphone.region', "")
+            setValue('channels.voximplantphone.regionname', "")
         }
         disableNextButton();
     }
@@ -311,11 +351,6 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     if (viewSelected === "view1") {
         return (
             <div style={{ width: "100%" }}>
-                <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD, whatsAppData) }}>
-                        {t(langKeys.previoustext)}
-                    </Link>
-                </Breadcrumbs>
                 <div>
                     <div className={classes.containerDetail}>
                         <div style={{ textAlign: "left", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.voximplant_buynumber)}</div>
@@ -384,7 +419,7 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                                     </Tooltip>
                                 </div>
                                 <div style={{ display: "inline", alignContent: "right", float: "right" }}>
-                                    <b style={{ paddingRight: "20px", textAlign: "right" }}>{`$${phonePrice}`}</b>
+                                    <b style={{ paddingRight: "20px", textAlign: "right" }}>{`$${formatNumber(phonePrice * (1 + (phoneTax || 0)))}`}</b>
                                 </div>
                             </div>
                         </div>
