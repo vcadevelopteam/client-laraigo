@@ -110,15 +110,17 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     }, [phonePrice])
 
     useEffect(() => {
-        const strRequired = (value: string) => {
-            if (!value) {
-                return t(langKeys.field_required);
+        const strRequired = (value: string, other?:boolean) => {
+            if(!other){
+                if (!value) {
+                    return t(langKeys.field_required);
+                }
             }
         }
         register('channels.voximplantphone.country', { validate: strRequired, value: '' });
         register('channels.voximplantphone.category', { validate: strRequired, value: '' });
-        register('channels.voximplantphone.region', { validate: strRequired, value: '' });
-        register('channels.voximplantphone.state', { validate: strRequired, value: '' });
+        register('channels.voximplantphone.region', { validate: hasRegions?strRequired:()=>{return undefined}, value: '' });
+        register('channels.voximplantphone.state', { validate: hasStates?strRequired:()=>{return undefined}, value: '' });
         register('channels.voximplantphone.description', { validate: strRequired, value: '' });
         register('channels.voximplantphone.build', {
             value: values => ({
