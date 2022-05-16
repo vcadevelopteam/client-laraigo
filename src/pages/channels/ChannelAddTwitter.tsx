@@ -278,7 +278,7 @@ export const ChannelAddTwitter: FC = () => {
                         <Button
                             onClick={() => { finishreg() }}
                             className={classes.button}
-                            disabled={channelreg}
+                            disabled={channelreg || mainResult.loading}
                             variant="contained"
                             color="primary"
                         >{t(langKeys.finishreg)}

@@ -196,6 +196,10 @@ export const ChannelAddPhone: FC = () => {
     }, [mainResult])
 
     useEffect(() => {
+        disableNextButton();
+    }, [regionList])
+
+    useEffect(() => {
         if (waitCategories) {
             if (!categoriesResult.loading) {
                 if (categoriesResult.data) {
@@ -236,14 +240,16 @@ export const ChannelAddPhone: FC = () => {
         setNextButton(true);
         if (fields) {
             if (fields.service) {
-                if (fields.service.category && fields.service.country && fields.service.region) {
-                    if (hasStates) {
-                        if (fields.service.state) {
+                if (fields.service.category && fields.service.country) {
+                    if (fields.service.region || regionList.length === 0) {
+                        if (hasStates) {
+                            if (fields.service.state) {
+                                setNextButton(false);
+                            }
+                        }
+                        else {
                             setNextButton(false);
                         }
-                    }
-                    else {
-                        setNextButton(false);
                     }
                 }
             }
@@ -495,7 +501,7 @@ export const ChannelAddPhone: FC = () => {
                     </div>
                     <div style={{ paddingLeft: "64%" }}>
                         <Button
-                            disabled={nextButton}
+                            disabled={nextButton || regionsResult.loading}
                             onClick={() => { setViewSelected("view2") }}
                             className={classes.button}
                             variant="contained"
@@ -550,7 +556,7 @@ export const ChannelAddPhone: FC = () => {
                             <Button
                                 onClick={() => { finishRegister() }}
                                 className={classes.button}
-                                disabled={channelreg}
+                                disabled={channelreg || mainResult.loading}
                                 variant="contained"
                                 color="primary"
                             >{t(langKeys.finishreg)}

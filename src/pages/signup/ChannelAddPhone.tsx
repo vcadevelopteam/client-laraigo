@@ -200,6 +200,10 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     }, [mainResult])
 
     useEffect(() => {
+        disableNextButton();
+    }, [regionList])
+
+    useEffect(() => {
         if (waitCategories) {
             if (!categoriesResult.loading) {
                 if (categoriesResult.data) {
@@ -238,14 +242,16 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
 
     function disableNextButton() {
         setNextButton(true);
-        if (getValues('channels.voximplantphone.category') && getValues('channels.voximplantphone.country') && getValues('channels.voximplantphone.region')) {
-            if (hasStates) {
-                if (getValues('channels.voximplantphone.state')) {
+        if (getValues('channels.voximplantphone.category') && getValues('channels.voximplantphone.country')) {
+            if (getValues('channels.voximplantphone.region') || regionList.length === 0) {
+                if (hasStates) {
+                    if (getValues('channels.voximplantphone.state')) {
+                        setNextButton(false);
+                    }
+                }
+                else {
                     setNextButton(false);
                 }
-            }
-            else {
-                setNextButton(false);
             }
         }
     }
@@ -426,7 +432,7 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                     </div>
                     <div style={{ paddingLeft: "64%" }}>
                         <Button
-                            disabled={nextButton}
+                            disabled={nextButton  || regionsResult.loading}
                             onClick={() => { setViewSelected("view2") }}
                             className={classes.button}
                             variant="contained"
