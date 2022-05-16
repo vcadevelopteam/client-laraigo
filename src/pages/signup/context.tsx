@@ -470,6 +470,8 @@ export const SubscriptionProvider: FC = ({ children }) => {
         submitObs.trigger();
     }
     const valchannels = () => {
+        console.log(form.formState.errors)
+        debugger
         form.handleSubmit(onVal, onError)();
     }
     const onCheckFunc = (altfunc?: any) => {
