@@ -29,6 +29,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                 })
 
                 sdk.on(VoxImplant.Events.IncomingCall, (e) => {
+                    console.log("llamada entrante!", e.call?.headers())
                     const headers = e.call?.headers();
                     const splitIdentifier = headers["X-identifier"].split("-");
 
@@ -99,7 +100,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                 return;
             }
             try {
-                // console.log(`voximplant: ${payload.user}@${payload.application}`)
+                console.log(`voximplant: ${payload.user}@${payload.application}`)
                 await sdk.login(`${payload.user}@${payload.application}`, "Laraigo2022$CDFD");
 
                 if (payload?.automaticConnection) {

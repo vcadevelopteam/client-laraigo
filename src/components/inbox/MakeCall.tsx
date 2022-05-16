@@ -266,7 +266,7 @@ const MakeCall: React.FC = () => {
 
     //reassign if the call overload time limit
     React.useEffect(() => {
-        console.log("user?.properties.time_reassign_call", user?.properties.time_reassign_call)
+        // console.log("user?.properties.time_reassign_call", user?.properties.time_reassign_call)
         if (timeWaiting >= 0) {
             if (timeWaiting >= (user?.properties.time_reassign_call || 30) && (call.type === "INBOUND" && statusCall === "CONNECTING")) {
                 dispatch(rejectCall(call.call));
