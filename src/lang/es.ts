@@ -26,8 +26,14 @@ const translation: LangKeys = {
     type_service_plural: 'Tipos de Servicio',
 
     show_logs: 'Mostrar logs',
+    font: "Fuente",
     hide_logs: 'Ocultar logs',
 
+    small:"Pequeño",
+    normal:"Normal",
+    large:"Grande",
+    huge:"Enorme",
+    size:"Tamaño",
     show_all: 'Mostrar todo',
     function_count_unique: 'Contar únicos',
     indefinetly: "Indefinido",

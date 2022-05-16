@@ -26,9 +26,15 @@ const translation: LangKeys = {
     hide_logs: 'Hide logs',
 
     type_service: 'Service Type',
+    font: "Font",
     type_service_plural: 'Services Type',
     
     show_all: 'Show all',
+    size:"Size",
+    small:"Small",
+    normal:"Normal",
+    large:"Large",
+    huge:"Huge",
     errorhours: "Hours overlap another set of hours",
     errorhoursdontmatch: "Choose an end time later than the start time",
 

@@ -728,12 +728,26 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                 onChange={(value) => {
                                     setBodyobject(value)
                                 }}
+                                positionEditable="top"
                                 spellCheck
                                 image={false}
                                 onPaste={onPasteTextbar}
                                 onKeyPress={handleKeyPress}
                                 placeholder="Send your message..."
-                            />
+                            >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+                                    
+                                    <QuickReplyIcon classes={classes} setText={setText} />
+                                    <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage}/>
+                                    <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
+                                    <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite}/>
+                                    <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
+                                    <TmpRichResponseIcon classes={classes} setText={setText} />
+                                </div>
+                            </div>
+                                
+                            </RichText>
                             {openDialogHotKey && (
                                 <div style={{
                                     position: 'absolute',
@@ -773,16 +787,8 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                             )}
                         </div>
                     </ClickAwayListener>
+                    
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-                            
-                            <QuickReplyIcon classes={classes} setText={setText} />
-                            <TmpRichResponseIcon classes={classes} setText={setText} />
-                            <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
-                            <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
-                            <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite}/>
-                            <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage}/>
-                        </div>
                         <div className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(renderToString(toElement(bodyobject))!== `<div data-reactroot=""><p><span></span></p></div>` || files.filter(x => !!x.url).length > 0) })} onClick={triggerReplyMessage}>
                             <SendIcon />
                         </div>
