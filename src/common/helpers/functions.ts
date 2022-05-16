@@ -23,6 +23,8 @@ export function formatNumberNoDecimals(num: number) {
     return "0"
 }
 
+
+
 export function formattime(cc: any) {
     if (!cc)
         return "0";
