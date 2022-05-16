@@ -5,10 +5,12 @@ import { goToBottom, showGoToBottom } from 'store/inbox/actions';
 import { useDispatch } from 'react-redux';
 import ItemGroupInteraction from 'components/inbox/Interaction';
 import { SkeletonInteraction } from 'components';
+import ManageCallInfoTicket from './ManageCallInfoTicket';
 
 const InteractionPanel: React.FC<{ classes: any }> = React.memo(({ classes }) => {
 
     const dispatch = useDispatch();
+    const call = useSelector(state => state.voximplant.call);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const groupInteractionList = useSelector(state => state.inbox.interactionList);
     const loadingInteractions = useSelector(state => state.inbox.interactionList.loading);
@@ -48,7 +50,10 @@ const InteractionPanel: React.FC<{ classes: any }> = React.memo(({ classes }) =>
 
     return (
         <div className={`scroll-style-go ${classes.containerInteractions}`} onScroll={handleScroll} ref={refContInteractions}>
-            {groupInteractionList.loading ? <SkeletonInteraction /> :
+            {(ticketSelected?.conversationid === call.data?.conversationid && !!call?.call && ticketSelected?.status === "ASIGNADO" ) && (
+                <ManageCallInfoTicket/> 
+            )}
+            {!(ticketSelected?.conversationid === call.data?.conversationid && !!call?.call && ticketSelected?.status === "ASIGNADO") && (groupInteractionList.loading ? <SkeletonInteraction /> :
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {groupInteractionList.data.map((groupInteraction) => (
                         <ItemGroupInteraction
@@ -59,7 +64,7 @@ const InteractionPanel: React.FC<{ classes: any }> = React.memo(({ classes }) =>
                             key={groupInteraction.interactionid} />
                     ))}
                 </div>
-            }
+            )}
             <div ref={el} />
         </div>
     )

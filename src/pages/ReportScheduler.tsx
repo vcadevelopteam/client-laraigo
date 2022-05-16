@@ -19,7 +19,7 @@ import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/acti
 import { useHistory } from 'react-router-dom';
 import paths from 'common/constants/paths';
 import Box from '@material-ui/core/Box';
-import { IconButton, TextField } from '@material-ui/core';
+import { IconButton } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { Descendant } from 'slate';
 import { renderToString, toElement } from 'components/fields/RichText';
@@ -75,7 +75,7 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
     const [filterData, setfilterData] = useState(origin==="TICKET"?JSON.parse(dataReportSimpleAll.filter(x=>x.origin==="TICKET")?.[0].filterjson|| "[]"):JSON.parse(dataReportSimple.find(x=>(x.reportname===(row?.reportname)))?.filterjson|| "[]").filter((x:any)=>x.type!=="timestamp without time zone"));
     const [showError, setShowError] = useState("");
 
-    const { register, handleSubmit, setValue, getValues,trigger, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             id: row?.reportschedulerid || 0,
             title: row?.title || '',
@@ -126,10 +126,10 @@ const DetailReportScheduler: React.FC<DetailProps> = ({ data: { row, edit }, set
         register('datarange', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('mailto', { validate: {
             validation: (value) => (value && value.length) || t(langKeys.field_required) ,
-            isemail: (value)=> (value.split(",").some((x:any)=>x.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g))) || t(langKeys.emailverification) 
+            isemail: (value)=> (value.split(",").some((x:any)=>x.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/g))) || t(langKeys.emailverification) 
         }});
         register('mailcc', { validate: {
-            isemail: (value)=> value?(value.split(",").some((x:any)=>x.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g))) || t(langKeys.emailverification) : true
+            isemail: (value)=> value?(value.split(",").some((x:any)=>x.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/g))) || t(langKeys.emailverification) : true
         }});
         register('mailsubject', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
 

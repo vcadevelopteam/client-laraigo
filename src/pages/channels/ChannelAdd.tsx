@@ -174,7 +174,7 @@ export const ChannelAdd: FC = () => {
         {
             icon: c => <CallIcon className={c} />,
             label: 'Phone',
-            onClick: () => { },
+            onClick: () => {history.push(paths.CHANNELS_ADD_PHONE.path, whatsAppData)},
         },
         {
             icon: c => <SmsColor className={c} />,

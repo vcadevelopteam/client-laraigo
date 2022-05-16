@@ -82,6 +82,7 @@ export interface ListChannels {
     sms: boolean;
     android: boolean;
     apple: boolean;
+    voximplantphone: boolean;
 }
 
 export interface FacebookChannel {
@@ -136,6 +137,20 @@ export interface ChatWebChannel {
     description: string;
     build: (v: Omit<ChatWebChannel, 'build'>) => IRequestBody;
 }
+export interface VoxImplantPhoneChannel {
+    description: string;
+    country: string;
+    category: string;
+    region: string;
+    state: string;
+    countryname: string;
+    categoryname: string;
+    regionname: string;
+    statename: string;
+    cost: number;
+    costvca: string;
+    build: (v: Omit<VoxImplantPhoneChannel, 'build'>) => IRequestBody;
+}
 
 export interface Channels {
     facebook: FacebookChannel;
@@ -152,6 +167,7 @@ export interface Channels {
     sms: any;
     android: MobileChannel;
     apple: MobileChannel;
+    voximplantphone: VoxImplantPhoneChannel;
 }
 
 export interface MainData {
@@ -207,6 +223,7 @@ const defaultListChannels: ListChannels = {
     sms: false,
     android: false,
     apple: false,
+    voximplantphone: false,
 };
 
 export const SubscriptionContext = createContext<Subscription>({
@@ -372,6 +389,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
                 message: errormessage,
             }))
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [executeResult, form.getValues, t, dispatch])
 
     useEffect(() => {
@@ -399,6 +417,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
                 dispatch(showBackdrop(false));
             }
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [executeResultValidation, validateBool])
 
     const deleteChannel = (option: keyof ListChannels) => {
@@ -581,6 +600,7 @@ interface PlanData {
         limitChannels: number,
         plan: PlanType,
         provider: string,
+        phonetax: number,
     } | null
 }
 
@@ -602,6 +622,7 @@ export function usePlanData(): PlanData {
                 limitChannels: planData.data[0]?.channelscontracted || 0,
                 plan: match.params.token as PlanType,
                 provider: planData.data[0]?.providerwhatsapp || "",
+                phonetax: planData.data[0]?.phonetax || "",
             },
         };
     }, [planData, match.params.token]);

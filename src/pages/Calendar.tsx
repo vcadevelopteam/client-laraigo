@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, AntTab, RichText, ColorInput, AntTabPanel, DateRangePicker, DialogZyx, FieldEditMulti, FieldView } from 'components';
+import { TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, AntTab, RichText, ColorInput, AntTabPanel, DateRangePicker, FieldEditMulti, FieldView } from 'components';
 import { getDateCleaned, insCommentsBooking, getValuesFromDomain, insCalendar, hours, selCalendar, getMessageTemplateLst, getCommChannelLst, getDateToday, selBookingCalendar, dayNames } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -356,8 +356,6 @@ const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = 
 
     useEffect(() => {
         if (!mainAux.error && !mainAux.loading && mainAux.key === "UFN_CALENDARBOOKING_REPORT") {
-            const cc: Dictionary = {}
-
             const bookingDates = Object.values(mainAux.data.reduce((acc, item) => ({
                 ...acc,
                 [item.monthdate]: acc[item.monthdate] ? acc[item.monthdate] : item
@@ -556,7 +554,7 @@ const LabelDays: React.FC<LabelDaysProps> = ({ flag, fieldsIntervals, errors, in
                                                     <IconButton style={{ pointerEvents: "auto" }} aria-label="delete" onClick={(e) => {
 
                                                         let overlap = getValues(`intervals.${i}.overlap`)
-                                                        if (overlap != -1) {
+                                                        if (overlap !== -1) {
                                                             setValue(`intervals.${overlap}.overlap`, -1)
                                                         }
                                                         e.preventDefault();

@@ -27,3 +27,15 @@ export const saveUser = (requestBody: ITransaction, transaction: boolean = false
 });
 
 export const resetSaveUser = (): IActionCall => ({ type: actionTypes.EXECUTE_MAIN_RESET });
+
+export const delUser = (requestBody: ITransaction, transaction: boolean = false): IActionCall => ({
+    callAPI: () => ActivationUserService.delUser(requestBody),
+    types: {
+        loading: actionTypes.DELUSER_SEND,
+        success: actionTypes.DELUSER_SUCCESS,
+        failure: actionTypes.DELUSER_FAILURE,
+    },
+    type: null,
+});
+
+export const resetDelUser = (): IActionCall => ({type: actionTypes.DELUSER_RESET});

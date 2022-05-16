@@ -21,6 +21,13 @@ export const getOrgUserSel = (userid: number, orgid: number): IRequestBody => ({
         all: true
     }
 })
+export const getConversationSelVoxi = (): IRequestBody => ({
+    method: "UFN_CONVERSATION_SEL_VOXI",
+    key: "UFN_CONVERSATION_SEL_VOXI",
+    parameters: {
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
 export const getOrgsByCorp = (orgid: number, keytmp?: number): IRequestBody => ({
     method: "UFN_CORP_ORG_SEL",
     key: "UFN_CORP_ORG_SEL" + (keytmp || ""),
@@ -2963,5 +2970,37 @@ export const getInvoiceReportDetail = ({ corpid, year, month, currency }: Dictio
 export const getCurrencyList = (): IRequestBody => ({
     method: "UFN_CURRENCY_SEL",
     key: "UFN_CURRENCY_SEL",
+    parameters: { }
+});
+
+export const conversationOutboundIns = ({ number, communicationchannelid, personcommunicationchannelowner, interactiontype, interactiontext }: Dictionary) => ({
+    method: "UFN_CONVERSATION_OUTBOUND_INS",
+    key: "UFN_CONVERSATION_OUTBOUND_INS",
+    parameters: {
+        personid: 0, 
+        personcommunicationchannel:`${number}_VOXI`, 
+        communicationchannelid, 
+        closetype:"", 
+        status: 'ASIGNADO',
+        finishdate:false, 
+        handoff:false, 
+        usergroup:"", 
+        phone:number,
+        extradata:"", 
+        lastreplydate:true, 
+        personlastreplydate:false, 
+        origin:"OUTBOUND", 
+        firstname: number, 
+        lastname:"", 
+        communicationchanneltype: "VOXI",
+        interactiontype, 
+        interactiontext,
+        personcommunicationchannelowner
+    },
+});
+
+export const getAdvisorListVoxi = (): IRequestBody => ({
+    method: "UFN_PERSONCOMMUNICATIONCHANNEL_SEL_VOXI",
+    key: "UFN_PERSONCOMMUNICATIONCHANNEL_SEL_VOXI",
     parameters: { }
 });

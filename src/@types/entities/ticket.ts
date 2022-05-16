@@ -1,3 +1,5 @@
+import { Call } from 'voximplant-websdk/Call/Call';
+
 export interface ITicket {
     conversationid: number;
     ticketnum: string;
@@ -19,9 +21,10 @@ export interface ITicket {
     usergroup?: string | null;
     replyexternalid?: string | null;
     personlastreplydate?: string | null;
-    channelicon: string;
     coloricon: string;
     lastseendate?: string | null;
     finishdate?: string | null;
     isAnswered?: boolean;
+    call?: Call | null;   
+    // channelicon: string;
 }
