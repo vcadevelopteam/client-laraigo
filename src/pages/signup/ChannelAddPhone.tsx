@@ -245,7 +245,7 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     function disableNextButton() {
         setNextButton(true);
         if (getValues('channels.voximplantphone.category') && getValues('channels.voximplantphone.country')) {
-            if (getValues('channels.voximplantphone.region') || regionList.length === 0) {
+            if (getValues('channels.voximplantphone.region')) {
                 if (hasStates) {
                     if (getValues('channels.voximplantphone.state')) {
                         setNextButton(false);
