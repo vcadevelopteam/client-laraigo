@@ -1330,19 +1330,26 @@ export const FieldEditArray: React.FC<InputProps> = ({ label, style = {}, classN
 }
 
 interface TemplateSwitchArrayProps extends InputProps {
-    defaultValue?: boolean;
+    defaultValue?: any;
     className?: any;
     label: string;
+    tooltip?: Dictionary;
 }
 
 
-export const TemplateSwitchArray: React.FC<TemplateSwitchArrayProps> = ({ className, onChange, defaultValue, label }) => {
+export const TemplateSwitchArray: React.FC<TemplateSwitchArrayProps> = ({ className, onChange, defaultValue, label, tooltip = {} }) => {
+    const { t } = useTranslation();
+    const [value, setValue] = useState([true,'1'].includes(defaultValue) ? true : false);
+
     return (
         <div className={className} style={{ paddingBottom: '3px' }}>
             {label && <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{label}</Box>}
-            <IOSSwitch defaultChecked={defaultValue} onChange={(e) => {
-                onChange && onChange(e.target.checked)
-            }} />
+            <Tooltip title={!!value ? t((langKeys as any)[tooltip?.true]) || '' : t((langKeys as any)[tooltip?.false]) || ''}>
+                <IOSSwitch defaultChecked={defaultValue} onChange={(e) => {
+                    onChange && onChange(e.target.checked)
+                    setValue(e.target.checked)
+                }} />
+            </Tooltip>
         </div>
     );
 }

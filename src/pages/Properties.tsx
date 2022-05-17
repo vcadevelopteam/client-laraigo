@@ -734,6 +734,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                 if (edit) {
                     valueInput =
                         <TemplateSwitchArray
+                            tooltip={{true: row?.tooltipenable, false: row?.tooltipdisable}}
                             className={classes.mb2}
                             error={errors?.table?.[index]?.propertyvalue?.message}
                             /*fregister={{
