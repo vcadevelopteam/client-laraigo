@@ -712,7 +712,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
         }
     }
 
-    if (ticketSelected?.communicationchanneltype !== "MAIL"){
+    if (ticketSelected?.communicationchanneltype === "MAIL"){
         return (<div className={classes.containerResponse}>
             {showReply ?
                 <>
