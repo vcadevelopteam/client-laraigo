@@ -42,6 +42,7 @@ export interface IState {
     triggerMassiveCloseTicket: IBaseState;
     triggerReplyTicket: IBaseState;
     triggerReassignTicket: IBaseState;
+    triggerImportTicket: IBaseState;
     showInfoPanel: boolean;
     userType: "SUPERVISOR" | "AGENT" | null;
     hideLogsOnTicket: boolean;
@@ -78,6 +79,7 @@ export const initialState: IState = {
     triggerReplyTicket: initialTransaction,
     triggerConnectAgentGo: initialTransaction,
     triggerReassignTicket: initialTransaction,
+    triggerImportTicket: initialTransaction,
     ticketSelected: null,
     agentSelected: null,
     aNewTicket: null,
@@ -173,6 +175,12 @@ export default createReducer<IState>(initialState, {
     [actionTypes.SEND_HSM_SUCCESS]: caseFunctions.sendHSMSuccess,
     [actionTypes.SEND_HSM_FAILURE]: caseFunctions.sendHSMFailure,
     [actionTypes.SEND_HSM_RESET]: caseFunctions.sendHSMReset,
+
+
+    [actionTypes.IMPORT_TICKET]: caseFunctions.importTicket,
+    [actionTypes.IMPORT_TICKET_SUCCESS]: caseFunctions.importTicketSuccess,
+    [actionTypes.IMPORT_TICKET_FAILURE]: caseFunctions.importTicketFailure,
+    [actionTypes.IMPORT_TICKET_RESET]: caseFunctions.importTicketReset,
 
     
 
