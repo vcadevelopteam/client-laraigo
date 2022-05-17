@@ -6,7 +6,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import { DraggableProvided, DraggableStateSnapshot, DroppableStateSnapshot } from 'react-beautiful-dnd';
 import { langKeys } from 'lang/keys';
 import { Trans, useTranslation } from 'react-i18next';
-import { Rating, Skeleton } from '@material-ui/lab';
+import { Rating } from '@material-ui/lab';
 import { useHistory } from 'react-router';
 import paths from 'common/constants/paths';
 import { ICrmLead } from '@types';
@@ -377,6 +377,7 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
 
     const handleDelete = useCallback(() => {
         onDelete?.(columnid);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     
 

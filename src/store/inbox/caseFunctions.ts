@@ -446,17 +446,16 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
             const conversation = newticketList.find(x => x.conversationid === data.conversationid);
             if (conversation) {
                 newticketList = [
-                    conversation,
+                    {
+                        ...conversation,
+                        lastconversationdate: data.usertype === "client" ? (conversation.lastconversationdate || new Date().toISOString()) : null,
+                        lastreplyuser: data.usertype === "agent" ? new Date().toISOString() : conversation.lastreplyuser,
+                        countnewmessages: data.usertype === "agent" ? 0 : conversation.countnewmessages + 1,
+                        lastmessage: data.typemessage === "text" ? data.lastmessage : data.typemessage.toUpperCase(),
+                    },
                     ...newticketList.filter(x => x.conversationid !== data.conversationid)
                 ]    
             }
-            newticketList = newticketList.map((x: ITicket) => x.conversationid === data.conversationid ? ({
-                ...x,
-                lastconversationdate: data.usertype === "client" ? (x.lastconversationdate || new Date().toISOString()) : null,
-                lastreplyuser: data.usertype === "agent" ? new Date().toISOString() : x.lastreplyuser,
-                countnewmessages: data.usertype === "agent" ? 0 : x.countnewmessages + 1,
-                lastmessage: data.typemessage === "text" ? data.lastmessage : data.typemessage.toUpperCase(),
-            }) : x)
         }
 
         if (ticketSelected?.conversationid === data.conversationid) {
@@ -547,6 +546,16 @@ export const changeStatusTicketWS = (state: IState, action: IAction): IState => 
     };
 }
 
+
+export const newCallTicket = (state: IState, action: IAction): IState => ({
+    ...state,
+    ticketList: {
+        ...state.ticketList,
+        data: state.ticketList.data.some(x => x.conversationid === action.payload.conversationid) ? state.ticketList.data : state.userType === "AGENT" ? [action.payload, ...state.ticketList.data] : state.ticketList.data
+    },
+})
+
+
 export const deleteTicket = (state: IState, action: IAction): IState => {
     const data: IDeleteTicketParams = action.payload;
     let newticketList = [...state.ticketList.data];
@@ -565,13 +574,16 @@ export const deleteTicket = (state: IState, action: IAction): IState => {
         } : x)
     }
 
-    if (agentSelected?.userid === data.userid || userType === 'AGENT' || newticketList.some(x => x.conversationid === data.conversationid)) {
-        if (newTicketSelected?.conversationid === data.conversationid) {
-            newTicketSelected = null;
-        }
-        newticketList = newticketList.filter((x: ITicket) => x.conversationid !== data.conversationid);
-    }
 
+    if ((userType === 'AGENT') || (userType === 'SUPERVISOR' && agentSelected?.userid === data.userid)) {
+        if (newticketList.some(x => x.conversationid === data.conversationid)) {
+            if (newTicketSelected?.conversationid === data.conversationid) {
+                newTicketSelected = null;
+            }
+            newticketList = newticketList.filter((x: ITicket) => x.conversationid !== data.conversationid);
+        }
+    }
+    
     return {
         ...state,
         ticketSelected: newTicketSelected,

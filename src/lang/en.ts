@@ -24,6 +24,7 @@ const translation: LangKeys = {
     show_logs: 'Show logs',
     function_count_unique: 'Count unique',
     hide_logs: 'Hide logs',
+    make_call: "Make call",
 
     type_service: 'Service Type',
     font: "Font",
@@ -1252,6 +1253,8 @@ const translation: LangKeys = {
     consumerapikey: "Enter the Consumer Api Key",
     consumerapisecret: "Enter the Consumer Api Secret",
     authenticationtoken: "Enter the Authentication Token",
+    outboundcall: "Outbound call",
+    inboundcall: "Inbound call",
     authenticationsecret: "Enter the Authentication Secret",
     consumerpageid: "Enter the Consumer Page id",
     channeladdtitle: "We want to know how you communicate",
@@ -2719,6 +2722,7 @@ const translation: LangKeys = {
     type_activitylead_call: 'Call',
     type_activitylead_automatedmail: 'Automate message email',
     type_activitylead_automatedhsm: 'Automate message hsm',
+    transfercalltoadvisor: "Transfer call to advisor",
     duein: "Due in",
     type_activitylead_automatedsms: 'Automate message sms',
     'type_activitylead_call for demo': 'Call for demo',
@@ -3514,10 +3518,21 @@ const translation: LangKeys = {
     scheduled_events: 'Scheduled events',
     event: 'Event',
     xfield_ismissing: '{{field}} is missing',
-
     invitation_date: "{{date}}, {{month}} {{day}}, {{year}}",
     automaticperiod: 'Automatic Generation of Period',
     automaticinvoice: 'Automatic Generation of Invoice',
+    voximplant_buynumber: 'Buy Number',
+    voximplant_state: 'State',
+    voximplant_region: 'Region',
+    voximplant_pricealert: 'Monthly price',
+    voximplant_tooltip: 'Price depends on selected country and region',
+    communicationchannel_edit: 'Communication channel edit',
+    communicationchannel_editsuccess: 'The communication channel was edited',
+    voximplantcategory_geographic: 'Geographic',
+    voximplantcategory_tollfree: 'Toll-free',
+    voximplantcategory_special: 'Special',
+    voximplantcategory_mobile: 'Mobile',
+    voximplant_numberbought: 'The following phone number was bought: ',
 };
 
 const enResource: ResourceLanguage = {

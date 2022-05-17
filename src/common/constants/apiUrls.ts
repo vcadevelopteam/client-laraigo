@@ -76,6 +76,7 @@ export const apiUrls = {
     SEND_HSM: `${BASE_URL}/ticket/send/hsm`,
     UPDATE_USER: `${BASE_URL}/user/update/info`,
     SAVE_USER: `${BASE_URL}/user/sendmail/password`,
+    DEL_USER: `${BASE_URL}/user/delete`,
     GETGEOCODE: `${BASE_URL}/gmaps/geocode`,
     GETLOCATION: `${BASE_URL}/flow/location`,
 
@@ -116,4 +117,8 @@ export const apiUrls = {
     CARDCREATE: `${BASE_URL}/payment/cardcreate`,
     CARDDELETE: `${BASE_URL}/payment/carddelete`,
     CARDGET: `${BASE_URL}/payment/cardget`,
+
+    VOXIMPLANT_GET_CATEGORIES: `${BASE_URL}/voximplant/getphonenumbercategories`,
+    VOXIMPLANT_GET_COUNTRYSTATES: `${BASE_URL}/voximplant/getphonenumbercountrystates`,
+    VOXIMPLANT_GET_REGIONS: `${BASE_URL}/voximplant/getphonenumberregions`,
 };

@@ -12,6 +12,7 @@ import Avatar from '@material-ui/core/Avatar';
 import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import { ManageOrganization, BadgeGo, StatusConnection } from 'components';
 import { connectAgentAPI, connectAgentUI, disconnectSocket, emitEvent } from "store/inbox/actions";
+import { disconnectVoxi } from "store/voximplant/actions";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -61,6 +62,12 @@ const useStyles = makeStyles((theme: Theme) =>
             fontWeight: 'normal',
             lineHeight: 'normal',
         },
+        statusConnection: {
+            display: 'none',
+            [theme.breakpoints.down('xs')]: {
+                display: 'block',
+            },
+        }
     }),
 );
 
@@ -68,10 +75,10 @@ const AccountMenu: FC = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const history = useHistory();
-    
+
     const user = useSelector(state => state.login.validateToken.user);
     const userConnected = useSelector(state => state.inbox.userConnected);
-    
+
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
     const handleClose = () => {
@@ -79,9 +86,9 @@ const AccountMenu: FC = () => {
     };
 
     const signOut = () => {
-        
         dispatch(connectAgentAPI(false))
         dispatch(connectAgentUI(false))
+        dispatch(disconnectVoxi())
         dispatch(emitEvent({
             event: 'connectAgent',
             data: {
@@ -154,7 +161,9 @@ const AccountMenu: FC = () => {
                     <div className={classes.textNotPass}>
                         {user?.email}
                     </div>
-                    <StatusConnection />
+                    <div className={classes.statusConnection}>
+                        <StatusConnection />
+                    </div>
                     <ManageOrganization />
                     <Button
                         onClick={gotoSettings}
@@ -170,7 +179,7 @@ const AccountMenu: FC = () => {
                         variant="outlined"
                         color="primary"
                         fullWidth
-                        style={{ fontWeight: "normal"}}
+                        style={{ fontWeight: "normal" }}
                     >
                         <Trans i18nKey={langKeys.privacypoliciestitle} />
                     </Button>

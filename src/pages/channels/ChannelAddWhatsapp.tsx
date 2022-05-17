@@ -912,7 +912,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                         <Button
                             onClick={() => { finishreg() }}
                             className={classes.button}
-                            disabled={channelreg}
+                            disabled={channelreg || mainResult.loading}
                             variant="contained"
                             color="primary"
                         >{t(langKeys.finishreg)}

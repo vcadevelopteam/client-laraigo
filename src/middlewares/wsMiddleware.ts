@@ -18,7 +18,6 @@ const eventsListeners = [
 const socket = io(apiUrls.WS_URL, {
     autoConnect: false
 });
-
 declare module 'socket.io-client' {
     interface Socket {
         _callbacks?: any
@@ -30,7 +29,7 @@ const callWSMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async
 
     if (type === typesInbox.WS_CONNECT) {
         const loginData = { data: payload };
-        
+
         if (socket.connected) {
             // console.log("vamos a desconectar")
             socket.disconnect();
@@ -41,7 +40,7 @@ const callWSMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async
             console.log("load eventsListeners")
             eventsListeners.forEach(({ event, type, extra = {} }) => {
                 socket.on(event, (datatmp) => {
-                    console.log("event ", event, datatmp)
+                    console.log("voximplant: event ", event, datatmp)
                     dispatch({ type, payload: { ...datatmp, ...extra } })
                 });
             });

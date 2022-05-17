@@ -407,6 +407,7 @@ export const executeSuccess = (state: IState, action: IAction): IState => {
         ...state,
         execute: {
             data: action.payload.data || [],
+            key: action.payload.key,
             count: 0,
             loading: false,
             error: false,

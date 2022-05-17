@@ -88,12 +88,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 var randomColor = () => Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
-
-interface IColumn {
-    columnname: string;
-    summary: string;
-}
-
 interface IGraphic {
     graphicType: string;
     column: string;
