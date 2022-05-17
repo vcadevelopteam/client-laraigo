@@ -241,7 +241,7 @@ export const ChannelAddPhone: FC = () => {
         if (fields) {
             if (fields.service) {
                 if (fields.service.category && fields.service.country) {
-                    if (fields.service.region || regionList.length === 0) {
+                    if (fields.service.region) {
                         if (hasStates) {
                             if (fields.service.state) {
                                 setNextButton(false);
