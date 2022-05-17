@@ -1365,7 +1365,7 @@ const translation: LangKeys = {
     daysUpToToday: 'days up to today',
     daysStartingToday: 'days starting today',
 
-    load_conversation_plural: 'Load conversations',
+    upload_conversation_plural: 'Upload conversations',
 
     equals: 'Equals',
     notequals: 'Not equals',
@@ -3206,6 +3206,12 @@ const translation: LangKeys = {
     propertyhorafinatencion:'End time of attention',
     propertyhorainiatencion:'Start time of attention',
     propertyhorasuspension:'Time for automatic suspension',
+    propertycargarconversaciones:'Allows you to enable or disable the Upload Conversations button',
+
+    property_tooltip_enable_button: 'Enable button',
+    property_tooltip_disable_button: 'Disable button',
+    property_tooltip_show_button: 'Show button',
+    property_tooltip_hide_button: 'Hide button',
 
     newDashboard: 'New dashboard',
     dashboard_groupment_quantity: 'Quantity',

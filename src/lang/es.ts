@@ -1341,7 +1341,7 @@ const translation: LangKeys = {
     daysUpToToday: 'días hasta hoy',
     daysStartingToday: 'días a partir de hoy',
 
-    load_conversation_plural: 'Cargar conversaciones',
+    upload_conversation_plural: 'Cargar conversaciones',
 
     equals: 'Igual',
     notequals: 'No igual',
@@ -3199,7 +3199,13 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     propertyhorafinatencion:'Hora fin de atención',
     propertyhorainiatencion:'Hora inicio de atención',
     propertyhorasuspension:'Hora de suspensión',
-    
+    propertycargarconversaciones:'Permite activar o desactivar el botón Cargar conversaciones',
+
+    property_tooltip_enable_button: 'Activar botón',
+    property_tooltip_disable_button: 'Desactivar botón',
+    property_tooltip_show_button: 'Mostrar botón',
+    property_tooltip_hide_button: 'Ocultar botón',
+
     newDashboard: 'Nuevo dashboard',
     dashboard_groupment_quantity: 'Cantidad',
     dashboard_groupment_percentage: 'Porcentaje',

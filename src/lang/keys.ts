@@ -1518,7 +1518,7 @@ export const langKeys = {
     minute_plural: 'minute_plural',
     day: 'day',
 
-    load_conversation_plural: 'load_conversation_plural',
+    upload_conversation_plural: 'upload_conversation_plural',
 
     equals: 'equals',
     notequals: 'notequals',
@@ -3209,6 +3209,12 @@ export const langKeys = {
     propertyhorafinatencion:'propertyhorafinatencion',
     propertyhorainiatencion:'propertyhorainiatencion',
     propertyhorasuspension:'propertyhorasuspension',
+    propertycargarconversaciones: 'propertycargarconversaciones',
+
+    property_tooltip_enable_button: 'property_tooltip_enable_button',
+    property_tooltip_disable_button: 'property_tooltip_disable_button',
+    property_tooltip_show_button: 'property_tooltip_show_button',
+    property_tooltip_hide_button: 'property_tooltip_hide_button',
 
     newDashboard: 'newDashboard',
     dashboard_groupment_quantity: 'dashboard_groupment_quantity',

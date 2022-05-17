@@ -20,7 +20,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { CloseTicketIcon, HistoryIcon, TipifyIcon, ReassignIcon } from 'icons';
-import { massiveCloseTicket, getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, emitEvent } from 'store/inbox/actions';
+import { massiveCloseTicket, getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, emitEvent, importTicket } from 'store/inbox/actions';
 import { Button, ListItemIcon } from '@material-ui/core';
 import PublishIcon from '@material-ui/icons/Publish';
 
@@ -599,7 +599,7 @@ const DialogLoadTickets: React.FC<{
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitUpload, setWaitUpload] = useState(false);
-    const executeRes = useSelector(state => state.main.execute)
+    const importRes = useSelector(state => state.inbox.triggerImportTicket)
     const [file, setFile] = useState<File | null>(null);
 
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<{
@@ -608,19 +608,19 @@ const DialogLoadTickets: React.FC<{
 
     useEffect(() => {
         if (waitUpload) {
-            if (!executeRes.loading && !executeRes.error) {
+            if (!importRes.loading && !importRes.error) {
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_import) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitUpload(false);
                 fetchData();
-            } else if (executeRes.error) {
+            } else if (importRes.error) {
                 dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
                 dispatch(showBackdrop(false));
                 setWaitUpload(false);
             }
         }
-    }, [executeRes, waitUpload])
+    }, [importRes, waitUpload])
 
     useEffect(() => {
         if (openModal) {
@@ -639,8 +639,7 @@ const DialogLoadTickets: React.FC<{
         else if (file?.type === 'text/csv') {
             data = await uploadCSV(file);
         }
-        console.log(data);
-        // dispatch(execute(reassignMassiveTicket(listConversation, data.newUserId, data.observation, data.newUserGroup)));
+        dispatch(importTicket({data}));
         dispatch(showBackdrop(true));
         setWaitUpload(true);
     });
@@ -654,7 +653,7 @@ const DialogLoadTickets: React.FC<{
     return (
         <DialogZyx
             open={openModal}
-            title={t(langKeys.load_conversation_plural)}
+            title={t(langKeys.upload_conversation_plural)}
             buttonText1={t(langKeys.cancel)}
             buttonText2={t(langKeys.import)}
             handleClickButton1={() => setOpenModal(false)}
@@ -1009,7 +1008,7 @@ const Tickets = () => {
     };
 
     const fetchDataAux2 = () => {
-        if (fetchDataAux) {
+        if (fetchDataAux.daterange) {
             fetchData(fetchDataAux);
         }
     };
@@ -1125,7 +1124,7 @@ const Tickets = () => {
                             onClick={() => setOpenUploadTickets(true)}
                             startIcon={<PublishIcon />}
                         >
-                            {t(langKeys.load_conversation_plural)}
+                            {t(langKeys.upload_conversation_plural)}
                         </Button>
                     </>
                 )}
