@@ -21,6 +21,13 @@ export const getOrgUserSel = (userid: number, orgid: number): IRequestBody => ({
         all: true
     }
 })
+export const getConversationSelVoxi = (): IRequestBody => ({
+    method: "UFN_CONVERSATION_SEL_VOXI",
+    key: "UFN_CONVERSATION_SEL_VOXI",
+    parameters: {
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
 export const getOrgsByCorp = (orgid: number, keytmp?: number): IRequestBody => ({
     method: "UFN_CORP_ORG_SEL",
     key: "UFN_CORP_ORG_SEL" + (keytmp || ""),
@@ -580,15 +587,15 @@ export const getQuickrepliesSel = (id: number): IRequestBody => ({
     }
 })
 
-export const insCorp = ({ id, description, type, status, logo, logotype, operation, paymentplanid = 0, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, billbyorg = false, credittype="", paymentmethod="", automaticpayment }: Dictionary): IRequestBody => ({
+export const insCorp = ({ id, description, type, status, logo, logotype, operation, paymentplanid = 0, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, billbyorg = false, credittype="", paymentmethod="", automaticpayment, automaticperiod, automaticinvoice }: Dictionary): IRequestBody => ({
     method: "UFN_CORP_INS",
     key: "UFN_CORP_INS",
-    parameters: { companysize: null, id, description, type, status, logo, logotype, operation, paymentplanid, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, billbyorg, credittype, paymentmethod, automaticpayment }
+    parameters: { companysize: null, id, description, type, status, logo, logotype, operation, paymentplanid, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, billbyorg, credittype, paymentmethod, automaticpayment, automaticperiod, automaticinvoice }
 });
-export const insOrg = ({ corpid, description, status, type, id, operation, currency, email = "", password = "", port = 0, host, ssl, default_credentials, private_mail, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, iconbot = "", iconadvisor="", iconclient="", credittype="", timezone, timezoneoffset, automaticpayment }: Dictionary): IRequestBody => ({
+export const insOrg = ({ corpid, description, status, type, id, operation, currency, email = "", password = "", port = 0, host, ssl, default_credentials, private_mail, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, iconbot = "", iconadvisor="", iconclient="", credittype="", timezone, timezoneoffset, automaticpayment, automaticperiod, automaticinvoice }: Dictionary): IRequestBody => ({
     method: "UFN_ORG_INS",
     key: "UFN_ORG_INS",
-    parameters: { corpid, id, description, status, type, operation, currency, email, password, port: parseInt(port), host, ssl, default_credentials, private_mail, country: null, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, iconbot, iconadvisor, iconclient, credittype, timezone, timezoneoffset, automaticpayment }
+    parameters: { corpid, id, description, status, type, operation, currency, email, password, port: parseInt(port), host, ssl, default_credentials, private_mail, country: null, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, iconbot, iconadvisor, iconclient, credittype, timezone, timezoneoffset, automaticpayment, automaticperiod, automaticinvoice }
 });
 
 export const insQuickreplies = ({ id, classificationid, description, quickreply, status, type, operation, favorite }: Dictionary): IRequestBody => ({
@@ -2963,5 +2970,37 @@ export const getInvoiceReportDetail = ({ corpid, year, month, currency }: Dictio
 export const getCurrencyList = (): IRequestBody => ({
     method: "UFN_CURRENCY_SEL",
     key: "UFN_CURRENCY_SEL",
+    parameters: { }
+});
+
+export const conversationOutboundIns = ({ number, communicationchannelid, personcommunicationchannelowner, interactiontype, interactiontext }: Dictionary) => ({
+    method: "UFN_CONVERSATION_OUTBOUND_INS",
+    key: "UFN_CONVERSATION_OUTBOUND_INS",
+    parameters: {
+        personid: 0, 
+        personcommunicationchannel:`${number}_VOXI`, 
+        communicationchannelid, 
+        closetype:"", 
+        status: 'ASIGNADO',
+        finishdate:false, 
+        handoff:false, 
+        usergroup:"", 
+        phone:number,
+        extradata:"", 
+        lastreplydate:true, 
+        personlastreplydate:false, 
+        origin:"OUTBOUND", 
+        firstname: number, 
+        lastname:"", 
+        communicationchanneltype: "VOXI",
+        interactiontype, 
+        interactiontext,
+        personcommunicationchannelowner
+    },
+});
+
+export const getAdvisorListVoxi = (): IRequestBody => ({
+    method: "UFN_PERSONCOMMUNICATIONCHANNEL_SEL_VOXI",
+    key: "UFN_PERSONCOMMUNICATIONCHANNEL_SEL_VOXI",
     parameters: { }
 });

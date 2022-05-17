@@ -18,9 +18,9 @@ import { uploadFile } from 'store/main/actions';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import {
     getCollection, resetAllMain, getMultiCollection,
-    execute, getCollectionAux, resetMainAux, getMultiCollectionAux
+    getCollectionAux, resetMainAux, getMultiCollectionAux
 } from 'store/main/actions';
-import { saveUser } from 'store/activationuser/actions';
+import { saveUser, delUser } from 'store/activationuser/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import AddIcon from '@material-ui/icons/Add';
@@ -975,8 +975,8 @@ const Users: FC = () => {
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main.mainData);
     const mainMultiResult = useSelector(state => state.main.multiData);
-    const executeResult = useSelector(state => state.main.execute);
     const executeRes = useSelector(state => state.activationuser.saveUser);
+    const deleteResult = useSelector(state => state.activationuser.delUser);
     const [dataUsers, setdataUsers] = useState<Dictionary[]>([]);
     // const [dataOrganizationsTmp, setdataOrganizationsTmp] = useState<Dictionary[]>([]);
     const [dataChannelsTemp, setdataChannelsTemp] = useState<Dictionary[]>([]);
@@ -1196,35 +1196,35 @@ const Users: FC = () => {
 
     useEffect(() => {
         if (waitChanges) {
-            if (!executeResult.loading && !executeResult.error) {
+            if (!deleteResult.loading && !deleteResult.error) {
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_transaction) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setwaitChanges(false);
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() })
+            } else if (deleteResult.error) {
+                const errormessage = t(deleteResult.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 dispatch(showBackdrop(false));
                 setwaitChanges(false);
             }
         }
-    }, [executeResult, waitChanges])
+    }, [deleteResult, waitChanges])
 
     useEffect(() => {
         if (waitSave) {
-            if (!executeResult.loading && !executeResult.error) {
+            if (!deleteResult.loading && !deleteResult.error) {
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() })
+            } else if (deleteResult.error) {
+                const errormessage = t(deleteResult.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
         }
-    }, [executeResult, waitSave])
+    }, [deleteResult, waitSave])
 
     const handleRegister = () => {
         setViewSelected("view-2");
@@ -1335,7 +1335,11 @@ const Users: FC = () => {
                     }
                 }), {});
                 Object.values(table).forEach((p) => {
-                    dispatch(execute(insUser({ ...p, id: p.userid, pwdchangefirstlogin: false })));
+                    dispatch(delUser({
+                        header: null,
+                        detail: [insUser({ ...p, id: p.userid, pwdchangefirstlogin: false })]
+                    }, false));
+                    // dispatch(execute(insUser({ ...p, id: p.userid, pwdchangefirstlogin: false })));
                 });
                 setwaitChanges(true)
             }
@@ -1356,7 +1360,11 @@ const Users: FC = () => {
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(insUser({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.userid, pwdchangefirstlogin: false })));
+            dispatch(delUser({
+                header: null,
+                detail: [insUser({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.userid, pwdchangefirstlogin: false })]
+            }, false));
+            // dispatch(execute(insUser({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.userid, pwdchangefirstlogin: false })));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }

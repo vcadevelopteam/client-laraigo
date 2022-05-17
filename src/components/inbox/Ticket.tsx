@@ -6,10 +6,16 @@ import { ITicket } from "@types";
 import { GetIcon } from 'components'
 import clsx from 'clsx';
 import Badge from '@material-ui/core/Badge';
+import { useDispatch } from 'react-redux';
 import Tooltip from '@material-ui/core/Tooltip';
 import { convertLocalDate, secondsToTime, getSecondsUntelNow } from 'common/helpers';
+import { answerCall, hangupCall } from 'store/voximplant/actions';
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
+import PhoneCallbackIcon from '@material-ui/icons/PhoneCallback';
+import { IconButton } from '@material-ui/core';
+import { Call } from 'voximplant-websdk/Call/Call';
+import CallEndIcon from '@material-ui/icons/CallEnd';
 
 const useStyles = makeStyles((theme) => ({
     label: {
@@ -27,6 +33,23 @@ const useStyles = makeStyles((theme) => ({
         position: 'absolute',
         top: 0,
         left: 0
+    },
+    iconcall: {
+        color: "white",
+        width: "25px",
+        height: "25px",
+        animationName: "$spin",
+        animationDuration: "5000ms",
+        animationIterationCount: "infinite",
+        animationTimingFunction: "linear",
+    },
+    "@keyframes spin": {
+        "from": {
+            transform: "rotate(0deg)"
+        },
+        "to": {
+            transform: "rotate(360deg)"
+        }
     }
 }));
 
@@ -75,17 +98,31 @@ const SmallAvatar = styled(Avatar)(() => ({
     fontSize: 11,
 }));
 
-const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { personlastreplydate, communicationchanneltype, lastmessage, displayname, imageurldef, ticketnum, firstconversationdate, countnewmessages, status, communicationchannelid, lastreplyuser, lastconversationdate } }) => {
+const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { call, personlastreplydate, communicationchanneltype, lastmessage, displayname, imageurldef, ticketnum, firstconversationdate, countnewmessages, status, communicationchannelid, lastreplyuser, lastconversationdate } }) => {
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const localclasses = useStyles({ color: "red" });
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const userType = useSelector(state => state.inbox.userType);
     const multiData = useSelector(state => state.main.multiData);
     const [dateToClose, setDateToClose] = useState<Date | null>(null)
     const dictAutoClose = useSelector(state => state.login.validateToken.user?.properties?.auto_close);
+    const statusCall = useSelector(state => state.voximplant?.statusCall);
     const dictAutoCloseHolding = useSelector(state => state.login.validateToken.user?.properties?.auto_close_holding);
+    const callVoxiTmp = useSelector(state => state.voximplant.call);
+    const [callVoxi, setCallVoxi] = useState<Call | null>(null);
+    const dispatch = useDispatch();
 
     const [iconColor, setIconColor] = useState('#7721AD');
     const { t } = useTranslation();
+
+    useEffect(() => {
+        if (callVoxiTmp && callVoxiTmp.call && callVoxiTmp.data?.conversationid === item.conversationid && item.status === "ASIGNADO") {
+            setCallVoxi(callVoxiTmp.call);
+        } else {
+            setCallVoxi(null);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [callVoxiTmp]);
 
     React.useEffect(() => {
         if (!multiData.error && !multiData.loading && multiData?.data[6] && multiData.data[6].success) {
@@ -107,15 +144,16 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
         } else {
             setDateToClose(null)
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dictAutoClose, dictAutoCloseHolding, countnewmessages, userType, agentSelected?.userid, communicationchannelid, lastreplyuser])
 
 
     return (
         <div
-            className={clsx(classes.containerItemTicket, { [classes.itemSelected]: (ticketSelected?.conversationid === item.conversationid) })}
+            className={clsx(classes.containerItemTicket, {
+                [classes.itemSelected]: (ticketSelected?.conversationid === item.conversationid)
+            })}
             onClick={() => setTicketSelected(item)}>
-
             <Badge
                 overlap="circular"
                 anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
@@ -126,7 +164,10 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                 <Avatar src={imageurldef} />
             </Badge>
 
-            <div style={{ flex: 1 }}>
+            <div className={clsx({
+                [classes.ticketWithCall]: !!call,
+                [classes.ticketWithoutCall]: !call
+            })}>
                 <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
                     <GetIcon channelType={communicationchanneltype} color={iconColor} />
                     <div className={classes.name}>{displayname || "-"}</div>
@@ -166,6 +207,45 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                     }
                 </div>
             </div>
+            {(!!callVoxi && statusCall === "CONNECTING" && callVoxiTmp.type === "INBOUND") &&
+                <div style={{ flex: 1 }}>
+                    <IconButton //answercall
+                        style={{ width: "35px", height: "35px", borderRadius: "50%", backgroundColor: '#55bd84' }}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            dispatch(answerCall(callVoxi));
+                        }}
+                    >
+                        <PhoneCallbackIcon className={localclasses.iconcall} />
+                    </IconButton>
+                </div>
+            }
+            {(!!callVoxi && statusCall === "CONNECTING" && callVoxiTmp.type === "OUTBOUND") && (
+                <div style={{ flex: 1 }}>
+                    <IconButton
+                            style={{ width: "35px", height: "35px", borderRadius: "50%", backgroundColor: 'rgb(180, 26, 26)' }}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                dispatch(hangupCall(callVoxi));
+                            }}
+                        >
+                            <CallEndIcon style={{ color: "white", width: "30px", height: "30px" }} />
+                    </IconButton>
+                </div>
+            )}
+            {(!!callVoxi && statusCall === "CONNECTED") &&
+                <div style={{ flex: 1 }}>
+                    <IconButton
+                            style={{ width: "35px", height: "35px", borderRadius: "50%", backgroundColor: 'rgb(180, 26, 26)' }}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                dispatch(hangupCall(callVoxi));
+                            }}
+                        >
+                            <CallEndIcon style={{ color: "white", width: "30px", height: "30px" }} />
+                    </IconButton>
+                </div>
+            }
         </div>
 
     )

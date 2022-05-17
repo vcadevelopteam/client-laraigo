@@ -78,6 +78,10 @@ const paths = {
         path: '/channels/:id/add/sms',
         resolve: (channelId: string | number) => `/channels/${channelId}/add/sms`,
     },
+    CHANNELS_ADD_PHONE: {
+        path: '/channels/:id/add/phone',
+        resolve: (channelId: string | number) => `/channels/${channelId}/add/phone`,
+    },
     CHANNELS_ADD_EMAIL: {
         path: '/channels/:id/add/email',
         resolve: (channelId: string | number) => `/channels/${channelId}/add/email`,
@@ -111,7 +115,7 @@ const paths = {
     QUICKREPLIES: '/extras/quickreplies',
     USERS: '/extras/users',
     GROUPCONFIG: '/extras/groupconfig',    
-    //WHITELIST: '/extras/whitelist',    
+    WHITELIST: '/extras/whitelist',    
     USERSETTINGS: '/usersettings',    
     INAPPROPRIATEWORDS: '/extras/inappropriatewords',
     INTELLIGENTMODELS: '/extras/intelligentmodels',

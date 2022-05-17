@@ -451,6 +451,21 @@ const Settings: FC = () => {
                                         m={2}
                                     />
                                 </Grid>                        
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    <ItemTile
+                                        title={<Trans i18nKey={langKeys.whitelist} count={2} />}
+                                        subtitle={<SubtitleText value={value?.num_whitelist} i18nKey={langKeys.whitelist} />}
+                                        icon={<ClassificationIcon fill="inherit" stroke="inherit" />}
+                                        helpText={
+                                            <HelpText
+                                                i18nKey={langKeys.manageWhitelist}
+                                                count={2}
+                                                onClick={() => history.push(paths.WHITELIST)}
+                                            />
+                                        }
+                                        m={2}
+                                    />
+                                </Grid>                        
                                 
                             </Grid>
                         </Grid>

@@ -2728,7 +2728,6 @@ const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg 
     const executeRes = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main.mainData);
     const multiResult = useSelector(state => state.main.multiData);
-    const mainMain = useSelector(state => state.main);
     const memoryTable = useSelector(state => state.main.memoryTable);
     const user = useSelector(state => state.login.validateToken.user);
     const [insertexcel, setinsertexcel] = useState(false);
@@ -2997,8 +2996,6 @@ const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg 
         const dataCurrency = [{ value: "PEN", description: "PEN" }, { value: "USD", description: "USD" }]
         const receiverdoctype = [{ value: 0, description: "NO DOMICILIADO" }, { value: 1, description: "DNI" }, { value: 4, description: "CARNE EXT." }, { value: 6, description: "RUC" }, { value: 7, description: "PASAPORTE" }]
         const invoicetype = [{ value: "01", description: "FACTURA" }, { value: "03", description: "BOLETA" }]
-        const indexCreditType = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_DOMAIN_LST_VALORES'));
-        let credittypelist = multiResult.data[indexCreditType] && multiResult.data[indexCreditType].success ? multiResult.data[indexCreditType].data : []
         let corplist = multiResult.data[indexCorp] && multiResult.data[indexCorp].success ? multiResult.data[indexCorp].data : []
         let orglist = multiResult.data[indexOrg] && multiResult.data[indexOrg].success ? multiResult.data[indexOrg].data : []
 
@@ -4723,7 +4720,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             label={t(langKeys.invoice_servicemonth)}
                             onChange={(value) => { setValue('month', parseInt(value?.val || '0')); }}
                             className="col-3"
-                            valueDefault={((data?.row?.month ? data?.row?.month.toString() : getValues('month')) || '').padStart(2, "0")}
+                            valueDefault={((data?.row?.month || 0) || getValues('month')).toString().padStart(2, "0")}
                             data={dataMonths}
                             optionDesc="val"
                             optionValue="val"
@@ -6160,13 +6157,17 @@ const PaymentMethods: React.FC<{}> = () => {
     const [waitDelete, setWaitDelete] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
 
-    const [dataMain, setdataMain] = useState({
+    // const [dataMain, setdataMain] = useState({
+    //     corpid: user?.corpid || 0,
+    //     id: 0,
+    //     orgid: 0,
+    // });
+
+    const fetchData = () => dispatch(getCollection(listPaymentCard({
         corpid: user?.corpid || 0,
         id: 0,
         orgid: 0,
-    });
-
-    const fetchData = () => dispatch(getCollection(listPaymentCard(dataMain)));
+    })));
 
     useEffect(() => {
         fetchData();
@@ -6348,7 +6349,7 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
 
     const [checkedFavorite, setCheckedFavorite] = useState(row?.favorite || false);
     const [icon, setIcon] = useState(<></>);
-    const [limitNumbers, setLimitNumbers] = useState(16);
+    // const [limitNumbers, setLimitNumbers] = useState(16);
     const [waitSave, setWaitSave] = useState(false);
 
     const datamonth = useMemo(() => ([
@@ -6397,24 +6398,24 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
         if (!edit) {
             if (row?.cardnumber) {
                 if (row.cardnumber.slice(0, 1) === "4") {
-                    setIcon(<img src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{ padding: 5 }}></img>)
-                    setLimitNumbers(19);
+                    setIcon(<img alt="aux" src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{ padding: 5 }}></img>)
+                    // setLimitNumbers(19);
                     setValue('cardlimit', 19);
                 } else if (row.cardnumber.slice(0, 2) === "51" || row.cardnumber.slice(0, 2) === "55") {
-                    setIcon(<img src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{ padding: 5 }}></img>)
-                    setLimitNumbers(19);
+                    setIcon(<img alt="aux" src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{ padding: 5 }}></img>)
+                    // setLimitNumbers(19);
                     setValue('cardlimit', 19);
                 } else if (row.cardnumber.slice(0, 2) === "37" || row.cardnumber.slice(0, 2) === "34") {
-                    setIcon(<img src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{ padding: 5 }}></img>)
-                    setLimitNumbers(18);
+                    setIcon(<img alt="aux" src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{ padding: 5 }}></img>)
+                    // setLimitNumbers(18);
                     setValue('cardlimit', 18);
                 } else if (row.cardnumber.slice(0, 2) === "36" || row.cardnumber.slice(0, 2) === "38" || row.cardnumber.slice(0, 3) === "300" || row.cardnumber.slice(0, 3) === "305") {
-                    setIcon(<img src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{ padding: 5 }}></img>)
-                    setLimitNumbers(17);
+                    setIcon(<img alt="aux" src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{ padding: 5 }}></img>)
+                    // setLimitNumbers(17);
                     setValue('cardlimit', 17);
                 } else {
                     setIcon(<></>)
-                    setLimitNumbers(10);
+                    // setLimitNumbers(10);
                     setValue('cardlimit', 10);
                 }
             }
@@ -6530,10 +6531,10 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
                     </div>
                     <h3>{t(langKeys.creditcard)}</h3>
                     {edit && <div style={{ display: "flex" }}>
-                        <img src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{ padding: 5 }}></img>
-                        <img src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{ padding: 5 }}></img>
-                        <img src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{ padding: 5 }}></img>
-                        <img src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{ padding: 5 }}></img>
+                        <img alt="aux2" src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{ padding: 5 }}></img>
+                        <img alt="aux2" src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{ padding: 5 }}></img>
+                        <img alt="aux2" src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{ padding: 5 }}></img>
+                        <img alt="aux2" src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{ padding: 5 }}></img>
                     </div>}
                     <div style={{ display: "flex", width: "100%" }}>
                         <div style={{ width: "50%" }}>
@@ -6567,24 +6568,24 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
                                     }}
                                     onInput={(e: any) => {
                                         if (e.target.value.slice(0, 1) === "4") {
-                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{ padding: 5 }}></img>)
-                                            setLimitNumbers(19);
+                                            setIcon(<img alt="aux" src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{ padding: 5 }}></img>)
+                                            // setLimitNumbers(19);
                                             setValue('cardlimit', 19);
                                         } else if (e.target.value.slice(0, 2) === "51" || e.target.value.slice(0, 2) === "55") {
-                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{ padding: 5 }}></img>)
-                                            setLimitNumbers(19);
+                                            setIcon(<img alt="aux" src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{ padding: 5 }}></img>)
+                                            // setLimitNumbers(19);
                                             setValue('cardlimit', 19);
                                         } else if (e.target.value.slice(0, 2) === "37" || e.target.value.slice(0, 2) === "34") {
-                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{ padding: 5 }}></img>)
-                                            setLimitNumbers(18);
+                                            setIcon(<img alt="aux" src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{ padding: 5 }}></img>)
+                                            // setLimitNumbers(18);
                                             setValue('cardlimit', 18);
                                         } else if (e.target.value.slice(0, 2) === "36" || e.target.value.slice(0, 2) === "38" || e.target.value.slice(0, 3) === "300" || e.target.value.slice(0, 3) === "305") {
-                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{ padding: 5 }}></img>)
-                                            setLimitNumbers(17);
+                                            setIcon(<img alt="aux" src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{ padding: 5 }}></img>)
+                                            // setLimitNumbers(17);
                                             setValue('cardlimit', 17);
                                         } else {
                                             setIcon(<></>)
-                                            setLimitNumbers(10);
+                                            // setLimitNumbers(10);
                                             setValue('cardlimit', 10);
                                         }
                                     }}

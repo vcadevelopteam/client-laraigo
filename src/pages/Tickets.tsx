@@ -199,7 +199,7 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
                     userid: ticket.asesoridfinal,
                     status: "ASIGNADO",
                     countnewmessages: 0,
-                    channelicon: ticket.channelicon,
+                    // channelicon: ticket.channelicon,
                     coloricon: ticket.coloricon,
                     newConversation: true,
                     postexternalid: ticket.postexternalid,

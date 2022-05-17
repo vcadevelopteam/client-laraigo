@@ -75,7 +75,7 @@ export const RecoverPassword: FC = () => {
     const [valid, setValid] = useState<boolean>(false);
     const [waitSave, setWaitSave] = useState(false);
 
-    const { register, handleSubmit, setValue, getValues, formState: { errors }, trigger, clearErrors } = useForm({
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             password: '',
             confirmpassword: '',

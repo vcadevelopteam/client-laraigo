@@ -12,6 +12,7 @@ import { ChannelAddTwitterDM } from './ChannelAddTwitterDM'
 import { ChannelAddChatWeb } from './ChannelAddChatWeb'
 import { ChannelAddAndroid } from './ChannelAddAndroid'
 import { ChannelAddIos } from './ChannelAddIos'
+import { ChannelAddPhone } from './ChannelAddPhone'
 import { Trans, useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { ListChannels, SubscriptionContext, MainData } from "./context";
@@ -516,8 +517,6 @@ const GetComponent: FC<GetComponentProps> = ({ channel: key, display, setOpenWar
             );
         case 'email':
             return <div>email</div>;
-        case 'phone':
-            return <div>phone</div>;
         case 'sms':
             return <div>sms</div>;
         case 'android':
@@ -530,6 +529,12 @@ const GetComponent: FC<GetComponentProps> = ({ channel: key, display, setOpenWar
             return (
                 <div style={{ display: display ? 'block' : 'none' }}>
                 <ChannelAddIos setOpenWarning={setOpenWarning} />
+                </div>
+            );
+        case 'phone':
+            return (
+                <div style={{ display: display ? 'block' : 'none' }}>
+                <ChannelAddPhone setOpenWarning={setOpenWarning} />
                 </div>
             );
         default: return <div />;

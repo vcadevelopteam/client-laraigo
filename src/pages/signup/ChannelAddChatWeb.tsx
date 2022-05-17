@@ -1801,8 +1801,6 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
 }) => {
     const {
         commonClasses,
-        selectedChannels,
-        finishreg,
         deleteChannel,
     } = useContext(SubscriptionContext);
     const { t } = useTranslation();

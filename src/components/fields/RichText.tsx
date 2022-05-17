@@ -1,4 +1,4 @@
-import { Box, BoxProps, IconButton, IconButtonProps, Menu, TextField, Toolbar, makeStyles, Button, InputAdornment, Tabs, FormHelperText, CircularProgress, Tooltip } from '@material-ui/core';
+import { Box, BoxProps, IconButton, IconButtonProps, Menu, TextField, Toolbar, makeStyles, Button, InputAdornment, Tabs, FormHelperText, CircularProgress, Tooltip, InputLabel, SelectProps, FormControl, Select, MenuItem } from '@material-ui/core';
 import {
     FormatBold as FormatBoldIcon,
     FormatItalic as FormatItalicIcon,
@@ -12,6 +12,7 @@ import {
     InsertPhoto as InsertPhotoIcon,
     Delete as DeleteIcon,
     Close as CloseIcon,
+    FormatSize as FormatSizeIcon,
 } from '@material-ui/icons';
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { createEditor, BaseEditor, Descendant, Transforms, Editor, Element as SlateElement } from 'slate';
@@ -26,6 +27,7 @@ import { useSelector } from 'hooks';
 import { resetUploadFile, uploadFile } from 'store/main/actions';
 import { useDispatch } from 'react-redux';
 import { showSnackbar } from 'store/popus/actions';
+import { ArrowDropDownIcon } from 'icons';
 
 export const renderToString = (element: React.ReactElement) => {
     return ReactDomServer.renderToString(element);
@@ -72,6 +74,8 @@ interface CustomText extends Object {
     text: string;
     bold?: boolean;
     italic?: boolean;
+    fontfamily?: string;
+    fontSize?: string;
     code?: boolean;
     underline?: boolean;
 }
@@ -92,6 +96,8 @@ interface RichTextProps extends Omit<BoxProps, 'onChange'> {
     onChange: (value: Descendant[]) => void;
     onlyurl?: boolean;
     image?: Boolean;
+    children?: React.ReactNode;
+    positionEditable?: 'top' | 'bottom';
 }
 
 interface RenderElementProps {
@@ -120,7 +126,7 @@ const useRichTextStyles = makeStyles(theme => ({
 }));
 
 /**TODO: Validar que la URL de la imagen sea valida en el boton de insertar imagen */
-const RichText: FC<RichTextProps> = ({ value, onChange, placeholder,image=true, spellCheck, error, onlyurl=false, ...boxProps })=> {
+const RichText: FC<RichTextProps> = ({ value, onChange, placeholder,image=true, spellCheck, error,positionEditable="bottom",children, onlyurl=false, ...boxProps })=> {
     const classes = useRichTextStyles();
     // Create a Slate editor object that won't change across renders.
     const editor = useMemo(() => withImages(withHistory(withReact(createEditor()))), []);
@@ -129,7 +135,18 @@ const RichText: FC<RichTextProps> = ({ value, onChange, placeholder,image=true, 
     return (
         <Box {...boxProps}>
             <Slate editor={editor} value={value} onChange={onChange}>
+                {positionEditable==="top" &&
+                    <Editable
+                        placeholder={placeholder}
+                        renderElement={renderElement}
+                        renderLeaf={renderLeaf}
+                        spellCheck={spellCheck}
+                    />
+                }
                 <Toolbar className={classes.toolbar}>
+                    {children}
+                    <FontFamily tooltip='font'></FontFamily>
+                    <FormatSizeMenu tooltip='size'></FormatSizeMenu>
                     <MarkButton format="bold" tooltip='bold'>
                         <FormatBoldIcon />
                     </MarkButton>
@@ -177,12 +194,14 @@ const RichText: FC<RichTextProps> = ({ value, onChange, placeholder,image=true, 
                         </div>
                     )}
                 </Toolbar>
-                <Editable
-                    placeholder={placeholder}
-                    renderElement={renderElement}
-                    renderLeaf={renderLeaf}
-                    spellCheck={spellCheck}
-                />
+                {positionEditable!=="top" &&
+                    <Editable
+                        placeholder={placeholder}
+                        renderElement={renderElement}
+                        renderLeaf={renderLeaf}
+                        spellCheck={spellCheck}
+                    />
+                }
             </Slate>
             {error && error !== '' && <FormHelperText error>{error}</FormHelperText>}
         </Box>
@@ -218,17 +237,29 @@ const renderLeaf: RenderLeaf = ({ attributes = {}, children, leaf }) => {
     if (leaf.bold === true) {
         children = <strong>{children}</strong>;
     }
-
     if (leaf.code === true) {
         children = <code>{children}</code>;
     }
-
     if (leaf.italic === true) {
         children = <em>{children}</em>;
     }
-
     if (leaf.underline === true) {
         children = <u>{children}</u>;
+    }
+    if (leaf.fontfamily === 'serif') {
+        children = <span style={{fontFamily: 'serif'}}>{children}</span>;
+    }
+    if (leaf.fontfamily === 'sans-serif') {
+        children = <span style={{fontFamily: 'sans-serif'}}>{children}</span>;
+    }
+    if (leaf.fontfamily === 'monospace') {
+        children = <span style={{fontFamily: 'monospace'}}>{children}</span>;
+    }
+    if (leaf.fontfamily === 'cursive') {
+        children = <span style={{fontFamily: 'cursive'}}>{children}</span>;
+    }
+    if (leaf.fontfamily === 'fantasy') {
+        children = <span style={{fontFamily: 'fantasy'}}>{children}</span>;
     }
     
     return <span {...attributes}>{children}</span>;
@@ -256,6 +287,106 @@ const toggleBlock = (editor: BaseEditor & ReactEditor, format: ElemetType) => {
         Transforms.wrapNodes(editor, block);
     }
 }
+/**Aplicar fuente al texto seleccionado */
+const toggleFontFamily = (editor: BaseEditor & ReactEditor, value: string) => {
+    if (value === "inherit") {
+        Editor.removeMark(editor, 'fontfamily');
+    } else {
+        Editor.addMark(editor, 'fontfamily', value);
+    }
+}
+
+const toggleFontSize = (editor: BaseEditor & ReactEditor, value: string) => {
+    if (value === "small") {
+        Editor.removeMark(editor, 'fontsize');
+    } else {
+        Editor.addMark(editor, 'fontsize', value);
+    }
+}
+
+interface FontFamilyProps extends SelectProps {
+    tooltip: string;
+}
+
+const FontFamily: FC<FontFamilyProps> = ({ tooltip = '', children, onClick, ...props }) => {
+    const editor = useSlate();
+    const marks = Editor.marks(editor);
+    const fontfamily = marks?.fontfamily || 'inherit';
+    const { t } = useTranslation();
+
+    return (
+        <FormControl>
+            <Select
+                labelId="font-family-select-label"    
+                value={fontfamily}
+                style={{ width: 150, marginLeft:10 }}
+                onChange={e => {
+                    e.preventDefault();
+                    toggleFontFamily(editor, e.target.value as string);
+                }}
+            >
+                <MenuItem style={{fontFamily: "inherit"}} value="inherit">{t(langKeys.default)}</MenuItem>
+                <MenuItem style={{fontFamily: "serif"}} value="serif">Serif</MenuItem>
+                <MenuItem style={{fontFamily: "sans-serif"}} value="sans-serif">Sans-serif</MenuItem>
+                <MenuItem style={{fontFamily: "monospace"}} value="monospace">Monospace</MenuItem>
+                <MenuItem style={{fontFamily: "cursive"}} value="cursive">Cursive</MenuItem>
+                <MenuItem style={{fontFamily: "fantasy"}} value="fantasy">Fantasy</MenuItem>
+            </Select>
+        </FormControl>
+    );
+}
+const FormatSizeMenu: FC<FontFamilyProps> = ({ tooltip = '', children, onClick, ...props }) => {
+    const editor = useSlate();
+    const marks = Editor.marks(editor);
+    //const fontsize = marks?.fontsize || 'small';
+    const { t } = useTranslation();
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const open = Boolean(anchorEl);
+
+    const handleClick = (event:any) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    return (
+        <FormControl>
+            <Tooltip title={t(langKeys.size)||"size"} 
+                aria-label="add">
+                <>
+                    <IconButton
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        onClick={handleClick}
+                        >
+                        <FormatSizeIcon />
+                        <ArrowDropDownIcon/>
+                    </IconButton>
+                    <Menu
+                        id="long-menu"
+                        anchorEl={anchorEl}
+                        keepMounted
+                        open={open}
+                        onClose={handleClose}
+                    >
+                        <MenuItem onClick={handleClose} value="x-small">{t(langKeys.small)}</MenuItem>
+                        <MenuItem onClick={handleClose} value="small">{t(langKeys.normal)}</MenuItem>
+                        <MenuItem onClick={handleClose} value="large">{t(langKeys.large)}</MenuItem>
+                        <MenuItem onClick={handleClose} value="xx-large">{t(langKeys.huge)}</MenuItem>
+                    </Menu>
+                </>
+            </Tooltip>
+        </FormControl>
+    );
+}
+
+const isMarkActive = (editor: BaseEditor & ReactEditor, format: keyof Omit<CustomText, 'text'>) => {
+    const marks = Editor.marks(editor);
+    return marks ? marks[format] === true : false;
+}
 
 /**Aplicar estilo al texto seleccionado */
 const toggleMark = (editor: BaseEditor & ReactEditor, format: keyof Omit<CustomText, 'text'>) => {
@@ -279,11 +410,6 @@ const isBlockActive = (editor: BaseEditor & ReactEditor, format: ElemetType) => 
 
     const [match] = Array.from(iterator);
     return !!match;
-}
-
-const isMarkActive = (editor: BaseEditor & ReactEditor, format: keyof Omit<CustomText, 'text'>) => {
-    const marks = Editor.marks(editor);
-    return marks ? marks[format] === true : false;
 }
 
 interface MarkButtonProps extends IconButtonProps {
@@ -370,7 +496,6 @@ const OnlyURLInsertImageButton: FC = ({ children }) => {
     const classes = useInsertImageButtonStyles();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [url, setUrl] = useState('');
-    const [tabIndex, setTabIndex] = useState(0);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
     const upload = useSelector(state => state.main.uploadFile);
     const open = Boolean(anchorEl);
@@ -441,7 +566,7 @@ const OnlyURLInsertImageButton: FC = ({ children }) => {
                 }}
             >
                 <div className={classes.rootPopup}>
-                    <div role="tabpanel" className={clsx(classes.rootTab, tabIndex !== 0 && classes.hidden)}>
+                    <div role="tabpanel" className={clsx(classes.rootTab)}>
                         <TextField
                             placeholder={t(langKeys.enterTheUrl)}
                             value={url}

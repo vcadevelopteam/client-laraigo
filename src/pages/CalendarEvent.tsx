@@ -1,24 +1,22 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
-import { Button, Fab, IconButton, makeStyles, Typography } from "@material-ui/core";
+import { Button, IconButton, makeStyles, Typography } from "@material-ui/core";
 import { useParams } from 'react-router';
 import { FieldEdit, CalendarZyx, FieldEditMulti } from "components";
-import { getCollEventBooking, resetMain } from 'store/main/actions';
-import { getEventByCode, validateCalendaryBooking, dayNames, calculateDateFromMonth, insBookingCalendar, getPersonFromBooking } from 'common/helpers';
+import { getCollEventBooking } from 'store/main/actions';
+import { getEventByCode, validateCalendaryBooking, dayNames, calculateDateFromMonth, insBookingCalendar } from 'common/helpers';
 import { Dictionary } from '@types';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import Backdrop from '@material-ui/core/Backdrop';
-import MuiPhoneNumber from 'material-ui-phone-number';
-import { styled } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
-import { getCountryList } from "store/signup/actions";
 import { langKeys } from 'lang/keys';
 import clsx from 'clsx';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import SaveIcon from '@material-ui/icons/Save';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -33,19 +31,6 @@ interface IDay {
     dow: number;
 }
 
-const CssPhonemui = styled(MuiPhoneNumber)({
-    '& label.Mui-focused': {
-        color: '#7721ad',
-    },
-    '& .MuiInput-underline:after': {
-        borderBottomColor: '#7721ad',
-    },
-    '& .MuiOutlinedInput-root': {
-        '&.Mui-focused fieldset': {
-            borderColor: '#7721ad',
-        },
-    },
-});
 interface ITime {
     localyeardate: string;
     localstarthour: string;
@@ -194,14 +179,11 @@ const TimeDate: FC<{ time: ITime, isSelected: boolean, setTimeSelected: (p: any)
         </div>
     )
 }
-const URL = "https://ipapi.co/json/";
 const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, disabledSubmit: boolean, parameters: Dictionary }> = ({ event, handlerOnSubmit, disabledSubmit, parameters }) => {
     const { t } = useTranslation();
     const classes = useStyles();
-    const [phoneCountry, setPhoneCountry] = useState('');
-    const dispatch = useDispatch();
 
-    const { register, handleSubmit, setValue, getValues, control, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             name: event?.personname,
             email: event?.email,
@@ -218,25 +200,6 @@ const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, dis
         register('phone');
     }, [register, t, event])
 
-    useEffect(() => {
-        dispatch(getCountryList())
-        try {
-            fetch(URL, { method: "get" })
-                .then((response) => response.json())
-                .then((data) => {
-                    const countryCode = data.country_code.toUpperCase();
-
-                    setPhoneCountry(countryCode);
-                })
-        }
-        catch (error) {
-            console.error("error");
-        }
-        return () => {
-            dispatch(resetMain());
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [dispatch]);
 
     const onSubmit = handleSubmit((data) => {
         handlerOnSubmit({ ...data, phone: data.phone?.replace("+", "") })

@@ -36,6 +36,7 @@ import CameraAltIcon from '@material-ui/icons/CameraAlt';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Tooltip from '@material-ui/core/Tooltip';
 import { ListItemIcon } from '@material-ui/core';
+import PhoneIcon from '@material-ui/icons/Phone';
 import {
     WebMessengerIcon,
     ZyxmeMessengerIcon,
@@ -58,7 +59,7 @@ import MuiPhoneNumber, { MaterialUiPhoneNumberProps } from 'material-ui-phone-nu
 import NumberFormat from 'react-number-format';
 import InfoIcon from '@material-ui/icons/Info';
 
-const EMOJISINDEXED = emojis.reduce((acc, item) => ({...acc, [item.emojihex]: item}), {});
+const EMOJISINDEXED = emojis.reduce((acc, item) => ({ ...acc, [item.emojihex]: item }), {});
 
 interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
@@ -195,7 +196,7 @@ export const FieldView: React.FC<{ label: string, value?: string, className?: an
         <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
             {label}
             {!!tooltip && <Tooltip title={tooltip} placement="top-start">
-                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
             </Tooltip>}
         </Box>
         <Box onClick={onclick} lineHeight="20px" fontSize={15} color="textPrimary" style={styles}>{value || ""}</Box>
@@ -218,7 +219,7 @@ interface TemplateDialogProps {
     maxWidth?: false | "sm" | "xs" | "md" | "lg" | "xl" | undefined;
 }
 
-export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText1, buttonText2,buttonText3, handleClickButton2,handleClickButton3, handleClickButton1, title, maxWidth = "sm", button2Type = "button", button1Type = "button", zIndex = 1300 }) => (
+export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText1, buttonText2, buttonText3, handleClickButton2, handleClickButton3, handleClickButton1, title, maxWidth = "sm", button2Type = "button", button1Type = "button", zIndex = 1300 }) => (
     <Dialog
         open={open}
         fullWidth
@@ -241,7 +242,7 @@ export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, butto
                     </Button>}
                 {!!buttonText3 &&
                     <Button onClick={(handleClickButton3)}>
-                        <p style={{color: "red"}}>{buttonText3}</p>
+                        <p style={{ color: "red" }}>{buttonText3}</p>
                     </Button>}
             </DialogActions>
         </form>
@@ -324,7 +325,7 @@ interface InputProps {
     inputProps?: any;
     InputProps?: Partial<OutlinedInputProps>;
     size?: "small" | "medium" | undefined;
-    width?: number|"string";
+    width?: number | "string";
 }
 
 interface TemplateAutocompleteProps extends InputProps {
@@ -339,7 +340,7 @@ interface TemplateAutocompleteProps extends InputProps {
     orderbylabel?: boolean;
 }
 
-export const FieldEdit: React.FC<InputProps> = ({ width="100%",label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard" }) => {
+export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard" }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -354,11 +355,11 @@ export const FieldEdit: React.FC<InputProps> = ({ width="100%",label, size, clas
             <TextField
                 {...fregister}
                 color="primary"
-                fullWidth={width==="100%"}
+                fullWidth={width === "100%"}
                 label={variant !== "standard" && label}
                 disabled={disabled}
                 type={type}
-                style={{width: width}}
+                style={{ width: width }}
                 value={value}
                 variant={variant}
                 error={!!error}
@@ -512,6 +513,7 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     if (channelType === "TWIT") return <TwitterIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "TWMS") return <TwitterIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "TEAM") return <TeamsIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "VOXI") return <PhoneIcon width={10} fill={color} stroke={color} height={height} style={{ color, width: 16, height: 16 }} />
 
     return <TelegramIcon style={{ color, width, height }} />
 }
@@ -519,18 +521,25 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
 export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({multiline=false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false }) => {
     const { t } = useTranslation();
     const [value, setValue] = useState<Dictionary | null>(null);
+    const [dataG, setDataG] = useState<Dictionary[]>([])
 
     useEffect(() => {
         if (orderbylabel) {
             if (data.length > 0) {
                 if (uset) {
-                    data = data.sort((a, b) => t(prefixTranslation + a[optionDesc]?.toLowerCase()).toUpperCase().localeCompare(t(prefixTranslation + b[optionDesc]?.toLowerCase()).toUpperCase()));
+                    const datatmp = data.sort((a, b) => t(prefixTranslation + a[optionDesc]?.toLowerCase()).toUpperCase().localeCompare(t(prefixTranslation + b[optionDesc]?.toLowerCase()).toUpperCase()));
+                    setDataG(datatmp);
+                    return;
                 }
                 else {
-                    data = data.sort((a, b) => (a[optionDesc] || '').localeCompare(b[optionDesc] || ''));
+                    const datatmp = data.sort((a, b) => (a[optionDesc] || '').localeCompare(b[optionDesc] || ''));
+                    setDataG(datatmp);
+                    return;
                 }
             }
         }
+        setDataG(data);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data]);
 
     useEffect(() => {
@@ -565,12 +574,12 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({multiline=fals
                     onChange && onChange(newValue);
                 }}
                 getOptionLabel={option => option ? (uset ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')) : ''}
-                options={data}
+                options={dataG}
                 loading={loading}
                 size="small"
                 renderInput={(params) => (
                     <TextField
-                        
+
                         {...params}
                         label={variant !== "standard" && label}
                         variant={variant}
@@ -667,7 +676,7 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
     )
 }
 
-export const FieldMultiSelectFreeSolo: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "",onBlur, onChange, disabled = false, loading, className = null, style = null, variant = "standard", readOnly = false }) => {
+export const FieldMultiSelectFreeSolo: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onBlur, onChange, disabled = false, loading, className = null, style = null, variant = "standard", readOnly = false }) => {
 
     const [optionsSelected, setOptionsSelected] = useState<any[]>([]);
 
@@ -741,7 +750,7 @@ export const FieldMultiSelectFreeSolo: React.FC<TemplateAutocompleteProps> = ({ 
         </div>
     )
 }
-export const FieldMultiSelectEmails: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "",onBlur, onChange, disabled = false, loading, className = null, style = null, variant = "standard", readOnly = false }) => {
+export const FieldMultiSelectEmails: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onBlur, onChange, disabled = false, loading, className = null, style = null, variant = "standard", readOnly = false }) => {
 
     const [optionsSelected, setOptionsSelected] = useState<any[]>([]);
 
@@ -756,7 +765,7 @@ export const FieldMultiSelectEmails: React.FC<TemplateAutocompleteProps> = ({ er
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [valueDefault, data]);
     const el = React.useRef<null | HTMLDivElement>(null);
-    const ke = new KeyboardEvent("keydown", {bubbles: true, cancelable: true, keyCode: 13});
+    const ke = new KeyboardEvent("keydown", { bubbles: true, cancelable: true, keyCode: 13 });
 
     return (
         <div className={className}>
@@ -784,8 +793,8 @@ export const FieldMultiSelectEmails: React.FC<TemplateAutocompleteProps> = ({ er
                         {item[optionDesc]}
                     </React.Fragment>
                 )}
-                onInput={(e:any) => {
-                    if(e.target.value.indexOf(",") > -1){
+                onInput={(e: any) => {
+                    if (e.target.value.indexOf(",") > -1) {
                         const values = e.target.value.split(",");
                         e.target.value = values[0]
                         el?.current?.dispatchEvent(ke);
@@ -799,9 +808,8 @@ export const FieldMultiSelectEmails: React.FC<TemplateAutocompleteProps> = ({ er
                 size="small"
                 getOptionLabel={option => String(option ? option[optionDesc] || option : '')}
                 options={data}
-                renderInput={(params) => 
-                    {
-                        return (<TextField
+                renderInput={(params) => {
+                    return (<TextField
                         {...params}
                         label={variant !== "standard" && label}
                         variant={variant}
@@ -821,7 +829,8 @@ export const FieldMultiSelectEmails: React.FC<TemplateAutocompleteProps> = ({ er
                         error={!!error}
                         helperText={error || null}
 
-                    />)}
+                    />)
+                }
                 }
             />
         </div>
@@ -1087,7 +1096,8 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisNoShow = [
                             onSelect={onSelect}
                             native={true}
                             sheetSize={32}
-                            i18n={{ search: t(langKeys.search), 
+                            i18n={{
+                                search: t(langKeys.search),
                                 categories: {
                                     search: t(langKeys.search_result),
                                     recent: t(langKeys.favorites),
@@ -1099,7 +1109,8 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisNoShow = [
                                     objects: t(langKeys.objects),
                                     symbols: t(langKeys.symbols),
                                     flags: t(langKeys.flags),
-                                }}} 
+                                }
+                            }}
                             recent={emojiFavorite.length > 0 ? emojiFavorite?.map(x => (EMOJISINDEXED as Dictionary)?.[x || ""]?.id || '') : undefined}
                             emojisToShowFilter={emojisNoShow && emojisNoShow.length > 0 ? (emoji: any) => emojisNoShow.map(x => x.toUpperCase()).indexOf(emoji.unified.toUpperCase()) === -1 : undefined}
                         />
