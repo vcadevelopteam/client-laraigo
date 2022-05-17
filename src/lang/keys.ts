@@ -1387,6 +1387,7 @@ export const langKeys = {
     source: 'source',
     bdinternal: 'bdinternal',
     bdexternal: 'bdexternal',
+    database: 'database',
     date: 'date',
     hour: 'hour',
     hour_plural: 'hour_plural',
@@ -1516,6 +1517,8 @@ export const langKeys = {
     minute: 'minute',
     minute_plural: 'minute_plural',
     day: 'day',
+
+    load_conversation_plural: 'load_conversation_plural',
 
     equals: 'equals',
     notequals: 'notequals',

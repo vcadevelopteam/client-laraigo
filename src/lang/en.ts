@@ -915,6 +915,7 @@ const translation: LangKeys = {
     source: 'Source',
     bdinternal: 'Internal data',
     bdexternal: 'External data',
+    database: 'Database',
     date: 'Date',
     hour: 'Hour',
     hour_plural: 'Hours',
@@ -1363,6 +1364,8 @@ const translation: LangKeys = {
     lastMonth: 'Last Month',
     daysUpToToday: 'days up to today',
     daysStartingToday: 'days starting today',
+
+    load_conversation_plural: 'Load conversations',
 
     equals: 'Equals',
     notequals: 'Not equals',

@@ -1103,6 +1103,7 @@ const translation: LangKeys = {
     source: 'Fuente',
     bdinternal: 'Base interna',
     bdexternal: 'Base externa',
+    database: 'Base de datos',
     date: 'Fecha',
     hour: 'Hora',
     hour_plural: 'Horas',
@@ -1339,6 +1340,8 @@ const translation: LangKeys = {
     lastMonth: 'Mes Pasado',
     daysUpToToday: 'días hasta hoy',
     daysStartingToday: 'días a partir de hoy',
+
+    load_conversation_plural: 'Cargar conversaciones',
 
     equals: 'Igual',
     notequals: 'No igual',

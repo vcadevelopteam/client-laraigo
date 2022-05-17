@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useCallback } from 'react'
-import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomainLight, insConversationClassificationMassive, reassignMassiveTicket, getUserSel, getHistoryStatusConversation, getCampaignLst } from 'common/helpers';
+import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomainLight, insConversationClassificationMassive, reassignMassiveTicket, getUserSel, getHistoryStatusConversation, getCampaignLst, uploadCSV, uploadExcel } from 'common/helpers';
 import { getCollectionPaginated, exportData, getMultiCollection, resetAllMain, execute, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
@@ -11,7 +11,7 @@ import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Box from '@material-ui/core/Box/Box';
-import { DialogZyx, FieldMultiSelect, FieldSelect, FieldEditMulti } from 'components';
+import { DialogZyx, FieldMultiSelect, FieldSelect, FieldEditMulti, FieldEdit } from 'components';
 import TableZyx from 'components/fields/table-simple';
 import { DialogInteractions } from 'components';
 import { useForm } from 'react-hook-form';
@@ -22,6 +22,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { CloseTicketIcon, HistoryIcon, TipifyIcon, ReassignIcon } from 'icons';
 import { massiveCloseTicket, getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, emitEvent } from 'store/inbox/actions';
 import { Button, ListItemIcon } from '@material-ui/core';
+import PublishIcon from '@material-ui/icons/Publish';
 
 const selectionKey = 'conversationid';
 
@@ -66,6 +67,9 @@ const useStyles = makeStyles((theme) => ({
     },
     filterStatusActive: {
         color: theme.palette.primary.main,
+    },
+    flex_1: {
+        flex: 1
     }
 }));
 
@@ -586,6 +590,114 @@ const DialogHistoryStatus: React.FC<{ ticket: Dictionary | null, openModal: bool
     )
 }
 
+const DialogLoadTickets: React.FC<{
+    setOpenModal: (param: any) => void,
+    openModal: boolean,
+    fetchData: () => void
+}> = ({ setOpenModal, openModal, fetchData }) => {
+    const classes = useStyles();
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const [waitUpload, setWaitUpload] = useState(false);
+    const executeRes = useSelector(state => state.main.execute)
+    const [file, setFile] = useState<File | null>(null);
+
+    const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<{
+        filename: string;
+    }>();
+
+    useEffect(() => {
+        if (waitUpload) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_import) }))
+                setOpenModal(false);
+                dispatch(showBackdrop(false));
+                setWaitUpload(false);
+                fetchData();
+            } else if (executeRes.error) {
+                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
+                dispatch(showBackdrop(false));
+                setWaitUpload(false);
+            }
+        }
+    }, [executeRes, waitUpload])
+
+    useEffect(() => {
+        if (openModal) {
+            reset({
+                filename: '',
+            })
+            register('filename', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        }
+    }, [openModal])
+
+    const onSubmit = handleSubmit(async () => {
+        let data: any = [];
+        if (file?.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+            data = await uploadExcel(file);
+        }
+        else if (file?.type === 'text/csv') {
+            data = await uploadCSV(file);
+        }
+        console.log(data);
+        // dispatch(execute(reassignMassiveTicket(listConversation, data.newUserId, data.observation, data.newUserGroup)));
+        dispatch(showBackdrop(true));
+        setWaitUpload(true);
+    });
+    
+    const handleUpload = async (files: any) => {
+        const file = files[0];
+        setValue('filename', file?.name);
+        setFile(file);
+    }
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.load_conversation_plural)}
+            buttonText1={t(langKeys.cancel)}
+            buttonText2={t(langKeys.import)}
+            handleClickButton1={() => setOpenModal(false)}
+            handleClickButton2={onSubmit}
+            button2Type="submit"
+        >
+            <div
+                style={{
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    gap: '10px'
+                }}
+            >
+                <FieldEdit
+                    className={classes.flex_1}
+                    label={t(langKeys.database)}
+                    valueDefault={getValues('filename')}
+                    error={errors.filename?.message}
+                    disabled={true}
+                />
+                <input
+                    name="file"
+                    accept="text/csv"
+                    id="laraigo-upload-csv-file"
+                    type="file"
+                    style={{ display: 'none' }}
+                    onChange={(e) => handleUpload(e.target.files)}
+                />
+                <label htmlFor="laraigo-upload-csv-file">
+                    <Button
+                        className={classes.button}
+                        variant="contained"
+                        component="span"
+                        color="primary"
+                        style={{ backgroundColor: "#55BD84" }}
+                    >{t(langKeys.select)}
+                    </Button>
+                </label>
+            </div>
+        </DialogZyx>)
+}
+
 const Tickets = () => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -610,6 +722,8 @@ const Tickets = () => {
     const [totalrow, settotalrow] = useState(0);
     const [userList, setUserList] = useState<Dictionary[]>([])
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
+
+    const [openUploadTickets, setOpenUploadTickets] = useState(false);
 
     const setValue = (parameterName: any, value: any) => {
         setAllParameters({ ...allParameters, [parameterName]: value });
@@ -895,7 +1009,9 @@ const Tickets = () => {
     };
 
     const fetchDataAux2 = () => {
-        fetchData(fetchDataAux);
+        if (fetchDataAux) {
+            fetchData(fetchDataAux);
+        }
     };
 
     useEffect(() => {
@@ -999,6 +1115,20 @@ const Tickets = () => {
                 pageCount={pageCount}
                 filterrange={true}
                 download={true}
+                ButtonsElement={() => (
+                    <>
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            disabled={mainPaginated.loading}
+                            onClick={() => setOpenUploadTickets(true)}
+                            startIcon={<PublishIcon />}
+                        >
+                            {t(langKeys.load_conversation_plural)}
+                        </Button>
+                    </>
+                )}
                 fetchData={fetchData}
                 exportPersonalized={triggerExportData}
                 useSelection={true}
@@ -1086,6 +1216,11 @@ const Tickets = () => {
                 rowWithDataSelected={rowToSend}
                 openModal={openDialogReassign}
                 setOpenModal={setOpenDialogReassign}
+            />
+            <DialogLoadTickets
+                fetchData={fetchDataAux2}
+                openModal={openUploadTickets}
+                setOpenModal={setOpenUploadTickets}
             />
         </div>
     )
