@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useCallback } from 'react'
-import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomainLight, insConversationClassificationMassive, reassignMassiveTicket, getUserSel, getHistoryStatusConversation, getCampaignLst, uploadCSV, uploadExcel } from 'common/helpers';
+import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomainLight, insConversationClassificationMassive, reassignMassiveTicket, getUserSel, getHistoryStatusConversation, getCampaignLst, uploadCSV, uploadExcel, getPropertySelByName } from 'common/helpers';
 import { getCollectionPaginated, exportData, getMultiCollection, resetAllMain, execute, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
@@ -1023,6 +1023,7 @@ const Tickets = () => {
             getUserSel(0),
             getValuesFromDomainLight("GRUPOS"),
             getCampaignLst(),
+            getPropertySelByName('CARGARCONVERSACIONES')
         ]));
 
         return () => {
@@ -1116,16 +1117,18 @@ const Tickets = () => {
                 download={true}
                 ButtonsElement={() => (
                     <>
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            disabled={mainPaginated.loading}
-                            onClick={() => setOpenUploadTickets(true)}
-                            startIcon={<PublishIcon />}
-                        >
-                            {t(langKeys.upload_conversation_plural)}
-                        </Button>
+                        {mainResult?.multiData?.data?.[8]?.data?.[0]?.propertyvalue === '1' &&
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={mainPaginated.loading}
+                                onClick={() => setOpenUploadTickets(true)}
+                                startIcon={<PublishIcon />}
+                            >
+                                {t(langKeys.upload_conversation_plural)}
+                            </Button>
+                        }
                     </>
                 )}
                 fetchData={fetchData}
