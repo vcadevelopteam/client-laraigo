@@ -72,7 +72,7 @@ const ManageCallInfoTicket: React.FC = () => {
 
     return (
         <div style={{ width: "100%" }}>
-            <Card style={{ maxWidth: "500px", marginLeft: "auto", marginRight: "auto" }}>
+            <Card style={{ maxWidth: "500px" }}>
                 <CardContent>
                     <>
                         <div>
