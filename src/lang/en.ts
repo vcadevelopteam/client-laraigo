@@ -24,12 +24,15 @@ const translation: LangKeys = {
     show_logs: 'Show logs',
     function_count_unique: 'Count unique',
     hide_logs: 'Hide logs',
+    backgroundColor: "Background Color",
+    textcolor: "Text Color",
     make_call: "Make call",
 
     type_service: 'Service Type',
     font: "Font",
     type_service_plural: 'Services Type',
     
+    align: "Align",
     show_all: 'Show all',
     size:"Size",
     small:"Small",
@@ -3534,6 +3537,18 @@ const translation: LangKeys = {
     voximplantcategory_special: 'Special',
     voximplantcategory_mobile: 'Mobile',
     voximplant_numberbought: 'The following phone number was bought: ',
+
+    type_close_cierre_externo: 'External closure',
+    type_close_cierre_por_envio_de_campaña: 'Closing by sending campaign',
+    type_close_cierreautocampaña: 'Automatic closure per campaign',
+    type_close_cierreautomatico: 'Automatic closing',
+    type_close_colgado_por_asesor: 'Call ended by advisor',
+    type_close_fuerahorario: 'Out of time',
+    type_close_irrelevante: 'Irrelevant closure',
+    type_close_llamada_desconectada: 'call disconnected',
+    type_close_no_hay_asesores: 'No advisers to refer',
+    type_close_nocompletado: 'Failed to complete care',
+    type_close_resuelto: 'Closing completed'
 };
 
 const enResource: ResourceLanguage = {
