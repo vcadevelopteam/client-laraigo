@@ -5,7 +5,7 @@ import * as VoxImplant from 'voximplant-websdk'
 import { CallSettings } from 'voximplant-websdk/Structures';
 import { ITicket } from '@types';
 
-import { emitEvent } from 'store/inbox/actions';
+import { emitEvent, connectAgentUI, connectAgentAPI } from 'store/inbox/actions';
 
 const sdk = VoxImplant.getInstance();
 let alreadyLoad = false;
@@ -27,7 +27,16 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                 sdk.on(VoxImplant.Events.ACDStatusUpdated, (e) => {
                     console.log("voximplant: status->", e);
                     if (e.status === "BANNED") {
-                        sdk.setOperatorACDStatus(VoxImplant.OperatorACDStatuses.Ready);
+                        dispatch(connectAgentAPI(false, "BANNED", "BANNED"));
+                        dispatch(connectAgentUI(false))
+                        dispatch(emitEvent({
+                            event: 'connectAgent',
+                            data: {
+                                isconnected: false,
+                                userid: 0,
+                                orgid: 0
+                            }
+                        }));
                     }
                 })
 
@@ -193,7 +202,12 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         call?.unmuteMicrophone();
         return
     } else if (type === typeVoximplant.MANAGE_STATUS_VOX) {
-        sdk.setOperatorACDStatus(payload ? VoxImplant.OperatorACDStatuses.Ready : VoxImplant.OperatorACDStatuses.Offline);
+        console.log("change status!")
+        if (payload) {
+            sdk.setOperatorACDStatus(VoxImplant.OperatorACDStatuses.Online).then(() => sdk.setOperatorACDStatus(VoxImplant.OperatorACDStatuses.Ready));
+        } else {
+            sdk.setOperatorACDStatus(VoxImplant.OperatorACDStatuses.Offline);
+        }
         return
     } else if (type === typeVoximplant.DISCONNECT) {
         try {
