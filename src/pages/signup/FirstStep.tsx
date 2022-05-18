@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { CSSProperties, FC, useContext, useEffect, useState } from "react";
 import { makeStyles, Button, TextField, InputAdornment, IconButton } from '@material-ui/core';
@@ -17,7 +18,7 @@ import { showSnackbar } from "store/popus/actions";
 import { Controller, useFormContext } from "react-hook-form";
 
 function validatePassword(password: string) {
-    var strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
+    var strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})");
 
     if (password) {
         return strongRegex.exec(password);
@@ -354,7 +355,7 @@ const FirstStep: FC = () => {
                 />
                 {/* eslint-disable-next-line jsx-a11y/anchor-is-valid*/}
                 <div style={{ textAlign: "center", padding: "20px" }}>{t(langKeys.tos)}<a style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={openprivacypolicies} rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
-                <div style={{ textAlign: "center", padding: "20px" }}>{t(langKeys.tossub1)} <a style={{ fontWeight: 'bold', color: '#6F1FA1'}} rel="noopener noreferrer">{t(langKeys.creditcard)}</a> {t(langKeys.tossub2)}</div>
+                <div style={{ textAlign: "center", padding: "20px" }}>{t(langKeys.tossub1)} <a href="#" style={{ fontWeight: 'bold', color: '#6F1FA1'}} rel="noopener noreferrer">{t(langKeys.creditcard)}</a> {t(langKeys.tossub2)}</div>
                 <Button
                     onClick={async () => {
                         const valid = await trigger();

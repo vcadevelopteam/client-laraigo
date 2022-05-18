@@ -621,7 +621,6 @@ const TableZyx = React.memo(({
         nextPage,
         previousPage,
         setPageSize,
-        preGlobalFilteredRows,
         globalFilteredRows,
         setGlobalFilter,
         state: { pageIndex, pageSize, selectedRowIds },

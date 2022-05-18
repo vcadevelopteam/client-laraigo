@@ -7,7 +7,7 @@ import {
 	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger, ChannelAddInstagram, ChannelAddWhatsapp, ChannelAddTelegram,
 	Reports, Tickets, MessageInbox, BotDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail, Iaservices,UserSettings,
 	Corporations, Settings, Dashboard, ChannelEdit, ChannelAddIos, ChannelAddAndroid, ChannelAddInstagramDM , Privacy, CRM, ActivateUser, RecoverPassword, LeadForm, ChangePwdFirstLogin, BillingSetups, DashboardAdd,
-	InputValidation, DashboardLayout, Invoice, KPIManager,GetLocations, ReportScheduler, ProductCatalog, Calendar, CalendarEvent, ChannelAddEmail, ChannelAddSMS,Whitelist
+	InputValidation, DashboardLayout, Invoice, KPIManager,GetLocations, ReportScheduler, ProductCatalog, Calendar, CalendarEvent, ChannelAddEmail, ChannelAddSMS, Whitelist, ChannelAddPhone
 } from 'pages';
 
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
@@ -17,6 +17,7 @@ import { useForcedDisconnection, useSelector } from 'hooks';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { wsConnect } from "store/inbox/actions";
+import { voximplantConnect } from "store/voximplant/actions";
 import { getAccessToken } from 'common/helpers';
 import { Redirect } from 'react-router-dom';
 import { logout, validateToken } from 'store/login/actions';
@@ -60,11 +61,18 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 		if (!resValidateToken.error && !resValidateToken.loading) {
 			const automaticConnection = resLogin.user?.automaticConnection || false;
 			const fromLogin = !!resLogin.user;
-			const { userid, orgid, roledesc } = resValidateToken.user!!
-			dispatch(wsConnect({ userid, orgid, usertype: 'PLATFORM', automaticConnection, fromLogin, roledesc  }));
+			const { userid, orgid, roledesc, ownervoxi, sitevoxi } = resValidateToken.user!!
+			dispatch(wsConnect({ userid, orgid, usertype: 'PLATFORM', automaticConnection, fromLogin, roledesc }));
+			if (sitevoxi && ownervoxi) {
+				dispatch(voximplantConnect({
+					automaticConnection: automaticConnection || !!localStorage.getItem("agentConnected") || false,
+					user: `user${userid}.${orgid}`,
+					application: ownervoxi
+				}));
+			}
 		}
 	}, [resValidateToken.loading])
-	
+
 	if (!existToken) {
 		return <Redirect to={{ pathname: paths.SIGNIN }} />;
 	} else if (resValidateToken.loading && !applications) {
@@ -171,7 +179,7 @@ const RouterApp: FC = () => {
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CHANNELS_ADD_WHATSAPP.path}>
 					<Layout mainClasses={classes.main}>
-						<ChannelAddWhatsapp edit={false}/>
+						<ChannelAddWhatsapp edit={false} />
 					</Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CHANNELS_ADD_TELEGRAM.path}>
@@ -187,6 +195,11 @@ const RouterApp: FC = () => {
 				<ProtectRoute exact path={paths.CHANNELS_ADD_TWITTERDM.path}>
 					<Layout mainClasses={classes.main}>
 						<ChannelAddTwitterDM />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS_ADD_PHONE.path}>
+					<Layout mainClasses={classes.main}>
+						<ChannelAddPhone />
 					</Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CHANNELS_ADD_SMS.path}>
@@ -271,9 +284,9 @@ const RouterApp: FC = () => {
 				<ProtectRoute exact path={paths.GROUPCONFIG}>
 					<Layout mainClasses={classes.main}><Groupconfig /></Layout>
 				</ProtectRoute>
-					<ProtectRoute exact path={paths.USERSETTINGS}>
-						<Layout mainClasses={classes.main}><UserSettings /></Layout>
-					</ProtectRoute>
+				<ProtectRoute exact path={paths.USERSETTINGS}>
+					<Layout mainClasses={classes.main}><UserSettings /></Layout>
+				</ProtectRoute>
 				<ProtectRoute exact path={paths.INAPPROPRIATEWORDS}>
 					<Layout mainClasses={classes.main}><InappropriateWords /></Layout>
 				</ProtectRoute>

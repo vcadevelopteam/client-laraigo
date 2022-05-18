@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { DialogZyx, FieldSelect, FieldEditMulti } from 'components';
+import { manageStatusVox } from "store/voximplant/actions";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -46,6 +47,7 @@ const DialogReasonsDisconnection: React.FC<{
     const onSubmit = handleSubmit((data) => {
         dispatch(connectAgentAPI(!userConnected, data.observation, data.motive));
         dispatch(connectAgentUI(!userConnected))
+        dispatch(manageStatusVox(!userConnected));
         dispatch(emitEvent({
             event: 'connectAgent',
             data: {
@@ -99,6 +101,7 @@ const Status: FC = () => {
         if (userConnected) {
             setOpenDialog(true)
         } else {
+            dispatch(manageStatusVox(!userConnected));
             dispatch(connectAgentAPI(!userConnected))
             dispatch(connectAgentUI(!userConnected))
             dispatch(emitEvent({

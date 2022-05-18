@@ -26,6 +26,7 @@ interface Properties {
     hide_log_conversation: boolean;
     auto_close: Dictionary;
     auto_close_holding: Dictionary;
+    time_reassign_call: number | undefined;
 }
 
 interface Domains {
@@ -42,6 +43,9 @@ export interface IUser {
     /**SUPERADMIN | ASESOR | ... */
     roledesc: string;
     corpdesc: string;
+    ownervoxi: string | null;
+    sitevoxi: string | null;
+    ccidvoxi: number | null;
     plan: string;
     orgdesc: string;
     redirect: string;

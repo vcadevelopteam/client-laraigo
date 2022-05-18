@@ -1,4 +1,4 @@
-import { Box, BoxProps, IconButton, IconButtonProps, Menu, TextField, Toolbar, makeStyles, Button, InputAdornment, Tabs, FormHelperText, CircularProgress, Tooltip } from '@material-ui/core';
+import { Box, BoxProps, IconButton, IconButtonProps, Menu, TextField, Toolbar, makeStyles, Button, InputAdornment, Tabs, FormHelperText, CircularProgress, Tooltip, InputLabel, SelectProps, FormControl, Select, MenuItem } from '@material-ui/core';
 import {
     FormatBold as FormatBoldIcon,
     FormatItalic as FormatItalicIcon,
@@ -12,6 +12,12 @@ import {
     InsertPhoto as InsertPhotoIcon,
     Delete as DeleteIcon,
     Close as CloseIcon,
+    FormatSize as FormatSizeIcon,
+    Check as CheckIcon,
+    FormatColorText as FormatColorTextIcon,
+    FormatAlignLeft as FormatAlignLeftIcon,
+    FormatAlignRight as FormatAlignRightIcon,
+    FormatAlignCenter as FormatAlignCenterIcon,
 } from '@material-ui/icons';
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { createEditor, BaseEditor, Descendant, Transforms, Editor, Element as SlateElement } from 'slate';
@@ -20,12 +26,13 @@ import { withHistory } from 'slate-history';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import ReactDomServer from 'react-dom/server';
-import { AntTab } from 'components';
+import { AntTab, ColorInput } from 'components';
 import clsx from 'clsx';
 import { useSelector } from 'hooks';
 import { resetUploadFile, uploadFile } from 'store/main/actions';
 import { useDispatch } from 'react-redux';
 import { showSnackbar } from 'store/popus/actions';
+import { ArrowDropDownIcon } from 'icons';
 
 export const renderToString = (element: React.ReactElement) => {
     return ReactDomServer.renderToString(element);
@@ -72,6 +79,11 @@ interface CustomText extends Object {
     text: string;
     bold?: boolean;
     italic?: boolean;
+    fontfamily?: string;
+    textalign?: string;
+    fontsize?: string;
+    color?: string;
+    backgroundcolor?: string;
     code?: boolean;
     underline?: boolean;
 }
@@ -92,6 +104,8 @@ interface RichTextProps extends Omit<BoxProps, 'onChange'> {
     onChange: (value: Descendant[]) => void;
     onlyurl?: boolean;
     image?: Boolean;
+    children?: React.ReactNode;
+    positionEditable?: 'top' | 'bottom';
 }
 
 interface RenderElementProps {
@@ -117,10 +131,16 @@ const useRichTextStyles = makeStyles(theme => ({
         overflow: 'auto',
         padding: 0,
     },
+    littleboxes: {
+        cursor:"pointer", 
+        marginRight:1, 
+        width:16, 
+        height:16
+    }
 }));
 
 /**TODO: Validar que la URL de la imagen sea valida en el boton de insertar imagen */
-const RichText: FC<RichTextProps> = ({ value, onChange, placeholder,image=true, spellCheck, error, onlyurl=false, ...boxProps })=> {
+const RichText: FC<RichTextProps> = ({ value, onChange, placeholder,image=true, spellCheck, error,positionEditable="bottom",children, onlyurl=false, ...boxProps })=> {
     const classes = useRichTextStyles();
     // Create a Slate editor object that won't change across renders.
     const editor = useMemo(() => withImages(withHistory(withReact(createEditor()))), []);
@@ -129,7 +149,18 @@ const RichText: FC<RichTextProps> = ({ value, onChange, placeholder,image=true, 
     return (
         <Box {...boxProps}>
             <Slate editor={editor} value={value} onChange={onChange}>
+                {positionEditable==="top" &&
+                    <Editable
+                        placeholder={placeholder}
+                        renderElement={renderElement}
+                        renderLeaf={renderLeaf}
+                        spellCheck={spellCheck}
+                    />
+                }
                 <Toolbar className={classes.toolbar}>
+                    {children}
+                    <FontFamily tooltip='font'></FontFamily>
+                    <FormatSizeMenu tooltip='size'></FormatSizeMenu>
                     <MarkButton format="bold" tooltip='bold'>
                         <FormatBoldIcon />
                     </MarkButton>
@@ -139,6 +170,17 @@ const RichText: FC<RichTextProps> = ({ value, onChange, placeholder,image=true, 
                     <MarkButton format="underline" tooltip='underline'>
                         <FormatUnderlinedIcon />
                     </MarkButton>
+
+                    <TextColor tooltip='size'></TextColor>
+                    <Alignment tooltip='size'></Alignment>
+
+                    <BlockButton format="numbered-list" tooltip='numbered_list'>
+                        <FormatListNumberedIcon />
+                    </BlockButton>
+                    <BlockButton format="bulleted-list" tooltip='bulleted_list'>
+                        <FormatListBulletedIcon />
+                    </BlockButton>
+
                     <MarkButton format="code" tooltip='code'>
                         <FormatCodeIcon />
                     </MarkButton>
@@ -150,12 +192,6 @@ const RichText: FC<RichTextProps> = ({ value, onChange, placeholder,image=true, 
                     </BlockButton>
                     <BlockButton format="block-quote" tooltip='block_quote'>
                         <FormatQuoteIcon />
-                    </BlockButton>
-                    <BlockButton format="numbered-list" tooltip='numbered_list'>
-                        <FormatListNumberedIcon />
-                    </BlockButton>
-                    <BlockButton format="bulleted-list" tooltip='bulleted_list'>
-                        <FormatListBulletedIcon />
                     </BlockButton>
                     {image &&
                     <>
@@ -177,16 +213,26 @@ const RichText: FC<RichTextProps> = ({ value, onChange, placeholder,image=true, 
                         </div>
                     )}
                 </Toolbar>
-                <Editable
-                    placeholder={placeholder}
-                    renderElement={renderElement}
-                    renderLeaf={renderLeaf}
-                    spellCheck={spellCheck}
-                />
+                {positionEditable!=="top" &&
+                    <Editable
+                        placeholder={placeholder}
+                        renderElement={renderElement}
+                        renderLeaf={renderLeaf}
+                        spellCheck={spellCheck}
+                    />
+                }
             </Slate>
             {error && error !== '' && <FormHelperText error>{error}</FormHelperText>}
         </Box>
     );
+}
+
+const NormalLine: FC<{attributes?: any, children: React.ReactNode}> = ({ attributes = {}, children }) => {
+    const editor = useSlate();
+    const marks = Editor.marks(editor);
+    const textalign = marks?.textalign || 'left';
+
+    return <p {...attributes} style={{textAlign: textalign}}>{children}</p>;
 }
 
 /**Renderiza el texto seleccionado con cierto estilo */
@@ -215,20 +261,30 @@ const renderElement: RenderElement = ({ attributes = {}, children, element, isSt
 
 /**Renderiza el texto seleccionado con cierto formato */
 const renderLeaf: RenderLeaf = ({ attributes = {}, children, leaf }) => {
+
     if (leaf.bold === true) {
         children = <strong>{children}</strong>;
     }
-
     if (leaf.code === true) {
         children = <code>{children}</code>;
     }
-
     if (leaf.italic === true) {
         children = <em>{children}</em>;
     }
-
     if (leaf.underline === true) {
         children = <u>{children}</u>;
+    }
+    if (leaf.fontfamily) {
+        children = <span style={{fontFamily: leaf.fontfamily}}>{children}</span>;
+    }
+    if (leaf.fontsize) {
+        children = <span style={{fontSize: leaf.fontsize}}>{children}</span>;
+    }
+    if (leaf.color) {
+        children = <span style={{color: leaf.color}}>{children}</span>;
+    }
+    if (leaf.backgroundcolor) {
+        children = <span style={{backgroundColor: leaf.backgroundcolor}}>{children}</span>;
     }
     
     return <span {...attributes}>{children}</span>;
@@ -256,6 +312,367 @@ const toggleBlock = (editor: BaseEditor & ReactEditor, format: ElemetType) => {
         Transforms.wrapNodes(editor, block);
     }
 }
+/**Aplicar fuente al texto seleccionado */
+const toggleFontFamily = (editor: BaseEditor & ReactEditor, value: string) => {
+    if (value === "inherit") {
+        Editor.removeMark(editor, 'fontfamily');
+    } else {
+        Editor.addMark(editor, 'fontfamily', value);
+    }
+}
+
+const toggleFontSize = (editor: BaseEditor & ReactEditor, value: string) => {
+    if (value === "small") {
+        Editor.removeMark(editor, 'fontsize');
+    } else {
+        Editor.addMark(editor, 'fontsize', value);
+    }
+}
+const toggleAlignment = (editor: BaseEditor & ReactEditor, value: string) => {
+    if (value === "left") {
+        Editor.removeMark(editor, 'textalign');
+    } else {
+        Editor.addMark(editor, 'textalign', value);
+    }
+}
+const toggleColor = (editor: BaseEditor & ReactEditor, value: string) => {
+    if (value === "black") {
+        Editor.removeMark(editor, 'color');
+    } else {
+        Editor.addMark(editor, 'color', value);
+    }
+}
+const toggleBackgroundColor = (editor: BaseEditor & ReactEditor, value: string) => {
+    if (value === "transparent") {
+        Editor.removeMark(editor, 'backgroundcolor');
+    } else {
+        Editor.addMark(editor, 'backgroundcolor', value);
+    }
+}
+
+interface FontFamilyProps extends SelectProps {
+    tooltip: string;
+    other?: ()=>void;
+}
+
+const FontFamily: FC<FontFamilyProps> = ({ tooltip = '', children, onClick, ...props }) => {
+    const editor = useSlate();
+    const marks = Editor.marks(editor);
+    const fontfamily = marks?.fontfamily || 'inherit';
+    const { t } = useTranslation();
+
+    return (
+        <FormControl>
+            <Select
+                labelId="font-family-select-label"    
+                value={fontfamily}
+                style={{ width: 150, marginLeft:10 }}
+                onChange={e => {
+                    e.preventDefault();
+                    toggleFontFamily(editor, e.target.value as string);
+                }}
+            >
+                <MenuItem style={{fontFamily: "inherit"}} value="inherit">{t(langKeys.default)}</MenuItem>
+                <MenuItem style={{fontFamily: "serif"}} value="serif">Serif</MenuItem>
+                <MenuItem style={{fontFamily: "sans-serif"}} value="sans-serif">Sans-serif</MenuItem>
+                <MenuItem style={{fontFamily: "monospace"}} value="monospace">Monospace</MenuItem>
+                <MenuItem style={{fontFamily: "cursive"}} value="cursive">Cursive</MenuItem>
+                <MenuItem style={{fontFamily: "fantasy"}} value="fantasy">Fantasy</MenuItem>
+            </Select>
+        </FormControl>
+    );
+}
+const FormatSizeMenu: FC<FontFamilyProps> = ({ tooltip = '', children, onClick, ...props }) => {
+    const editor = useSlate();
+    const marks = Editor.marks(editor);
+    const fontsize = marks?.fontsize || 'small';
+    const { t } = useTranslation();
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const open = Boolean(anchorEl);
+
+    const handleClick = (event:any) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = (value:string) => {
+        toggleFontSize(editor, value);
+        setAnchorEl(null);
+    };
+
+    return (
+        <FormControl>
+            <>
+                <Tooltip title={t(langKeys.size)||"size"} aria-label="add">
+                    <IconButton
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        onClick={handleClick}
+                        >
+                        <FormatSizeIcon />
+                        <ArrowDropDownIcon/>
+                    </IconButton>
+                </Tooltip>
+                <Menu
+                    id="long-menu"
+                    anchorEl={anchorEl}
+                    keepMounted
+                    open={open}
+                    onClose={handleClose}
+                    anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                    }}
+                    transformOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'center',
+                    }}
+                >
+                    <MenuItem onClick={()=>handleClose("x-small")} style={{paddingLeft:0,fontSize: "x-small"}} value="x-small">
+                        {fontsize==="x-small" && <CheckIcon style={{marginRight:10, marginLeft: 10, width:20,height:20}}/>}
+                        <div style={{marginLeft:(fontsize!=="x-small"?40:0)}}>{t(langKeys.small)} </div>
+                    </MenuItem>
+                    <MenuItem onClick={()=>handleClose("small")} style={{paddingLeft:0,fontSize: "small"}} value="small">
+                        {fontsize==="small" && <CheckIcon style={{marginRight:10, marginLeft: 10, width:20,height:20}}/>}
+                        <div style={{marginLeft:(fontsize!=="small"?40:0)}}>{t(langKeys.normal)} </div>
+                    </MenuItem>
+                    <MenuItem onClick={()=>handleClose("large")} style={{paddingLeft:0,fontSize: "large"}} value="large">
+                        {fontsize==="large" && <CheckIcon style={{marginRight:10, marginLeft: 10, width:20,height:20}}/>}
+                        <div style={{marginLeft:(fontsize!=="large"?40:0)}}>{t(langKeys.large)} </div>
+                    </MenuItem>
+                    <MenuItem onClick={()=>handleClose("xx-large")} style={{paddingLeft:0,fontSize: "xx-large"}} value="xx-large">
+                        {fontsize==="xx-large" && <CheckIcon style={{marginRight:10, marginLeft: 10, width:20,height:20}}/>}
+                        <div style={{marginLeft:(fontsize!=="xx-large"?40:0)}}>{t(langKeys.huge)} </div>
+                    </MenuItem>
+                </Menu>
+            </>
+        </FormControl>
+    );
+}
+const Alignment: FC<FontFamilyProps> = ({ tooltip = '', children, onClick, ...props }) => {
+    const editor = useSlate();
+    const marks = Editor.marks(editor);
+    const textalign = marks?.textalign || 'left';
+    const { t } = useTranslation();
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const open = Boolean(anchorEl);
+
+    const handleClick = (event:any) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = (value:string) => {
+        toggleAlignment(editor, value);
+        setAnchorEl(null);
+    };
+
+    return (
+        <FormControl>
+            <>
+                <Tooltip title={t(langKeys.align)||"align"} aria-label="add">
+                    <IconButton
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        onClick={handleClick}
+                        >
+                        {textalign==="left" && <FormatAlignLeftIcon />}
+                        {textalign==="end" && <FormatAlignRightIcon />}
+                        {textalign==="center" && <FormatAlignCenterIcon />}
+                        <ArrowDropDownIcon/>
+                    </IconButton>
+                </Tooltip>
+                <Menu
+                    id="long-menu"
+                    anchorEl={anchorEl}
+                    keepMounted
+                    open={open}
+                    onClose={handleClose}
+                    anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                    }}
+                    transformOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'center',
+                    }}
+                >
+                    <MenuItem onClick={()=>handleClose("left")} value="left">
+                        <div><FormatAlignLeftIcon /></div>
+                    </MenuItem>
+                    <MenuItem onClick={()=>handleClose("center")} value="center">
+                        <div><FormatAlignCenterIcon /></div>
+                    </MenuItem>
+                    <MenuItem onClick={()=>handleClose("end")} value="end">
+                        <div><FormatAlignRightIcon /></div>
+                    </MenuItem>
+                </Menu>
+            </>
+        </FormControl>
+    );
+}
+
+const ColorBoxes: FC<FontFamilyProps> = ({ other, tooltip }) => {
+    const editor = useSlate();
+    const classes = useRichTextStyles();
+    
+    const handleClose = (value:string) => {
+        if(tooltip==="background"){
+            toggleBackgroundColor(editor, value);
+        }else{
+            toggleColor(editor, value);
+        }
+        other?.();
+    };
+
+
+    return (
+        <div>
+            <div style={{display:"flex", marginTop:10}}>
+                <div onClick={()=>handleClose("rgb(0,0,0)")} className={classes.littleboxes} style={{backgroundColor: "rgb(0,0,0)" }}></div>
+                <div onClick={()=>handleClose("rgb(68,68,68)")} className={classes.littleboxes} style={{backgroundColor: "rgb(68,68,68)" }}></div>
+                <div onClick={()=>handleClose("rgb(102,102,102)")} className={classes.littleboxes} style={{backgroundColor: "rgb(102,102,102)" }}></div>
+                <div onClick={()=>handleClose("rgb(153,153,153)")} className={classes.littleboxes} style={{backgroundColor: "rgb(153,153,153)" }}></div>
+                <div onClick={()=>handleClose("rgb(204,204,204)")} className={classes.littleboxes} style={{backgroundColor: "rgb(204,204,204)" }}></div>
+                <div onClick={()=>handleClose("rgb(238,238,238)")} className={classes.littleboxes} style={{backgroundColor: "rgb(238,238,238)" }}></div>
+                <div onClick={()=>handleClose("rgb(243,243,243)")} className={classes.littleboxes} style={{backgroundColor: "rgb(243,243,243)" }}></div>
+                <div onClick={()=>handleClose("rgb(255,255,255)")} className={classes.littleboxes} style={{backgroundColor: "rgb(255,255,255)" }}></div>
+            </div>
+            <div style={{display:"flex", marginTop:5, marginBottom:5}}>
+                <div onClick={()=>handleClose("rgb(255,0,0)")} className={classes.littleboxes} style={{backgroundColor: "rgb(255,0,0)"}}></div>
+                <div onClick={()=>handleClose("rgb(255,153,0)")} className={classes.littleboxes} style={{backgroundColor: "rgb(255,153,0)"}}></div>
+                <div onClick={()=>handleClose("rgb(255,255,0)")} className={classes.littleboxes} style={{backgroundColor: "rgb(255,255,0)"}}></div>
+                <div onClick={()=>handleClose("rgb(0,255,0)")} className={classes.littleboxes} style={{backgroundColor: "rgb(0,255,0)"}}></div>
+                <div onClick={()=>handleClose("rgb(0,255,255)")} className={classes.littleboxes} style={{backgroundColor: "rgb(0,255,255)"}}></div>
+                <div onClick={()=>handleClose("rgb(0,0,255)")} className={classes.littleboxes} style={{backgroundColor: "rgb(0,0,255)"}}></div>
+                <div onClick={()=>handleClose("rgb(153,0,255)")} className={classes.littleboxes} style={{backgroundColor: "rgb(153,0,255)"}}></div>
+                <div onClick={()=>handleClose("rgb(255,0,255)")} className={classes.littleboxes} style={{backgroundColor: "rgb(255,0,255)"}}></div>
+            </div>
+            <div style={{display:"flex", marginBottom:1}}>
+                <div onClick={()=>handleClose("rgb(244,204,204)")} className={classes.littleboxes} style={{backgroundColor: "rgb(244,204,204)"}}></div>
+                <div onClick={()=>handleClose("rgb(252,229,205)")} className={classes.littleboxes} style={{backgroundColor: "rgb(252,229,205)"}}></div>
+                <div onClick={()=>handleClose("rgb(255,242,204)")} className={classes.littleboxes} style={{backgroundColor: "rgb(255,242,204)"}}></div>
+                <div onClick={()=>handleClose("rgb(217,234,211)")} className={classes.littleboxes} style={{backgroundColor: "rgb(217,234,211)"}}></div>
+                <div onClick={()=>handleClose("rgb(208,224,227)")} className={classes.littleboxes} style={{backgroundColor: "rgb(208,224,227)"}}></div>
+                <div onClick={()=>handleClose("rgb(207,226,243)")} className={classes.littleboxes} style={{backgroundColor: "rgb(207,226,243)"}}></div>
+                <div onClick={()=>handleClose("rgb(217,210,233)")} className={classes.littleboxes} style={{backgroundColor: "rgb(217,210,233)"}}></div>
+                <div onClick={()=>handleClose("rgb(234,209,220)")} className={classes.littleboxes} style={{backgroundColor: "rgb(234,209,220)"}}></div>
+            </div>
+            <div style={{display:"flex", marginBottom:1}}>
+                <div onClick={()=>handleClose("rgb(234,153,153)")} className={classes.littleboxes} style={{backgroundColor: "rgb(234,153,153)"}}></div>
+                <div onClick={()=>handleClose("rgb(249,203,156)")} className={classes.littleboxes} style={{backgroundColor: "rgb(249,203,156)"}}></div>
+                <div onClick={()=>handleClose("rgb(255,229,153)")} className={classes.littleboxes} style={{backgroundColor: "rgb(255,229,153)"}}></div>
+                <div onClick={()=>handleClose("rgb(182,215,168)")} className={classes.littleboxes} style={{backgroundColor: "rgb(182,215,168)"}}></div>
+                <div onClick={()=>handleClose("rgb(162,196,201)")} className={classes.littleboxes} style={{backgroundColor: "rgb(162,196,201)"}}></div>
+                <div onClick={()=>handleClose("rgb(159,197,232)")} className={classes.littleboxes} style={{backgroundColor: "rgb(159,197,232)"}}></div>
+                <div onClick={()=>handleClose("rgb(180,167,214)")} className={classes.littleboxes} style={{backgroundColor: "rgb(180,167,214)"}}></div>
+                <div onClick={()=>handleClose("rgb(213,166,189)")} className={classes.littleboxes} style={{backgroundColor: "rgb(213,166,189)"}}></div>
+            </div>
+            <div style={{display:"flex", marginBottom:1}}>
+                <div onClick={()=>handleClose("rgb(224,102,102)")} className={classes.littleboxes} style={{backgroundColor: "rgb(224,102,102)"}}></div>
+                <div onClick={()=>handleClose("rgb(246,178,107)")} className={classes.littleboxes} style={{backgroundColor: "rgb(246,178,107)"}}></div>
+                <div onClick={()=>handleClose("rgb(255,217,102)")} className={classes.littleboxes} style={{backgroundColor: "rgb(255,217,102)"}}></div>
+                <div onClick={()=>handleClose("rgb(147,196,125)")} className={classes.littleboxes} style={{backgroundColor: "rgb(147,196,125)"}}></div>
+                <div onClick={()=>handleClose("rgb(118,165,175)")} className={classes.littleboxes} style={{backgroundColor: "rgb(118,165,175)"}}></div>
+                <div onClick={()=>handleClose("rgb(111,168,220)")} className={classes.littleboxes} style={{backgroundColor: "rgb(111,168,220)"}}></div>
+                <div onClick={()=>handleClose("rgb(142,124,195)")} className={classes.littleboxes} style={{backgroundColor: "rgb(142,124,195)"}}></div>
+                <div onClick={()=>handleClose("rgb(194,123,160)")} className={classes.littleboxes} style={{backgroundColor: "rgb(194,123,160)"}}></div>
+            </div>
+            <div style={{display:"flex", marginBottom:1}}>
+                <div onClick={()=>handleClose("rgb(204,0,0)")} className={classes.littleboxes} style={{backgroundColor: "rgb(204,0,0)"}}></div>
+                <div onClick={()=>handleClose("rgb(230,145,56)")} className={classes.littleboxes} style={{backgroundColor: "rgb(230,145,56)"}}></div>
+                <div onClick={()=>handleClose("rgb(241,194,50)")} className={classes.littleboxes} style={{backgroundColor: "rgb(241,194,50)"}}></div>
+                <div onClick={()=>handleClose("rgb(106,168,79)")} className={classes.littleboxes} style={{backgroundColor: "rgb(106,168,79)"}}></div>
+                <div onClick={()=>handleClose("rgb(69,129,142)")} className={classes.littleboxes} style={{backgroundColor: "rgb(69,129,142)"}}></div>
+                <div onClick={()=>handleClose("rgb(61,133,198)")} className={classes.littleboxes} style={{backgroundColor: "rgb(61,133,198)"}}></div>
+                <div onClick={()=>handleClose("rgb(103,78,167)")} className={classes.littleboxes} style={{backgroundColor: "rgb(103,78,167)"}}></div>
+                <div onClick={()=>handleClose("rgb(166,77,121)")} className={classes.littleboxes} style={{backgroundColor: "rgb(166,77,121)"}}></div>
+            </div>
+            <div style={{display:"flex", marginBottom:1}}>
+                <div onClick={()=>handleClose("rgb(153,0,0)")} className={classes.littleboxes} style={{backgroundColor: "rgb(153,0,0)"}}></div>
+                <div onClick={()=>handleClose("rgb(180,95,0)")} className={classes.littleboxes} style={{backgroundColor: "rgb(180,95,0)"}}></div>
+                <div onClick={()=>handleClose("rgb(191,144,0)")} className={classes.littleboxes} style={{backgroundColor: "rgb(191,144,0)"}}></div>
+                <div onClick={()=>handleClose("rgb(56,118,29)")} className={classes.littleboxes} style={{backgroundColor: "rgb(56,118,29)"}}></div>
+                <div onClick={()=>handleClose("rgb(19,79,92)")} className={classes.littleboxes} style={{backgroundColor: "rgb(19,79,92)"}}></div>
+                <div onClick={()=>handleClose("rgb(11,83,148)")} className={classes.littleboxes} style={{backgroundColor: "rgb(11,83,148)"}}></div>
+                <div onClick={()=>handleClose("rgb(53,28,117)")} className={classes.littleboxes} style={{backgroundColor: "rgb(53,28,117)"}}></div>
+                <div onClick={()=>handleClose("rgb(116,27,71)")} className={classes.littleboxes} style={{backgroundColor: "rgb(116,27,71)"}}></div>
+            </div>
+            <div style={{display:"flex", marginBottom:1}}>
+                <div onClick={()=>handleClose("rgb(102,0,0)")} className={classes.littleboxes} style={{backgroundColor: "rgb(102,0,0)"}}></div>
+                <div onClick={()=>handleClose("rgb(120,63,4)")} className={classes.littleboxes} style={{backgroundColor: "rgb(120,63,4)"}}></div>
+                <div onClick={()=>handleClose("rgb(127,96,0)")} className={classes.littleboxes} style={{backgroundColor: "rgb(127,96,0)"}}></div>
+                <div onClick={()=>handleClose("rgb(39,78,19)")} className={classes.littleboxes} style={{backgroundColor: "rgb(39,78,19)"}}></div>
+                <div onClick={()=>handleClose("rgb(12,52,61)")} className={classes.littleboxes} style={{backgroundColor: "rgb(12,52,61)"}}></div>
+                <div onClick={()=>handleClose("rgb(7,55,99)")} className={classes.littleboxes} style={{backgroundColor: "rgb(7,55,99)"}}></div>
+                <div onClick={()=>handleClose("rgb(32,18,77)")} className={classes.littleboxes} style={{backgroundColor: "rgb(32,18,77)"}}></div>
+                <div onClick={()=>handleClose("rgb(76,17,48)")} className={classes.littleboxes} style={{backgroundColor: "rgb(76,17,48)"}}></div>
+            </div>
+        </div>
+    );
+}
+const TextColor: FC<FontFamilyProps> = ({ tooltip = '', children, onClick, ...props }) => {
+    const { t } = useTranslation();
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const open = Boolean(anchorEl);
+
+    const handleClick = (event:any) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    return (
+        <FormControl>
+            <>
+                <Tooltip title={t(langKeys.textcolor)||"textcolor"} aria-label="add">
+                    <IconButton
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        onClick={handleClick}
+                        >
+                        <FormatColorTextIcon />
+                        <ArrowDropDownIcon/>
+                    </IconButton>
+                </Tooltip>
+                <Menu
+                    anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'center',
+                    }}
+                    transformOrigin={{
+                        vertical: 120,
+                        horizontal: 'center',
+                    }}
+                    id="long-menu"
+                    anchorEl={anchorEl}
+                    keepMounted
+                    open={open}
+                    onClose={handleClose}
+                >
+                    <div style={{display:"flex", marginRight:10}}>
+                        <div style={{marginLeft:10, marginRight:10}}>
+                            <div>{t(langKeys.backgroundColor)}</div>
+                            <ColorBoxes tooltip="background" other={()=>handleClose()}/>
+                        </div>
+                        <div>
+                            <div>{t(langKeys.textcolor)}</div>
+                            <ColorBoxes tooltip="textcolor" other={()=>handleClose()}/>
+                        </div>
+                    </div>
+                </Menu>
+            </>
+        </FormControl>
+    );
+}
+
+const isMarkActive = (editor: BaseEditor & ReactEditor, format: keyof Omit<CustomText, 'text'>) => {
+    const marks = Editor.marks(editor);
+    return marks ? marks[format] === true : false;
+}
 
 /**Aplicar estilo al texto seleccionado */
 const toggleMark = (editor: BaseEditor & ReactEditor, format: keyof Omit<CustomText, 'text'>) => {
@@ -279,11 +696,6 @@ const isBlockActive = (editor: BaseEditor & ReactEditor, format: ElemetType) => 
 
     const [match] = Array.from(iterator);
     return !!match;
-}
-
-const isMarkActive = (editor: BaseEditor & ReactEditor, format: keyof Omit<CustomText, 'text'>) => {
-    const marks = Editor.marks(editor);
-    return marks ? marks[format] === true : false;
 }
 
 interface MarkButtonProps extends IconButtonProps {
@@ -370,7 +782,6 @@ const OnlyURLInsertImageButton: FC = ({ children }) => {
     const classes = useInsertImageButtonStyles();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [url, setUrl] = useState('');
-    const [tabIndex, setTabIndex] = useState(0);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
     const upload = useSelector(state => state.main.uploadFile);
     const open = Boolean(anchorEl);
@@ -441,7 +852,7 @@ const OnlyURLInsertImageButton: FC = ({ children }) => {
                 }}
             >
                 <div className={classes.rootPopup}>
-                    <div role="tabpanel" className={clsx(classes.rootTab, tabIndex !== 0 && classes.hidden)}>
+                    <div role="tabpanel" className={clsx(classes.rootTab)}>
                         <TextField
                             placeholder={t(langKeys.enterTheUrl)}
                             value={url}

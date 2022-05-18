@@ -11,7 +11,7 @@ import { uploadFile, resetUploadFile } from 'store/main/actions';
 import { manageConfirmation } from 'store/popus/actions';
 import InputBase from '@material-ui/core/InputBase';
 import clsx from 'clsx';
-import { EmojiPickerZyx, GifPickerZyx } from 'components'
+import { EmojiPickerZyx, GifPickerZyx, RichText } from 'components'
 import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
@@ -32,6 +32,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import TextField from '@material-ui/core/TextField';
 import { showSnackbar } from 'store/popus/actions';
 import { cleanedRichResponse, convertLocalDate, getSecondsUntelNow } from 'common/helpers/functions'
+import { Descendant } from 'slate';
+import { renderToString, toElement } from 'components/fields/RichText';
 
 const channelsWhatsapp = ["WHAT", "WHAD", "WHAP"];
 interface IFile {
@@ -470,6 +472,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const [richResponseToShow, setRichResponseToShow] = useState<Dictionary[]>([])
     const [showReply, setShowReply] = useState(true);
     const [fileimage,setfileimage] = useState<any>(null);
+    const [bodyobject, setBodyobject] = useState<Descendant[]>([{ "type": "paragraph", "children": [{ "text": "" }] }])
     
 
     useEffect(() => {
@@ -709,7 +712,96 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
         }
     }
 
-    return (
+    if (ticketSelected?.communicationchanneltype === "MAIL"){
+        return (<div className={classes.containerResponse}>
+            {showReply ?
+                <>
+                    {files.length > 0 &&
+                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', borderBottom: '1px solid #EBEAED', paddingBottom: 8 }}>
+                            {files.map((item: IFile) => <ItemFile key={item.id} item={item} setFiles={setFiles} />)}
+                        </div>
+                    }
+                    <ClickAwayListener onClickAway={handleClickAway}>
+                        <div>
+                            <RichText
+                                value={bodyobject}
+                                onChange={(value) => {
+                                    setBodyobject(value)
+                                }}
+                                positionEditable="top"
+                                spellCheck
+                                image={false}
+                                onPaste={onPasteTextbar}
+                                onKeyPress={handleKeyPress}
+                                placeholder="Send your message..."
+                            >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+                                    
+                                    <QuickReplyIcon classes={classes} setText={setText} />
+                                    <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage}/>
+                                    <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
+                                    <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite}/>
+                                    <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
+                                    <TmpRichResponseIcon classes={classes} setText={setText} />
+                                </div>
+                            </div>
+                                
+                            </RichText>
+                            {openDialogHotKey && (
+                                <div style={{
+                                    position: 'absolute',
+                                    bottom: 100,
+                                    left: 15
+                                }}>
+                                    <div className="scroll-style-go" style={{
+                                        maxHeight: 200,
+                                        display: 'flex',
+                                        gap: 4,
+                                        flexDirection: 'column',
+                                    }}>
+                                        {typeHotKey === "quickreply" ?
+                                            quickRepliesToShow.map((item) => (
+                                                <div
+                                                    key={item.quickreplyid}
+                                                    className={classes.hotKeyQuickReply}
+                                                    onClick={() => selectQuickReply(item.quickreply)}
+                                                >
+                                                    {item.description}
+                                                </div>
+
+                                            )) :
+                                            richResponseToShow.map((item) => (
+                                                <div
+                                                    key={item.id}
+                                                    className={classes.hotKeyQuickReply}
+                                                    onClick={() => selectRichResponse(item)}
+                                                >
+                                                    {item.title}
+                                                </div>
+
+                                            ))
+                                        }
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </ClickAwayListener>
+                    
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(renderToString(toElement(bodyobject))!== `<div data-reactroot=""><p><span></span></p></div>` || files.filter(x => !!x.url).length > 0) })} onClick={triggerReplyMessage}>
+                            <SendIcon />
+                        </div>
+                    </div>
+                </>
+                :
+                <div style={{ whiteSpace: 'break-spaces', color: 'rgb(251, 95, 95)', fontWeight: 500, textAlign: 'center' }}>
+                    {t(langKeys.no_reply_use_hsm)}
+                </div>
+            }
+            <BottomGoToUnder />
+        </div >)
+    }else return (
         <div className={classes.containerResponse}>
             {showReply ?
                 <>
