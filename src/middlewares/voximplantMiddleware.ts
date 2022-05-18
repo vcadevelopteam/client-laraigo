@@ -26,6 +26,9 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
 
                 sdk.on(VoxImplant.Events.ACDStatusUpdated, (e) => {
                     console.log("voximplant: status->", e);
+                    if (e.status === "BANNED") {
+                        sdk.setOperatorACDStatus(VoxImplant.OperatorACDStatuses.Ready);
+                    }
                 })
 
                 sdk.on(VoxImplant.Events.IncomingCall, (e) => {
