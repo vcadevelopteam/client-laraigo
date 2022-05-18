@@ -122,7 +122,7 @@ const Status: FC = () => {
                 setOpenModal={setOpenDialog}
             />
             <Paper elevation={0} className={classes.root}>
-                <label className={classes.connectionText}><Trans>{userConnected ? langKeys.online : langKeys.offline}</Trans></label>
+                <label className={classes.connectionText}><Trans>{userConnected ? langKeys.available : langKeys.notavailable}</Trans></label>
                 <div style={{ width: 6 }} />
                 <IOSSwitch checked={userConnected} onChange={onChecked} name="checkedB" />
             </Paper>
