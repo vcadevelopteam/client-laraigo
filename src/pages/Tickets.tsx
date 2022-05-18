@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useCallback } from 'react'
-import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomainLight, insConversationClassificationMassive, reassignMassiveTicket, getUserSel, getHistoryStatusConversation, getCampaignLst, uploadCSV, uploadExcel, getPropertySelByName } from 'common/helpers';
+import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomainLight, insConversationClassificationMassive, reassignMassiveTicket, getUserSel, getHistoryStatusConversation, getCampaignLst, uploadCSV, uploadExcel, getPropertySelByName, exportExcel, templateMaker } from 'common/helpers';
 import { getCollectionPaginated, exportData, getMultiCollection, resetAllMain, execute, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
@@ -599,6 +599,7 @@ const DialogLoadTickets: React.FC<{
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitUpload, setWaitUpload] = useState(false);
+    const mainResult = useSelector(state => state.main);
     const importRes = useSelector(state => state.inbox.triggerImportTicket)
     const [file, setFile] = useState<File | null>(null);
 
@@ -650,12 +651,32 @@ const DialogLoadTickets: React.FC<{
         setFile(file);
     }
 
+    const handleTemplate = () => {
+        const data = [
+            {}, // mainResult?.multiData?.data?.[0]?.data.reduce((a,d) => ({...a, [d.communicationchannelsite]: d.communicationchanneldesc}),{}),
+            {},
+            {},
+            {},
+            {'CLIENT': 'CLIENT', 'BOT': 'BOT'}
+        ];
+        const header = [
+            'channel',
+            'personname',
+            'personphone',
+            'interactiontext',
+            'interactionfrom'
+        ];
+        exportExcel(`${t(langKeys.template)} ${t(langKeys.ticket)}`, templateMaker(data, header));
+    }
+
     return (
         <DialogZyx
             open={openModal}
             title={t(langKeys.upload_conversation_plural)}
+            buttonText0={t(langKeys.template)}
             buttonText1={t(langKeys.cancel)}
             buttonText2={t(langKeys.import)}
+            handleClickButton0={() => handleTemplate()}
             handleClickButton1={() => setOpenModal(false)}
             handleClickButton2={onSubmit}
             button2Type="submit"
@@ -722,6 +743,7 @@ const Tickets = () => {
     const [userList, setUserList] = useState<Dictionary[]>([])
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
 
+    const user = useSelector(state => state.login.validateToken.user);
     const [openUploadTickets, setOpenUploadTickets] = useState(false);
 
     const setValue = (parameterName: any, value: any) => {
@@ -1117,8 +1139,10 @@ const Tickets = () => {
                 download={true}
                 ButtonsElement={() => (
                     <>
-                        {mainResult?.multiData?.data?.[8]?.data?.[0]?.propertyvalue === '1' &&
-                            <Button
+                        {
+                            ['SUPERADMIN','ADMINISTRADOR'].includes(user?.roledesc || '')
+                            && mainResult?.multiData?.data?.[8]?.data?.[0]?.propertyvalue === '1'
+                            && <Button
                                 className={classes.button}
                                 variant="contained"
                                 color="primary"
