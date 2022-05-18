@@ -162,8 +162,7 @@ const FilterDynamic: FC<{ filter: Dictionary, setFiltersDynamic: (param: any) =>
     const classes = useStyles();
     const { t } = useTranslation();
     const choosenwidth=filter.description.length*18
-    console.log(choosenwidth)
-
+    
     useEffect(() => {
         setFiltersDynamic((prev: any) => ({
             ...prev,
@@ -223,6 +222,7 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
     const mainDynamic = useSelector(state => state.main.mainDynamic);
     const resExportDynamic = useSelector(state => state.main.exportDynamicData);
     const [showDialogGraphic, setShowDialogGraphic] = useState(false);
+    const [footer, setFooter] = useState<Dictionary | null>(null)
     const [view, setView] = useState('GRID')
     const [filtersDynamic, setFiltersDynamic] = useState<Dictionary>(filters.reduce((acc: Dictionary, item: Dictionary) => ({
         ...acc,
@@ -237,7 +237,8 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
         () => columns.map((x: Dictionary) => ({
             Header: x.alias,
             accessor: x.columnname.replace(".", ""),
-        })), [columns]
+            Footer: () => footer?.[x.columnname.replace(".", "")]
+        })), [columns, footer]
     )
 
     useEffect(() => {
@@ -257,9 +258,23 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
 
     useEffect(() => {
         if (!mainDynamic.loading && !mainDynamic.error) {
+            let datato = mainDynamic.data;
+            if (summaries.length > 0) {
+                setFooter(datato[0]);
+                delete datato[0]
+            }
+            if (columns.some(x => x.columnname.replace(".", "") === "conversationclosetype")) {
+                datato = datato.map(x => {
+                    const cc = t(`type_close_${(x.conversationclosetype || "").toLowerCase().replace(/ /gi, "_")}`)
+                    return {
+                        ...x,
+                        conversationclosetype:  cc.includes("type_close") ? x.conversationclosetype : cc
+                    }
+                })
+            }
             const columnsDate = columns.filter(x => ["timestamp without time zone", "date", "boolean"].includes(x.type));
             if (columnsDate.length > 0) {
-                setDataCleaned(mainDynamic.data.map(x => {
+                setDataCleaned(datato.map(x => {
                     columnsDate.forEach(y => {
                         const columnclean = y.columnname.replace(".", "");
                         if (["timestamp without time zone", "date"].includes(y.type)) {
@@ -291,7 +306,7 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
                     return x;
                 }));
             } else {
-                setDataCleaned(mainDynamic.data);
+                setDataCleaned(datato);
             }
         }
     }, [mainDynamic])
@@ -380,6 +395,7 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
                         data={dataCleaned}
                         download={false}
                         loading={mainDynamic.loading}
+                        useFooter={!!footer}
                     />
                 )}
                 {view !== "GRID" && (

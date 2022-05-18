@@ -3525,6 +3525,18 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     voximplantcategory_special: 'Special',
     voximplantcategory_mobile: 'Mobile',
     voximplant_numberbought: 'El siguiente número fue comprado: ',
+
+    type_close_cierre_externo: 'Cierre externo',
+    type_close_cierre_por_envio_de_campaña: 'Cierre por envio de campaña',
+    type_close_cierreautocampaña: 'Cierre automático por campaña',
+    type_close_cierreautomatico: 'Cierre automático',
+    type_close_colgado_por_asesor: 'LLamada finalizada por el asesor',
+    type_close_fuerahorario: 'Fuera de horario',
+    type_close_irrelevante: 'Cierre irrelevante',
+    type_close_llamada_desconectada: 'Llamada desconectada',
+    type_close_no_hay_asesores: 'No hay asesores a derivar',
+    type_close_nocompletado: 'No se pudo completar la atención',
+    type_close_resuelto: 'Cierre completado',
 };
 
 const esResource: ResourceLanguage = {
