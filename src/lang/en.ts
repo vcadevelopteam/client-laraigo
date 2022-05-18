@@ -3548,7 +3548,8 @@ const translation: LangKeys = {
     type_close_llamada_desconectada: 'call disconnected',
     type_close_no_hay_asesores: 'No advisers to refer',
     type_close_nocompletado: 'Failed to complete care',
-    type_close_resuelto: 'Closing completed'
+    type_close_resuelto: 'Closing completed',
+    available: 'Available',
 };
 
 const enResource: ResourceLanguage = {

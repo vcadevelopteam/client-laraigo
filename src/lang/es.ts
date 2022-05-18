@@ -72,6 +72,7 @@ const translation: LangKeys = {
     comments: 'Comentarios',
     lastnote: 'Última nota',
     notavailable: "No disponible",
+    available: "Disponible",
     resume: "Resumen",
     emoticons: "Emoticones",
     filter: "Filtro",
