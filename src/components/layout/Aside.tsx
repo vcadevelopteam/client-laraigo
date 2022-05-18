@@ -122,7 +122,7 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
                 <>
                     <div style={{ display: "flex", width: "100%", borderRight: '1px solid #EBEAED' }}>
                         <IconButton 
-                            style={{ marginLeft: "auto", marginTop: 20, marginRight: "auto", width: 80, height: 80, borderRadius: "50%", backgroundColor: showcall ? "#7721ad" : "#bdbdbd" }}
+                            style={{ marginLeft: "auto", marginTop: 40, marginRight: "auto", width: 80, height: 80, borderRadius: "50%", backgroundColor: showcall ? "#7721ad" : "#bdbdbd" }}
                             onClick={() => dispatch(setModalCall(true))}
                             disabled={statusCall !== "DISCONNECTED"}
                         >
@@ -131,7 +131,7 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
                             </Typography>
                         </IconButton>
                     </div>
-                    <div style={{ textAlign: "center", cursor: "pointer", borderRight: '1px solid #EBEAED', fontSize: 20, fontWeight: 500 }} onClick={() => { dispatch(setModalCall(true)) }}>
+                    <div style={{ textAlign: "center", cursor: "pointer", borderRight: '1px solid #EBEAED', marginTop:16, marginBottom: 10,  fontSize: 14}} onClick={() => { dispatch(setModalCall(true)) }}>
                         {t(langKeys.phone)}
                     </div>
                 </>

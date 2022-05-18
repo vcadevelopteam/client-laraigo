@@ -24,12 +24,15 @@ const translation: LangKeys = {
     show_logs: 'Show logs',
     function_count_unique: 'Count unique',
     hide_logs: 'Hide logs',
+    backgroundColor: "Background Color",
+    textcolor: "Text Color",
     make_call: "Make call",
 
     type_service: 'Service Type',
     font: "Font",
     type_service_plural: 'Services Type',
     
+    align: "Align",
     show_all: 'Show all',
     size:"Size",
     small:"Small",
