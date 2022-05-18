@@ -205,21 +205,24 @@ export const FieldView: React.FC<{ label: string, value?: string, className?: an
 
 interface TemplateDialogProps {
     open: boolean;
-    buttonText2?: string;
+    buttonText0?: string;
     buttonText1?: string;
+    buttonText2?: string;
     buttonText3?: string;
     zIndex?: number;
-    handleClickButton2?: (param: any) => void;
+    handleClickButton0?: (param: any) => void;
     handleClickButton1?: (param: any) => void;
+    handleClickButton2?: (param: any) => void;
     handleClickButton3?: (param: any) => void;
     title: string;
-    button2Type?: "button" | "submit" | "reset";
+    button0Type?: "button" | "submit" | "reset";
     button1Type?: "button" | "submit" | "reset";
+    button2Type?: "button" | "submit" | "reset";
     button3Type?: "button" | "submit" | "reset";
     maxWidth?: false | "sm" | "xs" | "md" | "lg" | "xl" | undefined;
 }
 
-export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText1, buttonText2, buttonText3, handleClickButton2, handleClickButton3, handleClickButton1, title, maxWidth = "sm", button2Type = "button", button1Type = "button", zIndex = 1300 }) => (
+export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText0, buttonText1, buttonText2, buttonText3, handleClickButton0, handleClickButton1, handleClickButton2, handleClickButton3, title, maxWidth = "sm", button1Type = "button", button2Type = "button", zIndex = 1300 }) => (
     <Dialog
         open={open}
         fullWidth
@@ -231,6 +234,11 @@ export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, butto
                 {children}
             </DialogContent>
             <DialogActions>
+                {!!buttonText0 &&
+                    <Button onClick={(handleClickButton0)}
+                    >
+                        {buttonText0}
+                    </Button>}
                 {!!buttonText1 &&
                     <Button type={button1Type} onClick={(button1Type !== "submit" ? handleClickButton1 : undefined)}
                     >
