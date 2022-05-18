@@ -280,7 +280,19 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
             </div>
         );
-    else if (interactiontype === "image")
+    else if (interactiontype === "email"){
+        const [subject,body] = interactiontext.split("&%MAIL%&")
+        return (
+            <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
+                [classes.interactionTextAgent]: userType !== 'client',
+            })}>
+                <div>Subject: {subject}</div>
+                <div dangerouslySetInnerHTML={{ __html: body }} />
+                <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
+                <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
+            </div>
+        );
+    }else if (interactiontype === "image")
         return (
             <div title={convertLocalDate(createdate).toLocaleString()} className={classes.interactionImage}>
                 <img
