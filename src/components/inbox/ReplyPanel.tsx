@@ -76,7 +76,6 @@ const UploaderIcon: React.FC<{ classes: any, type: "image" | "file", setFiles: (
     }, [waitSave, uploadResult, dispatch, setFiles, idUpload])
 
     const onSelectImage = (files: any) => {
-        console.log(files)
         const selectedFile = files[0];
         const idd = new Date().toISOString()
         var fd = new FormData();
@@ -461,6 +460,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const [text, setText] = useState("");
     const [files, setFiles] = useState<IFile[]>([]);
     const multiData = useSelector(state => state.main.multiData);
+    const groupInteractionList = useSelector(state => state.inbox.interactionList);
 
     const [typeHotKey, setTypeHotKey] = useState("")
     const [quickReplies, setquickReplies] = useState<Dictionary[]>([])
@@ -471,6 +471,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const [quickRepliesToShow, setquickRepliesToShow] = useState<Dictionary[]>([])
     const [richResponseToShow, setRichResponseToShow] = useState<Dictionary[]>([])
     const [showReply, setShowReply] = useState(true);
+    const [refreshbody, setrefreshbody] = useState(1);
     const [fileimage,setfileimage] = useState<any>(null);
     const [bodyobject, setBodyobject] = useState<Descendant[]>([{ "type": "paragraph", "children": [{ "text": "" }] }])
     
@@ -491,6 +492,10 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     useEffect(() => {
         setText(renderToString(toElement(bodyobject)))
     }, [bodyobject])
+    
+    useEffect(() => {
+        setBodyobject([{"type": "paragraph","children": [{"text": ""}]}]);
+    }, [refreshbody])
 
     const reasignTicket = React.useCallback(() => {
         dispatch(reassignTicket({
@@ -514,9 +519,6 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const triggerReplyMessage = () => {
         const callback = () => {
             let wasSend = false;
-            console.log(text)
-            console.log(bodyobject)
-            debugger
             if (files.length > 0) {
                 const listMessages = files.map(x => ({
                     ...ticketSelected!!,
@@ -549,7 +551,10 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                 setFiles([])
             }
             if (text) {
-                const textCleaned = text.trim();
+                let textCleaned = text;
+                if(ticketSelected?.communicationchanneltype === "MAIL" && groupInteractionList.data[0]?.interactiontext){
+                    textCleaned =  ("RE: "+ (groupInteractionList.data[0].interactiontext).split("&%MAIL%&")[0]+"&%MAIL%&"+text).trim();
+                }
                 
                 const wordlist = textCleaned.split(" ").map(x => x.toLowerCase())
                 
@@ -578,11 +583,13 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                         //send to answer with integration
                         dispatch(replyTicket({
                             ...ticketSelected!!,
-                            interactiontype: "text",
+                            interactiontype: ticketSelected?.communicationchanneltype === "MAIL"? "email":"text",
                             interactiontext: textCleaned,
                             isAnswered: !ticketSelected!!.isAnswered,
                         }));
                         setText("");
+                        setrefreshbody(refreshbody*-1);
+
                     } else {
                         dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                     }
