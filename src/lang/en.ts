@@ -30,6 +30,8 @@ const translation: LangKeys = {
 
     type_service: 'Service Type',
     font: "Font",
+    undo: "Undo",
+    redo: "Redo",
     type_service_plural: 'Services Type',
     
     align: "Align",

@@ -34,6 +34,8 @@ import { showSnackbar } from 'store/popus/actions';
 import { cleanedRichResponse, convertLocalDate, getSecondsUntelNow } from 'common/helpers/functions'
 import { Descendant } from 'slate';
 import { renderToString, toElement } from 'components/fields/RichText';
+import UndoIcon from '@material-ui/icons/Undo';
+import RedoIcon from '@material-ui/icons/Redo';
 
 const channelsWhatsapp = ["WHAT", "WHAD", "WHAP"];
 interface IFile {
@@ -474,6 +476,11 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const [fileimage,setfileimage] = useState<any>(null);
     const [bodyobject, setBodyobject] = useState<Descendant[]>([{ "type": "paragraph", "children": [{ "text": "" }] }])
     const [refresh, setrefresh] = useState(1)
+    const [flagundo, setflagundo] = useState(false)
+    const [flagredo, setflagredo] = useState(false)
+    const [undotext, setundotext] = useState<any>([])
+    const [redotext, setredotext] = useState<any>([])
+
     
 
     useEffect(() => {
@@ -491,8 +498,24 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     }, [ticketSelected])
     
     useEffect(() => {
+        if (!flagundo){
+            if(!flagredo){
+                setredotext([])
+            }
+            setundotext([...undotext,(bodyobject)])
+        }
         setText(renderToString(toElement(bodyobject)))
     }, [bodyobject])
+    useEffect(() => {
+        if (flagundo) {
+            setflagundo(false)
+        }
+    }, [undotext])
+    useEffect(() => {
+        if (flagredo) {
+            setflagredo(false)
+        }
+    }, [redotext])
     
     const reasignTicket = React.useCallback(() => {
         dispatch(reassignTicket({
@@ -549,9 +572,9 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             }
             if (text) {
                 let textCleaned = text;
-                // if(ticketSelected?.communicationchanneltype === "MAIL" && groupInteractionList.data[0]?.interactiontext){
-                //     textCleaned =  ("RE: "+ (groupInteractionList.data[0].interactiontext).split("&%MAIL%&")[0]+"&%MAIL%&"+text).trim();
-                // }
+                if(ticketSelected?.communicationchanneltype === "MAIL" && groupInteractionList.data[0]?.interactiontext){
+                    textCleaned =  ("RE: "+ (groupInteractionList.data[0].interactiontext).split("&%MAIL%&")[0]+"&%MAIL%&"+text).trim();
+                }
                 
                 const wordlist = textCleaned.split(" ").map(x => x.toLowerCase())
                 
@@ -746,8 +769,30 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                     refresh={refresh}
                                     placeholder="Send your message..."
                                 >
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ display: 'block', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+                                        <IconButton  disabled={undotext.length<2} size="small" onClick={() => {
+                                            setflagundo(true)
+                                            setredotext([...redotext,bodyobject])
+                                            setBodyobject(undotext[undotext.length-2])
+                                            setrefresh(refresh * -1)
+                                            setundotext(undotext.slice(0,undotext.length-1))
+                                        }}>
+                                                
+                                            <Tooltip title={t(langKeys.undo) + ""} arrow placement="top">
+                                                <UndoIcon />
+                                            </Tooltip>
+                                        </IconButton>
+                                        <IconButton  disabled={redotext.length<1} size="small" onClick={() => {
+                                            setflagredo(true)
+                                            setBodyobject(redotext[redotext.length-1])
+                                            setrefresh(refresh * -1)
+                                            setredotext(redotext.slice(0,redotext.length-1))
+                                        }}>
+                                             <Tooltip title={t(langKeys.redo) + ""} arrow placement="top">
+                                                <RedoIcon />
+                                            </Tooltip>
+                                        </IconButton>
                                         <QuickReplyIcon classes={classes} setText={setText} />
                                         <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage}/>
                                         <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
@@ -799,8 +844,8 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                         </div>
                     </ClickAwayListener>
                     
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(renderToString(toElement(bodyobject))!== `<div data-reactroot=""><p><span></span></p></div>` || files.filter(x => !!x.url).length > 0) })} onClick={triggerReplyMessage}>
+                    <div style={{ display: 'flex', alignItems: 'end' }}>
+                        <div style={{marginLeft: "auto", marginRight: 0}} className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(renderToString(toElement(bodyobject))!== `<div data-reactroot=""><p><span></span></p></div>` || files.filter(x => !!x.url).length > 0) })} onClick={triggerReplyMessage}>
                             <SendIcon />
                         </div>
                     </div>
