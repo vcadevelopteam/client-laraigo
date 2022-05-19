@@ -166,6 +166,8 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
 
         call.on(VoxImplant.CallEvents.Connected, () => {
             dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "CONNECTED" });
+            //actualizar la fecha de contestado en la lista de tickets
+            dispatch({ type: typeInbox.CALL_CONNECTED, payload: action.payload.data.conversationid });
         });
         call.on(VoxImplant.CallEvents.Disconnected, () => {
             dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "DISCONNECTED" });

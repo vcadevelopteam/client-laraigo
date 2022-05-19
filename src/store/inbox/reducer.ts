@@ -219,4 +219,5 @@ export default createReducer<IState>(initialState, {
     [actionTypes.SHOW_LOG_INTERACTIONS]: caseFunctions.hideLogInteractions,
     [actionTypes.SET_HIDE_LOGS_ON_TICKET]: caseFunctions.setHideLogsOnTicket,
     [actionTypes.NEW_TICKET_CALL]: caseFunctions.newCallTicket,
+    [actionTypes.CALL_CONNECTED]: caseFunctions.callConnected,
 });
