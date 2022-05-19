@@ -144,10 +144,10 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             contact: row?.contact || '',
             autosendinvoice: row?.autosendinvoice || false,
             automaticpayment: row?.automaticpayment || false,
-            // automaticperiod: row?.billbyorg ? (row?.automaticperiod || false) : true,
-            // automaticinvoice: row?.billbyorg ? (row?.automaticinvoice || false) : true,
-            automaticperiod: row?.automaticperiod || false,
-            automaticinvoice: row?.automaticinvoice || false,
+            automaticperiod: row?.billbyorg ? (row?.automaticperiod || false) : true,
+            automaticinvoice: row?.billbyorg ? (row?.automaticinvoice || false) : true,
+            //automaticperiod: row?.automaticperiod || false,
+            //automaticinvoice: row?.automaticinvoice || false,
             iconbot: row?.iconbot || "",
             iconadvisor: row?.iconadvisor || "",
             iconclient: row?.iconclient || "",
@@ -321,7 +321,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
 
     const countries = useMemo(() => {
         if (countryList.loading) return [];
-        return countryList.data.sort((a, b) => {
+        return countryList.data.sort((a: { description: string; }, b: { description: any; }) => {
             return a.description.localeCompare(b.description);
         });
     }, [countryList]);
