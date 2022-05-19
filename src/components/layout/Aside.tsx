@@ -6,7 +6,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 
@@ -78,7 +78,9 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
     const dispatch = useDispatch();
     const showcall = useSelector(state => state.voximplant.showcall);
     const statusCall = useSelector(state => state.voximplant.statusCall);
-    const voxiConnection = useSelector(state => state.voximplant.connection);
+    const voxiConnection = useSelector(state => state.voximplant.connection);    
+    const location = useLocation();
+
 
     return (
         <Drawer
@@ -99,7 +101,7 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
         >
             <div style={{ overflowX: 'hidden', borderRight: '1px solid #EBEAED', marginTop: headerHeight }}>
                 {routes.map((ele) => (applications && applications[ele.key] && applications[ele.key][0]) ? <LinkList classes={classes} config={ele} key={ele.key} open={openDrawer} /> : null)}
-                {(!voxiConnection.error && !voxiConnection.loading && !openDrawer) && (
+                {(!voxiConnection.error && !voxiConnection.loading && !openDrawer&& location.pathname=== "/message_inbox") && (
                     <ListItem
                         button
                         key={"phone-agent"}
@@ -118,7 +120,7 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
                     </ListItem>
                 )}
             </div>
-            {(!voxiConnection.error && !voxiConnection.loading && openDrawer) && (
+            {(!voxiConnection.error && !voxiConnection.loading && openDrawer && location.pathname=== "/message_inbox") && (
                 <>
                     <div style={{ display: "flex", width: "100%", borderRight: '1px solid #EBEAED' }}>
                         <IconButton 

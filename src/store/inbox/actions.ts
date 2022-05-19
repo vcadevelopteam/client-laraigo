@@ -111,7 +111,7 @@ export const updatePerson = (person: IPerson): IActionCall => ({ type: actionTyp
 
 export const resetSelectTicket = (): IActionCall => ({ type: actionTypes.SELECT_TICKET, payload: null });
 
-export const selectAgent = (ticket: IAgent): IActionCall => ({ type: actionTypes.SELECT_AGENT, payload: ticket });
+export const selectAgent = (ticket: IAgent | null): IActionCall => ({ type: actionTypes.SELECT_AGENT, payload: ticket });
 
 
 export const addTicket = (ticket: ITicket): IActionCall => ({ type: actionTypes.ADD_TICKET, payload: ticket });

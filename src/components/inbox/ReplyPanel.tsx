@@ -488,6 +488,9 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
         } else
             setShowReply(true)
     }, [ticketSelected])
+    useEffect(() => {
+        setText(renderToString(toElement(bodyobject)))
+    }, [bodyobject])
 
     const reasignTicket = React.useCallback(() => {
         dispatch(reassignTicket({
@@ -511,6 +514,9 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const triggerReplyMessage = () => {
         const callback = () => {
             let wasSend = false;
+            console.log(text)
+            console.log(bodyobject)
+            debugger
             if (files.length > 0) {
                 const listMessages = files.map(x => ({
                     ...ticketSelected!!,
@@ -555,7 +561,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                         const newInteractionSocket = {
                             ...ticketSelected!!,
                             interactionid: 0,
-                            typemessage: "text",
+                            typemessage:  ticketSelected?.communicationchanneltype === "MAIL"? "email":"text",
                             typeinteraction: null,
                             lastmessage: textCleaned,
                             createdate: new Date().toISOString(),

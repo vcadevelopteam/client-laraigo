@@ -239,12 +239,14 @@ const InfoTab: React.FC = () => {
                             onChange={(value) => setValue('firstname', value)}
                             valueDefault={getValues('firstname')}
                             error={errors?.firstname?.message}
+                            maxLength={50}
                         />
                         <FieldEdit
                             label={t(langKeys.lastname)}
                             onChange={(value) => setValue('lastname', value)}
                             valueDefault={getValues('lastname')}
                             error={errors?.lastname?.message}
+                            maxLength={50}
                         />
                         <FieldSelect
                             onChange={(value) => setValue('documenttype', value?.domainvalue)}
@@ -264,30 +266,35 @@ const InfoTab: React.FC = () => {
                             valueDefault={getValues('documentnumber')}
                             type="number"
                             error={errors?.documentnumber?.message}
+                            maxLength={50}
                         />
                         <FieldEdit
                             label={t(langKeys.email)}
                             onChange={(value) => setValue('email', value)}
                             valueDefault={getValues('email')}
                             error={errors?.email?.message}
+                            maxLength={50}
                         />
                         <FieldEdit
                             label={t(langKeys.phone)}
                             onChange={(value) => setValue('phone', value)}
                             valueDefault={getValues('phone')}
                             error={errors?.phone?.message}
+                            maxLength={20}
                         />
                         <FieldEdit
                             label={t(langKeys.alternativeEmail)}
                             onChange={(value) => setValue('alternativeemail', value)}
                             valueDefault={getValues('alternativeemail')}
                             error={errors?.alternativeemail?.message}
+                            maxLength={50}
                         />
                         <FieldEdit
                             label={t(langKeys.alternativePhone)}
                             onChange={(value) => setValue('alternativephone', value)}
                             valueDefault={getValues('alternativephone')}
                             error={errors?.alternativephone?.message}
+                            maxLength={20}
                         />
                         <FieldEdit
                             label={t(langKeys.birthday)}
@@ -531,16 +538,11 @@ const Classifications: React.FC = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const person = useSelector(state => state.inbox.person.data);
-    const [view, setView] = useState('view');
     const [classifications, setClassifications] = useState<any[]>([]);
     const [waitSave, setWaitSave] = useState(false);
     const tipifyRes = useSelector(state => state.main.execute);
 
     const mainAux2 = useSelector(state => state.main.mainAux2);
-    const { setValue, getValues, trigger, register, formState: { errors } } = useForm<any>({
-        defaultValues: { ...person, birthday: person?.birthday || '' }
-    });
     const fetchData = () => dispatch(getCollectionAux2(getConversationClassification2(ticketSelected?.conversationid!!)))
 
     useEffect(() => {
@@ -749,7 +751,6 @@ const Attachments: React.FC = () => {
 
 
 const InfoPanel: React.FC = () => {
-    const dispatch = useDispatch();
     const classes = useStyles();
     const [pageSelected, setPageSelected] = useState(0);
     const [order, setOrder] = useState(-1)

@@ -328,6 +328,7 @@ const Supervisor: FC = () => {
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const wsConnected = useSelector(state => state.inbox.wsConnected);
     const multiData = useSelector(state => state.main.multiData);
+    const [initial, setInitial] = useState(true)
 
     useEffect(() => {
         if (multiData?.data[1])
@@ -335,6 +336,7 @@ const Supervisor: FC = () => {
     }, [multiData])
     
     useEffect(() => {
+        setInitial(false)
         dispatch(setOpenDrawer(false));
         dispatch(getAgents())
         dispatch(getMultiCollection([
@@ -367,11 +369,11 @@ const Supervisor: FC = () => {
             }));
         }
     }, [wsConnected])
-
+    
     return (
         <div className={classes.container}>
             <AgentPanel classes={classes} />
-            {agentSelected &&
+            {(agentSelected && !initial) &&
                 <InboxPanel userType="SUPERVISOR" />
             }
         </div>

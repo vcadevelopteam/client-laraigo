@@ -25,6 +25,7 @@ export interface ITicket {
     lastseendate?: string | null;
     finishdate?: string | null;
     isAnswered?: boolean;
-    call?: Call | null;   
+    call?: Call | null;
+    callanswereddate?: string | null;
     // channelicon: string;
 }
