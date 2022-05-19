@@ -321,7 +321,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
 
     const countries = useMemo(() => {
         if (countryList.loading) return [];
-        return countryList.data.sort((a: { description: string; }, b: { description: any; }) => {
+        return countryList.data.sort((a: Dictionary, b: Dictionary) => {
             return a.description.localeCompare(b.description);
         });
     }, [countryList]);
