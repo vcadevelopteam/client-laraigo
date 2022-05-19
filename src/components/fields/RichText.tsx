@@ -106,6 +106,7 @@ interface RichTextProps extends Omit<BoxProps, 'onChange'> {
     image?: Boolean;
     children?: React.ReactNode;
     positionEditable?: 'top' | 'bottom';
+    refresh?: number;
 }
 
 interface RenderElementProps {
@@ -132,24 +133,30 @@ const useRichTextStyles = makeStyles(theme => ({
         padding: 0,
     },
     littleboxes: {
-        cursor:"pointer", 
-        marginRight:1, 
-        width:16, 
-        height:16
+        cursor: "pointer",
+        marginRight: 1,
+        width: 16,
+        height: 16
     }
 }));
 
 /**TODO: Validar que la URL de la imagen sea valida en el boton de insertar imagen */
-const RichText: FC<RichTextProps> = ({ value, onChange, placeholder,image=true, spellCheck, error,positionEditable="bottom",children, onlyurl=false, ...boxProps })=> {
+const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, placeholder, image = true, spellCheck, error, positionEditable = "bottom", children, onlyurl = false, ...boxProps }) => {
     const classes = useRichTextStyles();
     // Create a Slate editor object that won't change across renders.
     const editor = useMemo(() => withImages(withHistory(withReact(createEditor()))), []);
     const upload = useSelector(state => state.main.uploadFile);
+    // const [valueg, setvalueg] = useState(value)
+
+    useEffect(() => {
+        //evitar q en cada cmbio re-renderice, solo en casos q el componente q llama lo requiera (ejemplo replypanel)
+        editor.children = value
+    }, [refresh])
 
     return (
         <Box {...boxProps}>
             <Slate editor={editor} value={value} onChange={onChange}>
-                {positionEditable==="top" &&
+                {positionEditable === "top" &&
                     <Editable
                         placeholder={placeholder}
                         renderElement={renderElement}
@@ -193,18 +200,15 @@ const RichText: FC<RichTextProps> = ({ value, onChange, placeholder,image=true, 
                     <BlockButton format="block-quote" tooltip='block_quote'>
                         <FormatQuoteIcon />
                     </BlockButton>
-                    {image &&
-                    <>
-                        {
-                            onlyurl?
+                    {(image && onlyurl) &&
+                        <>
                             <OnlyURLInsertImageButton>
                                 <InsertPhotoIcon />
-                            </OnlyURLInsertImageButton>:
+                            </OnlyURLInsertImageButton> :
                             <InsertImageButton>
                                 <InsertPhotoIcon />
                             </InsertImageButton>
-                        }
-                    </>
+                        </>
                     }
                     {upload.loading && (
                         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
@@ -213,7 +217,7 @@ const RichText: FC<RichTextProps> = ({ value, onChange, placeholder,image=true, 
                         </div>
                     )}
                 </Toolbar>
-                {positionEditable!=="top" &&
+                {positionEditable !== "top" &&
                     <Editable
                         placeholder={placeholder}
                         renderElement={renderElement}
@@ -223,16 +227,16 @@ const RichText: FC<RichTextProps> = ({ value, onChange, placeholder,image=true, 
                 }
             </Slate>
             {error && error !== '' && <FormHelperText error>{error}</FormHelperText>}
-        </Box>
+        </Box >
     );
 }
 
-const NormalLine: FC<{attributes?: any, children: React.ReactNode}> = ({ attributes = {}, children }) => {
+const NormalLine: FC<{ attributes?: any, children: React.ReactNode }> = ({ attributes = {}, children }) => {
     const editor = useSlate();
     const marks = Editor.marks(editor);
     const textalign = marks?.textalign || 'left';
 
-    return <p {...attributes} style={{textAlign: textalign}}>{children}</p>;
+    return <p {...attributes} style={{ textAlign: textalign }}>{children}</p>;
 }
 
 /**Renderiza el texto seleccionado con cierto estilo */
@@ -275,18 +279,18 @@ const renderLeaf: RenderLeaf = ({ attributes = {}, children, leaf }) => {
         children = <u>{children}</u>;
     }
     if (leaf.fontfamily) {
-        children = <span style={{fontFamily: leaf.fontfamily}}>{children}</span>;
+        children = <span style={{ fontFamily: leaf.fontfamily }}>{children}</span>;
     }
     if (leaf.fontsize) {
-        children = <span style={{fontSize: leaf.fontsize}}>{children}</span>;
+        children = <span style={{ fontSize: leaf.fontsize }}>{children}</span>;
     }
     if (leaf.color) {
-        children = <span style={{color: leaf.color}}>{children}</span>;
+        children = <span style={{ color: leaf.color }}>{children}</span>;
     }
     if (leaf.backgroundcolor) {
-        children = <span style={{backgroundColor: leaf.backgroundcolor}}>{children}</span>;
+        children = <span style={{ backgroundColor: leaf.backgroundcolor }}>{children}</span>;
     }
-    
+
     return <span {...attributes}>{children}</span>;
 }
 
@@ -352,7 +356,7 @@ const toggleBackgroundColor = (editor: BaseEditor & ReactEditor, value: string) 
 
 interface FontFamilyProps extends SelectProps {
     tooltip: string;
-    other?: ()=>void;
+    other?: () => void;
 }
 
 const FontFamily: FC<FontFamilyProps> = ({ tooltip = '', children, onClick, ...props }) => {
@@ -364,20 +368,20 @@ const FontFamily: FC<FontFamilyProps> = ({ tooltip = '', children, onClick, ...p
     return (
         <FormControl>
             <Select
-                labelId="font-family-select-label"    
+                labelId="font-family-select-label"
                 value={fontfamily}
-                style={{ width: 150, marginLeft:10 }}
+                style={{ width: 150, marginLeft: 10 }}
                 onChange={e => {
                     e.preventDefault();
                     toggleFontFamily(editor, e.target.value as string);
                 }}
             >
-                <MenuItem style={{fontFamily: "inherit"}} value="inherit">{t(langKeys.default)}</MenuItem>
-                <MenuItem style={{fontFamily: "serif"}} value="serif">Serif</MenuItem>
-                <MenuItem style={{fontFamily: "sans-serif"}} value="sans-serif">Sans-serif</MenuItem>
-                <MenuItem style={{fontFamily: "monospace"}} value="monospace">Monospace</MenuItem>
-                <MenuItem style={{fontFamily: "cursive"}} value="cursive">Cursive</MenuItem>
-                <MenuItem style={{fontFamily: "fantasy"}} value="fantasy">Fantasy</MenuItem>
+                <MenuItem style={{ fontFamily: "inherit" }} value="inherit">{t(langKeys.default)}</MenuItem>
+                <MenuItem style={{ fontFamily: "serif" }} value="serif">Serif</MenuItem>
+                <MenuItem style={{ fontFamily: "sans-serif" }} value="sans-serif">Sans-serif</MenuItem>
+                <MenuItem style={{ fontFamily: "monospace" }} value="monospace">Monospace</MenuItem>
+                <MenuItem style={{ fontFamily: "cursive" }} value="cursive">Cursive</MenuItem>
+                <MenuItem style={{ fontFamily: "fantasy" }} value="fantasy">Fantasy</MenuItem>
             </Select>
         </FormControl>
     );
@@ -390,11 +394,11 @@ const FormatSizeMenu: FC<FontFamilyProps> = ({ tooltip = '', children, onClick, 
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
 
-    const handleClick = (event:any) => {
+    const handleClick = (event: any) => {
         setAnchorEl(event.currentTarget);
     };
 
-    const handleClose = (value:string) => {
+    const handleClose = (value: string) => {
         toggleFontSize(editor, value);
         setAnchorEl(null);
     };
@@ -402,15 +406,15 @@ const FormatSizeMenu: FC<FontFamilyProps> = ({ tooltip = '', children, onClick, 
     return (
         <FormControl>
             <>
-                <Tooltip title={t(langKeys.size)||"size"} aria-label="add">
+                <Tooltip title={t(langKeys.size) || "size"} aria-label="add">
                     <IconButton
                         aria-label="more"
                         aria-controls="long-menu"
                         aria-haspopup="true"
                         onClick={handleClick}
-                        >
+                    >
                         <FormatSizeIcon />
-                        <ArrowDropDownIcon/>
+                        <ArrowDropDownIcon />
                     </IconButton>
                 </Tooltip>
                 <Menu
@@ -428,21 +432,21 @@ const FormatSizeMenu: FC<FontFamilyProps> = ({ tooltip = '', children, onClick, 
                         horizontal: 'center',
                     }}
                 >
-                    <MenuItem onClick={()=>handleClose("x-small")} style={{paddingLeft:0,fontSize: "x-small"}} value="x-small">
-                        {fontsize==="x-small" && <CheckIcon style={{marginRight:10, marginLeft: 10, width:20,height:20}}/>}
-                        <div style={{marginLeft:(fontsize!=="x-small"?40:0)}}>{t(langKeys.small)} </div>
+                    <MenuItem onClick={() => handleClose("x-small")} style={{ paddingLeft: 0, fontSize: "x-small" }} value="x-small">
+                        {fontsize === "x-small" && <CheckIcon style={{ marginRight: 10, marginLeft: 10, width: 20, height: 20 }} />}
+                        <div style={{ marginLeft: (fontsize !== "x-small" ? 40 : 0) }}>{t(langKeys.small)} </div>
                     </MenuItem>
-                    <MenuItem onClick={()=>handleClose("small")} style={{paddingLeft:0,fontSize: "small"}} value="small">
-                        {fontsize==="small" && <CheckIcon style={{marginRight:10, marginLeft: 10, width:20,height:20}}/>}
-                        <div style={{marginLeft:(fontsize!=="small"?40:0)}}>{t(langKeys.normal)} </div>
+                    <MenuItem onClick={() => handleClose("small")} style={{ paddingLeft: 0, fontSize: "small" }} value="small">
+                        {fontsize === "small" && <CheckIcon style={{ marginRight: 10, marginLeft: 10, width: 20, height: 20 }} />}
+                        <div style={{ marginLeft: (fontsize !== "small" ? 40 : 0) }}>{t(langKeys.normal)} </div>
                     </MenuItem>
-                    <MenuItem onClick={()=>handleClose("large")} style={{paddingLeft:0,fontSize: "large"}} value="large">
-                        {fontsize==="large" && <CheckIcon style={{marginRight:10, marginLeft: 10, width:20,height:20}}/>}
-                        <div style={{marginLeft:(fontsize!=="large"?40:0)}}>{t(langKeys.large)} </div>
+                    <MenuItem onClick={() => handleClose("large")} style={{ paddingLeft: 0, fontSize: "large" }} value="large">
+                        {fontsize === "large" && <CheckIcon style={{ marginRight: 10, marginLeft: 10, width: 20, height: 20 }} />}
+                        <div style={{ marginLeft: (fontsize !== "large" ? 40 : 0) }}>{t(langKeys.large)} </div>
                     </MenuItem>
-                    <MenuItem onClick={()=>handleClose("xx-large")} style={{paddingLeft:0,fontSize: "xx-large"}} value="xx-large">
-                        {fontsize==="xx-large" && <CheckIcon style={{marginRight:10, marginLeft: 10, width:20,height:20}}/>}
-                        <div style={{marginLeft:(fontsize!=="xx-large"?40:0)}}>{t(langKeys.huge)} </div>
+                    <MenuItem onClick={() => handleClose("xx-large")} style={{ paddingLeft: 0, fontSize: "xx-large" }} value="xx-large">
+                        {fontsize === "xx-large" && <CheckIcon style={{ marginRight: 10, marginLeft: 10, width: 20, height: 20 }} />}
+                        <div style={{ marginLeft: (fontsize !== "xx-large" ? 40 : 0) }}>{t(langKeys.huge)} </div>
                     </MenuItem>
                 </Menu>
             </>
@@ -457,11 +461,11 @@ const Alignment: FC<FontFamilyProps> = ({ tooltip = '', children, onClick, ...pr
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
 
-    const handleClick = (event:any) => {
+    const handleClick = (event: any) => {
         setAnchorEl(event.currentTarget);
     };
 
-    const handleClose = (value:string) => {
+    const handleClose = (value: string) => {
         toggleAlignment(editor, value);
         setAnchorEl(null);
     };
@@ -469,17 +473,17 @@ const Alignment: FC<FontFamilyProps> = ({ tooltip = '', children, onClick, ...pr
     return (
         <FormControl>
             <>
-                <Tooltip title={t(langKeys.align)||"align"} aria-label="add">
+                <Tooltip title={t(langKeys.align) || "align"} aria-label="add">
                     <IconButton
                         aria-label="more"
                         aria-controls="long-menu"
                         aria-haspopup="true"
                         onClick={handleClick}
-                        >
-                        {textalign==="left" && <FormatAlignLeftIcon />}
-                        {textalign==="end" && <FormatAlignRightIcon />}
-                        {textalign==="center" && <FormatAlignCenterIcon />}
-                        <ArrowDropDownIcon/>
+                    >
+                        {textalign === "left" && <FormatAlignLeftIcon />}
+                        {textalign === "end" && <FormatAlignRightIcon />}
+                        {textalign === "center" && <FormatAlignCenterIcon />}
+                        <ArrowDropDownIcon />
                     </IconButton>
                 </Tooltip>
                 <Menu
@@ -497,13 +501,13 @@ const Alignment: FC<FontFamilyProps> = ({ tooltip = '', children, onClick, ...pr
                         horizontal: 'center',
                     }}
                 >
-                    <MenuItem onClick={()=>handleClose("left")} value="left">
+                    <MenuItem onClick={() => handleClose("left")} value="left">
                         <div><FormatAlignLeftIcon /></div>
                     </MenuItem>
-                    <MenuItem onClick={()=>handleClose("center")} value="center">
+                    <MenuItem onClick={() => handleClose("center")} value="center">
                         <div><FormatAlignCenterIcon /></div>
                     </MenuItem>
-                    <MenuItem onClick={()=>handleClose("end")} value="end">
+                    <MenuItem onClick={() => handleClose("end")} value="end">
                         <div><FormatAlignRightIcon /></div>
                     </MenuItem>
                 </Menu>
@@ -515,11 +519,11 @@ const Alignment: FC<FontFamilyProps> = ({ tooltip = '', children, onClick, ...pr
 const ColorBoxes: FC<FontFamilyProps> = ({ other, tooltip }) => {
     const editor = useSlate();
     const classes = useRichTextStyles();
-    
-    const handleClose = (value:string) => {
-        if(tooltip==="background"){
+
+    const handleClose = (value: string) => {
+        if (tooltip === "background") {
             toggleBackgroundColor(editor, value);
-        }else{
+        } else {
             toggleColor(editor, value);
         }
         other?.();
@@ -528,85 +532,85 @@ const ColorBoxes: FC<FontFamilyProps> = ({ other, tooltip }) => {
 
     return (
         <div>
-            <div style={{display:"flex", marginTop:10}}>
-                <div onClick={()=>handleClose("rgb(0,0,0)")} className={classes.littleboxes} style={{backgroundColor: "rgb(0,0,0)" }}></div>
-                <div onClick={()=>handleClose("rgb(68,68,68)")} className={classes.littleboxes} style={{backgroundColor: "rgb(68,68,68)" }}></div>
-                <div onClick={()=>handleClose("rgb(102,102,102)")} className={classes.littleboxes} style={{backgroundColor: "rgb(102,102,102)" }}></div>
-                <div onClick={()=>handleClose("rgb(153,153,153)")} className={classes.littleboxes} style={{backgroundColor: "rgb(153,153,153)" }}></div>
-                <div onClick={()=>handleClose("rgb(204,204,204)")} className={classes.littleboxes} style={{backgroundColor: "rgb(204,204,204)" }}></div>
-                <div onClick={()=>handleClose("rgb(238,238,238)")} className={classes.littleboxes} style={{backgroundColor: "rgb(238,238,238)" }}></div>
-                <div onClick={()=>handleClose("rgb(243,243,243)")} className={classes.littleboxes} style={{backgroundColor: "rgb(243,243,243)" }}></div>
-                <div onClick={()=>handleClose("rgb(255,255,255)")} className={classes.littleboxes} style={{backgroundColor: "rgb(255,255,255)" }}></div>
+            <div style={{ display: "flex", marginTop: 10 }}>
+                <div onClick={() => handleClose("rgb(0,0,0)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(0,0,0)" }}></div>
+                <div onClick={() => handleClose("rgb(68,68,68)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(68,68,68)" }}></div>
+                <div onClick={() => handleClose("rgb(102,102,102)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(102,102,102)" }}></div>
+                <div onClick={() => handleClose("rgb(153,153,153)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(153,153,153)" }}></div>
+                <div onClick={() => handleClose("rgb(204,204,204)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(204,204,204)" }}></div>
+                <div onClick={() => handleClose("rgb(238,238,238)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(238,238,238)" }}></div>
+                <div onClick={() => handleClose("rgb(243,243,243)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(243,243,243)" }}></div>
+                <div onClick={() => handleClose("rgb(255,255,255)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(255,255,255)" }}></div>
             </div>
-            <div style={{display:"flex", marginTop:5, marginBottom:5}}>
-                <div onClick={()=>handleClose("rgb(255,0,0)")} className={classes.littleboxes} style={{backgroundColor: "rgb(255,0,0)"}}></div>
-                <div onClick={()=>handleClose("rgb(255,153,0)")} className={classes.littleboxes} style={{backgroundColor: "rgb(255,153,0)"}}></div>
-                <div onClick={()=>handleClose("rgb(255,255,0)")} className={classes.littleboxes} style={{backgroundColor: "rgb(255,255,0)"}}></div>
-                <div onClick={()=>handleClose("rgb(0,255,0)")} className={classes.littleboxes} style={{backgroundColor: "rgb(0,255,0)"}}></div>
-                <div onClick={()=>handleClose("rgb(0,255,255)")} className={classes.littleboxes} style={{backgroundColor: "rgb(0,255,255)"}}></div>
-                <div onClick={()=>handleClose("rgb(0,0,255)")} className={classes.littleboxes} style={{backgroundColor: "rgb(0,0,255)"}}></div>
-                <div onClick={()=>handleClose("rgb(153,0,255)")} className={classes.littleboxes} style={{backgroundColor: "rgb(153,0,255)"}}></div>
-                <div onClick={()=>handleClose("rgb(255,0,255)")} className={classes.littleboxes} style={{backgroundColor: "rgb(255,0,255)"}}></div>
+            <div style={{ display: "flex", marginTop: 5, marginBottom: 5 }}>
+                <div onClick={() => handleClose("rgb(255,0,0)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(255,0,0)" }}></div>
+                <div onClick={() => handleClose("rgb(255,153,0)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(255,153,0)" }}></div>
+                <div onClick={() => handleClose("rgb(255,255,0)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(255,255,0)" }}></div>
+                <div onClick={() => handleClose("rgb(0,255,0)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(0,255,0)" }}></div>
+                <div onClick={() => handleClose("rgb(0,255,255)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(0,255,255)" }}></div>
+                <div onClick={() => handleClose("rgb(0,0,255)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(0,0,255)" }}></div>
+                <div onClick={() => handleClose("rgb(153,0,255)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(153,0,255)" }}></div>
+                <div onClick={() => handleClose("rgb(255,0,255)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(255,0,255)" }}></div>
             </div>
-            <div style={{display:"flex", marginBottom:1}}>
-                <div onClick={()=>handleClose("rgb(244,204,204)")} className={classes.littleboxes} style={{backgroundColor: "rgb(244,204,204)"}}></div>
-                <div onClick={()=>handleClose("rgb(252,229,205)")} className={classes.littleboxes} style={{backgroundColor: "rgb(252,229,205)"}}></div>
-                <div onClick={()=>handleClose("rgb(255,242,204)")} className={classes.littleboxes} style={{backgroundColor: "rgb(255,242,204)"}}></div>
-                <div onClick={()=>handleClose("rgb(217,234,211)")} className={classes.littleboxes} style={{backgroundColor: "rgb(217,234,211)"}}></div>
-                <div onClick={()=>handleClose("rgb(208,224,227)")} className={classes.littleboxes} style={{backgroundColor: "rgb(208,224,227)"}}></div>
-                <div onClick={()=>handleClose("rgb(207,226,243)")} className={classes.littleboxes} style={{backgroundColor: "rgb(207,226,243)"}}></div>
-                <div onClick={()=>handleClose("rgb(217,210,233)")} className={classes.littleboxes} style={{backgroundColor: "rgb(217,210,233)"}}></div>
-                <div onClick={()=>handleClose("rgb(234,209,220)")} className={classes.littleboxes} style={{backgroundColor: "rgb(234,209,220)"}}></div>
+            <div style={{ display: "flex", marginBottom: 1 }}>
+                <div onClick={() => handleClose("rgb(244,204,204)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(244,204,204)" }}></div>
+                <div onClick={() => handleClose("rgb(252,229,205)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(252,229,205)" }}></div>
+                <div onClick={() => handleClose("rgb(255,242,204)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(255,242,204)" }}></div>
+                <div onClick={() => handleClose("rgb(217,234,211)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(217,234,211)" }}></div>
+                <div onClick={() => handleClose("rgb(208,224,227)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(208,224,227)" }}></div>
+                <div onClick={() => handleClose("rgb(207,226,243)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(207,226,243)" }}></div>
+                <div onClick={() => handleClose("rgb(217,210,233)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(217,210,233)" }}></div>
+                <div onClick={() => handleClose("rgb(234,209,220)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(234,209,220)" }}></div>
             </div>
-            <div style={{display:"flex", marginBottom:1}}>
-                <div onClick={()=>handleClose("rgb(234,153,153)")} className={classes.littleboxes} style={{backgroundColor: "rgb(234,153,153)"}}></div>
-                <div onClick={()=>handleClose("rgb(249,203,156)")} className={classes.littleboxes} style={{backgroundColor: "rgb(249,203,156)"}}></div>
-                <div onClick={()=>handleClose("rgb(255,229,153)")} className={classes.littleboxes} style={{backgroundColor: "rgb(255,229,153)"}}></div>
-                <div onClick={()=>handleClose("rgb(182,215,168)")} className={classes.littleboxes} style={{backgroundColor: "rgb(182,215,168)"}}></div>
-                <div onClick={()=>handleClose("rgb(162,196,201)")} className={classes.littleboxes} style={{backgroundColor: "rgb(162,196,201)"}}></div>
-                <div onClick={()=>handleClose("rgb(159,197,232)")} className={classes.littleboxes} style={{backgroundColor: "rgb(159,197,232)"}}></div>
-                <div onClick={()=>handleClose("rgb(180,167,214)")} className={classes.littleboxes} style={{backgroundColor: "rgb(180,167,214)"}}></div>
-                <div onClick={()=>handleClose("rgb(213,166,189)")} className={classes.littleboxes} style={{backgroundColor: "rgb(213,166,189)"}}></div>
+            <div style={{ display: "flex", marginBottom: 1 }}>
+                <div onClick={() => handleClose("rgb(234,153,153)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(234,153,153)" }}></div>
+                <div onClick={() => handleClose("rgb(249,203,156)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(249,203,156)" }}></div>
+                <div onClick={() => handleClose("rgb(255,229,153)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(255,229,153)" }}></div>
+                <div onClick={() => handleClose("rgb(182,215,168)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(182,215,168)" }}></div>
+                <div onClick={() => handleClose("rgb(162,196,201)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(162,196,201)" }}></div>
+                <div onClick={() => handleClose("rgb(159,197,232)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(159,197,232)" }}></div>
+                <div onClick={() => handleClose("rgb(180,167,214)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(180,167,214)" }}></div>
+                <div onClick={() => handleClose("rgb(213,166,189)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(213,166,189)" }}></div>
             </div>
-            <div style={{display:"flex", marginBottom:1}}>
-                <div onClick={()=>handleClose("rgb(224,102,102)")} className={classes.littleboxes} style={{backgroundColor: "rgb(224,102,102)"}}></div>
-                <div onClick={()=>handleClose("rgb(246,178,107)")} className={classes.littleboxes} style={{backgroundColor: "rgb(246,178,107)"}}></div>
-                <div onClick={()=>handleClose("rgb(255,217,102)")} className={classes.littleboxes} style={{backgroundColor: "rgb(255,217,102)"}}></div>
-                <div onClick={()=>handleClose("rgb(147,196,125)")} className={classes.littleboxes} style={{backgroundColor: "rgb(147,196,125)"}}></div>
-                <div onClick={()=>handleClose("rgb(118,165,175)")} className={classes.littleboxes} style={{backgroundColor: "rgb(118,165,175)"}}></div>
-                <div onClick={()=>handleClose("rgb(111,168,220)")} className={classes.littleboxes} style={{backgroundColor: "rgb(111,168,220)"}}></div>
-                <div onClick={()=>handleClose("rgb(142,124,195)")} className={classes.littleboxes} style={{backgroundColor: "rgb(142,124,195)"}}></div>
-                <div onClick={()=>handleClose("rgb(194,123,160)")} className={classes.littleboxes} style={{backgroundColor: "rgb(194,123,160)"}}></div>
+            <div style={{ display: "flex", marginBottom: 1 }}>
+                <div onClick={() => handleClose("rgb(224,102,102)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(224,102,102)" }}></div>
+                <div onClick={() => handleClose("rgb(246,178,107)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(246,178,107)" }}></div>
+                <div onClick={() => handleClose("rgb(255,217,102)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(255,217,102)" }}></div>
+                <div onClick={() => handleClose("rgb(147,196,125)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(147,196,125)" }}></div>
+                <div onClick={() => handleClose("rgb(118,165,175)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(118,165,175)" }}></div>
+                <div onClick={() => handleClose("rgb(111,168,220)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(111,168,220)" }}></div>
+                <div onClick={() => handleClose("rgb(142,124,195)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(142,124,195)" }}></div>
+                <div onClick={() => handleClose("rgb(194,123,160)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(194,123,160)" }}></div>
             </div>
-            <div style={{display:"flex", marginBottom:1}}>
-                <div onClick={()=>handleClose("rgb(204,0,0)")} className={classes.littleboxes} style={{backgroundColor: "rgb(204,0,0)"}}></div>
-                <div onClick={()=>handleClose("rgb(230,145,56)")} className={classes.littleboxes} style={{backgroundColor: "rgb(230,145,56)"}}></div>
-                <div onClick={()=>handleClose("rgb(241,194,50)")} className={classes.littleboxes} style={{backgroundColor: "rgb(241,194,50)"}}></div>
-                <div onClick={()=>handleClose("rgb(106,168,79)")} className={classes.littleboxes} style={{backgroundColor: "rgb(106,168,79)"}}></div>
-                <div onClick={()=>handleClose("rgb(69,129,142)")} className={classes.littleboxes} style={{backgroundColor: "rgb(69,129,142)"}}></div>
-                <div onClick={()=>handleClose("rgb(61,133,198)")} className={classes.littleboxes} style={{backgroundColor: "rgb(61,133,198)"}}></div>
-                <div onClick={()=>handleClose("rgb(103,78,167)")} className={classes.littleboxes} style={{backgroundColor: "rgb(103,78,167)"}}></div>
-                <div onClick={()=>handleClose("rgb(166,77,121)")} className={classes.littleboxes} style={{backgroundColor: "rgb(166,77,121)"}}></div>
+            <div style={{ display: "flex", marginBottom: 1 }}>
+                <div onClick={() => handleClose("rgb(204,0,0)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(204,0,0)" }}></div>
+                <div onClick={() => handleClose("rgb(230,145,56)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(230,145,56)" }}></div>
+                <div onClick={() => handleClose("rgb(241,194,50)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(241,194,50)" }}></div>
+                <div onClick={() => handleClose("rgb(106,168,79)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(106,168,79)" }}></div>
+                <div onClick={() => handleClose("rgb(69,129,142)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(69,129,142)" }}></div>
+                <div onClick={() => handleClose("rgb(61,133,198)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(61,133,198)" }}></div>
+                <div onClick={() => handleClose("rgb(103,78,167)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(103,78,167)" }}></div>
+                <div onClick={() => handleClose("rgb(166,77,121)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(166,77,121)" }}></div>
             </div>
-            <div style={{display:"flex", marginBottom:1}}>
-                <div onClick={()=>handleClose("rgb(153,0,0)")} className={classes.littleboxes} style={{backgroundColor: "rgb(153,0,0)"}}></div>
-                <div onClick={()=>handleClose("rgb(180,95,0)")} className={classes.littleboxes} style={{backgroundColor: "rgb(180,95,0)"}}></div>
-                <div onClick={()=>handleClose("rgb(191,144,0)")} className={classes.littleboxes} style={{backgroundColor: "rgb(191,144,0)"}}></div>
-                <div onClick={()=>handleClose("rgb(56,118,29)")} className={classes.littleboxes} style={{backgroundColor: "rgb(56,118,29)"}}></div>
-                <div onClick={()=>handleClose("rgb(19,79,92)")} className={classes.littleboxes} style={{backgroundColor: "rgb(19,79,92)"}}></div>
-                <div onClick={()=>handleClose("rgb(11,83,148)")} className={classes.littleboxes} style={{backgroundColor: "rgb(11,83,148)"}}></div>
-                <div onClick={()=>handleClose("rgb(53,28,117)")} className={classes.littleboxes} style={{backgroundColor: "rgb(53,28,117)"}}></div>
-                <div onClick={()=>handleClose("rgb(116,27,71)")} className={classes.littleboxes} style={{backgroundColor: "rgb(116,27,71)"}}></div>
+            <div style={{ display: "flex", marginBottom: 1 }}>
+                <div onClick={() => handleClose("rgb(153,0,0)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(153,0,0)" }}></div>
+                <div onClick={() => handleClose("rgb(180,95,0)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(180,95,0)" }}></div>
+                <div onClick={() => handleClose("rgb(191,144,0)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(191,144,0)" }}></div>
+                <div onClick={() => handleClose("rgb(56,118,29)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(56,118,29)" }}></div>
+                <div onClick={() => handleClose("rgb(19,79,92)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(19,79,92)" }}></div>
+                <div onClick={() => handleClose("rgb(11,83,148)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(11,83,148)" }}></div>
+                <div onClick={() => handleClose("rgb(53,28,117)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(53,28,117)" }}></div>
+                <div onClick={() => handleClose("rgb(116,27,71)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(116,27,71)" }}></div>
             </div>
-            <div style={{display:"flex", marginBottom:1}}>
-                <div onClick={()=>handleClose("rgb(102,0,0)")} className={classes.littleboxes} style={{backgroundColor: "rgb(102,0,0)"}}></div>
-                <div onClick={()=>handleClose("rgb(120,63,4)")} className={classes.littleboxes} style={{backgroundColor: "rgb(120,63,4)"}}></div>
-                <div onClick={()=>handleClose("rgb(127,96,0)")} className={classes.littleboxes} style={{backgroundColor: "rgb(127,96,0)"}}></div>
-                <div onClick={()=>handleClose("rgb(39,78,19)")} className={classes.littleboxes} style={{backgroundColor: "rgb(39,78,19)"}}></div>
-                <div onClick={()=>handleClose("rgb(12,52,61)")} className={classes.littleboxes} style={{backgroundColor: "rgb(12,52,61)"}}></div>
-                <div onClick={()=>handleClose("rgb(7,55,99)")} className={classes.littleboxes} style={{backgroundColor: "rgb(7,55,99)"}}></div>
-                <div onClick={()=>handleClose("rgb(32,18,77)")} className={classes.littleboxes} style={{backgroundColor: "rgb(32,18,77)"}}></div>
-                <div onClick={()=>handleClose("rgb(76,17,48)")} className={classes.littleboxes} style={{backgroundColor: "rgb(76,17,48)"}}></div>
+            <div style={{ display: "flex", marginBottom: 1 }}>
+                <div onClick={() => handleClose("rgb(102,0,0)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(102,0,0)" }}></div>
+                <div onClick={() => handleClose("rgb(120,63,4)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(120,63,4)" }}></div>
+                <div onClick={() => handleClose("rgb(127,96,0)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(127,96,0)" }}></div>
+                <div onClick={() => handleClose("rgb(39,78,19)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(39,78,19)" }}></div>
+                <div onClick={() => handleClose("rgb(12,52,61)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(12,52,61)" }}></div>
+                <div onClick={() => handleClose("rgb(7,55,99)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(7,55,99)" }}></div>
+                <div onClick={() => handleClose("rgb(32,18,77)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(32,18,77)" }}></div>
+                <div onClick={() => handleClose("rgb(76,17,48)")} className={classes.littleboxes} style={{ backgroundColor: "rgb(76,17,48)" }}></div>
             </div>
         </div>
     );
@@ -616,7 +620,7 @@ const TextColor: FC<FontFamilyProps> = ({ tooltip = '', children, onClick, ...pr
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
 
-    const handleClick = (event:any) => {
+    const handleClick = (event: any) => {
         setAnchorEl(event.currentTarget);
     };
 
@@ -627,15 +631,15 @@ const TextColor: FC<FontFamilyProps> = ({ tooltip = '', children, onClick, ...pr
     return (
         <FormControl>
             <>
-                <Tooltip title={t(langKeys.textcolor)||"textcolor"} aria-label="add">
+                <Tooltip title={t(langKeys.textcolor) || "textcolor"} aria-label="add">
                     <IconButton
                         aria-label="more"
                         aria-controls="long-menu"
                         aria-haspopup="true"
                         onClick={handleClick}
-                        >
+                    >
                         <FormatColorTextIcon />
-                        <ArrowDropDownIcon/>
+                        <ArrowDropDownIcon />
                     </IconButton>
                 </Tooltip>
                 <Menu
@@ -653,14 +657,14 @@ const TextColor: FC<FontFamilyProps> = ({ tooltip = '', children, onClick, ...pr
                     open={open}
                     onClose={handleClose}
                 >
-                    <div style={{display:"flex", marginRight:10}}>
-                        <div style={{marginLeft:10, marginRight:10}}>
+                    <div style={{ display: "flex", marginRight: 10 }}>
+                        <div style={{ marginLeft: 10, marginRight: 10 }}>
                             <div>{t(langKeys.backgroundColor)}</div>
-                            <ColorBoxes tooltip="background" other={()=>handleClose()}/>
+                            <ColorBoxes tooltip="background" other={() => handleClose()} />
                         </div>
                         <div>
                             <div>{t(langKeys.textcolor)}</div>
-                            <ColorBoxes tooltip="textcolor" other={()=>handleClose()}/>
+                            <ColorBoxes tooltip="textcolor" other={() => handleClose()} />
                         </div>
                     </div>
                 </Menu>
@@ -691,7 +695,7 @@ const isBlockActive = (editor: BaseEditor & ReactEditor, format: ElemetType) => 
 
     const iterator = Editor.nodes(editor, {
         at: Editor.unhangRange(editor, selection),
-        match: n =>!Editor.isEditor(n) && SlateElement.isElement(n) && n.type === format,
+        match: n => !Editor.isEditor(n) && SlateElement.isElement(n) && n.type === format,
     });
 
     const [match] = Array.from(iterator);
@@ -1096,30 +1100,30 @@ const Image: RenderElement = ({ children, element, attributes }) => {
     const classes = useImageStyles();
     const editor = useSlateStatic();
     const path = ReactEditor.findPath(editor, element);
-  
+
     const selected = useSelected();
     const focused = useFocused();
 
     return (
-      <div {...attributes} /*style={{ width: 'fit-content', maxWidth: '100%' }}*/>
-        {children}
-        <div contentEditable={false} className={classes.root}>
-            <img
-                src={element.url || ''}
-                alt="Imagen"
-                className={classes.img}
-                style={{ boxShadow: selected && focused ? '0 0 0 3px #B4D5FF' : 'none' }}
-            />
-            <IconButton
-                // onClick={() => Transforms.removeNodes(editor, { at: path })}
-                onClick={() => Transforms.setNodes(editor, { type: 'paragraph', url: undefined }, { at: path })}
-                color="default"
-                className={classes.btn}
-            >
-                <DeleteIcon />
-            </IconButton>
+        <div {...attributes} /*style={{ width: 'fit-content', maxWidth: '100%' }}*/>
+            {children}
+            <div contentEditable={false} className={classes.root}>
+                <img
+                    src={element.url || ''}
+                    alt="Imagen"
+                    className={classes.img}
+                    style={{ boxShadow: selected && focused ? '0 0 0 3px #B4D5FF' : 'none' }}
+                />
+                <IconButton
+                    // onClick={() => Transforms.removeNodes(editor, { at: path })}
+                    onClick={() => Transforms.setNodes(editor, { type: 'paragraph', url: undefined }, { at: path })}
+                    color="default"
+                    className={classes.btn}
+                >
+                    <DeleteIcon />
+                </IconButton>
+            </div>
         </div>
-      </div>
     );
 }
 
@@ -1142,26 +1146,26 @@ const StaticImage: StaticRenderElement = ({ children, element }) => {
 
 const withImages = (editor: BaseEditor & ReactEditor) => {
     const { insertData, isVoid } = editor
-  
+
     editor.isVoid = (element: CustomElement) => {
         return element.type === 'image-src' ? true : isVoid(element);
     }
-  
+
     editor.insertData = data => {
         const text = data.getData('text/plain');
         const { files } = data;
-    
+
         if (files && files.length > 0) {
             for (const file of Array.from(files)) {
                 const reader = new FileReader();
                 const [mime] = file.type.split('/');
-        
+
                 if (mime === 'image') {
                     reader.addEventListener('load', () => {
                         const url = reader.result;
                         insertImage(editor, url as string);
                     });
-        
+
                     reader.readAsDataURL(file);
                 }
             }
@@ -1171,7 +1175,7 @@ const withImages = (editor: BaseEditor & ReactEditor) => {
             insertData(data);
         }
     }
-  
+
     return editor;
 }
 

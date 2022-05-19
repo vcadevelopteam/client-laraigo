@@ -471,9 +471,9 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const [quickRepliesToShow, setquickRepliesToShow] = useState<Dictionary[]>([])
     const [richResponseToShow, setRichResponseToShow] = useState<Dictionary[]>([])
     const [showReply, setShowReply] = useState(true);
-    const [refreshbody, setrefreshbody] = useState(1);
     const [fileimage,setfileimage] = useState<any>(null);
     const [bodyobject, setBodyobject] = useState<Descendant[]>([{ "type": "paragraph", "children": [{ "text": "" }] }])
+    const [refresh, setrefresh] = useState(1)
     
 
     useEffect(() => {
@@ -489,14 +489,11 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
         } else
             setShowReply(true)
     }, [ticketSelected])
+    
     useEffect(() => {
         setText(renderToString(toElement(bodyobject)))
     }, [bodyobject])
     
-    useEffect(() => {
-        setBodyobject([{"type": "paragraph","children": [{"text": ""}]}]);
-    }, [refreshbody])
-
     const reasignTicket = React.useCallback(() => {
         dispatch(reassignTicket({
             ...ticketSelected!!,
@@ -552,9 +549,9 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             }
             if (text) {
                 let textCleaned = text;
-                if(ticketSelected?.communicationchanneltype === "MAIL" && groupInteractionList.data[0]?.interactiontext){
-                    textCleaned =  ("RE: "+ (groupInteractionList.data[0].interactiontext).split("&%MAIL%&")[0]+"&%MAIL%&"+text).trim();
-                }
+                // if(ticketSelected?.communicationchanneltype === "MAIL" && groupInteractionList.data[0]?.interactiontext){
+                //     textCleaned =  ("RE: "+ (groupInteractionList.data[0].interactiontext).split("&%MAIL%&")[0]+"&%MAIL%&"+text).trim();
+                // }
                 
                 const wordlist = textCleaned.split(" ").map(x => x.toLowerCase())
                 
@@ -588,7 +585,8 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                             isAnswered: !ticketSelected!!.isAnswered,
                         }));
                         setText("");
-                        setrefreshbody(refreshbody*-1);
+                        setrefresh(refresh * -1)
+                        setBodyobject([{"type": "paragraph","children": [{"text": ""}]}]);
 
                     } else {
                         dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
@@ -736,31 +734,31 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                     }
                     <ClickAwayListener onClickAway={handleClickAway}>
                         <div>
-                            <RichText
-                                value={bodyobject}
-                                onChange={(value) => {
-                                    setBodyobject(value)
-                                }}
-                                positionEditable="top"
-                                spellCheck
-                                image={false}
-                                onPaste={onPasteTextbar}
-                                onKeyPress={handleKeyPress}
-                                placeholder="Send your message..."
-                            >
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-                                    
-                                    <QuickReplyIcon classes={classes} setText={setText} />
-                                    <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage}/>
-                                    <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
-                                    <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite}/>
-                                    <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
-                                    <TmpRichResponseIcon classes={classes} setText={setText} />
+                            {true && 
+                                <RichText
+                                    value={bodyobject}
+                                    onChange={setBodyobject}
+                                    positionEditable="top"
+                                    spellCheck
+                                    image={false}
+                                    onPaste={onPasteTextbar}
+                                    onKeyPress={handleKeyPress}
+                                    refresh={refresh}
+                                    placeholder="Send your message..."
+                                >
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+                                        <QuickReplyIcon classes={classes} setText={setText} />
+                                        <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage}/>
+                                        <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
+                                        <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite}/>
+                                        <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
+                                        <TmpRichResponseIcon classes={classes} setText={setText} />
+                                    </div>
                                 </div>
-                            </div>
-                                
-                            </RichText>
+                                    
+                                </RichText>
+                            }
                             {openDialogHotKey && (
                                 <div style={{
                                     position: 'absolute',
@@ -867,7 +865,6 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                                 >
                                                     {item.title}
                                                 </div>
-
                                             ))
                                         }
                                     </div>

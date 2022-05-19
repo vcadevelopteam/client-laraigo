@@ -527,6 +527,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
         await trigger('attachment');
     }
 
+    console.log("bodyobject", bodyobject)
     return (
         <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
