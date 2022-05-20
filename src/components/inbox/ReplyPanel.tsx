@@ -34,6 +34,8 @@ import { showSnackbar } from 'store/popus/actions';
 import { cleanedRichResponse, convertLocalDate, getSecondsUntelNow } from 'common/helpers/functions'
 import { Descendant } from 'slate';
 import { renderToString, toElement } from 'components/fields/RichText';
+import UndoIcon from '@material-ui/icons/Undo';
+import RedoIcon from '@material-ui/icons/Redo';
 
 const channelsWhatsapp = ["WHAT", "WHAD", "WHAP"];
 interface IFile {
@@ -76,7 +78,6 @@ const UploaderIcon: React.FC<{ classes: any, type: "image" | "file", setFiles: (
     }, [waitSave, uploadResult, dispatch, setFiles, idUpload])
 
     const onSelectImage = (files: any) => {
-        console.log(files)
         const selectedFile = files[0];
         const idd = new Date().toISOString()
         var fd = new FormData();
@@ -461,6 +462,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const [text, setText] = useState("");
     const [files, setFiles] = useState<IFile[]>([]);
     const multiData = useSelector(state => state.main.multiData);
+    const groupInteractionList = useSelector(state => state.inbox.interactionList);
 
     const [typeHotKey, setTypeHotKey] = useState("")
     const [quickReplies, setquickReplies] = useState<Dictionary[]>([])
@@ -473,6 +475,12 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const [showReply, setShowReply] = useState(true);
     const [fileimage,setfileimage] = useState<any>(null);
     const [bodyobject, setBodyobject] = useState<Descendant[]>([{ "type": "paragraph", "children": [{ "text": "" }] }])
+    const [refresh, setrefresh] = useState(1)
+    const [flagundo, setflagundo] = useState(false)
+    const [flagredo, setflagredo] = useState(false)
+    const [undotext, setundotext] = useState<any>([])
+    const [redotext, setredotext] = useState<any>([])
+
     
 
     useEffect(() => {
@@ -488,10 +496,27 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
         } else
             setShowReply(true)
     }, [ticketSelected])
+    
     useEffect(() => {
+        if (!flagundo){
+            if(!flagredo){
+                setredotext([])
+            }
+            setundotext([...undotext,(bodyobject)])
+        }
         setText(renderToString(toElement(bodyobject)))
     }, [bodyobject])
-
+    useEffect(() => {
+        if (flagundo) {
+            setflagundo(false)
+        }
+    }, [undotext])
+    useEffect(() => {
+        if (flagredo) {
+            setflagredo(false)
+        }
+    }, [redotext])
+    
     const reasignTicket = React.useCallback(() => {
         dispatch(reassignTicket({
             ...ticketSelected!!,
@@ -514,9 +539,6 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const triggerReplyMessage = () => {
         const callback = () => {
             let wasSend = false;
-            console.log(text)
-            console.log(bodyobject)
-            debugger
             if (files.length > 0) {
                 const listMessages = files.map(x => ({
                     ...ticketSelected!!,
@@ -549,7 +571,10 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                 setFiles([])
             }
             if (text) {
-                const textCleaned = text.trim();
+                let textCleaned = text;
+                if(ticketSelected?.communicationchanneltype === "MAIL" && groupInteractionList.data[0]?.interactiontext){
+                    textCleaned =  ("RE: "+ (groupInteractionList.data[0].interactiontext).split("&%MAIL%&")[0]+"&%MAIL%&"+text).trim();
+                }
                 
                 const wordlist = textCleaned.split(" ").map(x => x.toLowerCase())
                 
@@ -578,11 +603,14 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                         //send to answer with integration
                         dispatch(replyTicket({
                             ...ticketSelected!!,
-                            interactiontype: "text",
+                            interactiontype: ticketSelected?.communicationchanneltype === "MAIL"? "email":"text",
                             interactiontext: textCleaned,
                             isAnswered: !ticketSelected!!.isAnswered,
                         }));
                         setText("");
+                        setrefresh(refresh * -1)
+                        setBodyobject([{"type": "paragraph","children": [{"text": ""}]}]);
+
                     } else {
                         dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                     }
@@ -729,31 +757,53 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                     }
                     <ClickAwayListener onClickAway={handleClickAway}>
                         <div>
-                            <RichText
-                                value={bodyobject}
-                                onChange={(value) => {
-                                    setBodyobject(value)
-                                }}
-                                positionEditable="top"
-                                spellCheck
-                                image={false}
-                                onPaste={onPasteTextbar}
-                                onKeyPress={handleKeyPress}
-                                placeholder="Send your message..."
-                            >
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-                                    
-                                    <QuickReplyIcon classes={classes} setText={setText} />
-                                    <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage}/>
-                                    <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
-                                    <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite}/>
-                                    <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
-                                    <TmpRichResponseIcon classes={classes} setText={setText} />
+                            {true && 
+                                <RichText
+                                    value={bodyobject}
+                                    onChange={setBodyobject}
+                                    positionEditable="top"
+                                    spellCheck
+                                    image={false}
+                                    onPaste={onPasteTextbar}
+                                    onKeyPress={handleKeyPress}
+                                    refresh={refresh}
+                                    placeholder="Send your message..."
+                                >
+                                <div style={{ display: 'block', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+                                        <IconButton  disabled={undotext.length<2} size="small" onClick={() => {
+                                            setflagundo(true)
+                                            setredotext([...redotext,bodyobject])
+                                            setBodyobject(undotext[undotext.length-2])
+                                            setrefresh(refresh * -1)
+                                            setundotext(undotext.slice(0,undotext.length-1))
+                                        }}>
+                                                
+                                            <Tooltip title={t(langKeys.undo) + ""} arrow placement="top">
+                                                <UndoIcon />
+                                            </Tooltip>
+                                        </IconButton>
+                                        <IconButton  disabled={redotext.length<1} size="small" onClick={() => {
+                                            setflagredo(true)
+                                            setBodyobject(redotext[redotext.length-1])
+                                            setrefresh(refresh * -1)
+                                            setredotext(redotext.slice(0,redotext.length-1))
+                                        }}>
+                                             <Tooltip title={t(langKeys.redo) + ""} arrow placement="top">
+                                                <RedoIcon />
+                                            </Tooltip>
+                                        </IconButton>
+                                        <QuickReplyIcon classes={classes} setText={setText} />
+                                        <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage}/>
+                                        <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
+                                        <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite}/>
+                                        <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
+                                        <TmpRichResponseIcon classes={classes} setText={setText} />
+                                    </div>
                                 </div>
-                            </div>
-                                
-                            </RichText>
+                                    
+                                </RichText>
+                            }
                             {openDialogHotKey && (
                                 <div style={{
                                     position: 'absolute',
@@ -794,8 +844,8 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                         </div>
                     </ClickAwayListener>
                     
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(renderToString(toElement(bodyobject))!== `<div data-reactroot=""><p><span></span></p></div>` || files.filter(x => !!x.url).length > 0) })} onClick={triggerReplyMessage}>
+                    <div style={{ display: 'flex', alignItems: 'end' }}>
+                        <div style={{marginLeft: "auto", marginRight: 0}} className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(renderToString(toElement(bodyobject))!== `<div data-reactroot=""><p><span></span></p></div>` || files.filter(x => !!x.url).length > 0) })} onClick={triggerReplyMessage}>
                             <SendIcon />
                         </div>
                     </div>
@@ -860,7 +910,6 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                                 >
                                                     {item.title}
                                                 </div>
-
                                             ))
                                         }
                                     </div>

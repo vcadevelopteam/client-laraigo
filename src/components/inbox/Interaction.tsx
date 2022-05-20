@@ -282,6 +282,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
         );
     else if (interactiontype === "email"){
         const [subject,body] = interactiontext.split("&%MAIL%&")
+        // console.log(interactiontext)
         return (
             <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
                 [classes.interactionTextAgent]: userType !== 'client',

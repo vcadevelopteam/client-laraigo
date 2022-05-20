@@ -454,7 +454,7 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
                         lastmessage: data.typemessage === "text" ? data.lastmessage : data.typemessage.toUpperCase(),
                     },
                     ...newticketList.filter(x => x.conversationid !== data.conversationid)
-                ]    
+                ]
             }
         }
 
@@ -583,7 +583,7 @@ export const deleteTicket = (state: IState, action: IAction): IState => {
             newticketList = newticketList.filter((x: ITicket) => x.conversationid !== data.conversationid);
         }
     }
-    
+
     return {
         ...state,
         ticketSelected: newTicketSelected,
@@ -1075,6 +1075,13 @@ export const forceddesconection = (state: IState, action: IAction): IState => ({
         message: action.payload.code,
         value: action.payload,
     },
+});
+export const callConnected = (state: IState, action: IAction): IState => ({
+    ...state,
+    ticketList: {
+        ...state.ticketList,
+        data: state.ticketList.data.map(x => x.conversationid === action.payload ? { ...x, callanswereddate: new Date().toISOString() } : x)
+    }
 });
 
 export const resetForceddesconection = (state: IState, action: IAction): IState => ({

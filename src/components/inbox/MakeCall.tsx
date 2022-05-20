@@ -2,7 +2,7 @@ import React, { FC, useState, MouseEventHandler } from 'react'
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import { createStyles, Theme } from '@material-ui/core/styles';
-import { Avatar, Fab, makeStyles, MenuItem, Tooltip, Typography } from "@material-ui/core";
+import { Avatar, Fab, InputBase, makeStyles, MenuItem, Paper, Tooltip, Typography } from "@material-ui/core";
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import DialpadIcon from '@material-ui/icons/Dialpad';
 import { useTranslation } from 'react-i18next';
@@ -24,6 +24,7 @@ import clsx from 'clsx';
 import { execute } from 'store/main/actions';
 import { ITicket } from '@types';
 import { ListItemSkeleton } from 'components';
+import { SearchIcon } from 'icons';
 
 const useStyles = makeStyles(theme => ({
     grey: {
@@ -59,6 +60,28 @@ const useStyles = makeStyles(theme => ({
         width: "100%",
         gridTemplateColumns: 'auto [col1] 50px 50px [col2] 50px 50px [col3] 50px auto',
         paddingBottom: 25
+    },
+    input: {
+      marginLeft: theme.spacing(1),
+      flex: 1,
+    },
+    iconButton: {
+      padding: 10,
+    },
+    rootpaper: {
+        padding: '2px 4px',
+        display: 'flex',
+        alignItems: 'center',
+        height: 35,
+        border: '1px solid #EBEAED',
+        //backgroundColor: (props: any) => props.colorPlaceHolder || '#F9F9FA',
+    },
+    inputPlaceholder: {
+        '&::placeholder': {
+            fontSize: 14,
+            fontWeight: 500,
+            color: '#84818A',
+        },
     },
 }));
 
@@ -206,6 +229,7 @@ const MakeCall: React.FC = () => {
     const resExecute = useSelector(state => state.main.execute);
     const [advisertodiver, setadvisertodiver] = useState("");
     const [pageSelected, setPageSelected] = useState(1);
+    const [filter, setfilter] = useState("");
     const call = useSelector(state => state.voximplant.call);
     const [timeWaiting, setTimeWaiting] = useState(-1);
     const [waitingDate, setWaitingDate] = useState<string | null>(null);
@@ -216,7 +240,6 @@ const MakeCall: React.FC = () => {
     const historial = useSelector(state => state.voximplant.requestGetHistory);
     const advisors = useSelector(state => state.voximplant.requestGetAdvisors);
     const { corpid, orgid, sitevoxi, ccidvoxi, userid } = useSelector(state => state.login.validateToken?.user!!);
-
     React.useEffect(() => {
         if (!resExecute.loading && !resExecute.error) {
             if (resExecute.key === "UFN_CONVERSATION_OUTBOUND_INS") {
@@ -334,7 +357,20 @@ const MakeCall: React.FC = () => {
                 <div style={{ height: 500 }}>
                     {pageSelected === 0 &&
                         <div style={{ width: "100%", height: '100%', overflow: 'overlay' }}>
-                            {advisors?.loading ? <ListItemSkeleton /> : advisors.data?.map((e: any, i: number) => (
+                            
+                            <Paper component="div" className={classes.rootpaper} elevation={0} >
+                                <InputBase
+                                    className={classes.input}
+                                    value={filter}
+                                    onChange={(e)=>{setfilter(e.target.value)}}
+                                    placeholder={t(langKeys.search)}
+                                    inputProps={{ className: classes.inputPlaceholder }}
+                                />
+                                <IconButton type="button" className={classes.iconButton} aria-label="search" disabled>
+                                    <SearchIcon />
+                                </IconButton>
+                            </Paper>
+                            {advisors?.loading ? <ListItemSkeleton /> : advisors.data?.filter((x:any)=>x.personname.includes(filter)).map((e: any, i: number) => (
                                 <NotificaionMenuItem
                                     onClick={() => {
                                         if (statusCall === "DISCONNECTED") {

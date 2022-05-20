@@ -226,7 +226,13 @@ export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, butto
         maxWidth={maxWidth}
         style={{ zIndex }}>
         <form onSubmit={(button1Type === "submit" ? handleClickButton1 : (button2Type === "submit" ? handleClickButton2 : undefined))}>
-            {title && <DialogTitle>{title}</DialogTitle>}
+            {title && (
+                <DialogTitle>
+                    <div style={{ overflow: 'hidden', wordBreak: 'break-word', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginRight: 120 }}>
+                        {title}
+                    </div>
+                </DialogTitle>
+            )}
             <DialogContent>
                 {children}
             </DialogContent>
@@ -340,7 +346,7 @@ interface TemplateAutocompleteProps extends InputProps {
     orderbylabel?: boolean;
 }
 
-export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard" }) => {
+export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard", maxLength = 0 }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -367,8 +373,10 @@ export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, c
                 rows={rows}
                 size={size}
                 onChange={(e) => {
-                    setvalue(e.target.value);
-                    onChange && onChange(e.target.value);
+                    if (maxLength === 0 || e.target.value.length <= maxLength) {
+                        setvalue(e.target.value);
+                        onChange && onChange(e.target.value);
+                    }
                 }}
                 onBlur={(e) => {
                     onBlur && onBlur(e.target.value);
@@ -518,7 +526,7 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     return <TelegramIcon style={{ color, width, height }} />
 }
 
-export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({multiline=false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false }) => {
+export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false }) => {
     const { t } = useTranslation();
     const [value, setValue] = useState<Dictionary | null>(null);
     const [dataG, setDataG] = useState<Dictionary[]>([])
@@ -539,7 +547,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({multiline=fals
             }
         }
         setDataG(data);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data]);
 
     useEffect(() => {

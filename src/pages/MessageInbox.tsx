@@ -88,6 +88,7 @@ const MessageInbox: React.FC = () => {
         ]))
         setinitial(false)
         return () => {
+            dispatch(selectAgent(null))
             dispatch(resetAllMain());
             dispatch(cleanAlerts());
         };
