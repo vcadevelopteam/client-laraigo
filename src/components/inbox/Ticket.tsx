@@ -98,7 +98,7 @@ const SmallAvatar = styled(Avatar)(() => ({
     fontSize: 11,
 }));
 
-const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { call, personlastreplydate, communicationchanneltype, lastmessage, displayname, imageurldef, ticketnum, firstconversationdate, countnewmessages, status, communicationchannelid, lastreplyuser, lastconversationdate } }) => {
+const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { conversationid, call, personlastreplydate, communicationchanneltype, lastmessage, displayname, imageurldef, ticketnum, firstconversationdate, countnewmessages, status, communicationchannelid, lastreplyuser, lastconversationdate } }) => {
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const localclasses = useStyles({ color: "red" });
     const agentSelected = useSelector(state => state.inbox.agentSelected);
@@ -116,12 +116,12 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
     const { t } = useTranslation();
 
     useEffect(() => {
-        if (callVoxiTmp && callVoxiTmp.call && callVoxiTmp.data?.conversationid === item.conversationid && item.status === "ASIGNADO") {
+        if (callVoxiTmp && callVoxiTmp.call && callVoxiTmp.data?.conversationid === conversationid && item.status === "ASIGNADO") {
             setCallVoxi(callVoxiTmp.call);
         } else {
             setCallVoxi(null);
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [callVoxiTmp]);
 
     React.useEffect(() => {
@@ -151,7 +151,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
     return (
         <div
             className={clsx(classes.containerItemTicket, {
-                [classes.itemSelected]: (ticketSelected?.conversationid === item.conversationid)
+                [classes.itemSelected]: (ticketSelected?.conversationid === conversationid)
             })}
             onClick={() => setTicketSelected(item)}>
             <Badge
@@ -172,7 +172,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                     <GetIcon channelType={communicationchanneltype} color={iconColor} />
                     <div className={classes.name}>{displayname || "-"}</div>
                 </div>
-                <div style={{ color: '#465a6ed9', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', minWidth: 180, maxWidth: callVoxi?180:230  }}>
+                <div style={{ color: '#465a6ed9', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', minWidth: 180, maxWidth: callVoxi ? 180 : 230 }}>
                     {(lastmessage || "").trim() || "-"}
                 </div>
                 <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
@@ -213,7 +213,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                         style={{ width: "35px", height: "35px", borderRadius: "50%", backgroundColor: '#55bd84' }}
                         onClick={(e) => {
                             e.stopPropagation();
-                            dispatch(answerCall(callVoxi));
+                            dispatch(answerCall({ call: callVoxi!!, conversationid }));
                         }}
                     >
                         <PhoneCallbackIcon className={localclasses.iconcall} />
@@ -223,26 +223,26 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
             {(!!callVoxi && statusCall === "CONNECTING" && callVoxiTmp.type === "OUTBOUND") && (
                 <div style={{ flex: 1 }}>
                     <IconButton
-                            style={{ width: "35px", height: "35px", borderRadius: "50%", backgroundColor: 'rgb(180, 26, 26)' }}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                dispatch(hangupCall(callVoxi));
-                            }}
-                        >
-                            <CallEndIcon style={{ color: "white", width: "30px", height: "30px" }} />
+                        style={{ width: "35px", height: "35px", borderRadius: "50%", backgroundColor: 'rgb(180, 26, 26)' }}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            dispatch(hangupCall(callVoxi));
+                        }}
+                    >
+                        <CallEndIcon style={{ color: "white", width: "30px", height: "30px" }} />
                     </IconButton>
                 </div>
             )}
             {(!!callVoxi && statusCall === "CONNECTED") &&
                 <div style={{ flex: 1 }}>
                     <IconButton
-                            style={{ width: "35px", height: "35px", borderRadius: "50%", backgroundColor: 'rgb(180, 26, 26)' }}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                dispatch(hangupCall(callVoxi));
-                            }}
-                        >
-                            <CallEndIcon style={{ color: "white", width: "30px", height: "30px" }} />
+                        style={{ width: "35px", height: "35px", borderRadius: "50%", backgroundColor: 'rgb(180, 26, 26)' }}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            dispatch(hangupCall(callVoxi));
+                        }}
+                    >
+                        <CallEndIcon style={{ color: "white", width: "30px", height: "30px" }} />
                     </IconButton>
                 </div>
             }

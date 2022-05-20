@@ -177,9 +177,12 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         });
         return
     } else if (type === typeVoximplant.ANSWER_CALL) {
-        const call = payload;
+        const call = payload.call;
+        
         call?.answer();
         dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "CONNECTED" });
+        //actualizar la fecha de contestado en la lista de tickets
+        dispatch({ type: typeInbox.CALL_CONNECTED, payload: action.payload.conversationid });
         return
     } else if (type === typeVoximplant.REJECT_CALL) {
         const call = payload;
@@ -214,8 +217,9 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
     } else if (type === typeVoximplant.DISCONNECT) {
         try {
             sdk?.disconnect();
+            return
         } catch (error) {
-
+            return   
         }
     }
 
