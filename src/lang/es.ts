@@ -33,6 +33,8 @@ const translation: LangKeys = {
     normal:"Normal",
     large:"Grande",
     huge:"Enorme",
+    
+    noname: "Sin nombre",
     size:"Tamaño",
     show_all: 'Mostrar todo',
     function_count_unique: 'Contar únicos',

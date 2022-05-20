@@ -34,6 +34,7 @@ const translation: LangKeys = {
     redo: "Redo",
     type_service_plural: 'Services Type',
     
+    noname: "No name",
     align: "Align",
     show_all: 'Show all',
     size:"Size",

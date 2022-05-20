@@ -82,7 +82,6 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
     const location = useLocation();
     const userConnected = useSelector(state => state.inbox.userConnected);
 
-
     return (
         <Drawer
             className={clsx(classes.drawer, {
