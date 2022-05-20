@@ -74,6 +74,7 @@ export const apiUrls = {
     REPLY_LIST_TICKET: `${BASE_URL}/ticket/reply/list`,
     REASSIGN_TICKET: `${BASE_URL}/ticket/reassign`,
     SEND_HSM: `${BASE_URL}/ticket/send/hsm`,
+    IMPORT_TICKET: `${BASE_URL}/ticket/import`,
     UPDATE_USER: `${BASE_URL}/user/update/info`,
     SAVE_USER: `${BASE_URL}/user/sendmail/password`,
     DEL_USER: `${BASE_URL}/user/delete`,
