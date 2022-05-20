@@ -1,4 +1,4 @@
-import { IActionCall, IAgent, IInteraction, ITicket, ISendHSM, ICloseTicketsParams, IMassiveCloseTicketsParams, IReplyTicketParams, INewMessageParams, IReassignicketParams, IDeleteTicketParams, IPerson, Dictionary } from "@types";
+import { IActionCall, IAgent, IInteraction, ITicket, ISendHSM, ICloseTicketsParams, IMassiveCloseTicketsParams, IReplyTicketParams, INewMessageParams, IReassignicketParams, IDeleteTicketParams, IPerson, Dictionary, IImportTicket } from "@types";
 import { CommonService, InboxService } from "network";
 import actionTypes from "./actionTypes";
 import { getUsersBySupervisor, getTicketsByFilter, getBlocksUserFromChatfow, getConfigurationVariables, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson, getClassificationLevel2, getCommChannelLst, getMessageTemplateSel } from 'common/helpers';
@@ -228,6 +228,19 @@ export const resetMassiveCloseTicket = (): IActionCall => ({ type: actionTypes.M
 
 
 export const resetReassignTicket = (): IActionCall => ({ type: actionTypes.REASSIGN_TICKET_RESET });
+
+
+export const importTicket = (params: IImportTicket): IActionCall => ({
+    callAPI: () => InboxService.importTicket(params),
+    types: {
+        loading: actionTypes.IMPORT_TICKET,
+        success: actionTypes.IMPORT_TICKET_SUCCESS,
+        failure: actionTypes.IMPORT_TICKET_FAILURE,
+    },
+    type: null,
+});
+
+export const resetImportTicket = (): IActionCall => ({ type: actionTypes.IMPORT_TICKET_RESET });
 
 
 export const getTipificationLevel2 = (classificationid: number): IActionCall => ({

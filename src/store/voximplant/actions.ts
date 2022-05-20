@@ -3,11 +3,11 @@ import { Dictionary, IActionCall, ITicket } from "@types";
 import { CommonService, VoximplantService } from "network";
 
 import actionTypes from "./actionTypes";
-import { getConversationSelVoxi,getAdvisorListVoxi } from "common/helpers";
+import { getConversationSelVoxi, getAdvisorListVoxi } from "common/helpers";
 
 export const voximplantConnect = (payload: Dictionary): IActionCall => ({ type: actionTypes.INIT_SDK, payload });
 
-export const answerCall = (payload?: Call | null): IActionCall => ({ type: actionTypes.ANSWER_CALL, payload });
+export const answerCall = (payload?: { call: Call, conversationid: number } | null): IActionCall => ({ type: actionTypes.ANSWER_CALL, payload });
 
 export const rejectCall = (payload?: Call | null): IActionCall => ({ type: actionTypes.REJECT_CALL, payload });
 

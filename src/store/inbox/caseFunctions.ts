@@ -954,6 +954,38 @@ export const sendHSMReset = (state: IState): IState => ({
 
 
 
+export const importTicket = (state: IState): IState => ({
+    ...state,
+    triggerImportTicket: { ...state.triggerImportTicket, loading: true, error: false },
+});
+
+export const importTicketSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    triggerImportTicket: {
+        loading: false,
+        error: false,
+    },
+});
+
+export const importTicketFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    triggerImportTicket: {
+        ...state.triggerImportTicket,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    },
+});
+
+export const importTicketReset = (state: IState): IState => ({
+    ...state,
+    triggerImportTicket: initialState.triggerImportTicket,
+});
+
+
+
+
 export const getDataForOutbound = (state: IState): IState => ({
     ...state,
     outboundData: { ...state.outboundData, loading: true },

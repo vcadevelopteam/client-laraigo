@@ -912,7 +912,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                         <SearchIcon width={24} height={24} fill="#8F92A1" />
                     </IconButton>
                 </Tooltip>
-                {ticketSelected?.status !== 'CERRADO' &&
+                {(ticketSelected?.status !== 'CERRADO' && ticketSelected?.communicationchanneltype !== "VOXI") &&
                     <Tooltip title={t(langKeys.close_ticket) + ""} arrow placement="top">
                         <IconButton onClick={() => closeTicket("CERRADO")}>
                             <CloseTicketIcon width={24} height={24} fill="#8F92A1" />

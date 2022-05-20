@@ -228,7 +228,6 @@ const MakeCall: React.FC = () => {
     
     const [numberVox, setNumberVox] = useState("");
     const resExecute = useSelector(state => state.main.execute);
-    const [advisertodiver, setadvisertodiver] = useState("");
     const [pageSelected, setPageSelected] = useState(1);
     const [filter, setfilter] = useState("");
     const call = useSelector(state => state.voximplant.call);
@@ -240,7 +239,10 @@ const MakeCall: React.FC = () => {
     const statusCall = useSelector(state => state.voximplant.statusCall);
     const historial = useSelector(state => state.voximplant.requestGetHistory);
     const advisors = useSelector(state => state.voximplant.requestGetAdvisors);
+    const [waiting2, setwaiting2] = useState(false)
+    
     const { corpid, orgid, sitevoxi, ccidvoxi, userid } = useSelector(state => state.login.validateToken?.user!!);
+
     React.useEffect(() => {
         if (!resExecute.loading && !resExecute.error) {
             if (resExecute.key === "UFN_CONVERSATION_OUTBOUND_INS") {
@@ -268,6 +270,8 @@ const MakeCall: React.FC = () => {
                 const identifier = `${corpid}-${orgid}-${ccidvoxi}-${resExecute.data[0].v_conversationid}-${resExecute.data[0].v_personid}.${sitevoxi}.${userid}`
                 dispatch(makeCall({ number: numberVox, site: identifier || "", data }));
             }
+        } else if (!resExecute.loading && resExecute.error && resExecute.key === "UFN_CONVERSATION_OUTBOUND_INS") {
+            setwaiting2(false)
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [resExecute])
@@ -319,6 +323,7 @@ const MakeCall: React.FC = () => {
 
     React.useEffect(() => {
         if (showcall) {
+            setwaiting2(false)
             setNumberVox("")
         } else {
             setPageSelected(1)
@@ -374,7 +379,8 @@ const MakeCall: React.FC = () => {
                             {advisors?.loading ? <ListItemSkeleton /> : advisors.data?.filter((x:any)=>(x.personname.toLowerCase().includes(filter.toLowerCase())||x.phone.includes(filter))).map((e: any, i: number) => (
                                 <NotificaionMenuItem
                                     onClick={() => {
-                                        if (statusCall === "DISCONNECTED") {
+                                        if (statusCall === "DISCONNECTED" && !waiting2) {
+                                            setwaiting2(true)
                                             setNumberVox(e.phone)
                                             dispatch(execute(conversationOutboundIns({
                                                 number: e.phone,
@@ -520,7 +526,8 @@ const MakeCall: React.FC = () => {
                             {historial?.loading ? <ListItemSkeleton /> : historial.data?.map((e: any, i: number) => (
                                 <NotificaionMenuItem
                                     onClick={() => {
-                                        if (statusCall === "DISCONNECTED") {
+                                        if (statusCall === "DISCONNECTED" && !waiting2) {
+                                            setwaiting2(true)
                                             setNumberVox(e.phone)
                                             dispatch(execute(conversationOutboundIns({
                                                 number: e.phone,

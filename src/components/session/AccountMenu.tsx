@@ -75,6 +75,7 @@ const AccountMenu: FC = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const history = useHistory();
+    const voxiConnection = useSelector(state => state.voximplant.connection);    
 
     const user = useSelector(state => state.login.validateToken.user);
     const userConnected = useSelector(state => state.inbox.userConnected);
@@ -88,7 +89,9 @@ const AccountMenu: FC = () => {
     const signOut = () => {
         dispatch(connectAgentAPI(false))
         dispatch(connectAgentUI(false))
-        dispatch(disconnectVoxi())
+        if (!voxiConnection.error) {
+            dispatch(disconnectVoxi())
+        }
         dispatch(emitEvent({
             event: 'connectAgent',
             data: {
