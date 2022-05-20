@@ -919,14 +919,14 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                         </IconButton>
                     </Tooltip>
                 }
-                {ticketSelected?.status === 'SUSPENDIDO' &&
+                {(ticketSelected?.status === 'SUSPENDIDO' && ticketSelected?.communicationchanneltype !== "VOXI") &&
                     <Tooltip title={t(langKeys.activate_ticket) + ""} arrow placement="top">
                         <IconButton onClick={() => closeTicket("ASIGNADO")}>
                             <PlayArrowIcon width={24} height={24} fill="#8F92A1" />
                         </IconButton>
                     </Tooltip>
                 }
-                {ticketSelected?.status === 'ASIGNADO' &&
+                {(ticketSelected?.status === 'ASIGNADO' && ticketSelected?.communicationchanneltype !== "VOXI") &&
                     <Tooltip title={t(langKeys.suspend_ticket) + ""} arrow placement="top">
                         <IconButton onClick={() => closeTicket("SUSPENDIDO")}>
                             <PauseIcon width={24} height={24} fill="#8F92A1" />
