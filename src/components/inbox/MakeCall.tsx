@@ -15,7 +15,7 @@ import PhoneForwardedIcon from '@material-ui/icons/PhoneForwarded';
 import PhoneIcon from '@material-ui/icons/Phone';
 import { FieldSelect, AntTab, SearchField } from 'components';
 import { IconButton, Tabs } from '@material-ui/core';
-import { conversationOutboundIns, convertLocalDate, getSecondsUntelNow,getAdvisorListVoxi } from 'common/helpers';
+import { conversationOutboundIns, convertLocalDate, getSecondsUntelNow, getAdvisorListVoxi } from 'common/helpers';
 import { langKeys } from 'lang/keys';
 import ContactPhoneIcon from '@material-ui/icons/ContactPhone';
 import PhoneCallbackIcon from '@material-ui/icons/PhoneCallback';
@@ -62,11 +62,11 @@ const useStyles = makeStyles(theme => ({
         paddingBottom: 25
     },
     input: {
-      marginLeft: theme.spacing(1),
-      flex: 1,
+        marginLeft: theme.spacing(1),
+        flex: 1,
     },
     iconButton: {
-      padding: 10,
+        padding: 10,
     },
     rootpaper: {
         padding: '2px 4px',
@@ -200,13 +200,13 @@ const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description,
                     </div>
                     <div style={{ gridColumnStart: "col2" }}>
                         <div className={clsx({
-                            [classes.textOneLine]:origin!=="CONTACT",
-                            [classes.textOneLineplus]:origin==="CONTACT"
+                            [classes.textOneLine]: origin !== "CONTACT",
+                            [classes.textOneLineplus]: origin === "CONTACT"
                         })}>
                             <div className={classes.title}>{title}</div>
                         </div>
                         <div className={clsx(classes.description, classes.textOneLine)}>
-                            {origin === "INBOUND" ? <PhoneCallbackIcon className={classes.phoneicon} />:origin==="CONTACT"?null:<PhoneForwardedIcon className={classes.phoneicon}/>} {description}
+                            {origin === "INBOUND" ? <PhoneCallbackIcon className={classes.phoneicon} /> : origin === "CONTACT" ? null : <PhoneForwardedIcon className={classes.phoneicon} />} {description}
                         </div>
                     </div>
                     {date &&
@@ -225,7 +225,7 @@ const MakeCall: React.FC = () => {
     const classes = useStyles();
     const { t } = useTranslation();
     const dispatch = useDispatch();
-    
+
     const [numberVox, setNumberVox] = useState("");
     const resExecute = useSelector(state => state.main.execute);
     const [pageSelected, setPageSelected] = useState(1);
@@ -240,7 +240,7 @@ const MakeCall: React.FC = () => {
     const historial = useSelector(state => state.voximplant.requestGetHistory);
     const advisors = useSelector(state => state.voximplant.requestGetAdvisors);
     const [waiting2, setwaiting2] = useState(false)
-    
+
     const { corpid, orgid, sitevoxi, ccidvoxi, userid } = useSelector(state => state.login.validateToken?.user!!);
 
     React.useEffect(() => {
@@ -273,7 +273,7 @@ const MakeCall: React.FC = () => {
         } else if (!resExecute.loading && resExecute.error && resExecute.key === "UFN_CONVERSATION_OUTBOUND_INS") {
             setwaiting2(false)
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [resExecute])
 
     //ring when the customer call
@@ -329,7 +329,7 @@ const MakeCall: React.FC = () => {
             setPageSelected(1)
         }
     }, [showcall])
-    
+
     const setGlobalFilter = (value: string) => {
         setfilter(value)
     }
@@ -366,17 +366,17 @@ const MakeCall: React.FC = () => {
                 <div style={{ height: 500 }}>
                     {pageSelected === 0 &&
                         <div style={{ width: "100%", height: '100%', overflow: 'overlay' }}>
-                            <div style={{padding:"12px 24px 0"}}>
+                            <div style={{ padding: "12px 24px 0" }}>
                                 <SearchField
                                     disabled={advisors?.loading}
-                                    style={{fontSize:"1rem"}}
+                                    style={{ fontSize: "1rem" }}
                                     colorPlaceHolder='#FFF'
                                     inputProps={{ className: classes.inputPlaceholder }}
                                     handleChangeOther={setGlobalFilter}
                                     lazy
                                 />
                             </div>
-                            {advisors?.loading ? <ListItemSkeleton /> : advisors.data?.filter((x:any)=>(x.personname.toLowerCase().includes(filter.toLowerCase())||x.phone.includes(filter))).map((e: any, i: number) => (
+                            {advisors?.loading ? <ListItemSkeleton /> : advisors.data?.filter((x: any) => (x.personname?.toLowerCase()?.includes(filter.toLowerCase()) || x.phone?.includes(filter))).map((e: any, i: number) => (
                                 <NotificaionMenuItem
                                     onClick={() => {
                                         if (statusCall === "DISCONNECTED" && !waiting2) {
@@ -394,7 +394,7 @@ const MakeCall: React.FC = () => {
                                     user={"none"}
                                     image={e.imageurldef}
                                     key={`advisor-${i}`}
-                                    title={e.personname?.trim()===e.phone?.trim()?t(langKeys.noname):e.personname}
+                                    title={e.personname?.trim() === e.phone?.trim() ? t(langKeys.noname) : e.personname}
                                     description={e.phone}
                                     origin={"CONTACT"}
                                 />
