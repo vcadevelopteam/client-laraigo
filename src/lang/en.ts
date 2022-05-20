@@ -2390,6 +2390,16 @@ const translation: LangKeys = {
     "personalizedreport_messagetemplate.priority": "message template priority",
     "personalizedreport_messagetemplate.attachment": "message template attachment",
 
+    "personalizedreport_surveyansweredsummary.csat_question": "csat question",
+    "personalizedreport_surveyansweredsummary.csat_answervalue": "csat answer value",
+    "personalizedreport_surveyansweredsummary.csat_answer": "csat answer",
+    "personalizedreport_surveyansweredsummary.nps_question": "nps question",
+    "personalizedreport_surveyansweredsummary.nps_answervalue": "nps answer value",
+    "personalizedreport_surveyansweredsummary.nps_answer": "nps answer",
+    "personalizedreport_surveyansweredsummary.fix_question": "fix question",
+    "personalizedreport_surveyansweredsummary.fix_answervalue": "fix answer value",
+    "personalizedreport_surveyansweredsummary.fix_answer": "fix answer",
+
     chatHeaderTitle: 'Chat header title',
     subtitle: 'Subtitle',
     chatHeaderSubtitle: 'Chat header subtitle',
