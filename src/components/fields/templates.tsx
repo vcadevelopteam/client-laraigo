@@ -205,21 +205,24 @@ export const FieldView: React.FC<{ label: string, value?: string, className?: an
 
 interface TemplateDialogProps {
     open: boolean;
-    buttonText2?: string;
+    buttonText0?: string;
     buttonText1?: string;
+    buttonText2?: string;
     buttonText3?: string;
     zIndex?: number;
-    handleClickButton2?: (param: any) => void;
+    handleClickButton0?: (param: any) => void;
     handleClickButton1?: (param: any) => void;
+    handleClickButton2?: (param: any) => void;
     handleClickButton3?: (param: any) => void;
     title: string;
-    button2Type?: "button" | "submit" | "reset";
+    button0Type?: "button" | "submit" | "reset";
     button1Type?: "button" | "submit" | "reset";
+    button2Type?: "button" | "submit" | "reset";
     button3Type?: "button" | "submit" | "reset";
     maxWidth?: false | "sm" | "xs" | "md" | "lg" | "xl" | undefined;
 }
 
-export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText1, buttonText2, buttonText3, handleClickButton2, handleClickButton3, handleClickButton1, title, maxWidth = "sm", button2Type = "button", button1Type = "button", zIndex = 1300 }) => (
+export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText0, buttonText1, buttonText2, buttonText3, handleClickButton0, handleClickButton1, handleClickButton2, handleClickButton3, title, maxWidth = "sm", button1Type = "button", button2Type = "button", zIndex = 1300 }) => (
     <Dialog
         open={open}
         fullWidth
@@ -237,6 +240,11 @@ export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, butto
                 {children}
             </DialogContent>
             <DialogActions>
+                {!!buttonText0 &&
+                    <Button onClick={(handleClickButton0)}
+                    >
+                        {buttonText0}
+                    </Button>}
                 {!!buttonText1 &&
                     <Button type={button1Type} onClick={(button1Type !== "submit" ? handleClickButton1 : undefined)}
                     >
@@ -1338,19 +1346,26 @@ export const FieldEditArray: React.FC<InputProps> = ({ label, style = {}, classN
 }
 
 interface TemplateSwitchArrayProps extends InputProps {
-    defaultValue?: boolean;
+    defaultValue?: any;
     className?: any;
     label: string;
+    tooltip?: Dictionary;
 }
 
 
-export const TemplateSwitchArray: React.FC<TemplateSwitchArrayProps> = ({ className, onChange, defaultValue, label }) => {
+export const TemplateSwitchArray: React.FC<TemplateSwitchArrayProps> = ({ className, onChange, defaultValue, label, tooltip = {} }) => {
+    const { t } = useTranslation();
+    const [value, setValue] = useState([true,'1'].includes(defaultValue) ? true : false);
+
     return (
         <div className={className} style={{ paddingBottom: '3px' }}>
             {label && <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{label}</Box>}
-            <IOSSwitch defaultChecked={defaultValue} onChange={(e) => {
-                onChange && onChange(e.target.checked)
-            }} />
+            <Tooltip title={!!value ? t((langKeys as any)[tooltip?.true]) || '' : t((langKeys as any)[tooltip?.false]) || ''}>
+                <IOSSwitch defaultChecked={defaultValue} onChange={(e) => {
+                    onChange && onChange(e.target.checked)
+                    setValue(e.target.checked)
+                }} />
+            </Tooltip>
         </div>
     );
 }
