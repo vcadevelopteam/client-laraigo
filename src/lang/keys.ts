@@ -2484,6 +2484,16 @@ export const langKeys = {
     "personalizedreport_messagetemplate.priority": "personalizedreport_messagetemplate.priority",
     "personalizedreport_messagetemplate.attachment": "personalizedreport_messagetemplate.attachment",
 
+    "personalizedreport_surveyansweredsummary.csat_question": "personalizedreport_surveyansweredsummary.csat_question",
+    "personalizedreport_surveyansweredsummary.csat_answervalue": "personalizedreport_surveyansweredsummary.csat_answervalue",
+    "personalizedreport_surveyansweredsummary.csat_answer": "personalizedreport_surveyansweredsummary.csat_answer",
+    "personalizedreport_surveyansweredsummary.nps_question": "personalizedreport_surveyansweredsummary.nps_question",
+    "personalizedreport_surveyansweredsummary.nps_answervalue": "personalizedreport_surveyansweredsummary.nps_answervalue",
+    "personalizedreport_surveyansweredsummary.nps_answer": "personalizedreport_surveyansweredsummary.nps_answer",
+    "personalizedreport_surveyansweredsummary.fix_question": "personalizedreport_surveyansweredsummary.fix_question",
+    "personalizedreport_surveyansweredsummary.fix_answervalue": "personalizedreport_surveyansweredsummary.fix_answervalue",
+    "personalizedreport_surveyansweredsummary.fix_answer": "personalizedreport_surveyansweredsummary.fix_answer",
+
     chatHeaderTitle: 'chatHeaderTitle',
     subtitle: 'subtitle',
     chatHeaderSubtitle: 'chatHeaderSubtitle',
