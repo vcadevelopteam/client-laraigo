@@ -80,6 +80,7 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
     const statusCall = useSelector(state => state.voximplant.statusCall);
     const voxiConnection = useSelector(state => state.voximplant.connection);    
     const location = useLocation();
+    const userConnected = useSelector(state => state.inbox.userConnected);
 
 
     return (
@@ -101,7 +102,7 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
         >
             <div style={{ overflowX: 'hidden', borderRight: '1px solid #EBEAED', marginTop: headerHeight }}>
                 {routes.map((ele) => (applications && applications[ele.key] && applications[ele.key][0]) ? <LinkList classes={classes} config={ele} key={ele.key} open={openDrawer} /> : null)}
-                {(!voxiConnection.error && !voxiConnection.loading && !openDrawer&& location.pathname=== "/message_inbox") && (
+                {(!voxiConnection.error && !voxiConnection.loading && !openDrawer&& location.pathname=== "/message_inbox" && userConnected) && (
                     <ListItem
                         button
                         key={"phone-agent"}
@@ -120,7 +121,7 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
                     </ListItem>
                 )}
             </div>
-            {(!voxiConnection.error && !voxiConnection.loading && openDrawer && location.pathname=== "/message_inbox") && (
+            {(!voxiConnection.error && !voxiConnection.loading && openDrawer && location.pathname=== "/message_inbox" && userConnected) && (
                 <>
                     <div style={{ display: "flex", width: "100%", borderRight: '1px solid #EBEAED' }}>
                         <IconButton 
