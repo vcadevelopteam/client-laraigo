@@ -13,7 +13,7 @@ import { makeCall, setModalCall, getHistory, geAdvisors, rejectCall } from 'stor
 import TextField from '@material-ui/core/TextField';
 import PhoneForwardedIcon from '@material-ui/icons/PhoneForwarded';
 import PhoneIcon from '@material-ui/icons/Phone';
-import { FieldSelect, AntTab } from 'components';
+import { FieldSelect, AntTab, SearchField } from 'components';
 import { IconButton, Tabs } from '@material-ui/core';
 import { conversationOutboundIns, convertLocalDate, getSecondsUntelNow,getAdvisorListVoxi } from 'common/helpers';
 import { langKeys } from 'lang/keys';
@@ -323,7 +323,10 @@ const MakeCall: React.FC = () => {
             setPageSelected(1)
         }
     }, [showcall])
-
+    
+    const setGlobalFilter = (value: string) => {
+        setfilter(value)
+    }
     return (
         <>
             <Dialog
@@ -357,19 +360,12 @@ const MakeCall: React.FC = () => {
                 <div style={{ height: 500 }}>
                     {pageSelected === 0 &&
                         <div style={{ width: "100%", height: '100%', overflow: 'overlay' }}>
-                            
-                            <Paper component="div" className={classes.rootpaper} elevation={0} >
-                                <InputBase
-                                    className={classes.input}
-                                    value={filter}
-                                    onChange={(e)=>{setfilter(e.target.value)}}
-                                    placeholder={t(langKeys.search)}
-                                    inputProps={{ className: classes.inputPlaceholder }}
-                                />
-                                <IconButton type="button" className={classes.iconButton} aria-label="search" disabled>
-                                    <SearchIcon />
-                                </IconButton>
-                            </Paper>
+                            <SearchField
+                                disabled={advisors?.loading}
+                                colorPlaceHolder='#FFF'
+                                handleChangeOther={setGlobalFilter}
+                                lazy
+                            />
                             {advisors?.loading ? <ListItemSkeleton /> : advisors.data?.filter((x:any)=>x.personname.includes(filter)).map((e: any, i: number) => (
                                 <NotificaionMenuItem
                                     onClick={() => {
