@@ -105,6 +105,7 @@ interface RichTextProps extends Omit<BoxProps, 'onChange'> {
     onlyurl?: boolean;
     image?: Boolean;
     children?: React.ReactNode;
+    endinput?: React.ReactNode;
     positionEditable?: 'top' | 'bottom';
     refresh?: number;
 }
@@ -130,7 +131,7 @@ type StaticRenderElement = (props: { element: CustomElement, children: any }) =>
 const useRichTextStyles = makeStyles(theme => ({
     toolbar: {
         padding: 0,
-        display: "block",
+        width: "100%"
     },
     littleboxes: {
         cursor: "pointer",
@@ -141,7 +142,7 @@ const useRichTextStyles = makeStyles(theme => ({
 }));
 
 /**TODO: Validar que la URL de la imagen sea valida en el boton de insertar imagen */
-const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, placeholder, image = true, spellCheck, error, positionEditable = "bottom", children, onlyurl = false, ...boxProps }) => {
+const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, placeholder, image = true, spellCheck, error, positionEditable = "bottom", children, onlyurl = false,endinput, ...boxProps }) => {
     const classes = useRichTextStyles();
     // Create a Slate editor object that won't change across renders.
     const editor = useMemo(() => withImages(withHistory(withReact(createEditor()))), []);
@@ -171,59 +172,64 @@ const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, placeholder
                     />
                 }
                 <Toolbar className={classes.toolbar}>
-                    <div style={{ display: "inline-block" }}>
-                        {children}
-                    </div>
-                    <FontFamily tooltip='font'></FontFamily>
-                    <FormatSizeMenu tooltip='size'></FormatSizeMenu>
-                    <MarkButton format="bold" tooltip='bold'>
-                        <FormatBoldIcon />
-                    </MarkButton>
-                    <MarkButton format="italic" tooltip='italic'>
-                        <FormatItalicIcon />
-                    </MarkButton>
-                    <MarkButton format="underline" tooltip='underline'>
-                        <FormatUnderlinedIcon />
-                    </MarkButton>
-
-                    <TextColor tooltip='size'></TextColor>
-                    <Alignment tooltip='size'></Alignment>
-
-                    <BlockButton format="numbered-list" tooltip='numbered_list'>
-                        <FormatListNumberedIcon />
-                    </BlockButton>
-                    <BlockButton format="bulleted-list" tooltip='bulleted_list'>
-                        <FormatListBulletedIcon />
-                    </BlockButton>
-
-                    <MarkButton format="code" tooltip='code'>
-                        <FormatCodeIcon />
-                    </MarkButton>
-                    <BlockButton format="heading-one" tooltip='heading_one'>
-                        <FormatLooksOneIcon />
-                    </BlockButton>
-                    <BlockButton format="heading-two" tooltip='heading_two'>
-                        <FormatLooksTwoIcon />
-                    </BlockButton>
-                    <BlockButton format="block-quote" tooltip='block_quote'>
-                        <FormatQuoteIcon />
-                    </BlockButton>
-                    {(image && onlyurl) &&
-                        <>
-                            <OnlyURLInsertImageButton>
-                                <InsertPhotoIcon />
-                            </OnlyURLInsertImageButton> :
-                            <InsertImageButton>
-                                <InsertPhotoIcon />
-                            </InsertImageButton>
-                        </>
-                    }
-                    {upload.loading && (
-                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                            <CircularProgress size={24} />
-                            <span><strong><Trans i18nKey={langKeys.loadingImage} />...</strong></span>
+                    <div>
+                        <div style={{ display: "inline-block" }}>
+                            {children}
                         </div>
-                    )}
+                        <FontFamily tooltip='font'></FontFamily>
+                        <FormatSizeMenu tooltip='size'></FormatSizeMenu>
+                        <MarkButton format="bold" tooltip='bold'>
+                            <FormatBoldIcon />
+                        </MarkButton>
+                        <MarkButton format="italic" tooltip='italic'>
+                            <FormatItalicIcon />
+                        </MarkButton>
+                        <MarkButton format="underline" tooltip='underline'>
+                            <FormatUnderlinedIcon />
+                        </MarkButton>
+
+                        <TextColor tooltip='size'></TextColor>
+                        <Alignment tooltip='size'></Alignment>
+
+                        <BlockButton format="numbered-list" tooltip='numbered_list'>
+                            <FormatListNumberedIcon />
+                        </BlockButton>
+                        <BlockButton format="bulleted-list" tooltip='bulleted_list'>
+                            <FormatListBulletedIcon />
+                        </BlockButton>
+
+                        <MarkButton format="code" tooltip='code'>
+                            <FormatCodeIcon />
+                        </MarkButton>
+                        <BlockButton format="heading-one" tooltip='heading_one'>
+                            <FormatLooksOneIcon />
+                        </BlockButton>
+                        <BlockButton format="heading-two" tooltip='heading_two'>
+                            <FormatLooksTwoIcon />
+                        </BlockButton>
+                        <BlockButton format="block-quote" tooltip='block_quote'>
+                            <FormatQuoteIcon />
+                        </BlockButton>
+                        {(image && onlyurl) &&
+                            <>
+                                <OnlyURLInsertImageButton>
+                                    <InsertPhotoIcon />
+                                </OnlyURLInsertImageButton> :
+                                <InsertImageButton>
+                                    <InsertPhotoIcon />
+                                </InsertImageButton>
+                            </>
+                        }
+                        {upload.loading && (
+                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                                <CircularProgress size={24} />
+                                <span><strong><Trans i18nKey={langKeys.loadingImage} />...</strong></span>
+                            </div>
+                        )}
+                    </div>
+                    <div style={{marginLeft:"auto", marginRight:0}}>
+                        {endinput}
+                    </div>
                 </Toolbar>
                 {positionEditable !== "top" &&
                     <Editable
