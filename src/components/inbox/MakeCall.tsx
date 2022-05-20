@@ -78,7 +78,7 @@ const useStyles = makeStyles(theme => ({
     },
     inputPlaceholder: {
         '&::placeholder': {
-            fontSize: 14,
+            fontSize: "1rem",
             fontWeight: 500,
             color: '#84818A',
         },
@@ -108,6 +108,7 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
             width: '100%',
         },
         title: {
+            fontSize: '1rem',
             whiteSpace: "initial",
             width: "calc(100% - 40px)",
             color: "#a39e9e",
@@ -360,13 +361,17 @@ const MakeCall: React.FC = () => {
                 <div style={{ height: 500 }}>
                     {pageSelected === 0 &&
                         <div style={{ width: "100%", height: '100%', overflow: 'overlay' }}>
-                            <SearchField
-                                disabled={advisors?.loading}
-                                colorPlaceHolder='#FFF'
-                                handleChangeOther={setGlobalFilter}
-                                lazy
-                            />
-                            {advisors?.loading ? <ListItemSkeleton /> : advisors.data?.filter((x:any)=>x.personname.includes(filter)).map((e: any, i: number) => (
+                            <div style={{padding:"12px 24px 0"}}>
+                                <SearchField
+                                    disabled={advisors?.loading}
+                                    style={{fontSize:"1rem"}}
+                                    colorPlaceHolder='#FFF'
+                                    inputProps={{ className: classes.inputPlaceholder }}
+                                    handleChangeOther={setGlobalFilter}
+                                    lazy
+                                />
+                            </div>
+                            {advisors?.loading ? <ListItemSkeleton /> : advisors.data?.filter((x:any)=>(x.personname.toLowerCase().includes(filter.toLowerCase())||x.phone.includes(filter))).map((e: any, i: number) => (
                                 <NotificaionMenuItem
                                     onClick={() => {
                                         if (statusCall === "DISCONNECTED") {
@@ -383,7 +388,7 @@ const MakeCall: React.FC = () => {
                                     user={"none"}
                                     image={e.imageurldef}
                                     key={`advisor-${i}`}
-                                    title={e.personname}
+                                    title={e.personname.trim()===e.phone.trim()?t(langKeys.noname):e.personname}
                                     description={e.phone}
                                     origin={"CONTACT"}
                                 />
