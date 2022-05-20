@@ -240,6 +240,7 @@ const MakeCall: React.FC = () => {
     const historial = useSelector(state => state.voximplant.requestGetHistory);
     const advisors = useSelector(state => state.voximplant.requestGetAdvisors);
     const [waiting2, setwaiting2] = useState(false)
+    
     const { corpid, orgid, sitevoxi, ccidvoxi, userid } = useSelector(state => state.login.validateToken?.user!!);
 
     React.useEffect(() => {
@@ -378,8 +379,8 @@ const MakeCall: React.FC = () => {
                             {advisors?.loading ? <ListItemSkeleton /> : advisors.data?.filter((x:any)=>(x.personname.toLowerCase().includes(filter.toLowerCase())||x.phone.includes(filter))).map((e: any, i: number) => (
                                 <NotificaionMenuItem
                                     onClick={() => {
-                                        if (statusCall === "DISCONNECTED") {
-                                            // setwaiting2(true)
+                                        if (statusCall === "DISCONNECTED" && !waiting2) {
+                                            setwaiting2(true)
                                             setNumberVox(e.phone)
                                             dispatch(execute(conversationOutboundIns({
                                                 number: e.phone,
