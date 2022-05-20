@@ -394,7 +394,7 @@ const MakeCall: React.FC = () => {
                                     user={"none"}
                                     image={e.imageurldef}
                                     key={`advisor-${i}`}
-                                    title={e.personname.trim()===e.phone.trim()?t(langKeys.noname):e.personname}
+                                    title={e.personname?.trim()===e.phone?.trim()?t(langKeys.noname):e.personname}
                                     description={e.phone}
                                     origin={"CONTACT"}
                                 />
