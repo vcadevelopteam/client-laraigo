@@ -498,13 +498,18 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     }, [ticketSelected])
     
     useEffect(() => {
+        if(ticketSelected?.communicationchanneltype === "MAIL")
         if (!flagundo){
             if(!flagredo){
                 setredotext([])
             }
             setundotext([...undotext,(bodyobject)])
         }
-        setText(renderToString(toElement(bodyobject)))
+        if(renderToString(toElement(bodyobject))=== `<div data-reactroot=""><p><span></span></p></div>`){
+            setText("")
+        }else{
+            setText(renderToString(toElement(bodyobject)))
+        }
     }, [bodyobject])
     useEffect(() => {
         if (flagundo) {
@@ -571,6 +576,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                 setFiles([])
             }
             if (text) {
+                debugger
                 let textCleaned = text;
                 if(ticketSelected?.communicationchanneltype === "MAIL" && groupInteractionList.data[0]?.interactiontext){
                     textCleaned =  ("RE: "+ (groupInteractionList.data[0].interactiontext).split("&%MAIL%&")[0]+"&%MAIL%&"+text).trim();
@@ -845,7 +851,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                     </ClickAwayListener>
                     
                     <div style={{ display: 'flex', alignItems: 'end' }}>
-                        <div style={{marginLeft: "auto", marginRight: 0}} className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(renderToString(toElement(bodyobject))!== `<div data-reactroot=""><p><span></span></p></div>` || files.filter(x => !!x.url).length > 0) })} onClick={triggerReplyMessage}>
+                        <div style={{marginLeft: "auto", marginRight: 0}} className={clsx(classes.iconSend, { [classes.iconSendDisabled]: ((text==="") || files.filter(x => !!x.url).length > 0) })} onClick={triggerReplyMessage}>
                             <SendIcon />
                         </div>
                     </div>
