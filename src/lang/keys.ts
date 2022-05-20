@@ -48,6 +48,7 @@ export const langKeys = {
     enter_details: "enter_details",
     confirm: "confirm",
     transfercalltoadvisor: "transfercalltoadvisor",
+    noname: "noname",
     copyLink: "copyLink",
     actionplan: 'actionplan',
     manageWhitelist: "manageWhitelist",
