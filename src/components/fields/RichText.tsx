@@ -130,7 +130,7 @@ type StaticRenderElement = (props: { element: CustomElement, children: any }) =>
 const useRichTextStyles = makeStyles(theme => ({
     toolbar: {
         padding: 0,
-        display:"block",
+        display: "block",
     },
     littleboxes: {
         cursor: "pointer",
@@ -150,7 +150,13 @@ const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, placeholder
 
     useEffect(() => {
         //evitar q en cada cmbio re-renderice, solo en casos q el componente q llama lo requiera (ejemplo replypanel)
-        if (editor?.children) editor.children = value
+        if (editor?.children) {
+            editor.selection = {
+                anchor: { path: [0, 0], offset: 0 },
+                focus: { path: [0, 0], offset: 0 },
+            };
+            editor.children = value;
+        }
     }, [refresh])
 
     return (
@@ -165,7 +171,7 @@ const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, placeholder
                     />
                 }
                 <Toolbar className={classes.toolbar}>
-                    <div style={{display:"inline-block"}}>
+                    <div style={{ display: "inline-block" }}>
                         {children}
                     </div>
                     <FontFamily tooltip='font'></FontFamily>
