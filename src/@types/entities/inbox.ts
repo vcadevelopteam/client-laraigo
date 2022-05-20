@@ -19,6 +19,10 @@ export interface IMassiveCloseTicketsParams {
     observation: string;
 }
 
+export interface IImportTicket {
+    data: Dictionary[];
+}
+
 interface IMember {
     personid: number;
     phone: string;
