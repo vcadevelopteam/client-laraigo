@@ -504,7 +504,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             }
             setundotext([...undotext,(bodyobject)])
         }
-        setText(renderToString(toElement(bodyobject)))
+        ticketSelected?.communicationchanneltype === "MAIL" && setText(renderToString(toElement(bodyobject)))
     }, [bodyobject])
     useEffect(() => {
         if (flagundo) {
