@@ -539,7 +539,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const triggerReplyMessage = () => {
         const callback = () => {
             let wasSend = false;
-            if (files.length > 0) {
+            if (files.length > 0 && ticketSelected?.communicationchanneltype === "MAIL") {
                 const listMessages = files.map(x => ({
                     ...ticketSelected!!,
                     interactiontype: x.type,
@@ -574,6 +574,9 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                 let textCleaned = text;
                 if (ticketSelected?.communicationchanneltype === "MAIL" && groupInteractionList.data[0]?.interactiontext) {
                     textCleaned = ("RE: " + (groupInteractionList.data[0].interactiontext).split("&%MAIL%&")[0] + "&%MAIL%&" + text).trim();
+                    console.log(files)
+                    let fileobj = files.reduce((acc,item) => ({...acc, [String(item.url.split('/').pop())]: item.url}),{})
+                    textCleaned = textCleaned + "&%MAIL%&" + JSON.stringify(fileobj)
                 }
 
                 const wordlist = textCleaned.split(" ").map(x => x.toLowerCase())
