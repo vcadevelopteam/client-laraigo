@@ -495,6 +495,15 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             }
         } else
             setShowReply(true)
+
+        if (ticketSelected?.communicationchanneltype === "MAIL") {
+            setBodyobject([{ "type": "paragraph", "children": [{ "text": "" }] }])
+            setText(renderToString(toElement([{ "type": "paragraph", "children": [{ "text": "" }] }])))
+            setrefresh(refresh * -1)
+        } else {
+            setText("")
+            setBodyobject([{ "type": "paragraph", "children": [{ "text": "" }] }])
+        }
     }, [ticketSelected])
 
     useEffect(() => {
