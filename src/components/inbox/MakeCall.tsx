@@ -413,7 +413,10 @@ const MakeCall: React.FC = () => {
                                     value={numberVox}
                                     disabled={resExecute.loading || statusCall !== "DISCONNECTED"}
                                     style={{ marginRight: "auto", marginLeft: "auto", width: "400px", marginBottom: 25 }}
-                                    type="number"
+                                    onInput={(e:any)=>{
+                                        let val = e.target.value.replace(/[^0-9*#]/g, "")
+                                        e.target.value = String(val)
+                                    }}
                                     onChange={(e) => setNumberVox(e.target.value)}
                                 />
                             </div>
