@@ -3550,6 +3550,7 @@ export const langKeys = {
     type_close_nocompletado: 'type_close_nocompletado',
     type_close_resuelto: 'type_close_resuelto',
     available: 'available',
+    already_call_person: 'already_call_person',
 
 };
 
