@@ -25,6 +25,7 @@ import { execute } from 'store/main/actions';
 import { ITicket } from '@types';
 import { ListItemSkeleton } from 'components';
 import { SearchIcon } from 'icons';
+import { showSnackbar } from 'store/popus/actions';
 
 const useStyles = makeStyles(theme => ({
     grey: {
@@ -244,6 +245,7 @@ const MakeCall: React.FC = () => {
     const { corpid, orgid, sitevoxi, ccidvoxi, userid } = useSelector(state => state.login.validateToken?.user!!);
 
     React.useEffect(() => {
+        console.log(resExecute)
         if (!resExecute.loading && !resExecute.error) {
             if (resExecute.key === "UFN_CONVERSATION_OUTBOUND_INS") {
                 const { v_conversationid, v_ticketnum, v_personid, v_firstconversationdate, v_personname } = resExecute.data[0]
@@ -271,6 +273,9 @@ const MakeCall: React.FC = () => {
                 dispatch(makeCall({ number: numberVox, site: identifier || "", data }));
             }
         } else if (!resExecute.loading && resExecute.error && resExecute.key === "UFN_CONVERSATION_OUTBOUND_INS") {
+            const errormessage = t(resExecute.code || "error_unexpected_error", { module: t(langKeys.whitelist).toLocaleLowerCase() })
+            const messagetoshow = resExecute.code === "error_already_exists_record" ? t(langKeys.already_call_person) : errormessage;
+            dispatch(showSnackbar({ show: true, success: false, message: messagetoshow }))
             setwaiting2(false)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -342,8 +347,7 @@ const MakeCall: React.FC = () => {
             <Dialog
                 open={showcall}
                 fullWidth
-                maxWidth={"xs"}
-                style={{ zIndex: 99999999 }}>
+                maxWidth={"xs"}>
                 <MuiDialogTitle disableTypography className={classes.root}>
                     <Typography variant="h6">{t(langKeys.phone)}</Typography>
                     <IconButton aria-label="close" className={classes.closeButton} onClick={() => {
@@ -413,7 +417,10 @@ const MakeCall: React.FC = () => {
                                     value={numberVox}
                                     disabled={resExecute.loading || statusCall !== "DISCONNECTED"}
                                     style={{ marginRight: "auto", marginLeft: "auto", width: "400px", marginBottom: 25 }}
-                                    type="number"
+                                    onInput={(e:any)=>{
+                                        let val = e.target.value.replace(/[^0-9*#]/g, "")
+                                        e.target.value = String(val)
+                                    }}
                                     onChange={(e) => setNumberVox(e.target.value)}
                                 />
                             </div>
