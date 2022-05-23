@@ -765,8 +765,6 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                         onChange={setBodyobject}
                                         positionEditable="top"
                                         spellCheck
-                                        image={false}
-                                        onPaste={onPasteTextbar}
                                         onKeyPress={handleKeyPress}
                                         refresh={refresh}
                                         placeholder="Send your message..."
@@ -803,11 +801,13 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                                     </Tooltip>
                                                 </IconButton>
                                                 <QuickReplyIcon classes={classes} setText={setText} />
-                                                <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage} />
-                                                <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
+                                                {/*
+                                                    <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage} />
+                                                    <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
+                                                    <TmpRichResponseIcon classes={classes} setText={setText} /> final
+                                                */}
                                                 <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite} />
                                                 <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
-                                                <TmpRichResponseIcon classes={classes} setText={setText} />
                                             </div>
                                         </div>
 

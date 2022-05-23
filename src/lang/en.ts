@@ -2823,7 +2823,7 @@ const translation: LangKeys = {
     accept: 'Accept',
     enterTheUrl: 'Enter the URL',
     attached: 'Attached',
-    loadingImage: 'Loading image',
+    loadingImage: 'Loading files',
 
     product: 'Product',
     product_plural: 'Products',
