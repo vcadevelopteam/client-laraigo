@@ -220,7 +220,7 @@ const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, placeholder
                                 <InsertPhotoIcon />
                             </OnlyURLInsertImageButton>
                         }
-                        {upload.loading && (
+                        {(false && upload.loading) && (
                             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                                 <CircularProgress size={24} />
                                 <span><strong><Trans i18nKey={langKeys.loadingImage} />...</strong></span>

@@ -952,7 +952,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                {ticketSelected?.status !== 'CERRADO' &&
+                {(ticketSelected?.status !== 'CERRADO' && ticketSelected?.communicationchanneltype !== "VOXI") &&
                     <MenuItem onClick={() => {
                         setOpenModalReassignticket(true)
                         setAnchorEl(null)
