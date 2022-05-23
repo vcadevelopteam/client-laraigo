@@ -504,7 +504,9 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             }
             setundotext([...undotext, (bodyobject)])
         }
-        ticketSelected?.communicationchanneltype === "MAIL" && setText(renderToString(toElement(bodyobject)))
+        if (ticketSelected?.communicationchanneltype === "MAIL") {
+            setText(renderToString(toElement(bodyobject)))
+        }
     }, [bodyobject])
     useEffect(() => {
         if (flagundo) {
@@ -574,7 +576,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                 let textCleaned = text;
                 if (ticketSelected?.communicationchanneltype === "MAIL" && groupInteractionList.data[0]?.interactiontext) {
                     textCleaned = ("RE: " + (groupInteractionList.data[0].interactiontext).split("&%MAIL%&")[0] + "&%MAIL%&" + text).trim();
-                    let fileobj = files.reduce((acc,item) => ({...acc, [String(item.url.split('/').pop())]: item.url}),{})
+                    let fileobj = files.reduce((acc, item) => ({ ...acc, [String(item.url.split('/').pop())]: item.url }), {})
                     textCleaned = textCleaned + "&%MAIL%&" + JSON.stringify(fileobj)
                     setFiles([])
                 }
@@ -761,61 +763,59 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                     <div style={{ alignItems: "center" }}>
                         <ClickAwayListener onClickAway={handleClickAway}>
                             <div>
-                                {true &&
-                                    <RichText
-                                        style={{ width: "100%" }}
-                                        value={bodyobject}
-                                        onChange={setBodyobject}
-                                        positionEditable="top"
-                                        spellCheck
-                                        onKeyPress={handleKeyPress}
-                                        refresh={refresh}
-                                        placeholder="Send your message..."
-                                        endinput={
-                                            <div style={{ display: 'block' }}>
-                                                <div style={{ marginLeft: "auto", marginRight: 0 }} className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(renderToString(toElement(bodyobject)) !== `<div data-reactroot=""><p><span></span></p></div>` || files.filter(x => !!x.url).length > 0) })} onClick={triggerReplyMessage}>
-                                                    <SendIcon />
-                                                </div>
+                                <RichText
+                                    style={{ width: "100%" }}
+                                    value={bodyobject}
+                                    onChange={setBodyobject}
+                                    positionEditable="top"
+                                    spellCheck
+                                    onKeyPress={handleKeyPress}
+                                    refresh={refresh}
+                                    placeholder="Send your message..."
+                                    endinput={
+                                        <div style={{ display: 'block' }}>
+                                            <div style={{ marginLeft: "auto", marginRight: 0 }} className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(renderToString(toElement(bodyobject)) !== `<div data-reactroot=""><p><span></span></p></div>` || files.filter(x => !!x.url).length > 0) })} onClick={triggerReplyMessage}>
+                                                <SendIcon />
                                             </div>
-                                        }
-                                    >
-                                        <div style={{ display: 'block', justifyContent: 'space-between', alignItems: 'center' }}>
-                                            <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-                                                <IconButton disabled={undotext.length < 2} size="small" onClick={() => {
-                                                    setflagundo(true)
-                                                    setredotext([...redotext, bodyobject])
-                                                    setBodyobject(undotext[undotext.length - 2])
-                                                    setrefresh(refresh * -1)
-                                                    setundotext(undotext.slice(0, undotext.length - 1))
-                                                }}>
+                                        </div>
+                                    }
+                                >
+                                    <div style={{ display: 'block', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+                                            <IconButton disabled={undotext.length < 2} size="small" onClick={() => {
+                                                setflagundo(true)
+                                                setredotext([...redotext, bodyobject])
+                                                setBodyobject(undotext[undotext.length - 2])
+                                                setrefresh(refresh * -1)
+                                                setundotext(undotext.slice(0, undotext.length - 1))
+                                            }}>
 
-                                                    <Tooltip title={t(langKeys.undo) + ""} arrow placement="top">
-                                                        <UndoIcon />
-                                                    </Tooltip>
-                                                </IconButton>
-                                                <IconButton disabled={redotext.length < 1} size="small" onClick={() => {
-                                                    setflagredo(true)
-                                                    setBodyobject(redotext[redotext.length - 1])
-                                                    setrefresh(refresh * -1)
-                                                    setredotext(redotext.slice(0, redotext.length - 1))
-                                                }}>
-                                                    <Tooltip title={t(langKeys.redo) + ""} arrow placement="top">
-                                                        <RedoIcon />
-                                                    </Tooltip>
-                                                </IconButton>
-                                                <QuickReplyIcon classes={classes} setText={setText} />
-                                                {/*
+                                                <Tooltip title={t(langKeys.undo) + ""} arrow placement="top">
+                                                    <UndoIcon />
+                                                </Tooltip>
+                                            </IconButton>
+                                            <IconButton disabled={redotext.length < 1} size="small" onClick={() => {
+                                                setflagredo(true)
+                                                setBodyobject(redotext[redotext.length - 1])
+                                                setrefresh(refresh * -1)
+                                                setredotext(redotext.slice(0, redotext.length - 1))
+                                            }}>
+                                                <Tooltip title={t(langKeys.redo) + ""} arrow placement="top">
+                                                    <RedoIcon />
+                                                </Tooltip>
+                                            </IconButton>
+                                            <QuickReplyIcon classes={classes} setText={setText} />
+                                            {/*
                                                     <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage} />
                                                     <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
                                                     <TmpRichResponseIcon classes={classes} setText={setText} /> final
                                                 */}
-                                                <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite} />
-                                                <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
-                                            </div>
+                                            <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite} />
+                                            <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
                                         </div>
+                                    </div>
 
-                                    </RichText>
-                                }
+                                </RichText>
                                 {openDialogHotKey && (
                                     <div style={{
                                         position: 'absolute',
