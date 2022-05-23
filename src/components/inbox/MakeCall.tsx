@@ -413,7 +413,7 @@ const MakeCall: React.FC = () => {
                                     value={numberVox}
                                     disabled={resExecute.loading || statusCall !== "DISCONNECTED"}
                                     style={{ marginRight: "auto", marginLeft: "auto", width: "400px", marginBottom: 25 }}
-                                    type="tel"
+                                    type="number"
                                     onChange={(e) => setNumberVox(e.target.value)}
                                 />
                             </div>
