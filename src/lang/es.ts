@@ -3565,6 +3565,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     type_close_no_hay_asesores: 'No hay asesores a derivar',
     type_close_nocompletado: 'No se pudo completar la atención',
     type_close_resuelto: 'Cierre completado',
+    already_call_person: 'El número que estas llamando se encuentra ocupado con otro asesor.',
 };
 
 const esResource: ResourceLanguage = {

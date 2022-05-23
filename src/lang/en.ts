@@ -3572,6 +3572,7 @@ const translation: LangKeys = {
     type_close_nocompletado: 'Failed to complete care',
     type_close_resuelto: 'Closing completed',
     available: 'Available',
+    already_call_person: 'The number you are calling is busy with another agent.',
 };
 
 const enResource: ResourceLanguage = {
