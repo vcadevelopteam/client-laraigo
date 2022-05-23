@@ -294,17 +294,21 @@ const MakeCall: React.FC = () => {
 
     //reassign if the call overload time limit
     React.useEffect(() => {
+        console.log("timeWaiting", timeWaiting)
         // console.log("user?.properties.time_reassign_call", user?.properties.time_reassign_call)
         if (timeWaiting >= 0) {
             if (timeWaiting >= (user?.properties.time_reassign_call || 30) && (call.type === "INBOUND" && statusCall === "CONNECTING")) {
                 dispatch(rejectCall(call.call));
+                dispatch(setWaitingDate(null))
                 setTimeWaiting(-1);
                 return;
             }
-            if (waitingDate) {
+            if (call.type === "INBOUND" && statusCall === "CONNECTING") {
                 setTimeout(() => {
                     setTimeWaiting(getSecondsUntelNow(convertLocalDate(waitingDate)));
                 }, 1000)
+            } else {
+                setTimeWaiting(-1);
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -409,7 +413,7 @@ const MakeCall: React.FC = () => {
                                     value={numberVox}
                                     disabled={resExecute.loading || statusCall !== "DISCONNECTED"}
                                     style={{ marginRight: "auto", marginLeft: "auto", width: "400px", marginBottom: 25 }}
-                                    type="tel"
+                                    type="number"
                                     onChange={(e) => setNumberVox(e.target.value)}
                                 />
                             </div>
