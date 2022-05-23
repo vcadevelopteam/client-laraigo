@@ -281,14 +281,38 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             </div>
         );
     else if (interactiontype === "email"){
-        const [subject,body] = interactiontext.split("&%MAIL%&")
-        // console.log(interactiontext)
+        const [subject,body,files] = interactiontext.split("&%MAIL%&")
         return (
             <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
                 [classes.interactionTextAgent]: userType !== 'client',
-            })}>
+            })} >
                 <div>Subject: {subject}</div>
                 <div dangerouslySetInnerHTML={{ __html: body }} />
+                {(files && files!=="{}") &&
+                    Object.keys(JSON.parse(files)).map((file:any)=>{
+                        let hreffile = JSON.parse(files)[file]
+                        let extension = file.split('.').pop()
+                        return (
+                        <a key={file} download rel="noreferrer" target="_blank" href={hreffile} style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 4, maxWidth: 200, border: "1px solid #e1e1e1", borderRadius: 5, marginBottom: 5, paddingRight: 5 }}>
+                            {extension === "pdf" ? (
+                                <PdfIcon width="30" height="30" />
+                            ) : (extension === "doc" || extension === "docx") ? (
+                                <DocIcon width="30" height="30" />
+                            ) : (extension === "xls" || extension === "xlsx" || extension === "csv") ? (
+                                <XlsIcon width="30" height="30" />
+                            ) : (extension === "ppt" || extension === "pptx") ? (
+                                <PptIcon width="30" height="30" />
+                            ) : (extension === "text" || extension === "txt") ? (
+                                <TxtIcon width="30" height="30" />
+                            ) : (extension === "zip" || extension === "rar") ? (
+                                <ZipIcon width="30" height="30" />
+                            ) : <FileIcon width="30" height="30" />
+                            }
+                            <div style={{ color: '#171717', textOverflow: 'ellipsis', overflowX: 'hidden', flex: 1, whiteSpace: 'nowrap' }}>{file}</div>
+                            <DownloadIcon2 width="20" height="20" color="primary" />
+                        </a>)
+                    })
+                }
                 <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
             </div>

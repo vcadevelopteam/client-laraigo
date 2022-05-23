@@ -539,7 +539,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const triggerReplyMessage = () => {
         const callback = () => {
             let wasSend = false;
-            if (files.length > 0) {
+            if (files.length > 0 && ticketSelected?.communicationchanneltype !== "MAIL") {
                 const listMessages = files.map(x => ({
                     ...ticketSelected!!,
                     interactiontype: x.type,
@@ -574,6 +574,9 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                 let textCleaned = text;
                 if (ticketSelected?.communicationchanneltype === "MAIL" && groupInteractionList.data[0]?.interactiontext) {
                     textCleaned = ("RE: " + (groupInteractionList.data[0].interactiontext).split("&%MAIL%&")[0] + "&%MAIL%&" + text).trim();
+                    let fileobj = files.reduce((acc,item) => ({...acc, [String(item.url.split('/').pop())]: item.url}),{})
+                    textCleaned = textCleaned + "&%MAIL%&" + JSON.stringify(fileobj)
+                    setFiles([])
                 }
 
                 const wordlist = textCleaned.split(" ").map(x => x.toLowerCase())
@@ -765,8 +768,6 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                         onChange={setBodyobject}
                                         positionEditable="top"
                                         spellCheck
-                                        image={false}
-                                        onPaste={onPasteTextbar}
                                         onKeyPress={handleKeyPress}
                                         refresh={refresh}
                                         placeholder="Send your message..."
@@ -803,11 +804,13 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                                     </Tooltip>
                                                 </IconButton>
                                                 <QuickReplyIcon classes={classes} setText={setText} />
-                                                <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage} />
-                                                <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
+                                                {/*
+                                                    <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage} />
+                                                    <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
+                                                    <TmpRichResponseIcon classes={classes} setText={setText} /> final
+                                                */}
                                                 <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite} />
                                                 <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
-                                                <TmpRichResponseIcon classes={classes} setText={setText} />
                                             </div>
                                         </div>
 

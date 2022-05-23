@@ -2811,7 +2811,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     accept: 'Aceptar',
     enterTheUrl: 'Ingresa la URL',
     attached: 'Adjunto',
-    loadingImage: 'Cargando imagen',
+    loadingImage: 'Cargando archivos',
 
     product: 'Producto',
     product_plural: 'Productos',
