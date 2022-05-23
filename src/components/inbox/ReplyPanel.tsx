@@ -45,7 +45,7 @@ interface IFile {
     error?: boolean;
 }
 
-const UploaderIcon: React.FC<{ classes: any, type: "image" | "file", setFiles: (param: any) => void, initfile?:any, setfileimage?: (param:any) => void}> = ({ classes, setFiles, type, initfile, setfileimage }) => {
+const UploaderIcon: React.FC<{ classes: any, type: "image" | "file", setFiles: (param: any) => void, initfile?: any, setfileimage?: (param: any) => void }> = ({ classes, setFiles, type, initfile, setfileimage }) => {
     const [valuefile, setvaluefile] = useState('')
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
@@ -54,13 +54,13 @@ const UploaderIcon: React.FC<{ classes: any, type: "image" | "file", setFiles: (
     const [idUpload, setIdUpload] = useState('');
 
     useEffect(() => {
-        if(initfile){
+        if (initfile) {
             onSelectImage(initfile)
-            if(setfileimage){
+            if (setfileimage) {
                 setfileimage(null)
             }
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [initfile])
     useEffect(() => {
         if (waitSave) {
@@ -473,7 +473,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const [quickRepliesToShow, setquickRepliesToShow] = useState<Dictionary[]>([])
     const [richResponseToShow, setRichResponseToShow] = useState<Dictionary[]>([])
     const [showReply, setShowReply] = useState(true);
-    const [fileimage,setfileimage] = useState<any>(null);
+    const [fileimage, setfileimage] = useState<any>(null);
     const [bodyobject, setBodyobject] = useState<Descendant[]>([{ "type": "paragraph", "children": [{ "text": "" }] }])
     const [refresh, setrefresh] = useState(1)
     const [flagundo, setflagundo] = useState(false)
@@ -481,7 +481,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const [undotext, setundotext] = useState<any>([])
     const [redotext, setredotext] = useState<any>([])
 
-    
+
 
     useEffect(() => {
         if (ticketSelected?.status !== "ASIGNADO")
@@ -496,20 +496,15 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
         } else
             setShowReply(true)
     }, [ticketSelected])
-    
+
     useEffect(() => {
-        if(ticketSelected?.communicationchanneltype === "MAIL")
-        if (!flagundo){
-            if(!flagredo){
+        if (!flagundo) {
+            if (!flagredo) {
                 setredotext([])
             }
-            setundotext([...undotext,(bodyobject)])
+            setundotext([...undotext, (bodyobject)])
         }
-        if(renderToString(toElement(bodyobject))=== `<div data-reactroot=""><p><span></span></p></div>`){
-            setText("")
-        }else{
-            setText(renderToString(toElement(bodyobject)))
-        }
+        ticketSelected?.communicationchanneltype === "MAIL" && setText(renderToString(toElement(bodyobject)))
     }, [bodyobject])
     useEffect(() => {
         if (flagundo) {
@@ -521,7 +516,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             setflagredo(false)
         }
     }, [redotext])
-    
+
     const reasignTicket = React.useCallback(() => {
         dispatch(reassignTicket({
             ...ticketSelected!!,
@@ -538,13 +533,13 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                 userid: agentSelected?.userid,
                 newuserid: 0,
             }
-        })); 
+        }));
     }, [dispatch, ticketSelected, agentSelected])
 
     const triggerReplyMessage = () => {
         const callback = () => {
             let wasSend = false;
-            if (files.length > 0) {
+            if (files.length > 0 && ticketSelected?.communicationchanneltype !== "MAIL") {
                 const listMessages = files.map(x => ({
                     ...ticketSelected!!,
                     interactiontype: x.type,
@@ -576,14 +571,16 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                 setFiles([])
             }
             if (text) {
-                debugger
                 let textCleaned = text;
-                if(ticketSelected?.communicationchanneltype === "MAIL" && groupInteractionList.data[0]?.interactiontext){
-                    textCleaned =  ("RE: "+ (groupInteractionList.data[0].interactiontext).split("&%MAIL%&")[0]+"&%MAIL%&"+text).trim();
+                if (ticketSelected?.communicationchanneltype === "MAIL" && groupInteractionList.data[0]?.interactiontext) {
+                    textCleaned = ("RE: " + (groupInteractionList.data[0].interactiontext).split("&%MAIL%&")[0] + "&%MAIL%&" + text).trim();
+                    let fileobj = files.reduce((acc,item) => ({...acc, [String(item.url.split('/').pop())]: item.url}),{})
+                    textCleaned = textCleaned + "&%MAIL%&" + JSON.stringify(fileobj)
+                    setFiles([])
                 }
-                
+
                 const wordlist = textCleaned.split(" ").map(x => x.toLowerCase())
-                
+
                 const errormessage = inappropiatewordsList.find(x => wordlist.includes(x.description.toLowerCase()))?.defaultanswer || "";
 
                 if (textCleaned) {
@@ -592,7 +589,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                         const newInteractionSocket = {
                             ...ticketSelected!!,
                             interactionid: 0,
-                            typemessage:  ticketSelected?.communicationchanneltype === "MAIL"? "email":"text",
+                            typemessage: ticketSelected?.communicationchanneltype === "MAIL" ? "email" : "text",
                             typeinteraction: null,
                             lastmessage: textCleaned,
                             createdate: new Date().toISOString(),
@@ -609,13 +606,13 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                         //send to answer with integration
                         dispatch(replyTicket({
                             ...ticketSelected!!,
-                            interactiontype: ticketSelected?.communicationchanneltype === "MAIL"? "email":"text",
+                            interactiontype: ticketSelected?.communicationchanneltype === "MAIL" ? "email" : "text",
                             interactiontext: textCleaned,
                             isAnswered: !ticketSelected!!.isAnswered,
                         }));
                         setText("");
                         setrefresh(refresh * -1)
-                        setBodyobject([{"type": "paragraph","children": [{"text": ""}]}]);
+                        setBodyobject([{ "type": "paragraph", "children": [{ "text": "" }] }]);
 
                     } else {
                         dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
@@ -743,119 +740,124 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                 return triggerReplyMessage()
         }
     }
-    function onPasteTextbar(e:any){
-        if(e.clipboardData.files.length){
+    function onPasteTextbar(e: any) {
+        if (e.clipboardData.files.length) {
             e.preventDefault()
-            if(e.clipboardData.files[0].type.includes("image")){
+            if (e.clipboardData.files[0].type.includes("image")) {
                 setfileimage(e.clipboardData.files)
             }
         }
     }
 
-    if (ticketSelected?.communicationchanneltype === "MAIL"){
+    if (ticketSelected?.communicationchanneltype === "MAIL") {
         return (<div className={classes.containerResponse}>
             {showReply ?
-                <>
+                <div>
                     {files.length > 0 &&
                         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', borderBottom: '1px solid #EBEAED', paddingBottom: 8 }}>
                             {files.map((item: IFile) => <ItemFile key={item.id} item={item} setFiles={setFiles} />)}
                         </div>
                     }
-                    <ClickAwayListener onClickAway={handleClickAway}>
-                        <div>
-                            {true && 
-                                <RichText
-                                    value={bodyobject}
-                                    onChange={setBodyobject}
-                                    positionEditable="top"
-                                    spellCheck
-                                    image={false}
-                                    onPaste={onPasteTextbar}
-                                    onKeyPress={handleKeyPress}
-                                    refresh={refresh}
-                                    placeholder="Send your message..."
-                                >
-                                <div style={{ display: 'block', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-                                        <IconButton  disabled={undotext.length<2} size="small" onClick={() => {
-                                            setflagundo(true)
-                                            setredotext([...redotext,bodyobject])
-                                            setBodyobject(undotext[undotext.length-2])
-                                            setrefresh(refresh * -1)
-                                            setundotext(undotext.slice(0,undotext.length-1))
-                                        }}>
-                                                
-                                            <Tooltip title={t(langKeys.undo) + ""} arrow placement="top">
-                                                <UndoIcon />
-                                            </Tooltip>
-                                        </IconButton>
-                                        <IconButton  disabled={redotext.length<1} size="small" onClick={() => {
-                                            setflagredo(true)
-                                            setBodyobject(redotext[redotext.length-1])
-                                            setrefresh(refresh * -1)
-                                            setredotext(redotext.slice(0,redotext.length-1))
-                                        }}>
-                                             <Tooltip title={t(langKeys.redo) + ""} arrow placement="top">
-                                                <RedoIcon />
-                                            </Tooltip>
-                                        </IconButton>
-                                        <QuickReplyIcon classes={classes} setText={setText} />
-                                        <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage}/>
-                                        <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
-                                        <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite}/>
-                                        <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
-                                        <TmpRichResponseIcon classes={classes} setText={setText} />
-                                    </div>
-                                </div>
-                                    
-                                </RichText>
-                            }
-                            {openDialogHotKey && (
-                                <div style={{
-                                    position: 'absolute',
-                                    bottom: 100,
-                                    left: 15
-                                }}>
-                                    <div className="scroll-style-go" style={{
-                                        maxHeight: 200,
-                                        display: 'flex',
-                                        gap: 4,
-                                        flexDirection: 'column',
-                                    }}>
-                                        {typeHotKey === "quickreply" ?
-                                            quickRepliesToShow.map((item) => (
-                                                <div
-                                                    key={item.quickreplyid}
-                                                    className={classes.hotKeyQuickReply}
-                                                    onClick={() => selectQuickReply(item.quickreply)}
-                                                >
-                                                    {item.description}
+                    <div style={{ alignItems: "center" }}>
+                        <ClickAwayListener onClickAway={handleClickAway}>
+                            <div>
+                                {true &&
+                                    <RichText
+                                        style={{ width: "100%" }}
+                                        value={bodyobject}
+                                        onChange={setBodyobject}
+                                        positionEditable="top"
+                                        spellCheck
+                                        onKeyPress={handleKeyPress}
+                                        refresh={refresh}
+                                        placeholder="Send your message..."
+                                        endinput={
+                                            <div style={{ display: 'block' }}>
+                                                <div style={{ marginLeft: "auto", marginRight: 0 }} className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(renderToString(toElement(bodyobject)) !== `<div data-reactroot=""><p><span></span></p></div>` || files.filter(x => !!x.url).length > 0) })} onClick={triggerReplyMessage}>
+                                                    <SendIcon />
                                                 </div>
-
-                                            )) :
-                                            richResponseToShow.map((item) => (
-                                                <div
-                                                    key={item.id}
-                                                    className={classes.hotKeyQuickReply}
-                                                    onClick={() => selectRichResponse(item)}
-                                                >
-                                                    {item.title}
-                                                </div>
-
-                                            ))
+                                            </div>
                                         }
+                                    >
+                                        <div style={{ display: 'block', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+                                                <IconButton disabled={undotext.length < 2} size="small" onClick={() => {
+                                                    setflagundo(true)
+                                                    setredotext([...redotext, bodyobject])
+                                                    setBodyobject(undotext[undotext.length - 2])
+                                                    setrefresh(refresh * -1)
+                                                    setundotext(undotext.slice(0, undotext.length - 1))
+                                                }}>
+
+                                                    <Tooltip title={t(langKeys.undo) + ""} arrow placement="top">
+                                                        <UndoIcon />
+                                                    </Tooltip>
+                                                </IconButton>
+                                                <IconButton disabled={redotext.length < 1} size="small" onClick={() => {
+                                                    setflagredo(true)
+                                                    setBodyobject(redotext[redotext.length - 1])
+                                                    setrefresh(refresh * -1)
+                                                    setredotext(redotext.slice(0, redotext.length - 1))
+                                                }}>
+                                                    <Tooltip title={t(langKeys.redo) + ""} arrow placement="top">
+                                                        <RedoIcon />
+                                                    </Tooltip>
+                                                </IconButton>
+                                                <QuickReplyIcon classes={classes} setText={setText} />
+                                                {/*
+                                                    <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage} />
+                                                    <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
+                                                    <TmpRichResponseIcon classes={classes} setText={setText} /> final
+                                                */}
+                                                <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite} />
+                                                <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
+                                            </div>
+                                        </div>
+
+                                    </RichText>
+                                }
+                                {openDialogHotKey && (
+                                    <div style={{
+                                        position: 'absolute',
+                                        bottom: 100,
+                                        left: 15
+                                    }}>
+                                        <div className="scroll-style-go" style={{
+                                            maxHeight: 200,
+                                            display: 'flex',
+                                            gap: 4,
+                                            flexDirection: 'column',
+                                        }}>
+                                            {typeHotKey === "quickreply" ?
+                                                quickRepliesToShow.map((item) => (
+                                                    <div
+                                                        key={item.quickreplyid}
+                                                        className={classes.hotKeyQuickReply}
+                                                        onClick={() => selectQuickReply(item.quickreply)}
+                                                    >
+                                                        {item.description}
+                                                    </div>
+
+                                                )) :
+                                                richResponseToShow.map((item) => (
+                                                    <div
+                                                        key={item.id}
+                                                        className={classes.hotKeyQuickReply}
+                                                        onClick={() => selectRichResponse(item)}
+                                                    >
+                                                        {item.title}
+                                                    </div>
+
+                                                ))
+                                            }
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-                        </div>
-                    </ClickAwayListener>
-                    
-                    <div style={{ display: 'flex', alignItems: 'end' }}>
-                        <div style={{marginLeft: "auto", marginRight: 0}} className={clsx(classes.iconSend, { [classes.iconSendDisabled]: ((text==="") || files.filter(x => !!x.url).length > 0) })} onClick={triggerReplyMessage}>
-                            <SendIcon />
-                        </div>
+                                )}
+                            </div>
+                        </ClickAwayListener>
+
                     </div>
-                </>
+                </div>
                 :
                 <div style={{ whiteSpace: 'break-spaces', color: 'rgb(251, 95, 95)', fontWeight: 500, textAlign: 'center' }}>
                     {t(langKeys.no_reply_use_hsm)}
@@ -863,7 +865,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             }
             <BottomGoToUnder />
         </div >)
-    }else return (
+    } else return (
         <div className={classes.containerResponse}>
             {showReply ?
                 <>
@@ -929,8 +931,8 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                             <TmpRichResponseIcon classes={classes} setText={setText} />
                             <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
                             <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
-                            <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite}/>
-                            <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage}/>
+                            <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite} />
+                            <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage} />
                         </div>
                         <div className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(text || files.filter(x => !!x.url).length > 0) })} onClick={triggerReplyMessage}>
                             <SendIcon />

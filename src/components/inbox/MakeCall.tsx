@@ -26,6 +26,7 @@ import { ITicket } from '@types';
 import { ListItemSkeleton } from 'components';
 import { SearchIcon } from 'icons';
 import { showSnackbar } from 'store/popus/actions';
+import PersonIcon from '@material-ui/icons/Person';
 
 const useStyles = makeStyles(theme => ({
     grey: {
@@ -194,7 +195,7 @@ const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description,
                         <Tooltip title={user}>
                             {image ? <Avatar style={{ width: 30, height: 30 }} src={image} /> :
                                 <Avatar style={{ width: 30, height: 30, fontSize: 18 }} >
-                                    {user?.split(" ").reduce((acc, item) => acc + (acc.length < 2 ? item.substring(0, 1).toUpperCase() : ""), "")}
+                                    <PersonIcon />
                                 </Avatar>
                             }
                         </Tooltip>
@@ -417,7 +418,10 @@ const MakeCall: React.FC = () => {
                                     value={numberVox}
                                     disabled={resExecute.loading || statusCall !== "DISCONNECTED"}
                                     style={{ marginRight: "auto", marginLeft: "auto", width: "400px", marginBottom: 25 }}
-                                    type="number"
+                                    onInput={(e:any)=>{
+                                        let val = e.target.value.replace(/[^0-9*#]/g, "")
+                                        e.target.value = String(val)
+                                    }}
                                     onChange={(e) => setNumberVox(e.target.value)}
                                 />
                             </div>

@@ -210,17 +210,17 @@ const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, placeholder
                         <BlockButton format="block-quote" tooltip='block_quote'>
                             <FormatQuoteIcon />
                         </BlockButton>
-                        {(image && onlyurl) &&
-                            <>
-                                <OnlyURLInsertImageButton>
-                                    <InsertPhotoIcon />
-                                </OnlyURLInsertImageButton> :
-                                <InsertImageButton>
-                                    <InsertPhotoIcon />
-                                </InsertImageButton>
-                            </>
+                        {(image && !onlyurl) && 
+                            <InsertImageButton>
+                                <InsertPhotoIcon />
+                            </InsertImageButton>
                         }
-                        {upload.loading && (
+                        {(image && onlyurl) && 
+                            <OnlyURLInsertImageButton>
+                                <InsertPhotoIcon />
+                            </OnlyURLInsertImageButton>
+                        }
+                        {(false && upload.loading) && (
                             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                                 <CircularProgress size={24} />
                                 <span><strong><Trans i18nKey={langKeys.loadingImage} />...</strong></span>
@@ -846,7 +846,7 @@ const OnlyURLInsertImageButton: FC = ({ children }) => {
     }, [url, editor, clearUrl]);
 
     return (
-        <div>
+        <>
             <Tooltip title={t(langKeys.image) || ''}>
                 <IconButton
                     aria-controls="insert-image-button-rich-text-popup"
@@ -900,7 +900,7 @@ const OnlyURLInsertImageButton: FC = ({ children }) => {
                     </div>
                 </div>
             </Menu>
-        </div>
+        </>
     );
 }
 
@@ -974,7 +974,7 @@ const InsertImageButton: FC = ({ children }) => {
     }, [clearUrl, dispatch]);
 
     return (
-        <div>
+        <>
             <Tooltip title={t(langKeys.image) || ''}>
                 <IconButton
                     aria-controls="insert-image-button-rich-text-popup"
@@ -1070,7 +1070,7 @@ const InsertImageButton: FC = ({ children }) => {
                     </div>
                 </div>
             </Menu>
-        </div>
+        </>
     );
 }
 
