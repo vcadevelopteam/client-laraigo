@@ -1588,7 +1588,7 @@ const useSaveActivityModalStyles = makeStyles(theme => ({
     },
 }));
 
-const initialValue: Descendant[] = [{ type: "paragraph", children: [{ text: "" }] }];
+const initialValue: Descendant[] = [{ type: "paragraph", children: [{ text: "" }], align:"left" }];
 
 export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity, leadid, userid, onSubmit }) => {
     const modalClasses = useSelectPersonModalStyles();
