@@ -640,9 +640,14 @@ const DialogLoadTickets: React.FC<{
         else if (file?.type === 'text/csv') {
             data = await uploadCSV(file);
         }
-        dispatch(importTicket({data}));
-        dispatch(showBackdrop(true));
-        setWaitUpload(true);
+        if (data.length > 0) {
+            dispatch(importTicket({data}));
+            dispatch(showBackdrop(true));
+            setWaitUpload(true);
+        }
+        else {
+            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.file_without_data) }))
+        }
     });
     
     const handleUpload = async (files: any) => {
