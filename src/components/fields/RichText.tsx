@@ -15,10 +15,10 @@ import {
     FormatSize as FormatSizeIcon,
     Check as CheckIcon,
     FormatColorText as FormatColorTextIcon,
-    FormatAlignLeft as FormatAlignLeftIcon,
     FormatAlignRight as FormatAlignRightIcon,
     FormatAlignCenter as FormatAlignCenterIcon,
     EmojiEmotions as EmojiEmotionsIcon,
+    FormatAlignLeft as FormatAlignLeftIcon,
 } from '@material-ui/icons';
 import { emojis } from "common/constants";
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
@@ -72,11 +72,12 @@ export const toElement = (value: Descendant[], root: FC = ({ children }) => <div
 }
 
 const LIST_TYPES = ['bulleted-list', 'numbered-list'];
-type ElemetType = 'paragraph' | 'block-quote' | 'heading-one' | 'heading-two' | 'list-item' | 'bulleted-list' | 'numbered-list' | 'image-src';
+type ElemetType = 'paragraph' | 'block-quote' | 'heading-one' | 'heading-two' | 'list-item' | 'bulleted-list' | 'numbered-list' | 'image-src' | "alignment";
 interface CustomElement extends Object {
     type: ElemetType;
     children: CustomElement[] | CustomText[];
     url?: string | null;
+    align: "left" | "center" | "right";
 }
 
 interface CustomText extends Object {
@@ -226,6 +227,8 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisNoShow = [
     )
 }
 
+const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify']
+
 /**TODO: Validar que la URL de la imagen sea valida en el boton de insertar imagen */
 const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, placeholder, image = true, spellCheck, error, positionEditable = "bottom", children, onlyurl = false
 ,endinput, emojiNoShow, emojiFavorite, emoji=false,  ...boxProps }) => {
@@ -276,7 +279,7 @@ const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, placeholder
                         </MarkButton>
 
                         <TextColor tooltip='size'></TextColor>
-                        <Alignment tooltip='size'></Alignment>
+                        <Alignment tooltip='alignment'></Alignment>
 
                         <BlockButton format="numbered-list" tooltip='numbered_list'>
                             <FormatListNumberedIcon />
@@ -397,7 +400,11 @@ const renderLeaf: RenderLeaf = ({ attributes = {}, children, leaf }) => {
 
 /**Aplicar formato en bloque */
 const toggleBlock = (editor: BaseEditor & ReactEditor, format: ElemetType) => {
-    const isActive = isBlockActive(editor, format);
+    const isActive = isBlockActive(
+        editor,
+        format,
+        TEXT_ALIGN_TYPES.includes(format) ? 'align' : 'type'
+    )
     const isList = LIST_TYPES.includes(format);
 
     Transforms.unwrapNodes(editor, {
@@ -413,7 +420,7 @@ const toggleBlock = (editor: BaseEditor & ReactEditor, format: ElemetType) => {
     Transforms.setNodes<SlateElement>(editor, newProperties);
 
     if (!isActive && isList) {
-        const block: CustomElement = { type: format, children: [] };
+        const block: CustomElement = { type: format, children: [], align: 'left' };
         Transforms.wrapNodes(editor, block);
     }
 }
@@ -433,7 +440,17 @@ const toggleFontSize = (editor: BaseEditor & ReactEditor, value: string) => {
         Editor.addMark(editor, 'fontsize', value);
     }
 }
-const toggleAlignment = (editor: BaseEditor & ReactEditor, value: string) => {
+const toggleAlignment = (editor: BaseEditor & ReactEditor, value: "left" | "center" | "right") => {
+    const isActive = isBlockActive(
+        editor,
+        "paragraph",
+        'align'
+    )
+    let newProperties: Partial<SlateElement>
+    newProperties = {
+        align: isActive ? undefined : value,
+    }
+    Transforms.setNodes<SlateElement>(editor, newProperties)
     if (value === "left") {
         Editor.removeMark(editor, 'textalign');
     } else {
@@ -566,7 +583,7 @@ const Alignment: FC<FontFamilyProps> = ({ tooltip = '', children, onClick, ...pr
         setAnchorEl(event.currentTarget);
     };
 
-    const handleClose = (value: string) => {
+    const handleClose = (value: "left" | "center" | "right") => {
         toggleAlignment(editor, value);
         setAnchorEl(null);
     };
@@ -581,8 +598,8 @@ const Alignment: FC<FontFamilyProps> = ({ tooltip = '', children, onClick, ...pr
                         aria-haspopup="true"
                         onClick={handleClick}
                     >
-                        {textalign === "left" && <FormatAlignLeftIcon />}
-                        {textalign === "end" && <FormatAlignRightIcon />}
+                        {(textalign !== "right" && textalign !== "center") && <FormatAlignLeftIcon />}
+                        {textalign === "right" && <FormatAlignRightIcon />}
                         {textalign === "center" && <FormatAlignCenterIcon />}
                         <ArrowDropDownIcon />
                     </IconButton>
@@ -608,7 +625,7 @@ const Alignment: FC<FontFamilyProps> = ({ tooltip = '', children, onClick, ...pr
                     <MenuItem onClick={() => handleClose("center")} value="center">
                         <div><FormatAlignCenterIcon /></div>
                     </MenuItem>
-                    <MenuItem onClick={() => handleClose("end")} value="end">
+                    <MenuItem onClick={() => handleClose("right")} value="right">
                         <div><FormatAlignRightIcon /></div>
                     </MenuItem>
                 </Menu>
@@ -790,17 +807,21 @@ const toggleMark = (editor: BaseEditor & ReactEditor, format: keyof Omit<CustomT
     }
 }
 
-const isBlockActive = (editor: BaseEditor & ReactEditor, format: ElemetType) => {
-    const { selection } = editor;
-    if (!selection) return false;
-
-    const iterator = Editor.nodes(editor, {
-        at: Editor.unhangRange(editor, selection),
-        match: n => !Editor.isEditor(n) && SlateElement.isElement(n) && n.type === format,
-    });
-
-    const [match] = Array.from(iterator);
-    return !!match;
+const isBlockActive = (editor: BaseEditor & ReactEditor, format: ElemetType, blockType: "type"|"align" = 'type') => {
+    const { selection } = editor
+    if (!selection) return false
+  
+    const [match] = Array.from(
+        Editor.nodes(editor, {
+            at: Editor.unhangRange(editor, selection),
+            match: n =>
+                !Editor.isEditor(n) &&
+                SlateElement.isElement(n) &&
+                n[blockType] === format,
+        })
+    )
+  
+    return !!match
 }
 
 interface MarkButtonProps extends IconButtonProps {
@@ -1167,14 +1188,14 @@ const isUrl = (src: string | undefined | null) => {
 
 const insertImage = (editor: BaseEditor & ReactEditor, url: string | null) => {
     const text: CustomText = { text: '' };
-    const image: CustomElement = { type: 'image-src', url, children: [text] };
+    const image: CustomElement = { type: 'image-src', url, children: [text], align: 'left' };
     Transforms.insertNodes(editor, image);
 
     const nextNode = Editor.next(editor);
     if (nextNode) return;
 
     const endDummyText: CustomText = { text: '' };
-    const endDummyElement: CustomElement = { type: 'paragraph', url: undefined, children: [endDummyText] };
+    const endDummyElement: CustomElement = { type: 'paragraph', url: undefined, children: [endDummyText], align: 'left' };
     Transforms.insertNodes(editor, endDummyElement);
 }
 
