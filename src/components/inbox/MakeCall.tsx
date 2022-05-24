@@ -363,7 +363,7 @@ const MakeCall: React.FC = () => {
                         variant="fullWidth"
                         style={{ borderBottom: '1px solid white', backgroundColor: '#7721ad' }}
                         textColor="primary"
-                        onChange={(_, value) => setPageSelected(value)}
+                        onChange={(_, value) => {setPageSelected(value); setGlobalFilter("")}}
                     >
                         <AntTab label={<ContactPhoneIcon style={{ color: pageSelected === 0 ? "gold" : "white" }} />} />
                         <AntTab label={<DialpadIcon style={{ color: pageSelected === 1 ? "gold" : "white" }} />} />
