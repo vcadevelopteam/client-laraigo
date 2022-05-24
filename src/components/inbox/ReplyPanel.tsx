@@ -474,7 +474,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const [richResponseToShow, setRichResponseToShow] = useState<Dictionary[]>([])
     const [showReply, setShowReply] = useState(true);
     const [fileimage, setfileimage] = useState<any>(null);
-    const [bodyobject, setBodyobject] = useState<Descendant[]>([{ "type": "paragraph", "children": [{ "text": "" }] }])
+    const [bodyobject, setBodyobject] = useState<Descendant[]>([{ "type": "paragraph",  align:"left", "children": [{ "text": "" }] }])
     const [refresh, setrefresh] = useState(1)
     const [flagundo, setflagundo] = useState(false)
     const [flagredo, setflagredo] = useState(false)
@@ -497,12 +497,12 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             setShowReply(true)
 
         if (ticketSelected?.communicationchanneltype === "MAIL") {
-            setBodyobject([{ "type": "paragraph", "children": [{ "text": "" }] }])
-            setText(renderToString(toElement([{ "type": "paragraph", "children": [{ "text": "" }] }])))
+            setBodyobject([{ "type": "paragraph", align:"left", "children": [{ "text": "" }] }])
+            setText(renderToString(toElement([{ "type": "paragraph", align:"left", "children": [{ "text": "" }] }])))
             setrefresh(refresh * -1)
         } else {
             setText("")
-            setBodyobject([{ "type": "paragraph", "children": [{ "text": "" }] }])
+            setBodyobject([{ "type": "paragraph", align:"left", "children": [{ "text": "" }] }])
         }
     }, [ticketSelected])
 
@@ -623,7 +623,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                         }));
                         setText("");
                         setrefresh(refresh * -1)
-                        setBodyobject([{ "type": "paragraph", "children": [{ "text": "" }] }]);
+                        setBodyobject([{ "type": "paragraph", align:"left", "children": [{ "text": "" }] }]);
 
                     } else {
                         dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
