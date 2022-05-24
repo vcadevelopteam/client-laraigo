@@ -74,7 +74,7 @@ export const getTicketsByPerson = (personid: number, conversationid: number): IR
 
 export const getInteractionsByConversation = (conversationid: number, lock: boolean, conversationold: number): IRequestBody => ({
     method: "UFN_CONVERSATION_SEL_INTERACTION",
-    key: "UFN_CONVERSATION_SEL_INTERACTION",
+    key: `UFN_CONVERSATION_SEL_INTERACTION_${conversationid}`,
     parameters: { conversationid, lock, conversationold }
 })
 
