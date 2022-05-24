@@ -16,7 +16,7 @@ import PhoneCallbackIcon from '@material-ui/icons/PhoneCallback';
 import { IconButton } from '@material-ui/core';
 import { Call } from 'voximplant-websdk/Call/Call';
 import CallEndIcon from '@material-ui/icons/CallEnd';
-import PhoneForwardedIcon from '@material-ui/icons/PhoneForwarded';
+import { PhoneCalling } from 'icons';
 
 const useStyles = makeStyles((theme) => ({
     label: {
@@ -226,7 +226,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                     <IconButton
                         style={{ width: "35px", height: "35px", borderRadius: "50%", backgroundColor: '#ffd33a', cursor: "default" }}
                     >
-                        <PhoneForwardedIcon style={{ color: "white", width: "30px", height: "30px" }} />
+                        <PhoneCalling style={{ color: "white", width: "30px", height: "30px" }} />
                     </IconButton>
                 </div>
             )}
