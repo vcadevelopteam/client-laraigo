@@ -1,4 +1,4 @@
-import { Box, BoxProps, IconButton, IconButtonProps, Menu, TextField, Toolbar, makeStyles, Button, InputAdornment, Tabs, FormHelperText, CircularProgress, Tooltip, InputLabel, SelectProps, FormControl, Select, MenuItem } from '@material-ui/core';
+import { Box, BoxProps, IconButton, IconButtonProps, Menu, TextField, Toolbar, makeStyles, Button, InputAdornment, Tabs, FormHelperText, CircularProgress, Tooltip, InputLabel, SelectProps, FormControl, Select, MenuItem, ClickAwayListener } from '@material-ui/core';
 import {
     FormatBold as FormatBoldIcon,
     FormatItalic as FormatItalicIcon,
@@ -18,7 +18,9 @@ import {
     FormatAlignLeft as FormatAlignLeftIcon,
     FormatAlignRight as FormatAlignRightIcon,
     FormatAlignCenter as FormatAlignCenterIcon,
+    EmojiEmotions as EmojiEmotionsIcon,
 } from '@material-ui/icons';
+import { emojis } from "common/constants";
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { createEditor, BaseEditor, Descendant, Transforms, Editor, Element as SlateElement } from 'slate';
 import { Slate, Editable, withReact, ReactEditor, useSlate, useSlateStatic, useSelected, useFocused } from 'slate-react';
@@ -33,6 +35,8 @@ import { resetUploadFile, uploadFile } from 'store/main/actions';
 import { useDispatch } from 'react-redux';
 import { showSnackbar } from 'store/popus/actions';
 import { ArrowDropDownIcon } from 'icons';
+import { Picker } from 'emoji-mart';
+import { Dictionary } from '@types';
 
 export const renderToString = (element: React.ReactElement) => {
     return ReactDomServer.renderToString(element);
@@ -108,6 +112,9 @@ interface RichTextProps extends Omit<BoxProps, 'onChange'> {
     endinput?: React.ReactNode;
     positionEditable?: 'top' | 'bottom';
     refresh?: number;
+    emojiNoShow?: any;
+    emojiFavorite?: any;
+    emoji?:Boolean;
 }
 
 interface RenderElementProps {
@@ -141,8 +148,87 @@ const useRichTextStyles = makeStyles(theme => ({
     }
 }));
 
+interface EmojiPickerZyxProps {
+    emojisNoShow?: string[];
+    emojiFavorite?: string[];
+    onSelect: (e: any) => void;
+    style?: React.CSSProperties;
+    icon?: (onClick: () => void) => React.ReactNode;
+}
+const emojiPickerStyle = makeStyles({
+    root: {
+        cursor: 'pointer',
+        position: 'relative',
+        '&:hover': {
+            backgroundColor: '#EBEAED',
+            borderRadius: 4
+        }
+    },
+    spanemoji: {
+        flex: "0 0 auto",
+        color: "rgba(0, 0, 0, 0.54)",
+        padding: "12px",
+        overflow: "visible",
+        fontSize: "1.5rem",
+        textAlign: "center",
+        transition: "background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+        borderRadius: "50%",
+    }
+});
+
+
+
+const EMOJISINDEXED = emojis.reduce((acc, item) => ({ ...acc, [item.emojihex]: item }), {});
+
+export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisNoShow = [], emojiFavorite = [], onSelect, icon }) => {
+    const [open, setOpen] = React.useState(false);
+    const classes = emojiPickerStyle();
+    const handleClick = () => setOpen((prev) => !prev);
+    const { t } = useTranslation();
+    const handleClickAway = () => setOpen(false);
+    return (
+        <ClickAwayListener onClickAway={handleClickAway}>
+            <span className={classes.spanemoji}>
+                {icon?.(handleClick) || <Tooltip title={t(langKeys.send_emoji) + ""} arrow placement="top">
+                    <EmojiEmotionsIcon className={classes.root} onClick={handleClick} />
+                </Tooltip>}
+                {open && (
+                    <div style={{
+                        position: 'absolute',
+                        bottom: 100
+                    }}>
+                        <Picker
+                            onSelect={(e)=>{setOpen(false);onSelect(e)}}
+                            native={true}
+                            sheetSize={32}
+                            i18n={{
+                                search: t(langKeys.search),
+                                categories: {
+                                    search: t(langKeys.search_result),
+                                    recent: t(langKeys.favorites),
+                                    people: t(langKeys.emoticons),
+                                    nature: t(langKeys.animals),
+                                    foods: t(langKeys.food),
+                                    activity: t(langKeys.activities),
+                                    places: t(langKeys.travel),
+                                    objects: t(langKeys.objects),
+                                    symbols: t(langKeys.symbols),
+                                    flags: t(langKeys.flags),
+                                }
+                            }}
+                            recent={emojiFavorite.length > 0 ? emojiFavorite?.map(x => (EMOJISINDEXED as Dictionary)?.[x || ""]?.id || '') : undefined}
+                            emojisToShowFilter={emojisNoShow && emojisNoShow.length > 0 ? (emoji: any) => emojisNoShow.map(x => x.toUpperCase()).indexOf(emoji.unified.toUpperCase()) === -1 : undefined}
+                        />
+                    </div>
+                )}
+            </span>
+        </ClickAwayListener>
+    )
+}
+
 /**TODO: Validar que la URL de la imagen sea valida en el boton de insertar imagen */
-const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, placeholder, image = true, spellCheck, error, positionEditable = "bottom", children, onlyurl = false,endinput, ...boxProps }) => {
+const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, placeholder, image = true, spellCheck, error, positionEditable = "bottom", children, onlyurl = false
+,endinput, emojiNoShow, emojiFavorite, emoji=false,  ...boxProps }) => {
     const classes = useRichTextStyles();
     // Create a Slate editor object that won't change across renders.
     const editor = useMemo(() => withImages(withHistory(withReact(createEditor()))), []);
@@ -176,6 +262,7 @@ const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, placeholder
                         <div style={{ display: "inline-block" }}>
                             {children}
                         </div>
+                        {emoji && <EmojiPickerZyx onSelect={e => editor.insertText(e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite} />}
                         <FontFamily tooltip='font'></FontFamily>
                         <FormatSizeMenu tooltip='size'></FormatSizeMenu>
                         <MarkButton format="bold" tooltip='bold'>
@@ -210,17 +297,17 @@ const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, placeholder
                         <BlockButton format="block-quote" tooltip='block_quote'>
                             <FormatQuoteIcon />
                         </BlockButton>
-                        {(image && !onlyurl) && 
-                            <InsertImageButton>
-                                <InsertPhotoIcon />
-                            </InsertImageButton>
+                        {(image && onlyurl) &&
+                            <>
+                                <OnlyURLInsertImageButton>
+                                    <InsertPhotoIcon />
+                                </OnlyURLInsertImageButton> :
+                                <InsertImageButton>
+                                    <InsertPhotoIcon />
+                                </InsertImageButton>
+                            </>
                         }
-                        {(image && onlyurl) && 
-                            <OnlyURLInsertImageButton>
-                                <InsertPhotoIcon />
-                            </OnlyURLInsertImageButton>
-                        }
-                        {(false && upload.loading) && (
+                        {upload.loading && (
                             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                                 <CircularProgress size={24} />
                                 <span><strong><Trans i18nKey={langKeys.loadingImage} />...</strong></span>
@@ -846,7 +933,7 @@ const OnlyURLInsertImageButton: FC = ({ children }) => {
     }, [url, editor, clearUrl]);
 
     return (
-        <>
+        <div>
             <Tooltip title={t(langKeys.image) || ''}>
                 <IconButton
                     aria-controls="insert-image-button-rich-text-popup"
@@ -900,7 +987,7 @@ const OnlyURLInsertImageButton: FC = ({ children }) => {
                     </div>
                 </div>
             </Menu>
-        </>
+        </div>
     );
 }
 
@@ -974,7 +1061,7 @@ const InsertImageButton: FC = ({ children }) => {
     }, [clearUrl, dispatch]);
 
     return (
-        <>
+        <div>
             <Tooltip title={t(langKeys.image) || ''}>
                 <IconButton
                     aria-controls="insert-image-button-rich-text-popup"
@@ -1070,7 +1157,7 @@ const InsertImageButton: FC = ({ children }) => {
                     </div>
                 </div>
             </Menu>
-        </>
+        </div>
     );
 }
 

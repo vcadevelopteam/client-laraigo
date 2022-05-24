@@ -772,6 +772,9 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                     onKeyPress={handleKeyPress}
                                     refresh={refresh}
                                     placeholder="Send your message..."
+                                    emojiNoShow={emojiNoShow}
+                                    emoji={true}
+                                    emojiFavorite={emojiFavorite}
                                     endinput={
                                         <div style={{ display: 'block' }}>
                                             <div style={{ marginLeft: "auto", marginRight: 0 }} className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(renderToString(toElement(bodyobject)) !== `<div data-reactroot=""><p><span></span></p></div>` || files.filter(x => !!x.url).length > 0) })} onClick={triggerReplyMessage}>
@@ -810,7 +813,6 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                                     <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
                                                     <TmpRichResponseIcon classes={classes} setText={setText} /> final
                                                 */}
-                                            <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite} />
                                             <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
                                         </div>
                                     </div>
