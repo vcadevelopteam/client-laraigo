@@ -641,34 +641,38 @@ export const getDataTicket = (state: IState): IState => ({
 });
 
 export const getDataTicketSuccess = (state: IState, action: IAction): IState => {
-    return {
-        ...state,
-        ticketSelected: { ...state.ticketSelected!!, isAnswered: action.payload.data[0].data.some((x: IInteraction) => x.userid === state.agentSelected?.userid && x.interactiontype !== "LOG") },
-        interactionBaseList: action.payload.data?.[0]?.data || [],
-        interactionList: {
-            data: getGroupInteractions(action.payload.data[0].data, state.hideLogsOnTicket),
-            count: action.payload.count,
-            loading: false,
-            error: false,
-        },
-        isOnBottom: null,
-        configurationVariables: {
-            data: action.payload.data[2].data.filter((x: any) => !!x.visible).sort((a: any, b: any) => (a.priority < b.priority) ? 1 : ((b.priority < a.priority) ? -1 : 0)) || [],
-            count: action.payload.count,
-            loading: false,
-            error: false,
-        },
-        richResponseList: {
-            data: action.payload.data[3].data.map((x: any) => JSON.parse(x.block)) || [],
-            count: action.payload.count,
-            loading: false,
-            error: false,
-        },
-        person: {
-            data: action.payload.data[1].data && action.payload.data[1].data.length > 0 ? action.payload.data[1].data[0] : null,
-            loading: false,
-            error: false,
-        },
+    if (action.payload.data[0].key === `UFN_CONVERSATION_SEL_INTERACTION_${state.ticketSelected?.conversationid}`) {
+        return {
+            ...state,
+            ticketSelected: { ...state.ticketSelected!!, isAnswered: action.payload.data[0].data.some((x: IInteraction) => x.userid === state.agentSelected?.userid && x.interactiontype !== "LOG") },
+            interactionBaseList: action.payload.data?.[0]?.data || [],
+            interactionList: {
+                data: getGroupInteractions(action.payload.data[0].data, state.hideLogsOnTicket),
+                count: action.payload.count,
+                loading: false,
+                error: false,
+            },
+            isOnBottom: null,
+            configurationVariables: {
+                data: action.payload.data[2].data.filter((x: any) => !!x.visible).sort((a: any, b: any) => (a.priority < b.priority) ? 1 : ((b.priority < a.priority) ? -1 : 0)) || [],
+                count: action.payload.count,
+                loading: false,
+                error: false,
+            },
+            richResponseList: {
+                data: action.payload.data[3].data.map((x: any) => JSON.parse(x.block)) || [],
+                count: action.payload.count,
+                loading: false,
+                error: false,
+            },
+            person: {
+                data: action.payload.data[1].data && action.payload.data[1].data.length > 0 ? action.payload.data[1].data[0] : null,
+                loading: false,
+                error: false,
+            },
+        }
+    } else {
+        return state;
     }
 };
 

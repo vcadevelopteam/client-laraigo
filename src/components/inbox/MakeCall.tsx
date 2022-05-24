@@ -192,13 +192,11 @@ const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description,
             <MenuItem button className={classes.root} onClick={onClick}>
                 <div style={{ gap: 8, alignItems: 'center', width: '100%', display: "grid", gridTemplateColumns: '[col1] 30px [col2] auto  [col3] 90px' }}>
                     <div style={{ gridColumnStart: "col1" }}>
-                        <Tooltip title={user}>
-                            {image ? <Avatar style={{ width: 30, height: 30 }} src={image} /> :
-                                <Avatar style={{ width: 30, height: 30, fontSize: 18 }} >
-                                    <PersonIcon />
-                                </Avatar>
-                            }
-                        </Tooltip>
+                        {image ? <Avatar style={{ width: 30, height: 30 }} src={image} /> :
+                            <Avatar style={{ width: 30, height: 30, fontSize: 18 }} >
+                                <PersonIcon />
+                            </Avatar>
+                        }
                     </div>
                     <div style={{ gridColumnStart: "col2" }}>
                         <div className={clsx({

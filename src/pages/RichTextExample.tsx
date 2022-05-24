@@ -11,7 +11,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-const initialValue2: Descendant[] = [{ "type": "paragraph", "children": [{ "text": "aaaa" }] }];
+const initialValue2: Descendant[] = [{ "type": "paragraph", "children": [{ "text": "aaaa" }], align: "left" }];
 const initialValue: Descendant[] = [
     {
         type: "paragraph",
@@ -26,7 +26,7 @@ const initialValue: Descendant[] = [
             {
                 text: "."
             }
-        ]
+        ], align: "left"
     },
     {
         type: "paragraph",
@@ -35,7 +35,8 @@ const initialValue: Descendant[] = [
                 text: "sdsd",
                 underline: true
             }
-        ]
+        ], 
+        align: "left"
     },
     {
         type: "numbered-list",
@@ -48,7 +49,7 @@ const initialValue: Descendant[] = [
                         text: "qqqq",
                         bold: true
                     }
-                ]
+                ], align: "left",
             },
             {
                 type: "list-item",
@@ -58,7 +59,7 @@ const initialValue: Descendant[] = [
                         bold: true,
                         text: "sddf"
                     }
-                ]
+                ], align: "left",
             },
             {
                 type: "list-item",
@@ -68,9 +69,9 @@ const initialValue: Descendant[] = [
                         bold: true,
                         text: "dfdf"
                     }
-                ]
+                ], align: "left",
             }
-        ]
+        ], align: "left",
     },
     {
         type: "image-src",
@@ -79,7 +80,7 @@ const initialValue: Descendant[] = [
             {
                 text: ""
             }
-        ]
+        ], align: "left"
     },
     {
         type: "paragraph",
@@ -97,7 +98,7 @@ const initialValue: Descendant[] = [
                 code: true,
                 text: "vsd"
             }
-        ]
+        ], align: "left"
     },
     {
         type: "bulleted-list",
@@ -108,7 +109,7 @@ const initialValue: Descendant[] = [
                     {
                         text: "sd"
                     }
-                ]
+                ], align: "left",
             },
             {
                 type: "list-item",
@@ -116,7 +117,7 @@ const initialValue: Descendant[] = [
                     {
                         text: "dfdf"
                     }
-                ]
+                ], align: "left",
             },
             {
                 type: "list-item",
@@ -124,9 +125,10 @@ const initialValue: Descendant[] = [
                     {
                         text: "asd"
                     }
-                ]
+                ], align: "left",
             }
-        ]
+        ], 
+        align: "left"
     }
 ];
 

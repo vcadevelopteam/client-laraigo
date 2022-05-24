@@ -1060,6 +1060,7 @@ const translation: LangKeys = {
     order: 'Orden',
     beautify: 'Embellecer',
     invalidjson: 'Json inválido',
+    invalid_file: 'Archivo inválido',
     invalid_date_format: 'Formato de fecha inválida',
     invalid_time_format: 'Formato de tiempo inválido',
     test: 'Probar',
