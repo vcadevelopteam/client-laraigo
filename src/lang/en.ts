@@ -849,6 +849,7 @@ const translation: LangKeys = {
     informationFCR: "Information FCR",
     beautify: 'Beautify',
     invalidjson: 'Invalid json',
+    invalid_file: 'Invalid file',
     invalid_date_format: 'Invalid date format',
     cancelsuscriptionconfirmation: "Do you want to cancel your subscription?",
     detailchangeplan1: "For more details about the plans, visit https://laraigo.com/ and click on Pricing",
