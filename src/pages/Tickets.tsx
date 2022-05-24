@@ -647,8 +647,13 @@ const DialogLoadTickets: React.FC<{
     
     const handleUpload = async (files: any) => {
         const file = files[0];
-        setValue('filename', file?.name);
-        setFile(file);
+        if (file.type === 'text/csv') {
+            setValue('filename', file?.name);
+            setFile(file);
+        }
+        else {
+            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.invalid_file) }))
+        }
     }
 
     const handleTemplate = () => {
