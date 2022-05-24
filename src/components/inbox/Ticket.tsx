@@ -221,12 +221,12 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                     </IconButton>
                 </div>
             }
-            {(!!callVoxi && statusCall === "CONNECTING" && callVoxiTmp.type === "OUTBOUND") && (
+            {(!callVoxi && statusCall !== "CONNECTING" && callVoxiTmp.type !== "OUTBOUND") && (
                 <div style={{ flex: 1 }}>
                     <IconButton
                         style={{ width: "35px", height: "35px", borderRadius: "50%", backgroundColor: '#ffd33a', cursor: "default" }}
                     >
-                        <PhoneCalling style={{ color: "white", width: "30px", height: "30px" }} />
+                        <PhoneCalling className={localclasses.iconcall}/>
                     </IconButton>
                 </div>
             )}

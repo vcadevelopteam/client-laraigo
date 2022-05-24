@@ -383,7 +383,15 @@ const MakeCall: React.FC = () => {
                                     lazy
                                 />
                             </div>
-                            {advisors?.loading ? <ListItemSkeleton /> : advisors.data?.filter((x: any) => (x.personname?.toLowerCase()?.includes(filter.toLowerCase()) || x.phone?.includes(filter))).map((e: any, i: number) => (
+                            {advisors?.loading ? <ListItemSkeleton /> : advisors.data?.filter((x: any) => {
+                                if (filter === "") {
+                                    return true;
+                                }
+                                if(filter.toLowerCase() === "sin nombre"){
+                                    return (x.personname?.trim() === x.phone?.trim())
+                                }
+                                return (x.personname?.toLowerCase()?.includes(filter.toLowerCase()) || x.phone?.includes(filter))
+                            }).map((e: any, i: number) => (
                                 <NotificaionMenuItem
                                     onClick={() => {
                                         if (statusCall === "DISCONNECTED" && !waiting2) {
