@@ -1293,6 +1293,7 @@ export const langKeys = {
     order: 'order',
     beautify: 'beautify',
     invalidjson: 'invalidjson',
+    invalid_file: 'invalid_file',
     invalid_date_format: 'invalid_date_format',
     invalid_time_format: 'invalid_time_format',
     test: 'test',
