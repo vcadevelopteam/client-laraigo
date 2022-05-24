@@ -652,7 +652,7 @@ const DialogLoadTickets: React.FC<{
     
     const handleUpload = async (files: any) => {
         const file = files[0];
-        if (file.type === 'text/csv') {
+        if (file?.type === 'text/csv') {
             setValue('filename', file?.name);
             setFile(file);
         }
