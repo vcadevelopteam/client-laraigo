@@ -226,7 +226,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                     </IconButton>
                 </div>
             }
-            {(!callVoxi && statusCall !== "CONNECTING" && callVoxiTmp.type !== "OUTBOUND") && (
+            {(!!callVoxi && statusCall === "CONNECTING" && callVoxiTmp.type === "OUTBOUND") && (
                 <div style={{ flex: 1 }}>
                     <IconButton
                         className={localclasses.phoneCallingIcon}
