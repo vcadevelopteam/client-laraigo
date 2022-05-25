@@ -345,25 +345,26 @@ const NormalLine: FC<{ attributes?: any, children: React.ReactNode }> = ({ attri
 
 /**Renderiza el texto seleccionado con cierto estilo */
 const renderElement: RenderElement = ({ attributes = {}, children, element, isStatic = false }) => {
+    const style = { textAlign: element.align }
     switch (element.type) {
         case 'block-quote':
-            return <blockquote {...attributes}>{children}</blockquote>;
+            return <blockquote style={style} {...attributes}>{children}</blockquote>;
         case 'bulleted-list':
-            return <ul {...attributes}>{children}</ul>;
+            return <ul style={style} {...attributes}>{children}</ul>;
         case 'heading-one':
-            return <h1 {...attributes}>{children}</h1>;
+            return <h1 style={style} {...attributes}>{children}</h1>;
         case 'heading-two':
-            return <h2 {...attributes}>{children}</h2>;
+            return <h2 style={style} {...attributes}>{children}</h2>;
         case 'list-item':
-            return <li {...attributes}>{children}</li>;
+            return <li style={style} {...attributes}>{children}</li>;
         case 'numbered-list':
-            return <ol {...attributes}>{children}</ol>;
+            return <ol style={style} {...attributes}>{children}</ol>;
         case 'image-src':
             if (isStatic === true) return <StaticImage element={element} children={children} />;
             return <Image element={element} attributes={attributes} children={children} />;
         default:
             // element.type: paragraph
-            return <p {...attributes}>{children}</p>;
+            return <p style={style} {...attributes}>{children}</p>;
     }
 }
 

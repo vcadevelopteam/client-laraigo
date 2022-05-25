@@ -317,7 +317,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
             </div>
         );
-    }else if (interactiontype === "image")
+    }else if (interactiontype === "image" || interactiontype === "comment-image")
         return (
             <div title={convertLocalDate(createdate).toLocaleString()} className={classes.interactionImage}>
                 <img
