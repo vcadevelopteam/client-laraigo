@@ -10,19 +10,21 @@ import { getTicketsPerson, showInfoPanel, updatePerson } from 'store/inbox/actio
 import { GetIcon, FieldEdit, FieldSelect, DialogInteractions, AntTab, FieldEditMulti } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
-import { convertLocalDate, getValuesFromDomain, insPersonBody } from 'common/helpers';
+import { convertLocalDate, getConversationClassification2, getValuesFromDomain, insertClassificationConversation, insPersonBody } from 'common/helpers';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import { Dictionary } from '@types';
 import EditIcon from '@material-ui/icons/Edit';
 import SaveIcon from '@material-ui/icons/Save';
 import { useForm } from 'react-hook-form';
-import { getMultiCollectionAux, resetMultiMainAux, execute } from 'store/main/actions';
+import { getMultiCollectionAux, resetMultiMainAux, execute, getCollectionAux2 } from 'store/main/actions';
 import Fab from '@material-ui/core/Fab';
 import { CircularProgress } from '@material-ui/core';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import ImportExportIcon from '@material-ui/icons/ImportExport';
 import clsx from 'clsx';
+import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const useStyles = makeStyles((theme) => ({
     containerInfo: {
@@ -237,12 +239,14 @@ const InfoTab: React.FC = () => {
                             onChange={(value) => setValue('firstname', value)}
                             valueDefault={getValues('firstname')}
                             error={errors?.firstname?.message}
+                            maxLength={50}
                         />
                         <FieldEdit
                             label={t(langKeys.lastname)}
                             onChange={(value) => setValue('lastname', value)}
                             valueDefault={getValues('lastname')}
                             error={errors?.lastname?.message}
+                            maxLength={50}
                         />
                         <FieldSelect
                             onChange={(value) => setValue('documenttype', value?.domainvalue)}
@@ -262,30 +266,35 @@ const InfoTab: React.FC = () => {
                             valueDefault={getValues('documentnumber')}
                             type="number"
                             error={errors?.documentnumber?.message}
+                            maxLength={50}
                         />
                         <FieldEdit
                             label={t(langKeys.email)}
                             onChange={(value) => setValue('email', value)}
                             valueDefault={getValues('email')}
                             error={errors?.email?.message}
+                            maxLength={50}
                         />
                         <FieldEdit
                             label={t(langKeys.phone)}
                             onChange={(value) => setValue('phone', value)}
                             valueDefault={getValues('phone')}
                             error={errors?.phone?.message}
+                            maxLength={20}
                         />
                         <FieldEdit
                             label={t(langKeys.alternativeEmail)}
                             onChange={(value) => setValue('alternativeemail', value)}
                             valueDefault={getValues('alternativeemail')}
                             error={errors?.alternativeemail?.message}
+                            maxLength={50}
                         />
                         <FieldEdit
                             label={t(langKeys.alternativePhone)}
                             onChange={(value) => setValue('alternativephone', value)}
                             valueDefault={getValues('alternativephone')}
                             error={errors?.alternativephone?.message}
+                            maxLength={20}
                         />
                         <FieldEdit
                             label={t(langKeys.birthday)}
@@ -524,6 +533,77 @@ const Variables: React.FC = () => {
     )
 }
 
+const Classifications: React.FC = () => {
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const classes = useStyles();
+    const dispatch = useDispatch();
+    const { t } = useTranslation();
+    const [classifications, setClassifications] = useState<any[]>([]);
+    const [waitSave, setWaitSave] = useState(false);
+    const tipifyRes = useSelector(state => state.main.execute);
+
+    const mainAux2 = useSelector(state => state.main.mainAux2);
+    const fetchData = () => dispatch(getCollectionAux2(getConversationClassification2(ticketSelected?.conversationid!!)))
+
+    useEffect(() => {
+        dispatch(getCollectionAux2(getConversationClassification2(ticketSelected?.conversationid!!)))
+    }, [])
+    useEffect(() => {
+        if (!tipifyRes.loading && !tipifyRes.error) {
+            fetchData()
+        }
+    }, [tipifyRes])
+
+    useEffect(() => {
+        setClassifications(mainAux2?.data?.reverse()||[])
+    }, [mainAux2])
+
+    useEffect(() => {
+        if (waitSave) {
+            dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+            dispatch(showBackdrop(false));
+            setWaitSave(false);
+        }
+    }, [waitSave])
+
+    const handleDelete = (row: Dictionary) => {
+        console.log(row)
+        console.log(ticketSelected)
+
+        const callback = () => {
+            dispatch(execute(insertClassificationConversation(ticketSelected?.conversationid||0,row.classificationid, row.jobplan, 'DELETE')));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_delete),
+            callback
+        }))
+    }
+    
+    return (
+        <>
+            <div style={{ overflowY: 'auto' }} className="scroll-style-go">
+                <div className={classes.containerInfoClient} style={{ paddingTop: 0, backgroundColor: 'transparent' }}>
+                    {classifications.map((x,i)=>{
+                        return (
+                            <div className={classes.containerPreviewTicket} style={{flexDirection:"initial", alignItems:"center"}} key={x.classificationid}>
+                                <div style={{ flex: 1 }}>
+                                    <div>- {x.path.replace("/"," / ")}</div>
+                                </div>
+                                <DeleteIcon style={{color:"#B6B4BA"}} onClick={()=>{handleDelete(x)}}/>
+                            </div>
+                        )
+                    })}
+                </div>
+            </div>
+
+        </>
+    )
+}
+
 const PreviewTickets: React.FC<{ order: number }> = ({ order }) => {
     const dispatch = useDispatch();
     const classes = useStyles();
@@ -675,7 +755,6 @@ const InfoPanel: React.FC = () => {
     const [pageSelected, setPageSelected] = useState(0);
     const [order, setOrder] = useState(-1)
     const { t } = useTranslation();
-
     return (
         <div className={classes.containerInfo}>
             <InfoClient />
@@ -692,11 +771,13 @@ const InfoPanel: React.FC = () => {
                 <AntTab label="Tickets" icon={<ImportExportIcon onClick={() => setOrder(order * -1)} />} />
                 <AntTab icon={<AttachFileIcon />} />
                 <AntTab label="Variables" />
+                <AntTab label={t(langKeys.classification_plural)} />
             </Tabs>
             {pageSelected === 0 && <InfoTab />}
             {pageSelected === 1 && <PreviewTickets order={order} />}
             {pageSelected === 2 && <Attachments />}
             {pageSelected === 3 && <Variables />}
+            {pageSelected === 4 && <Classifications />}
         </div>
     );
 }
