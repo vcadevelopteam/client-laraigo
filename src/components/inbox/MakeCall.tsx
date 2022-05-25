@@ -385,7 +385,7 @@ const MakeCall: React.FC = () => {
                             </div>
                             {advisors?.loading ? <ListItemSkeleton /> : advisors.data?.filter((x: any) => {
                                 if (filter === "") {
-                                    return true;
+                                    return false;
                                 }
                                 if(filter.toLowerCase() === "sin nombre"){
                                     return (x.personname?.trim() === x.phone?.trim())
