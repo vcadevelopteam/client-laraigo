@@ -779,6 +779,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                     positionEditable="top"
                                     spellCheck
                                     onKeyPress={handleKeyPress}
+                                    quickReplies={multiData?.data[4].data || []}
                                     refresh={refresh}
                                     placeholder="Send your message..."
                                     emojiNoShow={emojiNoShow}
@@ -816,7 +817,6 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                                     <RedoIcon />
                                                 </Tooltip>
                                             </IconButton>
-                                            <QuickReplyIcon classes={classes} setText={setText} />
                                             {/*
                                                     <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage} />
                                                     <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
