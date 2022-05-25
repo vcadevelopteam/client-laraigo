@@ -363,7 +363,7 @@ const MakeCall: React.FC = () => {
                         variant="fullWidth"
                         style={{ borderBottom: '1px solid white', backgroundColor: '#7721ad' }}
                         textColor="primary"
-                        onChange={(_, value) => setPageSelected(value)}
+                        onChange={(_, value) => {setPageSelected(value); setGlobalFilter("")}}
                     >
                         <AntTab label={<ContactPhoneIcon style={{ color: pageSelected === 0 ? "gold" : "white" }} />} />
                         <AntTab label={<DialpadIcon style={{ color: pageSelected === 1 ? "gold" : "white" }} />} />
@@ -383,7 +383,15 @@ const MakeCall: React.FC = () => {
                                     lazy
                                 />
                             </div>
-                            {advisors?.loading ? <ListItemSkeleton /> : advisors.data?.filter((x: any) => (x.personname?.toLowerCase()?.includes(filter.toLowerCase()) || x.phone?.includes(filter))).map((e: any, i: number) => (
+                            {advisors?.loading ? <ListItemSkeleton /> : advisors.data?.filter((x: any) => {
+                                if (filter === "") {
+                                    return true;
+                                }
+                                if(filter.toLowerCase() === "sin nombre"){
+                                    return (x.personname?.trim() === x.phone?.trim())
+                                }
+                                return (x.personname?.toLowerCase()?.includes(filter.toLowerCase()) || x.phone?.includes(filter))
+                            }).map((e: any, i: number) => (
                                 <NotificaionMenuItem
                                     onClick={() => {
                                         if (statusCall === "DISCONNECTED" && !waiting2) {

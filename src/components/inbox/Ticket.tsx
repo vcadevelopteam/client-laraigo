@@ -51,7 +51,12 @@ const useStyles = makeStyles((theme) => ({
         "to": {
             transform: "rotate(360deg)"
         }
-    }
+    },
+    phoneCallingIcon: {
+        '& span': {
+            width: 25
+        }
+    },
 }));
 
 const LabelGo: React.FC<{
@@ -224,9 +229,10 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
             {(!!callVoxi && statusCall === "CONNECTING" && callVoxiTmp.type === "OUTBOUND") && (
                 <div style={{ flex: 1 }}>
                     <IconButton
+                        className={localclasses.phoneCallingIcon}
                         style={{ width: "35px", height: "35px", borderRadius: "50%", backgroundColor: '#ffd33a', cursor: "default" }}
                     >
-                        <PhoneCalling style={{ color: "white", width: "30px", height: "30px" }} />
+                        <PhoneCalling className={localclasses.iconcall}/>
                     </IconButton>
                 </div>
             )}
