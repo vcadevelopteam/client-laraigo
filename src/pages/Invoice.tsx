@@ -1620,8 +1620,8 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                                             <StyledTableCell><b>{t(langKeys.basecost)}</b></StyledTableCell>
                                             <StyledTableCell></StyledTableCell>
                                             <StyledTableCell></StyledTableCell>
-                                            <StyledTableCell align="right">${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.basicfee || 0) : formatNumber(datareport.basicfee)}</StyledTableCell>
-                                            <StyledTableCell align="right">${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.basicfee || 0) : "0.00"}</StyledTableCell>
+                                            <StyledTableCell align="right">${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.basicfee || 0) : formatNumber(datareport.basicfee)}</StyledTableCell>
+                                            <StyledTableCell align="right">${datareport.taxrate !== 1 ? getIgv((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.basicfee || 0) : "0.00"}</StyledTableCell>
                                             <StyledTableCell align="right">${datareport.basicfee ? formatNumber(datareport.basicfee || 0) : "0.00"}</StyledTableCell>
                                         </StyledTableRow>
                                         <StyledTableRow>
@@ -1643,12 +1643,12 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.useradditionalcharge || 0) : formatNumber(datareport.useradditionalcharge)}</div>
+                                                <div>${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.useradditionalcharge || 0) : formatNumber(datareport.useradditionalcharge)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.useradditionalcharge || 0) : "0.00"}</div>
+                                                <div>${datareport.taxrate !== 1 ? getIgv((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.useradditionalcharge || 0) : "0.00"}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
@@ -1686,16 +1686,16 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.channelwhatsappcharge || 0) : formatNumber(datareport.channelwhatsappcharge)}</div>
-                                                <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.channelothercharge || 0) : formatNumber(datareport.channelothercharge)}</div>
+                                                <div>${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.channelwhatsappcharge || 0) : formatNumber(datareport.channelwhatsappcharge)}</div>
+                                                <div>${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.channelothercharge || 0) : formatNumber(datareport.channelothercharge)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.channelwhatsappcharge || 0) : "0.00"}</div>
-                                                <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.channelothercharge || 0) : "0.00"}</div>
+                                                <div>${datareport.taxrate !== 1 ? getIgv((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.channelwhatsappcharge || 0) : "0.00"}</div>
+                                                <div>${datareport.taxrate !== 1 ? getIgv((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.channelothercharge || 0) : "0.00"}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
@@ -1728,14 +1728,14 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.conversationclientwhatcharge || 0) : formatNumber(datareport.conversationclientwhatcharge)}</div>
-                                                <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.conversationcompanywhatcharge || 0) : formatNumber(datareport.conversationcompanywhatcharge)}</div>
+                                                <div>${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.conversationclientwhatcharge || 0) : formatNumber(datareport.conversationclientwhatcharge)}</div>
+                                                <div>${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.conversationcompanywhatcharge || 0) : formatNumber(datareport.conversationcompanywhatcharge)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.conversationclientwhatcharge || 0) : "0.00"}</div>
-                                                <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.conversationcompanywhatcharge || 0) : "0.00"}</div>
+                                                <div>${datareport.taxrate !== 1 ? getIgv((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.conversationclientwhatcharge || 0) : "0.00"}</div>
+                                                <div>${datareport.taxrate !== 1 ? getIgv((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.conversationcompanywhatcharge || 0) : "0.00"}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
@@ -1762,13 +1762,13 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.smscost || 0) : formatNumber(datareport.smscost)}</div>
-                                                <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.mailcost || 0) : formatNumber(datareport.mailcost)}</div>
+                                                <div>${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.smscost || 0) : formatNumber(datareport.smscost)}</div>
+                                                <div>${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.mailcost || 0) : formatNumber(datareport.mailcost)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.smscost || 0) : "0.00"}</div>
-                                                <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv || 0, datareport.mailcost || 0) : "0.00"}</div>
+                                                <div>${datareport.taxrate !== 1 ? getIgv((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.smscost || 0) : "0.00"}</div>
+                                                <div>${datareport.taxrate !== 1 ? getIgv((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.mailcost || 0) : "0.00"}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
@@ -1799,13 +1799,13 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.clientadditionalcharge || 0) : formatNumber(datareport.clientadditionalcharge)}</div>
+                                                <div>${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.clientadditionalcharge || 0) : formatNumber(datareport.clientadditionalcharge)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv, datareport.clientadditionalcharge) : "0.00"}</div>
+                                                <div>${datareport.taxrate !== 1 ? getIgv(datareport.igv, datareport.clientadditionalcharge) : "0.00"}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
@@ -1818,8 +1818,8 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                                             <StyledTableCell><b>{t(langKeys.supportplan)} {datareport.supportplan}</b></StyledTableCell>
                                             <StyledTableCell></StyledTableCell>
                                             <StyledTableCell></StyledTableCell>
-                                            <StyledTableCell align="right">${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv, datareport.supportbasicfee) : formatNumber(datareport.supportbasicfee)}</StyledTableCell>
-                                            <StyledTableCell align="right">${datareport.sunatcountry === "PE" ? getIgv(datareport.igv, datareport.supportbasicfee) : "0.00"}</StyledTableCell>
+                                            <StyledTableCell align="right">${datareport.taxrate !== 1 ? getTaxableAmount(datareport.igv, datareport.supportbasicfee) : formatNumber(datareport.supportbasicfee)}</StyledTableCell>
+                                            <StyledTableCell align="right">${datareport.taxrate !== 1 ? getIgv(datareport.igv, datareport.supportbasicfee) : "0.00"}</StyledTableCell>
                                             <StyledTableCell align="right">${formatNumber(datareport.supportbasicfee)}</StyledTableCell>
                                         </StyledTableRow>
                                         <StyledTableRow>
@@ -1833,14 +1833,14 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                                             <StyledTableCell>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
-                                                {datareport.additionalservicefee1 ? <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.additionalservicefee1 || 0) : formatNumber(datareport.additionalservicefee1)}</div> : <div style={{ color: "transparent" }}>.</div>}
-                                                {datareport.additionalservicefee2 ? <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.additionalservicefee2 || 0) : formatNumber(datareport.additionalservicefee2)}</div> : <div style={{ color: "transparent" }}>.</div>}
-                                                {datareport.additionalservicefee3 ? <div>${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.additionalservicefee3 || 0) : formatNumber(datareport.additionalservicefee3)}</div> : <div style={{ color: "transparent" }}>.</div>}
+                                                {datareport.additionalservicefee1 ? <div>${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.additionalservicefee1 || 0) : formatNumber(datareport.additionalservicefee1)}</div> : <div style={{ color: "transparent" }}>.</div>}
+                                                {datareport.additionalservicefee2 ? <div>${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.additionalservicefee2 || 0) : formatNumber(datareport.additionalservicefee2)}</div> : <div style={{ color: "transparent" }}>.</div>}
+                                                {datareport.additionalservicefee3 ? <div>${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.additionalservicefee3 || 0) : formatNumber(datareport.additionalservicefee3)}</div> : <div style={{ color: "transparent" }}>.</div>}
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
-                                                {datareport.additionalservicefee1 ? <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv, datareport.additionalservicefee1) : "0.00"}</div> : <div style={{ color: "transparent" }}>.</div>}
-                                                {datareport.additionalservicefee2 ? <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv, datareport.additionalservicefee2) : "0.00"}</div> : <div style={{ color: "transparent" }}>.</div>}
-                                                {datareport.additionalservicefee3 ? <div>${datareport.sunatcountry === "PE" ? getIgv(datareport.igv, datareport.additionalservicefee3) : "0.00"}</div> : <div style={{ color: "transparent" }}>.</div>}
+                                                {datareport.additionalservicefee1 ? <div>${datareport.taxrate !== 1 ? getIgv(datareport.igv, datareport.additionalservicefee1) : "0.00"}</div> : <div style={{ color: "transparent" }}>.</div>}
+                                                {datareport.additionalservicefee2 ? <div>${datareport.taxrate !== 1 ? getIgv(datareport.igv, datareport.additionalservicefee2) : "0.00"}</div> : <div style={{ color: "transparent" }}>.</div>}
+                                                {datareport.additionalservicefee3 ? <div>${datareport.taxrate !== 1 ? getIgv(datareport.igv, datareport.additionalservicefee3) : "0.00"}</div> : <div style={{ color: "transparent" }}>.</div>}
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 {datareport.additionalservicefee1 ? <div>${formatNumber(datareport.additionalservicefee1 || 0)}</div> : <div style={{ color: "transparent" }}>.</div>}
@@ -1857,10 +1857,10 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                                             <StyledTableCell>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
-                                                ${datareport.sunatcountry === "PE" ? getTaxableAmount(datareport.igv || 0, datareport.totalcharge || 0) : formatNumber(datareport.totalcharge)}
+                                                ${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.totalcharge || 0) : formatNumber(datareport.totalcharge)}
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
-                                                ${datareport.sunatcountry === "PE" ? getIgv(datareport.igv, datareport.totalcharge) : "0.00"}
+                                                ${datareport.taxrate !== 1 ? getIgv(datareport.igv, datareport.totalcharge) : "0.00"}
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 ${formatNumber(datareport.totalcharge || 0)}
@@ -2728,7 +2728,6 @@ const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg 
     const executeRes = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main.mainData);
     const multiResult = useSelector(state => state.main.multiData);
-    const mainMain = useSelector(state => state.main);
     const memoryTable = useSelector(state => state.main.memoryTable);
     const user = useSelector(state => state.login.validateToken.user);
     const [insertexcel, setinsertexcel] = useState(false);
@@ -2997,8 +2996,6 @@ const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg 
         const dataCurrency = [{ value: "PEN", description: "PEN" }, { value: "USD", description: "USD" }]
         const receiverdoctype = [{ value: 0, description: "NO DOMICILIADO" }, { value: 1, description: "DNI" }, { value: 4, description: "CARNE EXT." }, { value: 6, description: "RUC" }, { value: 7, description: "PASAPORTE" }]
         const invoicetype = [{ value: "01", description: "FACTURA" }, { value: "03", description: "BOLETA" }]
-        const indexCreditType = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_DOMAIN_LST_VALORES'));
-        let credittypelist = multiResult.data[indexCreditType] && multiResult.data[indexCreditType].success ? multiResult.data[indexCreditType].data : []
         let corplist = multiResult.data[indexCorp] && multiResult.data[indexCorp].success ? multiResult.data[indexCorp].data : []
         let orglist = multiResult.data[indexOrg] && multiResult.data[indexOrg].success ? multiResult.data[indexOrg].data : []
 
@@ -6160,13 +6157,17 @@ const PaymentMethods: React.FC<{}> = () => {
     const [waitDelete, setWaitDelete] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
 
-    const [dataMain, setdataMain] = useState({
+    // const [dataMain, setdataMain] = useState({
+    //     corpid: user?.corpid || 0,
+    //     id: 0,
+    //     orgid: 0,
+    // });
+
+    const fetchData = () => dispatch(getCollection(listPaymentCard({
         corpid: user?.corpid || 0,
         id: 0,
         orgid: 0,
-    });
-
-    const fetchData = () => dispatch(getCollection(listPaymentCard(dataMain)));
+    })));
 
     useEffect(() => {
         fetchData();
@@ -6348,7 +6349,7 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
 
     const [checkedFavorite, setCheckedFavorite] = useState(row?.favorite || false);
     const [icon, setIcon] = useState(<></>);
-    const [limitNumbers, setLimitNumbers] = useState(16);
+    // const [limitNumbers, setLimitNumbers] = useState(16);
     const [waitSave, setWaitSave] = useState(false);
 
     const datamonth = useMemo(() => ([
@@ -6397,24 +6398,24 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
         if (!edit) {
             if (row?.cardnumber) {
                 if (row.cardnumber.slice(0, 1) === "4") {
-                    setIcon(<img src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{ padding: 5 }}></img>)
-                    setLimitNumbers(19);
+                    setIcon(<img alt="aux" src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{ padding: 5 }}></img>)
+                    // setLimitNumbers(19);
                     setValue('cardlimit', 19);
                 } else if (row.cardnumber.slice(0, 2) === "51" || row.cardnumber.slice(0, 2) === "55") {
-                    setIcon(<img src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{ padding: 5 }}></img>)
-                    setLimitNumbers(19);
+                    setIcon(<img alt="aux" src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{ padding: 5 }}></img>)
+                    // setLimitNumbers(19);
                     setValue('cardlimit', 19);
                 } else if (row.cardnumber.slice(0, 2) === "37" || row.cardnumber.slice(0, 2) === "34") {
-                    setIcon(<img src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{ padding: 5 }}></img>)
-                    setLimitNumbers(18);
+                    setIcon(<img alt="aux" src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{ padding: 5 }}></img>)
+                    // setLimitNumbers(18);
                     setValue('cardlimit', 18);
                 } else if (row.cardnumber.slice(0, 2) === "36" || row.cardnumber.slice(0, 2) === "38" || row.cardnumber.slice(0, 3) === "300" || row.cardnumber.slice(0, 3) === "305") {
-                    setIcon(<img src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{ padding: 5 }}></img>)
-                    setLimitNumbers(17);
+                    setIcon(<img alt="aux" src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{ padding: 5 }}></img>)
+                    // setLimitNumbers(17);
                     setValue('cardlimit', 17);
                 } else {
                     setIcon(<></>)
-                    setLimitNumbers(10);
+                    // setLimitNumbers(10);
                     setValue('cardlimit', 10);
                 }
             }
@@ -6530,10 +6531,10 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
                     </div>
                     <h3>{t(langKeys.creditcard)}</h3>
                     {edit && <div style={{ display: "flex" }}>
-                        <img src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{ padding: 5 }}></img>
-                        <img src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{ padding: 5 }}></img>
-                        <img src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{ padding: 5 }}></img>
-                        <img src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{ padding: 5 }}></img>
+                        <img alt="aux2" src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{ padding: 5 }}></img>
+                        <img alt="aux2" src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{ padding: 5 }}></img>
+                        <img alt="aux2" src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{ padding: 5 }}></img>
+                        <img alt="aux2" src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{ padding: 5 }}></img>
                     </div>}
                     <div style={{ display: "flex", width: "100%" }}>
                         <div style={{ width: "50%" }}>
@@ -6567,24 +6568,24 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
                                     }}
                                     onInput={(e: any) => {
                                         if (e.target.value.slice(0, 1) === "4") {
-                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{ padding: 5 }}></img>)
-                                            setLimitNumbers(19);
+                                            setIcon(<img alt="aux" src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{ padding: 5 }}></img>)
+                                            // setLimitNumbers(19);
                                             setValue('cardlimit', 19);
                                         } else if (e.target.value.slice(0, 2) === "51" || e.target.value.slice(0, 2) === "55") {
-                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{ padding: 5 }}></img>)
-                                            setLimitNumbers(19);
+                                            setIcon(<img alt="aux" src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{ padding: 5 }}></img>)
+                                            // setLimitNumbers(19);
                                             setValue('cardlimit', 19);
                                         } else if (e.target.value.slice(0, 2) === "37" || e.target.value.slice(0, 2) === "34") {
-                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{ padding: 5 }}></img>)
-                                            setLimitNumbers(18);
+                                            setIcon(<img alt="aux" src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{ padding: 5 }}></img>)
+                                            // setLimitNumbers(18);
                                             setValue('cardlimit', 18);
                                         } else if (e.target.value.slice(0, 2) === "36" || e.target.value.slice(0, 2) === "38" || e.target.value.slice(0, 3) === "300" || e.target.value.slice(0, 3) === "305") {
-                                            setIcon(<img src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{ padding: 5 }}></img>)
-                                            setLimitNumbers(17);
+                                            setIcon(<img alt="aux" src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{ padding: 5 }}></img>)
+                                            // setLimitNumbers(17);
                                             setValue('cardlimit', 17);
                                         } else {
                                             setIcon(<></>)
-                                            setLimitNumbers(10);
+                                            // setLimitNumbers(10);
                                             setValue('cardlimit', 10);
                                         }
                                     }}
