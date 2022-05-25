@@ -1,4 +1,4 @@
-import { Box, BoxProps, IconButton, IconButtonProps, Menu, TextField, Toolbar, makeStyles, Button, InputAdornment, Tabs, FormHelperText, CircularProgress, Tooltip, InputLabel, SelectProps, FormControl, Select, MenuItem, ClickAwayListener } from '@material-ui/core';
+import { Box, BoxProps, IconButton, IconButtonProps, Menu, TextField, Toolbar, makeStyles, Button, InputAdornment, Tabs, FormHelperText, CircularProgress, Tooltip, InputLabel, SelectProps, FormControl, Select, MenuItem, ClickAwayListener, Divider } from '@material-ui/core';
 import {
     FormatBold as FormatBoldIcon,
     FormatItalic as FormatItalicIcon,
@@ -34,9 +34,12 @@ import { useSelector } from 'hooks';
 import { resetUploadFile, uploadFile } from 'store/main/actions';
 import { useDispatch } from 'react-redux';
 import { showSnackbar } from 'store/popus/actions';
-import { ArrowDropDownIcon } from 'icons';
+import { ArrowDropDownIcon, QuickresponseIcon, SearchIcon } from 'icons';
 import { Picker } from 'emoji-mart';
 import { Dictionary } from '@types';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 
 export const renderToString = (element: React.ReactElement) => {
     return ReactDomServer.renderToString(element);
@@ -116,6 +119,7 @@ interface RichTextProps extends Omit<BoxProps, 'onChange'> {
     emojiNoShow?: any;
     emojiFavorite?: any;
     emoji?: Boolean;
+    quickReplies?: any[];
 }
 
 interface RenderElementProps {
@@ -156,31 +160,144 @@ interface EmojiPickerZyxProps {
     style?: React.CSSProperties;
     icon?: (onClick: () => void) => React.ReactNode;
 }
-const emojiPickerStyle = makeStyles({
-    root: {
-        cursor: 'pointer',
-        position: 'relative',
-        '&:hover': {
-            backgroundColor: '#EBEAED',
-            borderRadius: 4
-        }
+const QuickResponseStyles = makeStyles((theme) => ({
+    iconResponse: {
+        //cursor: 'pointer',
+        //poisition: 'relative',
+        color: '#2E2C34',
+        //'&:hover': {
+        //    // color: theme.palette.primary.main,
+        //    backgroundColor: '#EBEAED',
+        //    borderRadius: 4
+        //}
     },
-    spanemoji: {
-        flex: "0 0 auto",
-        color: "rgba(0, 0, 0, 0.54)",
-        padding: "12px",
-        overflow: "visible",
-        fontSize: "1.5rem",
-        textAlign: "center",
-        transition: "background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
-        borderRadius: "50%",
-    }
-});
+    containerQuickReply: {
+        boxShadow: '0px 3px 6px rgb(0 0 0 / 10%)',
+        backgroundColor: '#FFF',
+        width: 250,
+    },
+    headerQuickReply: {
+        fontSize: 14,
+        fontWeight: 500,
+        padding: theme.spacing(1),
+        paddingLeft: theme.spacing(1.5),
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
+}));
 
+interface QuickReplyProps {
+    quickReplies: any[];
+    editor: BaseEditor & ReactEditor;
+}
 
 
 const EMOJISINDEXED = emojis.reduce((acc, item) => ({ ...acc, [item.emojihex]: item }), {});
 
+export const QuickReply: React.FC<QuickReplyProps> = ({ quickReplies, editor}) => {
+    const classes = QuickResponseStyles();
+    const [open, setOpen] = React.useState(false);
+    const [quickRepliesToShow, setquickRepliesToShow] = useState<Dictionary[]>([])
+    const handleClick = () => setOpen((prev) => !prev);
+    const [showSearch, setShowSearch] = useState(false);
+    const [search, setSearch] = useState("");
+    const { t } = useTranslation();
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const user = useSelector(state => state.login.validateToken.user);
+
+    const handleClickAway = () => setOpen(false);
+
+    useEffect(() => {
+        if (search === "") {
+            setquickRepliesToShow(quickReplies.filter(x => !!x.favorite))
+        } else {
+            setquickRepliesToShow(quickReplies.filter(x => x.description.toLowerCase().includes(search.toLowerCase())))
+        }
+    }, [search, quickReplies])
+
+    const handlerClickItem = (item: Dictionary) => {
+        setOpen(false);
+        editor.insertText(item.quickreply
+            .replace("{{numticket}}", ticketSelected?.ticketnum)
+            .replace("{{client_name}}", ticketSelected?.displayname)
+            .replace("{{agent_name}}", user?.firstname + " " + user?.lastname)
+        );
+    }
+
+    return (
+        <ClickAwayListener onClickAway={handleClickAway}>
+            <span>
+                <Tooltip title={t(langKeys.send_quickreply) + ""} arrow placement="top">
+                    <IconButton
+                            aria-label="more"
+                            aria-controls="long-menu"
+                            aria-haspopup="true"
+                            onClick={handleClick}
+                        >
+                        <QuickresponseIcon className={classes.iconResponse}/>
+                    </IconButton>
+                </Tooltip>
+                {open && (
+                    <div style={{
+                        position: 'absolute',
+                        bottom: 60
+                    }}>
+                        <div className={classes.containerQuickReply}>
+                            <div>
+                                {!showSearch ?
+                                    <div className={classes.headerQuickReply}>
+                                        <div >User Quick Response</div>
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => setShowSearch(true)} edge="end"
+                                        >
+                                            <SearchIcon />
+                                        </IconButton>
+
+                                    </div>
+                                    :
+                                    <TextField
+                                        color="primary"
+                                        fullWidth
+                                        autoFocus
+                                        placeholder="Search quickreplies"
+                                        style={{ padding: '6px 6px 6px 12px' }}
+                                        onBlur={() => !search && setShowSearch(false)}
+                                        onChange={e => setSearch(e.target.value)}
+                                        InputProps={{
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton size="small">
+                                                        <SearchIcon />
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            )
+                                        }}
+                                    />
+                                }
+                            </div>
+                            <Divider />
+                            <List component="nav" disablePadding style={{ maxHeight: 200, overflowY: 'overlay' as any }}>
+                                {quickRepliesToShow.map((item) => (
+                                    <ListItem
+                                        button
+                                        key={item.quickreplyid}
+                                        onClick={() => handlerClickItem(item)}
+                                    >
+                                        <Tooltip title={item.quickreply} arrow placement="top">
+                                            <ListItemText primary={item.description} />
+                                        </Tooltip>
+                                    </ListItem>
+                                ))}
+                            </List>
+                        </div>
+                    </div>
+                )}
+            </span>
+        </ClickAwayListener>
+    )
+}
 export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisNoShow = [], emojiFavorite = [], onSelect, icon }) => {
     const [open, setOpen] = React.useState(false);
     const handleClick = () => setOpen((prev) => !prev);
@@ -239,7 +356,7 @@ const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify']
 
 /**TODO: Validar que la URL de la imagen sea valida en el boton de insertar imagen */
 const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, placeholder, image = true, spellCheck, error, positionEditable = "bottom", children, onlyurl = false
-    , endinput, emojiNoShow, emojiFavorite, emoji = false, ...boxProps }) => {
+    , endinput, emojiNoShow, emojiFavorite, emoji = false,quickReplies=[], ...boxProps }) => {
     const classes = useRichTextStyles();
     // Create a Slate editor object that won't change across renders.
     const editor = useMemo(() => withImages(withHistory(withReact(createEditor()))), []);
@@ -273,9 +390,11 @@ const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, placeholder
                         <div style={{ display: "inline-block" }}>
                             {children}
                         </div>
-                        
                         <FontFamily tooltip='font'></FontFamily>
                         <FormatSizeMenu tooltip='size'></FormatSizeMenu>
+                        {quickReplies.length > 0 && (
+                            <QuickReply quickReplies={quickReplies} editor={editor}></QuickReply>
+                        )}
                         {emoji && <EmojiPickerZyx onSelect={e => editor.insertText(e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite} />}
                         <MarkButton format="bold" tooltip='bold'>
                             <FormatBoldIcon />
