@@ -30,7 +30,9 @@ import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import CloseIcon from '@material-ui/icons/Close';
+import PhoneIcon from '@material-ui/icons/Phone';
 import IOSSwitch from "components/fields/IOSSwitch";
+import { setModalCall } from 'store/voximplant/actions';
 
 const dataPriority = [
     { option: 'HIGH' },
@@ -902,6 +904,13 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     return (
         <>
             <div className={classes.containerButtonsChat}>
+                {(ticketSelected?.communicationchanneltype !== "VOXI") &&
+                    <Tooltip title={t(langKeys.close_ticket) + ""} arrow placement="top">
+                        <IconButton onClick={() => {dispatch(setModalCall(true))}}>
+                            <PhoneIcon width={24} height={24} fill="#8F92A1" />
+                        </IconButton>
+                    </Tooltip>
+                }
                 <Tooltip title={t(!hideLogs ? langKeys.hide_logs : langKeys.show_logs) || ""} arrow placement="top">
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <IOSSwitch checked={hideLogs} onChange={handlerShowLogs} name="checkedB" />

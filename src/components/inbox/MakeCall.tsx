@@ -225,8 +225,11 @@ const MakeCall: React.FC = () => {
     const classes = useStyles();
     const { t } = useTranslation();
     const dispatch = useDispatch();
+    
+    const personData = useSelector(state => state.inbox.person);
+    console.log(personData?.data?.phone)
 
-    const [numberVox, setNumberVox] = useState("");
+    const [numberVox, setNumberVox] = useState(personData?.data?.phone||"");
     const resExecute = useSelector(state => state.main.execute);
     const [pageSelected, setPageSelected] = useState(1);
     const [filter, setfilter] = useState("");
@@ -332,7 +335,7 @@ const MakeCall: React.FC = () => {
     React.useEffect(() => {
         if (showcall) {
             setwaiting2(false)
-            setNumberVox("")
+            setNumberVox(personData?.data?.phone||"")
         } else {
             setPageSelected(1)
         }
