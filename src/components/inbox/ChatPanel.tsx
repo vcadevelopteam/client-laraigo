@@ -985,7 +985,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                         {t(langKeys.typify)}
                     </MenuItem>
                 }
-                {ticketSelected?.communicationchanneltype?.includes('WHA') &&
+                {(ticketSelected?.communicationchanneltype?.includes('WHA')||ticketSelected?.communicationchanneltype?.includes('VOXI')) &&
                     <MenuItem onClick={() => {
                         setAnchorEl(null)
                         setOpenModalHSM(true)
