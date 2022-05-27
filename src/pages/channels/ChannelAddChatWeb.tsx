@@ -884,7 +884,7 @@ const TabPanelForm: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
     }, [fields, form]);
 
     const handleCloseTemplate = (key: string) => {
-        const newFields = fields.filter(e => e !== templates[key]);
+        const newFields = fields.filter(e => e.data.field !== templates[key].data.field) 
         setFields(newFields);
     };
 
