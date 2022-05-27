@@ -857,8 +857,10 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     const [openModalTipification, setOpenModalTipification] = useState(false);
     const [typeStatus, setTypeStatus] = useState('');
     const [openModalLead, setOpenModalLead] = useState(false);
+    const voxiConnection = useSelector(state => state.voximplant.connection);
     const [openModalHSM, setOpenModalHSM] = useState(false);
     const multiData = useSelector(state => state.main.multiData);
+    const statusCall = useSelector(state => state.voximplant.statusCall);
     const [checkTipification, setCheckTipification] = useState(false);
     const mainAux2 = useSelector(state => state.main.mainAux2);
     // const [showLogs, setShowLogs] = React.useState<boolean>(false)
@@ -904,7 +906,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     return (
         <>
             <div className={classes.containerButtonsChat}>
-                {(ticketSelected?.communicationchanneltype !== "VOXI") &&
+                {(!voxiConnection.error && !voxiConnection.loading && statusCall!=="CONNECTED" && statusCall!=="CONNECTING" && ticketSelected?.communicationchanneltype !== "VOXI") &&
                     <Tooltip title={t(langKeys.close_ticket) + ""} arrow placement="top">
                         <IconButton onClick={() => {dispatch(setModalCall(true))}}>
                             <PhoneIcon width={24} height={24} fill="#8F92A1" />
