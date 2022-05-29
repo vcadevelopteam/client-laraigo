@@ -23,6 +23,7 @@ import { useHistory } from 'react-router-dom';
 import paths from 'common/constants/paths';
 import clsx from 'clsx';
 import { formatNumber } from 'common/helpers';
+import { getMaximumConsumption, transferAccountBalance, getAccountBalance } from "store/voximplant/actions";
 
 interface RowSelected {
     row: Dictionary | null,
@@ -105,6 +106,9 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [waitSaveUpload, setWaitSaveUpload] = useState(false);
+    const [waitTransferBalance, setWaitTransferBalance] = useState(false);
+    const [waitGetBalance, setWaitGetBalance] = useState(false);
+    const [waitGetConsumption, setWaitGetConsumption] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -112,6 +116,9 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const [showPassword, setShowPassword] = useState(false);
     const [showCredential, setShowCredential] = useState(row?.private_mail || false);
     const uploadResult = useSelector(state => state.main.uploadFile);
+    const getBalanceResult = useSelector(state => state.voximplant.requestGetAccountBalance);
+    const getConsumptionResult = useSelector(state => state.voximplant.requestGetMaximumConsumption);
+    const transferBalanceResult = useSelector(state => state.voximplant.requestTransferAccountBalance);
     // const [valuefile, setvaluefile] = useState('')
     const [doctype, setdoctype] = useState(row?.doctype || ((row?.sunatcountry) === "PE" ? "1" : "0"))
     const [idUpload, setIdUpload] = useState('');
@@ -237,6 +244,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             }
         }
     }, [executeRes, waitSave])
+
     useEffect(() => {
         if (waitSaveUpload) {
             if (!uploadResult.loading && !uploadResult.error) {
@@ -251,6 +259,54 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         }
     }, [waitSaveUpload, uploadResult, dispatch, idUpload])
 
+    useEffect(() => {
+        if (waitGetConsumption) {
+            if (!getConsumptionResult.loading) {
+                if (getConsumptionResult.data) {
+                    setCostMaximum(getConsumptionResult.data.maximumconsumption || 0);
+                    setCostLimit(((getConsumptionResult.data.maximumconsumption || 0) * ((getValues('voximplantrechargepercentage') || 0) + 1)) + (getValues('voximplantrechargefixed') || 0));
+                }
+                setWaitGetConsumption(false);
+            }
+        }
+    }, [getConsumptionResult, waitGetConsumption])
+
+    useEffect(() => {
+        if (waitTransferBalance) {
+            if (!transferBalanceResult.loading) {
+                setWaitTransferBalance(false);
+            }
+        }
+    }, [transferBalanceResult, waitTransferBalance])
+
+    useEffect(() => {
+        if (waitGetBalance) {
+            if (!getBalanceResult.loading) {
+                if (getBalanceResult.data) {
+                    setBalanceChild(getBalanceResult.data.balancechild || 0);
+                    setBalanceParent(getBalanceResult.data.balanceparent || 0);
+                }
+                setWaitGetBalance(false);
+            }
+        }
+    }, [getBalanceResult, waitGetBalance])
+
+    const handleGetBalance = (orgid: any) => {
+        dispatch(getAccountBalance({ orgid: orgid }));
+        setWaitGetBalance(true);
+    }
+
+    const handleGetConsumption = (orgid: any, daterange: any, timezoneoffset: any) => {
+        dispatch(getMaximumConsumption({ orgid: orgid, daterange: daterange, timezoneoffset: timezoneoffset }));
+        setWaitGetConsumption(true);
+    }
+
+    const handleTransferBalance = (orgid: any, transferamount: any, toparent: boolean) => {
+        dispatch(transferAccountBalance({ orgid: orgid, transferamount: (toparent ? transferamount * -1 : transferamount) }));
+        setWaitTransferBalance(true);
+        setChargeAmount(0.00);
+    }
+
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
             dispatch(execute(insOrg({ ...data, iconbot: iconsurl.iconbot, iconadvisor: iconsurl.iconadvisor, iconclient: iconsurl.iconclient })));
@@ -264,6 +320,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             callback
         }))
     });
+
     const onSelectImage = (files: any, id: string) => {
 
         dispatch(showBackdrop(true));
@@ -276,6 +333,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         dispatch(uploadFile(fd));
         setWaitSaveUpload(true)
     }
+
     const onChangeChatInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         if (!e.target.files) return;
         setChatBtn(e.target.files[0]);
@@ -296,6 +354,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         setValue('iconclient', e.target.files[0]);
         onSelectImage(e.target.files[0], "iconclient")
     }
+
     const handleChatBtnClick = () => {
 
         const input = document.getElementById('chatBtnInput');
@@ -311,6 +370,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         const input = document.getElementById('botBtnInput');
         input!.click();
     }
+
     const handleCleanChatInput = () => {
         if (!chatBtn) return;
 
@@ -806,7 +866,8 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     color="primary"
                                     startIcon={<RefreshIcon color="secondary" />}
                                     style={{ backgroundColor: "#55BD84" }}
-                                    onClick={() => console.log("CLICK")}
+                                    onClick={() => handleGetConsumption(row?.orgid, (getValues('voximplantrechargerange') || 0), (getValues('timezoneoffset') || 0))}
+                                    disabled={((getValues('voximplantrechargerange') || 0) <= 0)}
                                 >{t(langKeys.calculate)}</Button>
                             </div>
                         </div>}
@@ -888,7 +949,8 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     color="primary"
                                     startIcon={<CompareArrows color="secondary" />}
                                     style={{ backgroundColor: "#55BD84", marginRight: "10px" }}
-                                    onClick={() => console.log("CLICK")}
+                                    onClick={() => handleTransferBalance(row?.orgid, (chargeAmount || 0), false)}
+                                    disabled={((chargeAmount || 0) <= 0)}
                                 >{t(langKeys.voximplant_organizationchannelcharge)}</Button>
                                 <Button
                                     variant="contained"
@@ -896,7 +958,8 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     color="primary"
                                     startIcon={<CompareArrows color="secondary" />}
                                     style={{ backgroundColor: "#FB5F5F" }}
-                                    onClick={() => console.log("CLICK")}
+                                    onClick={() => handleTransferBalance(row?.orgid, (chargeAmount || 0), true)}
+                                    disabled={((chargeAmount || 0) <= 0)}
                                 >{t(langKeys.voximplant_organizationchannelreturn)}</Button>
                             </div>
                         </div>}
@@ -929,7 +992,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     color="primary"
                                     startIcon={<RefreshIcon color="secondary" />}
                                     style={{ backgroundColor: "#55BD84" }}
-                                    onClick={() => console.log("CLICK")}
+                                    onClick={() => handleGetBalance(row?.orgid)}
                                 >{t(langKeys.voximplant_organizationgetcredit)}</Button>
                             </div>
                         </div>}

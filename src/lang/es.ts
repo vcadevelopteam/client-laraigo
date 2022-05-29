@@ -3583,8 +3583,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     voximplant_organizationchannelreturn: 'Devolver a Cuenta Padre',
     voximplant_organizationchannelcredit: 'Créditos',
     voximplant_organizationgetcredit: 'Consultar Créditos',
-    voximplant_organizationfathercredit: 'Saldo de Cuenta',
-    voximplant_organizationchildcredit: 'Saldo de Cuenta Padre',
+    voximplant_organizationfathercredit: 'Saldo de Cuenta Padre',
+    voximplant_organizationchildcredit: 'Saldo de Cuenta',
 };
 
 const esResource: ResourceLanguage = {

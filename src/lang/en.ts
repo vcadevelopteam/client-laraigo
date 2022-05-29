@@ -3590,8 +3590,8 @@ const translation: LangKeys = {
     voximplant_organizationchannelreturn: 'Return to Parent Account',
     voximplant_organizationchannelcredit: 'Credit',
     voximplant_organizationgetcredit: 'Check Credit',
-    voximplant_organizationfathercredit: 'Account Balance',
-    voximplant_organizationchildcredit: 'Parent Account Balance',
+    voximplant_organizationfathercredit: 'Parent Account Balance',
+    voximplant_organizationchildcredit: 'Account Balance',
 };
 
 const enResource: ResourceLanguage = {
