@@ -3,7 +3,7 @@ import React, { FC, Fragment, useEffect, useMemo, useState } from 'react'; // we
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch, IOSSwitch } from 'components';
 import { getCorpSel, getOrgSel, getTimeZoneSel, getValuesFromDomain, getValuesFromDomainCorp, insOrg } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -16,12 +16,13 @@ import { getCollection, getMultiCollection, execute, resetAllMain, uploadFile, r
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { getCurrencyList } from "store/signup/actions";
 import ClearIcon from '@material-ui/icons/Clear';
-import { Box, Grid, IconButton, InputAdornment, Tabs } from '@material-ui/core';
-import { Close, CloudUpload, Visibility, VisibilityOff } from '@material-ui/icons';
+import { Box, Grid, IconButton, InputAdornment, Tabs, FormControlLabel } from '@material-ui/core';
+import { Close, CloudUpload, Visibility, VisibilityOff, Refresh as RefreshIcon, CompareArrows } from '@material-ui/icons';
 import { getCountryList } from 'store/signup/actions';
 import { useHistory } from 'react-router-dom';
 import paths from 'common/constants/paths';
 import clsx from 'clsx';
+import { formatNumber } from 'common/helpers';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -92,9 +93,12 @@ const useStyles = makeStyles((theme) => ({
     notdisplay: {
         display: 'none',
     },
+    section: {
+        fontWeight: "bold"
+    }
 }));
 
-const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, dataCurrency,arrayBread }) => {
+const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, dataCurrency, arrayBread }) => {
     const countryList = useSelector(state => state.signup.countryList);
     const user = useSelector(state => state.login.validateToken.user);
     const roledesc = user?.roledesc || "";
@@ -154,6 +158,11 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             credittype: row?.credittype || "typecredit_alcontado",
             timezone: row?.timezone || "",
             timezoneoffset: row?.timezoneoffset || "",
+            voximplantautomaticrecharge: row?.voximplantautomaticrecharge || false,
+            voximplantrechargerange: row?.voximplantrechargerange || 0,
+            voximplantrechargepercentage: row?.voximplantrechargepercentage || 0.00,
+            voximplantrechargefixed: row?.voximplantrechargefixed || 0.00,
+            voximplantadditionalperchannel: row?.voximplantadditionalperchannel || 0.00,
         }
     });
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
@@ -163,6 +172,12 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const typeofcreditList = multiData[4] && multiData[4].success ? multiData[4].data : [];
     const timezoneList = multiData[5] && multiData[5].success ? multiData[5]?.data : [];
 
+    const [chargeAmount, setChargeAmount] = useState(0.00);
+    const [costMaximum, setCostMaximum] = useState(0.00);
+    const [costLimit, setCostLimit] = useState(0.00);
+    const [balanceChild, setBalanceChild] = useState(0.00);
+    const [balanceParent, setBalanceParent] = useState(0.00);
+    const [checkedAutomaticRecharge, setCheckedAutomaticRecharge] = useState(row?.voximplantautomaticrecharge || false);
     const [chatBtn, setChatBtn] = useState<File | null>(getValues("iconbot") as File);
     const [headerBtn, setHeaderBtn] = useState<File | null>(getValues("iconadvisor") as File);
     const [botBtn, setBotBtn] = useState<File | null>(getValues("iconclient") as File);
@@ -174,20 +189,24 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         register('currency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('timezone', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('doctype', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
-        register('docnum', { validate: {
-            needsvalidation: (value:any) => (doctype !== "0")? ((value && value.length) || t(langKeys.field_required)) : true,
-            dnivalidation: (value:any) => (doctype === "1")? ((value && value.length === 8) || t(langKeys.doctype_dni_error)) : true,
-            cevalidation: (value:any) => (doctype === "4")? ((value && value.length === 12) || t(langKeys.doctype_foreigners_card)) : true,
-            rucvalidation: (value:any) => (doctype === "6")? ((value && value.length === 11) || t(langKeys.doctype_ruc_error)) : true,
-            passportvalidation: (value:any) => (doctype === "7")? ((value && value.length === 12) || t(langKeys.doctype_passport_error)) : true,
-        }});
+        register('docnum', {
+            validate: {
+                needsvalidation: (value: any) => (doctype !== "0") ? ((value && value.length) || t(langKeys.field_required)) : true,
+                dnivalidation: (value: any) => (doctype === "1") ? ((value && value.length === 8) || t(langKeys.doctype_dni_error)) : true,
+                cevalidation: (value: any) => (doctype === "4") ? ((value && value.length === 12) || t(langKeys.doctype_foreigners_card)) : true,
+                rucvalidation: (value: any) => (doctype === "6") ? ((value && value.length === 11) || t(langKeys.doctype_ruc_error)) : true,
+                passportvalidation: (value: any) => (doctype === "7") ? ((value && value.length === 12) || t(langKeys.doctype_passport_error)) : true,
+            }
+        });
         register('businessname', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('fiscaladdress', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('contact', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
-        register('contactemail', { validate: {
-            hasvalue: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true ,
-            isemail: (value) => getValues('billbyorg') ? ((/\S+@\S+\.\S+/.test(value)) || t(langKeys.emailverification)+"") : true
-        }});
+        register('contactemail', {
+            validate: {
+                hasvalue: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true,
+                isemail: (value) => getValues('billbyorg') ? ((/\S+@\S+\.\S+/.test(value)) || t(langKeys.emailverification) + "") : true
+            }
+        });
         register('sunatcountry', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('credittype', { validate: (value) => getValues('billbyorg') ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('host');
@@ -196,6 +215,11 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         register('automaticpayment');
         register('automaticperiod');
         register('automaticinvoice');
+        register('voximplantautomaticrecharge');
+        register('voximplantrechargerange', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('voximplantrechargepercentage', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('voximplantrechargefixed', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('voximplantadditionalperchannel', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
     }, [edit, register, doctype, getValues, t]);
 
     useEffect(() => {
@@ -356,7 +380,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
-                            breadcrumbs={[...arrayBread,{ id: "view-2", name: t(langKeys.organizationdetail) }]}
+                            breadcrumbs={[...arrayBread, { id: "view-2", name: t(langKeys.organizationdetail) }]}
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
@@ -395,6 +419,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                 >
                     <AntTab label={t(langKeys.informationorganization)} />
                     <AntTab label={t(langKeys.emailconfiguration)} />
+                    <AntTab label={t(langKeys.voximplant_organizationchanneltab)} />
                     {false && <AntTab label={t(langKeys.chatimages)} />}
                 </Tabs>
                 {pageSelected === 0 && <div className={classes.containerDetail}>
@@ -500,9 +525,9 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                             label={t(langKeys.timezone)}
                             className="col-6"
                             valueDefault={getValues('timezone')}
-                            onChange={(value) => {setValue('timezone', value?.description || ''); setValue('timezoneoffset', value?.houroffset || '')}}
+                            onChange={(value) => { setValue('timezone', value?.description || ''); setValue('timezoneoffset', value?.houroffset || '') }}
                             error={errors?.timezone?.message}
-                            data={timezoneList.map(x=>{return {...x,textimezone: `(${x.houroffsettext}) ${x.description}`}})}
+                            data={timezoneList.map(x => { return { ...x, textimezone: `(${x.houroffsettext}) ${x.description}` } })}
                             //uset={true}
                             //prefixTranslation="status_"
                             optionDesc="textimezone"
@@ -555,10 +580,10 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 <FieldEdit
                                     label={t(langKeys.documentnumber)}
                                     className={clsx("col-6", {
-                                       // [classes.notdisplay]: doctype === "0",
+                                        // [classes.notdisplay]: doctype === "0",
                                     })}
                                     valueDefault={getValues('docnum')}
-                                    onChange={(value:any) => setValue('docnum', value)}
+                                    onChange={(value: any) => setValue('docnum', value)}
                                     error={errors?.docnum?.message}
                                 />
                                 <FieldEdit
@@ -585,7 +610,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     error={errors?.contactemail?.message}
                                 />
                             </div>
-                            {roledesc === "SUPERADMIN" && 
+                            {roledesc === "SUPERADMIN" &&
                                 <>
                                     <div className="row-zyx">
                                         <FieldSelect
@@ -633,249 +658,403 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                         </>
                     )}
                 </div>}
-                {pageSelected === 1 &&
-                    <div className={classes.containerDetail}>
-                        <div className="row-zyx">
-                            {edit ?
-                                <TemplateSwitch
-                                    label={t(langKeys.private_mail)}
-                                    className="col-6"
-                                    valueDefault={getValues("private_mail")}
-                                    onChange={(value) => { setValue('private_mail', value); setShowCredential(value) }}
-                                /> :
-                                <FieldView
-                                    label={"private_mail"}
-                                    value={row ? (row.private_mail ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
-                                    className="col-6"
-                                />
-                            }
-                        </div>
-                        {
-                            showCredential &&
-
-                            <Fragment>
-                                <div className="row-zyx">
-                                    {edit ?
-                                        <FieldEdit
-                                            label={t(langKeys.email)} //transformar a multiselect
-                                            className="col-6"
-                                            fregister={{
-                                                ...register("email", { validate: emailRequired, value: '' })
-                                            }}
-                                            error={errors?.email?.message}
-                                            onChange={(value) => setValue('email', value)}
-                                            valueDefault={getValues("email")}
-                                        />
-                                        : <FieldView
-                                            label={t(langKeys.email)}
-                                            value={row ? (row.email || "") : ""}
-                                            className="col-6"
-                                        />}
-                                    {edit ?
-                                        <FieldEdit
-                                            label={t(langKeys.port)} //transformar a multiselect
-                                            className="col-6"
-                                            type="number"
-                                            fregister={{
-                                                ...register("port", {
-                                                    validate: (value) => (value && value > 0) || t(langKeys.validnumber)
-                                                })
-                                            }}
-                                            error={errors?.port?.message}
-                                            onChange={(value) => setValue('port', value)}
-                                            valueDefault={getValues("port")}
-                                        />
-                                        : <FieldView
-                                            label={t(langKeys.port)}
-                                            value={row ? (row.port || 0) : 0}
-                                            className="col-6"
-                                        />}
-                                </div>
-                                <div className="row-zyx">
-                                    {edit ?
-                                        <FieldEdit
-                                            label={t(langKeys.password)}
-                                            className="col-6"
-                                            type={showPassword ? 'text' : 'password'}
-                                            onChange={(value) => setValue('password', value)}
-                                            valueDefault={getValues("password")}
-                                            fregister={{
-                                                ...register("password"
-                                                    //,{ validate: (value) => (value && value.length) || t(langKeys.field_required)}
-                                                )
-                                            }}
-                                            error={errors?.password?.message}
-                                            InputProps={{
-                                                endAdornment: (
-                                                    <InputAdornment position="end">
-                                                        <IconButton
-                                                            aria-label="toggle password visibility"
-                                                            onClick={() => setShowPassword(!showPassword)}
-                                                            edge="end"
-                                                        >
-                                                            {showPassword ? <Visibility /> : <VisibilityOff />}
-                                                        </IconButton>
-                                                    </InputAdornment>
-                                                ),
-                                            }}
-                                        />
-                                        : ""}
-                                </div>
-                                <div className="row-zyx">
-                                    {edit ?
-                                        <FieldEdit
-                                            label={t(langKeys.host)}
-                                            className="col-6"
-                                            fregister={{
-                                                ...register("host", {
-                                                    validate: (value) => (value && value.length) || t(langKeys.field_required)
-                                                })
-                                            }}
-                                            error={errors?.host?.message}
-                                            onChange={(value: any) => setValue('host', value)}
-                                            valueDefault={getValues("host")}
-                                        />
-                                        : <FieldView
-                                            label={t(langKeys.host)}
-                                            value={row ? (row.host || "") : ""}
-                                            className="col-6"
-                                        />
-                                    }
-                                    {edit ?
-                                        <TemplateSwitch
-                                            label={"SSL"}
-                                            className="col-3"
-                                            valueDefault={getValues("ssl")}
-                                            onChange={(value) => setValue('ssl', value)}
-                                        /> :
-                                        <FieldView
-                                            label={"SSL"}
-                                            value={row ? (row.ssl ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
-                                            className="col-6"
-                                        />
-                                    }
-                                    {edit ?
-                                        <TemplateSwitch
-                                            label={t(langKeys.default_credentials)}
-                                            className="col-3"
-                                            valueDefault={getValues("default_credentials")}
-                                            onChange={(value) => setValue('default_credentials', value)}
-                                        /> :
-                                        <FieldView
-                                            label={t(langKeys.default_credentials)}
-                                            value={row ? (row.default_credentials ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
-                                            className="col-6"
-                                        />
-                                    }
-                                </div>
-                            </Fragment>
-
+                {pageSelected === 1 && <div className={classes.containerDetail}>
+                    <div className="row-zyx">
+                        {edit ?
+                            <TemplateSwitch
+                                label={t(langKeys.private_mail)}
+                                className="col-6"
+                                valueDefault={getValues("private_mail")}
+                                onChange={(value) => { setValue('private_mail', value); setShowCredential(value) }}
+                            /> :
+                            <FieldView
+                                label={"private_mail"}
+                                value={row ? (row.private_mail ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
+                                className="col-6"
+                            />
                         }
                     </div>
-                }
-                {pageSelected === 2 &&
+                    {
+                        showCredential &&
+
+                        <Fragment>
+                            <div className="row-zyx">
+                                {edit ?
+                                    <FieldEdit
+                                        label={t(langKeys.email)} //transformar a multiselect
+                                        className="col-6"
+                                        fregister={{
+                                            ...register("email", { validate: emailRequired, value: '' })
+                                        }}
+                                        error={errors?.email?.message}
+                                        onChange={(value) => setValue('email', value)}
+                                        valueDefault={getValues("email")}
+                                    />
+                                    : <FieldView
+                                        label={t(langKeys.email)}
+                                        value={row ? (row.email || "") : ""}
+                                        className="col-6"
+                                    />}
+                                {edit ?
+                                    <FieldEdit
+                                        label={t(langKeys.port)} //transformar a multiselect
+                                        className="col-6"
+                                        type="number"
+                                        fregister={{
+                                            ...register("port", {
+                                                validate: (value) => (value && value > 0) || t(langKeys.validnumber)
+                                            })
+                                        }}
+                                        error={errors?.port?.message}
+                                        onChange={(value) => setValue('port', value)}
+                                        valueDefault={getValues("port")}
+                                    />
+                                    : <FieldView
+                                        label={t(langKeys.port)}
+                                        value={row ? (row.port || 0) : 0}
+                                        className="col-6"
+                                    />}
+                            </div>
+                            <div className="row-zyx">
+                                {edit ?
+                                    <FieldEdit
+                                        label={t(langKeys.password)}
+                                        className="col-6"
+                                        type={showPassword ? 'text' : 'password'}
+                                        onChange={(value) => setValue('password', value)}
+                                        valueDefault={getValues("password")}
+                                        fregister={{
+                                            ...register("password"
+                                                //,{ validate: (value) => (value && value.length) || t(langKeys.field_required)}
+                                            )
+                                        }}
+                                        error={errors?.password?.message}
+                                        InputProps={{
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={() => setShowPassword(!showPassword)}
+                                                        edge="end"
+                                                    >
+                                                        {showPassword ? <Visibility /> : <VisibilityOff />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                    />
+                                    : ""}
+                            </div>
+                            <div className="row-zyx">
+                                {edit ?
+                                    <FieldEdit
+                                        label={t(langKeys.host)}
+                                        className="col-6"
+                                        fregister={{
+                                            ...register("host", {
+                                                validate: (value) => (value && value.length) || t(langKeys.field_required)
+                                            })
+                                        }}
+                                        error={errors?.host?.message}
+                                        onChange={(value: any) => setValue('host', value)}
+                                        valueDefault={getValues("host")}
+                                    />
+                                    : <FieldView
+                                        label={t(langKeys.host)}
+                                        value={row ? (row.host || "") : ""}
+                                        className="col-6"
+                                    />
+                                }
+                                {edit ?
+                                    <TemplateSwitch
+                                        label={"SSL"}
+                                        className="col-3"
+                                        valueDefault={getValues("ssl")}
+                                        onChange={(value) => setValue('ssl', value)}
+                                    /> :
+                                    <FieldView
+                                        label={"SSL"}
+                                        value={row ? (row.ssl ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
+                                        className="col-6"
+                                    />
+                                }
+                                {edit ?
+                                    <TemplateSwitch
+                                        label={t(langKeys.default_credentials)}
+                                        className="col-3"
+                                        valueDefault={getValues("default_credentials")}
+                                        onChange={(value) => setValue('default_credentials', value)}
+                                    /> :
+                                    <FieldView
+                                        label={t(langKeys.default_credentials)}
+                                        value={row ? (row.default_credentials ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
+                                        className="col-6"
+                                    />
+                                }
+                            </div>
+                        </Fragment>
+
+                    }
+                </div>}
+                {pageSelected === 2 && <>
                     <div className={classes.containerDetail}>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <Box m={1}>
-                                <Grid container direction="row">
-                                    <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                        <label className={classes.text}>
-                                            <Trans i18nKey={langKeys.boticon} />
-                                        </label>
-                                    </Grid>
-                                    <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                        <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-                                            <div className={classes.imgContainer}>
-                                                {(chatImgUrl || iconsurl?.iconbot) && <img alt="chatweb" src={chatImgUrl || iconsurl?.iconbot} className={classes.img} />}
-                                            </div>
-                                            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
-                                                <input
-                                                    accept="image/*"
-                                                    style={{ display: 'none' }}
-                                                    id="chatBtnInput"
-                                                    type="file"
-                                                    onChange={onChangeChatInput}
-                                                />
-                                                <IconButton onClick={handleChatBtnClick}>
-                                                    <CloudUpload className={classes.icon} />
-                                                </IconButton>
-                                                <IconButton onClick={handleCleanChatInput}>
-                                                    <Close className={classes.icon} />
-                                                </IconButton>
-                                            </div>
-                                        </div>
-                                    </Grid>
-                                </Grid>
-                            </Box>
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <Box m={1}>
-                                <Grid container direction="row">
-                                    <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                        <label className={classes.text}>
-                                            <Trans i18nKey={langKeys.advisoricon} />
-                                        </label>
-                                    </Grid>
-                                    <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                        <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-                                            <div className={classes.imgContainer}>
-                                                {(headerImgUrl || iconsurl?.iconadvisor) && <img alt="chatweb" src={headerImgUrl || iconsurl?.iconadvisor} className={classes.img} />}
-                                            </div>
-                                            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
-                                                <input
-                                                    accept="image/*"
-                                                    style={{ display: 'none' }}
-                                                    id="headerBtnInput"
-                                                    type="file"
-                                                    onChange={onChangeHeaderInput}
-                                                />
-                                                <IconButton onClick={handleHeaderBtnClick}>
-                                                    <CloudUpload className={classes.icon} />
-                                                </IconButton>
-                                                <IconButton onClick={handleCleanHeaderInput}>
-                                                    <Close className={classes.icon} />
-                                                </IconButton>
-                                            </div>
-                                        </div>
-                                    </Grid>
-                                </Grid>
-                            </Box>
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <Box m={1}>
-                                <Grid container direction="row">
-                                    <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                        <label className={classes.text}>
-                                            <Trans i18nKey={langKeys.clienticon} />
-                                        </label>
-                                    </Grid>
-                                    <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                        <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-                                            <div className={classes.imgContainer}>
-                                                {(botImgUrl || iconsurl?.iconclient) && <img alt="chatweb" src={botImgUrl || iconsurl.iconclient} className={classes.img} />}
-                                            </div>
-                                            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
-                                                <input
-                                                    accept="image/*"
-                                                    style={{ display: 'none' }}
-                                                    id="botBtnInput"
-                                                    type="file"
-                                                    onChange={onChangeBotInput}
-                                                />
-                                                <IconButton onClick={handleBotBtnClick}>
-                                                    <CloudUpload className={classes.icon} />
-                                                </IconButton>
-                                                <IconButton onClick={handleCleanBotInput}>
-                                                    <Close className={classes.icon} />
-                                                </IconButton>
-                                            </div>
-                                        </div>
-                                    </Grid>
-                                </Grid>
-                            </Box>
-                        </Grid>
+                        {row?.orgid && <div>
+                            <div style={{ marginLeft: "auto", marginRight: "0px", float: "right" }}>
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    color="primary"
+                                    startIcon={<RefreshIcon color="secondary" />}
+                                    style={{ backgroundColor: "#55BD84" }}
+                                    onClick={() => console.log("CLICK")}
+                                >{t(langKeys.calculate)}</Button>
+                            </div>
+                        </div>}
+                        <div className="row-zyx">
+                            <FieldView
+                                className={classes.section}
+                                label={''}
+                                value={t(langKeys.voximplant_organizationchannelrecharge)}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                label={t(langKeys.voximplant_organizationchanneladditional)}
+                                className="col-6"
+                                valueDefault={getValues('voximplantadditionalperchannel')}
+                                onChange={(value) => setValue('voximplantadditionalperchannel', value)}
+                                error={errors?.voximplantadditionalperchannel?.message}
+                                type="number"
+                                inputProps={{ step: "any" }}
+                            />
+                            <div className={"col-6"} style={{ paddingBottom: '3px' }}>
+                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.voximplant_organizationenabledrecharge)}</Box>
+                                <FormControlLabel
+                                    style={{ paddingLeft: 10 }}
+                                    control={<IOSSwitch checked={checkedAutomaticRecharge} onChange={(e) => { setCheckedAutomaticRecharge(e.target.checked); setValue('voximplantautomaticrecharge', e.target.checked) }} />}
+                                    label={""}
+                                />
+                            </div>
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                label={t(langKeys.voximplant_organizationchannelrange)}
+                                className="col-6"
+                                valueDefault={getValues('voximplantrechargerange')}
+                                onChange={(value) => setValue('voximplantrechargerange', value)}
+                                error={errors?.voximplantrechargerange?.message}
+                                type="number"
+                            />
+                            <FieldEdit
+                                label={t(langKeys.voximplant_organizationchannelpercentage)}
+                                className="col-6"
+                                valueDefault={getValues('voximplantrechargepercentage')}
+                                onChange={(value) => setValue('voximplantrechargepercentage', value)}
+                                error={errors?.voximplantrechargepercentage?.message}
+                                type="number"
+                                inputProps={{ step: "any" }}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                label={t(langKeys.voximplant_organizationchannelfixed)}
+                                className="col-6"
+                                valueDefault={getValues('voximplantrechargefixed')}
+                                onChange={(value) => setValue('voximplantrechargefixed', value)}
+                                error={errors?.voximplantrechargefixed?.message}
+                                type="number"
+                                inputProps={{ step: "any" }}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldView
+                                label={t(langKeys.voximplant_organizationcostmaximum)}
+                                value={formatNumber(row?.orgid ? costMaximum : 0)}
+                                className="col-6"
+                            />
+                            <FieldView
+                                label={t(langKeys.voximplant_organizationcostlimit)}
+                                value={formatNumber(row?.orgid ? costLimit : 0)}
+                                className="col-6"
+                            />
+                        </div>
                     </div>
-                }
+                    <div className={classes.containerDetail}>
+                        {row?.orgid && <div>
+                            <div style={{ marginLeft: "auto", marginRight: "0px", float: "right" }}>
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    color="primary"
+                                    startIcon={<CompareArrows color="secondary" />}
+                                    style={{ backgroundColor: "#55BD84", marginRight: "10px" }}
+                                    onClick={() => console.log("CLICK")}
+                                >{t(langKeys.voximplant_organizationchannelcharge)}</Button>
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    color="primary"
+                                    startIcon={<CompareArrows color="secondary" />}
+                                    style={{ backgroundColor: "#FB5F5F" }}
+                                    onClick={() => console.log("CLICK")}
+                                >{t(langKeys.voximplant_organizationchannelreturn)}</Button>
+                            </div>
+                        </div>}
+                        {row?.orgid && <>
+                            <div className="row-zyx">
+                                <FieldView
+                                    className={classes.section}
+                                    label={''}
+                                    value={t(langKeys.voximplant_organizationmanualrecharge)}
+                                />
+                            </div>
+                            <div className="row-zyx">
+                                <FieldEdit
+                                    label={t(langKeys.voximplant_organizationchannelamount)}
+                                    className="col-12"
+                                    valueDefault={chargeAmount}
+                                    onChange={(value) => setChargeAmount(value || 0)}
+                                    type="number"
+                                    inputProps={{ step: "any" }}
+                                />
+                            </div>
+                        </>}
+                    </div>
+                    <div className={classes.containerDetail}>
+                        {row?.orgid && <div>
+                            <div style={{ marginLeft: "auto", marginRight: "0px", float: "right" }}>
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    color="primary"
+                                    startIcon={<RefreshIcon color="secondary" />}
+                                    style={{ backgroundColor: "#55BD84" }}
+                                    onClick={() => console.log("CLICK")}
+                                >{t(langKeys.voximplant_organizationgetcredit)}</Button>
+                            </div>
+                        </div>}
+                        {row?.orgid && <div className="row-zyx">
+                            <FieldView
+                                className={classes.section}
+                                label={''}
+                                value={t(langKeys.voximplant_organizationchannelcredit)}
+                            />
+                        </div>}
+                        {row?.orgid && <div className="row-zyx">
+                            <FieldView
+                                label={t(langKeys.voximplant_organizationchildcredit)}
+                                value={formatNumber(balanceChild || 0)}
+                                className="col-6"
+                            />
+                            <FieldView
+                                label={t(langKeys.voximplant_organizationfathercredit)}
+                                value={formatNumber(balanceParent || 0)}
+                                className="col-6"
+                            />
+                        </div>}
+                    </div>
+                </>}
+                {pageSelected === 3 && <div className={classes.containerDetail}>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        <Box m={1}>
+                            <Grid container direction="row">
+                                <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
+                                    <label className={classes.text}>
+                                        <Trans i18nKey={langKeys.boticon} />
+                                    </label>
+                                </Grid>
+                                <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
+                                    <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+                                        <div className={classes.imgContainer}>
+                                            {(chatImgUrl || iconsurl?.iconbot) && <img alt="chatweb" src={chatImgUrl || iconsurl?.iconbot} className={classes.img} />}
+                                        </div>
+                                        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
+                                            <input
+                                                accept="image/*"
+                                                style={{ display: 'none' }}
+                                                id="chatBtnInput"
+                                                type="file"
+                                                onChange={onChangeChatInput}
+                                            />
+                                            <IconButton onClick={handleChatBtnClick}>
+                                                <CloudUpload className={classes.icon} />
+                                            </IconButton>
+                                            <IconButton onClick={handleCleanChatInput}>
+                                                <Close className={classes.icon} />
+                                            </IconButton>
+                                        </div>
+                                    </div>
+                                </Grid>
+                            </Grid>
+                        </Box>
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        <Box m={1}>
+                            <Grid container direction="row">
+                                <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
+                                    <label className={classes.text}>
+                                        <Trans i18nKey={langKeys.advisoricon} />
+                                    </label>
+                                </Grid>
+                                <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
+                                    <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+                                        <div className={classes.imgContainer}>
+                                            {(headerImgUrl || iconsurl?.iconadvisor) && <img alt="chatweb" src={headerImgUrl || iconsurl?.iconadvisor} className={classes.img} />}
+                                        </div>
+                                        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
+                                            <input
+                                                accept="image/*"
+                                                style={{ display: 'none' }}
+                                                id="headerBtnInput"
+                                                type="file"
+                                                onChange={onChangeHeaderInput}
+                                            />
+                                            <IconButton onClick={handleHeaderBtnClick}>
+                                                <CloudUpload className={classes.icon} />
+                                            </IconButton>
+                                            <IconButton onClick={handleCleanHeaderInput}>
+                                                <Close className={classes.icon} />
+                                            </IconButton>
+                                        </div>
+                                    </div>
+                                </Grid>
+                            </Grid>
+                        </Box>
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        <Box m={1}>
+                            <Grid container direction="row">
+                                <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
+                                    <label className={classes.text}>
+                                        <Trans i18nKey={langKeys.clienticon} />
+                                    </label>
+                                </Grid>
+                                <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
+                                    <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+                                        <div className={classes.imgContainer}>
+                                            {(botImgUrl || iconsurl?.iconclient) && <img alt="chatweb" src={botImgUrl || iconsurl.iconclient} className={classes.img} />}
+                                        </div>
+                                        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
+                                            <input
+                                                accept="image/*"
+                                                style={{ display: 'none' }}
+                                                id="botBtnInput"
+                                                type="file"
+                                                onChange={onChangeBotInput}
+                                            />
+                                            <IconButton onClick={handleBotBtnClick}>
+                                                <CloudUpload className={classes.icon} />
+                                            </IconButton>
+                                            <IconButton onClick={handleCleanBotInput}>
+                                                <Close className={classes.icon} />
+                                            </IconButton>
+                                        </div>
+                                    </div>
+                                </Grid>
+                            </Grid>
+                        </Box>
+                    </Grid>
+                </div>}
             </form>
         </div>
     );
@@ -896,8 +1075,8 @@ const Organizations: FC = () => {
         { id: "view-0", name: t(langKeys.configuration_plural) },
         { id: "view-1", name: t(langKeys.organization_plural) },
     ];
-    function redirectFunc(view:string){
-        if(view ==="view-0"){
+    function redirectFunc(view: string) {
+        if (view === "view-0") {
             history.push(paths.CONFIGURATION)
             return;
         }
@@ -1029,8 +1208,8 @@ const Organizations: FC = () => {
     if (viewSelected === "view-1") {
 
         return (
-            <div style={{width:"100%"}}>
-                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
+            <div style={{ width: "100%" }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <TemplateBreadcrumbs
                         breadcrumbs={arrayBread}
                         handleClick={redirectFunc}

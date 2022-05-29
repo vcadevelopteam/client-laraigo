@@ -3553,6 +3553,23 @@ export const langKeys = {
     available: 'available',
     already_call_person: 'already_call_person',
 
+    voximplant_organizationchanneltab: 'voximplant_organizationchanneltab',
+    voximplant_organizationenabledrecharge: 'voximplant_organizationenabledrecharge',
+    voximplant_organizationchanneladditional: 'voximplant_organizationchanneladditional',
+    voximplant_organizationchannelrecharge: 'voximplant_organizationchannelrecharge',
+    voximplant_organizationcostmaximum: 'voximplant_organizationcostmaximum',
+    voximplant_organizationchannelpercentage: 'voximplant_organizationchannelpercentage',
+    voximplant_organizationchannelfixed: 'voximplant_organizationchannelfixed',
+    voximplant_organizationchannelrange: 'voximplant_organizationchannelrange',
+    voximplant_organizationcostlimit: 'voximplant_organizationcostlimit',
+    voximplant_organizationmanualrecharge: 'voximplant_organizationmanualrecharge',
+    voximplant_organizationchannelamount: 'voximplant_organizationchannelamount',
+    voximplant_organizationchannelcharge: 'voximplant_organizationchannelcharge',
+    voximplant_organizationchannelreturn: 'voximplant_organizationchannelreturn',
+    voximplant_organizationchannelcredit: 'voximplant_organizationchannelcredit',
+    voximplant_organizationgetcredit: 'voximplant_organizationgetcredit',
+    voximplant_organizationfathercredit: 'voximplant_organizationfathercredit',
+    voximplant_organizationchildcredit: 'voximplant_organizationchildcredit',
 };
 
 export type LangKeys = typeof langKeys;

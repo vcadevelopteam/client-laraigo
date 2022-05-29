@@ -3574,6 +3574,24 @@ const translation: LangKeys = {
     type_close_resuelto: 'Closing completed',
     available: 'Available',
     already_call_person: 'The number you are calling is busy with another agent.',
+
+    voximplant_organizationchanneltab: 'Voice Channel',
+    voximplant_organizationchanneladditional: 'Additional Balance Per Channel',
+    voximplant_organizationenabledrecharge: 'Enable Automatic Balance Recharge',
+    voximplant_organizationchannelrecharge: 'Automatic Balance Recharge',
+    voximplant_organizationcostmaximum: 'Maximum Cost',
+    voximplant_organizationchannelpercentage: 'Slack Percentage',
+    voximplant_organizationchannelfixed: 'Additional Balance',
+    voximplant_organizationchannelrange: 'Evaluation Range',
+    voximplant_organizationcostlimit: 'Balance Limit',
+    voximplant_organizationmanualrecharge: 'Manual Balance Recharge',
+    voximplant_organizationchannelamount: 'Amount',
+    voximplant_organizationchannelcharge: 'Charge',
+    voximplant_organizationchannelreturn: 'Return to Parent Account',
+    voximplant_organizationchannelcredit: 'Credit',
+    voximplant_organizationgetcredit: 'Check Credit',
+    voximplant_organizationfathercredit: 'Account Balance',
+    voximplant_organizationchildcredit: 'Parent Account Balance',
 };
 
 const enResource: ResourceLanguage = {
