@@ -181,6 +181,8 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
 
     const [chargeAmount, setChargeAmount] = useState(0.00);
     const [rangeAmount, setRangeAmount] = useState(row?.voximplantrechargerange || 0.00);
+    const [percentageAmount, setPercentageAmount] = useState(row?.voximplantrechargepercentage || 0.00);
+    const [fixedAmount, setFixedAmount] = useState(row?.voximplantrechargefixed || 0.00);
     const [costMaximum, setCostMaximum] = useState(0.00);
     const [costLimit, setCostLimit] = useState(0.00);
     const [balanceChild, setBalanceChild] = useState(0.00);
@@ -231,6 +233,14 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     }, [edit, register, doctype, getValues, t]);
 
     useEffect(() => {
+        if (row) {
+            if (row?.orgid && row?.voximplantrechargerange) {
+                handleGetConsumption(row?.orgid, row?.voximplantrechargerange, row?.timezoneoffset);
+            }
+        }
+    }, [row])
+
+    useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
                 dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
@@ -267,7 +277,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                     dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.success) }))
                     if (getConsumptionResult.data) {
                         setCostMaximum(getConsumptionResult.data.maximumconsumption || 0);
-                        setCostLimit(((getConsumptionResult.data.maximumconsumption || 0) * ((getValues('voximplantrechargepercentage') || 0) + 1)) + (getValues('voximplantrechargefixed') || 0));
+                        setCostLimit((parseFloat(fixedAmount) || 0) + ((parseFloat(getConsumptionResult.data.maximumconsumption) || 0) * ((parseFloat(percentageAmount) || 0) + 1)));
                     }
                 }
                 else {
@@ -927,7 +937,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 label={t(langKeys.voximplant_organizationchannelrange)}
                                 className="col-6"
                                 valueDefault={getValues('voximplantrechargerange')}
-                                onChange={(value) => { setValue('voximplantrechargerange', value); setRangeAmount(value || 0) }}
+                                onChange={(value) => { setValue('voximplantrechargerange', value); setRangeAmount(value || 0); }}
                                 error={errors?.voximplantrechargerange?.message}
                                 type="number"
                             />
@@ -935,7 +945,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 label={t(langKeys.voximplant_organizationchannelpercentage)}
                                 className="col-6"
                                 valueDefault={getValues('voximplantrechargepercentage')}
-                                onChange={(value) => setValue('voximplantrechargepercentage', value)}
+                                onChange={(value) => { setValue('voximplantrechargepercentage', value); setPercentageAmount(value || 0); }}
                                 error={errors?.voximplantrechargepercentage?.message}
                                 type="number"
                                 inputProps={{ step: "any" }}
@@ -946,7 +956,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 label={t(langKeys.voximplant_organizationchannelfixed)}
                                 className="col-6"
                                 valueDefault={getValues('voximplantrechargefixed')}
-                                onChange={(value) => setValue('voximplantrechargefixed', value)}
+                                onChange={(value) => { setValue('voximplantrechargefixed', value); setFixedAmount(value || 0); }}
                                 error={errors?.voximplantrechargefixed?.message}
                                 type="number"
                                 inputProps={{ step: "any" }}
