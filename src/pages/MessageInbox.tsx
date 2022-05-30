@@ -5,7 +5,7 @@ import { setUserType, emitEvent, cleanAlerts, setAgentsToReassign, selectAgent }
 import { useDispatch } from 'react-redux';
 import InboxPanel from 'components/inbox/InboxPanel'
 import { getMultiCollection, resetAllMain } from 'store/main/actions';
-import { getMessageTemplateLst, getValuesFromDomainLight, getCommChannelLst, getListUsers, getClassificationLevel1, getListQuickReply, getEmojiAllSel, getInappropriateWordsLst, getPropertySelByName } from 'common/helpers';
+import { getMessageTemplateLst, getValuesFromDomainLight, getCommChannelLst, getListUsers, getClassificationLevel1, getListQuickReply, getEmojiAllSel, getInappropriateWordsLst, getPropertySelByName, getUserChannelSel } from 'common/helpers';
 
 const MessageInbox: React.FC = () => {
     const dispatch = useDispatch();
@@ -84,7 +84,8 @@ const MessageInbox: React.FC = () => {
             getValuesFromDomainLight("OPORTUNIDADETIQUETAS"),
             getEmojiAllSel(),
             getInappropriateWordsLst(),
-            getPropertySelByName("TIPIFICACION")
+            getPropertySelByName("TIPIFICACION"),
+            getUserChannelSel()
         ]))
         setinitial(false)
         return () => {
