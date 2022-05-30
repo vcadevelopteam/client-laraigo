@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 const ENV = "TESTING";
 
 const APIS_URL = {
