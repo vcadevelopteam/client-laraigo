@@ -12,3 +12,15 @@ export function getCountryStates(request: any) {
 export function getRegions(request: any) {
     return APIManager.post(apiUrls.VOXIMPLANT_GET_REGIONS, { data: request }, true);
 }
+
+export function getMaximumConsumption(request: any) {
+    return APIManager.post(apiUrls.VOXIMPLANT_GET_MAXIMUMCONSUMPTION, { data: request }, true);
+}
+
+export function transferAccountBalance(request: any) {
+    return APIManager.post(apiUrls.VOXIMPLANT_TRANSFER_ACCOUNTBALANCE, { data: request }, true);
+}
+
+export function getAccountBalance(request: any) {
+    return APIManager.post(apiUrls.VOXIMPLANT_GET_ACCOUNTBALANCE, { data: request }, true);
+}
