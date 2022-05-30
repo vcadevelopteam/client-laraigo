@@ -55,6 +55,7 @@ export interface IState {
     triggerNewMessageClient: boolean;
     triggerConnectAgentGo: IBaseState;
     isFiltering: boolean;
+    showModalClose: number;
     outboundData: IObjectState<Dictionary>;
     forceddisconnect: IObjectState<{ userid: number, code: "SESSION_EXPIRED" | "OTHER_PC_CONNECTION" }>;
 }
@@ -95,6 +96,7 @@ export const initialState: IState = {
     isFiltering: false,
     outboundData: initialObjectState,
     forceddisconnect: initialObjectState,
+    showModalClose: 0
 };
 
 export default createReducer<IState>(initialState, {
