@@ -30,7 +30,9 @@ import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import CloseIcon from '@material-ui/icons/Close';
+import PhoneIcon from '@material-ui/icons/Phone';
 import IOSSwitch from "components/fields/IOSSwitch";
+import { setModalCall } from 'store/voximplant/actions';
 
 const dataPriority = [
     { option: 'HIGH' },
@@ -52,6 +54,8 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
     const [templatesList, setTemplatesList] = useState<Dictionary[]>([]);
     const [bodyMessage, setBodyMessage] = useState('');
     const [bodyCleaned, setBodyCleaned] = useState('');
+
+    console.log(multiData?.data?.[13]?.data||[])
 
     const { control, register, handleSubmit, setValue, getValues, reset, trigger, formState: { errors } } = useForm<any>({
         defaultValues: {
@@ -113,10 +117,21 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
                 variables: []
             })
             register('hsmtemplateid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+            register('communicationchannelid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+            register('communicationchanneltype', { validate: (value) => ((value && value.length > 0) || t(langKeys.field_required)) });
+            register('platformtype', { validate: (value) => ((value && value.length > 0) || t(langKeys.field_required)) });
+            if(ticketSelected?.communicationchanneltype?.includes('WHA')){
+            }
         }
     }, [openModal])
 
     const onSelectTemplate = (value: Dictionary) => {
+        if(ticketSelected?.communicationchanneltype?.includes('WHA')){
+            
+            setValue('communicationchannelid', ticketSelected?.communicationchannelid!!);
+            setValue('communicationchanneltype', ticketSelected?.communicationchanneltype!!);
+            setValue('platformtype', ticketSelected?.communicationchannelsite!!);
+        }
         if (value) {
             setBodyMessage(value.body);
             setValue('hsmtemplateid', value ? value.id : 0);
@@ -143,9 +158,9 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
         const bb = {
             hsmtemplateid: data.hsmtemplateid,
             hsmtemplatename: data.hsmtemplatename,
-            communicationchannelid: ticketSelected?.communicationchannelid!!,
-            communicationchanneltype: ticketSelected?.communicationchanneltype!!,
-            platformtype: ticketSelected?.communicationchannelsite!!,
+            communicationchannelid: data.communicationchannelid,
+            communicationchanneltype: data.communicationchanneltype,
+            platformtype: data.platformtype,
             type: 'HSM',
             shippingreason: "INBOX",
             listmembers: [{
@@ -175,6 +190,25 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
             handleClickButton2={onSubmit}
             button2Type="submit"
         >
+            <div className="row-zyx">
+                
+                {!ticketSelected?.communicationchanneltype?.includes('WHA') &&
+                    <FieldSelect
+                        label={t(langKeys.channel)}
+                        className="col-12"
+                        valueDefault={getValues('communicationchannelid')}
+                        onChange={(value) => {
+                            setValue('communicationchannelid', value?.communicationchannelid||0);
+                            setValue('communicationchanneltype', value?.type||"");
+                            setValue('platformtype', value?.communicationchannelsite||""); 
+                        }}
+                        error={errors?.communicationchannelid?.message}
+                        data={multiData?.data?.[13]?.data?.filter(e=>e.type.includes("WHA"))||[]}
+                        optionDesc="description"
+                        optionValue="communicationchannelid"
+                    />
+                }
+            </div>
             <div className="row-zyx">
                 <FieldSelect
                     label={t(langKeys.hsm_template)}
@@ -855,10 +889,13 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     const [openModalTipification, setOpenModalTipification] = useState(false);
     const [typeStatus, setTypeStatus] = useState('');
     const [openModalLead, setOpenModalLead] = useState(false);
+    const voxiConnection = useSelector(state => state.voximplant.connection);
     const [openModalHSM, setOpenModalHSM] = useState(false);
     const multiData = useSelector(state => state.main.multiData);
+    const statusCall = useSelector(state => state.voximplant.statusCall);
     const [checkTipification, setCheckTipification] = useState(false);
     const mainAux2 = useSelector(state => state.main.mainAux2);
+    const userConnected = useSelector(state => state.inbox.userConnected);
     // const [showLogs, setShowLogs] = React.useState<boolean>(false)
 
     const closeTicket = (newstatus: string) => {
@@ -873,9 +910,6 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
         }
     };
 
-    // useEffect(() => {
-    //     setShowLogs(hideLogs);
-    // }, [])
 
     const handlerShowLogs = (e: any) => {
         // setShowLogs(e.target.checked);
@@ -902,6 +936,13 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     return (
         <>
             <div className={classes.containerButtonsChat}>
+                {(!voxiConnection.error && !voxiConnection.loading && statusCall!=="CONNECTED" && userConnected && statusCall!=="CONNECTING" && ticketSelected?.communicationchanneltype !== "VOXI") &&
+                    <Tooltip title={t(langKeys.make_call) + ""} arrow placement="top">
+                        <IconButton onClick={() => {dispatch(setModalCall(true))}}>
+                            <PhoneIcon width={24} height={24} fill="#8F92A1" />
+                        </IconButton>
+                    </Tooltip>
+                }
                 <Tooltip title={t(!hideLogs ? langKeys.hide_logs : langKeys.show_logs) || ""} arrow placement="top">
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <IOSSwitch checked={hideLogs} onChange={handlerShowLogs} name="checkedB" />
@@ -974,7 +1015,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                         {t(langKeys.typify)}
                     </MenuItem>
                 }
-                {ticketSelected?.communicationchanneltype?.includes('WHA') &&
+                {(ticketSelected?.communicationchanneltype?.includes('WHA') || multiData?.data?.[13]?.data?.filter(e=>e.type.includes("WHA")).length>0 ) &&
                     <MenuItem onClick={() => {
                         setAnchorEl(null)
                         setOpenModalHSM(true)

@@ -28,6 +28,12 @@ export const getConversationSelVoxi = (): IRequestBody => ({
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
+export const getUserChannelSel = (): IRequestBody => ({
+    method: "UFN_USER_CHANNEL_SEL",
+    key: "UFN_USER_CHANNEL_SEL",
+    parameters: {
+    }
+})
 export const getOrgsByCorp = (orgid: number, keytmp?: number): IRequestBody => ({
     method: "UFN_CORP_ORG_SEL",
     key: "UFN_CORP_ORG_SEL" + (keytmp || ""),

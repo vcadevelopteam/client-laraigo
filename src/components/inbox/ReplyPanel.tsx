@@ -779,7 +779,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                     positionEditable="top"
                                     spellCheck
                                     onKeyPress={handleKeyPress}
-                                    quickReplies={multiData?.data[4].data || []}
+                                    quickReplies={multiData?.data[4]?.data || []}
                                     refresh={refresh}
                                     placeholder="Send your message..."
                                     emojiNoShow={emojiNoShow}
