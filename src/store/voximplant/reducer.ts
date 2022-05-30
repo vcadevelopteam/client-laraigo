@@ -23,6 +23,9 @@ export interface IState {
     sdk: Client | null;
     showcall: boolean;
     statusCall: string;
+    requestGetMaximumConsumption: IRequest;
+    requestTransferAccountBalance: IRequest;
+    requestGetAccountBalance: IRequest;
 }
 
 export const initialState: IState = {
@@ -37,6 +40,9 @@ export const initialState: IState = {
     sdk: null,
     showcall: false,
     statusCall: "DISCONNECTED",
+    requestGetMaximumConsumption: { ...initialCommon, data: null, loading: false, error: false },
+    requestTransferAccountBalance: { ...initialCommon, data: null, loading: false, error: false },
+    requestGetAccountBalance: { ...initialCommon, data: null, loading: false, error: false },
 };
 
 export default createReducer<IState>(initialState, {
@@ -69,4 +75,19 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_ADVISORS_FAILURE]: caseFUnctions.getAdvisorsFailure,
     [actionTypes.GET_ADVISORS_SUCCESS]: caseFUnctions.getAdvisorsSuccess,
     [actionTypes.GET_ADVISORS_RESET]: caseFUnctions.getAdvisorsReset,
+
+    [actionTypes.GET_MAXIMUMCONSUMPTION]: caseFUnctions.getMaximumConsumption,
+    [actionTypes.GET_MAXIMUMCONSUMPTION_FAILURE]: caseFUnctions.getMaximumConsumptionFailure,
+    [actionTypes.GET_MAXIMUMCONSUMPTION_SUCCESS]: caseFUnctions.getMaximumConsumptionSuccess,
+    [actionTypes.GET_MAXIMUMCONSUMPTION_RESET]: caseFUnctions.getMaximumConsumptionReset,
+
+    [actionTypes.TRANSFER_ACCOUNTBALANCE]: caseFUnctions.transferAccountBalance,
+    [actionTypes.TRANSFER_ACCOUNTBALANCE_FAILURE]: caseFUnctions.transferAccountBalanceFailure,
+    [actionTypes.TRANSFER_ACCOUNTBALANCE_SUCCESS]: caseFUnctions.transferAccountBalanceSuccess,
+    [actionTypes.TRANSFER_ACCOUNTBALANCE_RESET]: caseFUnctions.transferAccountBalanceReset,
+
+    [actionTypes.GET_ACCOUNTBALANCE]: caseFUnctions.getAccountBalance,
+    [actionTypes.GET_ACCOUNTBALANCE_FAILURE]: caseFUnctions.getAccountBalanceFailure,
+    [actionTypes.GET_ACCOUNTBALANCE_SUCCESS]: caseFUnctions.getAccountBalanceSuccess,
+    [actionTypes.GET_ACCOUNTBALANCE_RESET]: caseFUnctions.getAccountBalanceReset,
 });
