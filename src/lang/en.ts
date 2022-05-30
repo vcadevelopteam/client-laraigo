@@ -3592,6 +3592,11 @@ const translation: LangKeys = {
     voximplant_organizationgetcredit: 'Check Credit',
     voximplant_organizationfathercredit: 'Parent Account Balance',
     voximplant_organizationchildcredit: 'Account Balance',
+    error_org_notfound: 'Organization not found',
+    error_voximplant_notfound: 'Credentials not found. In order to use this option you must first create a voice channel',
+    error_voximplant_failedrequest: 'Operation failed',
+    error_voximplant_nofunds: 'Insuficient funds',
+    error_voximplant_invalidamount: 'Invalid amount',
 };
 
 const enResource: ResourceLanguage = {

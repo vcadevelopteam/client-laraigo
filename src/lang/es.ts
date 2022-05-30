@@ -3585,6 +3585,11 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     voximplant_organizationgetcredit: 'Consultar Créditos',
     voximplant_organizationfathercredit: 'Saldo de Cuenta Padre',
     voximplant_organizationchildcredit: 'Saldo de Cuenta',
+    error_org_notfound: 'Organización no encontrada',
+    error_voximplant_notfound: 'Credenciales no encontradas. Para poder utilizar esta opción debe primero registrar un canal de voz',
+    error_voximplant_failedrequest: 'Error en la operación',
+    error_voximplant_nofunds: 'Fondos insuficientes',
+    error_voximplant_invalidamount: 'Monto no válido',
 };
 
 const esResource: ResourceLanguage = {

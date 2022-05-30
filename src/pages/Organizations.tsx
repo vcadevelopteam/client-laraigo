@@ -180,6 +180,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const timezoneList = multiData[5] && multiData[5].success ? multiData[5]?.data : [];
 
     const [chargeAmount, setChargeAmount] = useState(0.00);
+    const [rangeAmount, setRangeAmount] = useState(row?.voximplantrechargerange || 0.00);
     const [costMaximum, setCostMaximum] = useState(0.00);
     const [costLimit, setCostLimit] = useState(0.00);
     const [balanceChild, setBalanceChild] = useState(0.00);
@@ -262,10 +263,17 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     useEffect(() => {
         if (waitGetConsumption) {
             if (!getConsumptionResult.loading) {
-                if (getConsumptionResult.data) {
-                    setCostMaximum(getConsumptionResult.data.maximumconsumption || 0);
-                    setCostLimit(((getConsumptionResult.data.maximumconsumption || 0) * ((getValues('voximplantrechargepercentage') || 0) + 1)) + (getValues('voximplantrechargefixed') || 0));
+                if (!getConsumptionResult.error) {
+                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.success) }))
+                    if (getConsumptionResult.data) {
+                        setCostMaximum(getConsumptionResult.data.maximumconsumption || 0);
+                        setCostLimit(((getConsumptionResult.data.maximumconsumption || 0) * ((getValues('voximplantrechargepercentage') || 0) + 1)) + (getValues('voximplantrechargefixed') || 0));
+                    }
                 }
+                else {
+                    dispatch(showSnackbar({ show: true, success: false, message: t(((getConsumptionResult.msg || getConsumptionResult.message) || getConsumptionResult.code) || 'error_unexpected_error') }));
+                }
+                dispatch(showBackdrop(false));
                 setWaitGetConsumption(false);
             }
         }
@@ -274,6 +282,13 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     useEffect(() => {
         if (waitTransferBalance) {
             if (!transferBalanceResult.loading) {
+                if (!transferBalanceResult.error) {
+                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.success) }));
+                }
+                else {
+                    dispatch(showSnackbar({ show: true, success: false, message: t(((transferBalanceResult.msg || transferBalanceResult.message) || transferBalanceResult.code) || 'error_unexpected_error') }));
+                }
+                dispatch(showBackdrop(false));
                 setWaitTransferBalance(false);
             }
         }
@@ -282,10 +297,17 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     useEffect(() => {
         if (waitGetBalance) {
             if (!getBalanceResult.loading) {
-                if (getBalanceResult.data) {
-                    setBalanceChild(getBalanceResult.data.balancechild || 0);
-                    setBalanceParent(getBalanceResult.data.balanceparent || 0);
+                if (!getBalanceResult.error) {
+                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.success) }));
+                    if (getBalanceResult.data) {
+                        setBalanceChild(getBalanceResult.data.balancechild || 0);
+                        setBalanceParent(getBalanceResult.data.balanceparent || 0);
+                    }
                 }
+                else {
+                    dispatch(showSnackbar({ show: true, success: false, message: t(((getBalanceResult.msg || getBalanceResult.message) || getBalanceResult.code) || 'error_unexpected_error') }));
+                }
+                dispatch(showBackdrop(false));
                 setWaitGetBalance(false);
             }
         }
@@ -294,16 +316,19 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const handleGetBalance = (orgid: any) => {
         dispatch(getAccountBalance({ orgid: orgid }));
         setWaitGetBalance(true);
+        dispatch(showBackdrop(true));
     }
 
     const handleGetConsumption = (orgid: any, daterange: any, timezoneoffset: any) => {
         dispatch(getMaximumConsumption({ orgid: orgid, daterange: daterange, timezoneoffset: timezoneoffset }));
         setWaitGetConsumption(true);
+        dispatch(showBackdrop(true));
     }
 
     const handleTransferBalance = (orgid: any, transferamount: any, toparent: boolean) => {
         dispatch(transferAccountBalance({ orgid: orgid, transferamount: (toparent ? transferamount * -1 : transferamount) }));
         setWaitTransferBalance(true);
+        dispatch(showBackdrop(true));
         setChargeAmount(0.00);
     }
 
@@ -867,7 +892,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     startIcon={<RefreshIcon color="secondary" />}
                                     style={{ backgroundColor: "#55BD84" }}
                                     onClick={() => handleGetConsumption(row?.orgid, (getValues('voximplantrechargerange') || 0), (getValues('timezoneoffset') || 0))}
-                                    disabled={((getValues('voximplantrechargerange') || 0) <= 0)}
+                                    disabled={((rangeAmount || 0) <= 0)}
                                 >{t(langKeys.calculate)}</Button>
                             </div>
                         </div>}
@@ -902,7 +927,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 label={t(langKeys.voximplant_organizationchannelrange)}
                                 className="col-6"
                                 valueDefault={getValues('voximplantrechargerange')}
-                                onChange={(value) => setValue('voximplantrechargerange', value)}
+                                onChange={(value) => { setValue('voximplantrechargerange', value); setRangeAmount(value || 0) }}
                                 error={errors?.voximplantrechargerange?.message}
                                 type="number"
                             />

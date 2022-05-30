@@ -3570,6 +3570,11 @@ export const langKeys = {
     voximplant_organizationgetcredit: 'voximplant_organizationgetcredit',
     voximplant_organizationfathercredit: 'voximplant_organizationfathercredit',
     voximplant_organizationchildcredit: 'voximplant_organizationchildcredit',
+    error_org_notfound: 'error_org_notfound',
+    error_voximplant_notfound: 'error_voximplant_notfound',
+    error_voximplant_failedrequest: 'error_voximplant_failedrequest',
+    error_voximplant_nofunds: 'error_voximplant_nofunds',
+    error_voximplant_invalidamount: 'error_voximplant_invalidamount',
 };
 
 export type LangKeys = typeof langKeys;
