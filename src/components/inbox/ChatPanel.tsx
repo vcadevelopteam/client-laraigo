@@ -203,7 +203,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
                             setValue('platformtype', value?.communicationchannelsite||""); 
                         }}
                         error={errors?.communicationchannelid?.message}
-                        data={multiData?.data?.[13]?.data.filter(e=>e.type.includes("WHA"))||[]}
+                        data={multiData?.data?.[13]?.data?.filter(e=>e.type.includes("WHA"))||[]}
                         optionDesc="description"
                         optionValue="communicationchannelid"
                     />
