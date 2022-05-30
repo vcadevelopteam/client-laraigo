@@ -7,13 +7,13 @@ export const dataYears = Array.from(Array(21).keys()).map(x => ({value: `${new D
 
 export function formatNumber(num: number) {
     if (num)
-        return num.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+        return parseFloat(num.toString()).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
     return "0.00"
 }
 
 export function formatNumberFourDecimals(num: number) {
     if (num)
-        return num.toFixed(4).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1')
+        return parseFloat(num.toString()).toFixed(4).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1')
     return "0.0000"
 }
 

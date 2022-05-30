@@ -219,3 +219,114 @@ export const getAdvisorsReset = (state: IState): IState => ({
     ...state,
     requestGetAdvisors: initialState.requestGetAdvisors,
 })
+
+export const getMaximumConsumption = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestGetMaximumConsumption: {
+        ...state.requestGetMaximumConsumption,
+        error: false,
+        loading: true,
+    }
+})
+
+export const getMaximumConsumptionFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestGetMaximumConsumption: {
+        ...state.requestGetMaximumConsumption,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message || 'error_unexpected_error',
+    }
+})
+
+export const getMaximumConsumptionSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestGetMaximumConsumption: {
+        ...state.requestGetMaximumConsumption,
+        code: action?.payload?.code,
+        data: action?.payload?.data,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message,
+    }
+})
+
+export const getMaximumConsumptionReset = (state: IState): IState => ({
+    ...state,
+    requestGetMaximumConsumption: initialState.requestGetMaximumConsumption,
+})
+
+export const transferAccountBalance = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestTransferAccountBalance: {
+        ...state.requestTransferAccountBalance,
+        error: false,
+        loading: true,
+    }
+})
+
+export const transferAccountBalanceFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestTransferAccountBalance: {
+        ...state.requestTransferAccountBalance,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message || 'error_unexpected_error',
+    }
+})
+
+export const transferAccountBalanceSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestTransferAccountBalance: {
+        ...state.requestTransferAccountBalance,
+        code: action?.payload?.code,
+        data: action?.payload?.data,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message,
+    }
+})
+
+export const transferAccountBalanceReset = (state: IState): IState => ({
+    ...state,
+    requestTransferAccountBalance: initialState.requestTransferAccountBalance,
+})
+
+export const getAccountBalance = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestGetAccountBalance: {
+        ...state.requestGetAccountBalance,
+        error: false,
+        loading: true,
+    }
+})
+
+export const getAccountBalanceFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestGetAccountBalance: {
+        ...state.requestGetAccountBalance,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message || 'error_unexpected_error',
+    }
+})
+
+export const getAccountBalanceSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestGetAccountBalance: {
+        ...state.requestGetAccountBalance,
+        code: action?.payload?.code,
+        data: action?.payload?.data,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message,
+    }
+})
+
+export const getAccountBalanceReset = (state: IState): IState => ({
+    ...state,
+    requestGetAccountBalance: initialState.requestGetAccountBalance,
+})
