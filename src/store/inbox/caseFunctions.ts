@@ -577,12 +577,11 @@ export const deleteTicket = (state: IState, action: IAction): IState => {
 
     if ((userType === 'AGENT') || (userType === 'SUPERVISOR' && agentSelected?.userid === data.userid)) {
         const ticket = newticketList.find(x => x.conversationid === data.conversationid);
-        debugger
         if (ticket) {
             if (newTicketSelected?.conversationid === data.conversationid) {
                 newTicketSelected = null;
             }
-            if (ticket.communicationchanneltype === "VOXI") {
+            if (ticket.communicationchanneltype === "VOXI" && userType === 'AGENT') {
                 showModalClose++;
             }
             newticketList = newticketList.filter((x: ITicket) => x.conversationid !== data.conversationid);
