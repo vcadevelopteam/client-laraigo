@@ -161,14 +161,16 @@ const CloseTicketVoxi: React.FC = () => {
             register('classificationid3');
             register('path1');
             register('observation');
-            if(multiData?.data[12]?.data[0].propertyvalue==="0"){
+            if(multiData?.data[12]?.data[0].propertyvalue==="1" && modalview==="view-1"){
                 register('classificationid1', { validate: (value:any) => (((value && value > 0) || t(langKeys.field_required)) )});
 
             }else{
-                
+                register('classificationid1');
             }
             if(modalview==="view-2"){
                 register('motive', { validate: (value) => ((value && value.length) || t(langKeys.field_required)) });
+            }else{
+                register('motive');
             }
 
         }
@@ -310,11 +312,6 @@ const CloseTicketVoxi: React.FC = () => {
                             onClick={onSubmitClassification}
                         >
                             {t(langKeys.add_classification)}
-                        </Button>
-                        <Button
-                            onClick={onSubmitClassification}
-                        >
-                            {t(langKeys.next)}
                         </Button>
                     </>
                 }
