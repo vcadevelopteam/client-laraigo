@@ -26,6 +26,7 @@ const translation: LangKeys = {
     hide_logs: 'Hide logs',
     backgroundColor: "Background Color",
     textcolor: "Text Color",
+    add_classification: "Add classification",
     make_call: "Make call",
 
     type_service: 'Service Type',

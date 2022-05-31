@@ -555,6 +555,10 @@ export const newCallTicket = (state: IState, action: IAction): IState => ({
     },
 })
 
+export const resetShowModal = (state: IState, action: IAction): IState => ({
+    ...state,
+    showModalClose: 0,
+})
 
 export const deleteTicket = (state: IState, action: IAction): IState => {
     const data: IDeleteTicketParams = action.payload;

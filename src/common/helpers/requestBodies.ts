@@ -3004,6 +3004,18 @@ export const conversationOutboundIns = ({ number, communicationchannelid, person
         personcommunicationchannelowner
     },
 });
+export const conversationCloseUpd = ({ communicationchannelid, personid, personcommunicationchannel, conversationid,  motive,  obs }: Dictionary) => ({
+    method: "UFN_CONVERSATION_CLOSE_UPD",
+    key: "UFN_CONVERSATION_CLOSE_UPD",
+    parameters: {
+        communicationchannelid,
+        personid,
+        personcommunicationchannel,
+        conversationid, 
+        motive, 
+        obs
+    },
+});
 
 export const getAdvisorListVoxi = (): IRequestBody => ({
     method: "UFN_PERSONCOMMUNICATIONCHANNEL_SEL_VOXI",
