@@ -311,7 +311,7 @@ const CloseTicketVoxi: React.FC = () => {
                         <Button
                             onClick={onSubmitClassification}
                         >
-                            {t(langKeys.add_classification)}
+                            {t(langKeys.next)}
                         </Button>
                     </>
                 }
