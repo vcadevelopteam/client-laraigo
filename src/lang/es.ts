@@ -1387,6 +1387,7 @@ const translation: LangKeys = {
     closed: "Cerrados",
     paused: "Pausados",
     pending: "Pendientes",
+    add_classification: "Agregar clasificación",
     assigned: "Asignados",
     created_on: "Creado en",
     closed_on: "Cerrado en",

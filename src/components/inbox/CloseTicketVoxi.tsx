@@ -303,7 +303,7 @@ const CloseTicketVoxi: React.FC = () => {
                         <Button
                             onClick={onSubmitClassification}
                         >
-                            {t(langKeys.add)}
+                            {t(langKeys.add_classification)}
                         </Button>
                         <Button
                             onClick={() => setmodalview("view-2")}
