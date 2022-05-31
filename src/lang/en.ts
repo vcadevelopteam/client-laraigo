@@ -26,6 +26,7 @@ const translation: LangKeys = {
     hide_logs: 'Hide logs',
     backgroundColor: "Background Color",
     textcolor: "Text Color",
+    add_classification: "Add classification",
     make_call: "Make call",
 
     type_service: 'Service Type',
@@ -3574,6 +3575,29 @@ const translation: LangKeys = {
     type_close_resuelto: 'Closing completed',
     available: 'Available',
     already_call_person: 'The number you are calling is busy with another agent.',
+
+    voximplant_organizationchanneltab: 'Voice Channel',
+    voximplant_organizationchanneladditional: 'Additional Balance Per Channel',
+    voximplant_organizationenabledrecharge: 'Enable Automatic Balance Recharge',
+    voximplant_organizationchannelrecharge: 'Automatic Balance Recharge',
+    voximplant_organizationcostmaximum: 'Maximum Cost',
+    voximplant_organizationchannelpercentage: 'Slack Percentage',
+    voximplant_organizationchannelfixed: 'Additional Balance',
+    voximplant_organizationchannelrange: 'Evaluation Range',
+    voximplant_organizationcostlimit: 'Balance Limit',
+    voximplant_organizationmanualrecharge: 'Manual Balance Recharge',
+    voximplant_organizationchannelamount: 'Amount',
+    voximplant_organizationchannelcharge: 'Charge',
+    voximplant_organizationchannelreturn: 'Return to Parent Account',
+    voximplant_organizationchannelcredit: 'Credit',
+    voximplant_organizationgetcredit: 'Check Credit',
+    voximplant_organizationfathercredit: 'Parent Account Balance',
+    voximplant_organizationchildcredit: 'Account Balance',
+    error_org_notfound: 'Organization not found',
+    error_voximplant_notfound: 'Credentials not found. In order to use this option you must first create a voice channel',
+    error_voximplant_failedrequest: 'Operation failed',
+    error_voximplant_nofunds: 'Insuficient funds',
+    error_voximplant_invalidamount: 'Invalid amount',
 };
 
 const enResource: ResourceLanguage = {

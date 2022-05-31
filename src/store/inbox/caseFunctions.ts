@@ -555,13 +555,17 @@ export const newCallTicket = (state: IState, action: IAction): IState => ({
     },
 })
 
+export const resetShowModal = (state: IState, action: IAction): IState => ({
+    ...state,
+    showModalClose: 0,
+})
 
 export const deleteTicket = (state: IState, action: IAction): IState => {
     const data: IDeleteTicketParams = action.payload;
     let newticketList = [...state.ticketList.data];
     let newAgentList = [...state.agentList.data];
     let newTicketSelected = state.ticketSelected ? { ...state.ticketSelected } : null;
-
+    let showModalClose = state.showModalClose;
     const { agentSelected, userType } = state;
 
     if (userType === 'SUPERVISOR') {
@@ -576,9 +580,13 @@ export const deleteTicket = (state: IState, action: IAction): IState => {
 
 
     if ((userType === 'AGENT') || (userType === 'SUPERVISOR' && agentSelected?.userid === data.userid)) {
-        if (newticketList.some(x => x.conversationid === data.conversationid)) {
+        const ticket = newticketList.find(x => x.conversationid === data.conversationid);
+        if (ticket) {
             if (newTicketSelected?.conversationid === data.conversationid) {
                 newTicketSelected = null;
+            }
+            if (ticket.communicationchanneltype === "VOXI" && userType === 'AGENT') {
+                showModalClose++;
             }
             newticketList = newticketList.filter((x: ITicket) => x.conversationid !== data.conversationid);
         }
@@ -591,6 +599,7 @@ export const deleteTicket = (state: IState, action: IAction): IState => {
             ...state.ticketList,
             data: newticketList
         },
+        showModalClose: showModalClose,
         agentList: {
             data: newAgentList,
             count: action.payload.count,

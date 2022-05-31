@@ -598,10 +598,10 @@ export const insCorp = ({ id, description, type, status, logo, logotype, operati
     key: "UFN_CORP_INS",
     parameters: { companysize: null, id, description, type, status, logo, logotype, operation, paymentplanid, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, billbyorg, credittype, paymentmethod, automaticpayment, automaticperiod, automaticinvoice }
 });
-export const insOrg = ({ corpid, description, status, type, id, operation, currency, email = "", password = "", port = 0, host, ssl, default_credentials, private_mail, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, iconbot = "", iconadvisor="", iconclient="", credittype="", timezone, timezoneoffset, automaticpayment, automaticperiod, automaticinvoice }: Dictionary): IRequestBody => ({
+export const insOrg = ({ corpid, description, status, type, id, operation, currency, email = "", password = "", port = 0, host, ssl, default_credentials, private_mail, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, iconbot = "", iconadvisor="", iconclient="", credittype="", timezone, timezoneoffset, automaticpayment, automaticperiod, automaticinvoice, voximplantautomaticrecharge, voximplantrechargerange, voximplantrechargepercentage, voximplantrechargefixed, voximplantadditionalperchannel }: Dictionary): IRequestBody => ({
     method: "UFN_ORG_INS",
     key: "UFN_ORG_INS",
-    parameters: { corpid, id, description, status, type, operation, currency, email, password, port: parseInt(port), host, ssl, default_credentials, private_mail, country: null, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, iconbot, iconadvisor, iconclient, credittype, timezone, timezoneoffset, automaticpayment, automaticperiod, automaticinvoice }
+    parameters: { corpid, id, description, status, type, operation, currency, email, password, port: parseInt(port), host, ssl, default_credentials, private_mail, country: null, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, iconbot, iconadvisor, iconclient, credittype, timezone, timezoneoffset, automaticpayment, automaticperiod, automaticinvoice, voximplantautomaticrecharge, voximplantrechargerange, voximplantrechargepercentage, voximplantrechargefixed, voximplantadditionalperchannel }
 });
 
 export const insQuickreplies = ({ id, classificationid, description, quickreply, status, type, operation, favorite }: Dictionary): IRequestBody => ({
@@ -3002,6 +3002,18 @@ export const conversationOutboundIns = ({ number, communicationchannelid, person
         interactiontype, 
         interactiontext,
         personcommunicationchannelowner
+    },
+});
+export const conversationCloseUpd = ({ communicationchannelid, personid, personcommunicationchannel, conversationid,  motive,  obs }: Dictionary) => ({
+    method: "UFN_CONVERSATION_CLOSE_UPD",
+    key: "UFN_CONVERSATION_CLOSE_UPD",
+    parameters: {
+        communicationchannelid,
+        personid,
+        personcommunicationchannel,
+        conversationid, 
+        motive, 
+        obs
     },
 });
 

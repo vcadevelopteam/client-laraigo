@@ -70,6 +70,7 @@ export const getHistory = (): IActionCall => ({
     },
     type: null,
 });
+
 export const geAdvisors = (): IActionCall => ({
     callAPI: () => CommonService.main(getAdvisorListVoxi()),
     types: {
@@ -81,3 +82,39 @@ export const geAdvisors = (): IActionCall => ({
 });
 
 export const resetGetRegions = (): IActionCall => ({ type: actionTypes.GET_REGIONS_RESET });
+
+export const getMaximumConsumption = (request: any): IActionCall => ({
+    callAPI: () => VoximplantService.getMaximumConsumption(request),
+    types: {
+        loading: actionTypes.GET_MAXIMUMCONSUMPTION,
+        success: actionTypes.GET_MAXIMUMCONSUMPTION_SUCCESS,
+        failure: actionTypes.GET_MAXIMUMCONSUMPTION_FAILURE,
+    },
+    type: null,
+});
+
+export const resetGetMaximumConsumption = (): IActionCall => ({ type: actionTypes.GET_MAXIMUMCONSUMPTION_RESET });
+
+export const transferAccountBalance = (request: any): IActionCall => ({
+    callAPI: () => VoximplantService.transferAccountBalance(request),
+    types: {
+        loading: actionTypes.TRANSFER_ACCOUNTBALANCE,
+        success: actionTypes.TRANSFER_ACCOUNTBALANCE_SUCCESS,
+        failure: actionTypes.TRANSFER_ACCOUNTBALANCE_FAILURE,
+    },
+    type: null,
+});
+
+export const resetTransferAccountBalance = (): IActionCall => ({ type: actionTypes.TRANSFER_ACCOUNTBALANCE_RESET });
+
+export const getAccountBalance = (request: any): IActionCall => ({
+    callAPI: () => VoximplantService.getAccountBalance(request),
+    types: {
+        loading: actionTypes.GET_ACCOUNTBALANCE,
+        success: actionTypes.GET_ACCOUNTBALANCE_SUCCESS,
+        failure: actionTypes.GET_ACCOUNTBALANCE_FAILURE,
+    },
+    type: null,
+});
+
+export const resetGetAccountBalance = (): IActionCall => ({ type: actionTypes.GET_ACCOUNTBALANCE_RESET });

@@ -55,6 +55,7 @@ export interface IState {
     triggerNewMessageClient: boolean;
     triggerConnectAgentGo: IBaseState;
     isFiltering: boolean;
+    showModalClose: number;
     outboundData: IObjectState<Dictionary>;
     forceddisconnect: IObjectState<{ userid: number, code: "SESSION_EXPIRED" | "OTHER_PC_CONNECTION" }>;
 }
@@ -95,6 +96,7 @@ export const initialState: IState = {
     isFiltering: false,
     outboundData: initialObjectState,
     forceddisconnect: initialObjectState,
+    showModalClose: 0
 };
 
 export default createReducer<IState>(initialState, {
@@ -225,6 +227,7 @@ export default createReducer<IState>(initialState, {
     [actionTypes.CHANGE_STATUS_TICKET_WS]: caseFunctions.changeStatusTicketWS,
     
     [actionTypes.SHOW_LOG_INTERACTIONS]: caseFunctions.hideLogInteractions,
+    [actionTypes.RESET_SHOW_MODAL_CLOSE]: caseFunctions.resetShowModal,
     [actionTypes.SET_HIDE_LOGS_ON_TICKET]: caseFunctions.setHideLogsOnTicket,
     [actionTypes.NEW_TICKET_CALL]: caseFunctions.newCallTicket,
     [actionTypes.CALL_CONNECTED]: caseFunctions.callConnected,
