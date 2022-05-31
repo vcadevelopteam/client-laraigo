@@ -105,7 +105,6 @@ const CloseTicketVoxi: React.FC = () => {
     const tipifyRes = useSelector(state => state.main.execute);
     const [waitClose, setWaitClose] = useState(false);
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm();
-
     React.useEffect(() => {
         if (showModalVoxi > 0) {
             setOpenModal(true)
@@ -157,16 +156,19 @@ const CloseTicketVoxi: React.FC = () => {
                 classificationid3: 0,
                 path3: '',
             })
-            if(modalview==="view-1"){
-                register('path1');
+            register('path2');
+            register('classificationid2');
+            register('classificationid3');
+            register('path1');
+            register('observation');
+            if(multiData?.data[12]?.data[0].propertyvalue==="0"){
                 register('classificationid1', { validate: (value:any) => (((value && value > 0) || t(langKeys.field_required)) )});
-                register('path2');
-                register('classificationid2');
-                register('classificationid3');
 
             }else{
+                
+            }
+            if(modalview==="view-2"){
                 register('motive', { validate: (value) => ((value && value.length) || t(langKeys.field_required)) });
-                register('observation');
             }
 
         }
@@ -203,9 +205,13 @@ const CloseTicketVoxi: React.FC = () => {
     }
 
     const onSubmitClassification = handleSubmit((data) => {
-        dispatch(showBackdrop(true));
-        //dispatch(execute(insertClassificationConversation(ticketSelected?.conversationid!!, data.classificationid3 || data.classificationid2 || data.classificationid1, '', 'INSERT')))
-        setWaitTipify(true)
+        if(data.classificationid1!==""){
+
+            dispatch(showBackdrop(true));
+            dispatch(execute(insertClassificationConversation(callVoxiTmp?.data?.conversationid!!, data.classificationid3 || data.classificationid2 || data.classificationid1, '', 'INSERT')))
+            setWaitTipify(true)
+        }
+        setmodalview("view-2")
     });
 
     const onSubmit = handleSubmit((data) => {
@@ -306,7 +312,7 @@ const CloseTicketVoxi: React.FC = () => {
                             {t(langKeys.add_classification)}
                         </Button>
                         <Button
-                            onClick={() => setmodalview("view-2")}
+                            onClick={onSubmitClassification}
                         >
                             {t(langKeys.next)}
                         </Button>

@@ -55,7 +55,6 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
     const [bodyMessage, setBodyMessage] = useState('');
     const [bodyCleaned, setBodyCleaned] = useState('');
 
-    console.log(multiData?.data?.[13]?.data||[])
 
     const { control, register, handleSubmit, setValue, getValues, reset, trigger, formState: { errors } } = useForm<any>({
         defaultValues: {
@@ -106,6 +105,12 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
 
     useEffect(() => {
         setTemplatesList(multiData?.data?.[5] && multiData?.data[5].data.filter(x => x.type === "HSM"))
+        if(ticketSelected?.communicationchanneltype?.includes('WHA')){
+            let value = multiData?.data?.[13]?.data?.filter(e=>e.type.includes("WHA"))[0]
+            setValue('communicationchannelid', value?.communicationchannelid||0);
+            setValue('communicationchanneltype', value?.type||"");
+            setValue('platformtype', value?.communicationchannelsite||""); 
+        }
     }, [multiData.data])
 
     useEffect(() => {
