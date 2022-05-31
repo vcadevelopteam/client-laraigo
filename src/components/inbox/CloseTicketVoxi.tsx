@@ -212,7 +212,7 @@ const CloseTicketVoxi: React.FC = () => {
         const dd: Dictionary = {
             conversationid: callVoxiTmp?.data?.conversationid!!,
             motive: data.motive,
-            obs: data.observation,
+            obs: data.observation||"",
             ticketnum: callVoxiTmp?.data?.ticketnum!!,
             personcommunicationchannel: callVoxiTmp?.data?.personcommunicationchannel!!,
             communicationchannelid: callVoxiTmp?.data?.communicationchannelid!!,
