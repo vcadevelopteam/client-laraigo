@@ -33,6 +33,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import PhoneIcon from '@material-ui/icons/Phone';
 import IOSSwitch from "components/fields/IOSSwitch";
 import { setModalCall } from 'store/voximplant/actions';
+import { useLocation } from 'react-router-dom';
 
 const dataPriority = [
     { option: 'HIGH' },
@@ -900,6 +901,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     const statusCall = useSelector(state => state.voximplant.statusCall);
     const [checkTipification, setCheckTipification] = useState(false);
     const mainAux2 = useSelector(state => state.main.mainAux2);
+    const location = useLocation();
     const userConnected = useSelector(state => state.inbox.userConnected);
     // const [showLogs, setShowLogs] = React.useState<boolean>(false)
 
@@ -941,7 +943,8 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     return (
         <>
             <div className={classes.containerButtonsChat}>
-                {(!voxiConnection.error && !voxiConnection.loading && statusCall!=="CONNECTED" && userConnected && statusCall!=="CONNECTING" && ticketSelected?.communicationchanneltype !== "VOXI") &&
+                {(!voxiConnection.error && !voxiConnection.loading && statusCall!=="CONNECTED" && userConnected && statusCall!=="CONNECTING" && 
+                ticketSelected?.communicationchanneltype !== "VOXI" && location.pathname=== "/message_inbox" ) &&
                     <Tooltip title={t(langKeys.make_call) + ""} arrow placement="top">
                         <IconButton onClick={() => {dispatch(setModalCall(true))}}>
                             <PhoneIcon width={24} height={24} fill="#8F92A1" />
