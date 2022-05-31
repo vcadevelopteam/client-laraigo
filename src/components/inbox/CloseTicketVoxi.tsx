@@ -27,7 +27,7 @@ import { ListItemSkeleton } from 'components';
 import { SearchIcon } from 'icons';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import PersonIcon from '@material-ui/icons/Person';
-import { getTipificationLevel2, getTipificationLevel3, resetGetTipificationLevel2, resetGetTipificationLevel3 } from 'store/inbox/actions';
+import { getTipificationLevel2, getTipificationLevel3, resetGetTipificationLevel2, resetGetTipificationLevel3, resetShowModal } from 'store/inbox/actions';
 import { useForm, useFieldArray } from 'react-hook-form';
 
 const useStyles = makeStyles(theme => ({
@@ -134,6 +134,7 @@ const CloseTicketVoxi: React.FC = () => {
                 console.log("test1")
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_close_ticket) }))
                 setOpenModal(false);
+                dispatch(resetShowModal())
                 dispatch(showBackdrop(false));
                 setWaitClose(false);
             } else if (tipifyRes.error) {
