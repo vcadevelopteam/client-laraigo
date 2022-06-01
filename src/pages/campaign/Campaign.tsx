@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons } from 'components';
-import { getCampaignLst, delCampaign, getCampaignStatus, getCampaignStart, dateToLocalDate, todayDate, capitalize } from 'common/helpers';
+import { getCampaignLst, delCampaign, getCampaignStatus, dateToLocalDate, todayDate, capitalize } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -12,6 +12,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { getCollection, execute, getCollectionAux, resetAllMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
+import { campaignStart } from 'store/campaign/actions';
 import { CampaignDetail } from 'pages';
 import { Blacklist } from './Blacklist';
 import { CampaignReport } from './CampaignReport';
@@ -42,6 +43,7 @@ export const Campaign: FC = () => {
     const mainResult = useSelector(state => state.main);
     const auxResult = useSelector(state => state.main.mainAux);
     const executeResult = useSelector(state => state.main.execute);
+    const campaignStartResult = useSelector(state => state.campaign.startRequest)
 
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
@@ -171,9 +173,9 @@ export const Campaign: FC = () => {
         }
     }
 
-    const handleStart = (id: number) => {
+    const handleStart = (campaignid: number) => {
         if (!waitStart) {
-            dispatch(getCollectionAux(getCampaignStart(id)));
+            dispatch(campaignStart({campaignid, offset: (new Date().getTimezoneOffset() / 60) * -1}));
             setWaitStart(true);
         }
     }
@@ -220,19 +222,22 @@ export const Campaign: FC = () => {
                 setWaitStatus(false);
             }
         }
+    }, [auxResult, waitStatus])
+
+    useEffect(() => {
         if (waitStart) {
-            if (!executeResult.loading && !executeResult.error) {
+            if (!campaignStartResult.loading && !campaignStartResult.error) {
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_transaction) }))
                 fetchData();
                 setWaitStart(false);
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
+            } else if (campaignStartResult.error) {
+                const errormessage = t(campaignStartResult.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitStart(false);
             }
         }
-    }, [auxResult, waitStatus, waitStart])
+    }, [campaignStartResult, waitStart])
 
     const handleRegister = () => {
         setViewSelected("view-2");

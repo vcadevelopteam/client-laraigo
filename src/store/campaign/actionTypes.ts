@@ -1,0 +1,8 @@
+const actionType = {
+    CAMPAIGN_START: 'campaign/CAMPAIGN_START',
+    CAMPAIGN_START_FAILURE: 'campaign/CAMPAIGN_START_FAILURE',
+    CAMPAIGN_START_SUCCESS: 'campaign/CAMPAIGN_START_SUCCESS',
+    CAMPAIGN_START_RESET: 'campaign/CAMPAIGN_START_RESET',
+};
+
+export default actionType;

@@ -1,4 +1,4 @@
-const ENV = "DEVELOP";
+const ENV = "LOCAL";
 
 const APIS_URL = {
     DEVELOP: {
@@ -128,4 +128,6 @@ export const apiUrls = {
     VOXIMPLANT_GET_ACCOUNTBALANCE: `${BASE_URL}/voximplant/getaccountbalance`,
 
     VOXIMPLANT_GET_CALLRECORD: `${BASE_URL}/voximplant/getcallrecord`,
+
+    CAMPAIGN_START: `${BASE_URL}/campaign/start`,
 };
