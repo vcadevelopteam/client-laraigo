@@ -571,7 +571,7 @@ export const deleteTicket = (state: IState, action: IAction): IState => {
     if (userType === 'SUPERVISOR') {
         newAgentList = newAgentList.map(x => x.userid === data.userid ? {
             ...x,
-            countClosed: x.countClosed + 1,
+            countClosed: data.closedTicket ? x.countClosed + 1 : x.countClosed,
             countAnswered: ((data.isanswered || data.userid === 2) && data.status === "ASIGNADO") ? x.countAnswered - 1 : x.countAnswered,
             countNotAnswered: ((!data.isanswered && data.userid !== 2) && data.status === "ASIGNADO") ? (x.countNotAnswered || 1) - 1 : x.countNotAnswered,
             countPaused: (data.status === "SUSPENDIDO") ? x.countPaused - 1 : x.countPaused
@@ -585,7 +585,7 @@ export const deleteTicket = (state: IState, action: IAction): IState => {
             if (newTicketSelected?.conversationid === data.conversationid) {
                 newTicketSelected = null;
             }
-            if (ticket.communicationchanneltype === "VOXI" && userType === 'AGENT') {
+            if (ticket.communicationchanneltype === "VOXI" && userType === 'AGENT' && data.closedTicket) {
                 showModalClose++;
             }
             newticketList = newticketList.filter((x: ITicket) => x.conversationid !== data.conversationid);

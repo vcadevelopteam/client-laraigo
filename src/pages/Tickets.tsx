@@ -783,7 +783,7 @@ const Tickets = () => {
     }, [selectedRows])
 
     const downloadCallRecord = (ticket: Dictionary) => {
-        dispatch(getCallRecord({call_session_history_id: ticket.voximplantcallsessionhistoryid}));
+        dispatch(getCallRecord({call_session_history_id: ticket.postexternalid}));
         setWaitDownloadRecord(true);
     }
 
@@ -833,7 +833,7 @@ const Tickets = () => {
                             }}
                             onHandlerCallRecord={
                                 ticket.communicationchanneltype === 'VOXI'
-                                && ticket.voximplantcallsessionhistoryid
+                                && ticket.postexternalid
                                 && ticket.callanswereddate ? () => {
                                 downloadCallRecord(ticket);
                             } : undefined}
