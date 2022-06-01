@@ -111,21 +111,21 @@ const CloseTicketVoxi: React.FC = () => {
         }
     }, [showModalVoxi])
 
-    useEffect(() => {
-        if (waitTipify) {
-            if (!tipifyRes.loading && !tipifyRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_tipify_ticket) }))
-                dispatch(showBackdrop(false));
-                setWaitTipify(false);
-            } else if (tipifyRes.error) {
-                const message = t(tipifyRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
+     useEffect(() => {
+         if (waitTipify) {
+             if (!tipifyRes.loading && !tipifyRes.error) {
+                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_tipify_ticket) }))
+                 dispatch(showBackdrop(false));
+                 setWaitTipify(false);
+             } else if (tipifyRes.error) {
+                 const message = t(tipifyRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
 
-                dispatch(showSnackbar({ show: true, success: false, message }))
-                dispatch(showBackdrop(false));
-                setWaitTipify(false);
-            }
-        }
-    }, [tipifyRes, waitTipify])
+                 dispatch(showSnackbar({ show: true, success: false, message }))
+                 dispatch(showBackdrop(false));
+                 setWaitTipify(false);
+             }
+         }
+     }, [tipifyRes, waitTipify])
 
     useEffect(() => {
         if (waitClose) {
@@ -175,6 +175,10 @@ const CloseTicketVoxi: React.FC = () => {
 
         }
     }, [openModal,modalview])
+
+    useEffect(() => {
+        setmodalview('view-1')
+    }, [openModal])
 
     const onChangeTipificationLevel1 = (value: Dictionary) => {
         setValue('classificationid1', value ? value.classificationid : '');
@@ -242,7 +246,7 @@ const CloseTicketVoxi: React.FC = () => {
                 maxWidth={"xs"}>
                 <DialogTitle>
                     <div style={{ overflow: 'hidden', wordBreak: 'break-word', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginRight: 120 }}>
-                        {modalview === "view-1"?t(langKeys.tipify_ticket):t(langKeys.close_ticket)}
+                        {callVoxiTmp.data?.displayname} - {modalview === "view-1"?t(langKeys.tipify_ticket):t(langKeys.close_ticket)}
                     </div>
                 </DialogTitle>
                 <DialogContent style={{ padding: 0 }}>
@@ -255,7 +259,7 @@ const CloseTicketVoxi: React.FC = () => {
                                 onChange={onChangeTipificationLevel1}
                                 error={errors?.classificationid1?.message}
                                 data={multiData?.data[2] && multiData?.data[2].data}
-                                optionDesc="path"
+                                optionDesc="description"
                                 optionValue="classificationid"
                             />
                             <FieldSelect
@@ -266,7 +270,7 @@ const CloseTicketVoxi: React.FC = () => {
                                 loading={tipificationLevel2.loading}
                                 error={errors?.classificationid2?.message}
                                 data={tipificationLevel2.data}
-                                optionDesc="path"
+                                optionDesc="description"
                                 optionValue="classificationid"
                             />
                             <FieldSelect
@@ -277,7 +281,7 @@ const CloseTicketVoxi: React.FC = () => {
                                 loading={tipificationLevel3.loading}
                                 error={errors?.classificationid3?.message}
                                 data={tipificationLevel3.data}
-                                optionDesc="path"
+                                optionDesc="description"
                                 optionValue="classificationid"
                             />
                         </div>

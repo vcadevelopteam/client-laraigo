@@ -1982,6 +1982,7 @@ const nameschannel: { [x: string]: string } = {
     "SMSI": "SMS",
     "TWIT": "TWITTER",
     "TWMS": "TWITTER",
+    "VOXI": "VOXIMPLANT",
 };
 
 const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
