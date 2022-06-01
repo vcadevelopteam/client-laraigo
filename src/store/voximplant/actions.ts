@@ -118,3 +118,15 @@ export const getAccountBalance = (request: any): IActionCall => ({
 });
 
 export const resetGetAccountBalance = (): IActionCall => ({ type: actionTypes.GET_ACCOUNTBALANCE_RESET });
+
+export const getCallRecord = (request: any): IActionCall => ({
+    callAPI: () => VoximplantService.getCallRecord(request),
+    types: {
+        loading: actionTypes.GET_CALLRECORD,
+        success: actionTypes.GET_CALLRECORD_SUCCESS,
+        failure: actionTypes.GET_CALLRECORD_FAILURE,
+    },
+    type: null,
+});
+
+export const resetGetCallRecord = (): IActionCall => ({ type: actionTypes.GET_CALLRECORD_RESET });

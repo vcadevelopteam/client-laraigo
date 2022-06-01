@@ -1169,6 +1169,8 @@ const translation: LangKeys = {
     recordPerPage: 'Registro por página',
     recordPerPage_plural: 'Registros por página',
 
+    download_record: 'Descargar grabación',
+
     successful_transaction: 'Transacción exitosa',
     successful_edit: 'Se editó satisfactoriamente',
     successful_register: 'Se registró satisfactoriamente',

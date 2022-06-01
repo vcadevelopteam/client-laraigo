@@ -710,6 +710,8 @@ const translation: LangKeys = {
     variance: 'Variance',
     last_update: 'Last update',
 
+    download_record: 'Download record',
+
     calendar: 'Calendar',
     calendar_detail: 'Calendar detail',
     calendar_plural: 'Calendars',

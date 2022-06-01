@@ -330,3 +330,40 @@ export const getAccountBalanceReset = (state: IState): IState => ({
     ...state,
     requestGetAccountBalance: initialState.requestGetAccountBalance,
 })
+
+export const getCallRecord = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestGetCallRecord: {
+        ...state.requestGetCallRecord,
+        error: false,
+        loading: true,
+    }
+})
+
+export const getCallRecordFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestGetCallRecord: {
+        ...state.requestGetCallRecord,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message || 'error_unexpected_error',
+    }
+})
+
+export const getCallRecordSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestGetCallRecord: {
+        ...state.requestGetCallRecord,
+        code: action?.payload?.code,
+        data: action?.payload?.data,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message,
+    }
+})
+
+export const getCallRecordReset = (state: IState): IState => ({
+    ...state,
+    requestGetCallRecord: initialState.requestGetCallRecord,
+})

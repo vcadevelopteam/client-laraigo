@@ -126,4 +126,6 @@ export const apiUrls = {
     VOXIMPLANT_GET_MAXIMUMCONSUMPTION: `${BASE_URL}/voximplant/getmaximumconsumption`,
     VOXIMPLANT_TRANSFER_ACCOUNTBALANCE: `${BASE_URL}/voximplant/transferaccountbalance`,
     VOXIMPLANT_GET_ACCOUNTBALANCE: `${BASE_URL}/voximplant/getaccountbalance`,
+
+    VOXIMPLANT_GET_CALLRECORD: `${BASE_URL}/voximplant/getcallrecord`,
 };
