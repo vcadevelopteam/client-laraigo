@@ -419,6 +419,7 @@ const DashboardLayout: FC = () => {
                                 edit={false}
                                 templates={reportTemplates.data as ReportTemplate[]}
                                 kpis={[]}
+                                tags={[]}
                                 loading={reportTemplates.loading}
                                 register={register}
                                 unregister={unregister}

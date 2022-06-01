@@ -3240,6 +3240,7 @@ const translation: LangKeys = {
     dashboard_groupment_both: 'Both',
     dashboard_contentType_kpi: 'KPI',
     dashboard_contentType_report: 'Report',
+    dashboard_contentType_funnel: 'Funnel',
     dashboard_chartType_pie: 'Pie chart',
     dashboard_chartType_bar: 'Bar chart',
     dashboard_chartType_line: 'Line chart',

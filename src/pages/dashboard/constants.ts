@@ -13,4 +13,5 @@ export const groupingType = [
 export const contentTypes = [
     { key: 'kpi' },
     { key: 'report' },
+    { key: 'funnel' },
 ];
