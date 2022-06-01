@@ -3598,6 +3598,11 @@ const translation: LangKeys = {
     error_voximplant_failedrequest: 'Operation failed',
     error_voximplant_nofunds: 'Insuficient funds',
     error_voximplant_invalidamount: 'Invalid amount',
+
+    propertyvoximplantautomaticrecharge: 'Default value used when an admin creates a new organization - Voiche Channel/Enable Automatic Balance Recharge',
+    propertyvoximplantrechargerange: 'Default value used when an admin creates a new organization - Voiche Channel/Evaluation Range',
+    propertyvoximplantrechargepercentage: 'Default value used when an admin creates a new organization - Voiche Channel/Slack Percentage',
+    propertyvoximplantadditionalperchannel: 'Default value used when an admin creates a new organization - Voiche Channel/Additional Balance Per Channel',
 };
 
 const enResource: ResourceLanguage = {
