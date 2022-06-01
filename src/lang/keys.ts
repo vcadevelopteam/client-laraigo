@@ -3578,6 +3578,11 @@ export const langKeys = {
     error_voximplant_failedrequest: 'error_voximplant_failedrequest',
     error_voximplant_nofunds: 'error_voximplant_nofunds',
     error_voximplant_invalidamount: 'error_voximplant_invalidamount',
+
+    propertyvoximplantautomaticrecharge: 'propertyvoximplantautomaticrecharge',
+    propertyvoximplantrechargerange: 'propertyvoximplantrechargerange',
+    propertyvoximplantrechargepercentage: 'propertyvoximplantrechargepercentage',
+    propertyvoximplantadditionalperchannel: 'propertyvoximplantadditionalperchannel',
 };
 
 export type LangKeys = typeof langKeys;
