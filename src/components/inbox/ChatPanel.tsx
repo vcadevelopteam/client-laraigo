@@ -33,6 +33,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import PhoneIcon from '@material-ui/icons/Phone';
 import IOSSwitch from "components/fields/IOSSwitch";
 import { setModalCall } from 'store/voximplant/actions';
+import { useLocation } from 'react-router-dom';
 
 const dataPriority = [
     { option: 'HIGH' },
@@ -55,7 +56,6 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
     const [bodyMessage, setBodyMessage] = useState('');
     const [bodyCleaned, setBodyCleaned] = useState('');
 
-    console.log(multiData?.data?.[13]?.data||[])
 
     const { control, register, handleSubmit, setValue, getValues, reset, trigger, formState: { errors } } = useForm<any>({
         defaultValues: {
@@ -106,6 +106,12 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
 
     useEffect(() => {
         setTemplatesList(multiData?.data?.[5] && multiData?.data[5].data.filter(x => x.type === "HSM"))
+        if(ticketSelected?.communicationchanneltype?.includes('WHA')){
+            let value = multiData?.data?.[13]?.data?.filter(e=>e.type.includes("WHA"))[0]
+            setValue('communicationchannelid', value?.communicationchannelid||0);
+            setValue('communicationchanneltype', value?.type||"");
+            setValue('platformtype', value?.communicationchannelsite||""); 
+        }
     }, [multiData.data])
 
     useEffect(() => {
@@ -895,6 +901,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     const statusCall = useSelector(state => state.voximplant.statusCall);
     const [checkTipification, setCheckTipification] = useState(false);
     const mainAux2 = useSelector(state => state.main.mainAux2);
+    const location = useLocation();
     const userConnected = useSelector(state => state.inbox.userConnected);
     // const [showLogs, setShowLogs] = React.useState<boolean>(false)
 
@@ -936,7 +943,8 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     return (
         <>
             <div className={classes.containerButtonsChat}>
-                {(!voxiConnection.error && !voxiConnection.loading && statusCall!=="CONNECTED" && userConnected && statusCall!=="CONNECTING" && ticketSelected?.communicationchanneltype !== "VOXI") &&
+                {(!voxiConnection.error && !voxiConnection.loading && statusCall!=="CONNECTED" && userConnected && statusCall!=="CONNECTING" && 
+                ticketSelected?.communicationchanneltype !== "VOXI" && location.pathname=== "/message_inbox" ) &&
                     <Tooltip title={t(langKeys.make_call) + ""} arrow placement="top">
                         <IconButton onClick={() => {dispatch(setModalCall(true))}}>
                             <PhoneIcon width={24} height={24} fill="#8F92A1" />

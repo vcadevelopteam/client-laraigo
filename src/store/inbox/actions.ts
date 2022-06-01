@@ -37,6 +37,8 @@ export const filterTickets = (lastmessage: string, start_createticket: string, e
 
 export const resetFilterTickets = (): IActionCall => ({ type: actionTypes.FILTER_TICKETS_RESET });
 
+export const resetShowModal = (): IActionCall => ({ type: actionTypes.RESET_SHOW_MODAL_CLOSE });
+
 
 
 export const getTickets = (userid: number | null): IActionCall => ({

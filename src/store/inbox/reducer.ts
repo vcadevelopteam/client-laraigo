@@ -227,6 +227,7 @@ export default createReducer<IState>(initialState, {
     [actionTypes.CHANGE_STATUS_TICKET_WS]: caseFunctions.changeStatusTicketWS,
     
     [actionTypes.SHOW_LOG_INTERACTIONS]: caseFunctions.hideLogInteractions,
+    [actionTypes.RESET_SHOW_MODAL_CLOSE]: caseFunctions.resetShowModal,
     [actionTypes.SET_HIDE_LOGS_ON_TICKET]: caseFunctions.setHideLogsOnTicket,
     [actionTypes.NEW_TICKET_CALL]: caseFunctions.newCallTicket,
     [actionTypes.CALL_CONNECTED]: caseFunctions.callConnected,

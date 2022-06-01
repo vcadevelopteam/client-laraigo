@@ -27,6 +27,7 @@ export const langKeys = {
     invitation_email: "invitation_email",
     invitation_phone: "invitation_phone",
     invitation_date: "invitation_date",
+    add_classification: "add_classification",
     align: "align",
     font: "font",
     undo: "undo",
@@ -1439,6 +1440,8 @@ export const langKeys = {
 
     recordPerPage: 'recordPerPage',
     recordPerPage_plural: 'recordPerPage_plural',
+
+    download_record: 'download_record',
 
     successful_transaction: 'successful_transaction',
     successful_edit: 'successful_edit',

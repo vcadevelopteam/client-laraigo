@@ -26,6 +26,7 @@ export interface IState {
     requestGetMaximumConsumption: IRequest;
     requestTransferAccountBalance: IRequest;
     requestGetAccountBalance: IRequest;
+    requestGetCallRecord: IRequest;
 }
 
 export const initialState: IState = {
@@ -43,6 +44,7 @@ export const initialState: IState = {
     requestGetMaximumConsumption: { ...initialCommon, data: null, loading: false, error: false },
     requestTransferAccountBalance: { ...initialCommon, data: null, loading: false, error: false },
     requestGetAccountBalance: { ...initialCommon, data: null, loading: false, error: false },
+    requestGetCallRecord: { ...initialCommon, data: null, loading: false, error: false },
 };
 
 export default createReducer<IState>(initialState, {
@@ -90,4 +92,9 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_ACCOUNTBALANCE_FAILURE]: caseFUnctions.getAccountBalanceFailure,
     [actionTypes.GET_ACCOUNTBALANCE_SUCCESS]: caseFUnctions.getAccountBalanceSuccess,
     [actionTypes.GET_ACCOUNTBALANCE_RESET]: caseFUnctions.getAccountBalanceReset,
+
+    [actionTypes.GET_CALLRECORD]: caseFUnctions.getCallRecord,
+    [actionTypes.GET_CALLRECORD_FAILURE]: caseFUnctions.getCallRecordFailure,
+    [actionTypes.GET_CALLRECORD_SUCCESS]: caseFUnctions.getCallRecordSuccess,
+    [actionTypes.GET_CALLRECORD_RESET]: caseFUnctions.getCallRecordReset,
 });
