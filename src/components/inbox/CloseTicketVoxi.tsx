@@ -112,21 +112,21 @@ const CloseTicketVoxi: React.FC = () => {
         }
     }, [showModalVoxi])
 
-    useEffect(() => {
-        if (waitTipify) {
-            if (!tipifyRes.loading && !tipifyRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_tipify_ticket) }))
-                dispatch(showBackdrop(false));
-                setWaitTipify(false);
-            } else if (tipifyRes.error) {
-                const message = t(tipifyRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
+     useEffect(() => {
+         if (waitTipify) {
+             if (!tipifyRes.loading && !tipifyRes.error) {
+                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_tipify_ticket) }))
+                 dispatch(showBackdrop(false));
+                 setWaitTipify(false);
+             } else if (tipifyRes.error) {
+                 const message = t(tipifyRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
 
-                dispatch(showSnackbar({ show: true, success: false, message }))
-                dispatch(showBackdrop(false));
-                setWaitTipify(false);
-            }
-        }
-    }, [tipifyRes, waitTipify])
+                 dispatch(showSnackbar({ show: true, success: false, message }))
+                 dispatch(showBackdrop(false));
+                 setWaitTipify(false);
+             }
+         }
+     }, [tipifyRes, waitTipify])
 
     useEffect(() => {
         if (waitClose) {
@@ -172,6 +172,10 @@ const CloseTicketVoxi: React.FC = () => {
         }
     }, [openModal,modalview])
 
+    useEffect(() => {
+        setmodalview('view-1')
+    }, [openModal])
+
     const onChangeTipificationLevel1 = (value: Dictionary) => {
         setValue('classificationid1', value ? value.classificationid : '');
         setValue('path1', value ? value.path : '');
@@ -204,7 +208,7 @@ const CloseTicketVoxi: React.FC = () => {
 
     const onSubmitClassification = handleSubmit((data) => {
         dispatch(showBackdrop(true));
-        //dispatch(execute(insertClassificationConversation(ticketSelected?.conversationid!!, data.classificationid3 || data.classificationid2 || data.classificationid1, '', 'INSERT')))
+        dispatch(execute(insertClassificationConversation(callVoxiTmp?.data?.conversationid!!, data.classificationid3 || data.classificationid2 || data.classificationid1, '', 'INSERT')))
         setWaitTipify(true)
     });
 
@@ -247,7 +251,7 @@ const CloseTicketVoxi: React.FC = () => {
                                 onChange={onChangeTipificationLevel1}
                                 error={errors?.classificationid1?.message}
                                 data={multiData?.data[2] && multiData?.data[2].data}
-                                optionDesc="path"
+                                optionDesc="description"
                                 optionValue="classificationid"
                             />
                             <FieldSelect
@@ -258,7 +262,7 @@ const CloseTicketVoxi: React.FC = () => {
                                 loading={tipificationLevel2.loading}
                                 error={errors?.classificationid2?.message}
                                 data={tipificationLevel2.data}
-                                optionDesc="path"
+                                optionDesc="description"
                                 optionValue="classificationid"
                             />
                             <FieldSelect
@@ -269,7 +273,7 @@ const CloseTicketVoxi: React.FC = () => {
                                 loading={tipificationLevel3.loading}
                                 error={errors?.classificationid3?.message}
                                 data={tipificationLevel3.data}
-                                optionDesc="path"
+                                optionDesc="description"
                                 optionValue="classificationid"
                             />
                         </div>
