@@ -1441,6 +1441,8 @@ export const langKeys = {
     recordPerPage: 'recordPerPage',
     recordPerPage_plural: 'recordPerPage_plural',
 
+    download_record: 'download_record',
+
     successful_transaction: 'successful_transaction',
     successful_edit: 'successful_edit',
     successful_register: 'successful_register',
