@@ -790,7 +790,9 @@ const Tickets = () => {
     useEffect(() => {
         if (waitDownloadRecord) {
             if (!getCallRecordRes.loading && !getCallRecordRes.error ) {
-                window.open(getCallRecordRes.data)
+                if (getCallRecordRes.data) {
+                    window.open(getCallRecordRes.data)
+                }
                 setWaitDownloadRecord(false)
             } else if (getCallRecordRes.error) {
                 const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.ticket_plural).toLocaleLowerCase() })
