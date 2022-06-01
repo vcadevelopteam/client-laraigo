@@ -306,7 +306,7 @@ const MakeCall: React.FC = () => {
         if (timeWaiting >= 0) {
             if (timeWaiting >= (user?.properties.time_reassign_call || 30) && (call.type === "INBOUND" && statusCall === "CONNECTING")) {
                 dispatch(rejectCall(call.call));
-                dispatch(setWaitingDate(null))
+                setWaitingDate(null)
                 setTimeWaiting(-1);
                 return;
             }
