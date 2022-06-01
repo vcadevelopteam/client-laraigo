@@ -145,6 +145,9 @@ const useRichTextStyles = makeStyles(theme => ({
         padding: 0,
         width: "100%"
     },
+    editable: {
+        minHeight: '200px'
+    },
     littleboxes: {
         cursor: "pointer",
         marginRight: 1,
@@ -376,14 +379,18 @@ const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, placeholder
 
     return (
         <Box {...boxProps}>
-            <Slate editor={editor} value={value} onChange={onChange}>
+            <Slate editor={editor} value={value} onChange={onChange} >
                 {positionEditable === "top" &&
+                <div
+                className={classes.editable}>
+
                     <Editable
                         placeholder={placeholder}
                         renderElement={renderElement}
                         renderLeaf={renderLeaf}
                         spellCheck={spellCheck}
                     />
+                </div>
                 }
                 <Toolbar className={classes.toolbar}>
                     <div>

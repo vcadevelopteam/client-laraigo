@@ -1441,6 +1441,8 @@ export const langKeys = {
     recordPerPage: 'recordPerPage',
     recordPerPage_plural: 'recordPerPage_plural',
 
+    download_record: 'download_record',
+
     successful_transaction: 'successful_transaction',
     successful_edit: 'successful_edit',
     successful_register: 'successful_register',
@@ -3576,6 +3578,11 @@ export const langKeys = {
     error_voximplant_failedrequest: 'error_voximplant_failedrequest',
     error_voximplant_nofunds: 'error_voximplant_nofunds',
     error_voximplant_invalidamount: 'error_voximplant_invalidamount',
+
+    propertyvoximplantautomaticrecharge: 'propertyvoximplantautomaticrecharge',
+    propertyvoximplantrechargerange: 'propertyvoximplantrechargerange',
+    propertyvoximplantrechargepercentage: 'propertyvoximplantrechargepercentage',
+    propertyvoximplantadditionalperchannel: 'propertyvoximplantadditionalperchannel',
 };
 
 export type LangKeys = typeof langKeys;

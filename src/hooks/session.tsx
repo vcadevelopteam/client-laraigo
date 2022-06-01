@@ -5,11 +5,13 @@ import { useDispatch } from 'react-redux';
 import { resetForcedDisconnection } from 'store/inbox/actions';
 import { showSnackbar } from 'store/popus/actions';
 import { useSelector } from './store';
+import { disconnectVoxi } from "store/voximplant/actions";
 
 export function useForcedDisconnection(callback?: () => void) {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const fd = useSelector(state => state.inbox.forceddisconnect);
+    const voxiConnection = useSelector(state => state.voximplant.connection);    
 
     useEffect(() => {
         console.log('useForcedDisconnection:', fd);
@@ -22,6 +24,9 @@ export function useForcedDisconnection(callback?: () => void) {
             }));
             dispatch(resetForcedDisconnection());
             callback?.();
+            if (!voxiConnection.error) {
+                dispatch(disconnectVoxi())
+            }
         }
     }, [fd, callback, t, dispatch]);
 }

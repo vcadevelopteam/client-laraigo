@@ -24,3 +24,7 @@ export function transferAccountBalance(request: any) {
 export function getAccountBalance(request: any) {
     return APIManager.post(apiUrls.VOXIMPLANT_GET_ACCOUNTBALANCE, { data: request }, true);
 }
+
+export function getCallRecord(request: any) {
+    return APIManager.post(apiUrls.VOXIMPLANT_GET_CALLRECORD, { data: request }, true);
+}

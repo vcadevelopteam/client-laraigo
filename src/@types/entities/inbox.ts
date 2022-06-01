@@ -73,6 +73,7 @@ export interface IDeleteTicketParams {
     orgid: number;
     isanswered: boolean;
     userid: number;
+    closedTicket?: boolean;
 }
 
 export interface IConnectAgentParams {

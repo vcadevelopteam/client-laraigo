@@ -165,11 +165,11 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             credittype: row?.credittype || "typecredit_alcontado",
             timezone: row?.timezone || "",
             timezoneoffset: row?.timezoneoffset || "",
-            voximplantautomaticrecharge: row?.voximplantautomaticrecharge || false,
-            voximplantrechargerange: row?.voximplantrechargerange || 0,
-            voximplantrechargepercentage: row?.voximplantrechargepercentage || 0.00,
+            voximplantautomaticrecharge: roledesc === "SUPERADMIN" ? (row?.voximplantautomaticrecharge || false) : null,
+            voximplantrechargerange: roledesc === "SUPERADMIN" ? (row?.voximplantrechargerange || 0) : null,
+            voximplantrechargepercentage: roledesc === "SUPERADMIN" ? (row?.voximplantrechargepercentage || 0.00) : null,
             voximplantrechargefixed: row?.voximplantrechargefixed || 0.00,
-            voximplantadditionalperchannel: row?.voximplantadditionalperchannel || 0.00,
+            voximplantadditionalperchannel: roledesc === "SUPERADMIN" ? (row?.voximplantadditionalperchannel || 0.00) : null,
         }
     });
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
@@ -226,10 +226,10 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         register('automaticperiod');
         register('automaticinvoice');
         register('voximplantautomaticrecharge');
-        register('voximplantrechargerange', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('voximplantrechargepercentage', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('voximplantrechargerange', { validate: (value) => roledesc === "SUPERADMIN" ? (((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required)) : true });
+        register('voximplantrechargepercentage', { validate: (value) => roledesc === "SUPERADMIN" ? (((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required)) : true });
         register('voximplantrechargefixed', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('voximplantadditionalperchannel', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('voximplantadditionalperchannel', { validate: (value) => roledesc === "SUPERADMIN" ? (((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required)) : true });
     }, [edit, register, doctype, getValues, t]);
 
     useEffect(() => {
@@ -514,7 +514,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                 >
                     <AntTab label={t(langKeys.informationorganization)} />
                     <AntTab label={t(langKeys.emailconfiguration)} />
-                    <AntTab label={t(langKeys.voximplant_organizationchanneltab)} />
+                    {roledesc === "SUPERADMIN" && <AntTab label={t(langKeys.voximplant_organizationchanneltab)} />}
                     {false && <AntTab label={t(langKeys.chatimages)} />}
                 </Tabs>
                 {pageSelected === 0 && <div className={classes.containerDetail}>

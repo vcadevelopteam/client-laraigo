@@ -23,6 +23,8 @@ import { CloseTicketIcon, HistoryIcon, TipifyIcon, ReassignIcon } from 'icons';
 import { massiveCloseTicket, getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, emitEvent, importTicket } from 'store/inbox/actions';
 import { Button, ListItemIcon } from '@material-ui/core';
 import PublishIcon from '@material-ui/icons/Publish';
+import { getCallRecord } from 'store/voximplant/actions'
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
 const selectionKey = 'conversationid';
 
@@ -450,7 +452,8 @@ const IconOptions: React.FC<{
     onHandlerClassify?: (e?: any) => void;
     onHandlerClose?: (e?: any) => void;
     onHandlerShowHistory?: (e?: any) => void;
-}> = ({ onHandlerReassign, onHandlerClassify, onHandlerClose, onHandlerShowHistory, disabled }) => {
+    onHandlerCallRecord?: (e?: any) => void;
+}> = ({ onHandlerReassign, onHandlerClassify, onHandlerClose, onHandlerShowHistory, onHandlerCallRecord, disabled }) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const { t } = useTranslation();
 
@@ -521,9 +524,20 @@ const IconOptions: React.FC<{
                         onHandlerShowHistory();
                     }}>
                         <ListItemIcon>
-                            <HistoryIcon width={18} style={{ fill: '#7721AD' }} />
+                            <HistoryIcon width={22} style={{ fill: '#7721AD' }} />
                         </ListItemIcon>
                         {t(langKeys.status_history)}
+                    </MenuItem>
+                }
+                {onHandlerCallRecord &&
+                    <MenuItem onClick={() => {
+                        setAnchorEl(null);
+                        onHandlerCallRecord();
+                    }}>
+                        <ListItemIcon>
+                            <CloudDownloadIcon width={18} style={{ fill: '#7721AD' }} />
+                        </ListItemIcon>
+                        {t(langKeys.download_record)}
                     </MenuItem>
                 }
             </Menu>
@@ -756,6 +770,9 @@ const Tickets = () => {
     const user = useSelector(state => state.login.validateToken.user);
     const [openUploadTickets, setOpenUploadTickets] = useState(false);
 
+    const [waitDownloadRecord, setWaitDownloadRecord] = useState(false);
+    const getCallRecordRes = useSelector(state => state.voximplant.requestGetCallRecord);
+
     const setValue = (parameterName: any, value: any) => {
         setAllParameters({ ...allParameters, [parameterName]: value });
     }
@@ -765,6 +782,26 @@ const Tickets = () => {
             setRowWithDataSelected(p => Object.keys(selectedRows).map(x => mainPaginated.data.find(y => y.conversationid === parseInt(x)) || p.find(y => y.conversationid === parseInt(x)) || {}))
         }
     }, [selectedRows])
+
+    const downloadCallRecord = (ticket: Dictionary) => {
+        dispatch(getCallRecord({call_session_history_id: ticket.postexternalid}));
+        setWaitDownloadRecord(true);
+    }
+
+    useEffect(() => {
+        if (waitDownloadRecord) {
+            if (!getCallRecordRes.loading && !getCallRecordRes.error ) {
+                if (getCallRecordRes.data) {
+                    window.open(getCallRecordRes.data)
+                }
+                setWaitDownloadRecord(false)
+            } else if (getCallRecordRes.error) {
+                const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.ticket_plural).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                setWaitDownloadRecord(false)
+            }
+        }
+    }, [getCallRecordRes, waitDownloadRecord])
 
     const columns = React.useMemo(
         () => [
@@ -795,6 +832,12 @@ const Tickets = () => {
                                 setRowSelected(ticket);
                                 setRowToSend([ticket]);
                             }}
+                            onHandlerCallRecord={
+                                ticket.communicationchanneltype === 'VOXI'
+                                && ticket.postexternalid
+                                && ticket.callanswereddate ? () => {
+                                downloadCallRecord(ticket);
+                            } : undefined}
                         />
                     )
                 }
