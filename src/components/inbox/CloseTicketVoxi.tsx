@@ -242,7 +242,7 @@ const CloseTicketVoxi: React.FC = () => {
                 maxWidth={"xs"}>
                 <DialogTitle>
                     <div style={{ overflow: 'hidden', wordBreak: 'break-word', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginRight: 120 }}>
-                        {modalview === "view-1"?t(langKeys.tipify_ticket):t(langKeys.close_ticket)}
+                        {callVoxiTmp.data?.displayname} - {modalview === "view-1"?t(langKeys.tipify_ticket):t(langKeys.close_ticket)}
                     </div>
                 </DialogTitle>
                 <DialogContent style={{ padding: 0 }}>
