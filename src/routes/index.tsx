@@ -104,7 +104,7 @@ const RouterApp: FC = () => {
 	useForcedDisconnection(useCallback(() => {
 		dispatch(logout());
 	}, [dispatch]));
-
+	
 	return (
 		<Router basename={process.env.PUBLIC_URL}>
 			<Switch>
