@@ -24,6 +24,7 @@ import { massiveCloseTicket, getTipificationLevel2, resetGetTipificationLevel2, 
 import { Button, ListItemIcon } from '@material-ui/core';
 import PublishIcon from '@material-ui/icons/Publish';
 import { getCallRecord } from 'store/voximplant/actions'
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
 const selectionKey = 'conversationid';
 
@@ -523,7 +524,7 @@ const IconOptions: React.FC<{
                         onHandlerShowHistory();
                     }}>
                         <ListItemIcon>
-                            <HistoryIcon width={18} style={{ fill: '#7721AD' }} />
+                            <HistoryIcon width={22} style={{ fill: '#7721AD' }} />
                         </ListItemIcon>
                         {t(langKeys.status_history)}
                     </MenuItem>
@@ -534,7 +535,7 @@ const IconOptions: React.FC<{
                         onHandlerCallRecord();
                     }}>
                         <ListItemIcon>
-                            <HistoryIcon width={18} style={{ fill: '#7721AD' }} />
+                            <CloudDownloadIcon width={18} style={{ fill: '#7721AD' }} />
                         </ListItemIcon>
                         {t(langKeys.download_record)}
                     </MenuItem>
@@ -783,7 +784,7 @@ const Tickets = () => {
     }, [selectedRows])
 
     const downloadCallRecord = (ticket: Dictionary) => {
-        dispatch(getCallRecord({call_session_history_id: ticket.voximplantcallsessionhistoryid}));
+        dispatch(getCallRecord({call_session_history_id: ticket.postexternalid}));
         setWaitDownloadRecord(true);
     }
 
@@ -833,7 +834,7 @@ const Tickets = () => {
                             }}
                             onHandlerCallRecord={
                                 ticket.communicationchanneltype === 'VOXI'
-                                && ticket.voximplantcallsessionhistoryid
+                                && ticket.postexternalid
                                 && ticket.callanswereddate ? () => {
                                 downloadCallRecord(ticket);
                             } : undefined}
