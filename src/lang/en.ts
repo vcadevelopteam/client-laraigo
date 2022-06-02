@@ -712,6 +712,9 @@ const translation: LangKeys = {
 
     download_record: 'Download record',
 
+    start: 'Start',
+    stop: 'Stop',
+
     calendar: 'Calendar',
     calendar_detail: 'Calendar detail',
     calendar_plural: 'Calendars',

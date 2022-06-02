@@ -1171,6 +1171,9 @@ const translation: LangKeys = {
 
     download_record: 'Descargar grabación',
 
+    start: 'Iniciar',
+    stop: 'Detener',
+
     successful_transaction: 'Transacción exitosa',
     successful_edit: 'Se editó satisfactoriamente',
     successful_register: 'Se registró satisfactoriamente',

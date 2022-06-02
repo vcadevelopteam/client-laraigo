@@ -2606,6 +2606,9 @@ export const langKeys = {
     invoice_generation: 'invoice_generation',
     whatsappinformationimportant: "whatsappinformationimportant",
 
+    start: 'start',
+    stop: 'stop',
+
     businessname: 'businessname',
     fiscaladdress: 'fiscaladdress',
     billingcontact: "billingcontact",

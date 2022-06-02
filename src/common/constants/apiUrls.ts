@@ -130,4 +130,5 @@ export const apiUrls = {
     VOXIMPLANT_GET_CALLRECORD: `${BASE_URL}/voximplant/getcallrecord`,
 
     CAMPAIGN_START: `${BASE_URL}/campaign/start`,
+    CAMPAIGN_STOP: `${BASE_URL}/campaign/stop`,
 };

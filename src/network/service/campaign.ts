@@ -4,3 +4,7 @@ import { APIManager } from '../manager';
 export function start(request: any) {
     return APIManager.post(apiUrls.CAMPAIGN_START, { data: request }, true);
 }
+
+export function stop(request: any) {
+    return APIManager.post(apiUrls.CAMPAIGN_STOP, { data: request }, true);
+}
