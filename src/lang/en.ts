@@ -3605,6 +3605,7 @@ const translation: LangKeys = {
     propertyvoximplantrechargerange: 'Default value used when an admin creates a new organization - Voiche Channel/Evaluation Range',
     propertyvoximplantrechargepercentage: 'Default value used when an admin creates a new organization - Voiche Channel/Slack Percentage',
     propertyvoximplantadditionalperchannel: 'Default value used when an admin creates a new organization - Voiche Channel/Additional Balance Per Channel',
+    T_VOICECHANNEL: 'VOICE CHANNEL'
 };
 
 const enResource: ResourceLanguage = {
