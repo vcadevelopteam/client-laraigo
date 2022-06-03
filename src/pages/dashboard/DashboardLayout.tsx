@@ -1106,7 +1106,7 @@ interface LayoutFunnelProps {
 }
 
 const LayoutFunnel: FC<LayoutFunnelProps> = ({ data,...props }) => {
-    let dataFunnel = data.map((e:any,i:number)=> ({name:e.title,value:i+1, fill:PIE_COLORS[i]}))
+    let dataFunnel = data.map((e:any,i:number)=> ({name:e.title,value:e.quantity, fill:PIE_COLORS[i]}))
     let total = dataFunnel.reduce((acc:number,x:any)=>acc+x.value,0)
     return (
         <ResponsiveContainer {...props}>
