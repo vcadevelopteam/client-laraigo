@@ -3598,6 +3598,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     propertyvoximplantrechargerange: 'Valor por defecto cuando un administrador crea una organización - Canal de Voz/Rango de Evaluación',
     propertyvoximplantrechargepercentage: 'Valor por defecto cuando un administrador crea una organización - Canal de Voz/Porcentaje de Holgura',
     propertyvoximplantadditionalperchannel: 'Valor por defecto cuando un administrador crea una organización - Canal de Voz/Saldo Adicional Por Canal',
+    T_VOICECHANNEL: 'CANAL DE VOZ'
 };
 
 const esResource: ResourceLanguage = {

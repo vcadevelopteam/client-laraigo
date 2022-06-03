@@ -1071,7 +1071,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     )
 }
 
-const typeText = ["text", "post-text", "reply-text", "quickreply", "carousel", "LOG"]
+const typeText = ["text", "post-text", "reply-text", "quickreply", "carousel", "LOG","email"]
 
 const applySearch = (list: Dictionary[], index: number) => {
     const inthtml = document.getElementById(`interaction-${list[index].interactionid}`)

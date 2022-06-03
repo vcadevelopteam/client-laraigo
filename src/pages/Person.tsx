@@ -1982,10 +1982,11 @@ const nameschannel: { [x: string]: string } = {
     "SMSI": "SMS",
     "TWIT": "TWITTER",
     "TWMS": "TWITTER",
-    "VOXI": "VOXIMPLANT",
+    "VOXI": "T_VOICECHANNEL",
 };
 
 const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
+    const { t } = useTranslation();
     const classes = useChannelItemStyles();
     const personIdentifier = useMemo(() => {
         if (!channel) return '';
@@ -2002,7 +2003,10 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
                         title={<Trans i18nKey={langKeys.communicationchannel} />}
                         subtitle={(
                             <div className={classes.subtitle}>
-                                <span>{nameschannel[channel.type]}</span>
+                                <span>{
+                                    nameschannel[channel.type].includes("T_")
+                                    ? t((langKeys as any)[nameschannel[channel.type]])
+                                    : nameschannel[channel.type]}</span>
                                 <GetIcon channelType={channel.type} color='black' />
                             </div>
                         )}
