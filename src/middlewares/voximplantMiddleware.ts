@@ -178,7 +178,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         return
     } else if (type === typeVoximplant.ANSWER_CALL) {
         const call = payload.call;
-        
+
         call?.answer();
         dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "CONNECTED" });
         //actualizar la fecha de contestado en la lista de tickets
@@ -215,11 +215,12 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         }
         return
     } else if (type === typeVoximplant.DISCONNECT) {
+        dispatch({ type: typeVoximplant.MANAGE_CONNECTION, payload: { error: true, message: "", loading: false } })
         try {
             sdk?.disconnect();
             return
         } catch (error) {
-            return   
+            return
         }
     }
 

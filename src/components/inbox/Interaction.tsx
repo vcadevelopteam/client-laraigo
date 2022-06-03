@@ -286,7 +286,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
                 [classes.interactionTextAgent]: userType !== 'client',
             })} >
-                <div>Subject: {subject}</div>
+                <div>RE-LARAIGO: {subject}</div>
                 <div dangerouslySetInnerHTML={{ __html: body }} />
                 {(files && files!=="{}") &&
                     Object.keys(JSON.parse(files)).map((file:any)=>{
