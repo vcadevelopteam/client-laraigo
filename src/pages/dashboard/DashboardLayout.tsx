@@ -24,6 +24,9 @@ import clsx from 'clsx';
 import { RenderCustomizedLabel } from "components/fields/Graphic";
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import FileSaver from 'file-saver';
+import * as XLSX from 'xlsx';
 
 const ReactGridLayout = WidthProvider(RGL);
 
@@ -69,6 +72,20 @@ const useDashboardLayoutStyles = makeStyles(theme => ({
         backgroundColor: 'white',
         padding: theme.spacing(1),
         gap: theme.spacing(1),
+    },
+    styleicon:{
+        width: "22px",
+        height: "22px",
+        '&:hover': {
+            cursor: 'pointer',
+        }
+    },
+    downloadiconcontainer:{
+        width:"100%",display: "flex",justifyContent: "end"
+    },
+    label: {
+        fontWeight: 'bold',
+        fontSize: 16,
     },
 }));
 
@@ -630,6 +647,7 @@ const LayoutItem: FC<LayoutItemProps> = ({
             case 'kpi': return <LayoutKpi data={dataGraph as KpiData} />;
             case 'funnel': return <LayoutFunnel
                 data={dataGraph}
+                title={title}
             />
             default: return null;
         }
@@ -666,6 +684,8 @@ const LayoutItem: FC<LayoutItemProps> = ({
 
     return (
         <div className={classes.root}>
+            {type !== 'funnel' &&
+            
             <div className={classes.header}>
                 <span className={classes.label}>{title}</span>
                 <div style={{ flexGrow: 1 }} />
@@ -710,7 +730,7 @@ const LayoutItem: FC<LayoutItemProps> = ({
                         </Menu>
                     </>
                 )}
-            </div>
+            </div>}
             <div className={classes.reponsiveContainer}>
                 {renderGraph()}
             </div>
@@ -1103,12 +1123,31 @@ const PIE_COLORS = ['#22b66e', '#b41a1a', '#ffcd56', '#D32F2F', '#FBC02D', '#757
 
 interface LayoutFunnelProps {
     data: any;
+    title:string;
 }
 
-const LayoutFunnel: FC<LayoutFunnelProps> = ({ data,...props }) => {
+const LayoutFunnel: FC<LayoutFunnelProps> = ({ data,title,...props }) => {
     let dataFunnel = data.map((e:any,i:number)=> ({name:e.title,value:e.quantity, fill:PIE_COLORS[i]}))
     let total = dataFunnel.reduce((acc:number,x:any)=>acc+x.value,0)
+    const classes = useDashboardLayoutStyles();
+    function exportexcel(){
+        const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+        const fileExtension = '.xlsx';
+        let dataexport = dataFunnel.map((e:any,i:number)=> ({Nombre:e.name,Cantidad:e.value,"% Representativo":((e.value/total)*100).toFixed(0)}))
+        const ws = XLSX.utils.json_to_sheet(dataexport);
+        const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        const data = new Blob([excelBuffer], { type: fileType });
+        FileSaver.saveAs(data, title + fileExtension);
+    }
     return (
+        <>
+        <div className={classes.header}>
+            <span className={classes.label}>{title}</span>
+            <div style={{ flexGrow: 1 }} />
+            
+            {total!==0 && <CloudDownloadIcon onClick={exportexcel} className={classes.styleicon}/>}
+        </div>
         <ResponsiveContainer {...props}>
             <FunnelChart margin={{ top: 10, right: 20, bottom: 5, left: 10 }}>
                 <ChartTooltip />
@@ -1150,6 +1189,7 @@ const LayoutFunnel: FC<LayoutFunnelProps> = ({ data,...props }) => {
                 </Funnel>
             </FunnelChart>
         </ResponsiveContainer>
+        </>
     );
 }
 const LayoutPie: FC<LayoutPieProps> = ({ data,alldata, tooltipFormatter,tickFormatter, ...props }) => {
