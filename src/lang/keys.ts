@@ -3583,6 +3583,7 @@ export const langKeys = {
     propertyvoximplantrechargerange: 'propertyvoximplantrechargerange',
     propertyvoximplantrechargepercentage: 'propertyvoximplantrechargepercentage',
     propertyvoximplantadditionalperchannel: 'propertyvoximplantadditionalperchannel',
+    T_VOICECHANNEL: 'T_VOICECHANNEL'
 };
 
 export type LangKeys = typeof langKeys;
