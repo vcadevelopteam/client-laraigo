@@ -146,7 +146,8 @@ const useRichTextStyles = makeStyles(theme => ({
         width: "100%"
     },
     editable: {
-        minHeight: '200px'
+        height: 200,
+        overflowY: "scroll",
     },
     littleboxes: {
         cursor: "pointer",

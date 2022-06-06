@@ -602,7 +602,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                             interactionid: 0,
                             typemessage: ticketSelected?.communicationchanneltype === "MAIL" ? "email" : "text",
                             typeinteraction: null,
-                            lastmessage: textCleaned,
+                            lastmessage: ticketSelected?.communicationchanneltype === "MAIL" ? textCleaned.split("&%MAIL%&")[0] : textCleaned,
                             createdate: new Date().toISOString(),
                             userid: 0,
                             usertype: "agent",
