@@ -3605,7 +3605,6 @@ const translation: LangKeys = {
     propertyvoximplantrechargerange: 'Default value used when an admin creates a new organization - Voiche Channel/Evaluation Range',
     propertyvoximplantrechargepercentage: 'Default value used when an admin creates a new organization - Voiche Channel/Slack Percentage',
     propertyvoximplantadditionalperchannel: 'Default value used when an admin creates a new organization - Voiche Channel/Additional Balance Per Channel',
-<<<<<<< HEAD
 
     vcacomissionpervoicechannel: 'Voice VCA Comission Percentage',
     minimumsmsquantity: 'Minimun SMS quantity',
@@ -3633,9 +3632,7 @@ const translation: LangKeys = {
     periodreportvoip: 'VoIP Calls',
     periodreportrecording: 'Call Recording',
     periodreportother: 'Others',
-=======
     T_VOICECHANNEL: 'VOICE CHANNEL'
->>>>>>> a2c293c34863d548516c1065b39038999565de23
 };
 
 const enResource: ResourceLanguage = {
