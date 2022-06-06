@@ -193,3 +193,4 @@ export { ReactComponent as KPIIcon } from './kpi.svg';
 export { ReactComponent as CalendaryIcon } from './calendary.svg';
 export { ReactComponent as RulesIcon } from './rules.svg';
 export { ReactComponent as ProductsIcon } from './products.svg';
+export { ReactComponent as CallRecordIcon } from './call-record.svg';

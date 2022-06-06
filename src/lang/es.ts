@@ -3598,6 +3598,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     propertyvoximplantrechargerange: 'Valor por defecto cuando un administrador crea una organización - Canal de Voz/Rango de Evaluación',
     propertyvoximplantrechargepercentage: 'Valor por defecto cuando un administrador crea una organización - Canal de Voz/Porcentaje de Holgura',
     propertyvoximplantadditionalperchannel: 'Valor por defecto cuando un administrador crea una organización - Canal de Voz/Saldo Adicional Por Canal',
+<<<<<<< HEAD
 
     vcacomissionpervoicechannel: 'Porcentaje Comisión VCA Voz',
     minimumsmsquantity: 'Cantidad mínima de SMS',
@@ -3625,6 +3626,9 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     periodreportvoip: 'Llamadas VoIP',
     periodreportrecording: 'Grabación de Llamadas',
     periodreportother: 'Otros',
+=======
+    T_VOICECHANNEL: 'CANAL DE VOZ'
+>>>>>>> a2c293c34863d548516c1065b39038999565de23
 };
 
 const esResource: ResourceLanguage = {

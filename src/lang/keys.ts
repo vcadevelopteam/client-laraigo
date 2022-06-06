@@ -3583,6 +3583,7 @@ export const langKeys = {
     propertyvoximplantrechargerange: 'propertyvoximplantrechargerange',
     propertyvoximplantrechargepercentage: 'propertyvoximplantrechargepercentage',
     propertyvoximplantadditionalperchannel: 'propertyvoximplantadditionalperchannel',
+<<<<<<< HEAD
 
     vcacomissionpervoicechannel: 'vcacomissionpervoicechannel',
     minimumsmsquantity: 'minimumsmsquantity',
@@ -3610,6 +3611,9 @@ export const langKeys = {
     periodreportvoip: 'periodreportvoip',
     periodreportrecording: 'periodreportrecording',
     periodreportother: 'periodreportother',
+=======
+    T_VOICECHANNEL: 'T_VOICECHANNEL'
+>>>>>>> a2c293c34863d548516c1065b39038999565de23
 };
 
 export type LangKeys = typeof langKeys;
