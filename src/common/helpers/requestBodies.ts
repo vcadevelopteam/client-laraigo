@@ -593,12 +593,12 @@ export const getQuickrepliesSel = (id: number): IRequestBody => ({
     }
 })
 
-export const insCorp = ({ id, description, type, status, logo, logotype, operation, paymentplanid = 0, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, billbyorg = false, credittype="", paymentmethod="", automaticpayment, automaticperiod, automaticinvoice }: Dictionary): IRequestBody => ({
+export const insCorp = ({ id, description, type, status, logo, logotype, operation, paymentplanid = 0, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, billbyorg = false, credittype = "", paymentmethod = "", automaticpayment, automaticperiod, automaticinvoice }: Dictionary): IRequestBody => ({
     method: "UFN_CORP_INS",
     key: "UFN_CORP_INS",
     parameters: { companysize: null, id, description, type, status, logo, logotype, operation, paymentplanid, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, billbyorg, credittype, paymentmethod, automaticpayment, automaticperiod, automaticinvoice }
 });
-export const insOrg = ({ corpid, description, status, type, id, operation, currency, email = "", password = "", port = 0, host, ssl, default_credentials, private_mail, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, iconbot = "", iconadvisor="", iconclient="", credittype="", timezone, timezoneoffset, automaticpayment, automaticperiod, automaticinvoice, voximplantautomaticrecharge, voximplantrechargerange, voximplantrechargepercentage, voximplantrechargefixed, voximplantadditionalperchannel }: Dictionary): IRequestBody => ({
+export const insOrg = ({ corpid, description, status, type, id, operation, currency, email = "", password = "", port = 0, host, ssl, default_credentials, private_mail, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, iconbot = "", iconadvisor = "", iconclient = "", credittype = "", timezone, timezoneoffset, automaticpayment, automaticperiod, automaticinvoice, voximplantautomaticrecharge, voximplantrechargerange, voximplantrechargepercentage, voximplantrechargefixed, voximplantadditionalperchannel }: Dictionary): IRequestBody => ({
     method: "UFN_ORG_INS",
     key: "UFN_ORG_INS",
     parameters: { corpid, id, description, status, type, operation, currency, email, password, port: parseInt(port), host, ssl, default_credentials, private_mail, country: null, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, iconbot, iconadvisor, iconclient, credittype, timezone, timezoneoffset, automaticpayment, automaticperiod, automaticinvoice, voximplantautomaticrecharge, voximplantrechargerange, voximplantrechargepercentage, voximplantrechargefixed, voximplantadditionalperchannel }
@@ -623,44 +623,44 @@ export const getClassificationSel = (id: number): IRequestBody => ({
         all: true
     }
 })
-export const insInvoice = ({ corpid=0,
-    orgid=0, year, month, description, status, receiverdoctype, receiverdocnum, receiverbusinessname, receiverfiscaladdress, receivercountry, receivermail, invoicetype, serie, correlative, invoicedate, expirationdate, invoicestatus, paymentstatus, paymentdate, paidby, paymenttype, totalamount, exchangerate, currency, urlcdr, urlpdf, urlxml, purchaseorder, comments, credittype, }: Dictionary): IRequestBody => ({
-    method: "UFN_INVOICE_IMPORT",
-    key: "UFN_INVOICE_IMPORT",
-    parameters: {
-        corpid,
-	    orgid,
-        year,
-        month,
-        description,
-        status,
-        receiverdoctype,
-        receiverdocnum,
-        receiverbusinessname,
-        receiverfiscaladdress,
-        receivercountry,
-        receivermail,
-        invoicetype,
-        serie,
-        correlative,
-        invoicedate,
-        expirationdate,
-        invoicestatus,
-        paymentstatus,
-        paymentdate,
-        paidby,
-        paymenttype,
-        totalamount,
-        exchangerate,
-        currency,
-        urlcdr,
-        urlpdf,
-        urlxml,
-        purchaseorder,
-        comments,
-        credittype,
-    }
-})
+export const insInvoice = ({ corpid = 0,
+    orgid = 0, year, month, description, status, receiverdoctype, receiverdocnum, receiverbusinessname, receiverfiscaladdress, receivercountry, receivermail, invoicetype, serie, correlative, invoicedate, expirationdate, invoicestatus, paymentstatus, paymentdate, paidby, paymenttype, totalamount, exchangerate, currency, urlcdr, urlpdf, urlxml, purchaseorder, comments, credittype, }: Dictionary): IRequestBody => ({
+        method: "UFN_INVOICE_IMPORT",
+        key: "UFN_INVOICE_IMPORT",
+        parameters: {
+            corpid,
+            orgid,
+            year,
+            month,
+            description,
+            status,
+            receiverdoctype,
+            receiverdocnum,
+            receiverbusinessname,
+            receiverfiscaladdress,
+            receivercountry,
+            receivermail,
+            invoicetype,
+            serie,
+            correlative,
+            invoicedate,
+            expirationdate,
+            invoicestatus,
+            paymentstatus,
+            paymentdate,
+            paidby,
+            paymenttype,
+            totalamount,
+            exchangerate,
+            currency,
+            urlcdr,
+            urlpdf,
+            urlxml,
+            purchaseorder,
+            comments,
+            credittype,
+        }
+    })
 
 export const insClassification = ({ id, title, description, parent, communicationchannel, status, type, operation, tags, jobplan = null }: Dictionary): IRequestBody => ({
     method: "UFN_CLASSIFICATION_INS",
@@ -2044,17 +2044,17 @@ export const getLeadsSel = (params: ICrmLeadSel): IRequestBody => ({
         all: params.id === 0,
     }
 })
-export const getAutomatizationRulesSel = ({id,communicationchannelid}:Dictionary ): IRequestBody => ({
+export const getAutomatizationRulesSel = ({ id, communicationchannelid }: Dictionary): IRequestBody => ({
     method: "UFN_LEADAUTOMATIZATIONRULES_SEL",
     key: "UFN_LEADAUTOMATIZATIONRULES_SEL",
     parameters: {
         id,
         communicationchannelid,
-        all: id===0
+        all: id === 0
     }
 })
 
-export const insAutomatizationRules = ({  id, description, status, type, columnid, communicationchannelid, messagetemplateid, messagetemplateparameters, shippingtype, xdays, schedule, tags, products, operation}: Dictionary): IRequestBody => ({
+export const insAutomatizationRules = ({ id, description, status, type, columnid, communicationchannelid, messagetemplateid, messagetemplateparameters, shippingtype, xdays, schedule, tags, products, operation }: Dictionary): IRequestBody => ({
     method: 'UFN_LEADAUTOMATIZATIONRULES_INS',
     key: "UFN_LEADAUTOMATIZATIONRULES_INS",
     parameters: {
@@ -2074,7 +2074,7 @@ export const insAutomatizationRules = ({  id, description, status, type, columni
         operation,
     }
 });
-export const insColumns = ({ id, description, type, status, edit=true, index, operation, delete_all = false }: Dictionary): IRequestBody => ({
+export const insColumns = ({ id, description, type, status, edit = true, index, operation, delete_all = false }: Dictionary): IRequestBody => ({
     method: 'UFN_COLUMN_INS',
     key: "UFN_COLUMN_INS",
     parameters: {
@@ -2425,10 +2425,10 @@ export const getBillingConfigurationSel = ({ year, month, plan }: Dictionary): I
     parameters: { year, month, plan }
 })
 
-export const billingConfigurationIns = ({ year, month, plan, id, basicfee, userfreequantity, useradditionalfee, channelfreequantity, channelwhatsappfee, channelotherfee, clientfreequantity, clientadditionalfee, allowhsm, hsmfee, description, status, whatsappconversationfreequantity, freewhatsappchannel, usercreateoverride, channelcreateoverride, vcacomissionperhsm, type, operation }: Dictionary): IRequestBody => ({
+export const billingConfigurationIns = ({ year, month, plan, id, basicfee, userfreequantity, useradditionalfee, channelfreequantity, channelwhatsappfee, channelotherfee, clientfreequantity, clientadditionalfee, allowhsm, hsmfee, description, status, whatsappconversationfreequantity, freewhatsappchannel, usercreateoverride, channelcreateoverride, vcacomissionperhsm, vcacomissionpervoicechannel, type, operation }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGCONFIGURATION_INS",
     key: "UFN_BILLINGCONFIGURATION_INS",
-    parameters: { year, month, plan, id, basicfee, userfreequantity, useradditionalfee, channelfreequantity, channelwhatsappfee, channelotherfee, clientfreequantity, clientadditionalfee, allowhsm, hsmfee, description, status, whatsappconversationfreequantity, freewhatsappchannel, usercreateoverride, channelcreateoverride, vcacomissionperhsm, type, operation }
+    parameters: { year, month, plan, id, basicfee, userfreequantity, useradditionalfee, channelfreequantity, channelwhatsappfee, channelotherfee, clientfreequantity, clientadditionalfee, allowhsm, hsmfee, description, status, whatsappconversationfreequantity, freewhatsappchannel, usercreateoverride, channelcreateoverride, vcacomissionperhsm, vcacomissionpervoicechannel, type, operation }
 })
 
 export const getBillingConversationSel = ({ year, month, countrycode = "" }: Dictionary): IRequestBody => ({
@@ -2449,10 +2449,10 @@ export const getBillingPeriodSel = ({ corpid, orgid, year, month, billingplan, s
     key: "UFN_BILLINGPERIOD_SEL",
     parameters: { corpid, orgid, year, month, billingplan, supportplan }
 })
-export const billingPeriodUpd = ({ corpid, orgid, year, month, billingplan, supportplan, basicfee, userfreequantity, useradditionalfee, channelfreequantity, channelwhatsappfee, channelotherfee, clientfreequantity, clientadditionalfee, supportbasicfee, unitpricepersms, vcacomissionpersms, unitepricepermail, vcacomissionpermail, additionalservicename1, additionalservicefee1, additionalservicename2, additionalservicefee2, additionalservicename3, additionalservicefee3, freewhatsappchannel, freewhatsappconversations, usercreateoverride, channelcreateoverride, vcacomissionperconversation, vcacomissionperhsm, force }: Dictionary): IRequestBody => ({
+export const billingPeriodUpd = ({ corpid, orgid, year, month, billingplan, supportplan, basicfee, userfreequantity, useradditionalfee, channelfreequantity, channelwhatsappfee, channelotherfee, clientfreequantity, clientadditionalfee, supportbasicfee, unitpricepersms, vcacomissionpersms, unitepricepermail, vcacomissionpermail, additionalservicename1, additionalservicefee1, additionalservicename2, additionalservicefee2, additionalservicename3, additionalservicefee3, freewhatsappchannel, freewhatsappconversations, usercreateoverride, channelcreateoverride, vcacomissionperconversation, vcacomissionperhsm, minimumsmsquantity, minimummailquantity, vcacomissionpervoicechannel, force }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGPERIOD_UPD",
     key: "UFN_BILLINGPERIOD_UPD",
-    parameters: { corpid, orgid, year, month, billingplan, supportplan, basicfee, userfreequantity, useradditionalfee, channelfreequantity, channelwhatsappfee, channelotherfee, clientfreequantity, clientadditionalfee, supportbasicfee, unitpricepersms, vcacomissionpersms, unitepricepermail, vcacomissionpermail, additionalservicename1, additionalservicefee1, additionalservicename2, additionalservicefee2, additionalservicename3, additionalservicefee3, freewhatsappchannel, freewhatsappconversations, usercreateoverride, channelcreateoverride, vcacomissionperconversation, vcacomissionperhsm, force }
+    parameters: { corpid, orgid, year, month, billingplan, supportplan, basicfee, userfreequantity, useradditionalfee, channelfreequantity, channelwhatsappfee, channelotherfee, clientfreequantity, clientadditionalfee, supportbasicfee, unitpricepersms, vcacomissionpersms, unitepricepermail, vcacomissionpermail, additionalservicename1, additionalservicefee1, additionalservicename2, additionalservicefee2, additionalservicename3, additionalservicefee3, freewhatsappchannel, freewhatsappconversations, usercreateoverride, channelcreateoverride, vcacomissionperconversation, vcacomissionperhsm, minimumsmsquantity, minimummailquantity, vcacomissionpervoicechannel, force }
 })
 
 export const getBillingPeriodHSMSel = ({ corpid, orgid, year, month }: Dictionary): IRequestBody => ({
@@ -2921,7 +2921,7 @@ export const getProductCatalogSel = (id: number = 0, category: string = ''): IRe
     }
 })
 
-export const productCatalogIns = ({id, code, description, descriptiontext, category, status, type, imagereference, notes, unitprice, operation }: Dictionary): IRequestBody => ({
+export const productCatalogIns = ({ id, code, description, descriptiontext, category, status, type, imagereference, notes, unitprice, operation }: Dictionary): IRequestBody => ({
     method: "UFN_PRODUCTCATALOG_INS",
     key: "UFN_PRODUCTCATALOG_INS",
     parameters: {
@@ -2976,43 +2976,43 @@ export const getInvoiceReportDetail = ({ corpid, year, month, currency }: Dictio
 export const getCurrencyList = (): IRequestBody => ({
     method: "UFN_CURRENCY_SEL",
     key: "UFN_CURRENCY_SEL",
-    parameters: { }
+    parameters: {}
 });
 
 export const conversationOutboundIns = ({ number, communicationchannelid, personcommunicationchannelowner, interactiontype, interactiontext }: Dictionary) => ({
     method: "UFN_CONVERSATION_OUTBOUND_INS",
     key: "UFN_CONVERSATION_OUTBOUND_INS",
     parameters: {
-        personid: 0, 
-        personcommunicationchannel:`${number}_VOXI`, 
-        communicationchannelid, 
-        closetype:"", 
+        personid: 0,
+        personcommunicationchannel: `${number}_VOXI`,
+        communicationchannelid,
+        closetype: "",
         status: 'ASIGNADO',
-        finishdate:false, 
-        handoff:false, 
-        usergroup:"", 
-        phone:number,
-        extradata:"", 
-        lastreplydate:true, 
-        personlastreplydate:false, 
-        origin:"OUTBOUND", 
-        firstname: number, 
-        lastname:"", 
+        finishdate: false,
+        handoff: false,
+        usergroup: "",
+        phone: number,
+        extradata: "",
+        lastreplydate: true,
+        personlastreplydate: false,
+        origin: "OUTBOUND",
+        firstname: number,
+        lastname: "",
         communicationchanneltype: "VOXI",
-        interactiontype, 
+        interactiontype,
         interactiontext,
         personcommunicationchannelowner
     },
 });
-export const conversationCloseUpd = ({ communicationchannelid, personid, personcommunicationchannel, conversationid,  motive,  obs }: Dictionary) => ({
+export const conversationCloseUpd = ({ communicationchannelid, personid, personcommunicationchannel, conversationid, motive, obs }: Dictionary) => ({
     method: "UFN_CONVERSATION_CLOSE_UPD",
     key: "UFN_CONVERSATION_CLOSE_UPD",
     parameters: {
         communicationchannelid,
         personid,
         personcommunicationchannel,
-        conversationid, 
-        motive, 
+        conversationid,
+        motive,
         obs
     },
 });
@@ -3020,5 +3020,5 @@ export const conversationCloseUpd = ({ communicationchannelid, personid, personc
 export const getAdvisorListVoxi = (): IRequestBody => ({
     method: "UFN_PERSONCOMMUNICATIONCHANNEL_SEL_VOXI",
     key: "UFN_PERSONCOMMUNICATIONCHANNEL_SEL_VOXI",
-    parameters: { }
+    parameters: {}
 });
