@@ -53,6 +53,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
     const person = useSelector(state => state.inbox.person);
     const sendingRes = useSelector(state => state.inbox.triggerSendHSM);
     const [templatesList, setTemplatesList] = useState<Dictionary[]>([]);
+    const [channelsList, setchannelsList] = useState<Dictionary[]>([]);
     const [bodyMessage, setBodyMessage] = useState('');
     const [bodyCleaned, setBodyCleaned] = useState('');
 
@@ -106,16 +107,8 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
 
     useEffect(() => {
         setTemplatesList(multiData?.data?.[5] && multiData?.data[5].data.filter(x => x.type === "HSM"))
+        setchannelsList(multiData?.data?.[13]?.data?.filter(e=>e.type.includes("WHA"))||[])
     }, [multiData.data])
-
-    useEffect(() => {
-        if(ticketSelected?.communicationchanneltype?.includes('WHA')){
-            let value = multiData?.data?.[13]?.data?.filter(e=>e.type.includes("WHA"))[0]
-            setValue('communicationchannelid', value?.communicationchannelid||0);
-            setValue('communicationchanneltype', value?.type||"");
-            setValue('platformtype', value?.communicationchannelsite||""); 
-        }
-    }, [openModal])
 
     useEffect(() => {
         if (openModal) {
@@ -129,7 +122,11 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
             register('communicationchannelid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
             register('communicationchanneltype', { validate: (value) => ((value && value.length > 0) || t(langKeys.field_required)) });
             register('platformtype', { validate: (value) => ((value && value.length > 0) || t(langKeys.field_required)) });
-            if(ticketSelected?.communicationchanneltype?.includes('WHA')){
+            if(ticketSelected?.communicationchanneltype?.includes('WHA')||ticketSelected?.communicationchanneltype?.includes('VOXI')){
+                let value = channelsList[0]
+                setValue('communicationchannelid', value?.communicationchannelid||0);
+                setValue('communicationchanneltype', value?.type||"");
+                setValue('platformtype', value?.communicationchannelsite||""); 
             }
         }
     }, [openModal])
@@ -212,7 +209,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
                             setValue('platformtype', value?.communicationchannelsite||""); 
                         }}
                         error={errors?.communicationchannelid?.message}
-                        data={multiData?.data?.[13]?.data?.filter(e=>e.type.includes("WHA"))||[]}
+                        data={channelsList}
                         optionDesc="description"
                         optionValue="communicationchannelid"
                     />
