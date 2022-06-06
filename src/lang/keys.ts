@@ -1431,7 +1431,7 @@ export const langKeys = {
     sent: 'sent',
     campaign_in_execution: 'campaign_in_execution',
     file_without_data: 'file_without_data',
-    too_many_records: 'file_without_data',
+    too_many_records: 'too_many_records',
     file_incompatbile_with_previous_one: 'file_incompatbile_with_previous_one',
     invalid_data: 'invalid_data',
 

@@ -971,7 +971,7 @@ const translation: LangKeys = {
     campaign_in_execution: 'Campaign in execution',
     file_without_data: 'File without data',
     confirmation_changepassword: "Do you want to change the password?",
-    too_many_records: 'Too many records',
+    too_many_records: 'Too many records ({{limit}} max)',
     file_incompatbile_with_previous_one: 'File incompatbile with previous one',
     invalid_data: 'Invalid data',
     pay: 'Pay',

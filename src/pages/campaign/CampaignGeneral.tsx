@@ -214,7 +214,10 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 data.fields = {...new SelectedColumns(), ...data.fields};
                 setDetaildata({...detaildata, ...data});
                 setFrameProps({...frameProps, executeSave: false, checkPage: false, valid: {...frameProps.valid, 0: valid}});
-                if (valid) {
+                if (frameProps.page > 1 && !frameProps.valid[1]) {
+                    setPageSelected(1)
+                }
+                else if (valid) {
                     setPageSelected(frameProps.page);
                 }
                 if (valid && frameProps.executeSave) {
@@ -236,6 +239,10 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const onChangeChannel = async (data: Dictionary) => {
         setValue('communicationchannelid', data?.communicationchannelid || 0);
         const channeltype = dataChannel.filter(d => d.communicationchannelid === data?.communicationchannelid)[0]?.type;
+        if (getValues('communicationchanneltype') !== channeltype) {
+            setValue('sourcechanged', true);
+            setFrameProps({...frameProps, valid: {...frameProps.valid, 1: false}});
+        }
         setValue('communicationchanneltype', channeltype);
         if (channeltype?.startsWith('WHA')) {
             onChangeType({key: 'HSM'});

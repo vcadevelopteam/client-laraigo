@@ -92,6 +92,14 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             if (detaildata.source === 'INTERNAL') {
                 // dispatch(getPersonSel());
             }
+            else if (detaildata.source === 'EXTERNAL') {
+                if (detaildata.sourcechanged) {
+                    setHeaders([]);
+                    setJsonData([]);
+                    setSelectedRows({});
+                    setDetaildata({...detaildata, sourcechanged: false})
+                }
+            }
         }
         else if (detaildata.operation === 'UPDATE') {
             if (detaildata.source === 'INTERNAL') {
@@ -169,9 +177,17 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.file_without_data)}));
             return null;
         }
-        if (data.length > 100000) {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.too_many_records)}));
-            return null;
+        if (detaildata.communicationchanneltype === 'VOXI') {
+            if (data.length > 10) {
+                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.too_many_records, {limit: 10})}));
+                return null;
+            }
+        }
+        else {
+            if (data.length > 100000) {
+                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.too_many_records, {limit: 100000})}));
+                return null;
+            }
         }
         let actualHeaders = jsonData.length > 0 ? Object.keys(jsonData[0]) : null;
         let newHeaders = Object.keys(data[0]);
@@ -326,12 +342,32 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     }
 
     const changeStep = (step: number) => {
+        let stepValid = true;
         if (Object.keys(selectedRows).length === 0) {
             if (step === 2) {
                 dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.no_record_selected)}));
             }
-            return false;
+            stepValid = false;
         }
+        
+        let personData = [];
+        if (detaildata.operation === 'INSERT' && detaildata.source === 'INTERNAL') {
+            personData = jsonData.filter(j => Object.keys(selectedRows).includes('' + j[selectionKey]));
+        }
+        else if (detaildata.operation === 'UPDATE' && detaildata.source === 'INTERNAL') {
+            personData = jsonData.map(j => Object.keys(selectedRows).includes('' + j[selectionKey]) ? j : {...j, status: 'ELIMINADO'});
+        }
+        else if (detaildata.source === 'EXTERNAL') {
+            personData = jsonData.filter(j => Object.keys(selectedRows).includes('' + j[selectionKey]));
+        }
+
+        if (step === 2 && detaildata.communicationchanneltype === 'VOXI') {
+            if (personData.length > 10) {
+                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.too_many_records, {limit: 10})}));
+                stepValid = false;
+            }
+        }
+
         if (detaildata.operation === 'INSERT' && detaildata.source === 'INTERNAL') {
             setDetaildata({
                 ...detaildata,
@@ -339,7 +375,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 jsonData: jsonData,
                 selectedColumns: selectedColumns,
                 selectedRows: selectedRows,
-                person: jsonData.filter(j => Object.keys(selectedRows).includes('' + j[selectionKey]))
+                person: personData
             });
         }
         else if (detaildata.operation === 'UPDATE' && detaildata.source === 'INTERNAL') {
@@ -349,9 +385,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 jsonData: jsonData,
                 selectedColumns: selectedColumns,
                 selectedRows: selectedRows,
-                person: jsonData.map(j => 
-                    Object.keys(selectedRows).includes('' + j[selectionKey]) ? j : {...j, status: 'ELIMINADO'}
-                )
+                person: personData
             });
         }
         else if (detaildata.source === 'EXTERNAL') {
@@ -363,10 +397,10 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 jsonData: jsonData,
                 selectedColumns: selectedColumns,
                 selectedRows: selectedRows,
-                person: jsonData.filter(j => Object.keys(selectedRows).includes('' + j[selectionKey]))
+                person: personData
             });
         }
-        return true;
+        return stepValid;
     }
 
     const AdditionalButtons = () => {
