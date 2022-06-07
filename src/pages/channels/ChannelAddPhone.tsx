@@ -99,6 +99,7 @@ export const ChannelAddPhone: FC = () => {
             "statename": "",
             "cost": "",
             "costvca": "",
+            "costinstallation": "",
         },
         "type": "VOXIMPLANTPHONE",
     });
@@ -109,6 +110,8 @@ export const ChannelAddPhone: FC = () => {
     const [phoneBackup, setPhoneBackup] = useState(0.00);
     const [phoneNumber, setPhoneNumber] = useState("");
     const [phonePrice, setPhonePrice] = useState(0.00);
+    const [phoneInstallation, setPhoneInstallation] = useState(0.00);
+    const [phoneInstallationBackup, setPhoneInstallationBackup] = useState(0.00);
     const [phoneTax, setPhoneTax] = useState(0.00);
     const [regionList, setRegionList] = useState<any>([]);
     const [setInsert, setSetInsert] = useState(false);
@@ -153,16 +156,18 @@ export const ChannelAddPhone: FC = () => {
         if (phonePrice) {
             let partialFields = fields;
             partialFields.service.cost = (phonePrice || 0).toString();
+            partialFields.service.costinstallation = (phoneInstallation || 0).toString();
             partialFields.service.costvca = (formatNumber((phonePrice || 0) * (1 + (phoneTax || 0)))).toString();
             setFields(partialFields);
         }
         else {
             let partialFields = fields;
             partialFields.service.cost = "0";
+            partialFields.service.costinstallation = "0";
             partialFields.service.costvca = "0";
             setFields(partialFields);
         }
-    }, [phonePrice])
+    }, [phonePrice, phoneInstallation])
 
     useEffect(() => {
         if (waitSave) {
@@ -277,6 +282,8 @@ export const ChannelAddPhone: FC = () => {
             setHasStates(false);
             setPhoneBackup(0.00);
             setPhonePrice(0.00);
+            setPhoneInstallation(0.00);
+            setPhoneInstallationBackup(0.00);
             setCategoryList([]);
             setRegionList([]);
             setStateList([]);
@@ -302,6 +309,8 @@ export const ChannelAddPhone: FC = () => {
             setHasStates(value.country_has_states || false);
             setPhoneBackup(value.phone_price || 0.00);
             setPhonePrice(value.phone_price || 0.00);
+            setPhoneInstallation(value.phone_installation_price || 0.00);
+            setPhoneInstallationBackup(value.phone_installation_price || 0.00);
 
             if (value.country_has_states) {
                 dispatch(getCountryStates({ country_code: fields.service.country, phone_category_name: value.phone_category_name }));
@@ -333,6 +342,8 @@ export const ChannelAddPhone: FC = () => {
             setHasStates(false);
             setPhoneBackup(0.00);
             setPhonePrice(0.00);
+            setPhoneInstallation(0.00);
+            setPhoneInstallationBackup(0.00);
             setRegionList([]);
             setStateList([]);
 
@@ -384,6 +395,7 @@ export const ChannelAddPhone: FC = () => {
     const handleRegion = (value: any) => {
         if (value) {
             setPhonePrice((value.phone_price || phoneBackup) || 0.00);
+            setPhoneInstallation((value.phone_installation_price || phoneInstallationBackup) || 0.00);
 
             let partialFields = fields;
             partialFields.service.region = value.phone_region_id;
@@ -392,6 +404,7 @@ export const ChannelAddPhone: FC = () => {
         }
         else {
             setPhonePrice(phoneBackup || 0.00);
+            setPhoneInstallation(phoneInstallationBackup || 0.00);
 
             let partialFields = fields;
             partialFields.service.region = "";

@@ -149,6 +149,7 @@ export interface VoxImplantPhoneChannel {
     statename: string;
     cost: number;
     costvca: string;
+    costinstallation: number;
     build: (v: Omit<VoxImplantPhoneChannel, 'build'>) => IRequestBody;
 }
 
