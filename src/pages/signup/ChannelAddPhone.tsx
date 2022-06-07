@@ -81,6 +81,8 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     const [nextButton, setNextButton] = useState(true);
     const [phoneBackup, setPhoneBackup] = useState(0.00);
     const [phonePrice, setPhonePrice] = useState(0.00);
+    const [phoneInstallation, setPhoneInstallation] = useState(0.00);
+    const [phoneInstallationBackup, setPhoneInstallationBackup] = useState(0.00);
     const [regionList, setRegionList] = useState<any>([]);
     const [setInsert, setSetInsert] = useState(false);
     const [stateList, setStateList] = useState<any>([]);
@@ -101,13 +103,15 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     useEffect(() => {
         if (phonePrice) {
             setValue("channels.voximplantphone.cost", (phonePrice || 0))
+            setValue("channels.voximplantphone.costinstallation", (phoneInstallation || 0))
             setValue("channels.voximplantphone.costvca", (formatNumber((phonePrice || 0) * (1 + (phoneTax || 0)))).toString())
         }
         else {
             setValue("channels.voximplantphone.cost", (0))
+            setValue("channels.voximplantphone.costinstallation", (0))
             setValue("channels.voximplantphone.costvca", "0")
         }
-    }, [phonePrice])
+    }, [phonePrice, phoneInstallation])
 
     useEffect(() => {
         const strRequired = (value: string, other?:boolean) => {
@@ -174,6 +178,15 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
             setValue('channels.voximplantphone.cost', 0)
         }
     }, [phonePrice])
+
+    useEffect(() => {
+        if (phoneInstallation) {
+            setValue('channels.voximplantphone.costinstallation', phoneInstallation || 0)
+        }
+        else {
+            setValue('channels.voximplantphone.costinstallation', 0)
+        }
+    }, [phoneInstallation])
 
     useEffect(() => {
         if (waitSave) {
@@ -268,6 +281,8 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
             setHasStates(false);
             setPhoneBackup(0.00);
             setPhonePrice(0.00);
+            setPhoneInstallation(0.00);
+            setPhoneInstallationBackup(0.00);
             setCategoryList([]);
             setRegionList([]);
             setStateList([]);
@@ -288,6 +303,8 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
             setHasStates(value.country_has_states || false);
             setPhoneBackup(value.phone_price || 0.00);
             setPhonePrice(value.phone_price || 0.00);
+            setPhoneInstallation(value.phone_installation_price || 0.00);
+            setPhoneInstallationBackup(value.phone_installation_price || 0.00);
             if (value.country_has_states) {
                 dispatch(getCountryStates({ country_code: getValues('channels.voximplantphone.country'), phone_category_name: value.phone_category_name }));
 
@@ -310,6 +327,8 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
             setHasStates(false);
             setPhoneBackup(0.00);
             setPhonePrice(0.00);
+            setPhoneInstallation(0.00);
+            setPhoneInstallationBackup(0.00);
             setRegionList([]);
             setStateList([]);
             setValue('channels.voximplantphone.category', "")
@@ -345,11 +364,13 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     const handleRegion = (value: any) => {
         if (value) {
             setPhonePrice((value.phone_price || phoneBackup) || 0.00);
+            setPhoneInstallation((value.phone_installation_price || phoneInstallationBackup) || 0.00);
             setValue('channels.voximplantphone.region', value.phone_region_id)
             setValue('channels.voximplantphone.regionname', value.phone_region_name)
         }
         else {
             setPhonePrice(phoneBackup || 0.00);
+            setPhoneInstallation(phoneInstallationBackup || 0.00);
             setValue('channels.voximplantphone.region', "")
             setValue('channels.voximplantphone.regionname', "")
         }
