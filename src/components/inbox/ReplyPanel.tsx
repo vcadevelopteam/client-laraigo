@@ -817,9 +817,9 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                                     <RedoIcon />
                                                 </Tooltip>
                                             </IconButton>
+                                            <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage} />
+                                            <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
                                             {/*
-                                                    <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage} />
-                                                    <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
                                                     <TmpRichResponseIcon classes={classes} setText={setText} /> final
                                                 */}
                                             <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
