@@ -211,7 +211,7 @@ const CloseTicketVoxi: React.FC = () => {
     }
 
     const onSubmitClassification = handleSubmit((data) => {
-        if(data.classificationid1!==""){
+        if(data.classificationid1){
 
             dispatch(showBackdrop(true));
             dispatch(execute(insertClassificationConversation(callVoxiTmp?.data?.conversationid!!, data.classificationid3 || data.classificationid2 || data.classificationid1, '', 'INSERT')))
