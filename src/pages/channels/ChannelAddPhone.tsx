@@ -229,7 +229,7 @@ export const ChannelAddPhone: FC = () => {
         if (waitRegions) {
             if (!regionsResult.loading) {
                 if (regionsResult.data) {
-                    setRegionList(regionsResult.data.filter((data: { phone_count: number; }) => data.phone_count > 0));
+                    setRegionList(regionsResult.data.filter((data: { phone_count: number; regulation_address_type: string; }) => data.phone_count > 0 && !data.regulation_address_type));
                 }
                 setWaitRegions(false);
             }
