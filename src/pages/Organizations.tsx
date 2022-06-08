@@ -194,7 +194,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const [costLimit, setCostLimit] = useState(0.00);
     const [balanceChild, setBalanceChild] = useState(0.00);
     const [balanceParent, setBalanceParent] = useState(0.00);
-    const [checkedAutomaticRecharge, setCheckedAutomaticRecharge] = useState(row?.voximplantautomaticrecharge || false);
+    const [checkedAutomaticRecharge, setCheckedAutomaticRecharge] = useState(row ? (row?.voximplantautomaticrecharge || false) : (defaultRecharge[0]?.propertyvalue === '1' ? true : false));
     const [chatBtn, setChatBtn] = useState<File | null>(getValues("iconbot") as File);
     const [headerBtn, setHeaderBtn] = useState<File | null>(getValues("iconadvisor") as File);
     const [botBtn, setBotBtn] = useState<File | null>(getValues("iconclient") as File);
