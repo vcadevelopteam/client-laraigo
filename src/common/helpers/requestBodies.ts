@@ -1928,6 +1928,14 @@ export const getPropertySelByName = (propertyname: string): IRequestBody => ({
     }
 });
 
+export const getPropertySelByNameOrg = (propertyname: string, orgid: number, key: string): IRequestBody => ({
+    method: 'UFN_PROPERTY_SELBYNAME',
+    key: "UFN_PROPERTY_SELBYNAME" + key,
+    parameters: {
+        propertyname, orgid
+    }
+});
+
 export const getConversationClassification2 = (conversationid: number): IRequestBody => ({
     method: 'UFN_CONVERSATIONCLASSIFICATION_SEL2',
     key: "UFN_CONVERSATIONCLASSIFICATION_SEL2",
@@ -2822,6 +2830,12 @@ export const billingReportConversationWhatsApp = ({ corpid, orgid, year, month }
     method: "UFN_BILLING_REPORT_CONVERSATIONWHATSAPP",
     key: "UFN_BILLING_REPORT_CONVERSATIONWHATSAPP",
     parameters: { corpid, orgid, year, month }
+})
+
+export const billingReportHsmHistory = ({ corpid, orgid, year, month, type }: Dictionary): IRequestBody => ({
+    method: "UFN_BILLING_REPORT_HSMHISTORY",
+    key: "UFN_BILLING_REPORT_HSMHISTORY",
+    parameters: { corpid, orgid, year, month, type }
 })
 
 export const selCalendar = (id: number = 0) => ({
