@@ -1092,7 +1092,7 @@ const translation: LangKeys = {
     heading_one: 'Encabezado uno',
     heading_two: 'Encabezado dos',
     block_quote: 'Cita en bloque',
-    numbered_list: 'Lista ordenada',
+    numbered_list: 'Lista numerada',
     bulleted_list: 'Lista con viñetas',
     show: 'Mostrar',
 
