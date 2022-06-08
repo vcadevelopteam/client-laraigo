@@ -603,6 +603,10 @@ export const deleteTicket = (state: IState, action: IAction): IState => {
             ...state.ticketList,
             data: newticketList
         },
+        person: {
+            ...state.person,
+            data: newTicketSelected ? state.person.data : null
+        },
         showModalClose: showModalClose,
         agentList: {
             data: newAgentList,
