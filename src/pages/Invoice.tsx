@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { cleanMemoryTable, setMemoryTable, uploadFile } from 'store/main/actions';
 import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx, FieldEditArray, TemplateIcons, IOSSwitch } from 'components';
-import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, billingReportConversationWhatsApp, invoiceRefresh, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail, selBalanceData, getBillingMessagingCurrent, getBalanceSelSent, getCorpSelVariant, listPaymentCard, paymentCardInsert, uploadExcel, insInvoice, templateMaker, exportExcel } from 'common/helpers';
+import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, billingReportConversationWhatsApp, billingReportHsmHistory, invoiceRefresh, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail, selBalanceData, getBillingMessagingCurrent, getBalanceSelSent, getCorpSelVariant, listPaymentCard, paymentCardInsert, uploadExcel, insInvoice, templateMaker, exportExcel } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -1586,6 +1586,12 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
         setWaitExport(true);
     };
 
+    const triggerExportDataHsmHistory = (datatype: string) => {
+        dispatch(exportData(billingReportHsmHistory({ corpid: dataMain.corpid, orgid: dataMain.orgid, year: dataMain.year, month: dataMain.month, type: datatype }), "BillingUserHsmHistory", "excel", true))
+        dispatch(showBackdrop(true));
+        setWaitExport(true);
+    };
+
     const handleCalculate = () => {
         const callback = () => {
             dispatch(execute(getBillingPeriodCalcRefreshAll(dataMain.year, dataMain.month, dataMain.corpid, dataMain.orgid)));
@@ -1767,6 +1773,24 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                                 startIcon={<DownloadIcon />}
                             >{`${t(langKeys.report)} ${t(langKeys.conversationwhatsapp)}`}
                             </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={resExportData.loading}
+                                onClick={() => triggerExportDataHsmHistory('SMS')}
+                                startIcon={<DownloadIcon />}
+                            >{`${t(langKeys.report)} ${t(langKeys.sms)}`}
+                            </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={resExportData.loading}
+                                onClick={() => triggerExportDataHsmHistory('MAIL')}
+                                startIcon={<DownloadIcon />}
+                            >{`${t(langKeys.report)} ${t(langKeys.mail)}`}
+                            </Button>
                         </Fragment>)
                     }
                 </div>
@@ -1831,7 +1855,7 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>${formatNumber(datareport.useradditionalfee || 0)}</div>
+                                                <div>${formatNumberFourDecimals(datareport.useradditionalfee || 0)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
@@ -1871,8 +1895,8 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>${formatNumber(datareport.channelwhatsappfee || 0)}</div>
-                                                <div>${formatNumber(datareport.channelotherfee || 0)}</div>
+                                                <div>${formatNumberFourDecimals(datareport.channelwhatsappfee || 0)}</div>
+                                                <div>${formatNumberFourDecimals(datareport.channelotherfee || 0)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
@@ -1940,32 +1964,44 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                                         <StyledTableRow>
                                             <StyledTableCell>
                                                 <div><b>{t(langKeys.billingreportmessaging)}</b></div>
+                                                <div>{t(langKeys.minimumsmsquantity)}</div>
                                                 <div>{t(langKeys.billingreportsms)}</div>
+                                                <div>{t(langKeys.minimummailquantity)}</div>
                                                 <div>{t(langKeys.billingreportmail)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
+                                                <div>{formatNumberNoDecimals(datareport.minimumsmsquantity || 0)}</div>
                                                 <div>{formatNumberNoDecimals(datareport.smsquantity || 0)}</div>
+                                                <div>{formatNumberNoDecimals(datareport.minimummailquantity || 0)}</div>
                                                 <div>{formatNumberNoDecimals(datareport.mailquantity || 0)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>${formatNumber((datareport.unitpricepersms || 0) + (datareport.vcacomissionpersms || 0))}</div>
-                                                <div>${formatNumber((datareport.unitepricepermail || 0) + (datareport.vcacomissionpermail || 0))}</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>${formatNumberFourDecimals((datareport.unitpricepersms || 0) + (datareport.vcacomissionpersms || 0))}</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>${formatNumberFourDecimals((datareport.unitepricepermail || 0) + (datareport.vcacomissionpermail || 0))}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
                                                 <div>${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.smscost || 0) : formatNumber(datareport.smscost)}</div>
+                                                <div style={{ color: "transparent" }}>.</div>
                                                 <div>${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.mailcost || 0) : formatNumber(datareport.mailcost)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
                                                 <div>${datareport.taxrate !== 1 ? getIgv((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.smscost || 0) : "0.00"}</div>
+                                                <div style={{ color: "transparent" }}>.</div>
                                                 <div>${datareport.taxrate !== 1 ? getIgv((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.mailcost || 0) : "0.00"}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
                                                 <div>${formatNumber(datareport.smscost || 0)}</div>
+                                                <div style={{ color: "transparent" }}>.</div>
                                                 <div>${formatNumber(datareport.mailcost || 0)}</div>
                                             </StyledTableCell>
                                         </StyledTableRow>
@@ -2036,7 +2072,7 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>${formatNumber(datareport.clientadditionalfee || 0)}</div>
+                                                <div>${formatNumberFourDecimals(datareport.clientadditionalfee || 0)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
