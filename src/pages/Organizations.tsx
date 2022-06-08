@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch, IOSSwitch } from 'components';
-import { getCorpSel, getOrgSel, getTimeZoneSel, getValuesFromDomain, getValuesFromDomainCorp, insOrg } from 'common/helpers';
+import { getCorpSel, getOrgSel, getPropertySelByNameOrg, getTimeZoneSel, getValuesFromDomain, getValuesFromDomainCorp, insOrg } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -128,6 +128,12 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         iconadvisor: row?.iconadvisor || "",
         iconclient: row?.iconclient || "",
     });
+
+    const defaultRecharge = multiData[6] && multiData[6].success ? multiData[6]?.data : [];
+    const defaultRange = multiData[7] && multiData[7].success ? multiData[7]?.data : [];
+    const defaultPercentage = multiData[8] && multiData[8].success ? multiData[8]?.data : [];
+    const defaultChannel = multiData[9] && multiData[9].success ? multiData[9]?.data : [];
+
     const { register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm({
         defaultValues: {
             corpid: row ? row.corpid : user?.corpid,
@@ -165,13 +171,14 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             credittype: row?.credittype || "typecredit_alcontado",
             timezone: row?.timezone || "",
             timezoneoffset: row?.timezoneoffset || "",
-            voximplantautomaticrecharge: roledesc === "SUPERADMIN" ? (row?.voximplantautomaticrecharge || false) : null,
-            voximplantrechargerange: roledesc === "SUPERADMIN" ? (row?.voximplantrechargerange || 0) : null,
-            voximplantrechargepercentage: roledesc === "SUPERADMIN" ? (row?.voximplantrechargepercentage || 0.00) : null,
+            voximplantautomaticrecharge: row ? (row?.voximplantautomaticrecharge || false) : (defaultRecharge[0]?.propertyvalue === '1' ? true : false),
+            voximplantrechargerange: row ? (row?.voximplantrechargerange || 0) : (parseFloat(defaultRange[0]?.propertyvalue) || 0),
+            voximplantrechargepercentage: row ? (row?.voximplantrechargepercentage || 0.00) : (parseFloat(defaultPercentage[0]?.propertyvalue) || 0),
             voximplantrechargefixed: row?.voximplantrechargefixed || 0.00,
-            voximplantadditionalperchannel: roledesc === "SUPERADMIN" ? (row?.voximplantadditionalperchannel || 0.00) : null,
+            voximplantadditionalperchannel: row ? (row?.voximplantadditionalperchannel || 0.00) : (parseFloat(defaultChannel[0]?.propertyvalue) || 0),
         }
     });
+
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataType = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataCorp = multiData[2] && multiData[2].success ? multiData[2].data : [];
@@ -191,6 +198,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const [chatBtn, setChatBtn] = useState<File | null>(getValues("iconbot") as File);
     const [headerBtn, setHeaderBtn] = useState<File | null>(getValues("iconadvisor") as File);
     const [botBtn, setBotBtn] = useState<File | null>(getValues("iconclient") as File);
+
     React.useEffect(() => {
         register('corpid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -1251,7 +1259,11 @@ const Organizations: FC = () => {
             getCorpSel(0),
             getValuesFromDomainCorp('BILLINGDOCUMENTTYPE', '_DOCUMENT', 1, 0),
             getValuesFromDomain("TYPECREDIT"),
-            getTimeZoneSel()
+            getTimeZoneSel(),
+            getPropertySelByNameOrg("VOXIMPLANTAUTOMATICRECHARGE", 0, "_RECHARGE"),
+            getPropertySelByNameOrg("VOXIMPLANTRECHARGERANGE", 0, "_RANGE"),
+            getPropertySelByNameOrg("VOXIMPLANTRECHARGEPERCENTAGE", 0, "_PERCENTAGE"),
+            getPropertySelByNameOrg("VOXIMPLANTADDITIONALPERCHANNEL", 0, "_CHANNEL"),
         ]));
         return () => {
             dispatch(resetAllMain());
