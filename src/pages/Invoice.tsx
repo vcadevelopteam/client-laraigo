@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { cleanMemoryTable, setMemoryTable, uploadFile } from 'store/main/actions';
 import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx, FieldEditArray, TemplateIcons, IOSSwitch } from 'components';
-import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, billingReportConversationWhatsApp, invoiceRefresh, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail, selBalanceData, getBillingMessagingCurrent, getBalanceSelSent, getCorpSelVariant, listPaymentCard, paymentCardInsert, uploadExcel, insInvoice, templateMaker, exportExcel } from 'common/helpers';
+import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, billingReportConversationWhatsApp, billingReportHsmHistory, invoiceRefresh, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail, selBalanceData, getBillingMessagingCurrent, getBalanceSelSent, getCorpSelVariant, listPaymentCard, paymentCardInsert, uploadExcel, insInvoice, templateMaker, exportExcel } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -546,6 +546,25 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
             channelcreateoverride: row?.channelcreateoverride || false,
             vcacomissionperconversation: row?.vcacomissionperconversation || 0,
             vcacomissionperhsm: row?.vcacomissionperhsm || 0,
+            minimumsmsquantity: row?.minimumsmsquantity || 0,
+            minimummailquantity: row?.minimummailquantity || 0,
+            vcacomissionpervoicechannel: row?.vcacomissionpervoicechannel || 0,
+            voximplantcallphonecost: row?.voximplantcallphonecost || 0,
+            voximplantcallphonevcacost: row?.voximplantcallphonevcacost || 0,
+            callphonecost: row?.callphonecost || 0,
+            voximplantcallpubliccost: row?.voximplantcallpubliccost || 0,
+            voximplantcallpublicvcacost: row?.voximplantcallpublicvcacost || 0,
+            callpubliccost: row?.callpubliccost || 0,
+            voximplantcallvoipcost: row?.voximplantcallvoipcost || 0,
+            voximplantcallvoipvcacost: row?.voximplantcallvoipvcacost || 0,
+            callvoipcost: row?.callvoipcost || 0,
+            voximplantcallrecordingcost: row?.voximplantcallrecordingcost || 0,
+            voximplantcallrecordingvcacost: row?.voximplantcallrecordingvcacost || 0,
+            callrecordingcost: row?.callrecordingcost || 0,
+            voximplantcallothercost: row?.voximplantcallothercost || 0,
+            voximplantcallothervcacost: row?.voximplantcallothervcacost || 0,
+            callothercost: row?.callothercost || 0,
+            callchannelcost: row?.callchannelcost || 0,
         }
     });
 
@@ -589,6 +608,25 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
         register('channelcreateoverride');
         register('vcacomissionperconversation');
         register('vcacomissionperhsm', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('minimumsmsquantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('minimummailquantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('vcacomissionpervoicechannel', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('voximplantcallphonecost');
+        register('voximplantcallphonevcacost');
+        register('callphonecost');
+        register('voximplantcallpubliccost');
+        register('voximplantcallpublicvcacost');
+        register('callpubliccost');
+        register('voximplantcallvoipcost');
+        register('voximplantcallvoipvcacost');
+        register('callvoipcost');
+        register('voximplantcallrecordingcost');
+        register('voximplantcallrecordingvcacost');
+        register('callrecordingcost');
+        register('voximplantcallothercost');
+        register('voximplantcallothervcacost');
+        register('callothercost');
+        register('callchannelcost');
     }, [edit, register]);
 
     useEffect(() => {
@@ -670,6 +708,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                     <AntTab label={t(langKeys.conversation_plural)} />
                     <AntTab label={t(langKeys.contact_plural)} />
                     <AntTab label={t(langKeys.messaging)} />
+                    <AntTab label={t(langKeys.billingperiodvoice)} />
                     <AntTab label="Extras" />
                 </Tabs>
                 {pageSelected === 0 && <div className={classes.containerDetail}>
@@ -1098,6 +1137,22 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             label={t(langKeys.smsquantity)}
                             value={formatNumberNoDecimals(getValues("smsquantity") || 0)}
                         />
+                        {canEdit ? <FieldEdit
+                            label={t(langKeys.minimumsmsquantity)}
+                            onChange={(value) => setValue('minimumsmsquantity', value)}
+                            valueDefault={getValues('minimumsmsquantity')}
+                            error={errors?.minimumsmsquantity?.message}
+                            type="number"
+                            className="col-6"
+                        /> :
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.minimumsmsquantity)}
+                                value={formatNumberFourDecimals(getValues("minimumsmsquantity") || 0)}
+                            />
+                        }
+                    </div>
+                    <div className="row-zyx">
                         <FieldView
                             className="col-6"
                             label={t(langKeys.smscost)}
@@ -1142,6 +1197,23 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             label={t(langKeys.mailquantity)}
                             value={formatNumberNoDecimals(getValues("mailquantity") || 0)}
                         />
+                        {canEdit ? <FieldEdit
+                            label={t(langKeys.minimummailquantity)}
+                            onChange={(value) => setValue('minimummailquantity', value)}
+                            valueDefault={getValues('minimummailquantity')}
+                            error={errors?.minimummailquantity?.message}
+                            type="number"
+                            className="col-6"
+                            inputProps={{ step: "any" }}
+                        /> :
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.minimummailquantity)}
+                                value={formatNumberFourDecimals(getValues("minimummailquantity") || 0)}
+                            />
+                        }
+                    </div>
+                    <div className="row-zyx">
                         <FieldView
                             className="col-6"
                             label={t(langKeys.mailcost)}
@@ -1150,6 +1222,127 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                     </div>
                 </div>}
                 {pageSelected === 6 && <div className={classes.containerDetail}>
+                    <div className="row-zyx">
+                        {canEdit ? <FieldEdit
+                            label={t(langKeys.vcacomissionpervoicechannel)}
+                            onChange={(value) => setValue('vcacomissionpervoicechannel', value)}
+                            valueDefault={getValues('vcacomissionpervoicechannel')}
+                            error={errors?.vcacomissionpervoicechannel?.message}
+                            type="number"
+                            className="col-12"
+                            inputProps={{ step: "any" }}
+                        /> :
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.vcacomissionpervoicechannel)}
+                                value={formatNumber(getValues("vcacomissionpervoicechannel") || 0)}
+                            />
+                        }
+                    </div>
+                    <div className="row-zyx">
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.voximplantcallphonecost)}
+                            value={formatNumber(getValues("voximplantcallphonecost") || 0)}
+                        />
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.voximplantcallphonevcacost)}
+                            value={formatNumber(getValues("voximplantcallphonevcacost") || 0)}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.callphonecost)}
+                            value={formatNumber(getValues("callphonecost") || 0)}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.voximplantcallpubliccost)}
+                            value={formatNumber(getValues("voximplantcallpubliccost") || 0)}
+                        />
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.voximplantcallpublicvcacost)}
+                            value={formatNumber(getValues("voximplantcallpublicvcacost") || 0)}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.callpubliccost)}
+                            value={formatNumber(getValues("callpubliccost") || 0)}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.voximplantcallvoipcost)}
+                            value={formatNumber(getValues("voximplantcallvoipcost") || 0)}
+                        />
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.voximplantcallvoipvcacost)}
+                            value={formatNumber(getValues("voximplantcallvoipvcacost") || 0)}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.callvoipcost)}
+                            value={formatNumber(getValues("callvoipcost") || 0)}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.voximplantcallrecordingcost)}
+                            value={formatNumber(getValues("voximplantcallrecordingcost") || 0)}
+                        />
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.voximplantcallrecordingvcacost)}
+                            value={formatNumber(getValues("voximplantcallrecordingvcacost") || 0)}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.callrecordingcost)}
+                            value={formatNumber(getValues("callrecordingcost") || 0)}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.voximplantcallothercost)}
+                            value={formatNumber(getValues("voximplantcallothercost") || 0)}
+                        />
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.voximplantcallothervcacost)}
+                            value={formatNumber(getValues("voximplantcallothervcacost") || 0)}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.callothercost)}
+                            value={formatNumber(getValues("callothercost") || 0)}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.callchannelcost)}
+                            value={formatNumber(getValues("callchannelcost") || 0)}
+                        />
+                    </div>
+                </div>}
+                {pageSelected === 7 && <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         {canEdit ? <FieldEdit
                             label={`${t(langKeys.additionalservicename)} 1`}
@@ -1393,6 +1586,12 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
         setWaitExport(true);
     };
 
+    const triggerExportDataHsmHistory = (datatype: string) => {
+        dispatch(exportData(billingReportHsmHistory({ corpid: dataMain.corpid, orgid: dataMain.orgid, year: dataMain.year, month: dataMain.month, type: datatype }), "BillingUserHsmHistory", "excel", true))
+        dispatch(showBackdrop(true));
+        setWaitExport(true);
+    };
+
     const handleCalculate = () => {
         const callback = () => {
             dispatch(execute(getBillingPeriodCalcRefreshAll(dataMain.year, dataMain.month, dataMain.corpid, dataMain.orgid)));
@@ -1574,6 +1773,24 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                                 startIcon={<DownloadIcon />}
                             >{`${t(langKeys.report)} ${t(langKeys.conversationwhatsapp)}`}
                             </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={resExportData.loading}
+                                onClick={() => triggerExportDataHsmHistory('SMS')}
+                                startIcon={<DownloadIcon />}
+                            >{`${t(langKeys.report)} ${t(langKeys.sms)}`}
+                            </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={resExportData.loading}
+                                onClick={() => triggerExportDataHsmHistory('MAIL')}
+                                startIcon={<DownloadIcon />}
+                            >{`${t(langKeys.report)} ${t(langKeys.mail)}`}
+                            </Button>
                         </Fragment>)
                     }
                 </div>
@@ -1638,7 +1855,7 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>${formatNumber(datareport.useradditionalfee || 0)}</div>
+                                                <div>${formatNumberFourDecimals(datareport.useradditionalfee || 0)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
@@ -1678,8 +1895,8 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>${formatNumber(datareport.channelwhatsappfee || 0)}</div>
-                                                <div>${formatNumber(datareport.channelotherfee || 0)}</div>
+                                                <div>${formatNumberFourDecimals(datareport.channelwhatsappfee || 0)}</div>
+                                                <div>${formatNumberFourDecimals(datareport.channelotherfee || 0)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
@@ -1747,33 +1964,95 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                                         <StyledTableRow>
                                             <StyledTableCell>
                                                 <div><b>{t(langKeys.billingreportmessaging)}</b></div>
+                                                <div>{t(langKeys.minimumsmsquantity)}</div>
                                                 <div>{t(langKeys.billingreportsms)}</div>
+                                                <div>{t(langKeys.minimummailquantity)}</div>
                                                 <div>{t(langKeys.billingreportmail)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
+                                                <div>{formatNumberNoDecimals(datareport.minimumsmsquantity || 0)}</div>
                                                 <div>{formatNumberNoDecimals(datareport.smsquantity || 0)}</div>
+                                                <div>{formatNumberNoDecimals(datareport.minimummailquantity || 0)}</div>
                                                 <div>{formatNumberNoDecimals(datareport.mailquantity || 0)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>${formatNumber((datareport.unitpricepersms || 0) + (datareport.vcacomissionpersms || 0))}</div>
-                                                <div>${formatNumber((datareport.unitepricepermail || 0) + (datareport.vcacomissionpermail || 0))}</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>${formatNumberFourDecimals((datareport.unitpricepersms || 0) + (datareport.vcacomissionpersms || 0))}</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>${formatNumberFourDecimals((datareport.unitepricepermail || 0) + (datareport.vcacomissionpermail || 0))}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
                                                 <div>${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.smscost || 0) : formatNumber(datareport.smscost)}</div>
+                                                <div style={{ color: "transparent" }}>.</div>
                                                 <div>${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.mailcost || 0) : formatNumber(datareport.mailcost)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
                                                 <div>${datareport.taxrate !== 1 ? getIgv((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.smscost || 0) : "0.00"}</div>
+                                                <div style={{ color: "transparent" }}>.</div>
                                                 <div>${datareport.taxrate !== 1 ? getIgv((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.mailcost || 0) : "0.00"}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
                                                 <div>${formatNumber(datareport.smscost || 0)}</div>
+                                                <div style={{ color: "transparent" }}>.</div>
                                                 <div>${formatNumber(datareport.mailcost || 0)}</div>
+                                            </StyledTableCell>
+                                        </StyledTableRow>
+                                        <StyledTableRow>
+                                            <StyledTableCell>
+                                                <div><b>{t(langKeys.periodreportvoice)}</b></div>
+                                                <div>{t(langKeys.periodreportphone)}</div>
+                                                <div>{t(langKeys.periodreportpstn)}</div>
+                                                <div>{t(langKeys.periodreportvoip)}</div>
+                                                <div>{t(langKeys.periodreportrecording)}</div>
+                                                <div>{t(langKeys.periodreportother)}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.callphonecost || 0) : formatNumber(datareport.callphonecost)}</div>
+                                                <div>${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.callpubliccost || 0) : formatNumber(datareport.callpubliccost)}</div>
+                                                <div>${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.callvoipcost || 0) : formatNumber(datareport.callvoipcost)}</div>
+                                                <div>${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.callrecordingcost || 0) : formatNumber(datareport.callrecordingcost)}</div>
+                                                <div>${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.callothercost || 0) : formatNumber(datareport.callothercost)}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>${datareport.taxrate !== 1 ? getIgv((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.callphonecost || 0) : "0.00"}</div>
+                                                <div>${datareport.taxrate !== 1 ? getIgv((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.callpubliccost || 0) : "0.00"}</div>
+                                                <div>${datareport.taxrate !== 1 ? getIgv((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.callvoipcost || 0) : "0.00"}</div>
+                                                <div>${datareport.taxrate !== 1 ? getIgv((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.callrecordingcost || 0) : "0.00"}</div>
+                                                <div>${datareport.taxrate !== 1 ? getIgv((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.callothercost || 0) : "0.00"}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>${formatNumber(datareport.callphonecost || 0)}</div>
+                                                <div>${formatNumber(datareport.callpubliccost || 0)}</div>
+                                                <div>${formatNumber(datareport.callvoipcost || 0)}</div>
+                                                <div>${formatNumber(datareport.callrecordingcost || 0)}</div>
+                                                <div>${formatNumber(datareport.callothercost || 0)}</div>
                                             </StyledTableCell>
                                         </StyledTableRow>
                                         <StyledTableRow>
@@ -1793,7 +2072,7 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>${formatNumber(datareport.clientadditionalfee || 0)}</div>
+                                                <div>${formatNumberFourDecimals(datareport.clientadditionalfee || 0)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
@@ -1833,19 +2112,19 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                                             <StyledTableCell>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
-                                                {datareport.additionalservicefee1 ? <div>${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.additionalservicefee1 || 0) : formatNumber(datareport.additionalservicefee1)}</div> : <div style={{ color: "transparent" }}>.</div>}
-                                                {datareport.additionalservicefee2 ? <div>${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.additionalservicefee2 || 0) : formatNumber(datareport.additionalservicefee2)}</div> : <div style={{ color: "transparent" }}>.</div>}
-                                                {datareport.additionalservicefee3 ? <div>${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.additionalservicefee3 || 0) : formatNumber(datareport.additionalservicefee3)}</div> : <div style={{ color: "transparent" }}>.</div>}
+                                                {datareport.additionalservicefee1 ? <div>${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), ((datareport.additionalservicefee1 || 0) * datareport.taxrate)) : formatNumber((datareport.additionalservicefee1 || 0) * datareport.taxrate)}</div> : <div style={{ color: "transparent" }}>.</div>}
+                                                {datareport.additionalservicefee2 ? <div>${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), ((datareport.additionalservicefee2 || 0) * datareport.taxrate)) : formatNumber((datareport.additionalservicefee2 || 0) * datareport.taxrate)}</div> : <div style={{ color: "transparent" }}>.</div>}
+                                                {datareport.additionalservicefee3 ? <div>${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), ((datareport.additionalservicefee3 || 0) * datareport.taxrate)) : formatNumber((datareport.additionalservicefee3 || 0) * datareport.taxrate)}</div> : <div style={{ color: "transparent" }}>.</div>}
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
-                                                {datareport.additionalservicefee1 ? <div>${datareport.taxrate !== 1 ? getIgv(datareport.igv, datareport.additionalservicefee1) : "0.00"}</div> : <div style={{ color: "transparent" }}>.</div>}
-                                                {datareport.additionalservicefee2 ? <div>${datareport.taxrate !== 1 ? getIgv(datareport.igv, datareport.additionalservicefee2) : "0.00"}</div> : <div style={{ color: "transparent" }}>.</div>}
-                                                {datareport.additionalservicefee3 ? <div>${datareport.taxrate !== 1 ? getIgv(datareport.igv, datareport.additionalservicefee3) : "0.00"}</div> : <div style={{ color: "transparent" }}>.</div>}
+                                                {datareport.additionalservicefee1 ? <div>${datareport.taxrate !== 1 ? getIgv(datareport.igv, ((datareport.additionalservicefee1 || 0) * datareport.taxrate)) : "0.00"}</div> : <div style={{ color: "transparent" }}>.</div>}
+                                                {datareport.additionalservicefee2 ? <div>${datareport.taxrate !== 1 ? getIgv(datareport.igv, ((datareport.additionalservicefee2 || 0) * datareport.taxrate)) : "0.00"}</div> : <div style={{ color: "transparent" }}>.</div>}
+                                                {datareport.additionalservicefee3 ? <div>${datareport.taxrate !== 1 ? getIgv(datareport.igv, ((datareport.additionalservicefee3 || 0) * datareport.taxrate)) : "0.00"}</div> : <div style={{ color: "transparent" }}>.</div>}
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
-                                                {datareport.additionalservicefee1 ? <div>${formatNumber(datareport.additionalservicefee1 || 0)}</div> : <div style={{ color: "transparent" }}>.</div>}
-                                                {datareport.additionalservicefee2 ? <div>${formatNumber(datareport.additionalservicefee2 || 0)}</div> : <div style={{ color: "transparent" }}>.</div>}
-                                                {datareport.additionalservicefee3 ? <div>${formatNumber(datareport.additionalservicefee3 || 0)}</div> : <div style={{ color: "transparent" }}>.</div>}
+                                                {datareport.additionalservicefee1 ? <div>${formatNumber((datareport.additionalservicefee1 || 0) * datareport.taxrate)}</div> : <div style={{ color: "transparent" }}>.</div>}
+                                                {datareport.additionalservicefee2 ? <div>${formatNumber((datareport.additionalservicefee2 || 0) * datareport.taxrate)}</div> : <div style={{ color: "transparent" }}>.</div>}
+                                                {datareport.additionalservicefee3 ? <div>${formatNumber((datareport.additionalservicefee3 || 0) * datareport.taxrate)}</div> : <div style={{ color: "transparent" }}>.</div>}
                                             </StyledTableCell>
                                         </StyledTableRow>
                                         <StyledTableRow>

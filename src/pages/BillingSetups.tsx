@@ -1124,6 +1124,16 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                     return formatNumberFourDecimals(vcacomissionperhsm || 0);
                 }
             },
+            {
+                Header: t(langKeys.vcacomissionpervoicechannel),
+                accessor: 'vcacomissionpervoicechannel',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { vcacomissionpervoicechannel } = props.cell.row.original;
+                    return formatNumber(vcacomissionpervoicechannel || 0);
+                }
+            },
         ],
         []
     );
@@ -1291,6 +1301,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
             channelotherfee: row?.channelotherfee || 0,
             hsmfee: row?.hsmfee || 0,
             vcacomissionperhsm: row?.vcacomissionperhsm || 0,
+            vcacomissionpervoicechannel: row?.vcacomissionpervoicechannel || 0,
             freewhatsappchannel: row?.freewhatsappchannel || 0,
             whatsappconversationfreequantity: row?.whatsappconversationfreequantity || 0,
             allowhsm: row?.allowhsm || false,
@@ -1336,6 +1347,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
         register('clientadditionalfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
         register('hsmfee');
         register('vcacomissionperhsm', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('vcacomissionpervoicechannel', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
         register('whatsappconversationfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
         register('freewhatsappchannel', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
     }, [edit, register]);
@@ -1557,6 +1569,17 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             onChange={(value) => setValue('vcacomissionperhsm', value)}
                             valueDefault={getValues('vcacomissionperhsm')}
                             error={errors?.vcacomissionperhsm?.message}
+                            type="number"
+                            className="col-6"
+                            inputProps={{ step: "any" }}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.vcacomissionpervoicechannel)}
+                            onChange={(value) => setValue('vcacomissionpervoicechannel', value)}
+                            valueDefault={getValues('vcacomissionpervoicechannel')}
+                            error={errors?.vcacomissionpervoicechannel?.message}
                             type="number"
                             className="col-6"
                             inputProps={{ step: "any" }}
