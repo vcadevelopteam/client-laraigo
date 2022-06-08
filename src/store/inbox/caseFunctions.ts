@@ -257,6 +257,10 @@ export const updatePerson = (state: IState, action: IAction): IState => ({
 export const resetSelectTicket = (state: IState, action: IAction): IState => ({
     ...state,
     ticketSelected: null,
+    person: {
+        ...state.person,
+        data: null
+    }
 })
 
 export const selectAgent = (state: IState, action: IAction): IState => ({
