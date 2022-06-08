@@ -1128,7 +1128,7 @@ interface LayoutFunnelProps {
 
 const LayoutFunnel: FC<LayoutFunnelProps> = ({ data,title,...props }) => {
     let dataFunnel = data.map((e:any,i:number)=> ({name:e.title,value:e.quantity, fill:PIE_COLORS[i]}))
-    let total = dataFunnel.reduce((acc:number,x:any)=>acc+x.value,0)
+    let total = dataFunnel[0].value
     const classes = useDashboardLayoutStyles();
     function exportexcel(){
         const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
