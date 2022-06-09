@@ -257,6 +257,10 @@ export const updatePerson = (state: IState, action: IAction): IState => ({
 export const resetSelectTicket = (state: IState, action: IAction): IState => ({
     ...state,
     ticketSelected: null,
+    person: {
+        ...state.person,
+        data: null
+    }
 })
 
 export const selectAgent = (state: IState, action: IAction): IState => ({
@@ -598,6 +602,10 @@ export const deleteTicket = (state: IState, action: IAction): IState => {
         ticketList: {
             ...state.ticketList,
             data: newticketList
+        },
+        person: {
+            ...state.person,
+            data: newTicketSelected ? state.person.data : null
         },
         showModalClose: showModalClose,
         agentList: {
