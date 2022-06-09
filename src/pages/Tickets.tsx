@@ -19,9 +19,9 @@ import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import { CloseTicketIcon, HistoryIcon, TipifyIcon, ReassignIcon } from 'icons';
+import { CloseTicketIcon, HistoryIcon, TipifyIcon, ReassignIcon, CallRecordIcon } from 'icons';
 import { massiveCloseTicket, getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, emitEvent, importTicket } from 'store/inbox/actions';
-import { Button, ListItemIcon } from '@material-ui/core';
+import { Button, ListItemIcon, Tooltip } from '@material-ui/core';
 import PublishIcon from '@material-ui/icons/Publish';
 import { getCallRecord } from 'store/voximplant/actions'
 
@@ -523,20 +523,9 @@ const IconOptions: React.FC<{
                         onHandlerShowHistory();
                     }}>
                         <ListItemIcon>
-                            <HistoryIcon width={18} style={{ fill: '#7721AD' }} />
+                            <HistoryIcon width={22} style={{ fill: '#7721AD' }} />
                         </ListItemIcon>
                         {t(langKeys.status_history)}
-                    </MenuItem>
-                }
-                {onHandlerCallRecord &&
-                    <MenuItem onClick={() => {
-                        setAnchorEl(null);
-                        onHandlerCallRecord();
-                    }}>
-                        <ListItemIcon>
-                            <HistoryIcon width={18} style={{ fill: '#7721AD' }} />
-                        </ListItemIcon>
-                        {t(langKeys.download_record)}
                     </MenuItem>
                 }
             </Menu>
@@ -831,13 +820,28 @@ const Tickets = () => {
                                 setRowSelected(ticket);
                                 setRowToSend([ticket]);
                             }}
-                            onHandlerCallRecord={
-                                ticket.communicationchanneltype === 'VOXI'
-                                && ticket.postexternalid
-                                && ticket.callanswereddate ? () => {
-                                downloadCallRecord(ticket);
-                            } : undefined}
                         />
+                    )
+                }
+            },
+            {
+                accessor: 'voxiid',
+                isComponent: true,
+                minWidth: 60,
+                width: '1%',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        row.communicationchanneltype === 'VOXI'
+                        && row.postexternalid
+                        && row.callanswereddate ?
+                        <Tooltip title={t(langKeys.download_record) || ""}>
+                            <IconButton size="small" onClick={() => downloadCallRecord(row)}
+                            >
+                                <CallRecordIcon style={{ fill: '#7721AD' }} />
+                            </IconButton>
+                        </Tooltip>
+                        : null
                     )
                 }
             },

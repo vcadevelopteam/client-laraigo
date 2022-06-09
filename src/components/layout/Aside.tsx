@@ -115,7 +115,9 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
                         component="div"
                     >
                         <Tooltip title={"Teléfono"}>
-                            <ListItemIcon>
+                            <ListItemIcon
+                                onClick={() => dispatch(setModalCall(true))}
+                            >
                                 <PhoneInTalkIcon style={{ width: 22, height: 22, stroke: 'none' }} className={false ? classes.drawerCloseItemActive : classes.drawerCloseItemInactive} />
                             </ListItemIcon>
                         </Tooltip>

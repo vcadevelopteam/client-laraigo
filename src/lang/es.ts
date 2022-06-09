@@ -3596,6 +3596,12 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     error_voximplant_failedrequest: 'Error en la operación',
     error_voximplant_nofunds: 'Fondos insuficientes',
     error_voximplant_invalidamount: 'Monto no válido',
+
+    propertyvoximplantautomaticrecharge: 'Valor por defecto cuando un administrador crea una organización - Canal de Voz/Habilitar Carga de Saldo Automático',
+    propertyvoximplantrechargerange: 'Valor por defecto cuando un administrador crea una organización - Canal de Voz/Rango de Evaluación',
+    propertyvoximplantrechargepercentage: 'Valor por defecto cuando un administrador crea una organización - Canal de Voz/Porcentaje de Holgura',
+    propertyvoximplantadditionalperchannel: 'Valor por defecto cuando un administrador crea una organización - Canal de Voz/Saldo Adicional Por Canal',
+    T_VOICECHANNEL: 'CANAL DE VOZ'
 };
 
 const esResource: ResourceLanguage = {
