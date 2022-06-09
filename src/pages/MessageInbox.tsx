@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'hooks';
-import { setUserType, emitEvent, cleanAlerts, setAgentsToReassign, selectAgent } from 'store/inbox/actions';
+import { setUserType, emitEvent, cleanAlerts, setAgentsToReassign, selectAgent, resetSelectTicket } from 'store/inbox/actions';
 import { useDispatch } from 'react-redux';
 import InboxPanel from 'components/inbox/InboxPanel'
 import { getMultiCollection, resetAllMain } from 'store/main/actions';
@@ -57,6 +57,7 @@ const MessageInbox: React.FC = () => {
     }, [multiData])
 
     useEffect(() => {
+        dispatch(resetSelectTicket());
         dispatch(setUserType("AGENT"));
         dispatch(selectAgent({
             userid: user?.userid!!,

@@ -227,9 +227,8 @@ const MakeCall: React.FC = () => {
     const dispatch = useDispatch();
     
     const personData = useSelector(state => state.inbox.person);
-    console.log(personData?.data?.phone)
 
-    const [numberVox, setNumberVox] = useState(personData?.data?.phone||"");
+    const [numberVox, setNumberVox] = useState("");
     const resExecute = useSelector(state => state.main.execute);
     const [pageSelected, setPageSelected] = useState(1);
     const [filter, setfilter] = useState("");
