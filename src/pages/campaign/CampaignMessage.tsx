@@ -1,12 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
-import { FieldEdit, FieldEditWithSelect } from 'components';
+import { FieldEdit, FieldEditWithSelect, FieldSelect } from 'components';
 import { Dictionary, ICampaign, MultiData } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { filterPipe } from 'common/helpers';
 import { FrameProps } from './CampaignDetail';
+import { Box } from '@material-ui/core';
 
 interface DetailProps {
     row: Dictionary | null,
@@ -21,6 +22,8 @@ interface DetailProps {
     setFrameProps: (value: FrameProps) => void;
     setPageSelected: (page: number) => void;
     setSave: (value: any) => void;
+    messageVariables: any[];
+    setMessageVariables: (value: any[]) => void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -61,7 +64,7 @@ class VariableHandler {
     }
 }
 
-export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, tablevariable, frameProps, setFrameProps, setPageSelected, setSave }) => {
+export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, tablevariable, frameProps, setFrameProps, setPageSelected, setSave, messageVariables, setMessageVariables }) => {
     const classes = useStyles();
     const { t } = useTranslation();
 
@@ -136,10 +139,32 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
     }
 
+    // useEffect(() => {
+    //     if (detaildata.communicationchanneltype?.startsWith('MAI')) {
+    //         const variablesList = detaildata.message?.match(/({{)(.*?)(}})/g) || [];
+    //         const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
+    //         setMessageVariables(varaiblesCleaned.map((x: string) => ({ name: x, text: '', type: 'text' })));
+    //     }
+    //     else {
+    //         setMessageVariables([]);
+    //     }
+    // }, [])
+
+    useEffect(() => {
+        if (detaildata.communicationchanneltype?.startsWith('MAI')) {
+            const variablesList = detaildata.message?.match(/({{)(.*?)(}})/g) || [];
+            const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
+            setMessageVariables(varaiblesCleaned.map((x: string) => ({ name: x, text: x, type: 'text' })));
+        }
+        else {
+            setMessageVariables([]);
+        }
+    }, [detaildata.message])
+
     return (
         <React.Fragment>
              <div className={classes.containerDetail}>
-                {detaildata.communicationchanneltype === 'MAIL' ?
+                {detaildata.communicationchanneltype?.startsWith('MAI') ?
                 <div className="row-zyx">
                     <FieldEdit
                         label={t(langKeys.title)}
@@ -164,6 +189,40 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         }}
                     />
                 </div> : null}
+                {detaildata.communicationchanneltype?.startsWith('MAI') ?
+                <div className="row-zyx">
+                    <React.Fragment>
+                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.body)}</Box>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', flexFlow: 'row wrap', gap: '10px' }}>
+                            <div className="col-9" style={{overflow: 'auto'}}>
+                                <div
+                                    onClick={(e) => console.log(e)}
+                                    dangerouslySetInnerHTML={{ __html: detaildata?.message || '' }}
+                                />
+                            </div>
+                            <div className="col-3" style={{width: '300px'}}>
+                                {messageVariables.map((item: Dictionary, i) => (
+                                    <React.Fragment key={"param_" + i}>
+                                        <FieldSelect
+                                            key={"var_" + i}
+                                            label={`${i + 1}. ${item.name}`}
+                                            valueDefault={messageVariables[i].text}
+                                            onChange={(value) => {
+                                                const datatemp = [...messageVariables];
+                                                datatemp[i].text = value.description;
+                                                setMessageVariables(datatemp)
+                                            }}
+                                            data={tablevariable}
+                                            optionDesc="description"
+                                            optionValue="description"
+                                        />
+                                    </React.Fragment>
+                                ))}
+                            </div>
+                        </div>
+                    </React.Fragment>
+                </div>
+                :
                 <div className="row-zyx">
                     <FieldEditWithSelect
                         label={t(langKeys.message)}
@@ -184,7 +243,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         onClickSelection={(e, value) => selectionVariableSelect(e, value)}
                         onClickAway={(variableHandler) => setVariableHandler({...variableHandler, show: false})}
                     />
-                </div>
+                </div>}
             </div>
         </React.Fragment>
     )

@@ -61,6 +61,7 @@ const dataCampaignType = [
     { key: 'TEXTO', value: 'text'},
     { key: 'HSM', value: 'hsm', rif: 'startsWith', rifvalue: 'WHA' },
     { key: 'SMS', value: 'sms', rif: 'startsWith', rifvalue: 'SMS'},
+    { key: 'MAIL', value: 'mail', rif: 'startsWith', rifvalue: 'MAI'},
 ];
 
 type FormFields = {
@@ -243,6 +244,9 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         else if (channeltype?.startsWith('SMS')) {
             onChangeType({key: 'SMS'});
         }
+        else if (channeltype?.startsWith('MAI')) {
+            onChangeType({key: 'MAIL'});
+        }
         else {
             onChangeType({key: 'TEXTO'});
         }
@@ -273,6 +277,9 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
         else if (getValues('communicationchanneltype')?.startsWith('SMS')) {
             return dataCampaignType.filter(t => t.key === 'SMS');
+        }
+        else if (getValues('communicationchanneltype')?.startsWith('MAI')) {
+            return dataCampaignType.filter(t => t.key === 'MAIL' || t.key === 'TEXTO');
         }
         else {
             return filterIf(dataCampaignType);
@@ -316,6 +323,9 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
             //     setValue('messagetemplatefooter', messageTemplate?.footer || '');
             // else
             //     setValue('messagetemplatefooter', '');
+        }
+        else if (data?.type === 'MAIL') {
+            setValue('subject', messageTemplate?.header || '')
         }
         await trigger(['messagetemplateid', 'messagetemplatename', 'messagetemplatenamespace', 'messagetemplatetype']);
     }
@@ -521,7 +531,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         />
                     }
                 </div>
-                {['HSM','SMS'].includes(getValues('type')) ?
+                {['HSM','SMS','MAIL'].includes(getValues('type')) ?
                 <div className="row-zyx">
                     {edit ?
                         <FieldSelect
@@ -545,7 +555,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     {edit ?
                         <FieldEdit
                             fregister={{...register(`messagetemplatenamespace`, {
-                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                validate: (value: any) => (getValues('type') !== 'HSM' ? true : value && value.length) || t(langKeys.field_required)
                             })}}    
                             label={t(langKeys.namespace)}
                             className="col-6"
