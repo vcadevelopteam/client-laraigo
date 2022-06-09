@@ -584,7 +584,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             if (text) {
                 let textCleaned = text;
                 if (ticketSelected?.communicationchanneltype === "MAIL" && groupInteractionList.data[0]?.interactiontext) {
-                    textCleaned = ("RE: " + (groupInteractionList.data[0].interactiontext).split("&%MAIL%&")[0] + "&%MAIL%&" + text).trim();
+                    textCleaned = ("Re: " + (groupInteractionList.data[0].interactiontext).split("&%MAIL%&")[0] + "&%MAIL%&" + text).trim();
 
                     let fileobj = files.reduce((acc, item,i) => ({ ...acc, [String(item.url.split('/').pop()==="tenor.gif"?"tenor"+i+".gif":item.url.split('/').pop())]: item.url }), {})
                     console.log(fileobj)
