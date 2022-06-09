@@ -485,7 +485,10 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
 
 
     useEffect(() => {
-        if(JSON.stringify(ticketSelected) !== JSON.stringify(previousTicket)) setpreviousTicket(ticketSelected)
+        console.log("useEffect")
+        console.log(ticketSelected)
+        console.log(previousTicket)
+        if((ticketSelected?.conversationid) !== (previousTicket?.conversationid)) setpreviousTicket(ticketSelected)
         if (ticketSelected?.status !== "ASIGNADO")
             setShowReply(false);
         else if (channelsWhatsapp.includes(ticketSelected!!.communicationchanneltype)) {
