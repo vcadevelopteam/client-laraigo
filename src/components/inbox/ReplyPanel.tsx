@@ -585,7 +585,9 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                 let textCleaned = text;
                 if (ticketSelected?.communicationchanneltype === "MAIL" && groupInteractionList.data[0]?.interactiontext) {
                     textCleaned = ("RE: " + (groupInteractionList.data[0].interactiontext).split("&%MAIL%&")[0] + "&%MAIL%&" + text).trim();
-                    let fileobj = files.reduce((acc, item) => ({ ...acc, [String(item.url.split('/').pop())]: item.url }), {})
+
+                    let fileobj = files.reduce((acc, item,i) => ({ ...acc, [String(item.url.split('/').pop()==="tenor.gif"?"tenor"+i+".gif":item.url.split('/').pop())]: item.url }), {})
+                    console.log(fileobj)
                     textCleaned = textCleaned + "&%MAIL%&" + JSON.stringify(fileobj)
                     setFiles([])
                 }
@@ -602,7 +604,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                             interactionid: 0,
                             typemessage: ticketSelected?.communicationchanneltype === "MAIL" ? "email" : "text",
                             typeinteraction: null,
-                            lastmessage: ticketSelected?.communicationchanneltype === "MAIL" ? textCleaned.split("&%MAIL%&")[0] : textCleaned,
+                            lastmessage: textCleaned,
                             createdate: new Date().toISOString(),
                             userid: 0,
                             usertype: "agent",
@@ -817,9 +819,9 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                                     <RedoIcon />
                                                 </Tooltip>
                                             </IconButton>
+                                            <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage} />
+                                            <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
                                             {/*
-                                                    <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage} />
-                                                    <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
                                                     <TmpRichResponseIcon classes={classes} setText={setText} /> final
                                                 */}
                                             <UploaderIcon type="file" classes={classes} setFiles={setFiles} />

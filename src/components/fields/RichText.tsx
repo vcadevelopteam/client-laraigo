@@ -150,6 +150,7 @@ const useRichTextStyles = makeStyles(theme => ({
         overflowY: "scroll",
         overflowX: "hidden",
         width: "100%",
+        direction: "ltr",
     },
     littleboxes: {
         cursor: "pointer",
