@@ -693,16 +693,38 @@ const Attachments: React.FC = () => {
 
 
     useEffect(() => {
-        setListFiles(interactionList.data.reduce<Dictionary[]>((acc, item) => [
-            ...acc,
-            ...(item.interactions?.filter((x) => ["file", "video"].includes(x.interactiontype)) || []).map(x => ({
-                url: x.interactiontext,
-                // filename: x.interactiontext.split("/").pop(),
-                filename: x.interactiontext.split("/").pop(),
-                extension: ((x.interactiontext.split("/").pop() || '') || "").split(".").pop(),
-                date: convertLocalDate(x.createdate).toLocaleString(),
-            }))
-        ], []));
+        if(interactionList.data[0].interactiontype==="email"){
+            setListFiles(interactionList.data.reduce<Dictionary[]>((acc, item) => {
+                const files= item?.interactiontext?.split("&%MAIL%&")[2]
+                console.log(item)
+                if(files && files!=="{}"){
+                    const filesjson = JSON.parse(files)
+                    const keys=Object.keys(filesjson)
+                    const values=Object.values(filesjson)
+                    return [...acc,
+                        ...(keys.map((x,i)=>({
+                            url:values[i],
+                            filename:x,
+                            extension:x.split(".").pop(),
+                            date:null
+                        })))
+                    ]
+                }
+                return [...acc]
+            }, []));
+
+        }else{
+            setListFiles(interactionList.data.reduce<Dictionary[]>((acc, item) => [
+                ...acc,
+                ...(item.interactions?.filter((x) => ["file", "video"].includes(x.interactiontype)) || []).map(x => ({
+                    url: x.interactiontext,
+                    // filename: x.interactiontext.split("/").pop(),
+                    filename: x.interactiontext.split("/").pop(),
+                    extension: ((x.interactiontext.split("/").pop() || '') || "").split(".").pop(),
+                    date: convertLocalDate(x.createdate).toLocaleString(),
+                }))
+            ], []));
+        }
     }, [interactionList])
 
     if (listFiles.length === 0) {
