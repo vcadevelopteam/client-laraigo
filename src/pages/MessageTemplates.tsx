@@ -90,7 +90,8 @@ const useStyles = makeStyles((theme) => ({
 const dataMessageType = [
     { value: "SMS", text: "sms" },
     { value: "HSM", text: "hsm" },
-    { value: "MAIL", text: "mail" }
+    { value: "MAIL", text: "mail" },
+    { value: "HTML", text: "html" }
 ];
 
 const dataTemplateType = [
@@ -309,6 +310,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
             status: row?.status || 'ACTIVO',
             name: row?.name || '',
             namespace: row?.namespace || '',
+            typeattachment: row?.typeattachment || '',
             category: row?.category || '',
             language: row?.language || '',
             templatetype: row?.templatetype || 'STANDARD',
@@ -431,6 +433,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                 register('body', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
                 setTemplateTypeDisabled(false);
                 break;
+            case 'HTML':
+                register('typeattachment', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+                break;
             case 'SMS': case 'MAIL':
                 if ((data?.value || 'HSM') === "SMS") {
                     register('language', { validate: () => true });
@@ -500,6 +505,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
     }
 
     const [fileAttachment, setFileAttachment] = useState<File | null>(null);
+    const [fileAttachmentTemplate, setFileAttachmentTemplate] = useState<File | null>(null);
+    const [bodyattachment, setbodyattachment] = useState("");
+    const [typeattachment, settypeattachment] = useState("");
 
     const onClickAttachment = useCallback(() => {
         const input = document.getElementById('attachmentInput');
@@ -517,6 +525,25 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
         }
     }, [])
 
+    useEffect(() => {
+        if(fileAttachmentTemplate){
+            var reader = new FileReader();
+            reader.readAsText(fileAttachmentTemplate);
+            reader.onload = (event: any) => {
+                let content = event.target.result.toString();
+                setValue('body', content);
+                setbodyattachment(content);
+            };
+        }
+    }, [fileAttachmentTemplate])
+
+    const onChangeAttachmentTemplate = useCallback((files: any) => {
+        const file = files?.item(0);
+        if (file) {
+            setFileAttachmentTemplate(file);
+        }
+    }, [])
+
     const handleCleanMediaInput = async (f: string) => {
         const input = document.getElementById('attachmentInput') as HTMLInputElement;
         if (input) {
@@ -526,8 +553,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
         setValue('attachment', getValues('attachment').split(',').filter((a: string) => a !== f).join(','));
         await trigger('attachment');
     }
-
-    console.log("bodyobject", bodyobject)
     return (
         <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
@@ -612,6 +637,20 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                                             valueDefault={getValues('namespace')}
                                             onChange={(value) => setValue('namespace', value)}
                                             error={errors?.namespace?.message}
+                                        />
+                                    )
+                                }
+                                {
+                                    getValues('type') === "HTML" && (
+                                        <FieldSelect
+                                            label={t(langKeys.type)}
+                                            className="col-6"
+                                            valueDefault={getValues('typeattachment')}
+                                            onChange={(value) => {setValue('typeattachment', value?.val);settypeattachment(value?.val)}}
+                                            error={errors?.typeattachment?.message}
+                                            data={[{val: "IMPORT", desc: t(langKeys.import)},{val: "EDIT", desc: t(langKeys.edit)}]}
+                                            optionDesc="desc"
+                                            optionValue="val"
                                         />
                                     )
                                 }
@@ -828,7 +867,31 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                                 />
                             </React.Fragment>
                         }
-                        {getValues('type') !== 'MAIL' &&
+                        {(getValues('type') === 'HTML') &&
+                            <React.Fragment>
+                                {typeattachment === 'IMPORT' &&
+                                    <Button
+                                        variant="contained"
+                                        component="label"
+                                        >
+                                        <input
+                                            type="file"
+                                            onChange={(e) => onChangeAttachmentTemplate(e.target.files)}
+                                        />
+                                </Button>}
+                                {typeattachment === 'EDIT' &&
+                                      <FieldEditMulti
+                                            label={t(langKeys.body)}
+                                            className="col-12"
+                                            valueDefault={getValues('body')}
+                                            onChange={(value) => {setValue('body', value);setbodyattachment(value)}}
+                                            error={errors?.body?.message}
+                                        />
+                                }
+                                <div dangerouslySetInnerHTML={{ __html: bodyattachment }} />
+                            </React.Fragment>
+                        }
+                        {(getValues('type') === 'SMS'||getValues('type') === 'HSM') &&
                             (
                                 edit ?
                                     <FieldEditMulti
