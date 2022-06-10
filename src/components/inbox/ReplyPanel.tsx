@@ -460,6 +460,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const richResponseList = useSelector(state => state.inbox.richResponseList);
     const userType = useSelector(state => state.inbox.userType);
     const [text, setText] = useState("");
+    const [previousTicket, setpreviousTicket] = useState<any>(null);
     const [files, setFiles] = useState<IFile[]>([]);
     const multiData = useSelector(state => state.main.multiData);
     const groupInteractionList = useSelector(state => state.inbox.interactionList);
@@ -484,6 +485,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
 
 
     useEffect(() => {
+        if((ticketSelected?.conversationid) !== (previousTicket?.conversationid)) setpreviousTicket(ticketSelected)
         if (ticketSelected?.status !== "ASIGNADO")
             setShowReply(false);
         else if (channelsWhatsapp.includes(ticketSelected!!.communicationchanneltype)) {
@@ -495,7 +497,8 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             }
         } else
             setShowReply(true)
-
+    }, [ticketSelected])
+    useEffect(() => {
         if (ticketSelected?.communicationchanneltype === "MAIL") {
             setBodyobject([{ "type": "paragraph", align:"left", "children": [{ "text": "" }] }])
             setText(renderToString(toElement([{ "type": "paragraph", align:"left", "children": [{ "text": "" }] }])))
@@ -504,7 +507,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             setText("")
             setBodyobject([{ "type": "paragraph", align:"left", "children": [{ "text": "" }] }])
         }
-    }, [ticketSelected])
+    }, [previousTicket])
 
     useEffect(() => {
         if (!flagundo) {
