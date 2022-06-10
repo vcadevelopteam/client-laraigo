@@ -702,7 +702,7 @@ const Attachments: React.FC = () => {
                     const keys=Object.keys(filesjson)
                     const values=Object.values(filesjson)
                     return [...acc,
-                        ...(keys.map((x,i)=>({
+                        ...(keys.filter(x=>(x.split(".").pop()!=="jpg"&&x.split(".").pop()!=="png")).map((x,i)=>({
                             url:values[i],
                             filename:x,
                             extension:x.split(".").pop(),
