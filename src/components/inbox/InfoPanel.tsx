@@ -690,26 +690,33 @@ const Attachments: React.FC = () => {
     const [listFiles, setListFiles] = useState<Dictionary[]>([]);
     const interactionList = useSelector(state => state.inbox.interactionList);
     const { t } = useTranslation();
-
+    console.log(interactionList)
 
     useEffect(() => {
         if(interactionList.data[0].interactiontype==="email"){
-            setListFiles(interactionList.data.reduce<Dictionary[]>((acc, item) => {
-                const files= item?.interactiontext?.split("&%MAIL%&")[2]
-                if(files && files!=="{}"){
-                    const filesjson = JSON.parse(files)
+            console.log(interactionList)
+            let interactions =interactionList.data.reduce<Dictionary[]>((acc, item) => [
+                ...acc,
+                ...(item.interactions||[])
+            ], []);
+            setListFiles(interactions.reduce<Dictionary[]>((acc, item) => {
+                if(item?.interactiontext?.split("&%MAIL%&")[2] && item?.interactiontext?.split("&%MAIL%&")[2]!="{}"){
+                    const filesjson = JSON.parse(item.interactiontext.split("&%MAIL%&")[2])
                     const keys=Object.keys(filesjson)
-                    return [...acc,
-                        ...(keys.filter(x=>(x.split(".").pop()!=="jpg"&&x.split(".").pop()!=="png"&&x.split(".").pop()!=="jpeg")).map((x)=>({
-                            url:filesjson[String(x)],
-                            filename:decodeURI(x),
-                            extension:x.split(".").pop(),
-                            date: item.createdate
-                        })))
-                    ]
+                    let arrayres= keys.filter(key=>(key.split(".").pop()!=="jpg" && key.split(".").pop()!=="png" && key.split(".").pop()!=="jpeg")).reduce<Dictionary[]>((acc1, key) => [
+                        ...acc1,{
+                            url:filesjson[String(key)],
+                            filename:decodeURI(key),
+                            extension:key.split(".").pop(),
+                            date: convertLocalDate(item.createdate).toLocaleString()
+                        }
+                    ], [])
+                    
+                    return [...acc, ...arrayres]
+
                 }
                 return [...acc]
-            }, []));
+                }, []));
 
         }else{
             setListFiles(interactionList.data.reduce<Dictionary[]>((acc, item) => [
