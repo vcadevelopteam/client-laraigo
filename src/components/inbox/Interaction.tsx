@@ -308,7 +308,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                                 <ZipIcon width="30" height="30" />
                             ) : <FileIcon width="30" height="30" />
                             }
-                            <div style={{ color: '#171717', textOverflow: 'ellipsis', overflowX: 'hidden', flex: 1, whiteSpace: 'nowrap' }}>{file}</div>
+                            <div style={{ color: '#171717', textOverflow: 'ellipsis', overflowX: 'hidden', flex: 1, whiteSpace: 'nowrap' }}>{decodeURI(file)}</div>
                             <DownloadIcon2 width="20" height="20" color="primary" />
                         </a>)
                     })

@@ -696,17 +696,15 @@ const Attachments: React.FC = () => {
         if(interactionList.data[0].interactiontype==="email"){
             setListFiles(interactionList.data.reduce<Dictionary[]>((acc, item) => {
                 const files= item?.interactiontext?.split("&%MAIL%&")[2]
-                console.log(item)
                 if(files && files!=="{}"){
                     const filesjson = JSON.parse(files)
                     const keys=Object.keys(filesjson)
-                    const values=Object.values(filesjson)
                     return [...acc,
-                        ...(keys.filter(x=>(x.split(".").pop()!=="jpg"&&x.split(".").pop()!=="png")).map((x,i)=>({
-                            url:values[i],
-                            filename:x,
+                        ...(keys.filter(x=>(x.split(".").pop()!=="jpg"&&x.split(".").pop()!=="png"&&x.split(".").pop()!=="jpeg")).map((x)=>({
+                            url:filesjson[String(x)],
+                            filename:decodeURI(x),
                             extension:x.split(".").pop(),
-                            date:null
+                            date: item.createdate
                         })))
                     ]
                 }
