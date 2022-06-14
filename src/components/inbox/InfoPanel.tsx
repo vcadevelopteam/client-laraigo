@@ -690,19 +690,46 @@ const Attachments: React.FC = () => {
     const [listFiles, setListFiles] = useState<Dictionary[]>([]);
     const interactionList = useSelector(state => state.inbox.interactionList);
     const { t } = useTranslation();
-
+    console.log(interactionList)
 
     useEffect(() => {
-        setListFiles(interactionList.data.reduce<Dictionary[]>((acc, item) => [
-            ...acc,
-            ...(item.interactions?.filter((x) => ["file", "video"].includes(x.interactiontype)) || []).map(x => ({
-                url: x.interactiontext,
-                // filename: x.interactiontext.split("/").pop(),
-                filename: x.interactiontext.split("/").pop(),
-                extension: ((x.interactiontext.split("/").pop() || '') || "").split(".").pop(),
-                date: convertLocalDate(x.createdate).toLocaleString(),
-            }))
-        ], []));
+        if(interactionList.data[0].interactiontype==="email"){
+            console.log(interactionList)
+            let interactions =interactionList.data.reduce<Dictionary[]>((acc, item) => [
+                ...acc,
+                ...(item.interactions||[])
+            ], []);
+            setListFiles(interactions.reduce<Dictionary[]>((acc, item) => {
+                if(item?.interactiontext?.split("&%MAIL%&")[2] && item?.interactiontext?.split("&%MAIL%&")[2]!="{}"){
+                    const filesjson = JSON.parse(item.interactiontext.split("&%MAIL%&")[2])
+                    const keys=Object.keys(filesjson)
+                    let arrayres= keys.filter(key=>(key.split(".").pop()!=="jpg" && key.split(".").pop()!=="png" && key.split(".").pop()!=="jpeg")).reduce<Dictionary[]>((acc1, key) => [
+                        ...acc1,{
+                            url:filesjson[String(key)],
+                            filename:decodeURI(key),
+                            extension:key.split(".").pop(),
+                            date: convertLocalDate(item.createdate).toLocaleString()
+                        }
+                    ], [])
+                    
+                    return [...acc, ...arrayres]
+
+                }
+                return [...acc]
+                }, []));
+
+        }else{
+            setListFiles(interactionList.data.reduce<Dictionary[]>((acc, item) => [
+                ...acc,
+                ...(item.interactions?.filter((x) => ["file", "video"].includes(x.interactiontype)) || []).map(x => ({
+                    url: x.interactiontext,
+                    // filename: x.interactiontext.split("/").pop(),
+                    filename: x.interactiontext.split("/").pop(),
+                    extension: ((x.interactiontext.split("/").pop() || '') || "").split(".").pop(),
+                    date: convertLocalDate(x.createdate).toLocaleString(),
+                }))
+            ], []));
+        }
     }, [interactionList])
 
     if (listFiles.length === 0) {

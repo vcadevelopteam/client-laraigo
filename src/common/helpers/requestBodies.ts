@@ -2399,13 +2399,12 @@ export const changePasswordOnFirstLoginIns = (userid: number | string, password:
     parameters: { password, userid },
 });
 
-
-
 export const getPlanSel = (): IRequestBody => ({
     method: "UFN_SUPPORTPLAN_SEL",
     key: "UFN_SUPPORTPLAN_SEL",
     parameters: {}
 })
+
 export const getPaymentPlanSel = (): IRequestBody => ({
     method: "UFN_PAYMENTPLAN_SEL",
     key: "UFN_PAYMENTPLAN_SEL",
@@ -2413,6 +2412,12 @@ export const getPaymentPlanSel = (): IRequestBody => ({
         code: 0,
         all: true
     }
+})
+
+export const getPhoneTax = (): IRequestBody => ({
+    method: "UFN_BILLINGPERIOD_SEL_PHONETAX",
+    key: "UFN_BILLINGPERIOD_SEL_PHONETAX",
+    parameters: {}
 })
 
 export const getBillingSupportSel = ({ year, month, plan }: Dictionary): IRequestBody => ({
