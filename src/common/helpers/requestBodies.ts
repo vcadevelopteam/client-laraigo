@@ -3058,3 +3058,32 @@ export const getDisconnectionTimes = ({ startdate, enddate, asesorid, supervisor
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
+
+//getPaginatedTicket
+export const getasesorvsticketsSel = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_REPORT_ASESOR_VS_TICKET_SEL",
+    methodCount: "UFN_REPORT_ASESOR_VS_TICKET_TOTALRECORDS",
+    parameters: {
+        startdate,
+        enddate,
+        skip,
+        take,
+        filters,
+        sorts,
+        origin: "ticketvsadviser",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
+
+export const getTicketvsAdviserExport = ({ filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
+    method: "UFN_REPORT_ASESOR_VS_TICKET_EXPORT",
+    key: "UFN_REPORT_ASESOR_VS_TICKET_EXPORT",
+    parameters: {
+        origin: "ticketvsadviser",
+        filters,
+        startdate,
+        enddate,
+        sorts,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+});

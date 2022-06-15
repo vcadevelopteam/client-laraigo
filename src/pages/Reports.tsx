@@ -39,6 +39,7 @@ import { Range } from 'react-date-range';
 import { CalendarIcon } from 'icons';
 import { Search as SearchIcon } from '@material-ui/icons';
 import ReportInvoice from 'components/report/ReportInvoice';
+import TicketvsAdviser from 'components/report/TicketvsAdviser';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -965,6 +966,27 @@ const Reports: FC = () => {
                         </Card>
                     </Grid>
                 )
+            case 'TICKETVSADVISER':
+                return (
+                    superadmin && <Grid item key={"report_ticketvsasesor"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                        <Card >
+                            <CardActionArea onClick={() => handleSelectedString("report_ticketvsasesor")}>
+                                <CardMedia
+                                    component="img"
+                                    height="140"
+                                    className={classes.media}
+                                    image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/03reportepersonalizado.png'}
+                                    title={t(langKeys.report_ticketvsasesor)}
+                                />
+                                <CardContent>
+                                    <Typography gutterBottom variant="h6" component="div">
+                                        {t(langKeys.report_ticketvsasesor)}
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                )
             default:
                 return (
                     <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
@@ -1179,6 +1201,18 @@ const Reports: FC = () => {
                         handleClick={handleSelectedString}
                     />
                     <ReportInvoice />
+                </div>
+            </>
+        )
+    } else if (viewSelected === "report_ticketvsasesor") {
+        return (
+            <>
+                <div style={{ width: '100%' }}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={getArrayBread(t('report_ticketvsasesor'), t(langKeys.report_plural))}
+                        handleClick={handleSelectedString}
+                    />
+                    <TicketvsAdviser />
                 </div>
             </>
         )

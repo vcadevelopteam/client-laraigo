@@ -1912,6 +1912,7 @@ export const langKeys = {
     report_tipification_classificationlevel2: 'report_tipification_classificationlevel2',
     report_tipification_classificationlevel3: 'report_tipification_classificationlevel3',
 
+    report_ticketvsasesor: 'report_ticketvsasesor',
     report_userproductivityhours: 'report_userproductivityhours',
     report_userproductivityhours_datehour: 'report_userproductivityhours_datestr',
     report_userproductivityhours_agent: 'report_userproductivityhours_fullname',
@@ -1925,6 +1926,17 @@ export const langKeys = {
     report_userproductivityhours_qtytickets: 'report_userproductivityhours_qtytickets',
     report_userproductivityhours_qtyconnection: 'report_userproductivityhours_qtyconnection',
     report_userproductivityhours_qtydisconnection: 'report_userproductivityhours_qtydisconnection',
+    submotive: "submotive",
+    assessment: "assessment",
+    closedby: "closedby",
+    
+    dateoffirstreplytoadviser: "dateoffirstreplytoadviser",
+    timeoffirstreplytoadviser: "timeoffirstreplytoadviser",
+    closing_date: "closing_date",
+    closing_time: "closing_time",
+    
+    dateoflastreplytoadviser: "dateoflastreplytoadviser",
+    timeoflastreplytoadviser: "timeoflastreplytoadviser",
 
     report_userproductivityhours_filter_adviser: 'report_userproductivityhours_filter_adviser',
     report_userproductivityhours_filter_channels: 'report_userproductivityhours_filter_channels',
@@ -3332,6 +3344,7 @@ export const langKeys = {
     transactionmessagetype: 'transactionmessagetype',
     transactionreference: 'transactionreference',
     transactionbalance: 'transactionbalance',
+    purchasemode: "purchasemode",
     transactionoperationtype: 'transactionoperationtype',
     transactionbuy: 'transactionbuy',
     transactioninformation: 'transactioninformation',
@@ -3341,6 +3354,7 @@ export const langKeys = {
     transactionrechargetitle: 'transactionrechargetitle',
     transactionconfirm: 'transactionconfirm',
     messagingpackagesdetail: 'messagingpackagesdetail',
+    operador: "operador",
     messagingpackagesnew: 'messagingpackagesnew',
     emissornone: 'emissornone',
     detractionnotepay1: 'detractionnotepay1',
