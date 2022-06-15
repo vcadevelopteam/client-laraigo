@@ -12,7 +12,7 @@ import { langKeys } from 'lang/keys';
 import { useSelector } from 'hooks';
 import { manageLightBox } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
-import { convertLocalDate } from 'common/helpers';
+import { convertLocalDate, validateIsUrl } from 'common/helpers';
 import Dialog from '@material-ui/core/Dialog';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -252,19 +252,23 @@ const PickerInteraction: React.FC<{ userType: string, fill?: string }> = ({ user
 const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userType: string }> = ({ interaction: { interactiontype, interactiontext, listImage, indexImage, createdate, onlyTime }, classes, userType }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const [showfulltext,setshowfulltext] = useState(interactiontext.length<=450)
+    const [showfulltext, setshowfulltext] = useState(interactiontext.length <= 450)
 
     if (!interactiontext.trim() || interactiontype === "typing")
         return null;
     if (interactiontype === "text")
         return (
-            <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
-                [classes.interactionTextAgent]: userType !== 'client',
-            })}>
-                {showfulltext?interactiontext:interactiontext.substring(0,450) + "... "}
+            <div
+                title={convertLocalDate(createdate).toLocaleString()}
+                className={clsx(classes.interactionText, {
+                    [classes.interactionTextAgent]: userType !== 'client',
+                })}
+            >
+                <div dangerouslySetInnerHTML={{ __html: validateIsUrl(showfulltext ? interactiontext : interactiontext.substring(0, 450) + "... ") }}>
+                </div>
                 {!showfulltext && (
-                        <div style={{color:"#53bdeb", display:"contents", cursor: "pointer"}}  onClick={() => setshowfulltext(true)}>{t(langKeys.showmore)}</div>
-                    )
+                    <div style={{ color: "#53bdeb", display: "contents", cursor: "pointer" }} onClick={() => setshowfulltext(true)}>{t(langKeys.showmore)}</div>
+                )
                 }
                 <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
@@ -280,44 +284,44 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
             </div>
         );
-    else if (interactiontype === "email"){
-        const [subject,body,files] = interactiontext.split("&%MAIL%&")
+    else if (interactiontype === "email") {
+        const [subject, body, files] = interactiontext.split("&%MAIL%&")
         return (
             <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
                 [classes.interactionTextAgent]: userType !== 'client',
             })} >
                 <div>RE-LARAIGO: {subject}</div>
                 <div dangerouslySetInnerHTML={{ __html: body }} />
-                {(files && files!=="{}") &&
-                    Object.keys(JSON.parse(files)).map((file:any)=>{
+                {(files && files !== "{}") &&
+                    Object.keys(JSON.parse(files)).map((file: any) => {
                         let hreffile = JSON.parse(files)[file]
                         let extension = file.split('.').pop()
                         return (
-                        <a key={file} download rel="noreferrer" target="_blank" href={hreffile} style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 4, maxWidth: 200, border: "1px solid #e1e1e1", borderRadius: 5, marginBottom: 5, paddingRight: 5 }}>
-                            {extension === "pdf" ? (
-                                <PdfIcon width="30" height="30" />
-                            ) : (extension === "doc" || extension === "docx") ? (
-                                <DocIcon width="30" height="30" />
-                            ) : (extension === "xls" || extension === "xlsx" || extension === "csv") ? (
-                                <XlsIcon width="30" height="30" />
-                            ) : (extension === "ppt" || extension === "pptx") ? (
-                                <PptIcon width="30" height="30" />
-                            ) : (extension === "text" || extension === "txt") ? (
-                                <TxtIcon width="30" height="30" />
-                            ) : (extension === "zip" || extension === "rar") ? (
-                                <ZipIcon width="30" height="30" />
-                            ) : <FileIcon width="30" height="30" />
-                            }
-                            <div style={{ color: '#171717', textOverflow: 'ellipsis', overflowX: 'hidden', flex: 1, whiteSpace: 'nowrap' }}>{decodeURI(file)}</div>
-                            <DownloadIcon2 width="20" height="20" color="primary" />
-                        </a>)
+                            <a key={file} download rel="noreferrer" target="_blank" href={hreffile} style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 4, maxWidth: 200, border: "1px solid #e1e1e1", borderRadius: 5, marginBottom: 5, paddingRight: 5 }}>
+                                {extension === "pdf" ? (
+                                    <PdfIcon width="30" height="30" />
+                                ) : (extension === "doc" || extension === "docx") ? (
+                                    <DocIcon width="30" height="30" />
+                                ) : (extension === "xls" || extension === "xlsx" || extension === "csv") ? (
+                                    <XlsIcon width="30" height="30" />
+                                ) : (extension === "ppt" || extension === "pptx") ? (
+                                    <PptIcon width="30" height="30" />
+                                ) : (extension === "text" || extension === "txt") ? (
+                                    <TxtIcon width="30" height="30" />
+                                ) : (extension === "zip" || extension === "rar") ? (
+                                    <ZipIcon width="30" height="30" />
+                                ) : <FileIcon width="30" height="30" />
+                                }
+                                <div style={{ color: '#171717', textOverflow: 'ellipsis', overflowX: 'hidden', flex: 1, whiteSpace: 'nowrap' }}>{decodeURI(file)}</div>
+                                <DownloadIcon2 width="20" height="20" color="primary" />
+                            </a>)
                     })
                 }
                 <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
             </div>
         );
-    }else if (interactiontype === "image" || interactiontype === "comment-image")
+    } else if (interactiontype === "image" || interactiontype === "comment-image")
         return (
             <div title={convertLocalDate(createdate).toLocaleString()} className={classes.interactionImage}>
                 <img
@@ -388,10 +392,10 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
                 [classes.interactionTextAgent]: userType !== 'client',
             })} style={{ backgroundColor: '#84818A', color: 'white' }}>
-                {showfulltext?interactiontext:interactiontext.substring(0,450) + "... "}
+                {showfulltext ? interactiontext : interactiontext.substring(0, 450) + "... "}
                 {!showfulltext && (
-                        <div style={{color:"#53bdeb", display:"contents", cursor: "pointer"}}  onClick={() => setshowfulltext(true)}>{t(langKeys.showmore)}</div>
-                    )
+                    <div style={{ color: "#53bdeb", display: "contents", cursor: "pointer" }} onClick={() => setshowfulltext(true)}>{t(langKeys.showmore)}</div>
+                )
                 }
                 <PickerInteraction userType={userType!!} fill="#84818A" />
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} background={true} time={onlyTime || ""} />
@@ -417,7 +421,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
     } else if (interactiontype === "file") {
         const filename = interactiontext.split("/").pop() || "";
         const extension = (filename || "").split(".").pop();
-        
+
         return (
             <div style={{ width: 200, backgroundColor: 'white', padding: '12px 13px', borderRadius: 4, position: 'relative' }}>
                 <a download rel="noreferrer" target="_blank" href={interactiontext} style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 4 }}>

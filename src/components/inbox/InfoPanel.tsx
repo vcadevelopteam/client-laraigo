@@ -10,7 +10,7 @@ import { getTicketsPerson, showInfoPanel, updatePerson } from 'store/inbox/actio
 import { GetIcon, FieldEdit, FieldSelect, DialogInteractions, AntTab, FieldEditMulti } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
-import { convertLocalDate, getConversationClassification2, getValuesFromDomain, insertClassificationConversation, insPersonBody } from 'common/helpers';
+import { convertLocalDate, getConversationClassification2, getValuesFromDomain, insertClassificationConversation, insPersonBody, validateIsUrl } from 'common/helpers';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import { Dictionary } from '@types';
@@ -524,7 +524,8 @@ const Variables: React.FC = () => {
                     <div key={index} className={classes.containerName}>
                         <div style={{ fontWeight: fontbold ? 'bold' : 'normal' }}>
                             <div className={classes.label}>{description}</div>
-                            <div style={{ color: fontcolor }}>{variabletmp?.Value || '-'}</div>
+                            <div style={{ color: fontcolor }} dangerouslySetInnerHTML={{ __html: validateIsUrl(variabletmp?.Value) || '-' }}>
+                            </div>
                         </div>
                     </div>
                 )
@@ -555,7 +556,7 @@ const Classifications: React.FC = () => {
     }, [tipifyRes])
 
     useEffect(() => {
-        setClassifications(mainAux2?.data?.reverse()||[])
+        setClassifications(mainAux2?.data?.reverse() || [])
     }, [mainAux2])
 
     useEffect(() => {
@@ -571,7 +572,7 @@ const Classifications: React.FC = () => {
         console.log(ticketSelected)
 
         const callback = () => {
-            dispatch(execute(insertClassificationConversation(ticketSelected?.conversationid||0,row.classificationid, row.jobplan, 'DELETE')));
+            dispatch(execute(insertClassificationConversation(ticketSelected?.conversationid || 0, row.classificationid, row.jobplan, 'DELETE')));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -582,24 +583,23 @@ const Classifications: React.FC = () => {
             callback
         }))
     }
-    
+
     return (
         <>
             <div style={{ overflowY: 'auto' }} className="scroll-style-go">
                 <div className={classes.containerInfoClient} style={{ paddingTop: 0, backgroundColor: 'transparent' }}>
-                    {classifications.map((x,i)=>{
+                    {classifications.map((x, i) => {
                         return (
-                            <div className={classes.containerPreviewTicket} style={{flexDirection:"initial", alignItems:"center"}} key={x.classificationid}>
+                            <div className={classes.containerPreviewTicket} style={{ flexDirection: "initial", alignItems: "center" }} key={x.classificationid}>
                                 <div style={{ flex: 1 }}>
-                                    <div>- {x.path.replace("/"," / ")}</div>
+                                    <div>- {x.path.replace("/", " / ")}</div>
                                 </div>
-                                <DeleteIcon style={{color:"#B6B4BA"}} onClick={()=>{handleDelete(x)}}/>
+                                <DeleteIcon style={{ color: "#B6B4BA" }} onClick={() => { handleDelete(x) }} />
                             </div>
                         )
                     })}
                 </div>
             </div>
-
         </>
     )
 }
@@ -693,32 +693,32 @@ const Attachments: React.FC = () => {
     console.log(interactionList)
 
     useEffect(() => {
-        if(interactionList.data[0].interactiontype==="email"){
+        if (interactionList.data[0].interactiontype === "email") {
             console.log(interactionList)
-            let interactions =interactionList.data.reduce<Dictionary[]>((acc, item) => [
+            let interactions = interactionList.data.reduce<Dictionary[]>((acc, item) => [
                 ...acc,
-                ...(item.interactions||[])
+                ...(item.interactions || [])
             ], []);
             setListFiles(interactions.reduce<Dictionary[]>((acc, item) => {
-                if(item?.interactiontext?.split("&%MAIL%&")[2] && item?.interactiontext?.split("&%MAIL%&")[2]!="{}"){
+                if (item?.interactiontext?.split("&%MAIL%&")[2] && item?.interactiontext?.split("&%MAIL%&")[2] != "{}") {
                     const filesjson = JSON.parse(item.interactiontext.split("&%MAIL%&")[2])
-                    const keys=Object.keys(filesjson)
-                    let arrayres= keys.filter(key=>(key.split(".").pop()!=="jpg" && key.split(".").pop()!=="png" && key.split(".").pop()!=="jpeg")).reduce<Dictionary[]>((acc1, key) => [
-                        ...acc1,{
-                            url:filesjson[String(key)],
-                            filename:decodeURI(key),
-                            extension:key.split(".").pop(),
+                    const keys = Object.keys(filesjson)
+                    let arrayres = keys.filter(key => (key.split(".").pop() !== "jpg" && key.split(".").pop() !== "png" && key.split(".").pop() !== "jpeg")).reduce<Dictionary[]>((acc1, key) => [
+                        ...acc1, {
+                            url: filesjson[String(key)],
+                            filename: decodeURI(key),
+                            extension: key.split(".").pop(),
                             date: convertLocalDate(item.createdate).toLocaleString()
                         }
                     ], [])
-                    
+
                     return [...acc, ...arrayres]
 
                 }
                 return [...acc]
-                }, []));
+            }, []));
 
-        }else{
+        } else {
             setListFiles(interactionList.data.reduce<Dictionary[]>((acc, item) => [
                 ...acc,
                 ...(item.interactions?.filter((x) => ["file", "video"].includes(x.interactiontype)) || []).map(x => ({
@@ -775,7 +775,6 @@ const Attachments: React.FC = () => {
         </div>
     )
 }
-
 
 const InfoPanel: React.FC = () => {
     const classes = useStyles();
