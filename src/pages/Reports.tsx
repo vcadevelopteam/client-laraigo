@@ -40,6 +40,7 @@ import { CalendarIcon } from 'icons';
 import { Search as SearchIcon } from '@material-ui/icons';
 import ReportInvoice from 'components/report/ReportInvoice';
 import TicketvsAdviser from 'components/report/TicketvsAdviser';
+import HSMHistoryReport from './HSMHistoryReport';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -924,6 +925,27 @@ const Reports: FC = () => {
                         </Card>
                     </Grid>
                 )
+            case 'HYSTORYHSM':
+                return (
+                    <Grid item key={"hsmhistory"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                        <Card >
+                            <CardActionArea onClick={() => handleSelectedString("hsmhistory")}>
+                                <CardMedia
+                                    component="img"
+                                    height="140"
+                                    className={classes.media}
+                                    image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/02reportehsm.png"
+                                    title={t(langKeys.hsmhistory)}
+                                />
+                                <CardContent>
+                                    <Typography gutterBottom variant="h6" component="div">
+                                        {t(langKeys.hsmhistory)}
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                )
             case 'CONVERSATIONWHATSAPP':
                 return (
                     <Grid item key={"reportconversationwhatsapp"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
@@ -1177,6 +1199,18 @@ const Reports: FC = () => {
                         handleClick={handleSelectedString}
                     />
                     <RecordHSMRecord />
+                </div>
+            </>
+        )
+    } else if (viewSelected === "hsmhistory") {
+        return (
+            <>
+                <div style={{ width: '100%' }}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={getArrayBread(t('hsmhistory'), t(langKeys.report_plural))}
+                        handleClick={handleSelectedString}
+                    />
+                    <HSMHistoryReport />
                 </div>
             </>
         )

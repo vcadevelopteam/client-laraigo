@@ -51,6 +51,7 @@ export const langKeys = {
     normal: "normal",
     large: "large",
     huge: "huge",
+    hsmhistory: "hsmhistory",
     emittername: "emittername",
     enter_details: "enter_details",
     confirm: "confirm",

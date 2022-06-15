@@ -3087,3 +3087,22 @@ export const getTicketvsAdviserExport = ({ filters, sorts, startdate, enddate }:
         offset: (new Date().getTimezoneOffset() / 60) * -1,
     }
 });
+
+export const getHSMHistoryList = ({ startdate, enddate }: Dictionary): IRequestBody => ({
+    method: "UFN_HSMHISTORY_LST",
+    key: "UFN_HSMHISTORY_LST",
+    parameters: {
+        startdate, enddate,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
+
+export const getHSMHistoryReport = ({ name, date }: Dictionary): IRequestBody => ({
+    method: "UFN_HSMHISTORY_REPORT",
+    key: "UFN_HSMHISTORY_REPORT",
+    parameters: {
+        date,
+        campaignname: name,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})

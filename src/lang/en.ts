@@ -3368,6 +3368,7 @@ const translation: LangKeys = {
     transactionbuy: 'Buy',
     transactioninformation: 'Price information',
     transactionlastbalance: 'Last balance',
+    hsmhistory: "HSM history",
     transactionbuyamount: 'Amount',
     transactionafterbalance: 'New balance',
     transactionrechargetitle: 'Balance charge ',
