@@ -10,6 +10,7 @@ import { default as DashboardManagerial } from './DashboardManagerial';
 import { default as DashboardProductivity } from './DashboardProductivity';
 import { default as DashboardOperationalPush } from './DashboardOperationalPush';
 import { default as DashboardTagRanking } from './DashboardTagRanking';
+import { default as DashboardDisconnections } from './DashboardDisconnections';
 import { SearchField, TemplateBreadcrumbs } from 'components';
 import paths from 'common/constants/paths';
 import { useHistory } from 'react-router';
@@ -294,6 +295,24 @@ const Dashboard: FC = () => {
                                 </CardActionArea>
                             </Card>
                         </Grid>}
+                        {t(langKeys.disconnections).toLowerCase().includes(searchValue.toLowerCase()) && <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                            <Card>
+                                <CardActionArea onClick={() => handleSelected("dashboarddisconnections")}>
+                                    <CardMedia
+                                        component="img"
+                                        height="140"
+                                        className={classes.media}
+                                        image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/randkinfg.png'}
+                                        title={t(langKeys.disconnections)}
+                                    />
+                                    <CardContent>
+                                        <Typography gutterBottom variant="h6" component="div">
+                                            {t(langKeys.disconnections)}
+                                        </Typography>
+                                    </CardContent>
+                                </CardActionArea>
+                            </Card>
+                        </Grid>}
                         {allDashboardsToShow.map((e:any, i:number) => (
                             <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }} key={i}>
                                 <DashboardCard
@@ -371,6 +390,20 @@ const Dashboard: FC = () => {
                         handleClick={handleSelected}
                     />
                     <DashboardTagRanking/>
+                </div>
+            </Fragment>
+        )
+    }    
+    else if(viewSelected === "dashboarddisconnections"){
+        return(
+            
+            <Fragment>
+                <div style={{ width: '100%' }}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={[...arrayBread, {id: 'dashboarddisconnections', name: t(langKeys.disconnections) }]}
+                        handleClick={handleSelected}
+                    />
+                    <DashboardDisconnections/>
                 </div>
             </Fragment>
         )

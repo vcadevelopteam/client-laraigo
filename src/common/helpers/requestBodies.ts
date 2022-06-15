@@ -3041,3 +3041,20 @@ export const getAdvisorListVoxi = (): IRequestBody => ({
     key: "UFN_PERSONCOMMUNICATIONCHANNEL_SEL_VOXI",
     parameters: {}
 });
+
+export const getUserAsesorByOrgID = (): IRequestBody => ({
+    method: "UFN_USER_ASESORBYORGID_LST",
+    parameters: { }
+});
+
+export const getDisconnectionTimes = ({ startdate, enddate, asesorid, supervisorid }: Dictionary): IRequestBody => ({
+    method: "UFN_DASHBOARD_DICONNECTIONTIMES_SEL",
+    key: "UFN_DASHBOARD_DICONNECTIONTIMES_SEL",
+    parameters: {
+        startdate,
+        enddate, 
+        asesorid,
+        supervisorid, 
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})

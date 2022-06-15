@@ -407,6 +407,9 @@ const translation: LangKeys = {
     province: 'Provincia',
     closedbyadviser: "Cerrado por asesor",
     closedbybot: "Cerrado por bot",
+    disconnections: "Desconexiones",
+    totaltimeduetodisconnectionreasons: "Tiempo total por motivos de desconexión",
+    timeconnectedvstimeoff: "Tiempo Conectado vs. Tiempo Desconectado",
     phone: 'Teléfono',
     costperHSMperiod: "Costo por período HSM",
     contact: 'Contacto',
@@ -1411,6 +1414,7 @@ const translation: LangKeys = {
     ticket_reason: 'Motivo',
     reasons_disconnection: 'Motivos de desconexión',
     ticket_comment: 'Comentario',
+    time: "Tiempo",
     ticket_user: 'Usuario',
 
     ticket_numeroticket: 'Ticket',
@@ -1634,6 +1638,8 @@ const translation: LangKeys = {
     dashboard_operationalpush_summary_status: 'Estado',
     dashboard_operationalpush_summary_answerdate: 'Fecha de respuesta',
     numberofconversationsperchannel: "Cantidad de conversaciones por canal",
+    totaltimeconnected: "Tiempo total conectado",
+    totaltimeoffline: "Tiempo total desconectado",
 
 
     dashboard_operationalpush_application_application: "Aplicación",
