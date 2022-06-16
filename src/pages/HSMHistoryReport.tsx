@@ -68,7 +68,7 @@ const DetailHSMHistoryReport: React.FC<DetailHSMHistoryReportProps> = ({ data: {
         dispatch(getMultiCollectionAux2([
             getHSMHistoryReport({
                 name: row?.name || "",
-                date: row?.shippingdate || "",
+                date: row?.date || "",
                 type: row?.type || "",
             })
         ]))
@@ -234,7 +234,6 @@ const HSMHistoryReport: FC = () => {
                 {
                     startdate: dateRangeCreateDate.startDate,
                     enddate: dateRangeCreateDate.endDate,
-                    type: '' //shippingtype
                 }
             )
         ]))
