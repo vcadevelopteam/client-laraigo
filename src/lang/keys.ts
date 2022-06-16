@@ -3262,6 +3262,7 @@ export const langKeys = {
     dashboard_groupment_both: 'dashboard_groupment_both',
     dashboard_contentType_kpi: 'dashboard_contentType_kpi',
     dashboard_contentType_report: 'dashboard_contentType_report',
+    dashboard_contentType_funnel: 'dashboard_contentType_funnel',
     dashboard_chartType_pie: 'dashboard_chartType_pie',
     dashboard_chartType_bar: 'dashboard_chartType_bar',
     dashboard_chartType_line: 'dashboard_chartType_line',

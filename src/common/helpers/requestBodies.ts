@@ -47,6 +47,11 @@ export const getUsersBySupervisor = (): IRequestBody => ({
     key: "UFN_USERBYSUPERVISOR_SEL",
     parameters: {}
 })
+export const getUsersBySupervisorLst = (): IRequestBody => ({
+    method: "UFN_USERBYSUPERVISOR_LST",
+    key: "UFN_USERBYSUPERVISOR_LST",
+    parameters: {}
+})
 
 export const getListQuickReply = (): IRequestBody => ({
     method: "UFN_QUICKREPLY_LIST_SEL",
@@ -3097,12 +3102,12 @@ export const getHSMHistoryList = ({ startdate, enddate }: Dictionary): IRequestB
     }
 })
 
-export const getHSMHistoryReport = ({ name, date }: Dictionary): IRequestBody => ({
+export const getHSMHistoryReport = ({ campaign = "", date }: Dictionary): IRequestBody => ({
     method: "UFN_HSMHISTORY_REPORT",
     key: "UFN_HSMHISTORY_REPORT",
     parameters: {
         date,
-        campaignname: name,
+        campaignname: campaign,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })

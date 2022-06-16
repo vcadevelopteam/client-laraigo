@@ -277,7 +277,7 @@ const DashboardDisconnections: FC = () => {
                         label={t(langKeys.user)}
                         className={classes.fieldsfilter}
                         variant="outlined"
-                        onChange={(value) => setusersearch(value||"")}
+                        onChange={(value) => setusersearch(value.userid||0)}
                         valueDefault={usersearch}
                         data={dataasesors}
                         optionDesc="userdesc"
