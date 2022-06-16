@@ -122,7 +122,7 @@ const FirstStep: FC = () => {
                 } else {
                     dispatch(showSnackbar({
                         show: true,
-                        success: false,
+                        severity: "error",
                         message: t(langKeys.useralreadyregistered),
                     }))
                     setwaitSave(false)

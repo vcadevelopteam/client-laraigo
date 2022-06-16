@@ -207,7 +207,7 @@ const DashboardDisconnections: FC = () => {
                 setWaitSave(false);
             } else if (remultiaux.error) {
                 const errormessage = t(remultiaux.code || "error_unexpected_error", { module: t(langKeys.quickreplies).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }

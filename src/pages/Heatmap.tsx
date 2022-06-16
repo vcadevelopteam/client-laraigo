@@ -294,7 +294,7 @@ const MainHeatMap: React.FC = () => {
 
     function search(){
         if (dataMainHeatMap.datetoshow === '') {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.date_format_error) }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.date_format_error) }))
         }
         else {
             setheatMapConversationsData([])
@@ -1852,7 +1852,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
     }
     async function search(){
         if (dataMainHeatMap.datetoshow === '') {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.date_format_error) }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.date_format_error) }))
         }
         else {
             // setlistadvisers([])
@@ -2160,7 +2160,7 @@ const HeatMapTicket: React.FC = () => {
 
     function search(){
         if (dataMainHeatMap.datetoshow === '') {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.date_format_error) }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.date_format_error) }))
         }
         else {
             setasesoresConectadosData([])

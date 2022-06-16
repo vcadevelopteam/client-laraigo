@@ -17,6 +17,8 @@ import { IconButton } from '@material-ui/core';
 import { Call } from 'voximplant-websdk/Call/Call';
 import CallEndIcon from '@material-ui/icons/CallEnd';
 import { PhoneCalling } from 'icons';
+import { showSnackbar } from 'store/popus/actions';
+import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles((theme) => ({
     label: {
@@ -67,7 +69,8 @@ const LabelGo: React.FC<{
     tooltip?: string;
     regressive?: boolean;
     labelOnNegative?: string;
-}> = ({ label, color, dateGo, isTimer, tooltip, regressive = false, labelOnNegative = "" }) => {
+    callback?: (time: number) => void
+}> = ({ callback, label, color, dateGo, isTimer, tooltip, regressive = false, labelOnNegative = "" }) => {
     const classes = useStyles({ color });
     const isMounted = React.useRef<boolean | null>(null);
     const [time, settime] = useState(isTimer ? getSecondsUntelNow(convertLocalDate(dateGo, !regressive), regressive) : -1);
@@ -76,7 +79,9 @@ const LabelGo: React.FC<{
         isMounted.current = true;
         let timer = !label ? setTimeout(() => {
             if (isMounted.current) {
-                settime(getSecondsUntelNow(convertLocalDate(dateGo, !regressive), regressive));
+                const timeSeconds = getSecondsUntelNow(convertLocalDate(dateGo, !regressive), regressive);
+                callback && callback(timeSeconds)
+                settime(timeSeconds);
             }
         }, 1000) : null;
 
@@ -114,7 +119,9 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
     const dictAutoClose = useSelector(state => state.login.validateToken.user?.properties?.auto_close);
     const statusCall = useSelector(state => state.voximplant?.statusCall);
     const dictAutoCloseHolding = useSelector(state => state.login.validateToken.user?.properties?.auto_close_holding);
+    const waitingcustomermessage = useSelector(state => state.login.validateToken.user?.properties?.waiting_customer_message);
     const callVoxiTmp = useSelector(state => state.voximplant.call);
+
     const [callVoxi, setCallVoxi] = useState<Call | null>(null);
     const dispatch = useDispatch();
 
@@ -153,10 +160,46 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dictAutoClose, dictAutoCloseHolding, countnewmessages, userType, agentSelected?.userid, communicationchannelid, lastreplyuser])
 
+    const validateTime = (time: number) => {
+        if (userType === "AGENT" && (countnewmessages || 0) > 0) {
+            if (multiData.data?.[14]?.data) {
+
+                const pAlerts = multiData.data?.[14]?.data;
+
+                const alert = pAlerts.find(x => x.groupname === item.usergroup && !!x.propertyvalue && x.propertyvalue !== "0");
+                if (alert) {
+                    const minutesAlert = parseInt(alert.propertyvalue)
+
+                    if (!Number.isNaN(minutesAlert)) {
+                        const secondsAlert = minutesAlert * 60;
+                        if (time % secondsAlert === 0) {
+                            console.log(2)
+                            const minuteswaiting = time / 60;
+                            console.log(minuteswaiting)
+                            if (minuteswaiting >= 1) {
+                                const messagetoshow = `Ticket ${ticketnum}: ` + (waitingcustomermessage || "Tu cliente está esperando {{minutos}} minutos por tu respuesta.").replace("{{minutos}}", minuteswaiting + "")
+                                dispatch(showSnackbar({
+                                    show: true,
+                                    severity: "warning",
+                                    message: messagetoshow,
+                                    horizontal: "center",
+                                    action: (
+                                        <Button color="secondary" size="small" onClick={() => setTicketSelected(item)}>
+                                            {t(langKeys.go_ticket)}
+                                        </Button>
+                                    )
+                                }))
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     return (
         <div
-            className={clsx(classes.containerItemTicket, { 
+            className={clsx(classes.containerItemTicket, {
                 [classes.itemSelected]: (ticketSelected?.conversationid === conversationid)
             })}
             onClick={() => setTicketSelected(item)}>
@@ -199,6 +242,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                             tooltip={t(langKeys.waiting_person_time)}
                             dateGo={lastconversationdate || new Date().toISOString()}
                             color="#FB5F5F"
+                            callback={validateTime}
                         />
                     }
                     {dateToClose &&
@@ -211,7 +255,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                             labelOnNegative={t(langKeys.ready_to_close)}
                         />
                     }
-                    <LabelGo 
+                    <LabelGo
                         isTimer={false}
                         color={origin === "OUTBOUND" ? "#ffbf00" : "#0000ff"}
                         label={origin || "INBOUND"}
@@ -237,7 +281,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                         className={localclasses.phoneCallingIcon}
                         style={{ width: "35px", height: "35px", borderRadius: "50%", backgroundColor: '#ffd33a', cursor: "default" }}
                     >
-                        <PhoneCalling className={localclasses.iconcall}/>
+                        <PhoneCalling className={localclasses.iconcall} />
                     </IconButton>
                 </div>
             )}

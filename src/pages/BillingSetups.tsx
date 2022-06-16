@@ -327,12 +327,12 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_edit) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_edit) }))
                 fetchData();
                 dispatch(showBackdrop(false));
             }
             else if (executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(executeResult.code || "error_unexpected_db_error") }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(executeResult.code || "error_unexpected_db_error") }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
@@ -1145,17 +1145,17 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
             if (!executeResult.loading && !executeResult.error) {
                 if (duplicateop) {
                     setduplicateop(false)
-                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_duplicate) }))
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_duplicate) }))
                 } else {
 
-                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 }
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
@@ -1355,13 +1355,13 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
@@ -1705,17 +1705,17 @@ const ConversationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
             if (!executeResult.loading && !executeResult.error) {
                 if (duplicateop) {
                     setduplicateop(false)
-                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_duplicate) }))
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_duplicate) }))
                 } else {
 
-                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 }
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.conversationcost).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
@@ -1885,13 +1885,13 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.conversationcost).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
@@ -2118,17 +2118,17 @@ const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
             if (!executeResult.loading && !executeResult.error) {
                 if (duplicateop) {
                     setduplicateop(false)
-                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_duplicate) }))
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_duplicate) }))
                 } else {
 
-                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 }
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.supportplan).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
@@ -2310,13 +2310,13 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({ data: { row, edit
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.supportplan).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
@@ -2562,17 +2562,17 @@ const MessagingCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
             if (!executeResult.loading && !executeResult.error) {
                 if (duplicateop) {
                     setduplicateop(false)
-                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_duplicate) }))
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_duplicate) }))
                 } else {
 
-                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 }
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.messagingcost).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
@@ -2732,13 +2732,13 @@ const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.messagingcost).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }

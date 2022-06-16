@@ -3106,3 +3106,11 @@ export const getHSMHistoryReport = ({ name, date }: Dictionary): IRequestBody =>
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
+
+export const getPropertiesIncludingName = (propertyname: string): IRequestBody => ({
+    method: "UFN_PROPERTY_SEL_BY_INCLUDE_NAME",
+    key: "UFN_PROPERTY_SEL_BY_INCLUDE_NAME",
+    parameters: {
+        propertyname
+    }
+})

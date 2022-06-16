@@ -99,12 +99,12 @@ const PersonalInformation: React.FC<DetailProps> = ({ setViewSelected }) => {
         if (waitsave) {
             if (!resSetting.loading && !resSetting.error) {
                 setwaitsave(false)
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_update) }));
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_update) }));
                 dispatch(updateUserInformation(getValues('firstname') + "", getValues('lastname') + "", getValues('image') + ""));
                 setViewSelected("view-1")
             } else if (resSetting.error) {
                 const errormessage = t(resSetting.code || "error_unexpected_error")
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setwaitsave(false);
             }
         }
@@ -232,12 +232,12 @@ const ChangePassword: React.FC<DetailProps> = ({ setViewSelected }) => {
         if (waitsave) {
             if (!resSetting.loading && !resSetting.error) {
                 setwaitsave(false)
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_update) }));
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_update) }));
                 dispatch(updateUserInformation(getValues('firstname') + "", getValues('lastname') + "", getValues('image') + ""));
                 setViewSelected("view-1")
             } else if (resSetting.error) {
                 const errormessage = t(resSetting.code || "error_unexpected_error")
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setwaitsave(false);
             }
         }
@@ -402,11 +402,11 @@ const ChangePlan: React.FC<DetailProps> = ({ setViewSelected }) => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
                 setWaitSave(false)
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_change_plan) }));
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_change_plan) }));
                 setViewSelected("view-1")
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error")
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
             }
         }
@@ -535,7 +535,7 @@ const UserSettings: FC = () => {
         if (user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMINISTRADOR") {
             setView('view-4')
         } else {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.notpermisionforaction) }));
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.notpermisionforaction) }));
         }
     }
     
@@ -543,11 +543,11 @@ const UserSettings: FC = () => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
                 setWaitSave(false)
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_cancel_suscription) }));
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_cancel_suscription) }));
                 // setViewSelected("view-1")
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error")
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
             }
         }
@@ -566,7 +566,7 @@ const UserSettings: FC = () => {
                 callback
             }))
         } else {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.notpermisionforaction) }));
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.notpermisionforaction) }));
         }
     }
 

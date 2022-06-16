@@ -450,13 +450,13 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.report_name).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
@@ -466,7 +466,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
     const onSubmit = handleSubmit((data) => {
         const { reporttemplateid, description, status, columns, filters, summary, dataorigin } = data;
         if (columns.length === 0) {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.column_at_least_required) }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.column_at_least_required) }))
             return;
         }
         const callback = () => {

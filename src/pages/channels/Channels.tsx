@@ -49,7 +49,7 @@ export const Channels: FC = () => {
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 fetchData();
 
                 dispatch(showBackdrop(false));
@@ -57,7 +57,7 @@ export const Channels: FC = () => {
                 //dispatch(getCollection(getChannelSel(0)));
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
@@ -181,14 +181,14 @@ export const Channels: FC = () => {
                     setTypeWhatsApp(paymentPlanResult.value.providerWhatsApp);
                     setCanRegister(paymentPlanResult.value.createChannel);
                     if (!paymentPlanResult.value.createChannel) {
-                        dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.channellimit) }))
+                        dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.channellimit) }))
                         dispatch(showBackdrop(false));
                         setWaitCheck(false);
                     }
                 }
             } else if (paymentPlanResult.error) {
                 const errormessage = t(paymentPlanResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitCheck(false);
             }

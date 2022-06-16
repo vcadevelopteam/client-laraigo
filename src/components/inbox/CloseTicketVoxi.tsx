@@ -114,13 +114,13 @@ const CloseTicketVoxi: React.FC = () => {
      useEffect(() => {
          if (waitTipify) {
              if (!tipifyRes.loading && !tipifyRes.error) {
-                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_tipify_ticket) }))
+                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_tipify_ticket) }))
                  dispatch(showBackdrop(false));
                  setWaitTipify(false);
              } else if (tipifyRes.error) {
                  const message = t(tipifyRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
 
-                 dispatch(showSnackbar({ show: true, success: false, message }))
+                 dispatch(showSnackbar({ show: true, severity: "error", message }))
                  dispatch(showBackdrop(false));
                  setWaitTipify(false);
              }
@@ -131,13 +131,13 @@ const CloseTicketVoxi: React.FC = () => {
         if (waitClose) {
             if (!tipifyRes.loading && !tipifyRes.error) {
                 console.log("test1")
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_close_ticket) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_close_ticket) }))
                 setOpenModal(false);
                 dispatch(resetShowModal())
                 dispatch(showBackdrop(false));
                 setWaitClose(false);
             } else if (tipifyRes.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(tipifyRes.code || "error_unexpected_error") }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(tipifyRes.code || "error_unexpected_error") }))
                 dispatch(showBackdrop(false));
                 setWaitClose(false);
             }

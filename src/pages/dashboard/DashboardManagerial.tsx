@@ -1025,7 +1025,7 @@ const DashboardManagerial: FC = () => {
                 setWaitSave(false);
             } else if (remultiaux.error) {
                 const errormessage = t(remultiaux.code || "error_unexpected_error", { module: t(langKeys.quickreplies).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
@@ -1049,7 +1049,7 @@ const DashboardManagerial: FC = () => {
     }
     async function funcsearchoneonly() {
         if(!searchfieldsOnlyOne.closedbybot && !searchfieldsOnlyOne.closedbyasesor){
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.choosebotorasesor) }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.choosebotorasesor) }))
         }
         if(searchfieldsOnlyOne.closedby){
             setOpenDialogPerRequest(false)

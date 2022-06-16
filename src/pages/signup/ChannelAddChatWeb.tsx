@@ -1594,13 +1594,13 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
             dispatch(showSnackbar({
                 message: insertChannel.message!,
                 show: true,
-                success: false,
+                severity: "error"
             }));
         } else if (insertChannel.value) {
             dispatch(showSnackbar({
                 message: "El canal se inserto con éxito",
                 show: true,
-                success: true,
+                severity: "success"
             }));
         }
     }, [insertChannel]);
