@@ -47,6 +47,11 @@ export const getUsersBySupervisor = (): IRequestBody => ({
     key: "UFN_USERBYSUPERVISOR_SEL",
     parameters: {}
 })
+export const getUsersBySupervisorLst = (): IRequestBody => ({
+    method: "UFN_USERBYSUPERVISOR_LST",
+    key: "UFN_USERBYSUPERVISOR_LST",
+    parameters: {}
+})
 
 export const getListQuickReply = (): IRequestBody => ({
     method: "UFN_QUICKREPLY_LIST_SEL",
