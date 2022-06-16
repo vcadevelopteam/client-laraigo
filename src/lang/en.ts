@@ -782,7 +782,7 @@ const translation: LangKeys = {
     none: 'None',
     basic: 'Basic',
     totalpromoters: "Total Promoters",
-    ready_to_close: 'Ready to close',
+    ready_to_close: 'To close',
     totalresolved: "Total Resolved",
     totalnotresolved: "Total Not resolved",
     totalresolvedfirstcontact: "Total Resolved in 1st contact",
