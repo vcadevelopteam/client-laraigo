@@ -179,7 +179,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                     <div className={classes.name}>{displayname || "-"}</div>
                 </div>
                 <div style={{ color: '#465a6ed9', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', minWidth: 180, maxWidth: callVoxi ? 180 : 230 }}>
-                    {(lastmessage.split("&%MAIL%&")[0] || "").trim() || "-"}
+                    {(lastmessage?.split("&%MAIL%&")[0] || "").trim() || "-"}
                 </div>
                 <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                     <LabelGo
