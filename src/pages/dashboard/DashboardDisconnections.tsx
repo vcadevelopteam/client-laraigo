@@ -1,6 +1,6 @@
 import { Box, Button, createStyles, makeStyles, Theme } from "@material-ui/core";
 import { Dictionary } from "@types";
-import { getDisconnectionTimes, getDateCleaned, getUsersBySupervisorLst, getValuesFromDomain, timetoseconds, formattime} from "common/helpers";
+import { getDisconnectionTimes, getDateCleaned, getUserAsesorByOrgID, getValuesFromDomain, timetoseconds, formattime} from "common/helpers";
 import { DateRangePicker, DialogZyx, FieldSelect } from "components";
 import { useSelector } from "hooks";
 import { CalendarIcon } from "icons";
@@ -224,7 +224,7 @@ const DashboardDisconnections: FC = () => {
     }, [mainResult])
     useEffect(() => {
         dispatch(getMultiCollection([
-            getUsersBySupervisorLst(),
+            getUserAsesorByOrgID(),
             getValuesFromDomain("TIPODESCONEXION"),
         ]));
         funcsearch()
