@@ -3102,7 +3102,7 @@ export const getHSMHistoryList = ({ startdate, enddate }: Dictionary): IRequestB
     }
 })
 
-export const getHSMHistoryReport = ({ campaign, date }: Dictionary): IRequestBody => ({
+export const getHSMHistoryReport = ({ campaign = "", date }: Dictionary): IRequestBody => ({
     method: "UFN_HSMHISTORY_REPORT",
     key: "UFN_HSMHISTORY_REPORT",
     parameters: {
