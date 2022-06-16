@@ -7,10 +7,10 @@ import RGL, { WidthProvider } from 'react-grid-layout';
 import { Trans, useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { Close as CloseIcon, Clear as ClearIcon, Add as AddIcon, Save as SaveIcon } from "@material-ui/icons";
-import { FieldErrors, useForm, UseFormGetValues, UseFormRegister, UseFormSetValue, UseFormUnregister } from "react-hook-form";
+import { FieldErrors, useFieldArray, useForm, UseFormGetValues, UseFormRegister, UseFormSetValue, UseFormUnregister } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { getMultiCollection, resetMain, resetMultiMain } from "store/main/actions";
-import { getDashboardTemplateIns, getDashboardTemplateSel, getKpiSel, getReportTemplateSel } from "common/helpers";
+import { getDashboardTemplateIns, getDashboardTemplateSel, getKpiSel, getReportTemplateSel, getTagsChatflow } from "common/helpers";
 import { useSelector } from "hooks";
 import { contentTypes, graphTypes, groupingType } from "./constants";
 import { showSnackbar } from "store/popus/actions";
@@ -103,6 +103,7 @@ interface Item {
     graph: string;
     column: string;
     summarizationfunction?: string;
+    tags?: any[];
 }
 
 interface Items {
@@ -143,6 +144,7 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
         dispatch(getMultiCollection([
             getReportTemplateSel(),
             getKpiSel(),
+            getTagsChatflow(),
         ]));
 
         return () => {
@@ -208,15 +210,11 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
     }, [dashboardtemplate, edit, t, dispatch]);
 
 
-    const {
-        register,
-        unregister,
-        formState: { errors },
-        getValues,
-        setValue,
-        handleSubmit,
-        reset,
-    } = useForm<Items>();
+    const {control,register,unregister,formState: { errors }, getValues, setValue, handleSubmit,reset,} = useForm<Items>({
+        defaultValues: {
+            
+        }
+    });
 
     const addItemOnClick = () => {
         const newKey = Date.now().toString();
@@ -357,6 +355,7 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     layoutKey={e.i}
                                     templates={reportTemplatesAndKpis.data[0].data as ReportTemplate[]}
                                     kpis={reportTemplatesAndKpis.data[1].data as KpiTemplate[]}
+                                    tags={reportTemplatesAndKpis.data[2].data as any[]}
                                     loading={reportTemplatesAndKpis.loading}
                                     register={register}
                                     unregister={unregister}
@@ -484,6 +483,7 @@ interface LayoutItemProps {
     layoutKey: string;
     templates: ReportTemplate[];
     kpis: KpiTemplate[];
+    tags: any[];
     loading?: boolean;
     errors: FieldErrors<Items>;
     getValues: UseFormGetValues<Items>;
@@ -519,6 +519,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
     loading = false,
     templates = [],
     kpis = [],
+    tags =[],
     errors,
     getValues,
     setValue,
@@ -530,6 +531,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
     const { t } = useTranslation();
     const [selectedIndex, setSelectedIndex] = useState(-1);
     const [contentType, setContentType] = useState('');
+    const [tagsdata, settagsdata] = useState<any>(getValues(`${key}.tags`)||[]);
     // const [graphicType, setgraphicType] = useState(getValues(`${key}.graph`));
     const [columns, setColumns] = useState<ColumnTemplate[]>([]);
 
@@ -581,6 +583,15 @@ export const LayoutItem: FC<LayoutItemProps> = ({
 
             register(`${key}.kpiid`, { validate: mandatoryNumField, value: getValues(`${key}.kpiid`) || 0 });
         }
+        else if (contentType === "funnel") {
+            unregister(`${key}.kpiid`);
+            unregister(`${key}.grouping`);
+            unregister(`${key}.graph`);
+            
+            register(`${key}.reporttemplateid`, { validate: mandatoryReportTemplate, value: getValues(`${key}.reporttemplateid`) || 0 });
+            register(`${key}.column`, { validate: mandatoryColumn, value: getValues(`${key}.column`) || '' });
+            register(`${key}.tags`);
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [contentType, columns, templates]);
 
@@ -603,7 +614,6 @@ export const LayoutItem: FC<LayoutItemProps> = ({
             type: x.type,
             function: x.function
         }})
-        console.log(summary)
         setColumns(summary.concat(columnas));
         // console.log(summary.concat(columnas))
         // console.log(getValues(`${key}.column`))
@@ -633,7 +643,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
     const mandatoryContentType = (value: string) => {
         if (!value || value.length === 0) {
             return t(langKeys.field_required);
-        } else if (value === "report" || value === "kpi") {
+        } else if (value === "report" || value === "kpi" || value === "funnel") {
             return undefined;
         }
 
@@ -778,6 +788,100 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                         error={errors[key]?.column?.message}
                         disabled={loading || columns.length === 0}
                     />
+                </>
+            )}
+            {contentType === "funnel" && (
+                <>
+                    <FieldSelect
+                        className={classes.field}
+                        label={t(langKeys.report)}
+                        data={templates}
+                        optionDesc="description"
+                        optionValue="reporttemplateid"
+                        valueDefault={getValues(`${key}.reporttemplateid`)}
+                        onChange={(v: ReportTemplate) => {
+                            const reporttemplateid = v?.reporttemplateid || 0;
+                            setValue(`${key}.reporttemplateid`, reporttemplateid);
+                            if (reporttemplateid === 0) {
+                                setValue(`${key}.column`, '');
+                            }
+                            setSelectedIndex(!v ? -1 : templates.findIndex(e => e === v));
+                        }}
+                        error={errors[key]?.reporttemplateid?.message}
+                        disabled={loading}
+                    />
+                    <FieldSelect
+                        className={classes.field}
+                        label={t(langKeys.column)}
+                        data={columns.filter(e=>e.columnname.includes("tag"))}
+                        optionDesc="alias"
+                        optionValue="columnname"
+                        valueDefault={`${getValues(`${key}.column`)}${getValues(`${key}.summarizationfunction`)|| ''}`}
+                        onChange={(v: ColumnTemplate) => {
+                            if(v?.function){
+                                setValue(`${key}.column`, v?.columnname?.slice(0,-(v?.function?.length||0)));
+                            }
+                            else{
+                                setValue(`${key}.column`, v?.columnname||'');
+                            }
+                            setValue(`${key}.summarizationfunction`, v?.function || '');
+                        }}
+                        error={errors[key]?.column?.message}
+                        disabled={loading || columns.length === 0}
+                    />
+                    
+                    <>
+                        {tagsdata.map((tag:any, i:number) => {
+                            return <div key={`tagdatalevel${i+1}`}>
+                                <p style={{fontSize: 14, fontWeight: 500}}>{t(langKeys.level)} {i+1}</p>
+                                <div    style={{paddingLeft: 40}}>
+                                    <FieldSelect
+                                        fregister={{
+                                            ...register(`${key}.tags[${i}].value`, {
+                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                            })
+                                        }}
+                                        className={classes.field}
+                                        label={t(langKeys.value)}
+                                        data={tags}
+                                        optionDesc="tag"
+                                        optionValue="tag"
+                                        valueDefault={getValues(`${key}.tags[${i}].value`)}
+                                        onChange={(v: any) => {
+                                            let initTags=getValues(`${key}.tags`)||[];
+                                            initTags[i].value = v?.tag || "";
+                                            setValue(`${key}.tags`,initTags)
+                                        }}
+                                        error={errors[key]?.tags?.[i]?.value.message}
+                                    />
+                                    <FieldEdit
+                                        fregister={{
+                                            ...register(`${key}.tags[${i}].title`, {
+                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                            })
+                                        }}
+                                        label={`${t(langKeys.title)} ${t(langKeys.level)} ${i+1}`}
+                                        valueDefault={getValues(`${key}.tags[${i}].title`)}
+                                        className={classes.field}
+                                        onChange={(value: any) => {
+                                            let initTags=getValues(`${key}.tags`)||[];
+                                            initTags[i].title = value || "";
+                                            setValue(`${key}.tags`,initTags)
+                                        }}
+                                        error={errors[key]?.tags?.[i]?.title.message}
+                                    />
+                                </div>
+                            </div>
+                        })}
+                    </>
+                    <>{tagsdata.length <5 &&
+                        <Button style={{float:"right"}} onClick={()=>{
+                            let initTags=getValues(`${key}.tags`)||[];
+                            settagsdata([...initTags,{value:"",title:""}])
+                            setValue(`${key}.tags`,[...initTags,{value:"",title:""}])
+                        }}><AddIcon/> {t(langKeys.add)} {t(langKeys.level)}</Button>
+                    }                    
+                    </>
                 </>
             )}
         </div>
