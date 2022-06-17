@@ -504,13 +504,27 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             </div>
         );
     } else if (interactiontype === "post-text") {
-        return (
-            <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
-                [classes.interactionTextAgent]: userType !== 'client',
-            })} style={{ marginLeft: 'auto', marginRight: 'auto' }}>
-                {interactiontext}
-            </div>
-        );
+
+        const ishtml = interactiontext.includes("###HTML###");
+        const text = ishtml ? interactiontext.split("###HTML###")[1] : interactiontext;
+
+        if (ishtml) {
+            return (
+                <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
+                    [classes.interactionTextAgent]: userType !== 'client',
+                })} style={{ marginLeft: 'auto', marginRight: 'auto' }} dangerouslySetInnerHTML={{ __html: text }}>
+
+                </div>
+            );
+        } else {
+            return (
+                <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
+                    [classes.interactionTextAgent]: userType !== 'client',
+                })} style={{ marginLeft: 'auto', marginRight: 'auto' }}>
+                    {text}
+                </div>
+            );
+        }
     }
     return (
         <div className={clsx(classes.interactionText, {
