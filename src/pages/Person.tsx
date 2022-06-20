@@ -8,6 +8,7 @@ import { Dictionary, IObjectState, IPerson, IPersonChannel, IPersonCommunication
 import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, TextField, MenuItem, Paper, InputBase } from '@material-ui/core';
 import clsx from 'clsx';
 import { BuildingIcon, DocNumberIcon, DocTypeIcon, EMailInboxIcon, GenderIcon, TelephoneIcon, WhatsappIcon, SearchIcon } from 'icons';
+import PhoneIcon from '@material-ui/icons/Phone';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -34,6 +35,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Menu from '@material-ui/core/Menu';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import { getLeadPhases, resetGetLeadPhases } from 'store/lead/actions';
+import { setModalCall, setPhoneNumber } from 'store/voximplant/actions';
 const urgencyLevels = [null, 'LOW', 'MEDIUM', 'HIGH']
 
 // interface SelectFieldProps {
@@ -1988,6 +1990,10 @@ const nameschannel: { [x: string]: string } = {
 const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
     const { t } = useTranslation();
     const classes = useChannelItemStyles();
+    const dispatch = useDispatch();
+    const voxiConnection = useSelector(state => state.voximplant.connection);
+    const statusCall = useSelector(state => state.voximplant.statusCall);
+    const userConnected = useSelector(state => state.inbox.userConnected);
     const personIdentifier = useMemo(() => {
         if (!channel) return '';
 
@@ -1996,8 +2002,23 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
     }, [channel]);
 
     return (
-        <div className={classes.root}>
+        <div className={classes.root} style={{display:"flex"}}>
             <Grid container direction="row">
+                <Grid item xs={11} sm={11} md={6} lg={6} xl={6}>
+                    <Property
+                        title={<Trans i18nKey={langKeys.communicationchannel} />}
+                        subtitle={(
+                            <div className={classes.subtitle}>
+                                <span>{
+                                    nameschannel[channel.type].includes("T_")
+                                    ? t((langKeys as any)[nameschannel[channel.type]])
+                                    : nameschannel[channel.type]}</span>
+                                <GetIcon channelType={channel.type} color='black' />
+                            </div>
+                        )}
+                        m={1}
+                    />
+                </Grid>
                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                     <Property
                         title={<Trans i18nKey={langKeys.communicationchannel} />}
@@ -2056,6 +2077,13 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
                     />
                 </Grid>
             </Grid>
+            {(!voxiConnection.error && !voxiConnection.loading && statusCall!=="CONNECTED" && userConnected && statusCall!=="CONNECTING" && channel.type.includes("WHAT")) &&
+            <IconButton
+                onClick={() => {dispatch(setPhoneNumber(channel.personcommunicationchannelowner));dispatch(setModalCall(true))}}
+            >
+                <PhoneIcon style={{ width: "20px", height: "20px" }} />
+            </IconButton>
+            }
         </div>
     );
 }
