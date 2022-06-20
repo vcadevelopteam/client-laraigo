@@ -22,6 +22,7 @@ export const holdCall = (payload?: Dictionary): IActionCall => ({ type: actionTy
 export const makeCall = (payload: { number: string, site: string, data: ITicket }): IActionCall => ({ type: actionTypes.MAKE_CALL, payload });
 
 export const setModalCall = (payload?: Boolean): IActionCall => ({ type: actionTypes.SET_MODAL_CALL, payload });
+export const setPhoneNumber = (payload?: string): IActionCall => ({ type: actionTypes.SET_PHONE_NUMBER, payload });
 
 export const manageStatusVox = (payload: boolean): IActionCall => ({ type: actionTypes.MANAGE_STATUS_VOX, payload });
 
