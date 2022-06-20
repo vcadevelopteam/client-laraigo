@@ -12,7 +12,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { manageConfirmation, showSnackbar } from "store/popus/actions";
 import { getDashboardTemplateIns, getDashboardTemplateSel, getReportTemplateSel } from "common/helpers";
 import RGL, { WidthProvider } from 'react-grid-layout';
-import { XAxis, YAxis, ResponsiveContainer, Tooltip as ChartTooltip, BarChart, Legend, Bar, PieChart, Pie, Cell, ResponsiveContainerProps, LineChart, Line, CartesianGrid, LabelList } from 'recharts';
+import { XAxis, YAxis, ResponsiveContainer, Tooltip as ChartTooltip, BarChart, Legend, Bar, PieChart, Pie, Cell, ResponsiveContainerProps, LineChart, Line, CartesianGrid, LabelList, FunnelChart, Funnel } from 'recharts';
 import { LayoutItem as NewLayoutItem, ReportTemplate } from './DashboardAdd';
 import { useForm } from "react-hook-form";
 import { getCollection, getCollectionDynamic, resetMain, resetMainDynamic } from "store/main/actions";
@@ -24,6 +24,9 @@ import clsx from 'clsx';
 import { RenderCustomizedLabel } from "components/fields/Graphic";
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import FileSaver from 'file-saver';
+import * as XLSX from 'xlsx';
 
 const ReactGridLayout = WidthProvider(RGL);
 
@@ -69,6 +72,20 @@ const useDashboardLayoutStyles = makeStyles(theme => ({
         backgroundColor: 'white',
         padding: theme.spacing(1),
         gap: theme.spacing(1),
+    },
+    styleicon:{
+        width: "22px",
+        height: "22px",
+        '&:hover': {
+            cursor: 'pointer',
+        }
+    },
+    downloadiconcontainer:{
+        width:"100%",display: "flex",justifyContent: "end"
+    },
+    label: {
+        fontWeight: 'bold',
+        fontSize: 16,
     },
 }));
 
@@ -404,7 +421,7 @@ const DashboardLayout: FC = () => {
                                 alldata={dashboard.value?.[e.i]}
                                 columns={dashboard.value?.[e.i]?.columns}
                                 dataorigin={dashboard.value?.[e.i]?.dataorigin}
-                                type={dashboard.value?.[e.i]?.contentType === 'report' ? layout.detail[e.i]!.graph : 'kpi'}
+                                type={dashboard.value?.[e.i]?.contentType === 'report' ? layout.detail[e.i]!.graph : (dashboard.value?.[e.i]?.contentType === 'funnel'?"funnel":'kpi')}
                                 groupment={layout.detail[e.i]?.grouping}
                                 detail={layout.detail}
                                 onDetailChange={(d, t) => onDetailChange(d, t, e.i)}
@@ -419,6 +436,7 @@ const DashboardLayout: FC = () => {
                                 edit={false}
                                 templates={reportTemplates.data as ReportTemplate[]}
                                 kpis={[]}
+                                tags={[]}
                                 loading={reportTemplates.loading}
                                 register={register}
                                 unregister={unregister}
@@ -545,8 +563,11 @@ const LayoutItem: FC<LayoutItemProps> = ({
 }) => {    
     const classes = useLayoutItemStyles();
     const { t } = useTranslation();
-    const dataGraph = useMemo<ChartData[] | KpiData>(() => {
+    const dataGraph = useMemo<any>(() => {
         if (error === true || !data) return [];
+        if(type==="funnel"){
+            return data;
+        }
         if (type !== 'kpi') {
             return Object.keys(data as ItemsData).map(e => ({
                 label: e,
@@ -556,6 +577,8 @@ const LayoutItem: FC<LayoutItemProps> = ({
             return data as KpiData;
         }
     }, [data, type, error]);
+    console.log("TIPO:",type)
+    console.log("data:",dataGraph)
     // const [graph, setGraph] = useState(type);
     const [openTableModal, setOpenTableModal] = useState(false);
 
@@ -622,6 +645,10 @@ const LayoutItem: FC<LayoutItemProps> = ({
                     />
                 );
             case 'kpi': return <LayoutKpi data={dataGraph as KpiData} />;
+            case 'funnel': return <LayoutFunnel
+                data={dataGraph}
+                title={title}
+            />
             default: return null;
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -657,6 +684,8 @@ const LayoutItem: FC<LayoutItemProps> = ({
 
     return (
         <div className={classes.root}>
+            {type !== 'funnel' &&
+            
             <div className={classes.header}>
                 <span className={classes.label}>{title}</span>
                 <div style={{ flexGrow: 1 }} />
@@ -701,11 +730,11 @@ const LayoutItem: FC<LayoutItemProps> = ({
                         </Menu>
                     </>
                 )}
-            </div>
+            </div>}
             <div className={classes.reponsiveContainer}>
                 {renderGraph()}
             </div>
-            {type !== 'kpi' && (
+            {(type !== 'kpi' && type!=="funnel") && (
                 <TableModal
                     title={title}
                     open={openTableModal}
@@ -1092,6 +1121,77 @@ interface LayoutPieProps extends Omit<ResponsiveContainerProps, 'children'> {
 
 const PIE_COLORS = ['#22b66e', '#b41a1a', '#ffcd56', '#D32F2F', '#FBC02D', '#757575', '#00BCD4', '#AFB42B', '#8BC34A', '#5D4037', '#607D8B', '#03A9F4', '#303F9F', '#009688', '#388E3C', '#E64A19', '#212121'];
 
+interface LayoutFunnelProps {
+    data: any;
+    title:string;
+}
+
+const LayoutFunnel: FC<LayoutFunnelProps> = ({ data,title,...props }) => {
+    let dataFunnel = data.map((e:any,i:number)=> ({name:e.title,value:e.quantity, fill:PIE_COLORS[i]}))
+    let total = dataFunnel[0].value
+    const classes = useDashboardLayoutStyles();
+    function exportexcel(){
+        const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+        const fileExtension = '.xlsx';
+        let dataexport = dataFunnel.map((e:any,i:number)=> ({Nombre:e.name,Cantidad:e.value,"% Representativo":((e.value/total)*100).toFixed(0)}))
+        const ws = XLSX.utils.json_to_sheet(dataexport);
+        const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        const data = new Blob([excelBuffer], { type: fileType });
+        FileSaver.saveAs(data, title + fileExtension);
+    }
+    return (
+        <>
+        <div className={classes.header}>
+            <span className={classes.label}>{title}</span>
+            <div style={{ flexGrow: 1 }} />
+            
+            {total!==0 && <CloudDownloadIcon onClick={exportexcel} className={classes.styleicon}/>}
+        </div>
+        <ResponsiveContainer {...props}>
+            <FunnelChart margin={{ top: 10, right: 20, bottom: 5, left: 10 }}>
+                <ChartTooltip />
+                <Funnel
+                    isAnimationActive={false}
+                    dataKey="value"
+                    data={dataFunnel}
+                >
+                    <LabelList position="right" fill="#000" stroke="none" dataKey="name" 
+                        content={(props2:any)=>{
+                            const { y, height } = props2;
+                            const { x, width } = props2.parentViewBox;
+                            if(Number(dataFunnel[props2.index].value) !==0){
+                                return <g>
+                                    <text x={x+width-50} y={y+height/2}>
+                                        {dataFunnel[props2.index].value} - {((Number(dataFunnel[props2.index].value)/total)*100).toFixed(1)}%
+                                    </text>
+                                </g>
+                            }else{
+                                return <g></g>
+                            }
+                        }}
+                    />
+                    <LabelList position="right" fill="#000" stroke="none" dataKey="name" 
+                        content={(props2:any)=>{
+                            const { value, y, height } = props2;
+                            const { x, width } = props2.parentViewBox;
+                            if(Number(dataFunnel[props2.index].value) !==0){
+                                return <g>
+                                    <text x={x+width/2} y={y+height/2} textAnchor="middle" dominantBaseline="middle">
+                                        {value}
+                                    </text>
+                                </g>
+                            }else{
+                                return <g></g>
+                            }
+                        }}
+                    />
+                </Funnel>
+            </FunnelChart>
+        </ResponsiveContainer>
+        </>
+    );
+}
 const LayoutPie: FC<LayoutPieProps> = ({ data,alldata, tooltipFormatter,tickFormatter, ...props }) => {
     let total=alldata?.total;
     return (
@@ -1142,7 +1242,6 @@ const LayoutPie: FC<LayoutPieProps> = ({ data,alldata, tooltipFormatter,tickForm
         </ResponsiveContainer>
     );
 }
-
 interface LayoutKpiProps {
     data: KpiData;
 }
