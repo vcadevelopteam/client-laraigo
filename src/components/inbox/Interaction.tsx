@@ -264,8 +264,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                     [classes.interactionTextAgent]: userType !== 'client',
                 })}
             >
-                <span dangerouslySetInnerHTML={{ __html: validateIsUrl(showfulltext ? interactiontext : interactiontext.substring(0, 450) + "... ") }}>
-                </span>
+                <span dangerouslySetInnerHTML={{ __html: validateIsUrl(showfulltext ? interactiontext : interactiontext.substring(0, 450) + "... ") }}></span>
                 {!showfulltext && (
                     <div style={{ color: "#53bdeb", display: "contents", cursor: "pointer" }} onClick={() => setshowfulltext(true)}>{t(langKeys.showmore)}</div>
                 )
