@@ -298,18 +298,18 @@ const CostPerPeriod: React.FC<{ dataCorp: any, dataOrg: any, dataPaymentPlan: an
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
                 if (waitCalculate) {
-                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_calculate) }))
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_calculate) }))
                     setWaitCalculate(false);
                 }
                 else {
-                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 }
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitCalculate(false);
                 setWaitSave(false);
@@ -632,13 +632,13 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
@@ -1555,13 +1555,13 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
     useEffect(() => {
         if (waitCalculate) {
             if (!executeCalculate.loading && !executeCalculate.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_calculate) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_calculate) }))
                 dispatch(showBackdrop(false));
                 setWaitCalculate(false);
                 search();
             } else if (executeCalculate.error) {
                 const message = t(executeCalculate.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message }))
+                dispatch(showSnackbar({ show: true, severity: "error", message }))
                 dispatch(showBackdrop(false));
                 setWaitCalculate(false);
             }
@@ -1614,7 +1614,7 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                 window.open(resExportData.url, '_blank');
             } else if (resExportData.error) {
                 const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.person).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitExport(false);
             }
@@ -2291,13 +2291,13 @@ const Payments: React.FC<{ dataCorp: any, dataOrg: any, setCustomSearch(value: R
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.invoicesuccessfullyvoided) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.invoicesuccessfullyvoided) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
@@ -2307,13 +2307,13 @@ const Payments: React.FC<{ dataCorp: any, dataOrg: any, setCustomSearch(value: R
     useEffect(() => {
         if (waitRefresh) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.success) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitRefresh(false);
                 dispatch(showBackdrop(false));
             }
@@ -2716,14 +2716,14 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
     useEffect(() => {
         if (waitPay) {
             if (!culqiSelector.loading && culqiSelector.data) {
-                dispatch(showSnackbar({ show: true, success: true, message: '' + t(culqiSelector.message || langKeys.success) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: '' + t(culqiSelector.message || langKeys.success) }))
                 dispatch(showBackdrop(false));
                 dispatch(resetCharge());
                 handleCulqiSuccess && handleCulqiSuccess();
                 setWaitPay(false);
             }
             else if (culqiSelector.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: '' + t(culqiSelector.message || langKeys.error_cos_unexpected) }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: '' + t(culqiSelector.message || langKeys.error_cos_unexpected) }))
                 dispatch(showBackdrop(false));
                 dispatch(resetCharge());
                 setWaitPay(false);
@@ -3074,13 +3074,13 @@ const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg 
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.deleteinvoicesuccess) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.deleteinvoicesuccess) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
@@ -3255,14 +3255,14 @@ const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg 
     useEffect(() => {
         if (waitSaveImport) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(insertexcel ? langKeys.successful_import : langKeys.successful_delete) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(insertexcel ? langKeys.successful_import : langKeys.successful_delete) }))
                 setinsertexcel(false)
                 fetchData();
                 dispatch(showBackdrop(false));
                 setwaitSaveImport(false);
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setwaitSaveImport(false);
             }
@@ -3755,14 +3755,14 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
         if (waitSave) {
             if (data?.invoicestatus === 'ERROR' || ((data?.invoicestatus !== 'INVOICED' && data?.invoicestatus !== 'ERROR') && data?.hasreport)) {
                 if (!emitResult.loading && !emitResult.error) {
-                    dispatch(showSnackbar({ show: true, success: true, message: t(emitResult.code || "success") }))
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(emitResult.code || "success") }))
                     dispatch(showBackdrop(false));
                     fetchData();
                     setViewSelected('view-1');
                     setWaitSave(false);
                 }
                 else if (emitResult.error) {
-                    dispatch(showSnackbar({ show: true, success: false, message: t(emitResult.code || "error_unexpected_db_error") }))
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(emitResult.code || "error_unexpected_db_error") }))
                     dispatch(showBackdrop(false));
                     fetchData();
                     setViewSelected('view-1');
@@ -3771,14 +3771,14 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
             }
             else {
                 if (!culqiResult.loading && !culqiResult.error) {
-                    dispatch(showSnackbar({ show: true, success: true, message: t(culqiResult.code || "success") }))
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(culqiResult.code || "success") }))
                     dispatch(showBackdrop(false));
                     fetchData();
                     setViewSelected('view-1');
                     setWaitSave(false);
                 }
                 else if (culqiResult.error) {
-                    dispatch(showSnackbar({ show: true, success: false, message: t(culqiResult.code || "error_unexpected_db_error") }))
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(culqiResult.code || "error_unexpected_db_error") }))
                     dispatch(showBackdrop(false));
                     fetchData();
                     setViewSelected('view-1');
@@ -4278,13 +4278,13 @@ const RegularizeModal: FC<{ data: any, openModal: boolean, setOpenModal: (param:
     useEffect(() => {
         if (waitSave) {
             if (!culqiResult.loading && !culqiResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(culqiResult.code || "success") }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(culqiResult.code || "success") }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
                 onTrigger();
             }
             else if (culqiResult.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(culqiResult.code || "error_unexpected_db_error") }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(culqiResult.code || "error_unexpected_db_error") }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
@@ -4887,14 +4887,14 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
     useEffect(() => {
         if (waitSave) {
             if (!culqiResult.loading && !culqiResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(culqiResult.code || "success") }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(culqiResult.code || "success") }))
                 dispatch(showBackdrop(false));
                 fetchData();
                 setViewSelected('view-1');
                 setWaitSave(false);
             }
             else if (culqiResult.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(culqiResult.code || "error_unexpected_db_error") }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(culqiResult.code || "error_unexpected_db_error") }))
                 dispatch(showBackdrop(false));
                 fetchData();
                 setViewSelected('view-1');
@@ -5739,14 +5739,14 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
     useEffect(() => {
         if (waitPay) {
             if (!culqiSelector.loading && culqiSelector.data) {
-                dispatch(showSnackbar({ show: true, success: true, message: '' + t(culqiSelector.message || langKeys.success) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: '' + t(culqiSelector.message || langKeys.success) }))
                 dispatch(showBackdrop(false));
                 dispatch(resetBalance());
                 handleCulqiSuccess && handleCulqiSuccess();
                 setWaitPay(false);
             }
             else if (culqiSelector.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: '' + t(culqiSelector.message || langKeys.error_cos_unexpected) }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: '' + t(culqiSelector.message || langKeys.error_cos_unexpected) }))
                 dispatch(showBackdrop(false));
                 dispatch(resetBalance());
                 setWaitPay(false);
@@ -6482,7 +6482,7 @@ const PaymentMethods: React.FC<{}> = () => {
 
     const handleDelete = (row: Dictionary) => {
         if (row.favorite) {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.paymentmethod_preferreddelete) }));
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.paymentmethod_preferreddelete) }));
         }
         else {
             const callback = () => {
@@ -6528,12 +6528,12 @@ const PaymentMethods: React.FC<{}> = () => {
     useEffect(() => {
         if (waitDelete) {
             if (!deleteRequest.loading && !deleteRequest.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 fetchData && fetchData();
                 setWaitDelete(false);
                 dispatch(showBackdrop(false));
             } else if (deleteRequest.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t((deleteRequest.msg || deleteRequest.code) || "error_unexpected_error") }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t((deleteRequest.msg || deleteRequest.code) || "error_unexpected_error") }))
                 setWaitDelete(false);
                 dispatch(showBackdrop(false));
             }
@@ -6543,13 +6543,13 @@ const PaymentMethods: React.FC<{}> = () => {
     useEffect(() => {
         if (waitSave) {
             if (!executeRequest.loading && !executeRequest.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.markpreferred_success) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.markpreferred_success) }))
                 fetchData && fetchData();
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             } else if (executeRequest.error) {
                 const errormessage = t(executeRequest.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
@@ -6727,13 +6727,13 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
     useEffect(() => {
         if (waitSave) {
             if (!createRequest.loading && !createRequest.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
                 fetchData && fetchData();
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1");
             } else if (createRequest.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t((createRequest.msg || createRequest.code) || "error_unexpected_error") }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t((createRequest.msg || createRequest.code) || "error_unexpected_error") }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }

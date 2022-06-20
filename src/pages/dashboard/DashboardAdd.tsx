@@ -161,7 +161,7 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
             const error = t(reportTemplatesAndKpis.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 message: error,
-                success: false,
+                severity: "error",
                 show: true,
             }));
         }
@@ -173,13 +173,13 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
             const error = t(dashboardSave.code || "error_unexpected_error", { module: t(langKeys.dashboard).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 message: error,
-                success: false,
+                severity: "error",
                 show: true,
             }));
         } else if (dashboardSave.success === true) {
             dispatch(showSnackbar({
                 message: "Se guardó el dashboard",
-                success: true,
+                severity: "success",
                 show: true,
             }));
             history.push(paths.DASHBOARD);
@@ -192,7 +192,7 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
             const error = t(dashboardtemplate.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 message: error,
-                success: false,
+                severity: "error",
                 show: true,
             }));
         } else if (dashboardtemplate.value) {
@@ -249,7 +249,7 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
         if (layout.length <= 1) {
             dispatch(showSnackbar({
                 message: t(langKeys.empty_dashboard_form_error),
-                success: false,
+                severity: "error",
                 show: true,
             }));
         } else {

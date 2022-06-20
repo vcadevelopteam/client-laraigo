@@ -27,6 +27,8 @@ interface Properties {
     auto_close: Dictionary;
     auto_close_holding: Dictionary;
     time_reassign_call: number | undefined;
+    waiting_customer_message: string | undefined;
+
 }
 
 interface Domains {

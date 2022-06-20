@@ -3652,7 +3652,8 @@ const translation: LangKeys = {
     periodreportvoip: 'VoIP Calls',
     periodreportrecording: 'Call Recording',
     periodreportother: 'Others',
-    T_VOICECHANNEL: 'VOICE CHANNEL'
+    T_VOICECHANNEL: 'VOICE CHANNEL',
+    go_ticket: 'Go to ticket',
 };
 
 const enResource: ResourceLanguage = {

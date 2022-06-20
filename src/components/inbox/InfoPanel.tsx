@@ -561,7 +561,7 @@ const Classifications: React.FC = () => {
 
     useEffect(() => {
         if (waitSave) {
-            dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+            dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
             dispatch(showBackdrop(false));
             setWaitSave(false);
         }

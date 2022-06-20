@@ -3645,7 +3645,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     periodreportvoip: 'Llamadas VoIP',
     periodreportrecording: 'Grabación de Llamadas',
     periodreportother: 'Otros',
-    T_VOICECHANNEL: 'CANAL DE VOZ'
+    T_VOICECHANNEL: 'CANAL DE VOZ',
+    go_ticket: 'Ir al ticket',
 };
 
 const esResource: ResourceLanguage = {

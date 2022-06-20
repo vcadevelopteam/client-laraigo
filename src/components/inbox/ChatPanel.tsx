@@ -75,7 +75,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
     useEffect(() => {
         if (waitClose) {
             if (!sendingRes.loading && !sendingRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_send_hsm) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_send_hsm) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
 
@@ -98,7 +98,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
                 setWaitClose(false);
             } else if (sendingRes.error) {
 
-                dispatch(showSnackbar({ show: true, success: false, message: t(sendingRes.code || "error_unexpected_error") }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(sendingRes.code || "error_unexpected_error") }))
                 dispatch(showBackdrop(false));
                 setWaitClose(false);
             }
@@ -294,7 +294,7 @@ const DialogCloseticket: React.FC<{
     useEffect(() => {
         if (waitClose) {
             if (!closingRes.loading && !closingRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_close_ticket) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_close_ticket) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 dispatch(emitEvent({
@@ -310,7 +310,7 @@ const DialogCloseticket: React.FC<{
                 }));
                 setWaitClose(false);
             } else if (closingRes.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(closingRes.code || "error_unexpected_error") }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(closingRes.code || "error_unexpected_error") }))
                 dispatch(showBackdrop(false));
                 setWaitClose(false);
             }
@@ -321,7 +321,7 @@ const DialogCloseticket: React.FC<{
         if (waitOther) {
             if (!changeStatusRes.loading && !changeStatusRes.error) {
 
-                dispatch(showSnackbar({ show: true, success: true, message: status === "SUSPENDIDO" ? t(langKeys.successful_suspend_ticket) : t(langKeys.successful_reactivate_ticket) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: status === "SUSPENDIDO" ? t(langKeys.successful_suspend_ticket) : t(langKeys.successful_reactivate_ticket) }))
                 // dispatch(changeStatusTicket(ticketSelected?.conversationid!!, status));
 
                 dispatch(emitEvent({
@@ -339,7 +339,7 @@ const DialogCloseticket: React.FC<{
                 setWaitOther(false);
             } else if (changeStatusRes.error) {
                 const message = t(changeStatusRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message }))
+                dispatch(showSnackbar({ show: true, severity: "error", message }))
                 dispatch(showBackdrop(false));
                 setWaitOther(false);
             }
@@ -443,7 +443,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     useEffect(() => {
         if (waitReassign) {
             if (!reassigningRes.loading && !reassigningRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_reasign_ticket) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_reasign_ticket) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitReassign(false);
@@ -463,7 +463,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                 }));
 
             } else if (reassigningRes.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_unexpected_error) }))
                 dispatch(showBackdrop(false));
                 setWaitReassign(false);
             }
@@ -485,7 +485,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
 
     const onSubmit = handleSubmit((data) => {
         if (data.newUserId === 0 && !data.newUserGroup) {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.least_user_or_group) }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.least_user_or_group) }))
             return;
         }
         const dd: IReassignicketParams = {
@@ -583,14 +583,14 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
     useEffect(() => {
         if (waitInsLead) {
             if (!insLeadRes.loading && !insLeadRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitInsLead(false);
                 dispatch(updatePerson({ ...personSelected!!, havelead: true }));
             } else if (insLeadRes.error) {
                 const message = t(insLeadRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message }))
+                dispatch(showSnackbar({ show: true, severity: "error", message }))
                 dispatch(showBackdrop(false));
                 setWaitInsLead(false);
             }
@@ -765,14 +765,14 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
     useEffect(() => {
         if (waitTipify) {
             if (!tipifyRes.loading && !tipifyRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_tipify_ticket) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_tipify_ticket) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitTipify(false);
             } else if (tipifyRes.error) {
                 const message = t(tipifyRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
 
-                dispatch(showSnackbar({ show: true, success: false, message }))
+                dispatch(showSnackbar({ show: true, severity: "error", message }))
                 dispatch(showBackdrop(false));
                 setWaitTipify(false);
             }
@@ -934,7 +934,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                 }
                 else {
                     setCheckTipification(false);
-                    dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.tipify_ticket) }))
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.tipify_ticket) }))
                 }
             }
         }

@@ -4,8 +4,11 @@ import actionTypes from "./actionTypes";
 
 export interface ISnackBar {
     show: boolean;
-    success: boolean;
+    severity?: "info" | "warning" | "error" | "success";
     message: string;
+    vertical?: "top" | "bottom";
+    horizontal?: "left" | "right" | "center";
+    action?: React.ReactNode;
 }
 export interface IQuestion {
     visible: boolean;
@@ -33,7 +36,7 @@ export interface IState {
 export const initialState: IState = {
     snackbar: {
         show: false,
-        success: false,
+        // severity: ,
         message: ''
     },
     question: {

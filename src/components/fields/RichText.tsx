@@ -1068,7 +1068,7 @@ const OnlyURLInsertImageButton: FC = ({ children }) => {
                 dispatch(showSnackbar({
                     message,
                     show: true,
-                    success: false,
+                    severity: "error"
                 }));
                 setWaitUploadFile(false);
             } else if (upload.url && upload.url.length > 0) {
@@ -1180,7 +1180,7 @@ const InsertImageButton: FC = ({ children }) => {
                 dispatch(showSnackbar({
                     message,
                     show: true,
-                    success: false,
+                    severity: "error"
                 }));
                 setWaitUploadFile(false);
             } else if (upload.url && upload.url.length > 0) {

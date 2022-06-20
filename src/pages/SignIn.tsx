@@ -170,7 +170,7 @@ const SignIn = () => {
     useEffect(() => {
         const ff = location.state || {} as any;
         if (!!ff?.showSnackbar) {
-            dispatch(showSnackbar({ show: true, success: true, message: ff?.message || "" }))
+            dispatch(showSnackbar({ show: true, severity: "success", message: ff?.message || "" }))
         }
     }, [location]);
 
@@ -328,13 +328,13 @@ const RecoverModal: FC<{ openModal: boolean, setOpenModal: (param: any) => void,
     useEffect(() => {
         if (waitSave) {
             if (!recoverResult.loading && !recoverResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(recoverResult.msg || "success") }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(recoverResult.msg || "success") }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
                 onTrigger();
             }
             else if (recoverResult.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(recoverResult.msg || "error_unexpected_db_error") }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(recoverResult.msg || "error_unexpected_db_error") }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }

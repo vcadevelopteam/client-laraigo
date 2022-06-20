@@ -38,7 +38,7 @@ const ManageOrganization: FC = () => {
                 // });
             } else if (resChangeOrganization.error) {
                 const errormessage = t(resChangeOrganization.code || "error_unexpected_error")
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setTriggerSave(false);
                 dispatch(showBackdrop(false));
             }
