@@ -1073,7 +1073,7 @@ const translation: LangKeys = {
     reassign_ticket: 'Reasignar ticket',
     typify: 'Clasificar',
     typify_ticket: 'Clasificar ticket',
-    send_hsm: 'Enviar HSM',
+    send_hsm: 'Contactar por Whatsapp',
     send_mail: 'Enviar Correo',
     send_sms: 'Enviar SMS',
     app_automatizationrules: "Reglas de automatización",
