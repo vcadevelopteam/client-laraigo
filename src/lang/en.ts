@@ -1357,7 +1357,7 @@ const translation: LangKeys = {
     dateRangeFilterTitle: 'Filter by date range',
     person_who_modified: 'Person who modified',
     tipify_ticket: 'Classify ticket',
-    send_hsm: 'Send HSM',
+    send_hsm: 'Contact by Whatsapp',
     send_mail: 'Send Mail',
     send_sms: 'Send SMS',
     agent: 'Agent',
