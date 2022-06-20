@@ -198,13 +198,13 @@ const IntegrationManager: FC = () => {
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.integrationmanager).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
@@ -407,13 +407,13 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.integrationmanager).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
@@ -435,7 +435,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
         }
         else if (data.isnew && data.type === 'CUSTOM') {
             if (data.fields.filter(d => !dataLevelKeys.includes(d.name) && d.key === true).length === 0) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.field_key_required) }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.field_key_required) }))
                 return null;
             }
             let rex1 = new RegExp(/[^0-9a-zA-Z\s-_]/,'g');
@@ -656,12 +656,12 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
     useEffect(() => {
         if (waitImport) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_transaction) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_transaction) }))
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
             } else if (executeRes.error) {
                 const errormessage = t(langKeys.invalid_data)
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
             }
@@ -685,12 +685,12 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
     useEffect(() => {
         if (waitDelete) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 dispatch(showBackdrop(false));
                 setWaitDelete(false);
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.integrationmanager).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitDelete(false);
             }
@@ -718,7 +718,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                 setOpenViewTableModal(true);
             } else if (mainAuxRes.error) {
                 const errormessage = t(mainAuxRes.code || "error_unexpected_error", { module: t(langKeys.integration_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitView(false);
             }

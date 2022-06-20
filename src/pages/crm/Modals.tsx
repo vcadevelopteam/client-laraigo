@@ -59,13 +59,13 @@ export const NewActivityModal: FC<IFCModalProps> = ({ gridModalProps, setGridMod
             const errormessage = t(saveActivity.code || "error_unexpected_error", { module: t(langKeys.lead).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 message: errormessage,
-                success: false,
+                severity: "error",
                 show: true,
             }));
         } else if (saveActivity.success) {
             dispatch(showSnackbar({
                 message: t(langKeys.successful_transaction),
-                success: true,
+                severity: "success",
                 show: true,
             }));
             setGridModal({ name: '', open: false, payload: null });
@@ -107,13 +107,13 @@ export const NewNoteModal: FC<IFCModalProps> = ({ gridModalProps, setGridModal, 
             const errormessage = t(saveNote.code || "error_unexpected_error", { module: t(langKeys.lead).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 message: errormessage,
-                success: false,
+                severity: "error",
                 show: true,
             }));
         } else if (saveNote.success) {
             dispatch(showSnackbar({
                 message: t(langKeys.successful_transaction),
-                success: true,
+                severity: "success",
                 show: true,
             }));
             setGridModal({ name: '', open: false, payload: null });
@@ -235,13 +235,13 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
     useEffect(() => {
         if (waitClose) {
             if (!sendingRes.loading && !sendingRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_send_message) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_send_message) }))
                 setGridModal({ name: '', open: false, payload: null });
                 dispatch(showBackdrop(false));
                 dispatch(resetExecute());
                 setWaitClose(false);
             } else if (sendingRes.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(sendingRes.code || "error_unexpected_error") }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(sendingRes.code || "error_unexpected_error") }))
                 dispatch(showBackdrop(false));
                 dispatch(resetExecute());
                 setWaitClose(false);

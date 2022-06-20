@@ -1543,13 +1543,13 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
             dispatch(showSnackbar({
                 message: insertChannel.message!,
                 show: true,
-                success: false,
+                severity: "error"
             }));
         } else if (insertChannel.value) {
             dispatch(showSnackbar({
                 message: t(langKeys.channelcreatesuccess),
                 show: true,
-                success: true,
+                severity: "success"
             }));
         }
     }, [dispatch, insertChannel, t]);
@@ -1560,13 +1560,13 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
             dispatch(showSnackbar({
                 message: editChannel.message!,
                 show: true,
-                success: false,
+                severity: "error"
             }));
         } else if (editChannel.success) {
             dispatch(showSnackbar({
                 message: t(langKeys.channeleditsuccess),
                 show: true,
-                success: true,
+                severity: "success"
             }));
             history.push(paths.CHANNELS);
         }

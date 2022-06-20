@@ -1073,7 +1073,7 @@ const translation: LangKeys = {
     reassign_ticket: 'Reasignar ticket',
     typify: 'Clasificar',
     typify_ticket: 'Clasificar ticket',
-    send_hsm: 'Enviar HSM',
+    send_hsm: 'Contactar por Whatsapp',
     send_mail: 'Enviar Correo',
     send_sms: 'Enviar SMS',
     app_automatizationrules: "Reglas de automatización",
@@ -2707,7 +2707,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     lastuser: 'Último asesor',
     ticket_number: "Número de ticket",
     total_duration: "Duración total",
-    ready_to_close: 'Listo para cerrar',
+    ready_to_close: 'Por cerrar',
     waiting_person_time: "Tiempo de espera de la persona",
     time_to_automatic_closing: "Tiempo restante para cierre automático",
     new: 'Nuevo',
@@ -3645,7 +3645,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     periodreportvoip: 'Llamadas VoIP',
     periodreportrecording: 'Grabación de Llamadas',
     periodreportother: 'Otros',
-    T_VOICECHANNEL: 'CANAL DE VOZ'
+    T_VOICECHANNEL: 'CANAL DE VOZ',
+    go_ticket: 'Ir al ticket',
 };
 
 const esResource: ResourceLanguage = {

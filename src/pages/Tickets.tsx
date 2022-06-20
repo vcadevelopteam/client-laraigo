@@ -86,13 +86,13 @@ const DialogCloseticket: React.FC<{ fetchData: () => void, setOpenModal: (param:
     useEffect(() => {
         if (waitClose) {
             if (!closingRes.loading && !closingRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_close_ticket) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_close_ticket) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 fetchData()
                 setWaitClose(false);
             } else if (closingRes.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_unexpected_error) }))
                 dispatch(showBackdrop(false));
                 setWaitClose(false);
             }
@@ -182,7 +182,7 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
         if (waitReassign) {
             if (!reassigningRes.loading && !reassigningRes.error) {
                 const touserid = getValues('newUserGroup') !== "" && getValues('newUserId') === 0 ? 3 : getValues('newUserId');
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_reasign_ticket) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_reasign_ticket) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitReassign(false);
@@ -224,7 +224,7 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
                 })))
                 fetchData();
             } else if (reassigningRes.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_unexpected_error) }))
                 dispatch(showBackdrop(false));
                 setWaitReassign(false);
             }
@@ -257,7 +257,7 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
 
     const onSubmit = handleSubmit((data) => {
         if (data.newUserId === 0 && !data.newUserGroup) {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.least_user_or_group) }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.least_user_or_group) }))
             return;
         }
         const listConversation = rowWithDataSelected.map(x => x.conversationid).join();
@@ -326,14 +326,14 @@ const DialogTipifications: React.FC<{ fetchData: () => void, setOpenModal: (para
     useEffect(() => {
         if (waitTipify) {
             if (!tipifyRes.loading && !tipifyRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_tipify_ticket) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_tipify_ticket) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitTipify(false);
                 fetchData()
             } else if (tipifyRes.error) {
                 const message = t(tipifyRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message }))
+                dispatch(showSnackbar({ show: true, severity: "error", message }))
                 dispatch(showBackdrop(false));
                 setWaitTipify(false);
             }
@@ -612,13 +612,13 @@ const DialogLoadTickets: React.FC<{
     useEffect(() => {
         if (waitUpload) {
             if (!importRes.loading && !importRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_import) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_import) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitUpload(false);
                 fetchData();
             } else if (importRes.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_unexpected_error) }))
                 dispatch(showBackdrop(false));
                 setWaitUpload(false);
             }
@@ -648,7 +648,7 @@ const DialogLoadTickets: React.FC<{
             setWaitUpload(true);
         }
         else {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.file_without_data) }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.file_without_data) }))
         }
     });
     
@@ -659,7 +659,7 @@ const DialogLoadTickets: React.FC<{
             setFile(file);
         }
         else {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.invalid_file) }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.invalid_file) }))
         }
     }
 
@@ -785,7 +785,7 @@ const Tickets = () => {
                 setWaitDownloadRecord(false)
             } else if (getCallRecordRes.error) {
                 const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.ticket_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitDownloadRecord(false)
             }
         }
@@ -1128,7 +1128,7 @@ const Tickets = () => {
                 window.open(resExportData.url, '_blank');
             } else if (resExportData.error) {
                 const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }

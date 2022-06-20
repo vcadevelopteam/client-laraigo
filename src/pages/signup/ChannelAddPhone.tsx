@@ -201,14 +201,14 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                 setSetInsert(false);
                 setWaitSave(false);
 
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }));
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }));
                 dispatch(showBackdrop(false));
 
                 history.push(paths.CHANNELS);
             } else if (!executeResult) {
                 setWaitSave(false);
 
-                dispatch(showSnackbar({ show: true, success: false, message: t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() }) }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() }) }))
                 dispatch(showBackdrop(false));
             }
         }

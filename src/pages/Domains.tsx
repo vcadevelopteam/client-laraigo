@@ -66,7 +66,7 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, da
     const { register, handleSubmit, setValue, formState: { errors }, reset, getValues } = useForm();
     const onSubmit = handleSubmit((data) => {
         if (!edit && dataDomain && dataDomain.some(d => d.domainvalue === data.domainvalue)) {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.code_duplicate) }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.code_duplicate) }))
         }
         else {
             if (edit)
@@ -267,13 +267,13 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1");
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
@@ -311,7 +311,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
                 callback
             }))
         }else{
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.errorneedvalues) }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.errorneedvalues) }))
         }
     });
     return (
@@ -568,13 +568,13 @@ const Domains: FC = () => {
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }

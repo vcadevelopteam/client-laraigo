@@ -276,7 +276,7 @@ const MakeCall: React.FC = () => {
         } else if (!resExecute.loading && resExecute.error && resExecute.key === "UFN_CONVERSATION_OUTBOUND_INS") {
             const errormessage = t(resExecute.code || "error_unexpected_error", { module: t(langKeys.whitelist).toLocaleLowerCase() })
             const messagetoshow = resExecute.code === "error_already_exists_record" ? t(langKeys.already_call_person) : errormessage;
-            dispatch(showSnackbar({ show: true, success: false, message: messagetoshow }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: messagetoshow }))
             setwaiting2(false)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps

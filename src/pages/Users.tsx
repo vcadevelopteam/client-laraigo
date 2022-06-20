@@ -631,13 +631,13 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
@@ -690,10 +690,10 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                 return
             }
             if (!dataOrganizations.some(x => x?.bydefault)) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.organization_by_default) }));
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.organization_by_default) }));
                 return;
             } else if (dataOrganizations.filter(x => x?.bydefault).length > 1) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.organization_by_default) }));
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.organization_by_default) }));
                 return;
             }
             const data = getValues();
@@ -720,11 +720,11 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
         console.log(dataOrganizations)
         debugger
         if (!row && !data.password) {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.password_required) }));
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.password_required) }));
             return;
         }
         if (!edit && data.password === "") {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.password_required) }));
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.password_required) }));
             return;
         }
         setTriggerSave(true)
@@ -1161,9 +1161,9 @@ const Users: FC = () => {
                     setImportCount(0);
                     setMessageError('');
                     if (messageError) {
-                        dispatch(showSnackbar({ show: true, success: false, message: messageError }));
+                        dispatch(showSnackbar({ show: true, severity: "error", message: messageError }));
                     } else {
-                        dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
+                        dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
                     }
                     fetchData();
                     dispatch(showBackdrop(false));
@@ -1171,14 +1171,14 @@ const Users: FC = () => {
                 } else {
                     setImportCount(newcount);
                 }
-                // dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
+                // dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
             } else if (executeRes.error) {
                 const newcount = importCount - 1;
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: `${t(langKeys.user).toLocaleLowerCase()}(${executeRes.key})` })
                 if (newcount === 0) {
                     setImportCount(0);
                     setMessageError('');
-                    dispatch(showSnackbar({ show: true, success: false, message: messageError + errormessage }));
+                    dispatch(showSnackbar({ show: true, severity: "error", message: messageError + errormessage }));
 
                     fetchData();
                     dispatch(showBackdrop(false));
@@ -1187,7 +1187,7 @@ const Users: FC = () => {
                     setImportCount(newcount);
                     setMessageError(messageError + errormessage + "\n");
                 }
-                // dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                // dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 // dispatch(showBackdrop(false));
                 // setWaitImport(false);
             }
@@ -1197,13 +1197,13 @@ const Users: FC = () => {
     useEffect(() => {
         if (waitChanges) {
             if (!deleteResult.loading && !deleteResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_transaction) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_transaction) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setwaitChanges(false);
             } else if (deleteResult.error) {
                 const errormessage = t(deleteResult.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setwaitChanges(false);
             }
@@ -1213,13 +1213,13 @@ const Users: FC = () => {
     useEffect(() => {
         if (waitSave) {
             if (!deleteResult.loading && !deleteResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (deleteResult.error) {
                 const errormessage = t(deleteResult.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
@@ -1260,7 +1260,7 @@ const Users: FC = () => {
 
             if (data.length > 0) {
                 if (data.length > useravailable) {
-                    dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.userlimit, { limit }) }))
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.userlimit, { limit }) }))
                 }
                 else {
                     dispatch(showBackdrop(true));
@@ -1311,7 +1311,7 @@ const Users: FC = () => {
 
             }
             else {
-                dispatch(showSnackbar({ show: true, success: false, message: messageerrors }));
+                dispatch(showSnackbar({ show: true, severity: "error", message: messageerrors }));
             }
         }
     }
@@ -1344,7 +1344,7 @@ const Users: FC = () => {
                 setwaitChanges(true)
             }
             else {
-                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.no_records_valid) }));
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) }));
             }
         }
     }
@@ -1390,7 +1390,7 @@ const Users: FC = () => {
                     setWaitCheck(false);
                     if (!(mainAuxResult.data[0].usernumber < mainAuxResult.data[0].userscontracted)) {
                         dispatch(showSnackbar({
-                            show: true, success: false, message: t(langKeys.userlimit, {
+                            show: true, severity: "error", message: t(langKeys.userlimit, {
                                 limit: mainAuxResult.data[0].userscontracted
                             })
                         }))
@@ -1406,7 +1406,7 @@ const Users: FC = () => {
                 }
             } else if (mainAuxResult.error) {
                 const errormessage = t(mainAuxResult.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitCheck(false);
             }

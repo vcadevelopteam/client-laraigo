@@ -782,7 +782,7 @@ const translation: LangKeys = {
     none: 'None',
     basic: 'Basic',
     totalpromoters: "Total Promoters",
-    ready_to_close: 'Ready to close',
+    ready_to_close: 'To close',
     totalresolved: "Total Resolved",
     totalnotresolved: "Total Not resolved",
     totalresolvedfirstcontact: "Total Resolved in 1st contact",
@@ -1357,7 +1357,7 @@ const translation: LangKeys = {
     dateRangeFilterTitle: 'Filter by date range',
     person_who_modified: 'Person who modified',
     tipify_ticket: 'Classify ticket',
-    send_hsm: 'Send HSM',
+    send_hsm: 'Contact by Whatsapp',
     send_mail: 'Send Mail',
     send_sms: 'Send SMS',
     agent: 'Agent',
@@ -3652,7 +3652,8 @@ const translation: LangKeys = {
     periodreportvoip: 'VoIP Calls',
     periodreportrecording: 'Call Recording',
     periodreportother: 'Others',
-    T_VOICECHANNEL: 'VOICE CHANNEL'
+    T_VOICECHANNEL: 'VOICE CHANNEL',
+    go_ticket: 'Go to ticket',
 };
 
 const enResource: ResourceLanguage = {

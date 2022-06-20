@@ -140,13 +140,13 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
         if (waitClose) {
             if (!sendingRes.loading && !sendingRes.error) {
                 const message = type === "HSM" ? t(langKeys.successful_send_hsm) : (type === "SMS" ? t(langKeys.successful_send_sms) : t(langKeys.successful_send_mail));
-                dispatch(showSnackbar({ show: true, success: true, message }))
+                dispatch(showSnackbar({ show: true, severity: "success", message }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitClose(false);
             } else if (sendingRes.error) {
 
-                dispatch(showSnackbar({ show: true, success: false, message: t(sendingRes.code || "error_unexpected_error") }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(sendingRes.code || "error_unexpected_error") }))
                 dispatch(showBackdrop(false));
                 setWaitClose(false);
             }
@@ -612,7 +612,7 @@ export const Person: FC = () => {
                 window.open(resExportData.url, '_blank');
             } else if (resExportData.error) {
                 const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.person).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitExport(false);
             }
@@ -738,7 +738,7 @@ export const Person: FC = () => {
                 setWaitImport(true)
             }
             else {
-                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.no_records_valid) }));
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) }));
             }
         }
     }
@@ -765,13 +765,13 @@ export const Person: FC = () => {
     useEffect(() => {
         if (waitImport) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
                 fetchData(fetchDataAux);
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.quickreplies).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
             }
@@ -1126,7 +1126,7 @@ export const PersonDetail: FC = () => {
             dispatch(showSnackbar({
                 message: domains.message!,
                 show: true,
-                success: false,
+                severity: "error"
             }));
         }
     }, [domains, dispatch]);
@@ -1139,14 +1139,14 @@ export const PersonDetail: FC = () => {
             dispatch(showSnackbar({
                 message: edit.message!,
                 show: true,
-                success: false,
+                severity: "error"
             }));
         } else if (edit.success) {
             dispatch(showBackdrop(false));
             dispatch(showSnackbar({
                 message: t(langKeys.successful_edit),
                 show: true,
-                success: true,
+                severity: "success"
             }));
             if (!person?.personid) {
                 history.push(paths.PERSON);
@@ -1208,12 +1208,12 @@ export const PersonDetail: FC = () => {
     useEffect(() => {
         if (waitLock) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_transaction) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_transaction) }))
                 dispatch(showBackdrop(false));
                 setWaitLock(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.person).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitLock(false);
             }
@@ -2254,7 +2254,7 @@ const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
             dispatch(showSnackbar({
                 message: conversations.message || 'Error',
                 show: true,
-                success: false,
+                severity: "error"
             }));
         } else {
             setList(prevList => [...prevList, ...conversations.data]);

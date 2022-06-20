@@ -252,7 +252,7 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
             window.open(resExportDynamic.url, '_blank');
         } else if (resExportDynamic.error) {
             const errormessage = t(resExportDynamic.code || "error_unexpected_error")
-            dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
         }
     }, [resExportDynamic]);
 
