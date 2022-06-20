@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'hooks';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import { useDispatch } from 'react-redux';
-import { makeCall, setModalCall, getHistory, geAdvisors, rejectCall } from 'store/voximplant/actions';
+import { makeCall, setModalCall, getHistory, geAdvisors, rejectCall, setPhoneNumber } from 'store/voximplant/actions';
 import TextField from '@material-ui/core/TextField';
 import PhoneForwardedIcon from '@material-ui/icons/PhoneForwarded';
 import PhoneIcon from '@material-ui/icons/Phone';
@@ -237,6 +237,7 @@ const MakeCall: React.FC = () => {
     const [waitingDate, setWaitingDate] = useState<string | null>(null);
     const user = useSelector(state => state.login.validateToken.user);
     const ringtone = React.useRef<HTMLAudioElement>(null);
+    const phonenumber = useSelector(state => state.voximplant.phoneNumber);
     const showcall = useSelector(state => state.voximplant.showcall);
     const statusCall = useSelector(state => state.voximplant.statusCall);
     const historial = useSelector(state => state.voximplant.requestGetHistory);
@@ -334,7 +335,8 @@ const MakeCall: React.FC = () => {
     React.useEffect(() => {
         if (showcall) {
             setwaiting2(false)
-            setNumberVox(personData?.data?.phone||"")
+            setNumberVox(personData?.data?.phone||phonenumber||"")
+            dispatch(setPhoneNumber(""))
         } else {
             setPageSelected(1)
         }
