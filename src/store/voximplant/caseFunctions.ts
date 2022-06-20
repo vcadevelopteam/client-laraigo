@@ -18,6 +18,12 @@ export const setModalCall = (state: IState, action: IAction): IState => {
         showcall: action.payload,
     }
 }
+export const setPhoneNumber = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        phoneNumber: action.payload,
+    }
+}
 export const initCall = (state: IState, action: IAction): IState => {
 
     return {
