@@ -152,6 +152,7 @@ const MainHeatMap: React.FC = () => {
                                 </label>
                             }
                         },
+                        { Header: t(langKeys.channel), accessor: 'channel' },
                         { Header: t(langKeys.agent), accessor: 'asesor' },
                         { Header: t(langKeys.tmo), accessor: 'totalduration' },
                     ])
@@ -170,6 +171,7 @@ const MainHeatMap: React.FC = () => {
                                 </label>
                             }
                         },
+                        { Header: t(langKeys.channel), accessor: 'channel' },
                         { Header: t(langKeys.tmo), accessor: 'totalduration' },
                         { Header: t(langKeys.agent), accessor: 'asesor' },
                     ])
@@ -189,6 +191,7 @@ const MainHeatMap: React.FC = () => {
                                 </label>
                             }
                         },
+                        { Header: t(langKeys.channel), accessor: 'channel' },
                         { Header: t(langKeys.tme), accessor: 'userfirstreplytime' },
                         { Header: t(langKeys.agent), accessor: 'asesor' },
                     ])
@@ -208,6 +211,7 @@ const MainHeatMap: React.FC = () => {
                                 </label>
                             }
                         },
+                        { Header: t(langKeys.channel), accessor: 'channel' },
                         { Header: t(langKeys.tmr), accessor: 'useraveragereplytime' },
                         { Header: t(langKeys.agent), accessor: 'asesor' },
                     ])
@@ -227,6 +231,7 @@ const MainHeatMap: React.FC = () => {
                                 </label>
                             }
                         },
+                        { Header: t(langKeys.channel), accessor: 'channel' },
                         { Header: t(langKeys.tmr_client), accessor: 'personaveragereplytime' },
                     ])
                     break;
@@ -1211,6 +1216,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                                 </label>
                             }
                         },
+                        { Header: t(langKeys.channel), accessor: 'channel' },
                         { Header: t(langKeys.agent), accessor: 'asesor' },
                     ])
                     break;
@@ -1228,6 +1234,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                                 </label>
                             }
                         },
+                        { Header: t(langKeys.channel), accessor: 'channel' },
                     ])
                     break;
                 case 'OPPORTUNITY':
@@ -1244,6 +1251,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                                 </label>
                             }
                         },
+                        { Header: t(langKeys.channel), accessor: 'channel' },
                         { Header: t(langKeys.opportunityname), accessor: 'leadname' },
                     ])
                     break;
@@ -1261,6 +1269,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                                 </label>
                             }
                         },
+                        { Header: t(langKeys.channel), accessor: 'channel' },
                         { Header: t(langKeys.opportunitywon), accessor: 'opportunitywon' },
                     ])
                     break;
@@ -2112,7 +2121,8 @@ const HeatMapTicket: React.FC = () => {
                 case '3.1':
                     setModalTitle(`${t(langKeys.agent_plural)} ${t(langKeys.day)} ${day} ${hournum}`)
                     setModalColumns([
-                        { Header: t(langKeys.agent), accessor: 'asesor' }
+                        { Header: t(langKeys.agent), accessor: 'asesor' },
+                        { Header: t(langKeys.channel), accessor: 'channel' },
                     ])
                     break;
                 default:
