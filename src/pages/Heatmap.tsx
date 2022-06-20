@@ -1039,7 +1039,6 @@ const MainHeatMap: React.FC = () => {
                 <div style={{flex:1}}>
 
                     <FieldMultiSelect
-                        limitTags={1}
                         label={t(langKeys.advisor)}
                         className={classes.fieldsfilter}
                         variant="outlined"
