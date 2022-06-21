@@ -46,8 +46,8 @@ const useStyles = makeStyles((theme) => ({
         gap: 8
     },
     containerTickets: {
-        flex: '0 0 300px',
-        maxWidth: 300,
+        flex: '0 0 301px',
+        maxWidth: 301,
         backgroundColor: '#FFF',
         flexDirection: 'column',
         display: 'flex',
@@ -401,6 +401,8 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const isFiltering = useSelector(state => state.inbox.isFiltering);
     const hideLogs = useSelector(state => state.login.validateToken.user?.properties.hide_log_conversation) || false;
+    const user = useSelector(state => state.login.validateToken.user);
+
     const [counterTickets, setCounterTickets] = useState({
         assigned: -0,
         paused: -0,
@@ -415,7 +417,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
 
     useEffect(() => {
         if (agentSelected) {
-            dispatch(getTickets(userType === "SUPERVISOR" ? agentSelected!.userid : null))
+            dispatch(getTickets(userType === "SUPERVISOR" ? agentSelected!.userid : (user?.userid || null)))
             setPageSelected(0)
             setCounterTickets({
                 assigned: -0,

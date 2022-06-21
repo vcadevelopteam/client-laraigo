@@ -3405,7 +3405,7 @@ const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg 
     }
 
     const handleView = (row: Dictionary) => {
-        if (row.invoicestatus === 'PENDING') {
+        if (row.invoicestatus === 'PENDING' || (row.invoicestatus === 'DRAFT' && row.hasreport === true)) {
             setViewSelected("view-3");
             setRowSelected({ row: row, edit: true });
         }
@@ -4484,6 +4484,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
 
     const classes = useStyles();
     const culqiResult = useSelector(state => state.culqi.requestCreateInvoice);
+    const invoicehasreport = data?.row?.hasreport || false;
     const multiResult = useSelector(state => state.main.multiDataAux);
     const user = useSelector(state => state.login.validateToken.user);
 
@@ -4680,8 +4681,8 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
         register('invoiceduedate');
         register('invoicecurrency', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('invoicetotalamount', { validate: (value) => (value && value > 0) || "" + t(langKeys.billingamountvalidation) });
-        register('invoicepurchaseorder', { validate: (value) => (value === '' || value.length <= 15) || "" + t(langKeys.validation15char) });
-        register('invoicecomments', { validate: (value) => (value === '' || value.length <= 150) || "" + t(langKeys.validation150char) });
+        register('invoicepurchaseorder', { validate: (value) => (value === '' || (value || '').length <= 15) || "" + t(langKeys.validation15char) });
+        register('invoicecomments', { validate: (value) => (value === '' || (value || '').length <= 150) || "" + t(langKeys.validation150char) });
         register('autosendinvoice');
         register('year', { validate: (value) => (value && value > 0) || "" + t(langKeys.field_required) });
         register('month', { validate: (value) => (value && value > 0) || "" + t(langKeys.field_required) });
@@ -4924,7 +4925,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             style={{ backgroundColor: "#FB5F5F" }}
                             onClick={() => { setViewSelected("view-1"); fetchData(); }}
                         >{t(langKeys.back)}</Button>
-                        <Button
+                        {!invoicehasreport && <Button
                             className={classes.button}
                             variant="contained"
                             color="primary"
@@ -4933,7 +4934,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             startIcon={<SaveIcon color="secondary" />}
                             style={{ backgroundColor: "#55BD84" }}
                         >{t(langKeys.saveasdraft)}
-                        </Button>
+                        </Button>}
                         <Button
                             className={classes.button}
                             variant="contained"
@@ -4971,6 +4972,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             optionValue="corpid"
                             error={errors?.corpid?.message}
                             orderbylabel={true}
+                            disabled={invoicehasreport}
                         />
                         <FieldSelect
                             label={t(langKeys.organization)}
@@ -4981,7 +4983,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             data={orgList.data}
                             optionDesc="orgdesc"
                             optionValue="orgid"
-                            disabled={(getValues('billbyorg') === false)}
+                            disabled={(getValues('billbyorg') === false) || invoicehasreport}
                             error={errors?.orgid?.message}
                             orderbylabel={true}
                         />
@@ -4994,6 +4996,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             optionDesc="value"
                             optionValue="value"
                             error={errors?.year?.message}
+                            disabled={invoicehasreport}
                         />
                         <FieldSelect
                             label={t(langKeys.invoice_servicemonth)}
@@ -5004,6 +5007,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             optionDesc="val"
                             optionValue="val"
                             error={errors?.month?.message}
+                            disabled={invoicehasreport}
                         />
                     </div>
                 </div>
@@ -5114,6 +5118,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                 optionValue="value"
                                 error={errors?.invoicecurrency?.message}
                                 orderbylabel={true}
+                                disabled={invoicehasreport}
                             />
                             <FieldEdit
                                 label={t(langKeys.taxbase)}
@@ -5186,6 +5191,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                                         productquantity: 0,
                                                         productsubtotal: 0.0,
                                                     })}
+                                                    disabled={invoicehasreport}
                                                 > <AddIcon />
                                                 </IconButton>
                                             </TableCell>
@@ -5206,6 +5212,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                                         valueDefault={getValues(`productdetail.${i}.productdescription`)}
                                                         error={errors?.productdetail?.[i]?.productdescription?.message}
                                                         onChange={(value) => setValue(`productdetail.${i}.productdescription`, "" + value)}
+                                                        disabled={invoicehasreport}
                                                     />
                                                 </TableCell>
                                                 <TableCell>
@@ -5225,6 +5232,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                                         optionValue="code"
                                                         error={errors?.productdetail?.[i]?.productmeasure?.message}
                                                         orderbylabel={true}
+                                                        disabled={invoicehasreport}
                                                     />
                                                 </TableCell>
                                                 <TableCell>
@@ -5241,6 +5249,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                                         onChange={(value) => { setValue(`productdetail.${i}.productsubtotal`, "" + value); onProductChange(); }}
                                                         type="number"
                                                         inputProps={{ step: "any" }}
+                                                        disabled={invoicehasreport}
                                                     />
                                                 </TableCell>
                                                 <TableCell>
@@ -5256,6 +5265,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                                         error={errors?.productdetail?.[i]?.productquantity?.message}
                                                         onChange={(value) => { setValue(`productdetail.${i}.productquantity`, "" + value); onProductChange(); }}
                                                         type="number"
+                                                        disabled={invoicehasreport}
                                                     />
                                                 </TableCell>
                                                 <TableCell>
@@ -5272,6 +5282,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                                         color="primary"
                                                         style={{ marginLeft: '1rem' }}
                                                         onClick={() => { fieldRemove(i); onProductChange(); }}
+                                                        disabled={invoicehasreport}
                                                     > <DeleteIcon />
                                                     </IconButton>
                                                 </TableCell>

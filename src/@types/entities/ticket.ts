@@ -24,6 +24,7 @@ export interface ITicket {
     coloricon: string;
     lastseendate?: string | null;
     finishdate?: string | null;
+    origin?: string | null;
     isAnswered?: boolean;
     call?: Call | null;
     callanswereddate?: string | null;

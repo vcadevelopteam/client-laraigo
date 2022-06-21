@@ -1039,7 +1039,6 @@ const MainHeatMap: React.FC = () => {
                 <div style={{flex:1}}>
 
                     <FieldMultiSelect
-                        limitTags={1}
                         label={t(langKeys.advisor)}
                         className={classes.fieldsfilter}
                         variant="outlined"
@@ -1900,7 +1899,6 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                 </div>
                 <div style={{flex:1,paddingRight: 10}}>
                     <FieldMultiSelect
-                        limitTags={1}
                         label={t(langKeys.advisor)}
                         className={classes.fieldsfilter}
                         variant="outlined"
@@ -1913,7 +1911,6 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                 </div>
                 <div style={{flex:1,paddingRight: 10}}>
                     <FieldMultiSelect
-                        limitTags={1}
                         label={t(langKeys.company)}
                         className={classes.fieldsfilter}
                         variant="outlined"
@@ -1926,7 +1923,6 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                 </div>
                 <div style={{flex:1}}>
                     <FieldMultiSelect
-                        limitTags={1}
                         label={t(langKeys.group)}
                         className={classes.fieldsfilter}
                         variant="outlined"
