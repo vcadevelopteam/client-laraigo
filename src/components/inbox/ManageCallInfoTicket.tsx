@@ -148,13 +148,13 @@ const ManageCallInfoTicket: React.FC = () => {
                                 <div style={{ display: "grid", width: "100%", gridTemplateColumns: 'auto [col1] 50px 50px [col2] 50px 50px [col4] 50px auto', }}>
                                     {mute ? (
                                         <IconButton //unmuteself
-                                            style={{ gridColumnStart: "col1", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#fa6262' }}
+                                            style={{ gridColumnStart: "col1", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#7721ad' }}
                                             onClick={() => { dispatch(unmuteCall(call.call)); setmute(false) }}>
                                             <MicOffIcon style={{ color: "white", width: "35px", height: "35px" }} />
                                         </IconButton>
                                     ) : (
                                         <IconButton //muteself
-                                            style={{ gridColumnStart: "col1", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#bdbdbd' }}
+                                            style={{ gridColumnStart: "col1", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#55bd84' }}
                                             onClick={() => { dispatch(muteCall(call.call)); setmute(true) }}>
                                             <MicIcon style={{ color: "white", width: "35px", height: "35px" }} />
                                         </IconButton>
