@@ -2077,8 +2077,9 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
                     />
                 </Grid>
             </Grid>
-            {(!voxiConnection.error && !voxiConnection.loading && statusCall!=="CONNECTED" && userConnected && statusCall!=="CONNECTING" && channel.type.includes("WHAT")) &&
+            {(!voxiConnection.error && !voxiConnection.loading && statusCall!=="CONNECTED" && userConnected && statusCall!=="CONNECTING" && channel.type.includes("WHA")) &&
             <IconButton
+                style={{maxHeight: 40}}
                 onClick={() => {dispatch(setPhoneNumber(channel.personcommunicationchannelowner));dispatch(setModalCall(true))}}
             >
                 <PhoneIcon style={{ width: "20px", height: "20px" }} />
