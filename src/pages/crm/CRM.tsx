@@ -721,7 +721,7 @@ const CRM: FC = () => {
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [voxiConnection,statusCall]
   );
 
   const fetchGridData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
