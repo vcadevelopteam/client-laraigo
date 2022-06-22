@@ -18,6 +18,7 @@ import {
     IosColor,
     WhatsappColor,
     TwitterColor,
+    VoiceChannelIcon,
 } from "icons";
 import { ListChannels, SubscriptionContext, usePlanData } from "./context";
 
@@ -193,7 +194,7 @@ const ThirdStep: FC = () => {
 
         },*/
         {
-            icon: <PhoneIcon className={classes.icon} />,
+            icon: <VoiceChannelIcon className={classes.icon} />,
             label: 'phone',
             key: 'phone',
             onClick: () => toggleChannel('phone'),

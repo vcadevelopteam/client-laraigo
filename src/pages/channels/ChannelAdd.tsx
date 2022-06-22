@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router";
 import paths from "common/constants/paths";
 import { CallIcon,
-    AndroidColor, EmailColor, FacebookColor, FacebookMessengerColor, InstagramColor, IosColor, SmsColor, TelegramColor, TwitterColor, WebMessengerColor, WhatsappColor
+    AndroidColor, EmailColor, FacebookColor, FacebookMessengerColor, InstagramColor, IosColor, SmsColor, TelegramColor, TwitterColor, WebMessengerColor, WhatsappColor, VoiceChannelIcon
 } from "icons";
 import { TemplateBreadcrumbs } from "components";
 
@@ -172,7 +172,7 @@ export const ChannelAdd: FC = () => {
             onClick: () => {history.push(paths.CHANNELS_ADD_EMAIL.path, whatsAppData)},
         },
         {
-            icon: c => <CallIcon className={c} />,
+            icon: c => <VoiceChannelIcon className={c} />,
             label: 'Phone',
             onClick: () => {history.push(paths.CHANNELS_ADD_PHONE.path, whatsAppData)},
         },
