@@ -662,9 +662,11 @@ export const LayoutItem: FC<LayoutItemProps> = ({
         return value === 0 ? t(langKeys.field_required) : undefined;
     }
 
-    function deleteFunnel(e:any){
-        console.log(e)
+    function deleteFunnel(index:number){
+        let newtagsdata=tagsdata.filter((x:any,i:number)=>i!=index)
         debugger
+        settagsdata(newtagsdata)
+        setValue(`${key}.tags`,newtagsdata)
     }
 
     return (
@@ -844,7 +846,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                             return <div key={`tagdatalevel${i+1}`}>
                                 <div className={classes.funnelLvlTitle}>
                                     <p style={{fontSize: 14, fontWeight: 500}}>{t(langKeys.level)} {i+1}</p>
-                                    <IconButton onClick={(e)=>deleteFunnel(e)} size="small" style={{ width: 18, height: 18, margin: 14, marginRight: 0 }} >
+                                    <IconButton onClick={()=>deleteFunnel(i)} size="small" style={{ width: 18, height: 18, margin: 14, marginRight: 0 }} >
                                         <CloseIcon style={{ width: 18, height: 18 }} />
                                     </IconButton>
                                 </div>
@@ -864,6 +866,9 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                                         onChange={(v: any) => {
                                             let initTags=getValues(`${key}.tags`)||[];
                                             initTags[i].value = v?.tag || "";
+                                            let newtagdata=tagsdata;
+                                            newtagdata[i].value = v?.tag || "";
+                                            settagsdata(newtagdata)
                                             setValue(`${key}.tags`,initTags)
                                         }}
                                         error={errors[key]?.tags?.[i]?.value.message}
@@ -880,6 +885,9 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                                         onChange={(value: any) => {
                                             let initTags=getValues(`${key}.tags`)||[];
                                             initTags[i].title = value || "";
+                                            let newtagdata=tagsdata;
+                                            newtagdata[i].title = value || "";
+                                            settagsdata(newtagdata)
                                             setValue(`${key}.tags`,initTags)
                                         }}
                                         error={errors[key]?.tags?.[i]?.title.message}
