@@ -201,7 +201,7 @@ const DashboardDisconnections: FC = () => {
                         })
                     }
                 })
-                setdatatotaltime(disconnectiontypes.reduce((acc:any,x:string, i:number)=>[...acc,{type:x, time: arraydisconnectiontimes[i]}],[]))
+                setdatatotaltime(disconnectiontypes.reduce((acc:any,x:string, i:number)=>[...acc,{type:x, time: arraydisconnectiontimes[i]}],[]).filter((x:any)=>x.time!==0))
                 settcovstdc([{title: t(langKeys.totaltimeconnected), time: timestotal[0]},{title: t(langKeys.totaltimeoffline), time: timestotal[1]}])
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
