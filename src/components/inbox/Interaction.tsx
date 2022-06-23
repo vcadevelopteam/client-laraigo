@@ -18,6 +18,8 @@ import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import Avatar from '@material-ui/core/Avatar';
+import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
+// import { ShoppingCart } from '@material-ui/icons';
 
 const useStylesInteraction = makeStyles((theme) => ({
     containerCarousel: {
@@ -94,6 +96,171 @@ const useStylesInteraction = makeStyles((theme) => ({
         gap: 4
     }
 }));
+
+const ShoppingCart: React.FC<{ onlyTime?: string, interactiontext: string, createdate: string, classes: any, userType: string }> = ({ interactiontext, createdate, classes, userType, onlyTime }) => {
+    const [open, setOpen] = React.useState(false);
+    const { t } = useTranslation();
+
+    const handleClickOpen = () => setOpen(true);
+
+    const handleClose = () => setOpen(false);
+
+    const jsonIntt = JSON.parse(interactiontext);
+
+    // const firstimage = jsonIntt.SectionList?.[0]?.ProductList?.[0]?.ImageReference || "";
+    // const totalitems = jsonIntt.SectionList.reduce((a: number, i: Dictionary) => a + i.ProductList.length, 0)
+
+    return (
+        <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
+            [classes.interactionTextAgent]: userType !== 'client',
+        })}>
+            <div style={{ width: 300 }}>
+                <div style={{ display: 'flex', backgroundColor: "#f5f6f6" }}>
+                    <img width="70px" height="70px" alt="reference" src={jsonIntt.Product_items[0].ImageReference} />
+                    <div style={{ display: 'flex', alignItems: 'center', paddingLeft: 8 }}>
+                        <div>
+                            <div style={{ fontWeight: 'bold' }}>{jsonIntt.Product_items.length} Elementos</div>
+                            <div style={{ fontWeight: 'bold' }}>{jsonIntt.Product_items.reduce((acc: number, item: Dictionary) => acc + parseFloat(item.Item_price), 0).toFixed(2)} {jsonIntt.Product_items[0].Currency}</div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    {jsonIntt.Text}
+                </div>
+                <div style={{ height: 2, borderTop: '1px solid rgb(235, 234, 237)', marginTop: 4 }}></div>
+                <div
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#00a5f4', cursor: 'pointer' }}
+                    onClick={handleClickOpen}
+                >Show shopping cart</div>
+                <TimerInteraction interactiontype="interactivelist" createdate={createdate} userType={userType} time={onlyTime || ""} />
+            </div>
+            <SwipeableDrawer
+                anchor='right'
+                open={open}
+                onClose={handleClose}
+                onOpen={handleClickOpen}
+            >
+                <div style={{ width: 400, padding: 16 }}>
+                    <h4 >Carrito enviado</h4>
+                    <div>
+                        <div style={{ fontWeight: 500 }}>{jsonIntt.Product_items.length} Items</div>
+                        <div style={{ color: '#8696a0' }}>{jsonIntt.Product_items.reduce((acc: number, item: Dictionary) => acc + parseFloat(item.Item_price), 0).toFixed(2)} {jsonIntt.Product_items[0].Currency}</div>
+                        <div style={{ marginTop: 16 }}>
+                        </div>
+                    </div>
+                    <div>
+                        {jsonIntt.Product_items.map((item: Dictionary, index: number) => (
+                            <div key={index}>
+                                <div style={{ display: 'flex', gap: 16, marginBottom: 8 }}>
+                                    <img width="80px" alt="reference" height="80px" src={item.ImageReference} />
+                                    <div style={{ display: 'flex', alignItems: 'center', width: '75%', borderTop: '1px solid #ebebeb' }}>
+                                        <div style={{ width: '100%' }}>
+                                            <div style={{ fontWeight: 500 }}>{item.Title}</div>
+                                            <div style={{ color: '#8696a0' }}>{item.Currency} {parseFloat(item.Item_price).toFixed(2)} • {t(langKeys.quantity)}: {item.Quantity}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </SwipeableDrawer>
+        </div>
+    )
+}
+
+const CatalogProduct: React.FC<{ onlyTime?: string, interactiontext: string, createdate: string, classes: any, userType: string }> = ({ interactiontext, createdate, classes, userType, onlyTime }) => {
+    const [open, setOpen] = React.useState(false);
+
+    const handleClickOpen = () => setOpen(true);
+
+    const handleClose = () => setOpen(false);
+
+    const jsonIntt = JSON.parse(interactiontext);
+
+    if (jsonIntt.Type === "product_list") {
+        const firstimage = jsonIntt.SectionList?.[0]?.ProductList?.[0]?.ImageReference || "";
+        const totalitems = jsonIntt.SectionList.reduce((a: number, i: Dictionary) => a + i.ProductList.length, 0)
+
+        return (
+            <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
+                [classes.interactionTextAgent]: userType !== 'client',
+            })}>
+                <div style={{ display: 'flex', gap: '4px', backgroundColor: "#f5f6f6", width: 300 }}>
+                    {firstimage && <img width="70px" height="70px" src={firstimage} alt="fist" />}
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <div>
+                            <div style={{ fontWeight: 500 }}>{jsonIntt.Body}</div>
+                            <div style={{ color: '#8696a0' }}>{totalitems} items</div>
+                        </div>
+                    </div>
+                </div>
+                <div style={{ padding: 8 }}>
+                    <div style={{ fontWeight: 500 }}>{jsonIntt.Body}</div>
+                    <div style={{ color: '#8696a0' }}>{jsonIntt.Footer}</div>
+                </div>
+                <div style={{ height: 2, borderTop: '1px solid rgb(235, 234, 237)', marginTop: 4 }}></div>
+                <div
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#00a5f4', cursor: 'pointer' }}
+                    onClick={handleClickOpen}
+                >
+                    <InteractiveListIcon /> Show items
+                </div>
+                <TimerInteraction interactiontype="interactivelist" createdate={createdate} userType={userType} time={onlyTime || ""} />
+                <SwipeableDrawer
+                    anchor='right'
+                    open={open}
+                    onClose={handleClose}
+                    onOpen={handleClickOpen}
+                >
+                    <div style={{ width: 400, padding: 16 }}>
+                        <div style={{ marginBottom: 16 }}>{jsonIntt.Body}</div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, }}>
+                            {jsonIntt.SectionList.map((item: Dictionary, index11: number) => (
+                                <div key={index11} style={{ cursor: 'pointer' }}>
+                                    <div style={{ color: "#008069", marginBottom: 16 }}>{item.Title}</div>
+                                    {item.ProductList.map((itemProduct: Dictionary, index22: number) => (
+                                        <div key={index22}>
+                                            <div style={{ display: 'flex', gap: 16, marginBottom: 8 }}>
+                                                <img width="80px" alt="reference" height="80px" src={itemProduct.ImageReference} />
+                                                <div style={{ display: 'flex', alignItems: 'center', width: '75%', borderTop: '1px solid #ebebeb' }}>
+                                                    <div style={{ width: '100%' }}>
+                                                        <div style={{ fontWeight: 500 }}>{itemProduct.Title}</div>
+                                                        <div style={{ color: '#8696a0', overflow: "hidden", wordBreak: "break-word", fontWeight: 500, whiteSpace: "nowrap", textOverflow: "ellipsis" }}>{itemProduct.Description}</div>
+                                                        <div style={{ color: '#8696a0' }}>{itemProduct.Currency} {itemProduct.Price || 10.0}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </SwipeableDrawer>
+            </div>
+        )
+    } else {
+        return (
+            <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
+                [classes.interactionTextAgent]: userType !== 'client',
+            })}>
+                <div style={{ width: 300, display: 'flex', flexDirection: 'column' }}>
+                    <img width="100%" src={jsonIntt.Product.ImageReference} height="320px" alt="reference" />
+                    <div style={{ backgroundColor: "#f5f6f6", padding: 8 }}>
+                        <div>{jsonIntt.Product.Title}</div>
+                        <div style={{ color: '#dff3cc' }}>{jsonIntt.Product.Price} {jsonIntt.Product.Currency}</div>
+                    </div>
+                    <div style={{ padding: 8 }}>
+                        <div style={{ fontWeight: 'bold' }}>{jsonIntt.Body}</div>
+                        <div style={{ color: '#8696a0' }}>{jsonIntt.Footer}</div>
+                    </div>
+                </div>
+                <TimerInteraction interactiontype="interactivelist" createdate={createdate} userType={userType} time={onlyTime || ""} />
+            </div>
+        )
+    }
+}
 
 const InteractiveList: React.FC<{ onlyTime?: string, interactiontext: string, createdate: string, classes: any, userType: string }> = ({ interactiontext, createdate, classes, userType, onlyTime }) => {
     const [open, setOpen] = React.useState(false);
@@ -524,6 +691,26 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 </div>
             );
         }
+    } else if (interactiontype === "whatsappcatalog") {
+        return (
+            <CatalogProduct
+                interactiontext={interactiontext}
+                createdate={createdate}
+                classes={classes}
+                userType={userType}
+                onlyTime={onlyTime}
+            />
+        )
+    } else if (interactiontype === "shoppingcart") {
+        return (
+            <ShoppingCart
+                interactiontext={interactiontext}
+                createdate={createdate}
+                classes={classes}
+                userType={userType}
+                onlyTime={onlyTime}
+            />
+        )
     }
     return (
         <div className={clsx(classes.interactionText, {
