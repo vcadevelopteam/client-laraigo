@@ -90,7 +90,8 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             let partialText = '';
             if (startIndex !== -1) {
                 if (elem.value.slice(startIndex, selectionStart).indexOf(' ') === -1
-                && elem.value.slice(startIndex, selectionStart).indexOf('}}') === -1) {
+                && elem.value.slice(startIndex, selectionStart).indexOf('}}') === -1
+                && elem.value[selectionStart - 1] !== '}') {
                     partialText = elem.value.slice(startIndex + 2, selectionStart);
                     let rightText = (elem.value || '').slice(selectionStart, elem.value.length);
                     let selectionEnd = rightText.indexOf('}}') !== -1 ? rightText.indexOf('}}') : 0;
