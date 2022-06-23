@@ -1973,6 +1973,12 @@ const useChannelItemStyles = makeStyles(theme => ({
         margin: 0,
         width: '100%',
     },
+    buttonphone:{
+        padding: 0,
+        '&:hover': {
+            color: "#7721ad",
+        },
+    }
 }));
 
 interface ChannelItemProps {
@@ -2055,7 +2061,7 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
                             <div style={{display:"flex"}}>
                                 {(!voxiConnection.error && !voxiConnection.loading && statusCall!=="CONNECTED" && userConnected && statusCall!=="CONNECTING" && (channel.type.includes("WHA")||channel.type.includes("VOXI"))) &&
                                     <IconButton
-                                        style={{padding: 0}}
+                                        className={classes.buttonphone}
                                         onClick={() => {dispatch(setPhoneNumber(channel.personcommunicationchannelowner));dispatch(setModalCall(true))}}
                                     >
                                         <PhoneIcon style={{ width: "20px", height: "20px" }} />
