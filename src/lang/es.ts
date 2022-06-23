@@ -1447,7 +1447,8 @@ const translation: LangKeys = {
 
     ticket_tiempopromediorespuestaasesor: 'Tiempo medio de respuesta asesor (TMR asesor)',
     ticket_tiempopromediorespuestaasesor_help: 'Es el tiempo promedio en que se otorga una respuesta por parte del asesor',
-    ticket_tiempopromediorespuestapersona: 'ART Cliente',
+    ticket_tiempopromediorespuestapersona: 'Tiempo medio de respuesta cliente (TMR Cliente)',
+    ticket_tiempopromediorespuestapersona_help: 'Es el tiempo promedio en que el cliente responde',
     ticket_duraciontotal: 'Tiempo total (TMO)',
     ticket_duraciontotal_help: 'Es la sumatoria de la duración real + el tiempo pausado',
     ticket_duracionreal: 'Tiempo real',
