@@ -1631,6 +1631,7 @@ export const langKeys = {
     ticket_tiempopromediorespuestaasesor: 'ticket_tiempopromediorespuestaasesor',
     ticket_tiempopromediorespuestaasesor_help: 'ticket_tiempopromediorespuestaasesor_help',
     ticket_tiempopromediorespuestapersona: 'ticket_tiempopromediorespuestapersona',
+    ticket_tiempopromediorespuestapersona_help: 'ticket_tiempopromediorespuestapersona_help',
     ticket_duraciontotal: 'ticket_duraciontotal',
     ticket_duraciontotal_help: 'ticket_duraciontotal_help',
     ticket_duracionreal: 'ticket_duracionreal',
