@@ -1932,6 +1932,18 @@ const useChannelItemStyles = makeStyles(theme => ({
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
     },
+    contentContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'flex-start',
+        flexGrow: 1,
+    },
+    propTitle: {
+        fontWeight: 400,
+        fontSize: 14,
+        color: '#8F92A1',
+    },
     item: {
         display: 'flex',
         flexDirection: 'column',
@@ -1953,6 +1965,13 @@ const useChannelItemStyles = makeStyles(theme => ({
         flexDirection: 'row',
         gap: '0.5em',
         alignItems: 'center',
+    },
+    propSubtitle: {
+        color: theme.palette.text.primary,
+        fontWeight: 400,
+        fontSize: 15,
+        margin: 0,
+        width: '100%',
     },
 }));
 
@@ -2000,26 +2019,12 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
         const index = channel.personcommunicationchannel.lastIndexOf('_');
         return channel.personcommunicationchannel.substring(0, index);
     }, [channel]);
+    console.log(channel.type)
 
     return (
         <div className={classes.root} style={{display:"flex"}}>
             <Grid container direction="row">
                 <Grid item xs={11} sm={11} md={6} lg={6} xl={6}>
-                    <Property
-                        title={<Trans i18nKey={langKeys.communicationchannel} />}
-                        subtitle={(
-                            <div className={classes.subtitle}>
-                                <span>{
-                                    nameschannel[channel.type].includes("T_")
-                                    ? t((langKeys as any)[nameschannel[channel.type]])
-                                    : nameschannel[channel.type]}</span>
-                                <GetIcon channelType={channel.type} color='black' />
-                            </div>
-                        )}
-                        m={1}
-                    />
-                </Grid>
-                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                     <Property
                         title={<Trans i18nKey={langKeys.communicationchannel} />}
                         subtitle={(
@@ -2042,11 +2047,24 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
                     />
                 </Grid>
                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-                    <Property
-                        title={<Trans i18nKey={langKeys.personIdentifier} />}
-                        subtitle={channel.personcommunicationchannelowner}
-                        m={1}
-                    />
+                    
+                    <Box>
+                        <div className={classes.contentContainer}>
+                            <label className={classes.propTitle}>{<Trans i18nKey={langKeys.personIdentifier} />}</label>
+                            <div style={{ height: 4 }} />
+                            <div style={{display:"flex"}}>
+                                {(!voxiConnection.error && !voxiConnection.loading && statusCall!=="CONNECTED" && userConnected && statusCall!=="CONNECTING" && (channel.type.includes("WHA")||channel.type.includes("VOXI"))) &&
+                                    <IconButton
+                                        style={{padding: 0}}
+                                        onClick={() => {dispatch(setPhoneNumber(channel.personcommunicationchannelowner));dispatch(setModalCall(true))}}
+                                    >
+                                        <PhoneIcon style={{ width: "20px", height: "20px" }} />
+                                    </IconButton>
+                                }
+                                <div className={classes.propSubtitle}>{channel.personcommunicationchannelowner || "-"}</div>
+                            </div>
+                        </div>
+                    </Box>
                 </Grid>
                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                     <Property
@@ -2077,13 +2095,6 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
                     />
                 </Grid>
             </Grid>
-            {(!voxiConnection.error && !voxiConnection.loading && statusCall!=="CONNECTED" && userConnected && statusCall!=="CONNECTING" && channel.type.includes("WHAT")) &&
-            <IconButton
-                onClick={() => {dispatch(setPhoneNumber(channel.personcommunicationchannelowner));dispatch(setModalCall(true))}}
-            >
-                <PhoneIcon style={{ width: "20px", height: "20px" }} />
-            </IconButton>
-            }
         </div>
     );
 }

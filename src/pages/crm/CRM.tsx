@@ -619,6 +619,7 @@ const CRM: FC = () => {
         isComponent: true,
         Cell: (props: any) => {
           const row = props.cell.row.original;
+          console.log((!voxiConnection.error && !voxiConnection.loading && statusCall!=="CONNECTED" && userConnected && statusCall!=="CONNECTING" && !!row.phone))
           if (row.status === 'ACTIVO') {
             return (
               <React.Fragment>
@@ -694,7 +695,7 @@ const CRM: FC = () => {
                       color="action" 
                     />
                   </IconButton>
-                  {(!voxiConnection.error && !voxiConnection.loading && statusCall!=="CONNECTED" && userConnected && statusCall!=="CONNECTING" && row.phone) &&
+                  {(!voxiConnection.error && !voxiConnection.loading && statusCall!=="CONNECTED" && userConnected && statusCall!=="CONNECTING" && !!row.phone) &&
                     <IconButton
                       aria-label="more"
                       aria-controls="long-menu"
@@ -720,7 +721,7 @@ const CRM: FC = () => {
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [voxiConnection,statusCall]
   );
 
   const fetchGridData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
