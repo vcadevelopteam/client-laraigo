@@ -997,7 +997,7 @@ const Reports: FC = () => {
                                     component="img"
                                     height="140"
                                     className={classes.media}
-                                    image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/03reportepersonalizado.png'}
+                                    image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/PROCESOSYCONSULTORIA/ad0b89eb-6ed6-409d-b2e7-ddc9ea6c6f28/asesorvstickets.png'}
                                     title={t(langKeys.report_ticketvsasesor)}
                                 />
                                 <CardContent>
