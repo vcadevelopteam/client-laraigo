@@ -46,8 +46,8 @@ const useStyles = makeStyles((theme) => ({
         gap: 8
     },
     containerTickets: {
-        flex: '0 0 301px',
-        maxWidth: 301,
+        flex: '0 0 305px',
+        maxWidth: 305,
         backgroundColor: '#FFF',
         flexDirection: 'column',
         display: 'flex',
