@@ -7,7 +7,6 @@ import { formatNumber, getPhoneTax } from 'common/helpers';
 import { getCategories, getCountryStates, getRegions } from "store/voximplant/actions";
 import { getMultiCollection } from 'store/main/actions';
 import { getName } from "country-list";
-import { getPaymentPlanSel } from 'common/helpers';
 import { insertChannel } from "store/channel/actions";
 import { langKeys } from "lang/keys";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
@@ -19,7 +18,7 @@ import { useTranslation } from "react-i18next";
 import InfoIcon from "@material-ui/icons/Info";
 import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
-import PhoneIcon from "@material-ui/icons/Phone";
+import PhoneIcon from "@material-ui/icons/Call";
 import Tooltip from "@material-ui/core/Tooltip";
 
 interface whatsAppData {
@@ -70,14 +69,14 @@ export const ChannelAddPhone: FC = () => {
     const [categoryList, setCategoryList] = useState<any>([]);
     const [countryList, setCountryList] = useState<any>([]);
     const [channelreg, setChannelreg] = useState(true);
-    const [coloricon, setcoloricon] = useState("#1D9BF0");
+    const [coloricon, setcoloricon] = useState("#1A0E40");
     const [fields, setFields] = useState({
         "method": "UFN_COMMUNICATIONCHANNEL_INS",
         "parameters": {
             "apikey": "",
             "chatflowenabled": true,
             "color": "",
-            "coloricon": "#1D9BF0",
+            "coloricon": "#1A0E40",
             "communicationchannelowner": "",
             "communicationchannelsite": "",
             "description": "",

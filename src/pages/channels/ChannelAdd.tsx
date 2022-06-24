@@ -4,8 +4,14 @@ import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router";
 import paths from "common/constants/paths";
+<<<<<<< HEAD
 import { CallIcon,
     AndroidColor, EmailColor, FacebookColor, FacebookMessengerColor, InstagramColor, IosColor, SmsColor, TelegramColor, TwitterColor, WebMessengerColor, WhatsappColor, VoiceChannelIcon
+=======
+import {
+    VoiceColor,
+    AndroidColor, EmailColor, FacebookColor, FacebookMessengerColor, InstagramColor, IosColor, SmsColor, TelegramColor, TwitterColor, WebMessengerColor, WhatsappColor, TikTokColor, YouTubeColor, LinkedInColor, TeamsColor, BloggerColor
+>>>>>>> 6a533732e7df7d5a063b8684f714a225c22509bb
 } from "icons";
 import { TemplateBreadcrumbs } from "components";
 
@@ -104,13 +110,13 @@ export const ChannelAdd: FC = () => {
     if (typeof whatsAppData === 'undefined' || !whatsAppData) {
         history.push(paths.CHANNELS);
     }
-    
-    function redirectFunc(view:string){
-        if(view ==="view-0"){
+
+    function redirectFunc(view: string) {
+        if (view === "view-0") {
             history.push(paths.CONFIGURATION)
             return;
         }
-        if(view ==="view-1"){
+        if (view === "view-1") {
             history.push(paths.CHANNELS)
             return;
         }
@@ -119,77 +125,107 @@ export const ChannelAdd: FC = () => {
     const socialMediaOptions: ChannelOption[] = [
         {
             icon: c => <FacebookColor className={c} />,
-            label: 'Facebook',
-            onClick: () => {history.push(paths.CHANNELS_ADD_FACEBOOK.path, whatsAppData)},
+            label: t(langKeys.channel_facebook),
+            onClick: () => { history.push(paths.CHANNELS_ADD_FACEBOOK.path, whatsAppData) },
         },
         {
             icon: c => <FacebookMessengerColor className={c} />,
-            label: 'Messenger',
-            onClick: () => {history.push(paths.CHANNELS_ADD_MESSENGER.path, whatsAppData)},
+            label: t(langKeys.channel_messenger),
+            onClick: () => { history.push(paths.CHANNELS_ADD_MESSENGER.path, whatsAppData) },
         },
         {
             icon: c => <InstagramColor className={c} />,
-            label: 'Instagram',
-            onClick: () => {history.push(paths.CHANNELS_ADD_INSTAGRAM.path, whatsAppData)},
+            label: t(langKeys.channel_instagram),
+            onClick: () => { history.push(paths.CHANNELS_ADD_INSTAGRAM.path, whatsAppData) },
         },
         {
             icon: c => <InstagramColor className={c} />,
-            label: 'Instagram DM',
-            onClick: () => {history.push(paths.CHANNELS_ADD_INSTAGRAMDM.path, whatsAppData)},
+            label: t(langKeys.channel_instagramdm),
+            onClick: () => { history.push(paths.CHANNELS_ADD_INSTAGRAMDM.path, whatsAppData) },
         },
         {
-            icon: c => <WhatsappColor className={c}/>,
-            label: 'Whatsapp',
-            onClick: () => {history.push(paths.CHANNELS_ADD_WHATSAPP.path, whatsAppData)},
+            icon: c => <WhatsappColor className={c} />,
+            label: t(langKeys.channel_whatsapp),
+            onClick: () => { history.push(paths.CHANNELS_ADD_WHATSAPP.path, whatsAppData) },
         },
         {
             icon: c => <TelegramColor className={c} />,
-            label: 'Telegram',
-            onClick: () => {history.push(paths.CHANNELS_ADD_TELEGRAM.path, whatsAppData)},
+            label: t(langKeys.channel_telegram),
+            onClick: () => { history.push(paths.CHANNELS_ADD_TELEGRAM.path, whatsAppData) },
         },
         {
             icon: c => <TwitterColor className={c} />,
-            label: 'Twitter',
-            onClick: () => {history.push(paths.CHANNELS_ADD_TWITTER.path, whatsAppData)},
+            label: t(langKeys.channel_twitter),
+            onClick: () => { history.push(paths.CHANNELS_ADD_TWITTER.path, whatsAppData) },
         },
         {
             icon: c => <TwitterColor className={c} />,
-            label: 'Twitter DM',
-            onClick: () => {history.push(paths.CHANNELS_ADD_TWITTERDM.path, whatsAppData)},
+            label: t(langKeys.channel_twitterdm),
+            onClick: () => { history.push(paths.CHANNELS_ADD_TWITTERDM.path, whatsAppData) },
+        },
+        {
+            icon: c => <TikTokColor className={c} />,
+            label: t(langKeys.channel_tiktok),
+            onClick: () => { history.push(paths.CHANNELS_ADD_TIKTOK.path, whatsAppData) },
+        },
+        {
+            icon: c => <YouTubeColor className={c} />,
+            label: t(langKeys.channel_youtube),
+            onClick: () => { history.push(paths.CHANNELS_ADD_YOUTUBE.path, whatsAppData) },
+        },
+        {
+            icon: c => <LinkedInColor className={c} />,
+            label: t(langKeys.channel_linkedin),
+            onClick: () => { history.push(paths.CHANNELS_ADD_LINKEDIN.path, whatsAppData) },
         },
     ];
-
 
     const businessChannelOptions: ChannelOption[] = [
         {
             icon: c => <WebMessengerColor className={c} />,
-            label: 'Chat Web',
+            label: t(langKeys.channel_chatweb),
             onClick: () => history.push(paths.CHANNELS_ADD_CHATWEB),
         },
         {
             icon: c => <EmailColor className={c} />,
-            label: 'Email',
-            onClick: () => {history.push(paths.CHANNELS_ADD_EMAIL.path, whatsAppData)},
+            label: t(langKeys.channel_email),
+            onClick: () => { history.push(paths.CHANNELS_ADD_EMAIL.path, whatsAppData) },
         },
         {
+<<<<<<< HEAD
             icon: c => <VoiceChannelIcon className={c} />,
             label: 'Phone',
             onClick: () => {history.push(paths.CHANNELS_ADD_PHONE.path, whatsAppData)},
+=======
+            icon: c => <VoiceColor className={c} />,
+            label: t(langKeys.channel_phone),
+            onClick: () => { history.push(paths.CHANNELS_ADD_PHONE.path, whatsAppData) },
+>>>>>>> 6a533732e7df7d5a063b8684f714a225c22509bb
         },
         {
             icon: c => <SmsColor className={c} />,
-            label: 'Sms',
-            onClick: () => {history.push(paths.CHANNELS_ADD_SMS.path, whatsAppData)},
+            label: t(langKeys.channel_sms),
+            onClick: () => { history.push(paths.CHANNELS_ADD_SMS.path, whatsAppData) },
         },
         {
             icon: c => <IosColor className={c} />,
-            label: 'iOS SDk',
+            label: t(langKeys.channel_ios),
             onClick: () => history.push(paths.CHANNELS_ADD_IOS.path, whatsAppData),
         },
         {
             icon: c => <AndroidColor className={c} />,
-            label: 'Android SDK',
+            label: t(langKeys.channel_android),
             onClick: () => history.push(paths.CHANNELS_ADD_ANDROID.path, whatsAppData),
+        },
+        {
+            icon: c => <TeamsColor className={c} />,
+            label: t(langKeys.channel_teams),
+            onClick: () => history.push(paths.CHANNELS_ADD_TEAMS.path, whatsAppData),
+        },
+        {
+            icon: c => <BloggerColor className={c} />,
+            label: t(langKeys.channel_blogger),
+            onClick: () => history.push(paths.CHANNELS_ADD_BLOGGER.path, whatsAppData),
         },
     ];
 

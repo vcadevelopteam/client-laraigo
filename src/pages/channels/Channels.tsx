@@ -25,7 +25,7 @@ export const Channels: FC = () => {
     const executeResult = useSelector(state => state.channel.channelList);
     const mainResult = useSelector(state => state.main);
     const user = useSelector(state => state.login.validateToken.user);
-    
+
     const roledesc = user?.roledesc || "";
 
     const [typeWhatsApp, setTypeWhatsApp] = useState('DIALOG');
@@ -37,8 +37,8 @@ export const Channels: FC = () => {
         { id: "view-0", name: t(langKeys.configuration_plural) },
         { id: "view-1", name: t(langKeys.channel_plural) },
     ];
-    function redirectFunc(view:string){
-        if(view ==="view-0"){
+    function redirectFunc(view: string) {
+        if (view === "view-0") {
             history.push(paths.CONFIGURATION)
             return;
         }
@@ -89,12 +89,12 @@ export const Channels: FC = () => {
                 typeWhatsApp: 'SMOOCH',
                 row: row
             }
-            history.push({pathname: paths.CHANNELS_EDIT_WHATSAPP.resolve(row.communicationchannelid), state:whatsAppData});
+            history.push({ pathname: paths.CHANNELS_EDIT_WHATSAPP.resolve(row.communicationchannelid), state: whatsAppData });
         }
         else {
             const pathname = row.type === "CHAZ" ?
-            paths.CHANNELS_EDIT_CHATWEB.resolve(row.communicationchannelid) :
-            paths.CHANNELS_EDIT.resolve(row.communicationchannelid);
+                paths.CHANNELS_EDIT_CHATWEB.resolve(row.communicationchannelid) :
+                paths.CHANNELS_EDIT.resolve(row.communicationchannelid);
 
             history.push({
                 pathname,
@@ -209,8 +209,8 @@ export const Channels: FC = () => {
     }, [canRegister]);
 
     return (
-        <div style={{width:"100%"}}>
-            <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
+        <div style={{ width: "100%" }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <TemplateBreadcrumbs
                     breadcrumbs={arrayBread}
                     handleClick={redirectFunc}
