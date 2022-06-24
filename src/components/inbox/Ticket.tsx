@@ -255,11 +255,13 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                             labelOnNegative={t(langKeys.ready_to_close)}
                         />
                     }
-                    <LabelGo
-                        isTimer={false}
-                        color={origin === "OUTBOUND" ? "#ffbf00" : "#0000ff"}
-                        label={origin || "INBOUND"}
-                    />
+                    {item.communicationchanneltype !== "VOXI" &&
+                            <LabelGo
+                                isTimer={false}
+                                color={origin === "OUTBOUND" ? "#ffbf00" : "#0000ff"}
+                                label={origin || "INBOUND"}
+                            />
+                    }
                 </div>
             </div>
             {(!!callVoxi && statusCall === "CONNECTING" && callVoxiTmp.type === "INBOUND") &&
