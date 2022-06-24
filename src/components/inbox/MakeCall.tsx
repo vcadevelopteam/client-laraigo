@@ -27,6 +27,7 @@ import { ListItemSkeleton } from 'components';
 import { SearchIcon } from 'icons';
 import { showSnackbar } from 'store/popus/actions';
 import PersonIcon from '@material-ui/icons/Person';
+import { useHistory } from 'react-router';
 
 const useStyles = makeStyles(theme => ({
     grey: {
@@ -244,6 +245,7 @@ const MakeCall: React.FC = () => {
     const [waiting2, setwaiting2] = useState(false)
 
     const { corpid, orgid, sitevoxi, ccidvoxi, userid } = useSelector(state => state.login.validateToken?.user!!);
+    const history = useHistory();
 
     React.useEffect(() => {
         console.log(resExecute)
@@ -272,6 +274,7 @@ const MakeCall: React.FC = () => {
                 dispatch(setModalCall(false));
                 const identifier = `${corpid}-${orgid}-${ccidvoxi}-${resExecute.data[0].v_conversationid}-${resExecute.data[0].v_personid}.${sitevoxi}.${userid}`
                 dispatch(makeCall({ number: numberVox, site: identifier || "", data }));
+                history.push('/message_inbox');
             }
         } else if (!resExecute.loading && resExecute.error && resExecute.key === "UFN_CONVERSATION_OUTBOUND_INS") {
             const errormessage = t(resExecute.code || "error_unexpected_error", { module: t(langKeys.whitelist).toLocaleLowerCase() })
