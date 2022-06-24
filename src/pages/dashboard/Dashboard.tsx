@@ -301,6 +301,7 @@ const Dashboard: FC = () => {
                                     <CardMedia
                                         component="img"
                                         height="140"
+                                        style={{objectFit: "contain"}}
                                         className={classes.media}
                                         image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/PROCESOSYCONSULTORIA/d4a7c4c3-1ff8-48ea-b10a-6a74a03142e4/desconexionestickets.png'}
                                         title={t(langKeys.disconnections)}
