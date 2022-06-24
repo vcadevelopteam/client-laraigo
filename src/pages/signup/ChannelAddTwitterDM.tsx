@@ -214,7 +214,7 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
                 <DeleteOutlineIcon />
             </IconButton>}
             {!hasFinished && <Typography>
-                <Trans i18nKey={langKeys.connectface2} />
+                <Trans i18nKey={langKeys.subscription_genericconnect} />
             </Typography>}
             {hasFinished && <TwitterColor
                 style={{ width: 100, height: 100, alignSelf: 'center' }} />

@@ -116,7 +116,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
                 <DeleteOutlineIcon />
             </IconButton>}
             {!hasFinished && <Typography>
-                <Trans i18nKey={langKeys.connectface2} />
+                <Trans i18nKey={langKeys.subscription_genericconnect} />
             </Typography>}
             {hasFinished && <FacebookMessengerColor
                 style={{ width: 100, height: 100, alignSelf: 'center', fill: 'gray' }} />

@@ -158,6 +158,57 @@ export interface VoxImplantPhoneChannel {
     build: (v: Omit<VoxImplantPhoneChannel, 'build'>) => IRequestBody;
 }
 
+export interface TikTokChannel {
+    description: string;
+    account: string;
+    url: string;
+    build: (v: Omit<TikTokChannel, 'build'>) => IRequestBody;
+}
+
+export interface YouTubeChannel {
+    description: string;
+    account: string;
+    url: string;
+    build: (v: Omit<YouTubeChannel, 'build'>) => IRequestBody;
+}
+
+export interface LinkedInChannel {
+    description: string;
+    account: string;
+    url: string;
+    build: (v: Omit<LinkedInChannel, 'build'>) => IRequestBody;
+}
+
+export interface TeamsChannel {
+    description: string;
+    account: string;
+    url: string;
+    build: (v: Omit<TeamsChannel, 'build'>) => IRequestBody;
+}
+
+export interface BloggerChannel {
+    description: string;
+    account: string;
+    url: string;
+    build: (v: Omit<BloggerChannel, 'build'>) => IRequestBody;
+}
+
+export interface EmailChannel {
+    description: string;
+    apikey: string;
+    url: string;
+    emittername: string;
+    build: (v: Omit<EmailChannel, 'build'>) => IRequestBody;
+}
+
+export interface SmsChannel {
+    description: string;
+    apikey: string;
+    url: string;
+    emittername: string;
+    build: (v: Omit<SmsChannel, 'build'>) => IRequestBody;
+}
+
 export interface Channels {
     facebook: FacebookChannel;
     instagram: FacebookChannel;
@@ -168,12 +219,17 @@ export interface Channels {
     twitter: TwitterChannel;
     twitterDM: TwitterChannel;
     chatWeb: ChatWebChannel;
-    email: any;
-    phone: any;
-    sms: any;
+    email: EmailChannel;
+    sms: SmsChannel;
+    tiktok: TikTokChannel,
+    youtube: YouTubeChannel,
+    linkedin: LinkedInChannel,
+    teams: TeamsChannel,
+    blogger: BloggerChannel,
     android: MobileChannel;
     apple: MobileChannel;
     voximplantphone: VoxImplantPhoneChannel;
+    phone: any;
 }
 
 export interface MainData {

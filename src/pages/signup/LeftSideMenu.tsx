@@ -13,6 +13,13 @@ import { ChannelAddChatWeb } from './ChannelAddChatWeb'
 import { ChannelAddAndroid } from './ChannelAddAndroid'
 import { ChannelAddIos } from './ChannelAddIos'
 import { ChannelAddPhone } from './ChannelAddPhone'
+import { ChannelAddBlogger } from './ChannelAddBlogger'
+import { ChannelAddEmail } from './ChannelAddEmail'
+import { ChannelAddLinkedIn } from './ChannelAddLinkedIn'
+import { ChannelAddSMS } from './ChannelAddSMS'
+import { ChannelAddTeams } from './ChannelAddTeams'
+import { ChannelAddTikTok } from './ChannelAddTikTok'
+import { ChannelAddYouTube } from './ChannelAddYouTube'
 import { Trans, useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { ListChannels, SubscriptionContext, MainData } from "./context";
@@ -151,7 +158,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                         </Link>
                     </Breadcrumbs>
                 )}
-                {!foreground && <h1 className={classes.title}>Canal seleccionado</h1>}
+                {!foreground && <h1 className={classes.title}>{t(langKeys.subscription_selectedchannel)}</h1>}
                 <div className={classes.channelList}>
                     {channels}
                 </div>
@@ -520,21 +527,21 @@ const GetComponent: FC<GetComponentProps> = ({ channel: key, display, setOpenWar
         case 'tiktok':
             return (
                 <div style={{ display: display ? 'block' : 'none' }}>
-                    <ChannelAddTwitterDM setOpenWarning={setOpenWarning} />
+                    <ChannelAddTikTok setOpenWarning={setOpenWarning} />
                 </div>
             );
 
         case 'youtube':
             return (
                 <div style={{ display: display ? 'block' : 'none' }}>
-                    <ChannelAddTwitterDM setOpenWarning={setOpenWarning} />
+                    <ChannelAddYouTube setOpenWarning={setOpenWarning} />
                 </div>
             );
 
         case 'linkedin':
             return (
                 <div style={{ display: display ? 'block' : 'none' }}>
-                    <ChannelAddTwitterDM setOpenWarning={setOpenWarning} />
+                    <ChannelAddLinkedIn setOpenWarning={setOpenWarning} />
                 </div>
             );
 
@@ -548,7 +555,7 @@ const GetComponent: FC<GetComponentProps> = ({ channel: key, display, setOpenWar
         case 'email':
             return (
                 <div style={{ display: display ? 'block' : 'none' }}>
-                    <ChannelAddTwitterDM setOpenWarning={setOpenWarning} />
+                    <ChannelAddEmail setOpenWarning={setOpenWarning} />
                 </div>
             );
 
@@ -562,7 +569,7 @@ const GetComponent: FC<GetComponentProps> = ({ channel: key, display, setOpenWar
         case 'sms':
             return (
                 <div style={{ display: display ? 'block' : 'none' }}>
-                    <ChannelAddTwitterDM setOpenWarning={setOpenWarning} />
+                    <ChannelAddSMS setOpenWarning={setOpenWarning} />
                 </div>
             );
 
@@ -583,14 +590,14 @@ const GetComponent: FC<GetComponentProps> = ({ channel: key, display, setOpenWar
         case 'teams':
             return (
                 <div style={{ display: display ? 'block' : 'none' }}>
-                    <ChannelAddAndroid setOpenWarning={setOpenWarning} />
+                    <ChannelAddTeams setOpenWarning={setOpenWarning} />
                 </div>
             );
 
         case 'blogger':
             return (
                 <div style={{ display: display ? 'block' : 'none' }}>
-                    <ChannelAddAndroid setOpenWarning={setOpenWarning} />
+                    <ChannelAddBlogger setOpenWarning={setOpenWarning} />
                 </div>
             );
 

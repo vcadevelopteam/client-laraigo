@@ -3684,6 +3684,12 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
 
     blogger_account: 'Cuenta de Blogger',
     blogger_url: 'Url de Blog',
+
+    subscription_genericconnect: "Llena los siguientes datos para poder enlazar tu canal a nuestra plataforma.",
+    subscription_instagramconnect: "Instala el chatbot en tu página de Instagram y empieza a conseguir clientes potenciales.",
+    subscription_selectedchannel: "Canales Seleccionados",
+    subscription_channellimit: "El límite de canales es de:",
+    subscription_nolimit: "Sin límite",
 };
 
 const esResource: ResourceLanguage = {

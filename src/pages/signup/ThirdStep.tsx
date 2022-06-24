@@ -281,12 +281,12 @@ const ThirdStep: FC = () => {
 
     const description = () => {
         switch (planData.plan!.plan) {
-            case "BASIC": return "Solo se podrá seleccionar un canal";
-            case "PRO": return "Solo se podrá seleccionar 3 canales";
+            case "BASIC": return `${t(langKeys.subscription_channellimit)} 1`;
+            case "PRO": return `${t(langKeys.subscription_channellimit)} 3`;
             case "ADVANCED":
             case "ENTERPRISE":
             case "PREMIUM":
-                return "Sin limite";
+                return `${t(langKeys.subscription_channellimit)} ${t(langKeys.subscription_nolimit)}`;
             default: return "-";
         }
     }

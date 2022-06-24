@@ -14,7 +14,7 @@ import { resetInsertChannel } from 'store/channel/actions';
 import { useSelector } from 'hooks';
 import { showSnackbar } from 'store/popus/actions';
 import { getInsertChatwebChannel } from 'common/helpers';
-import { ZyxmeMessengerIcon } from 'icons';
+import { WebMessengerColor, ZyxmeMessengerIcon } from 'icons';
 import { MainData, SubscriptionContext } from './context';
 
 interface TabPanelProps {
@@ -1802,7 +1802,10 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
 
     return (
         <div className={clsx(commonClasses.root, submitError && commonClasses.rootError)}>
-            {!hasFinished && <ZyxmeMessengerIcon className={commonClasses.leadingIcon} />}
+            {!hasFinished && <Typography>
+                <Trans i18nKey={langKeys.subscription_genericconnect} />
+            </Typography>}
+            {!hasFinished && <WebMessengerColor className={commonClasses.leadingIcon} />}
             {!hasFinished && <IconButton
                 color="primary"
                 className={commonClasses.trailingIcon}
@@ -1810,7 +1813,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
             >
                 <DeleteOutlineIcon />
             </IconButton>}
-            {hasFinished && <ZyxmeMessengerIcon
+            {hasFinished && <WebMessengerColor
                 style={{ width: 100, height: 100, alignSelf: 'center', fill: 'gray' }} />
             }
             {hasFinished && (

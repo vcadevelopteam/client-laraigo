@@ -3671,6 +3671,12 @@ export const langKeys = {
 
     blogger_account: 'blogger_account',
     blogger_url: 'blogger_url',
+
+    subscription_genericconnect: 'subscription_genericconnect',
+    subscription_instagramconnect: "subscription_instagramconnect",
+    subscription_selectedchannel: "subscription_selectedchannel",
+    subscription_channellimit: "subscription_channellimit",
+    subscription_nolimit: "subscription_nolimit",
 };
 
 export type LangKeys = typeof langKeys;

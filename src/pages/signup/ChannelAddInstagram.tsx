@@ -115,7 +115,7 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
                 <DeleteOutlineIcon />
             </IconButton>}
             {!hasFinished && <Typography>
-                <Trans i18nKey={langKeys.connectface2} />
+                <Trans i18nKey={langKeys.subscription_instagramconnect} />
             </Typography>}
             {hasFinished && <InstagramColor
                 style={{ width: 100, height: 100, alignSelf: 'center' }} />

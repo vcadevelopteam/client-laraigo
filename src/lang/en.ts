@@ -3691,6 +3691,12 @@ const translation: LangKeys = {
 
     blogger_account: 'Blogger Account',
     blogger_url: 'Blog Url',
+
+    subscription_genericconnect: 'Fill up the information in order to link your channel to our platform.',
+    subscription_instagramconnect: "Install the chatbot on your Instagram page and start getting leads.",
+    subscription_selectedchannel: "Selected Channels",
+    subscription_channellimit: "The maximum amount of channels is:",
+    subscription_nolimit: "No limit",
 };
 
 const enResource: ResourceLanguage = {
