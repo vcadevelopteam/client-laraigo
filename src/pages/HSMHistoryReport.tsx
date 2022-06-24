@@ -67,7 +67,7 @@ const DetailHSMHistoryReport: React.FC<DetailHSMHistoryReportProps> = ({ data: {
         dispatch(showBackdrop(true))
         dispatch(getMultiCollectionAux2([
             getHSMHistoryReport({
-                name: row?.campaign || "",
+                campaign: row?.campaign || "",
                 date: row?.date || "",
             })
         ]))
