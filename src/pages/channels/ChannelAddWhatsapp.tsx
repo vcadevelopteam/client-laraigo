@@ -314,9 +314,9 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
         if (!executeActivationResult.loading && (set360 || setsmooch)) {
             dispatch(showBackdrop(false));
             if (executeActivationResult.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: String(executeActivationResult.message) }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: String(executeActivationResult.message) }))
             } else {
-                dispatch(showSnackbar({ show: true, success: true, message: "Success" }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: "Success" }))
                 history.push(paths.CHANNELS);
             }
         }
