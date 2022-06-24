@@ -124,6 +124,14 @@ const DetailHSMHistoryReport: React.FC<DetailHSMHistoryReportProps> = ({ data: {
             {
                 Header: t(langKeys.success),
                 accessor: 'success',
+                type: 'boolean',
+                sortType: 'basic',
+                width: 180,
+                maxWidth: 180,
+                Cell: (props: any) => {
+                    const { success } = props.cell.row.original;
+                    return success ? t(langKeys.yes) : "No"
+                }
             },
             {
                 Header: t(langKeys.log),
@@ -205,7 +213,7 @@ const HSMHistoryReport: FC = () => {
             },
             {
                 Header: t(langKeys.failed),
-                accessor: 'fail',
+                accessor: 'failed',
                 type: 'number',
                 sortType: 'number',
             },
@@ -217,7 +225,7 @@ const HSMHistoryReport: FC = () => {
             },
             {
                 Header: t(langKeys.failed_percent),
-                accessor: 'failp',
+                accessor: 'failedp',
                 type: 'number',
                 sortType: 'number',
             },
