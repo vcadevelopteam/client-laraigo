@@ -3636,6 +3636,15 @@ export const langKeys = {
     periodreportother: 'periodreportother',
     T_VOICECHANNEL: 'T_VOICECHANNEL',
     go_ticket: 'go_ticket',
+
+    productcatalog_title: 'productcatalog_title',
+    productcatalog_website: 'productcatalog_website',
+    productcatalog_currency: 'productcatalog_currency',
+    productcatalog_condition: 'productcatalog_condition',
+    productcatalog_contentid: 'productcatalog_contentid',
+    productcatalog_facebookcatalogid: 'productcatalog_facebookcatalogid',
+    productcatalog_facebookproductid: 'productcatalog_facebookproductid',
+    productcatalog_facebookcatalogname: 'productcatalog_facebookcatalogname',
 };
 
 export type LangKeys = typeof langKeys;

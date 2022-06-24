@@ -3656,6 +3656,15 @@ const translation: LangKeys = {
     periodreportother: 'Others',
     T_VOICECHANNEL: 'VOICE CHANNEL',
     go_ticket: 'Go to ticket',
+
+    productcatalog_title: 'Title',
+    productcatalog_website: 'Website',
+    productcatalog_currency: 'Currency',
+    productcatalog_condition: 'Condition',
+    productcatalog_contentid: 'Content ID',
+    productcatalog_facebookcatalogid: 'Facebook Catalog ID',
+    productcatalog_facebookproductid: 'Facebook Product ID',
+    productcatalog_facebookcatalogname: 'Facebook Catalog Name',
 };
 
 const enResource: ResourceLanguage = {

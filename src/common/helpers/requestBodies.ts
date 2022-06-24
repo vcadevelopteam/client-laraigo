@@ -2945,11 +2945,11 @@ export const getProductCatalogSel = (id: number = 0, category: string = ''): IRe
     }
 })
 
-export const productCatalogIns = ({ id, code, description, descriptiontext, category, status, type, imagereference, notes, unitprice, operation }: Dictionary): IRequestBody => ({
+export const productCatalogIns = ({ id, code, description, descriptiontext, category, status, type, imagereference, notes, title, website, currency, condition, contentid, facebookcatalogid, facebookproductid, facebookcatalogname, unitprice, username, operation }: Dictionary): IRequestBody => ({
     method: "UFN_PRODUCTCATALOG_INS",
     key: "UFN_PRODUCTCATALOG_INS",
     parameters: {
-        id, code, description, descriptiontext, category, status, type, imagereference, notes, unitprice, operation
+        id, code, description, descriptiontext, category, status, type, imagereference, notes, title, website, currency, condition, contentid, facebookcatalogid, facebookproductid, facebookcatalogname, unitprice, username, operation
     }
 })
 export const listPaymentCard = ({ corpid, orgid, id }: Dictionary) => ({

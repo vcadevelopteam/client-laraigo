@@ -8,7 +8,7 @@ import TableZyx from '../components/fields/table-simple';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateIcons, TemplateBreadcrumbs, FieldEdit, FieldSelect, TitleDetail } from 'components';
-import { getValuesFromDomain, getProductCatalogSel, productCatalogIns} from 'common/helpers';
+import { getValuesFromDomain, getProductCatalogSel, productCatalogIns } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -60,6 +60,8 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+const dataCurrency = [{ value: "PEN", description: "PEN" }, { value: "USD", description: "USD" }]
+
 const PRODUCTCATALOG = 'PRODUCTCATALOG';
 const ProductCatalog: FC = () => {
     const dispatch = useDispatch();
@@ -98,14 +100,14 @@ const ProductCatalog: FC = () => {
         dispatch(setMemoryTable({
             id: PRODUCTCATALOG
         }))
-        
+
         return () => {
             dispatch(cleanMemoryTable());
             dispatch(resetAllMain());
         };
     }, []);
 
-    function redirectFunc(view:string) {
+    function redirectFunc(view: string) {
         setViewSelected(view)
     }
 
@@ -194,6 +196,10 @@ const ProductCatalog: FC = () => {
                 }
             },
             {
+                Header: t(langKeys.productcatalog_title),
+                accessor: 'title',
+            },
+            {
                 Header: t(langKeys.code),
                 accessor: 'code',
             },
@@ -234,7 +240,7 @@ const ProductCatalog: FC = () => {
         }
 
         return (
-            <div style={{width:"100%"}}>
+            <div style={{ width: "100%" }}>
                 <Fragment>
                     <TableZyx
                         ButtonsElement={() => (
@@ -299,13 +305,13 @@ const sxImageBox = {
 
 const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, arrayBread }) => {
     const dispatch = useDispatch();
-    
+
     const { t } = useTranslation();
-    
+
     const classes = useStyles();
     const executeRes = useSelector(state => state.main.execute);
     const dataDomainStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataDomainCategory = multiData[1] && multiData[1].success ? multiData[1].data: [];
+    const dataDomainCategory = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const uploadResult = useSelector(state => state.main.uploadFile);
 
     const [fileAttachment, setFileAttachment] = useState<File | null>(null);
@@ -323,6 +329,14 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
             type: row?.type || '',
             imagereference: row?.imagereference || '',
             notes: row?.notes || '',
+            title: row?.title || '',
+            website: row?.website || '',
+            currency: row?.currency || '',
+            condition: row?.condition || '',
+            contentid: row?.contentid || '',
+            facebookcatalogid: row?.facebookcatalogid || '',
+            facebookproductid: row?.facebookproductid || '',
+            facebookcatalogname: row?.facebookcatalogname || '',
             unitprice: row?.unitprice || 0.0,
             operation: (edit && row) ? "EDIT" : "INSERT",
         }
@@ -354,6 +368,14 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
         register('type');
         register('imagereference');
         register('notes');
+        register('title', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('website');
+        register('currency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('condition');
+        register('contentid');
+        register('facebookcatalogid');
+        register('facebookproductid');
+        register('facebookcatalogname');
         register('unitprice', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
     }, [edit, register]);
 
@@ -370,7 +392,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
             callback
         }))
     });
-    
+
     const onChangeAttachment = useCallback((files: any) => {
         const file = files?.item(0);
         if (file) {
@@ -409,7 +431,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
     }, [waitUploadFile, uploadResult])
 
     return (
-        <div style={{width: "100%"}}>
+        <div style={{ width: "100%" }}>
             <form onSubmit={onSubmit}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
@@ -447,11 +469,33 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         <FieldEdit
+                            label={t(langKeys.productcatalog_title)}
+                            className="col-6"
+                            valueDefault={row?.title || ""}
+                            onChange={(value) => setValue('title', value)}
+                            error={errors?.title?.message}
+                        />
+                        <FieldEdit
                             label={t(langKeys.code)}
                             className="col-6"
                             valueDefault={row?.code || ""}
                             onChange={(value) => setValue('code', value)}
                             error={errors?.code?.message}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldSelect
+                            label={t(langKeys.category)}
+                            className="col-6"
+                            valueDefault={row?.category || ""}
+                            onChange={(value) => {
+                                setValue('category', value?.domainvalue || '');
+                                setValue('descriptiontext', value?.domaindesc || '');
+                            }}
+                            error={errors?.category?.message}
+                            data={dataDomainCategory}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
                         />
                         <FieldSelect
                             label={t(langKeys.status)}
@@ -467,6 +511,16 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         />
                     </div>
                     <div className="row-zyx">
+                        <FieldSelect
+                            label={t(langKeys.productcatalog_currency)}
+                            className="col-6"
+                            valueDefault={row?.currency}
+                            onChange={(value) => setValue('currency', value?.value || '')}
+                            error={errors?.currency?.message}
+                            data={dataCurrency}
+                            optionDesc="description"
+                            optionValue="value"
+                        />
                         <FieldEdit
                             label={t(langKeys.productcatalogunitprice)}
                             className="col-6"
@@ -475,19 +529,6 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             error={errors?.unitprice?.message}
                             type="number"
                             inputProps={{ step: "any" }}
-                        />
-                        <FieldSelect
-                            label={t(langKeys.category)}
-                            className="col-6"
-                            valueDefault={row?.category || ""}
-                            onChange={(value) => {
-                                setValue('category', value?.domainvalue || '');
-                                setValue('descriptiontext', value?.domaindesc || '');
-                            }}
-                            error={errors?.category?.message}
-                            data={dataDomainCategory}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
                         />
                     </div>
                     <div className="row-zyx">
@@ -509,6 +550,47 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         />
                     </div>
                     <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.productcatalog_website)}
+                            className="col-12"
+                            valueDefault={row?.website || ""}
+                            onChange={(value) => setValue('website', value)}
+                            error={errors?.website?.message}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.productcatalog_condition)}
+                            className="col-6"
+                            valueDefault={row?.condition || ""}
+                            onChange={(value) => setValue('condition', value)}
+                            error={errors?.condition?.message}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.productcatalog_contentid)}
+                            className="col-6"
+                            valueDefault={row?.contentid || ""}
+                            onChange={(value) => setValue('contentid', value)}
+                            error={errors?.contentid?.message}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.productcatalog_facebookcatalogid)}
+                            className="col-6"
+                            valueDefault={row?.facebookcatalogid || ""}
+                            onChange={(value) => setValue('facebookcatalogid', value)}
+                            error={errors?.facebookcatalogid?.message}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.productcatalog_facebookproductid)}
+                            className="col-6"
+                            valueDefault={row?.facebookproductid || ""}
+                            onChange={(value) => setValue('facebookproductid', value)}
+                            error={errors?.facebookproductid?.message}
+                        />
+                    </div>
+                    <div className="row-zyx">
                         <div className={classes.subtitle}>{t(langKeys.productcatalogimage)}</div>
                         {
                             getValues("imagereference") ? (
@@ -521,7 +603,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                                         />
                                     </Box>
                                 </React.Fragment>)
-                            : null
+                                : null
                         }
                         <React.Fragment>
                             <input
