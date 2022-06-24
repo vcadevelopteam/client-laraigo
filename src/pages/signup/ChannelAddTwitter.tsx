@@ -64,7 +64,7 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
                 return t(langKeys.field_required);
             }
         }
-        
+
         register('channels.twitter.description', { validate: strRequired, value: '' });
         register('channels.twitter.consumerkey', { validate: strRequired, value: '' });
         register('channels.twitter.consumersecret', { validate: strRequired, value: '' });
@@ -72,32 +72,34 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
         register('channels.twitter.accesssecret', { validate: strRequired, value: '' });
         register('channels.twitter.devenvironment', { validate: strRequired, value: '' });
         register('channels.twitter.communicationchannelowner', { value: '' });
-        register('channels.twitter.build', { value: values => ({
-            "method": "UFN_COMMUNICATIONCHANNEL_INS",
-            "parameters": {
-                "id": 0,
-                "description": values.description,
-                "type": "",
-                "communicationchannelsite": "",
-                "communicationchannelowner": values.communicationchannelowner,
-                "chatflowenabled": true,
-                "integrationid": "",
-                "color": "",
-                "icons": "",
-                "other": "",
-                "form": "",
-                "apikey": "",
-                "coloricon": "#1D9BF0",
-            },
-            "type": "TWITTER",
-            "service": {
-                "consumerkey": values.consumerkey,
-                "consumersecret": values.consumersecret,
-                "accesstoken": values.accesstoken,
-                "accesssecret": values.accesssecret,
-                "devenvironment": values.devenvironment
-            }
-        })});
+        register('channels.twitter.build', {
+            value: values => ({
+                "method": "UFN_COMMUNICATIONCHANNEL_INS",
+                "parameters": {
+                    "id": 0,
+                    "description": values.description,
+                    "type": "",
+                    "communicationchannelsite": "",
+                    "communicationchannelowner": values.communicationchannelowner,
+                    "chatflowenabled": true,
+                    "integrationid": "",
+                    "color": "",
+                    "icons": "",
+                    "other": "",
+                    "form": "",
+                    "apikey": "",
+                    "coloricon": "#1D9BF0",
+                },
+                "type": "TWITTER",
+                "service": {
+                    "consumerkey": values.consumerkey,
+                    "consumersecret": values.consumersecret,
+                    "accesstoken": values.accesstoken,
+                    "accesssecret": values.accesssecret,
+                    "devenvironment": values.devenvironment
+                }
+            })
+        });
 
         return () => {
             unregister('channels.twitter');
@@ -107,7 +109,7 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
     useEffect(() => {
         if (foreground !== 'twitter' && viewSelected !== "view1") {
             setViewSelected("view1");
-        } 
+        }
     }, [foreground, viewSelected]);
 
     useEffect(() => {
@@ -229,21 +231,21 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
                 <Trans i18nKey={langKeys.connectface2} />
             </Typography>}
             {hasFinished && <TwitterColor
-                style={{ width: 100, height: 100, alignSelf: 'center' }}/>
+                style={{ width: 100, height: 100, alignSelf: 'center' }} />
             }
             {hasFinished && (
                 <div style={{ alignSelf: 'center' }}>
                     <Typography
                         color="primary"
                         style={{ fontSize: '1.5vw', fontWeight: 'bold', textAlign: 'center' }}>
-                        ¡Felicitaciones!
+                        {t(langKeys.subscription_congratulations)}
                     </Typography>
                     <Typography
                         color="primary"
                         style={{ fontSize: '1.2vw', fontWeight: 500 }}>
-                        Haz conectado Twitter con tu cuenta
+                        {t(langKeys.subscription_message1)} {t(langKeys.channel_twitter)} {t(langKeys.subscription_message2)}
                     </Typography>
-            </div>
+                </div>
             )}
             <FieldEdit
                 onChange={(value) => setValue('channels.twitter.description', value)}
@@ -271,27 +273,6 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
                 size="small"
                 error={errors.channels?.twitter?.devenvironment?.message}
             />
-            {/* <div className="row-zyx">
-                <div className="col-3"></div>
-                <div className="col-6">
-                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                        {t(langKeys.givechannelcolor)}
-                    </Box>
-                    <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                        <TwitterIcon style={{ fill: `${coloricon}`, width: "100px" }} />
-                        <ColorInput
-                            hex={fields.parameters.coloricon}
-                            onChange={e => {
-                                setFields(prev => ({
-                                    ...prev,
-                                    parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
-                                }));
-                                setcoloricon(e.hex)
-                            }}
-                        />
-                    </div>
-                </div>
-            </div> */}
             {!hasFinished && (
                 <Button
                     onClick={() => setView("view2")}

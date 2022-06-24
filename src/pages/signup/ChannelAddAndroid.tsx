@@ -24,27 +24,29 @@ export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = (
                 return t(langKeys.field_required);
             }
         }
-        
+
         register('channels.android.description', { validate: strRequired, value: '' });
-        register('channels.android.build', { value: values => ({
-            "method": "UFN_COMMUNICATIONCHANNEL_INS",
-            "parameters": {
-                "id": 0,
-                "description": values.description,
-                "type": "",
-                "communicationchannelsite": "",
-                "communicationchannelowner": "",
-                "chatflowenabled": true,
-                "integrationid": "",
-                "color": "",
-                "icons": "",
-                "other": "",
-                "form": "",
-                "apikey": "",
-                "coloricon": "#90c900",
-            },
-            "type": "SMOOCHANDROID",
-        })});
+        register('channels.android.build', {
+            value: values => ({
+                "method": "UFN_COMMUNICATIONCHANNEL_INS",
+                "parameters": {
+                    "id": 0,
+                    "description": values.description,
+                    "type": "",
+                    "communicationchannelsite": "",
+                    "communicationchannelowner": "",
+                    "chatflowenabled": true,
+                    "integrationid": "",
+                    "color": "",
+                    "icons": "",
+                    "other": "",
+                    "form": "",
+                    "apikey": "",
+                    "coloricon": "#90c900",
+                },
+                "type": "SMOOCHANDROID",
+            })
+        });
 
         return () => {
             unregister('channels.android')
@@ -68,21 +70,21 @@ export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = (
                 <Trans i18nKey={langKeys.connectface2} />
             </Typography>}
             {hasFinished && <AndroidColor
-                style={{ width: 100, height: 100, alignSelf: 'center' }}/>
+                style={{ width: 100, height: 100, alignSelf: 'center' }} />
             }
             {hasFinished && (
                 <div style={{ alignSelf: 'center' }}>
                     <Typography
                         color="primary"
                         style={{ fontSize: '1.5vw', fontWeight: 'bold', textAlign: 'center' }}>
-                        ¡Felicitaciones!
+                        {t(langKeys.subscription_congratulations)}
                     </Typography>
                     <Typography
                         color="primary"
                         style={{ fontSize: '1.2vw', fontWeight: 500 }}>
-                        Haz integrado con Android SDK
+                        {t(langKeys.subscription_message1)} {t(langKeys.channel_android)} {t(langKeys.subscription_message2)}
                     </Typography>
-            </div>
+                </div>
             )}
             <FieldEdit
                 onChange={(val: string) => {
@@ -106,27 +108,6 @@ export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = (
                     )
                 }}
             />
-            {/* <div className="row-zyx">
-                <div className="col-3"></div>
-                <div className="col-6">
-                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                        {t(langKeys.givechannelcolor)}
-                    </Box>
-                    <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                        <AndroidIcon style={{ fill: `${coloricon}`, width: "100px" }} />
-                        <ColorInput
-                            hex={fields.parameters.coloricon}
-                            onChange={e => {
-                                setFields(prev => ({
-                                    ...prev,
-                                    parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
-                                }));
-                                setcoloricon(e.hex)
-                            }}
-                        />
-                    </div>
-                </div>
-            </div> */}
         </div>
     )
 }

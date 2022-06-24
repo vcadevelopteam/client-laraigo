@@ -32,7 +32,7 @@ class SubmitObservable {
     }
 
     trigger() {
-        for(const runnable of this.listeners) {
+        for (const runnable of this.listeners) {
             runnable();
         }
     }
@@ -54,7 +54,7 @@ interface Subscription {
     setStep: SetState<number>;
     finishreg: () => void;
     valchannels: () => void;
-    onCheckFunc: (altf:any) => void;
+    onCheckFunc: (altf: any) => void;
     setForeground: SetState<keyof ListChannels | undefined>;
     resetChannels: () => void;
     addChannel: (option: keyof ListChannels) => void;
@@ -83,6 +83,11 @@ export interface ListChannels {
     android: boolean;
     apple: boolean;
     voximplantphone: boolean;
+    tiktok: boolean;
+    youtube: boolean;
+    linkedin: boolean;
+    teams: boolean;
+    blogger: boolean;
 }
 
 export interface FacebookChannel {
@@ -225,6 +230,11 @@ const defaultListChannels: ListChannels = {
     android: false,
     apple: false,
     voximplantphone: false,
+    tiktok: false,
+    youtube: false,
+    linkedin: false,
+    teams: false,
+    blogger: false,
 };
 
 export const SubscriptionContext = createContext<Subscription>({
@@ -235,16 +245,16 @@ export const SubscriptionContext = createContext<Subscription>({
     step: 0,
     confirmations: 0,
     listchannels: defaultListChannels,
-    setConfirmations: () => {},
-    setStep: () => {},
-    finishreg: () => {},
-    valchannels: () => {},
-    onCheckFunc: (altf:any) => {},
-    setForeground: () => {},
-    addChannel: () => {},
-    deleteChannel: () => {},
-    resetChannels: () => {},
-    toggleChannel: () => {},
+    setConfirmations: () => { },
+    setStep: () => { },
+    finishreg: () => { },
+    valchannels: () => { },
+    onCheckFunc: (altf: any) => { },
+    setForeground: () => { },
+    addChannel: () => { },
+    deleteChannel: () => { },
+    resetChannels: () => { },
+    toggleChannel: () => { },
     submitObservable: new SubmitObservable(),
     form: {},
 });
@@ -383,14 +393,14 @@ export const SubscriptionProvider: FC = ({ children }) => {
             var errormessage = t(executeResult.message || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
 
             dispatch(showBackdrop(false));
-            
+
             dispatch(showSnackbar({
                 show: true,
                 success: false,
                 message: errormessage,
             }))
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [executeResult, form.getValues, t, dispatch])
 
     useEffect(() => {
@@ -403,11 +413,11 @@ export const SubscriptionProvider: FC = ({ children }) => {
 
             if (executeResultValidation.error) {
                 var errormessage = t(executeResultValidation.message || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-    
+
                 if (executeResultValidation.code) {
                     errormessage = `${t(langKeys.suscriptionlinkerror)}${t(executeResultValidation.code)}`
                 }
-                
+
                 dispatch(showBackdrop(false));
                 dispatch(showSnackbar({
                     message: errormessage,
@@ -418,14 +428,14 @@ export const SubscriptionProvider: FC = ({ children }) => {
                 dispatch(showBackdrop(false));
             }
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [executeResultValidation, validateBool])
 
     const deleteChannel = (option: keyof ListChannels) => {
         setlistchannels(prev => {
             const v = prev[option];
             if (foreground === option) setForeground(undefined);
-            
+
             if (v === false) return prev;
             return {
                 ...prev,
@@ -507,7 +517,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
             },
             channellist: partialchannels.map(
-                function<T extends {build: (v: any) => IRequestBody}>(x: T) {
+                function <T extends { build: (v: any) => IRequestBody }>(x: T) {
                     return x.build(x);
                 }
             ),
@@ -516,14 +526,14 @@ export const SubscriptionProvider: FC = ({ children }) => {
         dispatch(validateChannels(majorfield));
         setValidateBool(true);
     }
-    
+
     const onSubmit: SubmitHandler<MainData> = (data) => {
         const { channels, ...mainData } = data;
         debugger
         const majorfield = {
             method: "UFN_CREATEZYXMEACCOUNT_INS",
             key: "UFN_CREATEZYXMEACCOUNT_INS",
-            card:{
+            card: {
                 firstname: mainData.firstnamecard,
                 lastname: mainData.lastnamecard,
                 mail: mainData.pmemail,
@@ -551,7 +561,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
             },
             channellist: Object.values(channels).map(
-                function<T extends {build: (v: any) => IRequestBody}>(x: T) {
+                function <T extends { build: (v: any) => IRequestBody }>(x: T) {
                     return x.build(x);
                 }
             ),

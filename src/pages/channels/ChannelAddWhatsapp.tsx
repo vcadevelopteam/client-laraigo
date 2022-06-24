@@ -12,7 +12,7 @@ import { useHistory, useLocation } from "react-router";
 import paths from "common/constants/paths";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { insertChannel,activateChannel } from "store/channel/actions";
+import { insertChannel, activateChannel } from "store/channel/actions";
 import { WhatsappIcon } from "icons";
 import { Dictionary } from "@types";
 
@@ -37,14 +37,14 @@ const useChannelAddStyles = makeStyles(theme => ({
         width: "100%",
     },
     fields1: {
-        flex:1,
+        flex: 1,
         margin: "15px"
     },
     fields2: {
-        flex:1,
+        flex: 1,
     },
     fields3: {
-        flex:1,
+        flex: 1,
         marginLeft: "15px"
     },
 }));
@@ -82,7 +82,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
     const [setRegister360, setSetRegister360] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
     const [setParameters, setSetParameters] = useState(true);
-   
+
     const user = useSelector(state => state.login.validateToken.user);
     const roledesc = user?.roledesc || "";
     const executeResult = useSelector(state => state.channel.successinsert);
@@ -137,7 +137,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
             "apikey": "",
             "coloricon": "#4AC959",
         },
-        "type": whatsAppData?.typeWhatsApp==="DIALOG"?"WHATSAPP":"WHATSAPPSMOOCH",
+        "type": whatsAppData?.typeWhatsApp === "DIALOG" ? "WHATSAPP" : "WHATSAPPSMOOCH",
         "service": {
             "accesstoken": "",
             "brandname": "",
@@ -160,30 +160,30 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
     }
 
     async function finishreg() {
-        setsetins(true)
-        dispatch(insertChannel(fields))
+        setsetins(true);
+        dispatch(insertChannel(fields));
         setWaitSave(true);
-        setViewSelected("main")
+        setViewSelected("main");
     }
 
     useEffect(() => {
-        if (roledesc !== "SUPERADMIN" && !edit && whatsAppData?.typeWhatsApp==="DIALOG") {
+        if (roledesc !== "SUPERADMIN" && !edit && whatsAppData?.typeWhatsApp === "DIALOG") {
             setSetRegister360(true);
             setSetRegisterSmooch(false);
 
             let partialField = fields;
             partialField.type = "DIALOG";
-            
+
             setFields(partialField);
         }
-    
-        if (roledesc !== "SUPERADMIN" && !edit && whatsAppData?.typeWhatsApp==="SMOOCH") {
+
+        if (roledesc !== "SUPERADMIN" && !edit && whatsAppData?.typeWhatsApp === "SMOOCH") {
             setSetRegister360(false);
             setSetRegisterSmooch(true);
 
             let partialField = fields;
             partialField.type = "WHATSAPPSMOOCHINSERT";
-            
+
             setFields(partialField);
         }
     }, [whatsAppData])
@@ -195,7 +195,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                 if (whatsAppData?.row) {
                     if (whatsAppData && whatsAppData?.row.servicecredentials.length > 0) {
                         var serviceField = JSON.parse(whatsAppData.row.servicecredentials);
-                
+
                         setFields({
                             "method": "UFN_COMMUNICATIONCHANNEL_INS",
                             "parameters": {
@@ -239,24 +239,24 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
     }, [setParameters])
 
     useEffect(() => {
-        if (!mainResult.loading && setins){
+        if (!mainResult.loading && setins) {
             if (executeResult) {
-                setsetins(false)
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
+                setsetins(false);
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }));
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
-                history.push(paths.CHANNELS)
+                history.push(paths.CHANNELS);
             } else if (!executeResult) {
-                const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() });
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }));
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
         }
     }, [mainResult])
 
-    function checkissues(){
-        setViewSelected("viewfinishreg")
+    function checkissues() {
+        setViewSelected("viewfinishreg");
     }
 
     useEffect(() => {
@@ -267,62 +267,62 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
     }, [mainResult])
 
     function setnameField(value: any) {
-        setChannelreg(value==="")
+        setChannelreg(value === "");
         let partialf = fields;
-        partialf.parameters.description = value
-        setFields(partialf)
+        partialf.parameters.description = value;
+        setFields(partialf);
     }
 
     function setService(value: string, field: string) {
-        setNextbutton(value==="")
+        setNextbutton(value === "");
         let partialf = fields;
         partialf.service.accesstoken = value;
         partialf.parameters.communicationchannelowner = "";
-        setFields(partialf)
+        setFields(partialf);
     }
 
     function setApiKeyId(value: string, field: string) {
-        setNextbutton(value==="")
+        setNextbutton(value === "");
         let partialf = fields;
         partialf.service.apikeyid = value;
         partialf.parameters.communicationchannelowner = "";
-        setFields(partialf)
+        setFields(partialf);
     }
 
     function setApiKeySecret(value: string, field: string) {
-        setNextbutton(value==="")
+        setNextbutton(value === "");
         let partialf = fields;
         partialf.service.apikeysecret = value;
         partialf.parameters.communicationchannelowner = "";
-        setFields(partialf)
+        setFields(partialf);
     }
 
     function setAppId(value: string, field: string) {
-        setNextbutton(value==="")
+        setNextbutton(value === "")
         let partialf = fields;
         partialf.service.appid = value;
         partialf.parameters.communicationchannelowner = "";
-        setFields(partialf)
+        setFields(partialf);
     }
 
     async function activateChannelfunc() {
         dispatch(showBackdrop(true));
-        dispatch(activateChannel(fields))
+        dispatch(activateChannel(fields));
     }
 
     useEffect(() => {
-        if(!executeActivationResult.loading && (set360||setsmooch)){
+        if (!executeActivationResult.loading && (set360 || setsmooch)) {
             dispatch(showBackdrop(false));
-            if (executeActivationResult.error){
+            if (executeActivationResult.error) {
                 dispatch(showSnackbar({ show: true, success: false, message: String(executeActivationResult.message) }))
-            }else{
+            } else {
                 dispatch(showSnackbar({ show: true, success: true, message: "Success" }))
                 history.push(paths.CHANNELS);
             }
         }
     }, [executeActivationResult]);
 
-    if (viewSelected==="view1") {
+    if (viewSelected === "view1") {
         if (setRegister360) {
             return (
                 <div style={{ width: '100%' }}>
@@ -332,26 +332,26 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                         </Link>
                     </Breadcrumbs>
                     <div>
-                        <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.whatsapptitle)}</div>
+                        <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.whatsapptitledialog)}</div>
                         {
                             edit ?
-                            <Button
-                                className={classes.centerbutton}
-                                variant="contained"
-                                color="primary"
-                                disabled={false}
-                                onClick={() => { history.push(paths.CHANNELS_ADD, whatsAppData) }}
+                                <Button
+                                    className={classes.centerbutton}
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={false}
+                                    onClick={() => { history.push(paths.CHANNELS_ADD, whatsAppData) }}
                                 >{t(langKeys.close)}
-                            </Button>
-                            :
-                            <Button
-                                className={classes.centerbutton}
-                                variant="contained"
-                                color="primary"
-                                disabled={nextbutton}
-                                onClick={() => { setViewSelected("viewfinishreg") }}
+                                </Button>
+                                :
+                                <Button
+                                    className={classes.centerbutton}
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={nextbutton}
+                                    onClick={() => { setViewSelected("viewfinishreg") }}
                                 >{t(langKeys.registerwhats)}
-                            </Button>
+                                </Button>
                         }
                         <div className="row-zyx">
                             <div className="col-3"></div>
@@ -361,7 +361,6 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                 className="col-6"
                             />
                         </div>
-    
                     </div>
                 </div>
             )
@@ -375,59 +374,59 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                         </Link>
                     </Breadcrumbs>
                     <div>
-                        <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.whatsapptitle)}</div>
+                        <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.whatsapptitlesmooch)}</div>
                         {
                             edit ?
-                            <Button
-                                className={classes.centerbutton}
-                                variant="contained"
-                                color="primary"
-                                disabled={false}
-                                onClick={() => { history.push(paths.CHANNELS_ADD, whatsAppData) }}
+                                <Button
+                                    className={classes.centerbutton}
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={false}
+                                    onClick={() => { history.push(paths.CHANNELS_ADD, whatsAppData) }}
                                 >{t(langKeys.close)}
-                            </Button>
-                            :
-                            <Button
-                                className={classes.centerbutton}
-                                variant="contained"
-                                color="primary"
-                                disabled={disablebutton2}
-                                onClick={() => { setViewSelected("viewfinishreg") }}
+                                </Button>
+                                :
+                                <Button
+                                    className={classes.centerbutton}
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={disablebutton2}
+                                    onClick={() => { setViewSelected("viewfinishreg") }}
                                 >{t(langKeys.registerwhats)}
-                            </Button>
+                                </Button>
                         }
                         <div className="row-zyx">
-                            <div style={{width:"100%",padding: "10px 25%"}}>
+                            <div style={{ width: "100%", padding: "10px 25%" }}>
                                 <TextField
-                                    style={{width:"100%"}}
+                                    style={{ width: "100%" }}
                                     onChange={(e) => {
                                         setApiKeyId(e.target.value, "apikeyid");
                                         setdisablebutton2(!e.target.value || !fields.service.apikeysecret || !fields.service.appid)
                                     }}
                                     variant="outlined"
-                                    label={"Apikey Id"}
+                                    label={t(langKeys.smooch_apikeyid)}
                                 />
                             </div>
-                            <div style={{width:"100%",padding: "10px 25%"}}>
+                            <div style={{ width: "100%", padding: "10px 25%" }}>
                                 <TextField
-                                    style={{width:"100%"}}
+                                    style={{ width: "100%" }}
                                     onChange={(e) => {
                                         setApiKeySecret(e.target.value, "apikeysecret");
                                         setdisablebutton2(!e.target.value || !fields.service.apikeyid || !fields.service.appid)
                                     }}
                                     variant="outlined"
-                                    label={"Apikey Secret"}
+                                    label={t(langKeys.smooch_apikeysecret)}
                                 />
                             </div>
-                            <div style={{width:"100%",padding: "10px 25%"}}>
+                            <div style={{ width: "100%", padding: "10px 25%" }}>
                                 <TextField
-                                    style={{width:"100%"}}
+                                    style={{ width: "100%" }}
                                     onChange={(e) => {
                                         setAppId(e.target.value, "appid");
                                         setdisablebutton2(!e.target.value || !fields.service.apikeyid || !fields.service.apikeysecret)
                                     }}
                                     variant="outlined"
-                                    label={"App Id"}
+                                    label={t(langKeys.smooch_appid)}
                                 />
                             </div>
                         </div>
@@ -445,15 +444,15 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                             </Link>
                         </Breadcrumbs>
                     </div>
-                    <div style={{ width: "100%", marginTop: "20px", alignItems: "center", display: "flex"}}>
-                        <div style={{ flex: "1", margin: "0px 15px"}}>
+                    <div style={{ width: "100%", marginTop: "20px", alignItems: "center", display: "flex" }}>
+                        <div style={{ flex: "1", margin: "0px 15px" }}>
                             <Button
                                 onClick={() => {
                                     setSetRegister360(true);
-                                
+
                                     let partialField = fields;
                                     partialField.type = "WHATSAPP";
-                                
+
                                     setFields(partialField);
                                 }}
                                 className={classes.button2}
@@ -463,14 +462,14 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                             >{t(langKeys.register360dialog)}
                             </Button>
                         </div>
-                        <div style={{ flex: "1", margin: "0px 15px"}}>
+                        <div style={{ flex: "1", margin: "0px 15px" }}>
                             <Button
                                 onClick={() => {
                                     setSetRegisterSmooch(true);
-                                
+
                                     let partialField = fields;
                                     partialField.type = "WHATSAPPSMOOCHINSERT";
-                                
+
                                     setFields(partialField);
                                 }}
                                 className={classes.button2}
@@ -482,7 +481,6 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                         </div>
                     </div>
                 </div>
-                
             )
         }
         else if (set360) {
@@ -494,8 +492,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                         </Link>
                     </Breadcrumbs>
                     <div>
-                        <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.whatsapptitle)}</div>
-
+                        <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.whatsapptitledialog)}</div>
                         <Button
                             className={classes.centerbutton}
                             variant="contained"
@@ -512,7 +509,6 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                 className="col-6"
                             />
                         </div>
-
                     </div>
                 </div>
             )
@@ -526,13 +522,11 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                         </Link>
                     </Breadcrumbs>
                     <div>
-                        <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.whatsapptitle)}</div>
-    
+                        <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.whatsapptitlesmooch)}</div>
                         <div className="row-zyx">
-                            <div style={{width:"100%",padding: "10px 25%"}}>
-
+                            <div style={{ width: "100%", padding: "10px 25%" }}>
                                 <TextField
-                                    style={{width:"100%"}}
+                                    style={{ width: "100%" }}
                                     onChange={(e) => {
                                         setApiKeyId(e.target.value, "apikeyid");
                                         setdisablebutton2(!e.target.value || !fields.service.apikeysecret || !fields.service.appid)
@@ -541,9 +535,9 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                     label={"Apikey Id"}
                                 />
                             </div>
-                            <div style={{width:"100%",padding: "10px 25%"}}>
+                            <div style={{ width: "100%", padding: "10px 25%" }}>
                                 <TextField
-                                    style={{width:"100%"}}
+                                    style={{ width: "100%" }}
                                     onChange={(e) => {
                                         setApiKeySecret(e.target.value, "apikeysecret");
                                         setdisablebutton2(!e.target.value || !fields.service.apikeyid || !fields.service.appid)
@@ -552,9 +546,9 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                     label={"Apikey Secret"}
                                 />
                             </div>
-                            <div style={{width:"100%",padding: "10px 25%"}}>
+                            <div style={{ width: "100%", padding: "10px 25%" }}>
                                 <TextField
-                                    style={{width:"100%"}}
+                                    style={{ width: "100%" }}
                                     onChange={(e) => {
                                         setAppId(e.target.value, "appid");
                                         setdisablebutton2(!e.target.value || !fields.service.apikeyid || !fields.service.apikeysecret)
@@ -564,7 +558,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                 />
                             </div>
                         </div>
-                        <div style={{width:"100%",padding: "20px 25%"}}>
+                        <div style={{ width: "100%", padding: "20px 25%" }}>
                             <Button
                                 onClick={() => { activateChannelfunc() }}
                                 className={classes.button2}
@@ -574,13 +568,12 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                             >{t(langKeys.finishreg)}
                             </Button>
                         </div>
-    
                     </div>
                 </div>
             )
-        }    
+        }
         else {
-            if (whatsAppData?.typeWhatsApp==="DIALOG") {
+            if (whatsAppData?.typeWhatsApp === "DIALOG") {
                 return (
                     <div style={{ width: '100%' }}>
                         <Breadcrumbs aria-label="breadcrumb">
@@ -589,26 +582,26 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                             </Link>
                         </Breadcrumbs>
                         <div>
-                            <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.whatsapptitle)}</div>
+                            <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.whatsapptitledialog)}</div>
                             {
                                 edit ?
-                                <Button
-                                    className={classes.centerbutton}
-                                    variant="contained"
-                                    color="primary"
-                                    disabled={false}
-                                    onClick={() => { history.push(paths.CHANNELS_ADD, whatsAppData) }}
+                                    <Button
+                                        className={classes.centerbutton}
+                                        variant="contained"
+                                        color="primary"
+                                        disabled={false}
+                                        onClick={() => { history.push(paths.CHANNELS_ADD, whatsAppData) }}
                                     >{t(langKeys.close)}
-                                </Button>
-                                :
-                                <Button
-                                    className={classes.centerbutton}
-                                    variant="contained"
-                                    color="primary"
-                                    disabled={nextbutton}
-                                    onClick={() => { setViewSelected("viewfinishreg") }}
+                                    </Button>
+                                    :
+                                    <Button
+                                        className={classes.centerbutton}
+                                        variant="contained"
+                                        color="primary"
+                                        disabled={nextbutton}
+                                        onClick={() => { setViewSelected("viewfinishreg") }}
                                     >{t(langKeys.registerwhats)}
-                                </Button>
+                                    </Button>
                             }
                             <div className="row-zyx">
                                 <div className="col-3"></div>
@@ -618,36 +611,37 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                     className="col-6"
                                 />
                             </div>
-        
                         </div>
                         {
                             (roledesc === "SUPERADMIN" && edit) ?
-                            <div style={{ width: "100%", alignItems: "center", display: "flex"}}>
-                            <div style={{ flex: "1", margin: "0px 15px"}}>
-                                <Button
-                                    onClick={() => { setset360(true);
-                                        let partialf = fields;
-                                        partialf.type = "WHATSAPP";
-                                        setFields(partialf); }}
-                                    className={classes.button2}
-                                    disabled={disablebutton}
-                                    variant="contained"
-                                    color="primary"
-                                >{t(langKeys.activate360dialog)}
-                                </Button>
-                            </div>
-                            <div style={{ flex: "1", margin: "0px 15px"}}>
-                                <Button
-                                    onClick={() => { setsetsmooch(true) }}
-                                    className={classes.button2}
-                                    disabled={disablebutton}
-                                    variant="contained"
-                                    color="primary"
-                                >{t(langKeys.activatesmooch)}
-                                </Button>
-                            </div>
-                            </div>
-                            : ""
+                                <div style={{ width: "100%", alignItems: "center", display: "flex" }}>
+                                    <div style={{ flex: "1", margin: "0px 15px" }}>
+                                        <Button
+                                            onClick={() => {
+                                                setset360(true);
+                                                let partialf = fields;
+                                                partialf.type = "WHATSAPP";
+                                                setFields(partialf);
+                                            }}
+                                            className={classes.button2}
+                                            disabled={disablebutton}
+                                            variant="contained"
+                                            color="primary"
+                                        >{t(langKeys.activate360dialog)}
+                                        </Button>
+                                    </div>
+                                    <div style={{ flex: "1", margin: "0px 15px" }}>
+                                        <Button
+                                            onClick={() => { setsetsmooch(true) }}
+                                            className={classes.button2}
+                                            disabled={disablebutton}
+                                            variant="contained"
+                                            color="primary"
+                                        >{t(langKeys.activatesmooch)}
+                                        </Button>
+                                    </div>
+                                </div>
+                                : ""
                         }
                     </div>
                 )
@@ -655,11 +649,11 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
             else {
                 return (
                     <div style={{ width: '100%' }}>
-                        <div>    
+                        <div>
                             <div >
-                                <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad",marginBottom: 10}}>{t(langKeys.brandpointcontact)}</div>
-                                <div style={{ textAlign: "center", fontWeight: 500, fontSize: 16, color: "grey"}}>{t(langKeys.brandpointcontact2)}</div>
-                                <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display:"flex"}}>
+                                <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", marginBottom: 10 }}>{t(langKeys.brandpointcontact)}</div>
+                                <div style={{ textAlign: "center", fontWeight: 500, fontSize: 16, color: "grey" }}>{t(langKeys.brandpointcontact2)}</div>
+                                <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display: "flex" }}>
                                     <TextField
                                         className={classes.fields1}
                                         variant="outlined"
@@ -672,11 +666,11 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                         error={!!errors.firstname}
                                         helperText={errors.firstname}
                                         onChange={(e) => {
-                                            let partialf = {...fields};
+                                            let partialf = { ...fields };
                                             partialf.service.firstname = e.target.value;
                                             setFields(partialf)
-                                            setdisablebutton(!(e.target.value) || !(fields.service.brandname) || !(fields.service.brandaddress) || !(fields.service.lastname) || !(fields.service.email) 
-                                                    || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber) )
+                                            setdisablebutton(!(e.target.value) || !(fields.service.brandname) || !(fields.service.brandaddress) || !(fields.service.lastname) || !(fields.service.email)
+                                                || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber))
                                         }}
                                         value={fields.service.firstname}
                                         disabled={edit}
@@ -693,17 +687,17 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                         error={!!errors.lastname}
                                         helperText={errors.lastname}
                                         onChange={(e) => {
-                                            let partialf = {...fields};
+                                            let partialf = { ...fields };
                                             partialf.service.lastname = e.target.value;
                                             setFields(partialf)
-                                            setdisablebutton(!(e.target.value) || !(fields.service.brandname) || !(fields.service.brandaddress) || !(fields.service.firstname) || !(fields.service.email) 
-                                                    || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber) )
+                                            setdisablebutton(!(e.target.value) || !(fields.service.brandname) || !(fields.service.brandaddress) || !(fields.service.firstname) || !(fields.service.email)
+                                                || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber))
                                         }}
                                         value={fields.service.lastname}
                                         disabled={edit}
                                     />
                                 </div>
-                                <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display:"flex"}}>
+                                <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display: "flex" }}>
                                     <TextField
                                         className={classes.fields1}
                                         style={{ marginBottom: 0 }}
@@ -717,11 +711,11 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                         error={!!errors.email}
                                         helperText={errors.email}
                                         onChange={(e) => {
-                                            let partialf = {...fields};
+                                            let partialf = { ...fields };
                                             partialf.service.email = e.target.value;
                                             setFields(partialf)
-                                            setdisablebutton(!(e.target.value) || !(fields.service.brandname) || !(fields.service.brandaddress) || !(fields.service.firstname) || !(fields.service.lastname) 
-                                                    || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber) )
+                                            setdisablebutton(!(e.target.value) || !(fields.service.brandname) || !(fields.service.brandaddress) || !(fields.service.firstname) || !(fields.service.lastname)
+                                                || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber))
                                         }}
                                         value={fields.service.email}
                                         disabled={edit}
@@ -738,20 +732,20 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                         label={t(langKeys.phone)}
                                         name="phone"
                                         fullWidth
-                                        defaultCountry={'pe'}                                    
+                                        defaultCountry={'pe'}
                                         onChange={(e) => {
-                                            let partialf = {...fields};
+                                            let partialf = { ...fields };
                                             partialf.service.phone = e;
                                             setFields(partialf)
-                                            setdisablebutton(!(e) || !(fields.service.brandname) || !(fields.service.brandaddress) || !(fields.service.firstname) || !(fields.service.lastname) 
-                                                    || !(fields.service.email) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber) )
+                                            setdisablebutton(!(e) || !(fields.service.brandname) || !(fields.service.brandaddress) || !(fields.service.firstname) || !(fields.service.lastname)
+                                                || !(fields.service.email) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber))
                                         }}
                                         disabled={edit}
                                     />
                                 </div>
-                                <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey",marginLeft: "15px",marginBottom: "15px"}}>{t(langKeys.emailcondition)}</div>
-                                <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad",marginBottom: 10}}>{t(langKeys.whatsappinformation)}</div>
-                                <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display:"flex"}}>
+                                <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginLeft: "15px", marginBottom: "15px" }}>{t(langKeys.emailcondition)}</div>
+                                <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", marginBottom: 10 }}>{t(langKeys.whatsappinformation)}</div>
+                                <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display: "flex" }}>
                                     <TextField
                                         className={classes.fields3}
                                         variant="outlined"
@@ -764,23 +758,23 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                         error={!!errors.phonenumberwhatsappbusiness}
                                         helperText={errors.phonenumberwhatsappbusiness}
                                         onChange={(e) => {
-                                            let partialf = {...fields};
+                                            let partialf = { ...fields };
                                             partialf.service.phonenumberwhatsappbusiness = e.target.value;
                                             setFields(partialf)
-                                            setdisablebutton(!(e.target.value) || !(fields.service.brandname) || !(fields.service.brandaddress) || !(fields.service.firstname) || !(fields.service.lastname) 
-                                                    || !(fields.service.email) || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.nameassociatednumber) )
+                                            setdisablebutton(!(e.target.value) || !(fields.service.brandname) || !(fields.service.brandaddress) || !(fields.service.firstname) || !(fields.service.lastname)
+                                                || !(fields.service.email) || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.nameassociatednumber))
                                         }}
                                         value={fields.service.phonenumberwhatsappbusiness}
                                         disabled={edit}
                                     />
                                 </div>
                                 <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginLeft: "15px", marginBottom: "15px" }}>
-                                    {t(langKeys.whatsappinformation3)+" "}
+                                    {t(langKeys.whatsappinformation3) + " "}
                                     <Link href="http://africau.edu/images/default/sample.pdf">
                                         {t(langKeys.whatsappguidedownload)}
                                     </Link>
                                 </div>
-                                <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display:"flex"}}>
+                                <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display: "flex" }}>
                                     <TextField
                                         className={classes.fields3}
                                         variant="outlined"
@@ -793,73 +787,73 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                         error={!!errors.nameassociatednumber}
                                         helperText={errors.nameassociatednumber}
                                         onChange={(e) => {
-                                            let partialf = {...fields};
+                                            let partialf = { ...fields };
                                             partialf.service.nameassociatednumber = e.target.value;
                                             setFields(partialf)
-                                            setdisablebutton(!(e.target.value) || !(fields.service.brandname) || !(fields.service.brandaddress) || !(fields.service.firstname) || !(fields.service.lastname) 
-                                                    || !(fields.service.email) || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) )
+                                            setdisablebutton(!(e.target.value) || !(fields.service.brandname) || !(fields.service.brandaddress) || !(fields.service.firstname) || !(fields.service.lastname)
+                                                || !(fields.service.email) || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness))
                                         }}
                                         value={fields.service.nameassociatednumber}
                                         disabled={edit}
                                     />
                                 </div>
-                                <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey",marginLeft: "15px",marginBottom: "15px"}}>{t(langKeys.whatsappinformation4)}</div>
+                                <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginLeft: "15px", marginBottom: "15px" }}>{t(langKeys.whatsappinformation4)}</div>
                                 <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginLeft: "15px", marginBottom: "15px" }}><b>*{t(langKeys.whatsappsubtitle1)}</b></div>
-                                <div style={{ width: "100%", alignItems: "center", display: "flex"}}>
-                                    <div style={{ flex: "1", margin: "0px 15px"}}>
+                                <div style={{ width: "100%", alignItems: "center", display: "flex" }}>
+                                    <div style={{ flex: "1", margin: "0px 15px" }}>
                                         {edit ?
-                                        <Button
-                                            onClick={() => { history.push(paths.CHANNELS_ADD, whatsAppData) }}
-                                            className={classes.button2}
-                                            disabled={false}
-                                            variant="contained"
-                                            color="primary"
-                                        >{t(langKeys.close)}
-                                        </Button>
-                                        :
-                                        <Button
-                                            onClick={() => { checkissues() }}
-                                            className={classes.button2}
-                                            disabled={disablebutton}
-                                            variant="contained"
-                                            color="primary"
-                                        >{t(langKeys.next)}
-                                        </Button>
+                                            <Button
+                                                onClick={() => { history.push(paths.CHANNELS_ADD, whatsAppData) }}
+                                                className={classes.button2}
+                                                disabled={false}
+                                                variant="contained"
+                                                color="primary"
+                                            >{t(langKeys.close)}
+                                            </Button>
+                                            :
+                                            <Button
+                                                onClick={() => { checkissues() }}
+                                                className={classes.button2}
+                                                disabled={disablebutton}
+                                                variant="contained"
+                                                color="primary"
+                                            >{t(langKeys.next)}
+                                            </Button>
                                         }
                                     </div>
                                     {
                                         (roledesc === "SUPERADMIN" && edit) ?
-                                        <Fragment>
-                                        <div style={{ flex: "1", margin: "0px 15px"}}>
-                                            <Button
-                                                onClick={() => { setset360(true);
-                                                    let partialf = fields;
-                                                    partialf.type = "WHATSAPP";
-                                                    setFields(partialf); }}
-                                                className={classes.button2}
-                                                disabled={disablebutton}
-                                                variant="contained"
-                                                color="primary"
-                                            >{t(langKeys.activate360dialog)}
-                                            </Button>
-                                        </div>
-                                        <div style={{ flex: "1", margin: "0px 15px"}}>
-                                            <Button
-                                                onClick={() => { setsetsmooch(true) }}
-                                                className={classes.button2}
-                                                disabled={disablebutton}
-                                                variant="contained"
-                                                color="primary"
-                                            >{t(langKeys.activatesmooch)}
-                                            </Button>
-                                        </div>
-                                        </Fragment>
-                                        :""
+                                            <Fragment>
+                                                <div style={{ flex: "1", margin: "0px 15px" }}>
+                                                    <Button
+                                                        onClick={() => {
+                                                            setset360(true);
+                                                            let partialf = fields;
+                                                            partialf.type = "WHATSAPP";
+                                                            setFields(partialf);
+                                                        }}
+                                                        className={classes.button2}
+                                                        disabled={disablebutton}
+                                                        variant="contained"
+                                                        color="primary"
+                                                    >{t(langKeys.activate360dialog)}
+                                                    </Button>
+                                                </div>
+                                                <div style={{ flex: "1", margin: "0px 15px" }}>
+                                                    <Button
+                                                        onClick={() => { setsetsmooch(true) }}
+                                                        className={classes.button2}
+                                                        disabled={disablebutton}
+                                                        variant="contained"
+                                                        color="primary"
+                                                    >{t(langKeys.activatesmooch)}
+                                                    </Button>
+                                                </div>
+                                            </Fragment>
+                                            : ""
                                     }
                                 </div>
-    
                             </div>
-        
                         </div>
                     </div>
                 )
@@ -876,7 +870,6 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                 </Breadcrumbs>
                 <div>
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.commchannelfinishreg)}</div>
-
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
@@ -890,10 +883,10 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                         <div className="col-3"></div>
                         <div className="col-6">
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                            {t(langKeys.givechannelcolor)}
+                                {t(langKeys.givechannelcolor)}
                             </Box>
-                            <div style={{display:"flex",justifyContent:"space-around", alignItems: "center"}}>
-                                <WhatsappIcon style={{fill: `${coloricon}`, width: "100px" }}/>
+                            <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
+                                <WhatsappIcon style={{ fill: `${coloricon}`, width: "100px" }} />
                                 <ColorInput
                                     hex={fields.parameters.coloricon}
                                     onChange={e => {
@@ -907,7 +900,6 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                             </div>
                         </div>
                     </div>
-                    
                     <div style={{ paddingLeft: "80%" }}>
                         <Button
                             onClick={() => { finishreg() }}

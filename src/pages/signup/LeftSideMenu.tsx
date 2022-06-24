@@ -68,7 +68,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
         finishreg,
         valchannels,
         commonClasses
-    } = useContext(SubscriptionContext);  
+    } = useContext(SubscriptionContext);
     const executeResult = useSelector(state => state.signup.insertChannel);
     const datamonth = useMemo(() => ([
         { id: 1, desc: "01" },
@@ -80,25 +80,25 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
         { id: 7, desc: "07" },
         { id: 8, desc: "08" },
         { id: 9, desc: "09" },
-        { id:10, desc: "10" },
-        { id:11, desc: "11" },
-        { id:12, desc: "12" },
+        { id: 10, desc: "10" },
+        { id: 11, desc: "11" },
+        { id: 12, desc: "12" },
     ]), [t]);
 
     useEffect(() => {
-      if(waitSave){
-          if(!executeResultValidation.loading){
-            if(!executeResultValidation.error){
-                setWaitSave(false);
-                setCurrentView("view-2");
-            } else {
-                setWaitSave(false);
+        if (waitSave) {
+            if (!executeResultValidation.loading) {
+                if (!executeResultValidation.error) {
+                    setWaitSave(false);
+                    setCurrentView("view-2");
+                } else {
+                    setWaitSave(false);
+                }
             }
-          }
-      }
+        }
     }, [executeResultValidation])
 
-    
+
     const channels = useMemo(() => {
         if (listchannels === undefined) {
             return null;
@@ -133,7 +133,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
             });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [listchannels, foreground]);
-    
+
     return (
         <div className={classes.root}>
             <div hidden={currentView !== "view-1"}>
@@ -159,7 +159,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                     <>
                         <div style={{ textAlign: "center", padding: "20px" }}>{t(langKeys.finishregmessage)}</div>
                         <Button
-                            onClick={(e)=>{
+                            onClick={(e) => {
                                 e.preventDefault();
                                 setWaitSave(true)
                                 valchannels();
@@ -174,7 +174,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                         </Button>
                     </>
                 )}
-                <div/>
+                <div />
             </div>
             <div hidden={currentView !== "view-2"}>
                 <Breadcrumbs aria-label="breadcrumb" style={{ marginBottom: '1em' }}>
@@ -264,13 +264,13 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                     )}
                 />
                 <h3>{t(langKeys.creditcard)}</h3>
-                <div style={{display:"flex"}}>
-                    <img alt="visa" src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{padding: 5}}></img>
-                    <img alt="mastercard" src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{padding: 5}}></img>
-                    <img alt="ammex" src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{padding: 5}}></img>
-                    <img alt="dinners" src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{padding: 5}}></img>
+                <div style={{ display: "flex" }}>
+                    <img alt="visa" src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{ padding: 5 }}></img>
+                    <img alt="mastercard" src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{ padding: 5 }}></img>
+                    <img alt="ammex" src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{ padding: 5 }}></img>
+                    <img alt="dinners" src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{ padding: 5 }}></img>
                 </div>
-                <div style={{display: "flex",width:"100%", flexWrap: 'wrap'}}>
+                <div style={{ display: "flex", width: "100%", flexWrap: 'wrap' }}>
                     <div className={classes.containerInfoPay}>
                         <Controller
                             name="creditcard"
@@ -280,7 +280,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                     if (currentView === "view-2") {
                                         if (value?.length === 0) {
                                             return t(langKeys.field_required) as string;
-                                        } else if ((value?.length!==limitnumbers) || (limitnumbers<12)) {
+                                        } else if ((value?.length !== limitnumbers) || (limitnumbers < 12)) {
                                             return t(langKeys.creditcardvalidate) as string;
                                         }
                                     }
@@ -296,32 +296,32 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                     label={t(langKeys.creditcard)}
                                     error={!!errors.creditcard}
                                     helperText={errors.creditcard?.message}
-                                    onPaste={e=>{
+                                    onPaste={e => {
                                         e.preventDefault()
                                     }}
-                                    onChange={(e) =>{
+                                    onChange={(e) => {
                                         let val = e.target.value.replace(/[^0-9]/g, '');
-                                        let spaces = Math.floor(val.length/4)
-                                        let partialvalue = val.slice(0,4)
-                                        for(let i=1;i<=spaces;i++){
-                                            partialvalue += " " + val.slice(i*4,(i+1)*4)
+                                        let spaces = Math.floor(val.length / 4)
+                                        let partialvalue = val.slice(0, 4)
+                                        for (let i = 1; i <= spaces; i++) {
+                                            partialvalue += " " + val.slice(i * 4, (i + 1) * 4)
                                         }
                                         setValue("creditcard", partialvalue.trim());
                                     }}
-                                    onInput={(e:any) => {
-                                        if(e.target.value.slice(0,1)==="4"){
-                                            setIcon(<img alt="visa" src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{padding: 5}}></img>)
+                                    onInput={(e: any) => {
+                                        if (e.target.value.slice(0, 1) === "4") {
+                                            setIcon(<img alt="visa" src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{ padding: 5 }}></img>)
                                             setlimitnumbers(19)
-                                        }else if(e.target.value.slice(0,2)==="51"||e.target.value.slice(0,2)==="55"){
-                                            setIcon(<img alt="mastercard" src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{padding: 5}}></img>)
+                                        } else if (e.target.value.slice(0, 2) === "51" || e.target.value.slice(0, 2) === "55") {
+                                            setIcon(<img alt="mastercard" src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{ padding: 5 }}></img>)
                                             setlimitnumbers(19)
-                                        }else if(e.target.value.slice(0,2)==="37"||e.target.value.slice(0,2)==="34"){
-                                            setIcon(<img alt="ammex" src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{padding: 5}}></img>)
+                                        } else if (e.target.value.slice(0, 2) === "37" || e.target.value.slice(0, 2) === "34") {
+                                            setIcon(<img alt="ammex" src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{ padding: 5 }}></img>)
                                             setlimitnumbers(18)
-                                        }else if(e.target.value.slice(0,2)==="36"||e.target.value.slice(0,2)==="38"||e.target.value.slice(0,3)==="300"||e.target.value.slice(0,3)==="305"){
-                                            setIcon(<img alt="dinners" src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{padding: 5}}></img>)
+                                        } else if (e.target.value.slice(0, 2) === "36" || e.target.value.slice(0, 2) === "38" || e.target.value.slice(0, 3) === "300" || e.target.value.slice(0, 3) === "305") {
+                                            setIcon(<img alt="dinners" src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{ padding: 5 }}></img>)
                                             setlimitnumbers(17)
-                                        }else{
+                                        } else {
                                             setIcon(<></>)
                                             setlimitnumbers(10)
                                         }
@@ -336,7 +336,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                             )}
                         />
                         <div style={{ padding: "20px" }}>{t(langKeys.dueDate)}</div>
-                        <div style={{display:"flex"}}>
+                        <div style={{ display: "flex" }}>
                             <Controller
                                 name="mm"
                                 control={control}
@@ -374,7 +374,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                         if (currentView === "view-2") {
                                             if (value?.length === 0) {
                                                 return t(langKeys.field_required) as string;
-                                            } else if (value?.length!==4) {
+                                            } else if (value?.length !== 4) {
                                                 return t(langKeys.field_required) as string;
                                             }
                                         }
@@ -428,25 +428,25 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                     }}
                                 />
                             )}
-                        /> 
-                    </div>   
+                        />
+                    </div>
                     <div className={classes.containerInfoPay} >
                         <div style={{ textAlign: "center", padding: "20px", border: "1px solid #7721ad", borderRadius: "15px", margin: "10px" }}>{t(langKeys.finishregwarn)}</div>
                         <div style={{ textAlign: "center", padding: "20px", color: "#7721ad", margin: "10px" }}>{t(langKeys.finishregwarn2)}</div>
-                    </div>                
+                    </div>
                 </div>
                 <Button
-                        onClick={(e)=>{
-                            e.preventDefault();
-                            finishreg();
-                        }}
-                        className={commonClasses.button}
-                        style={{ marginTop: '3em' }}
-                        variant="contained"
-                        color="primary"
-                        disabled={executeResult.loading}
-                    >
-                        <Trans i18nKey={langKeys.finishreg} />
+                    onClick={(e) => {
+                        e.preventDefault();
+                        finishreg();
+                    }}
+                    className={commonClasses.button}
+                    style={{ marginTop: '3em' }}
+                    variant="contained"
+                    color="primary"
+                    disabled={executeResult.loading}
+                >
+                    <Trans i18nKey={langKeys.finishreg} />
                 </Button>
             </div>
         </div>
@@ -464,79 +464,136 @@ const GetComponent: FC<GetComponentProps> = ({ channel: key, display, setOpenWar
         case 'facebook':
             return (
                 <div style={{ display: display ? 'block' : 'none' }}>
-                <ChannelAddFacebook setOpenWarning={setOpenWarning} />
+                    <ChannelAddFacebook setOpenWarning={setOpenWarning} />
                 </div>
             );
-        case 'instagram':
-            return (
-                <div style={{ display: display ? 'block' : 'none' }}>
-                <ChannelAddInstagram setOpenWarning={setOpenWarning} />
-                </div>
-            );
-        case 'instagramDM':
-            return (
-                <div style={{ display: display ? 'block' : 'none' }}>
-                <ChannelAddInstagramDM setOpenWarning={setOpenWarning} />
-                </div>
-            );
+
         case 'messenger':
             return (
                 <div style={{ display: display ? 'block' : 'none' }}>
-                <ChannelAddMessenger setOpenWarning={setOpenWarning} />
+                    <ChannelAddMessenger setOpenWarning={setOpenWarning} />
                 </div>
             );
+
+        case 'instagram':
+            return (
+                <div style={{ display: display ? 'block' : 'none' }}>
+                    <ChannelAddInstagram setOpenWarning={setOpenWarning} />
+                </div>
+            );
+
+        case 'instagramDM':
+            return (
+                <div style={{ display: display ? 'block' : 'none' }}>
+                    <ChannelAddInstagramDM setOpenWarning={setOpenWarning} />
+                </div>
+            );
+
         case 'whatsapp':
             return (
                 <div style={{ display: display ? 'block' : 'none' }}>
-                <ChannelAddWhatsapp setOpenWarning={setOpenWarning} />
+                    <ChannelAddWhatsapp setOpenWarning={setOpenWarning} />
                 </div>
             );
+
         case 'telegram':
             return (
                 <div style={{ display: display ? 'block' : 'none' }}>
-                <ChannelAddTelegram setOpenWarning={setOpenWarning} />
+                    <ChannelAddTelegram setOpenWarning={setOpenWarning} />
                 </div>
             );
+
         case 'twitter':
             return (
                 <div style={{ display: display ? 'block' : 'none' }}>
-                <ChannelAddTwitter setOpenWarning={setOpenWarning} />
+                    <ChannelAddTwitter setOpenWarning={setOpenWarning} />
                 </div>
             );
+
         case 'twitterDM':
             return (
                 <div style={{ display: display ? 'block' : 'none' }}>
-                <ChannelAddTwitterDM setOpenWarning={setOpenWarning} />
+                    <ChannelAddTwitterDM setOpenWarning={setOpenWarning} />
                 </div>
             );
+
+        case 'tiktok':
+            return (
+                <div style={{ display: display ? 'block' : 'none' }}>
+                    <ChannelAddTwitterDM setOpenWarning={setOpenWarning} />
+                </div>
+            );
+
+        case 'youtube':
+            return (
+                <div style={{ display: display ? 'block' : 'none' }}>
+                    <ChannelAddTwitterDM setOpenWarning={setOpenWarning} />
+                </div>
+            );
+
+        case 'linkedin':
+            return (
+                <div style={{ display: display ? 'block' : 'none' }}>
+                    <ChannelAddTwitterDM setOpenWarning={setOpenWarning} />
+                </div>
+            );
+
         case 'chatWeb':
             return (
                 <div style={{ display: display ? 'block' : 'none' }}>
-                <ChannelAddChatWeb setOpenWarning={setOpenWarning} />
+                    <ChannelAddChatWeb setOpenWarning={setOpenWarning} />
                 </div>
             );
+
         case 'email':
-            return <div>email</div>;
-        case 'sms':
-            return <div>sms</div>;
-        case 'android':
             return (
                 <div style={{ display: display ? 'block' : 'none' }}>
-                <ChannelAddAndroid setOpenWarning={setOpenWarning} />
+                    <ChannelAddTwitterDM setOpenWarning={setOpenWarning} />
                 </div>
             );
-        case 'apple':
-            return (
-                <div style={{ display: display ? 'block' : 'none' }}>
-                <ChannelAddIos setOpenWarning={setOpenWarning} />
-                </div>
-            );
+
         case 'phone':
             return (
                 <div style={{ display: display ? 'block' : 'none' }}>
-                <ChannelAddPhone setOpenWarning={setOpenWarning} />
+                    <ChannelAddPhone setOpenWarning={setOpenWarning} />
                 </div>
             );
+
+        case 'sms':
+            return (
+                <div style={{ display: display ? 'block' : 'none' }}>
+                    <ChannelAddTwitterDM setOpenWarning={setOpenWarning} />
+                </div>
+            );
+
+        case 'apple':
+            return (
+                <div style={{ display: display ? 'block' : 'none' }}>
+                    <ChannelAddIos setOpenWarning={setOpenWarning} />
+                </div>
+            );
+
+        case 'android':
+            return (
+                <div style={{ display: display ? 'block' : 'none' }}>
+                    <ChannelAddAndroid setOpenWarning={setOpenWarning} />
+                </div>
+            );
+
+        case 'teams':
+            return (
+                <div style={{ display: display ? 'block' : 'none' }}>
+                    <ChannelAddAndroid setOpenWarning={setOpenWarning} />
+                </div>
+            );
+
+        case 'blogger':
+            return (
+                <div style={{ display: display ? 'block' : 'none' }}>
+                    <ChannelAddAndroid setOpenWarning={setOpenWarning} />
+                </div>
+            );
+
         default: return <div />;
     }
 }
