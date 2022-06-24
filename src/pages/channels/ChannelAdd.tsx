@@ -4,14 +4,9 @@ import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router";
 import paths from "common/constants/paths";
-<<<<<<< HEAD
-import { CallIcon,
-    AndroidColor, EmailColor, FacebookColor, FacebookMessengerColor, InstagramColor, IosColor, SmsColor, TelegramColor, TwitterColor, WebMessengerColor, WhatsappColor, VoiceChannelIcon
-=======
 import {
     VoiceColor,
     AndroidColor, EmailColor, FacebookColor, FacebookMessengerColor, InstagramColor, IosColor, SmsColor, TelegramColor, TwitterColor, WebMessengerColor, WhatsappColor, TikTokColor, YouTubeColor, LinkedInColor, TeamsColor, BloggerColor
->>>>>>> 6a533732e7df7d5a063b8684f714a225c22509bb
 } from "icons";
 import { TemplateBreadcrumbs } from "components";
 
@@ -192,15 +187,9 @@ export const ChannelAdd: FC = () => {
             onClick: () => { history.push(paths.CHANNELS_ADD_EMAIL.path, whatsAppData) },
         },
         {
-<<<<<<< HEAD
-            icon: c => <VoiceChannelIcon className={c} />,
-            label: 'Phone',
-            onClick: () => {history.push(paths.CHANNELS_ADD_PHONE.path, whatsAppData)},
-=======
             icon: c => <VoiceColor className={c} />,
             label: t(langKeys.channel_phone),
             onClick: () => { history.push(paths.CHANNELS_ADD_PHONE.path, whatsAppData) },
->>>>>>> 6a533732e7df7d5a063b8684f714a225c22509bb
         },
         {
             icon: c => <SmsColor className={c} />,

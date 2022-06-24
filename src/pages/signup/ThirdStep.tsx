@@ -19,16 +19,12 @@ import {
     IosColor,
     WhatsappColor,
     TwitterColor,
-<<<<<<< HEAD
-    VoiceChannelIcon,
-=======
     VoiceColor,
     TikTokColor,
     YouTubeColor,
     LinkedInColor,
     TeamsColor,
     BloggerColor,
->>>>>>> 6a533732e7df7d5a063b8684f714a225c22509bb
 } from "icons";
 import { ListChannels, SubscriptionContext, usePlanData } from "./context";
 
@@ -232,13 +228,8 @@ const ThirdStep: FC = () => {
             selected: listchannels.email
         },
         {
-<<<<<<< HEAD
-            icon: <VoiceChannelIcon className={classes.icon} />,
-            label: 'phone',
-=======
             icon: <VoiceColor className={classes.icon} />,
             label: t(langKeys.channel_phone),
->>>>>>> 6a533732e7df7d5a063b8684f714a225c22509bb
             key: 'phone',
             onClick: () => toggleChannel('phone'),
             selected: listchannels.voximplantphone

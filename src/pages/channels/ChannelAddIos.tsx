@@ -78,13 +78,8 @@ export const ChannelAddIos: FC = () => {
     useEffect(() => {
         if (!mainResult.loading && setins) {
             if (executeResult) {
-<<<<<<< HEAD
                 setsetins(false)
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
-=======
-                setsetins(false);
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }));
->>>>>>> 6a533732e7df7d5a063b8684f714a225c22509bb
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
                 setShowRegister(false);
@@ -92,13 +87,8 @@ export const ChannelAddIos: FC = () => {
                 setShowScript(true);
                 setIntegrationId(mainResult.data[0].integrationId);
             } else if (!executeResult) {
-<<<<<<< HEAD
                 const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
-=======
-                const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() });
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }));
->>>>>>> 6a533732e7df7d5a063b8684f714a225c22509bb
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
