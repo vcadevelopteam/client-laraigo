@@ -23,6 +23,7 @@
         "dom-to-image": "^2.6.0",
         "emoji-mart": "^3.0.1",
         "file-saver": "^2.0.5",
+        "gapi-script": "^1.2.0",
         "i18next": "^20.3.5",
         "immutability-helper": "^3.1.1",
         "install": "^0.13.0",
