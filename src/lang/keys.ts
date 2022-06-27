@@ -3697,6 +3697,16 @@ export const langKeys = {
     voicechannel_smstooltip: 'voicechannel_smstooltip',
     voicechannel_outbound: 'voicechannel_outbound',
     voicechannel_outboundtooltip: 'voicechannel_outboundtooltip',
+    voicechannel_recordingquality: 'voicechannel_recordingquality',
+    voicechannel_recordingmonth3: 'voicechannel_recordingmonth3',
+    voicechannel_recordingmonth6: 'voicechannel_recordingmonth6',
+    voicechannel_recordingyear1: 'voicechannel_recordingyear1',
+    voicechannel_recordingyear2: 'voicechannel_recordingyear2',
+    voicechannel_recordingyear3: 'voicechannel_recordingyear3',
+    voicechannel_recordingdefault: 'voicechannel_recordingdefault',
+    voicechannel_recordinghd: 'voicechannel_recordinghd',
+    voicechannel_recordinglossless: 'voicechannel_recordinglossless',
+    voicechannel_recordingalert: 'voicechannel_recordingalert',
 };
 
 export type LangKeys = typeof langKeys;

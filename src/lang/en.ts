@@ -3717,6 +3717,16 @@ const translation: LangKeys = {
     voicechannel_smstooltip: 'Allows SMS messages. 1 message per $0.00',
     voicechannel_outbound: 'Outbound',
     voicechannel_outboundtooltip: 'Allows outbound calls. 1 call per $0.00',
+    voicechannel_recordingquality: 'Recording quality',
+    voicechannel_recordingmonth3: '3 months of storage',
+    voicechannel_recordingmonth6: '6 months of storage',
+    voicechannel_recordingyear1: '1 year of storage',
+    voicechannel_recordingyear2: '2 years of storage',
+    voicechannel_recordingyear3: '3 years of storage',
+    voicechannel_recordingdefault: 'Default',
+    voicechannel_recordinghd: 'HD - High Definition',
+    voicechannel_recordinglossless: 'Lossless',
+    voicechannel_recordingalert: 'The purchase of a new number and the activation of certain capacities result in extra charges in your monthly plan. For more information please visit our price list: ',
 };
 
 const enResource: ResourceLanguage = {
