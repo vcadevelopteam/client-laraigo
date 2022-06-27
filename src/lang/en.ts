@@ -3709,6 +3709,14 @@ const translation: LangKeys = {
     subscription_selectedchannel: "Selected Channels",
     subscription_channellimit: "The maximum amount of channels is:",
     subscription_nolimit: "No limit",
+
+    voicechannel_capacities: 'Capacities',
+    voicechannel_recording: 'Recordings',
+    voicechannel_recordingtooltip: 'Store and save messages. 15 seconds per $0.3',
+    voicechannel_sms: 'SMS',
+    voicechannel_smstooltip: 'Allows SMS messages. 1 message per $0.00',
+    voicechannel_outbound: 'Outbound',
+    voicechannel_outboundtooltip: 'Allows outbound calls. 1 call per $0.00',
 };
 
 const enResource: ResourceLanguage = {

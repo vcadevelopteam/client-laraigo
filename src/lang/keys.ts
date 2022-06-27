@@ -3689,6 +3689,14 @@ export const langKeys = {
     subscription_selectedchannel: "subscription_selectedchannel",
     subscription_channellimit: "subscription_channellimit",
     subscription_nolimit: "subscription_nolimit",
+
+    voicechannel_capacities: 'voicechannel_capacities',
+    voicechannel_recording: 'voicechannel_recording',
+    voicechannel_recordingtooltip: 'voicechannel_recordingtooltip',
+    voicechannel_sms: 'voicechannel_sms',
+    voicechannel_smstooltip: 'voicechannel_smstooltip',
+    voicechannel_outbound: 'voicechannel_outbound',
+    voicechannel_outboundtooltip: 'voicechannel_outboundtooltip',
 };
 
 export type LangKeys = typeof langKeys;

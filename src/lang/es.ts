@@ -3702,6 +3702,14 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     subscription_selectedchannel: "Canales Seleccionados",
     subscription_channellimit: "El límite de canales es de:",
     subscription_nolimit: "Sin límite",
+
+    voicechannel_capacities: 'Capacidades',
+    voicechannel_recording: 'Grabaciones',
+    voicechannel_recordingtooltip: 'Almacena y guarda mensajes. 15 segundos por $0.3',
+    voicechannel_sms: 'SMS',
+    voicechannel_smstooltip: 'Habilita el envio de SMS. 1 envio por $0.00',
+    voicechannel_outbound: 'Outbound',
+    voicechannel_outboundtooltip: 'Habilita la salida de llamadas. 1 llamada por $0.00',
 };
 
 const esResource: ResourceLanguage = {
