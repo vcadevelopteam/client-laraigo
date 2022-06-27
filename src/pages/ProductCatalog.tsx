@@ -372,10 +372,10 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
         register('website');
         register('currency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('condition');
-        register('contentid');
-        register('facebookcatalogid');
-        register('facebookproductid');
-        register('facebookcatalogname');
+        register('contentid', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('facebookcatalogid', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('facebookproductid', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('facebookcatalogname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('unitprice', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
     }, [edit, register]);
 
