@@ -208,10 +208,14 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         return
     } else if (type === typeVoximplant.MANAGE_STATUS_VOX) {
         console.log("change status!")
-        if (payload) {
-            sdk.setOperatorACDStatus(VoxImplant.OperatorACDStatuses.Online).then(() => sdk.setOperatorACDStatus(VoxImplant.OperatorACDStatuses.Ready));
-        } else {
-            sdk.setOperatorACDStatus(VoxImplant.OperatorACDStatuses.Offline);
+        try {
+            if (payload) {
+                sdk.setOperatorACDStatus(VoxImplant.OperatorACDStatuses.Online).then(() => sdk.setOperatorACDStatus(VoxImplant.OperatorACDStatuses.Ready));
+            } else {
+                sdk.setOperatorACDStatus(VoxImplant.OperatorACDStatuses.Offline);
+            }
+        } catch (error) {
+            
         }
         return
     } else if (type === typeVoximplant.DISCONNECT) {
