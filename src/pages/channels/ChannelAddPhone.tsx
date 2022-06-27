@@ -78,6 +78,9 @@ export const ChannelAddPhone: FC = () => {
 
     const { t } = useTranslation();
 
+    const dataRecordingStorage = [{ value: "month3", text: t(langKeys.voicechannel_recordingmonth3) }, { value: "month6", text: t(langKeys.voicechannel_recordingmonth6) }, { value: "year1", text: t(langKeys.voicechannel_recordingyear1) }, { value: "year2", text: t(langKeys.voicechannel_recordingyear2) }, { value: "year3", text: t(langKeys.voicechannel_recordingyear3) }];
+    const dataRecordingQuality = [{ value: "default", text: t(langKeys.voicechannel_recordingdefault) }, { value: "hd", text: t(langKeys.voicechannel_recordinghd) }, { value: "lossless", text: t(langKeys.voicechannel_recordinglossless) }];
+
     const categoriesResult = useSelector(state => state.voximplant.requestGetCategories);
     const classes = useChannelAddStyles();
     const countryStatesResult = useSelector(state => state.voximplant.requestGetCountryStates);
@@ -164,6 +167,10 @@ export const ChannelAddPhone: FC = () => {
         setWaitCategories(true);
         setWaitPlan(true);
     }, [])
+
+    const openPricingPage = () => {
+        window.open("https://laraigo.com/en/pricing/", '_blank');
+    }
 
     useEffect(() => {
         if (!multiResult.loading && waitPlan) {
@@ -278,11 +285,25 @@ export const ChannelAddPhone: FC = () => {
                     if (fields.service.region) {
                         if (hasStates) {
                             if (fields.service.state) {
-                                setNextButton(false);
+                                if (fields.service.recording) {
+                                    if (fields.service.recordingquality && fields.service.recordingstorage) {
+                                        setNextButton(false);
+                                    }
+                                }
+                                else {
+                                    setNextButton(false);
+                                }
                             }
                         }
                         else {
-                            setNextButton(false);
+                            if (fields.service.recording) {
+                                if (fields.service.recordingquality && fields.service.recordingstorage) {
+                                    setNextButton(false);
+                                }
+                            }
+                            else {
+                                setNextButton(false);
+                            }
                         }
                     }
                 }
@@ -290,22 +311,50 @@ export const ChannelAddPhone: FC = () => {
         }
     }
 
+    const handleSwitchRecordingQuality = (value: any) => {
+        let partialFields = fields;
+        partialFields.service.recordingquality = value;
+        setFields(partialFields);
+
+        disableNextButton();
+    }
+
+    const handleSwitchRecordingStorage = (value: any) => {
+        let partialFields = fields;
+        partialFields.service.recordingstorage = value;
+        setFields(partialFields);
+
+        disableNextButton();
+    }
+
     const handleSwitchRecording = (value: boolean) => {
         let partialFields = fields;
         partialFields.service.recording = value;
+
+        if (!value) {
+            partialFields.service.recordingquality = '';
+            partialFields.service.recordingstorage = '';
+        }
+
         setFields(partialFields);
+
+        disableNextButton();
     }
 
     const handleSwitchSms = (value: boolean) => {
         let partialFields = fields;
         partialFields.service.sms = value;
         setFields(partialFields);
+
+        disableNextButton();
     }
 
     const handleSwitchOutbound = (value: boolean) => {
         let partialFields = fields;
         partialFields.service.outbound = value;
         setFields(partialFields);
+
+        disableNextButton();
     }
 
     const handleCountry = (value: any) => {
@@ -580,6 +629,30 @@ export const ChannelAddPhone: FC = () => {
                                 valueDefault={fields?.service?.region || ""}
                             />
                         </div>}
+                        {checkedRecording && <div className="row-zyx">
+                            <FieldSelect
+                                className="col-12"
+                                data={dataRecordingStorage}
+                                label={t(langKeys.voicechannel_recording)}
+                                onChange={(value: any) => { handleSwitchRecordingStorage(value); }}
+                                optionDesc="text"
+                                optionValue="value"
+                                variant="outlined"
+                                valueDefault={fields?.service?.recordingstorage || ""}
+                            />
+                        </div>}
+                        {checkedRecording && <div className="row-zyx">
+                            <FieldSelect
+                                className="col-12"
+                                data={dataRecordingQuality}
+                                label={t(langKeys.voicechannel_recordingquality)}
+                                onChange={(value: any) => { handleSwitchRecordingQuality(value); }}
+                                optionDesc="text"
+                                optionValue="value"
+                                variant="outlined"
+                                valueDefault={fields?.service?.recordingquality || ""}
+                            />
+                        </div>}
                         <div className="row-zyx">
                             <div style={{ display: "inline-block" }}>
                                 <div>
@@ -591,6 +664,11 @@ export const ChannelAddPhone: FC = () => {
                                 </div>
                             </div>
                         </div>
+                        {(checkedRecording || checkedSms || checkedOutbound) && <div className="row-zyx">
+                            <div style={{ display: "flex", flexFlow: "row", flexWrap: "wrap" }}>
+                                <p><b style={{ color: "#762AA9" }}>{t(langKeys.voicechannel_recordingalert)}</b><a style={{ fontWeight: 'bold', cursor: 'pointer' }} onClick={openPricingPage} rel="noopener noreferrer">https://laraigo.com/en/pricing/</a></p>
+                            </div>
+                        </div>}
                     </div>
                     <div style={{ paddingLeft: "64%" }}>
                         <Button
