@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import { Button, IconButton, InputAdornment, makeStyles, Typography } from "@material-ui/core";
-import { FieldEdit, FieldSelect } from "components";
+import { Button, IconButton, InputAdornment, makeStyles, Typography, FormControlLabel } from "@material-ui/core";
+import { FieldEdit, FieldSelect, IOSSwitchPurple } from "components";
 import { FC, useEffect, useState, useContext } from "react";
 import { getCategories, getCountryStates, getRegions } from "store/voximplant/actions";
 import { getName } from "country-list";
@@ -45,6 +45,32 @@ const useChannelAddStyles = makeStyles(theme => ({
         padding: theme.spacing(2),
         width: "50%",
     },
+    containerCapacities: {
+        background: "#EFEFF4",
+        borderRadius: "6px",
+        marginLeft: "auto",
+        marginRight: "auto",
+        marginBottom: "20px",
+        paddingLeft: "10px",
+        paddingRight: "10px",
+        padding: theme.spacing(2),
+        width: "100%",
+        height: "auto",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexDirection: "row",
+        flexWrap: "wrap",
+    },
+    containerItem: {
+        display: "flex",
+        marginLeft: 0,
+        paddingLeft: 50,
+        marginRight: 20,
+        alignItems: "center",
+        justifyContent: "center",
+        width: 120,
+    },
 }));
 
 export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
@@ -73,7 +99,9 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
 
     const [phoneTax, setPhoneTax] = useState(planData?.plan?.phonetax || 0);
     const [waitPlan, setWaitPlan] = useState(false);
-
+    const [checkedRecording, setCheckedRecording] = useState(false);
+    const [checkedSms, setCheckedSms] = useState(false);
+    const [checkedOutbound, setCheckedOutbound] = useState(false);
     const [categoryList, setCategoryList] = useState<any>([]);
     const [countryList, setCountryList] = useState<any>([]);
     const [hasStates, setHasStates] = useState(false);
@@ -114,8 +142,8 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     }, [phonePrice, phoneInstallation])
 
     useEffect(() => {
-        const strRequired = (value: string, other?:boolean) => {
-            if(!other){
+        const strRequired = (value: string, other?: boolean) => {
+            if (!other) {
                 if (!value) {
                     return t(langKeys.field_required);
                 }
@@ -123,8 +151,8 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
         }
         register('channels.voximplantphone.country', { validate: strRequired, value: '' });
         register('channels.voximplantphone.category', { validate: strRequired, value: '' });
-        register('channels.voximplantphone.region', { validate: hasRegions?strRequired:()=>{return undefined}, value: '' });
-        register('channels.voximplantphone.state', { validate: hasStates?strRequired:()=>{return undefined}, value: '' });
+        register('channels.voximplantphone.region', { validate: hasRegions ? strRequired : () => { return undefined }, value: '' });
+        register('channels.voximplantphone.state', { validate: hasStates ? strRequired : () => { return undefined }, value: '' });
         register('channels.voximplantphone.description', { validate: strRequired, value: '' });
         register('channels.voximplantphone.build', {
             value: values => ({
@@ -155,6 +183,12 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                     "statename": values.statename,
                     "cost": values.cost,
                     "costvca": values.costvca,
+                    "costinstallation": values.costinstallation,
+                    "recording": values.recording,
+                    "sms": values.sms,
+                    "outbound": values.outbound,
+                    "recordingstorage": values.recordingstorage,
+                    "recordingquality": values.recordingquality,
                 },
                 "type": "VOXIMPLANTPHONE",
             })
@@ -248,7 +282,7 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
         if (waitRegions) {
             if (!regionsResult.loading) {
                 if (regionsResult.data) {
-                    setRegionList(regionsResult.data.filter((data: { phone_count: number;  regulation_address_type: string; }) => data.phone_count > 0 && !data.regulation_address_type));
+                    setRegionList(regionsResult.data.filter((data: { phone_count: number; regulation_address_type: string; }) => data.phone_count > 0 && !data.regulation_address_type));
                 }
                 setWaitRegions(false);
             }
@@ -269,6 +303,18 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                 }
             }
         }
+    }
+
+    const handleSwitchRecording = (value: boolean) => {
+        setValue('channels.voximplantphone.recording', value);
+    }
+
+    const handleSwitchSms = (value: boolean) => {
+        setValue('channels.voximplantphone.sms', value);
+    }
+
+    const handleSwitchOutbound = (value: boolean) => {
+        setValue('channels.voximplantphone.outbound', value);
     }
 
     const handleCountry = (value: any) => {
@@ -383,6 +429,41 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                 <div>
                     <div className={classes.containerDetail}>
                         <div style={{ textAlign: "left", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.voximplant_buynumber)}</div>
+                        <div className={classes.containerCapacities}>
+                            <div style={{ verticalAlign: "middle" }}>
+                                <b>{t(langKeys.voicechannel_capacities)}</b>
+                            </div>
+                            <div className={classes.containerItem}>
+                                <FormControlLabel
+                                    control={<IOSSwitchPurple checked={checkedRecording} onChange={(e) => { setCheckedRecording(e.target.checked); handleSwitchRecording(e.target.checked); }} />}
+                                    label={""}
+                                />
+                                {t(langKeys.voicechannel_recording)}
+                                <Tooltip title={`${t(langKeys.voicechannel_recordingtooltip)}`} placement="top-start">
+                                    <InfoIcon style={{ color: "rgb(119, 33, 173)", paddingLeft: "4px" }} />
+                                </Tooltip>
+                            </div>
+                            <div className={classes.containerItem}>
+                                <FormControlLabel
+                                    control={<IOSSwitchPurple checked={checkedSms} onChange={(e) => { setCheckedSms(e.target.checked); handleSwitchSms(e.target.checked); }} />}
+                                    label={""}
+                                />
+                                {t(langKeys.voicechannel_sms)}
+                                <Tooltip title={`${t(langKeys.voicechannel_smstooltip)}`} placement="top-start">
+                                    <InfoIcon style={{ color: "rgb(119, 33, 173)", paddingLeft: "4px" }} />
+                                </Tooltip>
+                            </div>
+                            <div className={classes.containerItem}>
+                                <FormControlLabel
+                                    control={<IOSSwitchPurple checked={checkedOutbound} onChange={(e) => { setCheckedOutbound(e.target.checked); handleSwitchOutbound(e.target.checked); }} />}
+                                    label={""}
+                                />
+                                {t(langKeys.voicechannel_outbound)}
+                                <Tooltip title={`${t(langKeys.voicechannel_outboundtooltip)}`} placement="top-start">
+                                    <InfoIcon style={{ color: "rgb(119, 33, 173)", paddingLeft: "4px" }} />
+                                </Tooltip>
+                            </div>
+                        </div>
                         <div className="row-zyx">
                             <FieldSelect
                                 className="col-12"
@@ -442,22 +523,20 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                             />
                         </div>}
                         <div className="row-zyx">
-                            <div>
-                                <div style={{ display: "inline" }}>
+                            <div style={{ display: "inline-block" }}>
+                                <div>
                                     <b style={{ paddingLeft: "6px" }}>{t(langKeys.voximplant_pricealert)}</b>
                                     <Tooltip title={`${t(langKeys.voximplant_tooltip)}`} placement="top-start">
-                                        <InfoIcon style={{ padding: "5px 0 0 5px", color: "rgb(119, 33, 173)" }} />
+                                        <InfoIcon style={{ color: "rgb(119, 33, 173)", paddingLeft: "4px" }} />
                                     </Tooltip>
-                                </div>
-                                <div style={{ display: "inline", alignContent: "right", float: "right" }}>
-                                    <b style={{ paddingRight: "20px", textAlign: "right" }}>{`$${formatNumber(phonePrice * (1 + (phoneTax || 0)))}`}</b>
+                                    <b style={{ paddingRight: "20px", textAlign: "right", alignContent: "right", float: "right" }}>{`$${formatNumber(phonePrice * (1 + (phoneTax || 0)))}`}</b>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div style={{ paddingLeft: "64%" }}>
                         <Button
-                            disabled={nextButton  || regionsResult.loading}
+                            disabled={nextButton || regionsResult.loading}
                             onClick={() => { setViewSelected("view2") }}
                             className={classes.button}
                             variant="contained"

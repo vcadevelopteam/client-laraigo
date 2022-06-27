@@ -3652,7 +3652,15 @@ const translation: LangKeys = {
     periodreportvoip: 'VoIP Calls',
     periodreportrecording: 'Call Recording',
     periodreportother: 'Others',
-    T_VOICECHANNEL: 'VOICE CHANNEL'
+    T_VOICECHANNEL: 'VOICE CHANNEL',
+
+    voicechannel_capacities: 'Capacities',
+    voicechannel_recording: 'Recordings',
+    voicechannel_recordingtooltip: 'Store and save messages. 15 seconds per $0.3',
+    voicechannel_sms: 'SMS',
+    voicechannel_smstooltip: 'Allows SMS messages. 1 message per $0.00',
+    voicechannel_outbound: 'Outbound',
+    voicechannel_outboundtooltip: 'Allows outbound calls. 1 call per $0.00',
 };
 
 const enResource: ResourceLanguage = {

@@ -3645,7 +3645,15 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     periodreportvoip: 'Llamadas VoIP',
     periodreportrecording: 'Grabación de Llamadas',
     periodreportother: 'Otros',
-    T_VOICECHANNEL: 'CANAL DE VOZ'
+    T_VOICECHANNEL: 'CANAL DE VOZ',
+
+    voicechannel_capacities: 'Capacidades',
+    voicechannel_recording: 'Grabaciones',
+    voicechannel_recordingtooltip: 'Almacena y guarda mensajes. 15 segundos por $0.3',
+    voicechannel_sms: 'SMS',
+    voicechannel_smstooltip: 'Habilita el envio de SMS. 1 envio por $0.00',
+    voicechannel_outbound: 'Outbound',
+    voicechannel_outboundtooltip: 'Habilita la salida de llamadas. 1 llamada por $0.00',
 };
 
 const esResource: ResourceLanguage = {

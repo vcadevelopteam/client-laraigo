@@ -3632,7 +3632,15 @@ export const langKeys = {
     periodreportvoip: 'periodreportvoip',
     periodreportrecording: 'periodreportrecording',
     periodreportother: 'periodreportother',
-    T_VOICECHANNEL: 'T_VOICECHANNEL'
+    T_VOICECHANNEL: 'T_VOICECHANNEL',
+
+    voicechannel_capacities: 'voicechannel_capacities',
+    voicechannel_recording: 'voicechannel_recording',
+    voicechannel_recordingtooltip: 'voicechannel_recordingtooltip',
+    voicechannel_sms: 'voicechannel_sms',
+    voicechannel_smstooltip: 'voicechannel_smstooltip',
+    voicechannel_outbound: 'voicechannel_outbound',
+    voicechannel_outboundtooltip: 'voicechannel_outboundtooltip',
 };
 
 export type LangKeys = typeof langKeys;
