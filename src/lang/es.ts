@@ -1151,6 +1151,8 @@ const translation: LangKeys = {
     sent: 'enviado',
     campaign_in_execution: 'Campaña en ejecución',
     file_without_data: 'Archivo sin data',
+    no_channel_selected: "Canal no seleccionado",
+    no_files_selected: "Archivos no seleccionados",
     too_many_records: 'Demasiados registros',
     file_incompatbile_with_previous_one: 'Archivo incompatible con el anterior',
     invalid_data: 'Data inválida',
@@ -1332,6 +1334,7 @@ const translation: LangKeys = {
     error_channels_limit: "Se alcanzo el maximo número de canales, mejora tu plan para continuar",
     error_users_limit: "Se alcanzo el maximo número de usuarios({{limit}}), mejora tu plan para continuar",
     error_kpi_sql: 'Query error: {{error}}',
+    error_limit_exceeded: "Límite excedido",
     dateRangeFilterTitle: 'Filtrar por rango de fechas',
 
     successful_change_plan: 'El plan fue cambiado satisfactoriamente. Vuelva a iniciar sesión para que pueda ver el cambio de plan.',
@@ -2657,6 +2660,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
 
     channellimit: 'Se alcanzo el maximo número de canales, mejora tu plan para continuar',
     userlimit: 'Se alcanzo el maximo número de usuarios({{limit}}), mejora tu plan para continuar',
+    max_limit: 'Límite máximo {{n}}',
     error_estructure_user: 'El usuario {{email}} no fue procesado por que tiene una estructura no válida',
 
     invitation_date: "{{day}} {{date}} de {{month}} de {{year}}",
