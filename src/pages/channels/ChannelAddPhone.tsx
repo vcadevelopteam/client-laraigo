@@ -537,7 +537,7 @@ export const ChannelAddPhone: FC = () => {
                     <div className={classes.containerDetail}>
                         <div style={{ textAlign: "left", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.voximplant_buynumber)}</div>
                         <div className={classes.containerCapacities}>
-                            <div style={{ verticalAlign: "middle", marginRight: "10px" }}>
+                            <div style={{ verticalAlign: "middle", marginRight: "30px" }}>
                                 <b>{t(langKeys.voicechannel_capacities)}</b>
                             </div>
                             <div className={classes.containerItem}>
