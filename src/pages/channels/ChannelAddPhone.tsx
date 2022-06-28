@@ -1,11 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import { Box, Breadcrumbs, Button, makeStyles } from "@material-ui/core";
-import { ColorInput, FieldEdit, FieldSelect, FieldView } from "components";
+import { Box, Breadcrumbs, Button, makeStyles, FormControlLabel } from "@material-ui/core";
+import { ColorInput, FieldEdit, FieldSelect, FieldView, IOSSwitchPurple } from "components";
 import { FC, useEffect, useState } from "react";
-import { formatNumber, getPhoneTax } from 'common/helpers';
+import { formatNumber, getPhoneTax } from "common/helpers";
 import { getCategories, getCountryStates, getRegions } from "store/voximplant/actions";
-import { getMultiCollection } from 'store/main/actions';
+import { getMultiCollection } from "store/main/actions";
 import { getName } from "country-list";
 import { insertChannel } from "store/channel/actions";
 import { langKeys } from "lang/keys";
@@ -45,12 +45,41 @@ const useChannelAddStyles = makeStyles(theme => ({
         padding: theme.spacing(2),
         width: "50%",
     },
+    containerCapacities: {
+        background: "#EFEFF4",
+        borderRadius: "6px",
+        marginLeft: "auto",
+        marginRight: "auto",
+        marginBottom: "20px",
+        paddingLeft: "10px",
+        paddingRight: "10px",
+        padding: theme.spacing(2),
+        width: "100%",
+        height: "auto",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexDirection: "row",
+        flexWrap: "wrap",
+    },
+    containerItem: {
+        display: "flex",
+        marginLeft: 0,
+        paddingLeft: 50,
+        marginRight: 20,
+        alignItems: "center",
+        justifyContent: "center",
+        width: 120,
+    },
 }));
 
 export const ChannelAddPhone: FC = () => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
+
+    const dataRecordingStorage = [{ value: "month3", text: t(langKeys.voicechannel_recordingmonth3) }, { value: "month6", text: t(langKeys.voicechannel_recordingmonth6) }, { value: "year1", text: t(langKeys.voicechannel_recordingyear1) }, { value: "year2", text: t(langKeys.voicechannel_recordingyear2) }, { value: "year3", text: t(langKeys.voicechannel_recordingyear3) }];
+    const dataRecordingQuality = [{ value: "default", text: t(langKeys.voicechannel_recordingdefault) }, { value: "hd", text: t(langKeys.voicechannel_recordinghd) }, { value: "lossless", text: t(langKeys.voicechannel_recordinglossless) }];
 
     const categoriesResult = useSelector(state => state.voximplant.requestGetCategories);
     const classes = useChannelAddStyles();
@@ -65,6 +94,9 @@ export const ChannelAddPhone: FC = () => {
     const user = useSelector(state => state.login.validateToken.user);
     const whatsAppData = location.state as whatsAppData | null;
 
+    const [checkedRecording, setCheckedRecording] = useState(false);
+    const [checkedSms, setCheckedSms] = useState(false);
+    const [checkedOutbound, setCheckedOutbound] = useState(false);
     const [dataPaymentPlan, setDataPaymentPlan] = useState<any>([]);
     const [categoryList, setCategoryList] = useState<any>([]);
     const [countryList, setCountryList] = useState<any>([]);
@@ -99,6 +131,11 @@ export const ChannelAddPhone: FC = () => {
             "cost": "",
             "costvca": "",
             "costinstallation": "",
+            "recording": false,
+            "sms": false,
+            "outbound": false,
+            "recordingstorage": "",
+            "recordingquality": "",
         },
         "type": "VOXIMPLANTPHONE",
     });
@@ -130,6 +167,10 @@ export const ChannelAddPhone: FC = () => {
         setWaitCategories(true);
         setWaitPlan(true);
     }, [])
+
+    const openPricingPage = () => {
+        window.open("https://laraigo.com/en/pricing/", '_blank');
+    }
 
     useEffect(() => {
         if (!multiResult.loading && waitPlan) {
@@ -244,16 +285,76 @@ export const ChannelAddPhone: FC = () => {
                     if (fields.service.region) {
                         if (hasStates) {
                             if (fields.service.state) {
-                                setNextButton(false);
+                                if (fields.service.recording) {
+                                    if (fields.service.recordingquality && fields.service.recordingstorage) {
+                                        setNextButton(false);
+                                    }
+                                }
+                                else {
+                                    setNextButton(false);
+                                }
                             }
                         }
                         else {
-                            setNextButton(false);
+                            if (fields.service.recording) {
+                                if (fields.service.recordingquality && fields.service.recordingstorage) {
+                                    setNextButton(false);
+                                }
+                            }
+                            else {
+                                setNextButton(false);
+                            }
                         }
                     }
                 }
             }
         }
+    }
+
+    const handleSwitchRecordingQuality = (value: any) => {
+        let partialFields = fields;
+        partialFields.service.recordingquality = value;
+        setFields(partialFields);
+
+        disableNextButton();
+    }
+
+    const handleSwitchRecordingStorage = (value: any) => {
+        let partialFields = fields;
+        partialFields.service.recordingstorage = value;
+        setFields(partialFields);
+
+        disableNextButton();
+    }
+
+    const handleSwitchRecording = (value: boolean) => {
+        let partialFields = fields;
+        partialFields.service.recording = value;
+
+        if (!value) {
+            partialFields.service.recordingquality = '';
+            partialFields.service.recordingstorage = '';
+        }
+
+        setFields(partialFields);
+
+        disableNextButton();
+    }
+
+    const handleSwitchSms = (value: boolean) => {
+        let partialFields = fields;
+        partialFields.service.sms = value;
+        setFields(partialFields);
+
+        disableNextButton();
+    }
+
+    const handleSwitchOutbound = (value: boolean) => {
+        let partialFields = fields;
+        partialFields.service.outbound = value;
+        setFields(partialFields);
+
+        disableNextButton();
     }
 
     const handleCountry = (value: any) => {
@@ -435,6 +536,41 @@ export const ChannelAddPhone: FC = () => {
                 <div>
                     <div className={classes.containerDetail}>
                         <div style={{ textAlign: "left", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.voximplant_buynumber)}</div>
+                        <div className={classes.containerCapacities}>
+                            <div style={{ verticalAlign: "middle" }}>
+                                <b>{t(langKeys.voicechannel_capacities)}</b>
+                            </div>
+                            <div className={classes.containerItem}>
+                                <FormControlLabel
+                                    control={<IOSSwitchPurple checked={checkedRecording} onChange={(e) => { setCheckedRecording(e.target.checked); handleSwitchRecording(e.target.checked); }} />}
+                                    label={""}
+                                />
+                                {t(langKeys.voicechannel_recording)}
+                                <Tooltip title={`${t(langKeys.voicechannel_recordingtooltip)}`} placement="top-start">
+                                    <InfoIcon style={{ color: "rgb(119, 33, 173)", paddingLeft: "4px" }} />
+                                </Tooltip>
+                            </div>
+                            <div className={classes.containerItem}>
+                                <FormControlLabel
+                                    control={<IOSSwitchPurple checked={checkedSms} onChange={(e) => { setCheckedSms(e.target.checked); handleSwitchSms(e.target.checked); }} />}
+                                    label={""}
+                                />
+                                {t(langKeys.voicechannel_sms)}
+                                <Tooltip title={`${t(langKeys.voicechannel_smstooltip)}`} placement="top-start">
+                                    <InfoIcon style={{ color: "rgb(119, 33, 173)", paddingLeft: "4px" }} />
+                                </Tooltip>
+                            </div>
+                            <div className={classes.containerItem}>
+                                <FormControlLabel
+                                    control={<IOSSwitchPurple checked={checkedOutbound} onChange={(e) => { setCheckedOutbound(e.target.checked); handleSwitchOutbound(e.target.checked); }} />}
+                                    label={""}
+                                />
+                                {t(langKeys.voicechannel_outbound)}
+                                <Tooltip title={`${t(langKeys.voicechannel_outboundtooltip)}`} placement="top-start">
+                                    <InfoIcon style={{ color: "rgb(119, 33, 173)", paddingLeft: "4px" }} />
+                                </Tooltip>
+                            </div>
+                        </div>
                         <div className="row-zyx">
                             <FieldSelect
                                 className="col-12"
@@ -493,19 +629,46 @@ export const ChannelAddPhone: FC = () => {
                                 valueDefault={fields?.service?.region || ""}
                             />
                         </div>}
+                        {checkedRecording && <div className="row-zyx">
+                            <FieldSelect
+                                className="col-12"
+                                data={dataRecordingStorage}
+                                label={t(langKeys.voicechannel_recording)}
+                                onChange={(value: any) => { handleSwitchRecordingStorage(value); }}
+                                optionDesc="text"
+                                optionValue="value"
+                                variant="outlined"
+                                valueDefault={fields?.service?.recordingstorage || ""}
+                            />
+                        </div>}
+                        {checkedRecording && <div className="row-zyx">
+                            <FieldSelect
+                                className="col-12"
+                                data={dataRecordingQuality}
+                                label={t(langKeys.voicechannel_recordingquality)}
+                                onChange={(value: any) => { handleSwitchRecordingQuality(value); }}
+                                optionDesc="text"
+                                optionValue="value"
+                                variant="outlined"
+                                valueDefault={fields?.service?.recordingquality || ""}
+                            />
+                        </div>}
                         <div className="row-zyx">
-                            <div>
-                                <div style={{ display: "inline" }}>
+                            <div style={{ display: "inline-block" }}>
+                                <div>
                                     <b style={{ paddingLeft: "6px" }}>{t(langKeys.voximplant_pricealert)}</b>
                                     <Tooltip title={`${t(langKeys.voximplant_tooltip)}`} placement="top-start">
-                                        <InfoIcon style={{ padding: "5px 0 0 5px", color: "rgb(119, 33, 173)" }} />
+                                        <InfoIcon style={{ color: "rgb(119, 33, 173)", paddingLeft: "4px" }} />
                                     </Tooltip>
-                                </div>
-                                <div style={{ display: "inline", alignContent: "right", float: "right" }}>
-                                    <b style={{ paddingRight: "20px", textAlign: "right" }}>{`$${formatNumber(phonePrice * (1 + (phoneTax || 0)))}`}</b>
+                                    <b style={{ paddingRight: "20px", textAlign: "right", alignContent: "right", float: "right" }}>{`$${formatNumber(phonePrice * (1 + (phoneTax || 0)))}`}</b>
                                 </div>
                             </div>
                         </div>
+                        {(checkedRecording || checkedSms || checkedOutbound) && <div className="row-zyx">
+                            <div style={{ display: "flex", flexFlow: "row", flexWrap: "wrap" }}>
+                                <p><b style={{ color: "#762AA9" }}>{t(langKeys.voicechannel_recordingalert)}</b><a style={{ fontWeight: 'bold', cursor: 'pointer' }} onClick={openPricingPage} rel="noopener noreferrer">https://laraigo.com/en/pricing/</a></p>
+                            </div>
+                        </div>}
                     </div>
                     <div style={{ paddingLeft: "64%" }}>
                         <Button
@@ -610,8 +773,8 @@ export const ChannelAddPhone: FC = () => {
                                 </div>
                             </div>
                         </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', marginLeft: 200, marginRight: 200, marginBottom: 20 }}>
-                            <pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word' }}>
+                        <div style={{ display: "flex", flexDirection: "column", marginLeft: 200, marginRight: 200, marginBottom: 20 }}>
+                            <pre style={{ background: "#f4f4f4", border: "1px solid #ddd", color: "#666", pageBreakInside: "avoid", fontFamily: "monospace", lineHeight: 1.6, maxWidth: "100%", overflow: "auto", padding: "1em 1.5em", display: "block", wordWrap: "break-word" }}>
                                 <code>
                                     {`${t(langKeys.voximplant_numberbought)}${phoneNumber}`}
                                 </code>
