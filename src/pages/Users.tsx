@@ -1192,7 +1192,7 @@ const Users: FC = () => {
                 // setWaitImport(false);
             }
         }
-    }, [executeRes, waitImport])
+    }, [executeRes, waitImport, importCount])
 
     useEffect(() => {
         if (waitChanges) {
