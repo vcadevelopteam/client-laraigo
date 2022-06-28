@@ -620,7 +620,7 @@ const DialogLoadTickets: React.FC<{
                 setWaitUpload(false);
                 fetchData();
             } else if (importRes.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
+                dispatch(showSnackbar({ show: true, success: false, message: t(importRes.code || "error_unexpected_error") }))
                 dispatch(showBackdrop(false));
                 setWaitUpload(false);
             }
@@ -635,23 +635,34 @@ const DialogLoadTickets: React.FC<{
     }, [openModal])
 
     const onSubmit = handleSubmit(async () => {
-        if (!!channelsite && !!fileList && fileList?.length > 0) {
-            const fd = new FormData();
-            fd.append('channelsite', channelsite);
-            for (let i = 0; i < fileList.length; i++) {
-                fd.append(fileList[i].name, fileList[i], fileList[i].name);
+        if (!!channelsite) {
+            if (!!fileList && fileList?.length > 0) {
+                const fd = new FormData();
+                fd.append('channelsite', channelsite);
+                for (let i = 0; i < fileList.length; i++) {
+                    fd.append(fileList[i].name, fileList[i], fileList[i].name);
+                }
+                dispatch(importTicket(fd));
+                dispatch(showBackdrop(true));
+                setWaitUpload(true);
             }
-            dispatch(importTicket(fd));
-            dispatch(showBackdrop(true));
-            setWaitUpload(true);
+            else {
+                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.no_files_selected) }))
+            }
         }
         else {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.file_without_data) }))
+            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.no_channel_selected) }))
         }
+        
     });
     
     const handleUpload = async (files: any) => {
-        setFileList([...fileList, ...Array.from<File>(files)]);
+        if (Array.from<File>(files).length > 10) {
+            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.max_limit, {n: 10}) }))
+        }
+        else {
+            setFileList(Array.from<File>(files));
+        }
     }
 
     const handleTemplate = () => {
@@ -722,7 +733,12 @@ const DialogLoadTickets: React.FC<{
                     </Button>
                 </label>
             </div>
-            <div>
+            <div style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "5px",
+                marginTop: "10px"
+            }}>
                 {fileList && fileList?.map((x, i) => (
                         <div>{i + 1}. {x.name}</div>
                     )
