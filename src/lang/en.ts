@@ -738,7 +738,7 @@ const translation: LangKeys = {
     newmessagetemplate: 'New Message Template',
     messagetemplate: 'Message template',
     messagetemplate_plural: 'Message templates',
-    messagetemplateid: 'Template Id',
+    messagetemplateid: 'Template ID',
     communicationtemplate: 'Communication template',
     creationdate: 'Creation Date',
     messagetype: 'Message Type',
@@ -3652,7 +3652,25 @@ const translation: LangKeys = {
     periodreportvoip: 'VoIP Calls',
     periodreportrecording: 'Call Recording',
     periodreportother: 'Others',
-    T_VOICECHANNEL: 'VOICE CHANNEL'
+    T_VOICECHANNEL: 'VOICE CHANNEL',
+
+    messagetemplate_sms: 'SMS',
+    messagetemplate_hsm: 'HSM',
+    messagetemplate_mail: 'Mail',
+    messagetemplate_html: 'Html',
+    messagetemplate_standard: 'Standard',
+    messagetemplate_multimedia: 'Multimedia',
+    messagetemplate_text: 'Text',
+    messagetemplate_image: 'Image',
+    messagetemplate_document: 'Document',
+    messagetemplate_video: 'Video',
+    messagetemplate_url: 'URL',
+    messagetemplate_quickreply: 'Quick Reply',
+    messagetemplate_low: 'Low',
+    messagetemplate_medium: 'Medium',
+    messagetemplate_high: 'High',
+    messagetemplate_attachment: 'Attachments',
+    messagetemplate_reload: 'Reload',
 };
 
 const enResource: ResourceLanguage = {
