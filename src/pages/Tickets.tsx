@@ -667,18 +667,14 @@ const DialogLoadTickets: React.FC<{
 
     const handleTemplate = () => {
         const data = [
-            {}, // mainResult?.multiData?.data?.[0]?.data.reduce((a,d) => ({...a, [d.communicationchannelsite]: d.communicationchanneldesc}),{}),
             {},
             {},
             {},
-            {'CLIENT': 'CLIENT', 'BOT': 'BOT'}
         ];
         const header = [
-            'channel',
-            'personname',
-            'personphone',
-            'interactiontext',
-            'interactionfrom'
+            'UserPhone',
+            'UserName',
+            'MessageBody',
         ];
         exportExcel(`${t(langKeys.template)} ${t(langKeys.ticket)}`, templateMaker(data, header));
     }
