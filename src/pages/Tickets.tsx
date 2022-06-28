@@ -603,9 +603,11 @@ const DialogLoadTickets: React.FC<{
     const [waitUpload, setWaitUpload] = useState(false);
     const mainResult = useSelector(state => state.main);
     const importRes = useSelector(state => state.inbox.triggerImportTicket)
-    const [file, setFile] = useState<File | null>(null);
 
-    const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<{
+    const [channelsite, setChannelsite] = useState<string>('');
+    const [fileList, setFileList] = useState<File[]>([])
+
+    const { handleSubmit } = useForm<{
         filename: string;
     }>();
 
@@ -627,23 +629,19 @@ const DialogLoadTickets: React.FC<{
 
     useEffect(() => {
         if (openModal) {
-            reset({
-                filename: '',
-            })
-            register('filename', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+            setChannelsite('');
+            setFileList([]);
         }
     }, [openModal])
 
     const onSubmit = handleSubmit(async () => {
-        let data: any = [];
-        if (file?.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
-            data = await uploadExcel(file);
-        }
-        else if (file?.type === 'text/csv') {
-            data = await uploadCSV(file);
-        }
-        if (data.length > 0) {
-            dispatch(importTicket({data}));
+        if (!!channelsite && !!fileList && fileList?.length > 0) {
+            const fd = new FormData();
+            fd.append('channelsite', channelsite);
+            for (let i = 0; i < fileList.length; i++) {
+                fd.append(fileList[i].name, fileList[i], fileList[i].name);
+            }
+            dispatch(importTicket(fd));
             dispatch(showBackdrop(true));
             setWaitUpload(true);
         }
@@ -653,14 +651,7 @@ const DialogLoadTickets: React.FC<{
     });
     
     const handleUpload = async (files: any) => {
-        const file = files[0];
-        if (file?.type === 'text/csv') {
-            setValue('filename', file?.name);
-            setFile(file);
-        }
-        else {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.invalid_file) }))
-        }
+        setFileList([...fileList, ...Array.from<File>(files)]);
     }
 
     const handleTemplate = () => {
@@ -701,20 +692,24 @@ const DialogLoadTickets: React.FC<{
                     gap: '10px'
                 }}
             >
-                <FieldEdit
+                <FieldSelect
+                    label={t(langKeys.channel)}
                     className={classes.flex_1}
-                    label={t(langKeys.database)}
-                    valueDefault={getValues('filename')}
-                    error={errors.filename?.message}
-                    disabled={true}
+                    valueDefault={channelsite}
+                    onChange={(value) => setChannelsite(value?.communicationchannelsite)}
+                    variant="outlined"
+                    data={mainResult?.multiData?.data[0]?.data.sort((a, b) => (a.communicationchanneldesc || "").localeCompare(b.communicationchanneldesc)) || []}
+                    optionDesc="communicationchanneldesc"
+                    optionValue="communicationchannelid"
                 />
                 <input
                     name="file"
-                    accept="text/csv"
+                    accept="text/csv,.zip,.rar"
                     id="laraigo-upload-csv-file"
                     type="file"
                     style={{ display: 'none' }}
                     onChange={(e) => handleUpload(e.target.files)}
+                    multiple
                 />
                 <label htmlFor="laraigo-upload-csv-file">
                     <Button
@@ -726,6 +721,12 @@ const DialogLoadTickets: React.FC<{
                     >{t(langKeys.select)}
                     </Button>
                 </label>
+            </div>
+            <div>
+                {fileList && fileList?.map((x, i) => (
+                        <div>{i + 1}. {x.name}</div>
+                    )
+                )}
             </div>
         </DialogZyx>)
 }
