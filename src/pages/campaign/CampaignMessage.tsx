@@ -189,7 +189,8 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         }}
                     />
                 </div> : null}
-                {detaildata.communicationchanneltype?.startsWith('MAI') ?
+                {detaildata.communicationchanneltype?.startsWith('MAI')
+                && ['MAIL','HTML'].includes(detaildata.type!!) ?
                 <div className="row-zyx">
                     <React.Fragment>
                         <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.body)}</Box>
@@ -244,6 +245,19 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         onClickAway={(variableHandler) => setVariableHandler({...variableHandler, show: false})}
                     />
                 </div>}
+                {(detaildata.messagetemplatetype === 'MULTIMEDIA'
+                && (detaildata?.messagetemplatefooter || '') !== '') ?
+                <div className="row-zyx">
+                    <FieldEdit
+                        label={t(langKeys.footer)}
+                        className="col-12"
+                        valueDefault={detaildata.messagetemplatefooter}
+                        onChange={(value) => setDetaildata({...detaildata,  messagetemplatefooter: value})}
+                        inputProps={{
+                            readOnly: detaildata.messagetemplateid !== 0
+                        }}
+                    />
+                </div> : null}
             </div>
         </React.Fragment>
     )

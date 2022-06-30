@@ -57,12 +57,22 @@ const dataSource: Dictionary = {
     EXTERNAL: 'bdexternal',
 };
 
-const dataCampaignType = [
-    { key: 'TEXTO', value: 'text'},
-    { key: 'HSM', value: 'hsm', rif: 'startsWith', rifvalue: 'WHA' },
-    { key: 'SMS', value: 'sms', rif: 'startsWith', rifvalue: 'SMS'},
-    { key: 'MAIL', value: 'mail', rif: 'startsWith', rifvalue: 'MAI'},
-];
+const dataCampaignType = {
+    WHA: [
+        { key: 'HSM', value: 'hsm' },
+    ],
+    SMS: [
+        { key: 'SMS', value: 'sms' },
+    ],
+    MAI: [
+        { key: 'TEXTO', value: 'text'},
+        { key: 'MAIL', value: 'mail' },
+        { key: 'HTML', value: 'html' },
+    ],
+    DEFAULT: [
+        { key: 'TEXTO', value: 'text'},
+    ]
+}
 
 type FormFields = {
     isnew: boolean,
@@ -87,7 +97,7 @@ type FormFields = {
     messagetemplatetype: string,
 	messagetemplateheader: Dictionary,
 	messagetemplatebuttons: Dictionary[],
-    // messagetemplatefooter: string,
+    messagetemplatefooter: string,
 	executiontype: string,
 	batchjson: Dictionary[],
 	fields: SelectedColumns,
@@ -131,7 +141,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
             messagetemplatetype: 'STANDARD',
             messagetemplateheader: {},
             messagetemplatebuttons: [],
-            // messagetemplatefooter: '',
+            messagetemplatefooter: '',
             executiontype: detaildata?.executiontype || (auxdata?.length > 0 ? auxdata[0].executiontype : 'MANUAL'),
             batchjson: [],
             fields: new SelectedColumns(),
@@ -199,7 +209,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('messagetemplatetype', data.messagetemplatetype);
         setValue('messagetemplateheader', data.messagetemplateheader || {});
         setValue('messagetemplatebuttons', data.messagetemplatebuttons || []);
-        // setValue('messagetemplatefooter', data.messagetemplatefooter || '');
+        setValue('messagetemplatefooter', data.messagetemplatefooter || '');
         setValue('executiontype', data.executiontype);
         setValue('batchjson', data.batchjson || []);
         setValue('fields', {...new SelectedColumns(), ...data.fields});
@@ -273,16 +283,16 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
     const filterDataCampaignType = () => {
         if (getValues('communicationchanneltype')?.startsWith('WHA')) {
-            return dataCampaignType.filter(t => t.key === 'HSM');
+            return dataCampaignType.WHA;
         }
         else if (getValues('communicationchanneltype')?.startsWith('SMS')) {
-            return dataCampaignType.filter(t => t.key === 'SMS');
+            return dataCampaignType.SMS;
         }
         else if (getValues('communicationchanneltype')?.startsWith('MAI')) {
-            return dataCampaignType.filter(t => t.key === 'MAIL' || t.key === 'TEXTO');
+            return dataCampaignType.MAI;
         }
         else {
-            return filterIf(dataCampaignType);
+            return dataCampaignType.DEFAULT;
         }
     }
 
@@ -295,7 +305,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('messagetemplatetype', 'STANDARD');
         setValue('messagetemplateheader', {});
         setValue('messagetemplatebuttons', []);
-        // setValue('messagetemplatefooter', '');
+        setValue('messagetemplatefooter', '');
         await trigger('type');
     }
     
@@ -319,10 +329,10 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 setValue('messagetemplatebuttons', messageTemplate?.buttons || []);
             else
                 setValue('messagetemplatebuttons', []);
-            // if (messageTemplate.footerenabled)
-            //     setValue('messagetemplatefooter', messageTemplate?.footer || '');
-            // else
-            //     setValue('messagetemplatefooter', '');
+            if (messageTemplate.footerenabled)
+                setValue('messagetemplatefooter', messageTemplate?.footer || '');
+            else
+                setValue('messagetemplatefooter', '');
         }
         else if (data?.type === 'MAIL') {
             setValue('subject', messageTemplate?.header || '')
@@ -526,12 +536,12 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         :
                         <FieldView
                             label={t(langKeys.messagetype)}
-                            value={t(dataCampaignType.filter(d => d.key === row?.type)[0].value) || ""}
+                            value={t(filterDataCampaignType().filter(d => d.key === row?.type)[0]?.value) || ""}
                             className="col-4"
                         />
                     }
                 </div>
-                {['HSM','SMS','MAIL'].includes(getValues('type')) ?
+                {['HSM','SMS','MAIL','HTML'].includes(getValues('type')) ?
                 <div className="row-zyx">
                     {edit ?
                         <FieldSelect

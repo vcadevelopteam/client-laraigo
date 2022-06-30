@@ -128,7 +128,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                         messagetemplatetype: data?.messagetemplatetype,
                         messagetemplateheader: data?.messagetemplateheader || {},
                         messagetemplatebuttons: data?.messagetemplatebuttons || [],
-                        // messagetemplatefooter: data?.messagetemplatefooter || '',
+                        messagetemplatefooter: data?.messagetemplatefooter || '',
                         executiontype: data?.executiontype,
                         batchjson: data?.batchjson || [],
                         fields: {...new SelectedColumns(), ...data?.fields},
@@ -170,7 +170,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
             let errorIndex = null;
             
             let subjectTemp = detaildata.subject || '';
-            if (detaildata.communicationchanneltype === 'MAIL') {
+            if (detaildata.communicationchanneltype?.startsWith('MAI')) {
                 let vars = extractVariables(subjectTemp);
                 errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
                 if (errorIndex !== -1) {
@@ -193,7 +193,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
 
             let messageTemp =(detaildata.message || '');
             if (messageTemp !== '') {
-                if (detaildata.communicationchanneltype === 'MAIL') {
+                if (detaildata.communicationchanneltype?.startsWith('MAI')) {
                     let splitMessage = messageTemp.split('{{');
                     messageVariables.forEach((v, i) => {
                         splitMessage[i + 1] = splitMessage[i + 1]?.replace(`${v.name}}}`, `${v.text}}}`);
