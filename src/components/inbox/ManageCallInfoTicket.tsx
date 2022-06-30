@@ -23,13 +23,13 @@ const ManageCallInfoTicket: React.FC = () => {
     const phoneinbox = useSelector(state => state.inbox.person.data?.phone);
     const [numberVox, setNumberVox] = useState("");
     const onholdstate = useSelector(state => state.voximplant.onhold);
+    const onholdstatedate = useSelector(state => state.voximplant.onholddate);
     const [hold, sethold] = useState(!onholdstate);
     const [mute, setmute] = useState(false);
     const call = useSelector(state => state.voximplant.call);
     const statusCall = useSelector(state => state.voximplant.statusCall);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const [date, setdate] = useState<string>(new Date().toISOString());
-    const [datehold, setdatehold] = useState<string>(new Date().toISOString());
     const [time, settime] = useState(0);
     const [timehold, settimehold] = useState(0);
     const [divertcall, setdivertcall] = useState(false);
@@ -45,9 +45,6 @@ const ManageCallInfoTicket: React.FC = () => {
             setNumberVox(call.number.split("@")[0].split(":")?.[1] || "")
         }
     }, [call, dispatch, statusCall])
-    React.useEffect(() => {
-        dispatch(setHold(!hold))
-    }, [hold])
 
     React.useEffect(() => {
         if (statusCall === "CONNECTED") {
@@ -70,20 +67,11 @@ const ManageCallInfoTicket: React.FC = () => {
             settime(0)
         }
     }, [time, statusCall, date]);
-    //hold
-    React.useEffect(() => {
-        if (!hold) {
-            const datex = new Date().toISOString();
-            console.log(datex)
-            setdatehold(datex);
-            settimehold(getSecondsUntelNow(convertLocalDate(datex)));
-        }
-    }, [hold])
 
     React.useEffect(() => {
         if (statusCall === "CONNECTED" && !hold) {
             setTimeout(() => {
-                settimehold(getSecondsUntelNow(convertLocalDate(datehold)));
+                settimehold(getSecondsUntelNow(convertLocalDate(onholdstatedate)));
             }, 1000)
         } else {
             settimehold(0)
@@ -140,7 +128,7 @@ const ManageCallInfoTicket: React.FC = () => {
                             }
                             {(statusCall === "CONNECTED" && !hold) &&
                                 <div style={{ fontSize: "15px", marginLeft: "auto", marginRight: "auto", width: "200px", textAlign: "center" }}>
-                                    {t(langKeys.waittime)} {(secondsToTime(timehold || 0))}
+                                    {t(langKeys.waittime)} {(secondsToTime(getSecondsUntelNow(convertLocalDate(onholdstatedate))))}
                                 </div>
                             }
                         </div>
@@ -194,6 +182,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                         onClick={() => {
                                             dispatch(holdCall({ call: call.call, flag: !hold }));
                                             sethold(!hold)
+                                            dispatch(setHold(hold))
                                         }}
                                     >
                                         <PauseIcon style={{ color: "white", width: "35px", height: "35px" }} />
