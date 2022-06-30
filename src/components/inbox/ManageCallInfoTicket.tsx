@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'hooks';
 import PersonIcon from '@material-ui/icons/Person';
 import { useDispatch } from 'react-redux';
-import { answerCall, hangupCall, rejectCall, holdCall, setHold, muteCall, unmuteCall } from 'store/voximplant/actions';
+import { answerCall, hangupCall, rejectCall, holdCall, muteCall, unmuteCall, setHold } from 'store/voximplant/actions';
 import TextField from '@material-ui/core/TextField';
 import PhoneIcon from '@material-ui/icons/Phone';
 import CallEndIcon from '@material-ui/icons/CallEnd';
@@ -22,10 +22,11 @@ const ManageCallInfoTicket: React.FC = () => {
     const dispatch = useDispatch();
     const phoneinbox = useSelector(state => state.inbox.person.data?.phone);
     const [numberVox, setNumberVox] = useState("");
+    const onholdstate = useSelector(state => state.voximplant.onhold);
+    const [hold, sethold] = useState(!onholdstate);
     const [mute, setmute] = useState(false);
     const call = useSelector(state => state.voximplant.call);
     const statusCall = useSelector(state => state.voximplant.statusCall);
-    const holdCallState = useSelector(state => state.voximplant.onhold);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const [date, setdate] = useState<string>(new Date().toISOString());
     const [datehold, setdatehold] = useState<string>(new Date().toISOString());
@@ -37,13 +38,16 @@ const ManageCallInfoTicket: React.FC = () => {
 
     React.useEffect(() => {
         if (call.type === "INBOUND" && statusCall === "CONNECTING") {
-            dispatch(setHold(false))
+            sethold(true)
             setmute(false)
             setNumberVox(call.number.split("@")[0].split(":")?.[1] || "")
         } else if (call.type === "INBOUND" && statusCall !== "CONNECTING") {
             setNumberVox(call.number.split("@")[0].split(":")?.[1] || "")
         }
     }, [call, dispatch, statusCall])
+    React.useEffect(() => {
+        dispatch(setHold(!hold))
+    }, [hold])
 
     React.useEffect(() => {
         if (statusCall === "CONNECTED") {
@@ -68,23 +72,23 @@ const ManageCallInfoTicket: React.FC = () => {
     }, [time, statusCall, date]);
     //hold
     React.useEffect(() => {
-        if (holdCallState) {
+        if (!hold) {
             const datex = new Date().toISOString();
             console.log(datex)
             setdatehold(datex);
             settimehold(getSecondsUntelNow(convertLocalDate(datex)));
         }
-    }, [holdCallState])
+    }, [hold])
 
     React.useEffect(() => {
-        if (statusCall === "CONNECTED" && holdCallState) {
+        if (statusCall === "CONNECTED" && !hold) {
             setTimeout(() => {
                 settimehold(getSecondsUntelNow(convertLocalDate(datehold)));
             }, 1000)
         } else {
             settimehold(0)
         }
-    }, [timehold, holdCallState,statusCall]);
+    }, [timehold, hold,statusCall]);
 
     React.useEffect(() => {
         if (phoneinbox) {
@@ -129,12 +133,12 @@ const ManageCallInfoTicket: React.FC = () => {
                                     </div>
                                 )
                             }
-                            {(statusCall === "CONNECTED" && !holdCallState) &&
+                            {(statusCall === "CONNECTED" && hold) &&
                                 <div style={{ fontSize: "15px", marginLeft: "auto", marginRight: "auto", width: "100px", textAlign: "center" }}>
                                     {(secondsToTime(time || 0))}
                                 </div>
                             }
-                            {(statusCall === "CONNECTED" && holdCallState) &&
+                            {(statusCall === "CONNECTED" && !hold) &&
                                 <div style={{ fontSize: "15px", marginLeft: "auto", marginRight: "auto", width: "200px", textAlign: "center" }}>
                                     {t(langKeys.waittime)} {(secondsToTime(timehold || 0))}
                                 </div>
@@ -146,7 +150,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                     style={{ marginLeft: "auto", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#fa6262' }}
                                     onClick={() => {
                                         dispatch(holdCall({ call: call.call, flag: true }));
-                                        dispatch(setHold(true))
+                                        sethold(true)
                                         setmute(false)
                                         dispatch(hangupCall(call.call))
                                     }}
@@ -172,7 +176,7 @@ const ManageCallInfoTicket: React.FC = () => {
                             )}
                             {statusCall === "CONNECTED" && (
                                 <div style={{ display: "grid", width: "100%", gridTemplateColumns: 'auto [col1] 50px 50px [col2] 50px 50px [col4] 50px auto', }}>
-                                    {(mute||holdCallState) ? (
+                                    {(mute||!hold) ? (
                                         <IconButton //unmuteself
                                             style={{ gridColumnStart: "col1", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#7721ad' }}
                                             onClick={() => { dispatch(unmuteCall(call.call)); setmute(false) }}>
@@ -186,10 +190,10 @@ const ManageCallInfoTicket: React.FC = () => {
                                         </IconButton>
                                     )}
                                     <IconButton //holdcall
-                                        style={{ gridColumnStart: "col2", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: (!holdCallState) ? '#bdbdbd' : '#fa6262' }}
+                                        style={{ gridColumnStart: "col2", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: hold ? '#bdbdbd' : '#781baf' }}
                                         onClick={() => {
-                                            dispatch(holdCall({ call: call.call, flag: !holdCallState }));
-                                            dispatch(setHold(!holdCallState))
+                                            dispatch(holdCall({ call: call.call, flag: !hold }));
+                                            sethold(!hold)
                                         }}
                                     >
                                         <PauseIcon style={{ color: "white", width: "35px", height: "35px" }} />
@@ -234,7 +238,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                     style={{ marginLeft: "auto", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#7721ad' }}
                                     onClick={() => {
                                         //dispatch(makeCall(numberVox))
-                                        dispatch(setHold(false))
+                                        sethold(true)
                                         setmute(false)
                                     }}
                                 >
