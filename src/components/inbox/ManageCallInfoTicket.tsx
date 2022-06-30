@@ -37,7 +37,7 @@ const ManageCallInfoTicket: React.FC = () => {
 
     React.useEffect(() => {
         if (call.type === "INBOUND" && statusCall === "CONNECTING") {
-            setHold(false)
+            dispatch(setHold(false))
             setmute(false)
             setNumberVox(call.number.split("@")[0].split(":")?.[1] || "")
         } else if (call.type === "INBOUND" && statusCall !== "CONNECTING") {
@@ -146,7 +146,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                     style={{ marginLeft: "auto", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#fa6262' }}
                                     onClick={() => {
                                         dispatch(holdCall({ call: call.call, flag: true }));
-                                        setHold(true)
+                                        dispatch(setHold(true))
                                         setmute(false)
                                         dispatch(hangupCall(call.call))
                                     }}
@@ -189,7 +189,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                         style={{ gridColumnStart: "col2", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: (!holdCallState) ? '#bdbdbd' : '#fa6262' }}
                                         onClick={() => {
                                             dispatch(holdCall({ call: call.call, flag: !holdCallState }));
-                                            setHold(!holdCallState)
+                                            dispatch(setHold(!holdCallState))
                                         }}
                                     >
                                         <PauseIcon style={{ color: "white", width: "35px", height: "35px" }} />
@@ -234,7 +234,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                     style={{ marginLeft: "auto", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#7721ad' }}
                                     onClick={() => {
                                         //dispatch(makeCall(numberVox))
-                                        setHold(false)
+                                        dispatch(setHold(false))
                                         setmute(false)
                                     }}
                                 >
