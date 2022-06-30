@@ -1017,6 +1017,10 @@ const Tickets = () => {
                 accessor: 'email'
             },
             {
+                Header: t(langKeys.origin),
+                accessor: 'origin'
+            },
+            {
                 Header: t(langKeys.ticket_firstusergroup),
                 accessor: 'firstusergroup'
             },

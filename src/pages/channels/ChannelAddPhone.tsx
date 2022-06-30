@@ -3,7 +3,7 @@
 import { Box, Breadcrumbs, Button, makeStyles } from "@material-ui/core";
 import { ColorInput, FieldEdit, FieldSelect, FieldView } from "components";
 import { FC, useEffect, useState } from "react";
-import { formatNumber } from 'common/helpers';
+import { formatNumber, getPhoneTax } from 'common/helpers';
 import { getCategories, getCountryStates, getRegions } from "store/voximplant/actions";
 import { getMultiCollection } from 'store/main/actions';
 import { getName } from "country-list";
@@ -126,7 +126,7 @@ export const ChannelAddPhone: FC = () => {
     useEffect(() => {
         dispatch(getCategories({}));
         dispatch(getMultiCollection([
-            getPaymentPlanSel(),
+            getPhoneTax(),
         ]));
         setWaitCategories(true);
         setWaitPlan(true);
@@ -143,11 +143,7 @@ export const ChannelAddPhone: FC = () => {
         setPhoneTax(0.00);
         if (dataPaymentPlan) {
             if (dataPaymentPlan.length > 0) {
-                var currentPlan = dataPaymentPlan.find((data: { plan: string | undefined; }) => data.plan === user?.plan);
-
-                if (currentPlan) {
-                    setPhoneTax(currentPlan.phonetax || 0);
-                }
+                setPhoneTax(dataPaymentPlan[0].vcacomissionpervoicechannel || 0);
             }
         }
     }, [dataPaymentPlan])
