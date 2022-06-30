@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'hooks';
 import PersonIcon from '@material-ui/icons/Person';
 import { useDispatch } from 'react-redux';
-import { answerCall, hangupCall, rejectCall, holdCall, muteCall, unmuteCall } from 'store/voximplant/actions';
+import { answerCall, hangupCall, rejectCall, holdCall, setHold, muteCall, unmuteCall } from 'store/voximplant/actions';
 import TextField from '@material-ui/core/TextField';
 import PhoneIcon from '@material-ui/icons/Phone';
 import CallEndIcon from '@material-ui/icons/CallEnd';
@@ -22,10 +22,10 @@ const ManageCallInfoTicket: React.FC = () => {
     const dispatch = useDispatch();
     const phoneinbox = useSelector(state => state.inbox.person.data?.phone);
     const [numberVox, setNumberVox] = useState("");
-    const [hold, sethold] = useState(true);
     const [mute, setmute] = useState(false);
     const call = useSelector(state => state.voximplant.call);
     const statusCall = useSelector(state => state.voximplant.statusCall);
+    const holdCallState = useSelector(state => state.voximplant.onhold);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const [date, setdate] = useState<string>(new Date().toISOString());
     const [time, settime] = useState(0);
@@ -35,7 +35,7 @@ const ManageCallInfoTicket: React.FC = () => {
 
     React.useEffect(() => {
         if (call.type === "INBOUND" && statusCall === "CONNECTING") {
-            sethold(true)
+            setHold(false)
             setmute(false)
             setNumberVox(call.number.split("@")[0].split(":")?.[1] || "")
         } else if (call.type === "INBOUND" && statusCall !== "CONNECTING") {
@@ -120,7 +120,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                     style={{ marginLeft: "auto", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#fa6262' }}
                                     onClick={() => {
                                         dispatch(holdCall({ call: call.call, flag: true }));
-                                        sethold(true)
+                                        setHold(true)
                                         setmute(false)
                                         dispatch(hangupCall(call.call))
                                     }}
@@ -160,10 +160,10 @@ const ManageCallInfoTicket: React.FC = () => {
                                         </IconButton>
                                     )}
                                     <IconButton //holdcall
-                                        style={{ gridColumnStart: "col2", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: hold ? '#bdbdbd' : '#fa6262' }}
+                                        style={{ gridColumnStart: "col2", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: (!holdCallState) ? '#bdbdbd' : '#fa6262' }}
                                         onClick={() => {
-                                            dispatch(holdCall({ call: call.call, flag: !hold }));
-                                            sethold(!hold)
+                                            dispatch(holdCall({ call: call.call, flag: !holdCallState }));
+                                            setHold(!holdCallState)
                                         }}
                                     >
                                         <PauseIcon style={{ color: "white", width: "35px", height: "35px" }} />
@@ -208,7 +208,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                     style={{ marginLeft: "auto", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#7721ad' }}
                                     onClick={() => {
                                         //dispatch(makeCall(numberVox))
-                                        sethold(true)
+                                        setHold(false)
                                         setmute(false)
                                     }}
                                 >

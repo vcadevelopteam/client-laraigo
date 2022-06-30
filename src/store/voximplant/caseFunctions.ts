@@ -18,11 +18,18 @@ export const setModalCall = (state: IState, action: IAction): IState => {
         showcall: action.payload,
     }
 }
+export const setHold = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        onhold: action.payload,
+    }
+}
 export const initCall = (state: IState, action: IAction): IState => {
 
     return {
         ...state,
         call: action.payload,
+        onhold: false,
         statusCall: "CONNECTING"
     }
 }
