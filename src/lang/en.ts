@@ -1787,6 +1787,8 @@ const translation: LangKeys = {
     report_interaction_interactiontext: 'Text interaction',
     report_interaction_clientnumber: 'Client number',
     report_interaction_personcommunicationchannel: 'Person communication channel',
+    report_interaction_email: 'Email',
+    report_interaction_ticketgroup: 'Group',
 
     least_user_or_group: 'Should choose at least user or group',
 
