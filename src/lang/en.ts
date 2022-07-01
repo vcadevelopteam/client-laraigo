@@ -3657,7 +3657,7 @@ const translation: LangKeys = {
     messagetemplate_sms: 'SMS',
     messagetemplate_hsm: 'HSM',
     messagetemplate_mail: 'Mail',
-    messagetemplate_html: 'Html',
+    messagetemplate_html: 'HTML',
     messagetemplate_standard: 'Standard',
     messagetemplate_multimedia: 'Multimedia',
     messagetemplate_text: 'Text',
@@ -3671,6 +3671,10 @@ const translation: LangKeys = {
     messagetemplate_high: 'High',
     messagetemplate_attachment: 'Attachments',
     messagetemplate_reload: 'Reload',
+    messagetemplate_changetoeditor: 'Edit HTML code',
+    messagetemplate_changetoview: 'View HTML template',
+
+    validationchar: 'This field has a minimum and maximum amount of characters',
 };
 
 const enResource: ResourceLanguage = {

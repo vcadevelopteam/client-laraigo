@@ -3651,6 +3651,10 @@ export const langKeys = {
     messagetemplate_high: 'messagetemplate_high',
     messagetemplate_attachment: 'messagetemplate_attachment',
     messagetemplate_reload: 'messagetemplate_reload',
+    messagetemplate_changetoeditor: 'messagetemplate_changetoeditor',
+    messagetemplate_changetoview: 'messagetemplate_changetoview',
+
+    validationchar: 'validationchar',
 };
 
 export type LangKeys = typeof langKeys;

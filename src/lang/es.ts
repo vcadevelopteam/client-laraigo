@@ -3650,7 +3650,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     messagetemplate_sms: 'SMS',
     messagetemplate_hsm: 'HSM',
     messagetemplate_mail: 'Correo',
-    messagetemplate_html: 'Html',
+    messagetemplate_html: 'HTML',
     messagetemplate_standard: 'Estándar',
     messagetemplate_multimedia: 'Multimedia',
     messagetemplate_text: 'Texto',
@@ -3664,6 +3664,10 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     messagetemplate_high: 'Alta',
     messagetemplate_attachment: 'Adjuntos',
     messagetemplate_reload: 'Recargar',
+    messagetemplate_changetoeditor: 'Editar código HTML',
+    messagetemplate_changetoview: 'Visualizar plantilla HTML',
+
+    validationchar: 'Este campo tiene un número mínimo y máximo de caracteres',
 };
 
 const esResource: ResourceLanguage = {
