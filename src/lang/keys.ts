@@ -3640,7 +3640,6 @@ export const langKeys = {
     periodreportrecording: 'periodreportrecording',
     periodreportother: 'periodreportother',
     T_VOICECHANNEL: 'T_VOICECHANNEL',
-<<<<<<< HEAD
     go_ticket: 'go_ticket',
 
     productcatalog_title: 'productcatalog_title',
@@ -3712,7 +3711,6 @@ export const langKeys = {
     voicechannel_recordinghd: 'voicechannel_recordinghd',
     voicechannel_recordinglossless: 'voicechannel_recordinglossless',
     voicechannel_recordingalert: 'voicechannel_recordingalert',
-=======
 
     messagetemplate_sms: 'messagetemplate_sms',
     messagetemplate_hsm: 'messagetemplate_hsm',
@@ -3735,7 +3733,6 @@ export const langKeys = {
     messagetemplate_changetoview: 'messagetemplate_changetoview',
 
     validationchar: 'validationchar',
->>>>>>> f175f6d71dc20336d6596e1532dbe73e88bb730d
 };
 
 export type LangKeys = typeof langKeys;

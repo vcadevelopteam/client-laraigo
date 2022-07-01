@@ -3653,7 +3653,6 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     periodreportrecording: 'Grabación de Llamadas',
     periodreportother: 'Otros',
     T_VOICECHANNEL: 'CANAL DE VOZ',
-<<<<<<< HEAD
     go_ticket: 'Ir al ticket',
 
     productcatalog_title: 'Título',
@@ -3725,7 +3724,6 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     voicechannel_recordinghd: 'HD - Alta definición',
     voicechannel_recordinglossless: 'Sin pérdidas',
     voicechannel_recordingalert: 'La compra de una línea nueva y la activación de ciertas capacidades incurren en cargas extras en su plan mensual. Para mayor información visitar nuestra lista de precios: ',
-=======
 
     messagetemplate_sms: 'SMS',
     messagetemplate_hsm: 'HSM',
@@ -3748,7 +3746,6 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     messagetemplate_changetoview: 'Visualizar plantilla HTML',
 
     validationchar: 'Este campo tiene un número mínimo y máximo de caracteres',
->>>>>>> f175f6d71dc20336d6596e1532dbe73e88bb730d
 };
 
 const esResource: ResourceLanguage = {

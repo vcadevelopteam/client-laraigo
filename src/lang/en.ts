@@ -3660,7 +3660,6 @@ const translation: LangKeys = {
     periodreportrecording: 'Call Recording',
     periodreportother: 'Others',
     T_VOICECHANNEL: 'VOICE CHANNEL',
-<<<<<<< HEAD
     go_ticket: 'Go to ticket',
 
     productcatalog_title: 'Title',
@@ -3732,7 +3731,6 @@ const translation: LangKeys = {
     voicechannel_recordinghd: 'HD - High Definition',
     voicechannel_recordinglossless: 'Lossless',
     voicechannel_recordingalert: 'The purchase of a new number and the activation of certain capacities result in extra charges in your monthly plan. For more information please visit our price list: ',
-=======
 
     messagetemplate_sms: 'SMS',
     messagetemplate_hsm: 'HSM',
@@ -3755,7 +3753,6 @@ const translation: LangKeys = {
     messagetemplate_changetoview: 'View HTML template',
 
     validationchar: 'This field has a minimum and maximum amount of characters',
->>>>>>> f175f6d71dc20336d6596e1532dbe73e88bb730d
 };
 
 const enResource: ResourceLanguage = {

@@ -201,22 +201,13 @@ const MessageTemplates: FC = () => {
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-<<<<<<< HEAD
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
-=======
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }));
->>>>>>> f175f6d71dc20336d6596e1532dbe73e88bb730d
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
-<<<<<<< HEAD
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.messagetemplate).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
-=======
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.messagetemplate).toLocaleLowerCase() });
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }));
->>>>>>> f175f6d71dc20336d6596e1532dbe73e88bb730d
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
@@ -382,22 +373,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-<<<<<<< HEAD
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
-=======
-                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }));
->>>>>>> f175f6d71dc20336d6596e1532dbe73e88bb730d
                 fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1");
             } else if (executeRes.error) {
-<<<<<<< HEAD
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.messagetemplate).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
-=======
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.messagetemplate).toLocaleLowerCase() });
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }));
->>>>>>> f175f6d71dc20336d6596e1532dbe73e88bb730d
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
