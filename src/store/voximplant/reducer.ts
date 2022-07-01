@@ -23,6 +23,8 @@ export interface IState {
     sdk: Client | null;
     showcall: boolean;
     phoneNumber: string;
+    onhold: boolean;
+    onholddate: string;
     statusCall: string;
     requestGetMaximumConsumption: IRequest;
     requestTransferAccountBalance: IRequest;
@@ -42,6 +44,8 @@ export const initialState: IState = {
     sdk: null,
     showcall: false,
     phoneNumber: "",
+    onhold: false,
+    onholddate: new Date().toISOString(),
     statusCall: "DISCONNECTED",
     requestGetMaximumConsumption: { ...initialCommon, data: null, loading: false, error: false },
     requestTransferAccountBalance: { ...initialCommon, data: null, loading: false, error: false },
@@ -53,6 +57,7 @@ export default createReducer<IState>(initialState, {
     [actionTypes.INIT_CALL]: caseFUnctions.initCall,
     [actionTypes.SET_MODAL_CALL]: caseFUnctions.setModalCall,
     [actionTypes.SET_PHONE_NUMBER]: caseFUnctions.setPhoneNumber,
+    [actionTypes.SET_HOLD]: caseFUnctions.setHold,
     [actionTypes.MANAGE_STATUS_CALL]: caseFUnctions.manageStatusCall,
     [actionTypes.MANAGE_CONNECTION]: caseFUnctions.manageConnection,
 

@@ -41,12 +41,8 @@ export function sendHSM(data: ISendHSM) {
     return APIManager.post(apiUrls.SEND_HSM, { data: { data } }, true);
 }
 
-export function importTicket({ data }: IImportTicket) {
-    return APIManager.post(apiUrls.IMPORT_TICKET, { data: {
-        data: {
-            datatable: data
-        }
-    } }, true);
+export function importTicket(data: FormData) {
+    return APIManager.post(apiUrls.IMPORT_TICKET, { data }, true);
 }
 
 export function replyTicket(params: IReplyTicketParams | IReplyTicketParams[], isList: boolean = false) {
