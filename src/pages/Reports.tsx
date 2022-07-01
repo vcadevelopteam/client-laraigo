@@ -243,6 +243,28 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                     type: "string"
                                 }
                         }
+                    case "interaction":
+                        switch (x.proargnames) {
+                            case "interactiontext":
+                                return {
+                                    Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                                    accessor: x.proargnames,
+                                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help")? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
+                                    type: "string",
+                                    Cell: (props: any) => {
+                                        const { interactiontext } = props.cell.row.original;
+                                        let texttoshow = interactiontext.length<40? interactiontext: interactiontext.substring(0, 40) + "... "
+                                        return texttoshow
+                                    }
+                                }
+                            default:
+                                return {
+                                    Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                                    accessor: x.proargnames,
+                                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help")? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
+                                    type: "string"
+                                }
+                        }
                     default:
                         return {
                             Header: t('report_' + row?.origin + '_' + x.proargnames || ''),

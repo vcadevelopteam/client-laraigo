@@ -1711,6 +1711,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     report_interaction_interactiontext: 'Texto de interacción',
     report_interaction_clientnumber: 'Número de cliente',
     report_interaction_personcommunicationchannel: 'Canal de comunicación persona',
+    report_interaction_email: 'Correo',
+    report_interaction_ticketgroup: 'Grupo',
 
     report_productivity: 'Conversaciones',
     report_productivity_ticket: 'Ticket',
