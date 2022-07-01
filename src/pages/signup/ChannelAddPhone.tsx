@@ -405,10 +405,12 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                                 loading={categoriesResult.loading}
                                 onChange={(value: any) => { handleCategory(value); }}
                                 optionDesc="phone_category_name"
-                                optionValue="incoming_calls_resource_id"
+                                optionValue="phone_category_name"
                                 orderbylabel={true}
                                 variant="outlined"
                                 valueDefault={getValues('channels.voximplantphone.category')}
+                                uset={true}
+                                prefixTranslation="voximplantcategory_"
                             />
                         </div>
                         {hasStates && <div className="row-zyx">

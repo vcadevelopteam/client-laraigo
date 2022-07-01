@@ -104,7 +104,7 @@ const SmallAvatar = styled(Avatar)(() => ({
     fontSize: 11,
 }));
 
-const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { conversationid, call, personlastreplydate, communicationchanneltype, lastmessage, displayname, imageurldef, ticketnum, firstconversationdate, countnewmessages, status, communicationchannelid, lastreplyuser, lastconversationdate } }) => {
+const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { conversationid, call, personlastreplydate, origin, communicationchanneltype, lastmessage, displayname, imageurldef, ticketnum, firstconversationdate, countnewmessages, status, communicationchannelid, lastreplyuser, lastconversationdate } }) => {
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const localclasses = useStyles({ color: "red" });
     const agentSelected = useSelector(state => state.inbox.agentSelected);
@@ -156,7 +156,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
 
     return (
         <div
-            className={clsx(classes.containerItemTicket, {
+            className={clsx(classes.containerItemTicket, { 
                 [classes.itemSelected]: (ticketSelected?.conversationid === conversationid)
             })}
             onClick={() => setTicketSelected(item)}>
@@ -179,7 +179,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                     <div className={classes.name}>{displayname || "-"}</div>
                 </div>
                 <div style={{ color: '#465a6ed9', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', minWidth: 180, maxWidth: callVoxi ? 180 : 230 }}>
-                    {(lastmessage.split("&%MAIL%&")[0] || "").trim() || "-"}
+                    {(lastmessage?.split("&%MAIL%&")[0] || "").trim() || "-"}
                 </div>
                 <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                     <LabelGo
@@ -211,6 +211,11 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                             labelOnNegative={t(langKeys.ready_to_close)}
                         />
                     }
+                    <LabelGo 
+                        isTimer={false}
+                        color={origin === "OUTBOUND" ? "#ffbf00" : "#0000ff"}
+                        label={origin || "INBOUND"}
+                    />
                 </div>
             </div>
             {(!!callVoxi && statusCall === "CONNECTING" && callVoxiTmp.type === "INBOUND") &&

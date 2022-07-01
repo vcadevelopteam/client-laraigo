@@ -869,6 +869,18 @@ const Tickets = () => {
                 accessor: 'name',
             },
             {
+                Header: t(langKeys.origin),
+                accessor: 'origin'
+            },
+            {
+                Header: t(langKeys.ticket_firstusergroup),
+                accessor: 'firstusergroup'
+            },
+            {
+                Header: t(langKeys.ticket_ticketgroup),
+                accessor: 'ticketgroup'
+            },
+            {
                 Header: t(langKeys.ticket_phone),
                 accessor: 'phone'
             },
@@ -1015,14 +1027,6 @@ const Tickets = () => {
             {
                 Header: t(langKeys.ticket_email),
                 accessor: 'email'
-            },
-            {
-                Header: t(langKeys.ticket_firstusergroup),
-                accessor: 'firstusergroup'
-            },
-            {
-                Header: t(langKeys.ticket_ticketgroup),
-                accessor: 'ticketgroup'
             },
             {
                 Header: t(langKeys.ticket_balancetimes),

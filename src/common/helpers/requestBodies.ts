@@ -47,6 +47,11 @@ export const getUsersBySupervisor = (): IRequestBody => ({
     key: "UFN_USERBYSUPERVISOR_SEL",
     parameters: {}
 })
+export const getUsersBySupervisorLst = (): IRequestBody => ({
+    method: "UFN_USERBYSUPERVISOR_LST",
+    key: "UFN_USERBYSUPERVISOR_LST",
+    parameters: {}
+})
 
 export const getListQuickReply = (): IRequestBody => ({
     method: "UFN_QUICKREPLY_LIST_SEL",
@@ -2399,13 +2404,12 @@ export const changePasswordOnFirstLoginIns = (userid: number | string, password:
     parameters: { password, userid },
 });
 
-
-
 export const getPlanSel = (): IRequestBody => ({
     method: "UFN_SUPPORTPLAN_SEL",
     key: "UFN_SUPPORTPLAN_SEL",
     parameters: {}
 })
+
 export const getPaymentPlanSel = (): IRequestBody => ({
     method: "UFN_PAYMENTPLAN_SEL",
     key: "UFN_PAYMENTPLAN_SEL",
@@ -2413,6 +2417,12 @@ export const getPaymentPlanSel = (): IRequestBody => ({
         code: 0,
         all: true
     }
+})
+
+export const getPhoneTax = (): IRequestBody => ({
+    method: "UFN_BILLINGPERIOD_SEL_PHONETAX",
+    key: "UFN_BILLINGPERIOD_SEL_PHONETAX",
+    parameters: {}
 })
 
 export const getBillingSupportSel = ({ year, month, plan }: Dictionary): IRequestBody => ({
@@ -3036,3 +3046,68 @@ export const getAdvisorListVoxi = (): IRequestBody => ({
     key: "UFN_PERSONCOMMUNICATIONCHANNEL_SEL_VOXI",
     parameters: {}
 });
+
+export const getUserAsesorByOrgID = (): IRequestBody => ({
+    method: "UFN_USER_ASESORBYORGID_LST",
+    parameters: { }
+});
+
+export const getDisconnectionTimes = ({ startdate, enddate, asesorid, supervisorid }: Dictionary): IRequestBody => ({
+    method: "UFN_DASHBOARD_DICONNECTIONTIMES_SEL",
+    key: "UFN_DASHBOARD_DICONNECTIONTIMES_SEL",
+    parameters: {
+        startdate,
+        enddate, 
+        asesorid,
+        supervisorid, 
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
+
+//getPaginatedTicket
+export const getasesorvsticketsSel = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_REPORT_ASESOR_VS_TICKET_SEL",
+    methodCount: "UFN_REPORT_ASESOR_VS_TICKET_TOTALRECORDS",
+    parameters: {
+        startdate,
+        enddate,
+        skip,
+        take,
+        filters,
+        sorts,
+        origin: "ticketvsadviser",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
+
+export const getTicketvsAdviserExport = ({ filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
+    method: "UFN_REPORT_ASESOR_VS_TICKET_EXPORT",
+    key: "UFN_REPORT_ASESOR_VS_TICKET_EXPORT",
+    parameters: {
+        origin: "ticketvsadviser",
+        filters,
+        startdate,
+        enddate,
+        sorts,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+});
+
+export const getHSMHistoryList = ({ startdate, enddate }: Dictionary): IRequestBody => ({
+    method: "UFN_HSMHISTORY_LST",
+    key: "UFN_HSMHISTORY_LST",
+    parameters: {
+        startdate, enddate,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
+
+export const getHSMHistoryReport = ({ campaign = "", date }: Dictionary): IRequestBody => ({
+    method: "UFN_HSMHISTORY_REPORT",
+    key: "UFN_HSMHISTORY_REPORT",
+    parameters: {
+        date,
+        campaignname: campaign,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})

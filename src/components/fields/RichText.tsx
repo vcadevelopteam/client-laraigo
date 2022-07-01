@@ -625,6 +625,7 @@ const FontFamily: FC<FontFamilyProps> = ({ tooltip = '', children, onClick, ...p
 
     return (
         <FormControl>
+            <Tooltip title={t(langKeys.font) || "font"} aria-label="add">
             <Select
                 labelId="font-family-select-label"
                 value={fontfamily}
@@ -641,6 +642,7 @@ const FontFamily: FC<FontFamilyProps> = ({ tooltip = '', children, onClick, ...p
                 <MenuItem style={{ fontFamily: "cursive" }} value="cursive">Cursive</MenuItem>
                 <MenuItem style={{ fontFamily: "fantasy" }} value="fantasy">Fantasy</MenuItem>
             </Select>
+            </Tooltip>
         </FormControl>
     );
 }
