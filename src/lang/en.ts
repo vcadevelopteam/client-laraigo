@@ -3660,6 +3660,7 @@ const translation: LangKeys = {
     periodreportrecording: 'Call Recording',
     periodreportother: 'Others',
     T_VOICECHANNEL: 'VOICE CHANNEL',
+<<<<<<< HEAD
     go_ticket: 'Go to ticket',
 
     productcatalog_title: 'Title',
@@ -3731,6 +3732,30 @@ const translation: LangKeys = {
     voicechannel_recordinghd: 'HD - High Definition',
     voicechannel_recordinglossless: 'Lossless',
     voicechannel_recordingalert: 'The purchase of a new number and the activation of certain capacities result in extra charges in your monthly plan. For more information please visit our price list: ',
+=======
+
+    messagetemplate_sms: 'SMS',
+    messagetemplate_hsm: 'HSM',
+    messagetemplate_mail: 'Mail',
+    messagetemplate_html: 'HTML',
+    messagetemplate_standard: 'Standard',
+    messagetemplate_multimedia: 'Multimedia',
+    messagetemplate_text: 'Text',
+    messagetemplate_image: 'Image',
+    messagetemplate_document: 'Document',
+    messagetemplate_video: 'Video',
+    messagetemplate_url: 'URL',
+    messagetemplate_quickreply: 'Quick Reply',
+    messagetemplate_low: 'Low',
+    messagetemplate_medium: 'Medium',
+    messagetemplate_high: 'High',
+    messagetemplate_attachment: 'Attachments',
+    messagetemplate_reload: 'Reload',
+    messagetemplate_changetoeditor: 'Edit HTML code',
+    messagetemplate_changetoview: 'View HTML template',
+
+    validationchar: 'This field has a minimum and maximum amount of characters',
+>>>>>>> f175f6d71dc20336d6596e1532dbe73e88bb730d
 };
 
 const enResource: ResourceLanguage = {

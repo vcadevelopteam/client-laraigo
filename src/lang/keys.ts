@@ -3640,6 +3640,7 @@ export const langKeys = {
     periodreportrecording: 'periodreportrecording',
     periodreportother: 'periodreportother',
     T_VOICECHANNEL: 'T_VOICECHANNEL',
+<<<<<<< HEAD
     go_ticket: 'go_ticket',
 
     productcatalog_title: 'productcatalog_title',
@@ -3711,6 +3712,30 @@ export const langKeys = {
     voicechannel_recordinghd: 'voicechannel_recordinghd',
     voicechannel_recordinglossless: 'voicechannel_recordinglossless',
     voicechannel_recordingalert: 'voicechannel_recordingalert',
+=======
+
+    messagetemplate_sms: 'messagetemplate_sms',
+    messagetemplate_hsm: 'messagetemplate_hsm',
+    messagetemplate_mail: 'messagetemplate_mail',
+    messagetemplate_html: 'messagetemplate_html',
+    messagetemplate_standard: 'messagetemplate_standard',
+    messagetemplate_multimedia: 'messagetemplate_multimedia',
+    messagetemplate_text: 'messagetemplate_text',
+    messagetemplate_image: 'messagetemplate_image',
+    messagetemplate_document: 'messagetemplate_document',
+    messagetemplate_video: 'messagetemplate_video',
+    messagetemplate_url: 'messagetemplate_url',
+    messagetemplate_quickreply: 'messagetemplate_quickreply',
+    messagetemplate_low: 'messagetemplate_low',
+    messagetemplate_medium: 'messagetemplate_medium',
+    messagetemplate_high: 'messagetemplate_high',
+    messagetemplate_attachment: 'messagetemplate_attachment',
+    messagetemplate_reload: 'messagetemplate_reload',
+    messagetemplate_changetoeditor: 'messagetemplate_changetoeditor',
+    messagetemplate_changetoview: 'messagetemplate_changetoview',
+
+    validationchar: 'validationchar',
+>>>>>>> f175f6d71dc20336d6596e1532dbe73e88bb730d
 };
 
 export type LangKeys = typeof langKeys;

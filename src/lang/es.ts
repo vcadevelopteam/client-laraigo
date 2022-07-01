@@ -3653,6 +3653,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     periodreportrecording: 'Grabación de Llamadas',
     periodreportother: 'Otros',
     T_VOICECHANNEL: 'CANAL DE VOZ',
+<<<<<<< HEAD
     go_ticket: 'Ir al ticket',
 
     productcatalog_title: 'Título',
@@ -3724,6 +3725,30 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     voicechannel_recordinghd: 'HD - Alta definición',
     voicechannel_recordinglossless: 'Sin pérdidas',
     voicechannel_recordingalert: 'La compra de una línea nueva y la activación de ciertas capacidades incurren en cargas extras en su plan mensual. Para mayor información visitar nuestra lista de precios: ',
+=======
+
+    messagetemplate_sms: 'SMS',
+    messagetemplate_hsm: 'HSM',
+    messagetemplate_mail: 'Correo',
+    messagetemplate_html: 'HTML',
+    messagetemplate_standard: 'Estándar',
+    messagetemplate_multimedia: 'Multimedia',
+    messagetemplate_text: 'Texto',
+    messagetemplate_image: 'Imagen',
+    messagetemplate_document: 'Documento',
+    messagetemplate_video: 'Video',
+    messagetemplate_url: 'URL',
+    messagetemplate_quickreply: 'Respuesta Rápida',
+    messagetemplate_low: 'Baja',
+    messagetemplate_medium: 'Media',
+    messagetemplate_high: 'Alta',
+    messagetemplate_attachment: 'Adjuntos',
+    messagetemplate_reload: 'Recargar',
+    messagetemplate_changetoeditor: 'Editar código HTML',
+    messagetemplate_changetoview: 'Visualizar plantilla HTML',
+
+    validationchar: 'Este campo tiene un número mínimo y máximo de caracteres',
+>>>>>>> f175f6d71dc20336d6596e1532dbe73e88bb730d
 };
 
 const esResource: ResourceLanguage = {
