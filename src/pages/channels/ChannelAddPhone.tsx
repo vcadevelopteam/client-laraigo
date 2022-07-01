@@ -537,13 +537,14 @@ export const ChannelAddPhone: FC = () => {
                     <div className={classes.containerDetail}>
                         <div style={{ textAlign: "left", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.voximplant_buynumber)}</div>
                         <div className={classes.containerCapacities}>
-                            <div style={{ verticalAlign: "middle" }}>
+                            <div style={{ verticalAlign: "middle", marginRight: "30px" }}>
                                 <b>{t(langKeys.voicechannel_capacities)}</b>
                             </div>
                             <div className={classes.containerItem}>
                                 <FormControlLabel
                                     control={<IOSSwitchPurple checked={checkedRecording} onChange={(e) => { setCheckedRecording(e.target.checked); handleSwitchRecording(e.target.checked); }} />}
                                     label={""}
+                                    style={{ marginRight: "4px" }}
                                 />
                                 {t(langKeys.voicechannel_recording)}
                                 <Tooltip title={`${t(langKeys.voicechannel_recordingtooltip)}`} placement="top-start">
@@ -554,6 +555,7 @@ export const ChannelAddPhone: FC = () => {
                                 <FormControlLabel
                                     control={<IOSSwitchPurple checked={checkedSms} onChange={(e) => { setCheckedSms(e.target.checked); handleSwitchSms(e.target.checked); }} />}
                                     label={""}
+                                    style={{ marginRight: "4px" }}
                                 />
                                 {t(langKeys.voicechannel_sms)}
                                 <Tooltip title={`${t(langKeys.voicechannel_smstooltip)}`} placement="top-start">
@@ -564,6 +566,7 @@ export const ChannelAddPhone: FC = () => {
                                 <FormControlLabel
                                     control={<IOSSwitchPurple checked={checkedOutbound} onChange={(e) => { setCheckedOutbound(e.target.checked); handleSwitchOutbound(e.target.checked); }} />}
                                     label={""}
+                                    style={{ marginRight: "4px" }}
                                 />
                                 {t(langKeys.voicechannel_outbound)}
                                 <Tooltip title={`${t(langKeys.voicechannel_outboundtooltip)}`} placement="top-start">
