@@ -2273,6 +2273,7 @@ export const langKeys = {
     "personalizedreport_person.changedate": "personalizedreport_person.changedate",
     "personalizedreport_person.changeby": "personalizedreport_person.changeby",
     "personalizedreport_person.name": "personalizedreport_person.name",
+    "personalizedreport_person.realname": "personalizedreport_person.realname",
     "personalizedreport_person.referringperson": "personalizedreport_person.referringperson",
     "personalizedreport_person.referringpersonid": "personalizedreport_person.referringpersonid",
     "personalizedreport_person.persontype": "personalizedreport_person.persontype",
