@@ -30,6 +30,7 @@ const DialogReasonsDisconnection: React.FC<{
     const dispatch = useDispatch();
     const userConnected = useSelector(state => state.inbox.userConnected);
     const domains = useSelector(state => state.login.validateToken.user?.domains);
+    const voxiConnection = useSelector(state => state.voximplant.connection);    
 
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm();
 
@@ -46,8 +47,10 @@ const DialogReasonsDisconnection: React.FC<{
 
     const onSubmit = handleSubmit((data) => {
         dispatch(connectAgentAPI(!userConnected, data.observation, data.motive));
-        dispatch(connectAgentUI(!userConnected))
-        dispatch(manageStatusVox(!userConnected));
+        dispatch(connectAgentUI(!userConnected));
+        if (!voxiConnection.error) {
+            dispatch(manageStatusVox(!userConnected));
+        }
         dispatch(emitEvent({
             event: 'connectAgent',
             data: {
@@ -96,12 +99,15 @@ const Status: FC = () => {
     const dispatch = useDispatch();
     const userConnected = useSelector(state => state.inbox.userConnected);
     const [openDialog, setOpenDialog] = useState(false);
+    const voxiConnection = useSelector(state => state.voximplant.connection);    
 
     const onChecked = () => {
         if (userConnected) {
             setOpenDialog(true)
         } else {
-            dispatch(manageStatusVox(!userConnected));
+            if (!voxiConnection.error) {
+                dispatch(manageStatusVox(!userConnected));
+            }
             dispatch(connectAgentAPI(!userConnected))
             dispatch(connectAgentUI(!userConnected))
             dispatch(emitEvent({
