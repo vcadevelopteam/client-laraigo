@@ -3592,6 +3592,9 @@ const translation: LangKeys = {
     voximplantcategory_special: 'Special',
     voximplantcategory_mobile: 'Mobile',
     voximplant_numberbought: 'The following phone number was bought: ',
+    error_no_record: 'No record',
+    error_record_error: 'Record error',
+    error_invalid_call: 'Invalid call',
 
     type_close_cierre_externo: 'External closure',
     type_close_cierre_por_envio_de_campaña: 'Closing by sending campaign',

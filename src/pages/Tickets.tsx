@@ -23,7 +23,7 @@ import { CloseTicketIcon, HistoryIcon, TipifyIcon, ReassignIcon, CallRecordIcon 
 import { massiveCloseTicket, getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, emitEvent, importTicket } from 'store/inbox/actions';
 import { Button, ListItemIcon, Tooltip } from '@material-ui/core';
 import PublishIcon from '@material-ui/icons/Publish';
-import { getCallRecord } from 'store/voximplant/actions'
+import { VoximplantService } from 'network';
 
 const selectionKey = 'conversationid';
 
@@ -784,9 +784,25 @@ const Tickets = () => {
         }
     }, [selectedRows])
 
-    const downloadCallRecord = (ticket: Dictionary) => {
-        dispatch(getCallRecord({call_session_history_id: ticket.postexternalid}));
-        setWaitDownloadRecord(true);
+    const downloadCallRecord = async (ticket: Dictionary) => {
+        // dispatch(getCallRecord({call_session_history_id: ticket.postexternalid}));
+        // setWaitDownloadRecord(true);
+        try {
+            const axios_result = await VoximplantService.getCallRecord({call_session_history_id: ticket.postexternalid});
+            if (axios_result.status === 200) {
+                let buff = Buffer.from(axios_result.data, 'base64');
+                const blob = new Blob([buff], {type: axios_result.headers['content-type'].split(';').find((x: string) => x.includes('audio'))});
+                const objectUrl = window.URL.createObjectURL(blob);
+                let a = document.createElement('a');
+                a.href = objectUrl;
+                a.download = ticket.numeroticket;
+                a.click();
+            }
+        }
+        catch (error: any) {
+            const errormessage = t(error?.response?.data?.code || "error_unexpected_error")
+            dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+        }
     }
 
     useEffect(() => {

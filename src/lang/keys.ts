@@ -3572,6 +3572,9 @@ export const langKeys = {
     voximplantcategory_special: 'voximplantcategory_special',
     voximplantcategory_mobile: 'mobile',
     voximplant_numberbought: 'voximplant_numberbought',
+    error_no_record: 'error_no_record',
+    error_record_error: 'error_record_error',
+    error_invalid_call: 'error_invalid_call',
 
     type_close_cierre_externo: 'type_close_cierre_externo',
     type_close_cierre_por_envio_de_campaña: 'type_close_cierre_por_envio_de_campaña',
