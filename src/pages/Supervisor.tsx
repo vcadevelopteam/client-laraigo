@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useState, useEffect } from 'react'; // we need this to make JSX compile
+import React, { FC, useState, useEffect, memo } from 'react'; // we need this to make JSX compile
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
@@ -24,6 +24,9 @@ import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import { FixedSizeList, areEqual } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
+import memoize from 'memoize-one';
 
 const filterAboutStatusName = (data: IAgent[], page: number, textToSearch: string, filterBy: string): IAgent[] => {
     if (page === 0 && textToSearch === "") {
@@ -66,7 +69,11 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 500,
         fontSize: '16px',
         lineHeight: '22px',
-        wordBreak: 'break-word'
+        wordBreak: 'break-word',
+        overflow: 'hidden',
+        maxWidth: 215,
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
     },
     agentUp: {
         display: 'flex',
@@ -85,7 +92,9 @@ const useStyles = makeStyles((theme) => ({
         cursor: 'pointer',
         '&:hover': {
             backgroundColor: 'rgb(235, 234, 237, 0.18)'
-        }
+        },
+        height: '129.328px',
+        minHeight: '129.328px',
     },
     itemSelected: {
         backgroundColor: 'rgb(235, 234, 237, 0.50)'
@@ -96,6 +105,16 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 'bold',
         height: '48px',
         color: theme.palette.text.primary,
+    },
+    tooManyChannels: {
+        display: 'flex',
+        alignItems: 'center',
+        backgroundColor: '#adadad',
+        color: 'white',
+        borderRadius: 9,
+        height: 16,
+        width: 16,
+        fontSize: 12,
     }
 }));
 
@@ -106,12 +125,30 @@ const CountTicket: FC<{ label: string, count: number, color: string }> = ({ labe
     </div>
 )
 
+const createItemData = memoize((items) => ({
+    items
+}));
+
 const ChannelTicket: FC<{ channelName: string, channelType: string, color: string }> = ({ channelName, channelType, color }) => (
     <div style={{ display: 'flex', alignItems: 'center' }}>
         <Tooltip title={channelName}>
             <span><GetIcon channelType={channelType} color={`#${color}`} /></span>
         </Tooltip>
     </div>
+)
+
+const RenderRow = memo(
+    ({ data, index, style }: any) => {
+        const { items } = data;
+        const item = items[index]
+        
+        return (
+            <div style={style}>
+                <ItemAgent key={item.userid} agent={item} />
+            </div>
+        )
+    },
+    areEqual
 )
 
 const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agent: { name, userid, image, isConnected, countPaused, countClosed, countNotAnswered, countPending, countAnswered, channels } }) => {
@@ -136,12 +173,19 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agen
                     <Avatar src={image || undefined} >{name?.split(" ").reduce((acc, item) => acc + (acc.length < 2 ? item.substring(0, 1).toUpperCase() : ""), "")}</Avatar>
                 </BadgeGo>
                 <div>
-                    <div className={classes.agentName}>{name}</div>
+                    <div className={classes.agentName} title={name}>{name}</div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                        {channels.map((channel, index) => {
+                        {channels.slice(0, 10).map((channel, index) => {
                             const [channelType, color, channelName] = channel.split('#');
                             return <ChannelTicket key={index} channelName={channelName} channelType={channelType} color={color} />
                         })}
+                        {channels.length > 10 && (
+                            <Tooltip title={<div style={{ whiteSpace: 'pre-wrap' }}>{channels.slice(10, channels.length).reduce((acc, channel) => acc + "\n• " + channel.split('#')[2], "")}</div>}>
+                                <div className={classes.tooManyChannels}>
+                                    <span>{channels.length - 10 < 10 ? channels.length - 10 : "+9"}</span>
+                                </div>
+                            </Tooltip>
+                        )}
                     </div>
                 </div>
             </div>
@@ -309,13 +353,26 @@ const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
             setAgentsToShow(agentList.data as IAgent[])
         }
     }, [agentList])
-
+    
     return (
         <div className={classes.containerAgents}>
             <HeaderAgentPanel classes={classes} onSearch={onSearch} />
             {agentList.loading ? <ListItemSkeleton /> :
-                <div className="scroll-style-go">
-                    {agentsToShow.map((agent) => (<ItemAgent key={agent.userid} agent={agent} />))}
+                <div className="scroll-style-go" style={{height: '100%'}}>
+                    <AutoSizer>
+                        {({ height, width }: any) => (
+                            <FixedSizeList
+                                width={width}
+                                height={height}
+                                itemCount={agentsToShow.length}
+                                itemSize={129}
+                                itemData={createItemData(agentsToShow)}
+                            >
+                                {RenderRow}
+                            </FixedSizeList>
+                        )}
+                    </AutoSizer>
+                    {/* {agentsToShow.map((agent) => (<ItemAgent key={agent.userid} agent={agent} />))} */}
                 </div>
             }
         </div>
@@ -334,7 +391,7 @@ const Supervisor: FC = () => {
         if (multiData?.data[1])
             dispatch(setAgentsToReassign(multiData?.data?.[1].data || []))
     }, [multiData])
-    
+
     useEffect(() => {
         setInitial(false)
         dispatch(setOpenDrawer(false));
@@ -370,7 +427,7 @@ const Supervisor: FC = () => {
             }));
         }
     }, [wsConnected])
-    
+
     return (
         <div className={classes.container}>
             <AgentPanel classes={classes} />
