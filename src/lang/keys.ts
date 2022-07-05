@@ -2205,6 +2205,7 @@ export const langKeys = {
     "personalizedreport_conversation.pausedurationbeforeuser": "personalizedreport_conversation.pausedurationbeforeuser",
     "personalizedreport_conversation.pausedurationafteruser": "personalizedreport_conversation.pausedurationafteruser",
     "personalizedreport_conversation.personfirstreplytime": "personalizedreport_conversation.personfirstreplytime",
+    "personalizedreport_conversation.callanswereddate": "personalizedreport_conversation.callanswereddate",
     "personalizedreport_corp.description": "personalizedreport_corp.description",
     "personalizedreport_corp.status": "personalizedreport_corp.status",
     "personalizedreport_corp.type": "personalizedreport_corp.type",

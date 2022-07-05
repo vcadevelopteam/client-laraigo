@@ -2126,6 +2126,7 @@ const translation: LangKeys = {
     "personalizedreport_conversation.pausedurationbeforeuser": "conversation pause duration before user",
     "personalizedreport_conversation.pausedurationafteruser": "conversation pause duration after user",
     "personalizedreport_conversation.personfirstreplytime": "conversation person first reply time",
+    "personalizedreport_conversation.callanswereddate": "conversation call answered date",
     "personalizedreport_corp.description": "corporation description",
     "personalizedreport_corp.status": "corporation status",
     "personalizedreport_corp.type": "corporation type",
