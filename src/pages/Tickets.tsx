@@ -801,7 +801,7 @@ const Tickets = () => {
         }
         catch (error: any) {
             const errormessage = t(error?.response?.data?.code || "error_unexpected_error")
-            dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
         }
     }
 
