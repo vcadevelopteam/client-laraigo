@@ -2658,6 +2658,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     channellimit: 'Se alcanzo el maximo número de canales, mejora tu plan para continuar',
     userlimit: 'Se alcanzo el maximo número de usuarios({{limit}}), mejora tu plan para continuar',
     max_limit: 'Límite máximo {{n}}',
+    max_limit_file_per_upload: 'Límite máximo de {{n}} archivos por carga',
     error_estructure_user: 'El usuario {{email}} no fue procesado por que tiene una estructura no válida',
 
     invitation_date: "{{day}} {{date}} de {{month}} de {{year}}",
