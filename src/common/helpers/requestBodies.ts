@@ -67,7 +67,7 @@ export const insertClassificationConversation = (conversationid: number, classif
 
 export const getTickets = (userid: number | null): IRequestBody => ({
     method: "UFN_CONVERSATION_SEL_TICKETSBYUSER",
-    key: "UFN_CONVERSATION_SEL_TICKETSBYUSER",
+    key: `UFN_CONVERSATION_SEL_TICKETSBYUSER_${userid}`,
     parameters: { ...(userid && { agentid: userid }) }
 })
 
