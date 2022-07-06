@@ -314,16 +314,23 @@ export const getTickets = (state: IState): IState => ({
     ticketSelected: null
 });
 
-export const getTicketsSuccess = (state: IState, action: IAction): IState => ({
-    ...state,
-    isOnBottom: null,
-    ticketList: {
-        data: action.payload.data || [],
-        count: action.payload.count,
-        loading: false,
-        error: false,
-    },
-});
+export const getTicketsSuccess = (state: IState, action: IAction): IState => {
+    console.log("action.payload.key", action.payload.key.split("_").pop())
+    if ((state.agentSelected?.userid + "") === action.payload.key.split("_")?.pop()) {
+        return {
+            ...state,
+            isOnBottom: null,
+            ticketList:  {
+                data: action.payload.data || [],
+                count: action.payload.count,
+                loading: false,
+                error: false,
+            },
+        }
+    } else {
+        return state
+    }
+};
 
 export const getTicketsFailure = (state: IState, action: IAction): IState => ({
     ...state,
