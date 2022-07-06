@@ -658,7 +658,7 @@ const DialogLoadTickets: React.FC<{
     
     const handleUpload = async (files: any) => {
         if (Array.from<File>(files).length > 10) {
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.max_limit, {n: 10}) }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.max_limit_file_per_upload, {n: 10}) }))
         }
         else {
             setFileList(Array.from<File>(files));
