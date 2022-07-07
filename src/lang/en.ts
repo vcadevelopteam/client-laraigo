@@ -1789,6 +1789,8 @@ const translation: LangKeys = {
     report_interaction_personcommunicationchannel: 'Person communication channel',
     report_interaction_email: 'Email',
     report_interaction_ticketgroup: 'Group',
+    propertywaitingtimecustomer: "Time to send a message alert to the advisor waiting for the client",
+    propertywaitingtimecustomermessage: "Customer waiting time alert message to advisor",
 
     least_user_or_group: 'Should choose at least user or group',
 

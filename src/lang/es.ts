@@ -1718,6 +1718,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     report_interaction_personcommunicationchannel: 'Canal de comunicación persona',
     report_interaction_email: 'Correo',
     report_interaction_ticketgroup: 'Grupo',
+    propertywaitingtimecustomer: "Tiempo para alerta de envío de mensaje al asesor por espera del cliente",
+    propertywaitingtimecustomermessage: "Mensaje de alerta al asesor por tiempo de espera del cliente",
 
     report_productivity: 'Conversaciones',
     report_productivity_ticket: 'Ticket',

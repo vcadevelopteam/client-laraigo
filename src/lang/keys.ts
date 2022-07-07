@@ -1614,6 +1614,8 @@ export const langKeys = {
     ticket_ticketgroup: 'ticket_ticketgroup',
     ticket_communicationchanneldescription: 'ticket_communicationchanneldescription',
     ticket_name: 'ticket_name',
+    propertywaitingtimecustomer: "propertywaitingtimecustomer",
+    propertywaitingtimecustomermessage: "propertywaitingtimecustomermessage",
     ticket_canalpersonareferencia: 'ticket_canalpersonareferencia',
     ticket_fechainicio: 'ticket_fechainicio',
     ticket_fechafin: 'ticket_fechafin',
