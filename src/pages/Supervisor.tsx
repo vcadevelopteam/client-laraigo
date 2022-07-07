@@ -109,6 +109,7 @@ const useStyles = makeStyles((theme) => ({
     tooManyChannels: {
         display: 'flex',
         alignItems: 'center',
+        justifyContent: 'center',
         backgroundColor: '#adadad',
         color: 'white',
         borderRadius: 9,
