@@ -3,12 +3,12 @@ import { initialState, IState } from "./reducer";
 import { toTime24HR, convertLocalDate } from 'common/helpers';
 import { keys } from 'common/constants';
 
-const getGroupInteractions = (interactions: IInteraction[], hideLogs: boolean = false): IGroupInteraction[] => {
+const getGroupInteractions = (interactions: IInteraction[], hideLogs: boolean = false, returnHidden: boolean = false): IGroupInteraction[] => {
 
     const listImages = interactions.filter(x => x.interactiontype.includes("image")).map(x => x.interactiontext)
     let indexImage = 0;
 
-    return (hideLogs ? interactions.filter(x => x.interactiontype !== "LOG") : cleanLogsReassignedTask(interactions)).reduce((acc: any, item: IInteraction) => {
+    return (hideLogs ? interactions.filter(x => x.interactiontype !== "LOG") : cleanLogsReassignedTask(interactions, returnHidden)).reduce((acc: any, item: IInteraction) => {
         item.indexImage = indexImage;
         item.listImage = listImages;
         item.onlyTime = toTime24HR(convertLocalDate(item.createdate, false).toLocaleTimeString())
@@ -760,7 +760,7 @@ export const getInteractionsExtra = (state: IState): IState => ({
 export const getInteractionsExtraSuccess = (state: IState, action: IAction): IState => ({
     ...state,
     interactionExtraList: {
-        data: getGroupInteractions(cleanLogsReassignedTask(action.payload.data || [], true)),
+        data: getGroupInteractions(cleanLogsReassignedTask(action.payload.data || [], true), false, true),
         count: action.payload.count,
         loading: false,
         error: false,
