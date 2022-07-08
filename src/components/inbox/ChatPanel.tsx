@@ -425,6 +425,9 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     const multiData = useSelector(state => state.main.multiData);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const agentToReassignList = useSelector(state => state.inbox.agentToReassignList);
+    const user = useSelector(state => state.login.validateToken.user);
+    const groups = user?.groups?.split(",")||[]
+    
     const userType = useSelector(state => state.inbox.userType);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
 
@@ -522,7 +525,17 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                         trigger('newUserGroup');
                     }}
                     error={errors?.newUserId?.message}
-                    data={agentToReassignList.filter(x => x.status === "ACTIVO")}
+                    data={agentToReassignList.filter(x => x.status === "ACTIVO").filter(x=>{
+                        let ingroup=false
+                        if(groups[0]!==""){
+                            groups.forEach(e => {
+                                if(x.groups.split(",").includes(e)) ingroup=true;
+                            })
+                        }else{
+                            ingroup=true
+                        }
+                        return ingroup
+                    })}
                     optionDesc="displayname"
                     optionValue="userid"
                 />
@@ -536,7 +549,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                         trigger('newUserId');
                     }}
                     error={errors?.newUserGroup?.message}
-                    data={(multiData?.data?.[3]?.data || []).filter(x => x.domainvalue !== ticketSelected?.usergroup)}
+                    data={(multiData?.data?.[3]?.data || []).filter(x => x.domainvalue !== ticketSelected?.usergroup).filter(x=>user?.groups!==""?user?.groups?.includes(x.domainvalue):true)}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />

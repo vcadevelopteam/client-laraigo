@@ -46,6 +46,7 @@ export interface IUser {
     ownervoxi: string | null;
     sitevoxi: string | null;
     ccidvoxi: number | null;
+    groups: string;
     plan: string;
     orgdesc: string;
     redirect: string;
