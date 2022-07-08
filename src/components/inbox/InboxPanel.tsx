@@ -46,8 +46,8 @@ const useStyles = makeStyles((theme) => ({
         gap: 8
     },
     containerTickets: {
-        flex: '0 0 301px',
-        maxWidth: 301,
+        flex: '0 0 305px',
+        maxWidth: 305,
         backgroundColor: '#FFF',
         flexDirection: 'column',
         display: 'flex',
@@ -541,7 +541,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                                                 width={width}
                                                 height={height}
                                                 itemCount={ticketFilteredList.data.length}
-                                                itemSize={82.59}
+                                                itemSize={82.584}
                                                 itemData={ticketFilteredListData}
                                             >
                                                 {RenderRowFilterd}
@@ -559,7 +559,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                                         width={width}
                                         height={height}
                                         itemCount={ticketsToShow.length}
-                                        itemSize={82.59}
+                                        itemSize={82.584}
                                         itemData={ticketsToShowData}
                                     >
                                         {RenderRow}
@@ -568,9 +568,6 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                             </AutoSizer>
                         )
                 }
-                {/* {ticketList.loading ? <ListItemSkeleton /> :
-                    ticketsToShow.map((item) => <ItemTicket key={item.conversationid} classes={classes} item={item} setTicketSelected={setTicketSelected} />)
-                } */}
             </div>
             <DrawerFilter
                 drawerOpen={drawerOpen}

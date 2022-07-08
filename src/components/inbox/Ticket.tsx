@@ -181,7 +181,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                 <div style={{ color: '#465a6ed9', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', minWidth: 180, maxWidth: callVoxi ? 180 : 230 }}>
                     {(lastmessage?.split("&%MAIL%&")[0] || "").trim() || "-"}
                 </div>
-                <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: '4px' }}>
                     <LabelGo
                         label={ticketnum}
                         tooltip={t(langKeys.ticket_number)}
@@ -211,11 +211,13 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                             labelOnNegative={t(langKeys.ready_to_close)}
                         />
                     }
-                    <LabelGo 
-                        isTimer={false}
-                        color={origin === "OUTBOUND" ? "#ffbf00" : "#0000ff"}
-                        label={origin || "INBOUND"}
-                    />
+                    {communicationchanneltype !== "VOXI" &&
+                        <LabelGo 
+                            isTimer={false}
+                            color={origin === "OUTBOUND" ? "#ffbf00" : "#0000ff"}
+                            label={origin || "INBOUND"}
+                        />
+                    }
                 </div>
             </div>
             {(!!callVoxi && statusCall === "CONNECTING" && callVoxiTmp.type === "INBOUND") &&
