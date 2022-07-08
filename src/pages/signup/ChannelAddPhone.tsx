@@ -114,8 +114,8 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     }, [phonePrice, phoneInstallation])
 
     useEffect(() => {
-        const strRequired = (value: string, other?:boolean) => {
-            if(!other){
+        const strRequired = (value: string, other?: boolean) => {
+            if (!other) {
                 if (!value) {
                     return t(langKeys.field_required);
                 }
@@ -123,8 +123,8 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
         }
         register('channels.voximplantphone.country', { validate: strRequired, value: '' });
         register('channels.voximplantphone.category', { validate: strRequired, value: '' });
-        register('channels.voximplantphone.region', { validate: hasRegions?strRequired:()=>{return undefined}, value: '' });
-        register('channels.voximplantphone.state', { validate: hasStates?strRequired:()=>{return undefined}, value: '' });
+        register('channels.voximplantphone.region', { validate: hasRegions ? strRequired : () => { return undefined }, value: '' });
+        register('channels.voximplantphone.state', { validate: hasStates ? strRequired : () => { return undefined }, value: '' });
         register('channels.voximplantphone.description', { validate: strRequired, value: '' });
         register('channels.voximplantphone.build', {
             value: values => ({
@@ -248,7 +248,7 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
         if (waitRegions) {
             if (!regionsResult.loading) {
                 if (regionsResult.data) {
-                    setRegionList(regionsResult.data.filter((data: { phone_count: number;  regulation_address_type: string; }) => data.phone_count > 0 && !data.regulation_address_type));
+                    setRegionList(regionsResult.data.filter((data: { phone_count: number; regulation_address_type: string; }) => data.phone_count > 0 && !data.regulation_address_type));
                 }
                 setWaitRegions(false);
             }
@@ -457,7 +457,7 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                     </div>
                     <div style={{ paddingLeft: "64%" }}>
                         <Button
-                            disabled={nextButton  || regionsResult.loading}
+                            disabled={nextButton || regionsResult.loading}
                             onClick={() => { setViewSelected("view2") }}
                             className={classes.button}
                             variant="contained"
@@ -483,7 +483,7 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                     <DeleteOutlineIcon />
                 </IconButton>}
                 {!hasFinished && <Typography>
-                    <Trans i18nKey={langKeys.connectface2} />
+                    <Trans i18nKey={langKeys.subscription_genericconnect} />
                 </Typography>}
                 {hasFinished && <PhoneIcon
                     style={{ width: 100, height: 100, alignSelf: 'center' }} />
@@ -493,12 +493,12 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                         <Typography
                             color="primary"
                             style={{ fontSize: '1.5vw', fontWeight: 'bold', textAlign: 'center' }}>
-                            ¡Felicitaciones!
+                            {t(langKeys.subscription_congratulations)}
                         </Typography>
                         <Typography
                             color="primary"
                             style={{ fontSize: '1.2vw', fontWeight: 500 }}>
-                            Haz integrado tu teléfono
+                            {t(langKeys.subscription_message1)} {t(langKeys.channel_phone)} {t(langKeys.subscription_message2)}
                         </Typography>
                     </div>
                 )}

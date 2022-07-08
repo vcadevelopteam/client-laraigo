@@ -8,7 +8,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { FieldEdit } from "components";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { TwitterColor } from "icons";
+import { YouTubeColor } from "icons";
 import { MainData, SubscriptionContext } from "./context";
 import { useFormContext } from "react-hook-form";
 import clsx from 'clsx';
@@ -23,7 +23,7 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
+export const ChannelAddYouTube: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
     const {
         commonClasses,
         foreground,
@@ -42,14 +42,13 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
+    const [nextbutton, setNextbutton] = useState(true);
 
     useEffect(() => {
         const cb = async () => {
-            const v1 = await trigger('channels.twitter.consumerkey');
-            const v2 = await trigger('channels.twitter.consumersecret');
-            const v3 = await trigger('channels.twitter.accesstoken');
-            const v4 = await trigger('channels.twitter.accesssecret');
-            setSubmitError(!v1 || !v2 || !v3 || !v4);
+            const v1 = await trigger('channels.youtube.account');
+            const v2 = await trigger('channels.youtube.url');
+            setSubmitError(!v1 || !v2);
         }
 
         submitObservable.addListener(cb);
@@ -65,14 +64,10 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
             }
         }
 
-        register('channels.twitter.description', { validate: strRequired, value: '' });
-        register('channels.twitter.consumerkey', { validate: strRequired, value: '' });
-        register('channels.twitter.consumersecret', { validate: strRequired, value: '' });
-        register('channels.twitter.accesstoken', { validate: strRequired, value: '' });
-        register('channels.twitter.accesssecret', { validate: strRequired, value: '' });
-        register('channels.twitter.devenvironment', { validate: strRequired, value: '' });
-        register('channels.twitter.communicationchannelowner', { value: '' });
-        register('channels.twitter.build', {
+        register('channels.youtube.description', { validate: strRequired, value: '' });
+        register('channels.youtube.account', { validate: strRequired, value: '' });
+        register('channels.youtube.url', { validate: strRequired, value: '' });
+        register('channels.youtube.build', {
             value: values => ({
                 "method": "UFN_COMMUNICATIONCHANNEL_INS",
                 "parameters": {
@@ -80,7 +75,7 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
                     "description": values.description,
                     "type": "",
                     "communicationchannelsite": "",
-                    "communicationchannelowner": values.communicationchannelowner,
+                    "communicationchannelowner": values.description,
                     "chatflowenabled": true,
                     "integrationid": "",
                     "color": "",
@@ -88,26 +83,23 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
                     "other": "",
                     "form": "",
                     "apikey": "",
-                    "coloricon": "#1D9BF0",
+                    "coloricon": "#FE0000",
                 },
-                "type": "TWITTER",
+                "type": "YOUTUBE",
                 "service": {
-                    "consumerkey": values.consumerkey,
-                    "consumersecret": values.consumersecret,
-                    "accesstoken": values.accesstoken,
-                    "accesssecret": values.accesssecret,
-                    "devenvironment": values.devenvironment
+                    "account": values.account,
+                    "url": values.url,
                 }
             })
         });
 
         return () => {
-            unregister('channels.twitter');
+            unregister('channels.youtube');
         }
     }, [register, unregister]);
 
     useEffect(() => {
-        if (foreground !== 'twitter' && viewSelected !== "view1") {
+        if (foreground !== 'youtube' && viewSelected !== "view1") {
             setViewSelected("view1");
         }
     }, [foreground, viewSelected]);
@@ -125,7 +117,7 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
             setForeground(undefined);
         } else {
             setViewSelected(option);
-            setForeground('twitter');
+            setForeground('youtube');
         }
     }
 
@@ -145,57 +137,41 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
                     </Link>
                 </Breadcrumbs>
                 <div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.twittertitle)}</div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>{t(langKeys.twittertitle2)}</div>
+                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.channel_youtubetitle)}</div>
+                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>{t(langKeys.channel_genericalert)}</div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
-                            onChange={v => setValue('channels.twitter.consumerkey', v)}
-                            valueDefault={getValues('channels.twitter.consumerkey')}
-                            label={t(langKeys.consumerapikey)}
+                            onChange={v => {
+                                setNextbutton(v === "" || getValues('channels.youtube.url') === "" || !/\S+@\S+\.\S+/.test(v) || !/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/.test(getValues('channels.youtube.url')));
+                                setValue('channels.youtube.account', v);
+                            }}
+                            valueDefault={getValues('channels.youtube.account')}
+                            label={t(langKeys.account)}
                             className="col-6"
-                            error={errors.channels?.twitter?.consumerkey?.message}
+                            error={errors.channels?.youtube?.account?.message}
                         />
                     </div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
-                            onChange={v => setValue('channels.twitter.consumersecret', v)}
-                            valueDefault={getValues('channels.twitter.consumersecret')}
-                            label={t(langKeys.consumerapisecret)}
+                            onChange={v => {
+                                setNextbutton(v === "" || getValues('channels.youtube.account') === "" || !/\S+@\S+\.\S+/.test(getValues('channels.youtube.account')) || !/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/.test(v))
+                                setValue('channels.youtube.url', v);
+                            }}
+                            valueDefault={getValues('channels.youtube.url')}
+                            label={t(langKeys.url)}
                             className="col-6"
-                            error={errors.channels?.twitter?.consumersecret?.message}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldEdit
-                            onChange={v => setValue('channels.twitter.accesstoken', v)}
-                            valueDefault={getValues('channels.twitter.accesstoken')}
-                            label={t(langKeys.authenticationtoken)}
-                            className="col-6"
-                            error={errors.channels?.twitter?.accesstoken?.message}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldEdit
-                            onChange={v => setValue('channels.twitter.accesssecret', v)}
-                            valueDefault={getValues('channels.twitter.accesssecret')}
-                            label={t(langKeys.authenticationsecret)}
-                            className="col-6"
-                            error={errors.channels?.twitter?.accesssecret?.message}
+                            error={errors.channels?.youtube?.url?.message}
                         />
                     </div>
 
                     <div style={{ paddingLeft: "80%" }}>
                         <Button
                             onClick={async () => {
-                                const v1 = await trigger('channels.twitter.consumerkey');
-                                const v2 = await trigger('channels.twitter.consumersecret');
-                                const v3 = await trigger('channels.twitter.accesstoken');
-                                const v4 = await trigger('channels.twitter.accesssecret');
-                                if (v1 && v2 && v3 && v4) {
+                                const v1 = await trigger('channels.youtube.account');
+                                const v2 = await trigger('channels.youtube.url');
+                                if (v1 && v2) {
                                     setView("view1");
                                     setHasFinished(true);
                                 }
@@ -203,6 +179,7 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
                             className={classes.button}
                             variant="contained"
                             color="primary"
+                            disabled={nextbutton}
                         >
                             <Trans i18nKey={langKeys.next} />
                         </Button>
@@ -216,13 +193,13 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
 
     return (
         <div className={clsx(commonClasses.root, submitError && commonClasses.rootError)}>
-            {!hasFinished && <TwitterColor className={commonClasses.leadingIcon} />}
+            {!hasFinished && <YouTubeColor className={commonClasses.leadingIcon} />}
             {!hasFinished && <IconButton
                 color="primary"
                 className={commonClasses.trailingIcon}
                 onClick={() => {
-                    deleteChannel('twitter');
-                    // setrequestchannels(prev => prev.filter(x => x.type !== "TWITTER"));
+                    deleteChannel('youtube');
+                    // setrequestchannels(prev => prev.filter(x => x.type !== "YOUTUBE"));
                 }}
             >
                 <DeleteOutlineIcon />
@@ -230,7 +207,7 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
             {!hasFinished && <Typography>
                 <Trans i18nKey={langKeys.subscription_genericconnect} />
             </Typography>}
-            {hasFinished && <TwitterColor
+            {hasFinished && <YouTubeColor
                 style={{ width: 100, height: 100, alignSelf: 'center' }} />
             }
             {hasFinished && (
@@ -243,17 +220,17 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
                     <Typography
                         color="primary"
                         style={{ fontSize: '1.2vw', fontWeight: 500 }}>
-                        {t(langKeys.subscription_message1)} {t(langKeys.channel_twitter)} {t(langKeys.subscription_message2)}
+                        {t(langKeys.subscription_message1)} {t(langKeys.channel_blogger)} {t(langKeys.subscription_message2)}
                     </Typography>
                 </div>
             )}
             <FieldEdit
-                onChange={(value) => setValue('channels.twitter.description', value)}
-                valueDefault={getValues('channels.twitter.description')}
+                onChange={(value) => setValue('channels.blogger.description', value)}
+                valueDefault={getValues('channels.blogger.description')}
                 label={t(langKeys.givechannelname)}
                 variant="outlined"
                 size="small"
-                error={errors.channels?.twitter?.description?.message}
+                error={errors.channels?.blogger?.description?.message}
                 InputProps={{
                     endAdornment: (
                         <InputAdornment position="end">
@@ -261,17 +238,6 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
                         </InputAdornment>
                     )
                 }}
-            />
-            <FieldEdit
-                onChange={(value) => {
-                    setValue('channels.twitter.devenvironment', value);
-                    setValue('channels.twitter.communicationchannelowner', "");
-                }}
-                valueDefault={getValues('channels.twitter.devenvironment')}
-                label={t(langKeys.devenvironment)}
-                variant="outlined"
-                size="small"
-                error={errors.channels?.twitter?.devenvironment?.message}
             />
             {!hasFinished && (
                 <Button

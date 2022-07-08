@@ -34,36 +34,38 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
                 return t(langKeys.field_required);
             }
         }
-        
+
         register('channels.instagramDM.description', { validate: strRequired, value: '' });
         register('channels.instagramDM.accesstoken', { validate: strRequired, value: '' });
         register('channels.instagramDM.communicationchannelowner', { validate: strRequired, value: '' });
         register('channels.instagramDM.communicationchannelsite', { validate: strRequired, value: '' });
         register('channels.instagramDM.siteid', { validate: strRequired, value: '' });
-        register('channels.instagramDM.build', { value: values => ({
-            "method": "UFN_COMMUNICATIONCHANNEL_INS",
-            "parameters": {
-                "id": 0,
-                "description": values.description,
-                "type": "",
-                "communicationchannelsite": values.communicationchannelsite,
-                "communicationchannelowner": values.communicationchannelowner,
-                "chatflowenabled": true,
-                "integrationid": "",
-                "color": "",
-                "icons": "",
-                "other": "",
-                "form": "",
-                "apikey": "",
-                "coloricon": "#F56040",
-            },
-            "type": "INSTAMESSENGER",
-            "service": {
-                "accesstoken": values.accesstoken,
-                "siteid": values.siteid,
-                "appid": apiUrls.INSTAGRAMAPP
-            }
-        })});
+        register('channels.instagramDM.build', {
+            value: values => ({
+                "method": "UFN_COMMUNICATIONCHANNEL_INS",
+                "parameters": {
+                    "id": 0,
+                    "description": values.description,
+                    "type": "",
+                    "communicationchannelsite": values.communicationchannelsite,
+                    "communicationchannelowner": values.communicationchannelowner,
+                    "chatflowenabled": true,
+                    "integrationid": "",
+                    "color": "",
+                    "icons": "",
+                    "other": "",
+                    "form": "",
+                    "apikey": "",
+                    "coloricon": "#F56040",
+                },
+                "type": "INSTAMESSENGER",
+                "service": {
+                    "accesstoken": values.accesstoken,
+                    "siteid": values.siteid,
+                    "appid": apiUrls.INSTAGRAMAPP
+                }
+            })
+        });
 
         return () => {
             unregister('channels.instagramDM');
@@ -77,10 +79,6 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
             setWaitSave(false);
         }
     }, [mainResult, waitSave])
-
-    useEffect(() => {
-        console.log(`SIGNUP ADD INSTAGRAM DM: ${window.location.href}`);
-    }, [])
 
     const processFacebookCallback = async (r: any) => {
         if (r.status !== "unknown" && !r.error) {
@@ -112,24 +110,24 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
                 <DeleteOutlineIcon />
             </IconButton>}
             {!hasFinished && <Typography>
-                <Trans i18nKey={langKeys.connectface2} />
+                <Trans i18nKey={langKeys.subscription_instagramconnect} />
             </Typography>}
             {hasFinished && <InstagramColor3
-                style={{ width: 100, height: 100, alignSelf: 'center' }}/>
+                style={{ width: 100, height: 100, alignSelf: 'center' }} />
             }
             {hasFinished && (
                 <div style={{ alignSelf: 'center' }}>
                     <Typography
                         color="primary"
                         style={{ fontSize: '1.5vw', fontWeight: 'bold', textAlign: 'center' }}>
-                        ¡Felicitaciones!
+                        {t(langKeys.subscription_congratulations)}
                     </Typography>
                     <Typography
                         color="primary"
                         style={{ fontSize: '1.2vw', fontWeight: 500 }}>
-                        Haz conectado Facebook con tu cuenta
+                        {t(langKeys.subscription_message1)} {t(langKeys.channel_instagramdm)} {t(langKeys.subscription_message2)}
                     </Typography>
-            </div>
+                </div>
             )}
             <FieldEdit
                 onChange={(value) => setValue('channels.instagramDM.description', value)}
@@ -158,27 +156,6 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
                 disabled={mainResult.loading || mainResult.data.length === 0}
                 error={errors.channels?.instagramDM?.siteid?.message}
             />
-            {/* <div className="row-zyx">
-                <div className="col-3"></div>
-                <div className="col-6">
-                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                        {t(langKeys.givechannelcolor)}
-                    </Box>
-                    <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                        <InstagramIcon style={{ fill: `${coloricon}`, width: "100px" }} />
-                        <ColorInput
-                            hex={fields.parameters.coloricon}
-                            onChange={e => {
-                                setFields(prev => ({
-                                    ...prev,
-                                    parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
-                                }));
-                                setcoloricon(e.hex)
-                            }}
-                        />
-                    </div>
-                </div>
-            </div> */}
             {((getValues('channels.instagramDM.siteid')?.length || 0) === 0) && (mainResult.data.length === 0) && (
                 <FacebookLogin
                     appId={apiUrls.INSTAGRAMAPP}

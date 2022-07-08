@@ -77,7 +77,7 @@ export const ChannelAddEmail: FC = () => {
         setViewSelected("main")
     }
     useEffect(() => {
-        if (!mainResult.loading && setins){
+        if (!mainResult.loading && setins) {
             if (executeResult) {
                 setsetins(false)
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
@@ -106,11 +106,11 @@ export const ChannelAddEmail: FC = () => {
         partialf.parameters.description = value
         setFields(partialf)
     }
-    if(viewSelected==="view1"){
+    if (viewSelected === "view1") {
         return (
             <div style={{ width: '100%' }}>
                 <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD, whatsAppData)}}>
+                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD, whatsAppData) }}>
                         {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
@@ -121,9 +121,9 @@ export const ChannelAddEmail: FC = () => {
                         <div className="col-3"></div>
                         <FieldEdit
                             onChange={(value) => {
-                                setNextbutton(value==="" || fields.service.emittername===""||fields.service.url==="")
+                                setNextbutton(value === "" || fields.service.emittername === "" || fields.service.url === "" || !/\S+@\S+\.\S+/.test(fields.service.emittername) || !/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/.test(fields.service.url))
                                 let partialf = fields;
-                                partialf.service.apikey= value
+                                partialf.service.apikey = value
                                 setFields(partialf)
                             }}
                             valueDefault={fields.service.apikey}
@@ -135,9 +135,9 @@ export const ChannelAddEmail: FC = () => {
                         <div className="col-3"></div>
                         <FieldEdit
                             onChange={(value) => {
-                                setNextbutton(value==="" || fields.service.emittername===""||fields.service.apikey==="")
+                                setNextbutton(value === "" || fields.service.emittername === "" || fields.service.apikey === "" || !/\S+@\S+\.\S+/.test(fields.service.emittername) || !/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/.test(value))
                                 let partialf = fields;
-                                partialf.service.url= value
+                                partialf.service.url = value
                                 setFields(partialf)
                             }}
                             valueDefault={fields.service.url}
@@ -149,9 +149,9 @@ export const ChannelAddEmail: FC = () => {
                         <div className="col-3"></div>
                         <FieldEdit
                             onChange={(value) => {
-                                setNextbutton(value==="" || fields.service.apikey===""||fields.service.url==="")
+                                setNextbutton(value === "" || fields.service.apikey === "" || fields.service.url === "" || !/\S+@\S+\.\S+/.test(value) || !/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/.test(fields.service.url))
                                 let partialf = fields;
-                                partialf.service.emittername= value
+                                partialf.service.emittername = value
                                 setFields(partialf)
                             }}
                             valueDefault={fields.service.emittername}
@@ -159,7 +159,6 @@ export const ChannelAddEmail: FC = () => {
                             className="col-6"
                         />
                     </div>
-
                     <div style={{ paddingLeft: "80%" }}>
                         <Button
                             disabled={nextbutton}
@@ -169,23 +168,20 @@ export const ChannelAddEmail: FC = () => {
                             color="primary"
                         >{t(langKeys.next)}
                         </Button>
-
                     </div>
-
                 </div>
             </div>
         )
-    }else{
+    } else {
         return (
             <div style={{ width: '100%' }}>
                 <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view2") }}>
+                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view1") }}>
                         {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <div>
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.commchannelfinishreg)}</div>
-
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
@@ -198,10 +194,10 @@ export const ChannelAddEmail: FC = () => {
                         <div className="col-3"></div>
                         <div className="col-6">
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                            {t(langKeys.givechannelcolor)}
+                                {t(langKeys.givechannelcolor)}
                             </Box>
-                            <div style={{display:"flex",justifyContent:"space-around", alignItems: "center"}}>
-                                <EmailIcon style={{fill: `${coloricon}`, width: "100px", height: "100px" }}/>
+                            <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
+                                <EmailIcon style={{ fill: `${coloricon}`, width: "100px", height: "100px" }} />
                                 <ColorInput
                                     hex={fields.parameters.coloricon}
                                     onChange={e => {
@@ -224,9 +220,7 @@ export const ChannelAddEmail: FC = () => {
                             color="primary"
                         >{t(langKeys.finishreg)}
                         </Button>
-
                     </div>
-
                 </div>
             </div>
         )
