@@ -577,7 +577,11 @@ const TableZyx = React.memo(({
             triggertmp()
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [pageSize, pagination, triggerSearch])
+    }, [pagination, triggerSearch])
+
+    useEffect(() => {
+        triggertmp()
+    }, [pageSize])
 
     useEffect(() => {
         if (triggerSearch) {
