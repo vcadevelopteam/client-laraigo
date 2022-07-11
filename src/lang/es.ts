@@ -1713,6 +1713,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
 
     report_productivity: 'Conversaciones',
     report_productivity_ticket: 'Ticket',
+    NINGUNO: "NONE",
     report_productivity_ticketyear: 'Año',
     report_productivity_ticketmonth: 'Mes',
     report_productivity_ticketweek: 'Semana',

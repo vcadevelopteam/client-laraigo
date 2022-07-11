@@ -1784,6 +1784,7 @@ const translation: LangKeys = {
     report_interaction_personcommunicationchannel: 'Person communication channel',
 
     least_user_or_group: 'Should choose at least user or group',
+    NINGUNO: "NINGUNO",
 
     report_productivity: 'Conversations',
     report_productivity_ticket: 'Ticket',

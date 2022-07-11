@@ -1617,6 +1617,7 @@ export const langKeys = {
     ticket_fechaultimaconversacion_help: 'ticket_fechaultimaconversacion_help',
     ticket_fechahandoff: 'ticket_fechahandoff',
     ticket_fechahandoff_help: 'ticket_fechahandoff_help',
+    NINGUNO: "NINGUNO",
     ticket_asesorinicial: 'ticket_asesorinicial',
     ticket_asesorfinal: 'ticket_asesorfinal',
     ticket_supervisor: 'ticket_supervisor',
