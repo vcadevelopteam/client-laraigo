@@ -524,7 +524,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                         trigger('newUserId');
                     }}
                     error={errors?.newUserGroup?.message}
-                    data={(multiData?.data?.[3]?.data || []).filter(x => x.domainvalue !== ticketSelected?.usergroup).filter(x=>user?.groups!==""?user?.groups?.includes(x.domainvalue):true)}
+                    data={[{domainvalue:"NINGUNO",domaindesc: t(langKeys.NINGUNO)},...(multiData?.data?.[3]?.data || []).filter(x => x.domainvalue !== ticketSelected?.usergroup).filter(x=>user?.groups!==""?user?.groups?.includes(x.domainvalue):true)]}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />
@@ -534,23 +534,25 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                     valueDefault={getValues('newUserId')}
                     onChange={(value) => {
                         setValue('newUserId', value ? value.userid : 0);
-                        setValue('newUserGroup', '');
-                        trigger('newUserGroup');
                     }}
                     error={errors?.newUserId?.message}
                     data={agentToReassignList.filter(x => x.status === "ACTIVO").filter(x=>{
                         let ingroup=false
                         if(getValues("newUserGroup")){
-                            return x.groups.includes(getValues("newUserGroup"))
-                        }else{
-                            if(groups[0]!==""){
-                                groups.forEach(e => {
-                                    if(x.groups.split(",").includes(e)) ingroup=true;
-                                })
+                            if(getValues("newUserGroup")==="NINGUNO"){
+                                return x.groups.includes(getValues("newUserGroup"))
                             }else{
-                                ingroup=true
+                                if(groups[0]!==""){
+                                    groups.forEach(e => {
+                                        if(x.groups.split(",").includes(e)) ingroup=true;
+                                    })
+                                }else{
+                                    ingroup=true
+                                }
+                                return ingroup
                             }
-                            return ingroup
+                        }else{
+                            return false
                         }
                     })
                 }

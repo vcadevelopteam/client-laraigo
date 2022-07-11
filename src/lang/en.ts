@@ -1793,6 +1793,7 @@ const translation: LangKeys = {
     propertywaitingtimecustomermessage: "Customer waiting time alert message to advisor",
 
     least_user_or_group: 'Should choose at least user or group',
+    NINGUNO: "NINGUNO",
 
     report_productivity: 'Conversations',
     report_productivity_ticket: 'Ticket',
