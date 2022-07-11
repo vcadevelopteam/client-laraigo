@@ -3651,6 +3651,8 @@ export const langKeys = {
     periodreportrecording: 'periodreportrecording',
     periodreportother: 'periodreportother',
     T_VOICECHANNEL: 'T_VOICECHANNEL',
+    validate_time_filter: "validate_time_filter",
+
     go_ticket: 'go_ticket',
 
     productcatalog_title: 'productcatalog_title',
@@ -3743,8 +3745,7 @@ export const langKeys = {
     messagetemplate_changetoeditor: 'messagetemplate_changetoeditor',
     messagetemplate_changetoview: 'messagetemplate_changetoview',
 
-    validationchar: 'validationchar',
-    validate_time_filter: "validate_time_filter"
+    validationchar: 'validationchar'
 };
 
 export type LangKeys = typeof langKeys;

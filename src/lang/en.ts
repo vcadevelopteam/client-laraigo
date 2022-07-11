@@ -3671,6 +3671,7 @@ const translation: LangKeys = {
     periodreportrecording: 'Call Recording',
     periodreportother: 'Others',
     T_VOICECHANNEL: 'VOICE CHANNEL',
+    validate_time_filter: "Please select a date range less than one month.",
     go_ticket: 'Go to ticket',
 
     productcatalog_title: 'Title',
@@ -3764,7 +3765,6 @@ const translation: LangKeys = {
     messagetemplate_changetoview: 'View HTML template',
 
     validationchar: 'This field has a minimum and maximum amount of characters',
-    validate_time_filter: "Please select a date range less than one month."
 };
 
 const enResource: ResourceLanguage = {
