@@ -1438,6 +1438,8 @@ export const langKeys = {
     sent: 'sent',
     campaign_in_execution: 'campaign_in_execution',
     file_without_data: 'file_without_data',
+    no_channel_selected: "no_channel_selected",
+    no_files_selected: "no_files_selected",
     too_many_records: 'file_without_data',
     file_incompatbile_with_previous_one: 'file_incompatbile_with_previous_one',
     invalid_data: 'invalid_data',
@@ -1513,6 +1515,7 @@ export const langKeys = {
     error_kpi_sql: 'error_kpi_sql',
     error_excess_channels: "error_excess_channels",
     error_excess_users: "error_excess_users",
+    error_limit_exceeded: "error_limit_exceeded",
 
     no_records: 'no_records',
 
@@ -2784,6 +2787,8 @@ export const langKeys = {
 
     channellimit: 'channellimit',
     userlimit: 'userlimit',
+    max_limit: 'max_limit',
+    max_limit_file_per_upload: 'max_limit_file_per_upload',
     type_activitylead_call: 'type_activitylead_call',
     type_activitylead_automated: 'type_activitylead_automated',
     type_activitylead_automatedmail: 'type_activitylead_automatedmail',
