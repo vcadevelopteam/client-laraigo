@@ -144,7 +144,7 @@ const DateRangePicker: FC<DateRangePickerProps> = (props) => {
                                         return dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.validate_time_filter) }))
                                     }
                                 }
-
+                                setSearch(true)
                                 setCurrentRange([selection]);
                             }}
                             showSelectionPreview={showSelectionPreview}
