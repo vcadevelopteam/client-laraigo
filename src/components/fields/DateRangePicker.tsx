@@ -1,3 +1,4 @@
+import React from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, useTheme } from "@material-ui/core";
 import { langKeys } from "lang/keys";
 import { useState } from "react";
@@ -16,6 +17,8 @@ import {
     endOfWeek,
     isSameDay,
 } from 'date-fns';
+import { useDispatch } from 'react-redux';
+import { showSnackbar } from 'store/popus/actions';
 
 interface DateRangePickerProps extends Omit<PDateRangePickerProps, 'ranges'> {
     title?: React.ReactNode;
@@ -69,11 +72,18 @@ const DateRangePicker: FC<DateRangePickerProps> = (props) => {
         moveRangeOnFirstSelection = false,
         ...res
     } = props;
-
+    const dispatch = useDispatch();
     const theme = useTheme();
     const { t } = useTranslation();
     const [currentRange, setCurrentRange] = useState<Range[]>([range]);
+    const [search, setSearch] = useState(true)
 
+    React.useEffect(() => {
+        if (open) {
+            setSearch(true)
+        }
+    }, [open])
+    
     const staticRanges: StaticRange[] = [
         {
           label: t(langKeys.today),
@@ -108,40 +118,6 @@ const DateRangePicker: FC<DateRangePickerProps> = (props) => {
         },
     ];
 
-    // const inputRanges: InputRange[] = [
-    //     {
-    //         label: t(langKeys.daysUpToToday),
-    //         range(value) {
-    //           return {
-    //             startDate: addDays(defineds.startOfToday, (Math.max(Number(value), 1) - 1) * -1),
-    //             endDate: defineds.endOfToday,
-    //           };
-    //         },
-    //         getCurrentValue: (range) => {
-    //           if (!isSameDay(range.endDate!, defineds.endOfToday)) return '-';
-    //           if (!range.startDate) return '∞';
-    //           return String(differenceInCalendarDays(defineds.endOfToday, range.startDate) + 1);
-    //         },
-    //         isSelected: (_) => false,
-    //     },
-    //     {
-    //         label: t(langKeys.daysStartingToday),
-    //         range(value) {
-    //           const today = new Date();
-    //           return {
-    //             startDate: today,
-    //             endDate: addDays(today, Math.max(Number(value), 1) - 1),
-    //           };
-    //         },
-    //         getCurrentValue: (range) => {
-    //           if (!isSameDay(range.startDate!, defineds.startOfToday)) return '-';
-    //           if (!range.endDate) return '∞';
-    //           return String(differenceInCalendarDays(range.endDate, defineds.startOfToday) + 1);
-    //         },
-    //         isSelected: (_) => false,
-    //     },
-    // ];
-
     return (
         <>
             {children}
@@ -158,6 +134,17 @@ const DateRangePicker: FC<DateRangePickerProps> = (props) => {
                         <PDateRangePicker
                             onChange={(range) => {
                                 const selection = (range as { selection: RangeWithKey }).selection;
+                                
+                                const { startDate, endDate } = selection;
+                                if (startDate?.getMonth() !== endDate?.getMonth()) {
+                                    let difference = endDate!!.getTime() - startDate!!.getTime();
+                                    let days = Math.ceil(difference / (1000 * 3600 * 24));
+                                    if (days > 30) {
+                                        setSearch(false)
+                                        return dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.validate_time_filter) }))
+                                    }
+                                }
+
                                 setCurrentRange([selection]);
                             }}
                             showSelectionPreview={showSelectionPreview}
@@ -168,8 +155,6 @@ const DateRangePicker: FC<DateRangePickerProps> = (props) => {
                             color={theme.palette.primary.main}
                             locale={dateRangeResourceLanguage()}
                             staticRanges={staticRanges}
-                            
-                            // inputRanges={inputRanges}
                             rangeColors={[theme.palette.primary.main, theme.palette.primary.dark]}
                             {...res}
                         />
@@ -178,6 +163,7 @@ const DateRangePicker: FC<DateRangePickerProps> = (props) => {
                 <DialogActions>
                     <Button
                         color="primary"
+                        disabled={!search}
                         onClick={() => {
                             onSelect?.(currentRange[0]);
                             setOpen(false);

@@ -3744,6 +3744,7 @@ export const langKeys = {
     messagetemplate_changetoview: 'messagetemplate_changetoview',
 
     validationchar: 'validationchar',
+    validate_time_filter: "validate_time_filter"
 };
 
 export type LangKeys = typeof langKeys;

@@ -3757,6 +3757,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     messagetemplate_changetoview: 'Visualizar plantilla HTML',
 
     validationchar: 'Este campo tiene un número mínimo y máximo de caracteres',
+
+    validate_time_filter: "Por favor, seleccione un rango de fechas menor a un mes."
 };
 
 const esResource: ResourceLanguage = {

@@ -3764,6 +3764,7 @@ const translation: LangKeys = {
     messagetemplate_changetoview: 'View HTML template',
 
     validationchar: 'This field has a minimum and maximum amount of characters',
+    validate_time_filter: "Please select a date range less than one month."
 };
 
 const enResource: ResourceLanguage = {
