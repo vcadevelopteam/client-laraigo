@@ -503,7 +503,6 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
         setWaitReassign(true)
 
     });
-
     return (
         <DialogZyx
             open={openModal}
@@ -515,30 +514,6 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
             button2Type="submit"
         >
             <div className="row-zyx">
-                <FieldSelect
-                    label={t(langKeys.advisor)}
-                    className="col-12"
-                    valueDefault={getValues('newUserId')}
-                    onChange={(value) => {
-                        setValue('newUserId', value ? value.userid : 0);
-                        setValue('newUserGroup', '');
-                        trigger('newUserGroup');
-                    }}
-                    error={errors?.newUserId?.message}
-                    data={agentToReassignList.filter(x => x.status === "ACTIVO").filter(x=>{
-                        let ingroup=false
-                        if(groups[0]!==""){
-                            groups.forEach(e => {
-                                if(x.groups.split(",").includes(e)) ingroup=true;
-                            })
-                        }else{
-                            ingroup=true
-                        }
-                        return ingroup
-                    })}
-                    optionDesc="displayname"
-                    optionValue="userid"
-                />
                 <FieldSelect
                     label={t(langKeys.group_plural)}
                     className="col-12"
@@ -552,6 +527,35 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                     data={(multiData?.data?.[3]?.data || []).filter(x => x.domainvalue !== ticketSelected?.usergroup).filter(x=>user?.groups!==""?user?.groups?.includes(x.domainvalue):true)}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
+                />
+                <FieldSelect
+                    label={t(langKeys.advisor)}
+                    className="col-12"
+                    valueDefault={getValues('newUserId')}
+                    onChange={(value) => {
+                        setValue('newUserId', value ? value.userid : 0);
+                        setValue('newUserGroup', '');
+                        trigger('newUserGroup');
+                    }}
+                    error={errors?.newUserId?.message}
+                    data={agentToReassignList.filter(x => x.status === "ACTIVO").filter(x=>{
+                        let ingroup=false
+                        if(getValues("newUserGroup")){
+                            return x.groups.includes(getValues("newUserGroup"))
+                        }else{
+                            if(groups[0]!==""){
+                                groups.forEach(e => {
+                                    if(x.groups.split(",").includes(e)) ingroup=true;
+                                })
+                            }else{
+                                ingroup=true
+                            }
+                            return ingroup
+                        }
+                    })
+                }
+                    optionDesc="displayname"
+                    optionValue="userid"
                 />
                 <FieldEditMulti
                     label={t(langKeys.observation)}
