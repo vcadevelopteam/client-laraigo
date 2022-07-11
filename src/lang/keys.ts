@@ -3640,8 +3640,9 @@ export const langKeys = {
     periodreportrecording: 'periodreportrecording',
     periodreportother: 'periodreportother',
     T_VOICECHANNEL: 'T_VOICECHANNEL',
-    validate_time_filter: "validate_time_filter"
+    validate_time_filter: "validate_time_filter",
 
+    go_ticket: 'go_ticket',
 };
 
 export type LangKeys = typeof langKeys;

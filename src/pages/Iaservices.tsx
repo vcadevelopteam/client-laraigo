@@ -249,13 +249,13 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
@@ -268,7 +268,7 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
 
     const onSubmit = handleSubmit((data) => {
         if (data.services.length === 0) {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.iaservice_must_select) }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.iaservice_must_select) }))
             return
         }
 
@@ -455,7 +455,7 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                                                             if (value) {
                                                                 if (fields.some((x: any) => x.service === value.value)) {
                                                                     // fieldUpdate(i, { ...fields[i], service: '' })
-                                                                    dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.iaservice_already_exist) }))
+                                                                    dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.iaservice_already_exist) }))
                                                                     setValue(`services.${i}.type_of_service`, "");
                                                                     setValue(`services.${i}.service`, "");
                                                                     trigger(`services.${i}.service`)
@@ -708,13 +708,13 @@ const Iaservices: FC = () => {
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }

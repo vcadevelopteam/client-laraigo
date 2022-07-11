@@ -251,13 +251,13 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
@@ -282,14 +282,14 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         if (waitGetConsumption) {
             if (!getConsumptionResult.loading) {
                 if (!getConsumptionResult.error) {
-                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.success) }))
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }))
                     if (getConsumptionResult.data) {
                         setCostMaximum(getConsumptionResult.data.maximumconsumption || 0);
                         setCostLimit((parseFloat(fixedAmount) || 0) + ((parseFloat(getConsumptionResult.data.maximumconsumption) || 0) * ((parseFloat(percentageAmount) || 0) + 1)));
                     }
                 }
                 else {
-                    dispatch(showSnackbar({ show: true, success: false, message: t(((getConsumptionResult.msg || getConsumptionResult.message) || getConsumptionResult.code) || 'error_unexpected_error') }));
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(((getConsumptionResult.msg || getConsumptionResult.message) || getConsumptionResult.code) || 'error_unexpected_error') }));
                 }
                 dispatch(showBackdrop(false));
                 setWaitGetConsumption(false);
@@ -301,10 +301,10 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         if (waitTransferBalance) {
             if (!transferBalanceResult.loading) {
                 if (!transferBalanceResult.error) {
-                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.success) }));
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }));
                 }
                 else {
-                    dispatch(showSnackbar({ show: true, success: false, message: t(((transferBalanceResult.msg || transferBalanceResult.message) || transferBalanceResult.code) || 'error_unexpected_error') }));
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(((transferBalanceResult.msg || transferBalanceResult.message) || transferBalanceResult.code) || 'error_unexpected_error') }));
                 }
                 dispatch(showBackdrop(false));
                 setWaitTransferBalance(false);
@@ -316,14 +316,14 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         if (waitGetBalance) {
             if (!getBalanceResult.loading) {
                 if (!getBalanceResult.error) {
-                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.success) }));
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }));
                     if (getBalanceResult.data) {
                         setBalanceChild(getBalanceResult.data.balancechild || 0);
                         setBalanceParent(getBalanceResult.data.balanceparent || 0);
                     }
                 }
                 else {
-                    dispatch(showSnackbar({ show: true, success: false, message: t(((getBalanceResult.msg || getBalanceResult.message) || getBalanceResult.code) || 'error_unexpected_error') }));
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(((getBalanceResult.msg || getBalanceResult.message) || getBalanceResult.code) || 'error_unexpected_error') }));
                 }
                 dispatch(showBackdrop(false));
                 setWaitGetBalance(false);
@@ -1273,13 +1273,13 @@ const Organizations: FC = () => {
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }

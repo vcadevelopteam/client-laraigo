@@ -217,13 +217,13 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.kpimanager_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
@@ -317,13 +317,13 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                 }
                 else {
                     const errormessage = t(langKeys.error_kpi_sql, { error: executeRes.data[0].p_error })
-                    dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 }
                 setWaitCalc(false);
                 dispatch(showBackdrop(false));
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.kpimanager_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitCalc(false);
                 dispatch(showBackdrop(false));
             }
@@ -939,13 +939,13 @@ const KPIManager: FC = () => {
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.kpimanager_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
@@ -1003,13 +1003,13 @@ const KPIManager: FC = () => {
     useEffect(() => {
         if (waitDuplicate) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_duplicate) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_duplicate) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitDuplicate(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.kpimanager_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitDuplicate(false);
             }
@@ -1024,13 +1024,13 @@ const KPIManager: FC = () => {
                 }
                 else {
                     const errormessage = t(langKeys.error_kpi_sql, { error: executeResult.data[0].p_error })
-                    dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 }
                 dispatch(showBackdrop(false));
                 setWaitCalc(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.kpimanager_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitCalc(false);
             }

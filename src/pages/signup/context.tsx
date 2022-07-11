@@ -376,7 +376,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
             }
             dispatch(showSnackbar({
                 show: true,
-                success: true,
+                severity: "success",
                 message: msg,
             }));
         } else if (executeResult.error) {
@@ -386,7 +386,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
             
             dispatch(showSnackbar({
                 show: true,
-                success: false,
+                severity: "error",
                 message: errormessage,
             }))
         }
@@ -412,7 +412,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
                 dispatch(showSnackbar({
                     message: errormessage,
                     show: true,
-                    success: false,
+                    severity: "error",
                 }));
             } else {
                 dispatch(showBackdrop(false));
@@ -564,7 +564,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
         dispatch(showSnackbar({
             message: "Debe completar el/los canal/es",
             show: true,
-            success: false,
+            severity: "error",
         }))
     }
 

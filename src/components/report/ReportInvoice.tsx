@@ -420,7 +420,7 @@ const ReportInvoice: FC = () => {
             dispatch(showSnackbar({
                 message: t(langKeys.xfield_ismissing, {field: t(langKeys.year)}),
                 show: true,
-                success: false,
+                severity: "error"
             }));
         }
     }

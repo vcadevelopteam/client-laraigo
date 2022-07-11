@@ -221,13 +221,13 @@ const DialogBooking: React.FC<{
     useEffect(() => {
         if (waitSave) {
             if (!saveRes.loading && !saveRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_update) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_update) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
                 fetchData()
             } else if (saveRes.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(saveRes.code || "error_unexpected_error") }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(saveRes.code || "error_unexpected_error") }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
@@ -727,16 +727,16 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
                 if(operation === "DUPLICATE"){                    
-                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_duplicate) }))
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_duplicate) }))
                 }else{
-                    dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 }
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.calendar_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
@@ -1510,7 +1510,7 @@ const Calendar: FC = () => {
                             onCopyLink={() => {
                                 let url = new URL(`events/${user?.orgid}/${row.code}`, window.location.origin)
                                 navigator.clipboard.writeText(url.href);
-                                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.linkcopysuccesfull) }))
+                                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.linkcopysuccesfull) }))
                             }}
                         />
                     )
@@ -1566,13 +1566,13 @@ const Calendar: FC = () => {
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.calendar_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }

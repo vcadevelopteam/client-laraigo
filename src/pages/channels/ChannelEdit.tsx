@@ -73,13 +73,13 @@ const ChannelEdit: FC = () => {
             dispatch(showSnackbar({
                 message: edit.message!,
                 show: true,
-                success: false,
+                severity: "error"
             }));
         } else if (edit.success) {
             dispatch(showSnackbar({
                 message: t(langKeys.communicationchannel_editsuccess),
                 show: true,
-                success: true,
+                severity: "success"
             }));
             history.push(paths.CHANNELS);
         }
