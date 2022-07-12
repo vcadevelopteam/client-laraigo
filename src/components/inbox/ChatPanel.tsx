@@ -538,8 +538,16 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                     error={errors?.newUserId?.message}
                     data={agentToReassignList.filter(x => x.status === "ACTIVO").filter(x=>{
                         if(getValues("newUserGroup")){
+                            let ingroup = false;
                             if(getValues("newUserGroup")==="NINGUNO"){
-                                return true
+                                if(groups[0]!==""){
+                                    groups.forEach(e => {
+                                        if(x.groups.split(",").includes(e)) ingroup=true;
+                                    })
+                                }else{
+                                    ingroup=true
+                                }
+                                return ingroup
                             }else{
                                 return x.groups.includes(getValues("newUserGroup"))
                             }
