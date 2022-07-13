@@ -718,7 +718,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
 
     const onSubmit = handleSubmit((data) => {
         console.log(dataOrganizations)
-        debugger
+        
         if (!row && !data.password) {
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.password_required) }));
             return;
@@ -1088,6 +1088,7 @@ const Users: FC = () => {
             domains.value?.userstatus?.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`status_${d.domainvalue?.toLowerCase()}`) }), {}),
             {},
             {},
+            {},
             { 'true': 'true', 'false': 'false' },
             domains.value?.roles?.reduce((a, d) => ({ ...a, [d.roleid]: d.roldesc }), {}),
             dataChannelsTemp.reduce((a, d) => ({ ...a, [d.communicationchannelid]: d.description }), {}),
@@ -1104,6 +1105,7 @@ const Users: FC = () => {
             'twofactorauthentication',
             'status',
             'image',
+            'user',
             'password',
             'pwdchangefirstlogin',
             'role',
@@ -1232,6 +1234,7 @@ const Users: FC = () => {
     }
 
     const handleUpload = async (files: any, useravailable: number, limit: number) => {
+        
         const file = files?.item(0);
         if (file) {
             let excel: any = await uploadExcel(file, undefined);
@@ -1267,9 +1270,9 @@ const Users: FC = () => {
                     setImportCount(data.length);
                     let table: Dictionary = data.reduce((a: any, d) => ({
                         ...a,
-                        [`${d.email}_${d.docnum}`]: {
+                        [`${d.user}_${d.docnum}`]: {
                             id: 0,
-                            usr: String(d.email),
+                            usr: String(d.user||d.email),
                             doctype: d.doctype,
                             docnum: String(d.docnum),
                             password: String(d.password),
@@ -1389,6 +1392,7 @@ const Users: FC = () => {
                     dispatch(showBackdrop(false));
                     setWaitCheck(false);
                     if (!(mainAuxResult.data[0].usernumber < mainAuxResult.data[0].userscontracted)) {
+                        
                         dispatch(showSnackbar({
                             show: true, severity: "error", message: t(langKeys.userlimit, {
                                 limit: mainAuxResult.data[0].userscontracted
