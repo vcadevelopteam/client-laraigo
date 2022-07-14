@@ -3688,6 +3688,7 @@ export const langKeys = {
     channel_gmailalert1: 'channel_gmailalert1',
     channel_gmailalert2: 'channel_gmailalert2',
     channel_gmailtitle: 'channel_gmailtitle',
+    subscription_missinginfo: 'subscription_missinginfo',
 };
 
 export type LangKeys = typeof langKeys;

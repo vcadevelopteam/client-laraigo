@@ -36,6 +36,7 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
     const [viewSelected, setViewSelected] = useState("view1");
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
+    const [nextbutton2, setNextbutton2] = useState(true);
 
     useEffect(() => {
         const cb = async () => {
@@ -234,7 +235,7 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
                 </div>
             )}
             <FieldEdit
-                onChange={(value) => setValue('channels.twitterDM.description', value)}
+                onChange={(value) => { setValue('channels.twitterDM.description', value); setNextbutton2(!value); }}
                 valueDefault={getValues('channels.twitterDM.description')}
                 label={t(langKeys.givechannelname)}
                 variant="outlined"
@@ -265,6 +266,7 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
                     className={commonClasses.button}
                     variant="contained"
                     color="primary"
+                    disabled={nextbutton2}
                 >
                     <Trans i18nKey={langKeys.next} />
                 </Button>

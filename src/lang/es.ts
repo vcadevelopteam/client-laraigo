@@ -3701,6 +3701,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     channel_gmailalert1: 'Instala el chatbot en tu correo y empieza a conseguir clientes potenciales.',
     channel_gmailalert2: 'La cuenta de correo que selecciones será usada para este proceso',
     channel_gmailtitle: 'Conectar Gmail',
+    subscription_missinginfo: 'Debe completar la información faltante para los canales seleccionados',
 };
 
 const esResource: ResourceLanguage = {

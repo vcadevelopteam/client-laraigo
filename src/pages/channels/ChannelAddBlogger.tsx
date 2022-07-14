@@ -8,7 +8,6 @@ import { Breadcrumbs, Box, Button, makeStyles } from '@material-ui/core';
 import { ColorInput, FieldEdit, FieldSelect } from "components";
 import { exchangeCode, listBlogger } from "store/google/actions";
 import { FC, useEffect, useState } from "react";
-import { GoogleOAuthProvider } from '@react-oauth/google';
 import { useGoogleLogin } from '@react-oauth/google';
 import { insertChannel } from "store/channel/actions";
 import { langKeys } from "lang/keys";
@@ -213,7 +212,7 @@ export const ChannelAddBlogger: FC = () => {
 
     if (viewSelected === "view1") {
         return (
-            <GoogleOAuthProvider clientId={apiUrls.GOOGLECLIENTID_CHANNEL}>
+            <>
                 <meta name="google-signin-client_id" content={apiUrls.GOOGLECLIENTID_CHANNEL} />
                 <script src="https://apis.google.com/js/platform.js" async defer></script>
                 <div style={{ width: '100%' }}>
@@ -239,7 +238,7 @@ export const ChannelAddBlogger: FC = () => {
                         <div style={{ textAlign: "center", paddingBottom: "80px", color: "#969ea5" }}><a style={{ fontWeight: "bold", color: "#6F1FA1", cursor: "pointer" }} onClick={openprivacypolicies} rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
                     </div>
                 </div>
-            </GoogleOAuthProvider>
+            </>
         )
     } else if (viewSelected === "view2") {
         return (

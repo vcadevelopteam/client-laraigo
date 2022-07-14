@@ -150,14 +150,15 @@ const SignIn = () => {
         }
     }
 
-    const onGoogleLoginFailure = (r: any) => {
-        if (r && r.error) {
-            switch (r.error) {
+    const onGoogleLoginFailure = (event: any) => {
+        console.log('GOOGLE LOGIN FAILURE: ' + JSON.stringify(event));
+        if (event && event.error) {
+            switch (event.error) {
                 case 'idpiframe_initialization_failed':
                 case 'popup_closed_by_user':
                     break;
                 default:
-                    alert(r.error);
+                    alert(event.error);
                     break;
             }
         }

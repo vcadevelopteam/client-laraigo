@@ -3708,6 +3708,7 @@ const translation: LangKeys = {
     channel_gmailalert1: 'Install the chatbot on your mail and start getting leads.',
     channel_gmailalert2: 'The selected mail account will be the one used on this process.',
     channel_gmailtitle: 'Connect Gmail',
+    subscription_missinginfo: 'You must complete the information of the selected channels',
 };
 
 const enResource: ResourceLanguage = {
