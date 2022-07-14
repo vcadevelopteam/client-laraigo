@@ -20,6 +20,7 @@ import dashboardReducer, { IState as IDashboard } from './dashboard/reducer';
 import getlocationsReducer, { IState as IGetLocations } from './getlocations/reducer';
 import subscriptionReducer, { IState as ISubscription } from './subscription/reducer';
 import voximplantReducer, { IState as IVoximplant } from './voximplant/reducer';
+import googleReducer, { IState as IGoogle } from './google/reducer';
 
 export interface IRootState {
     login: ILogin,
@@ -39,6 +40,7 @@ export interface IRootState {
     getlocations: IGetLocations;
     subscription: ISubscription;
     voximplant: IVoximplant;
+    google: IGoogle;
 }
 
 declare global {
@@ -65,6 +67,7 @@ const rootReducer = combineReducers<IRootState>({
     getlocations: getlocationsReducer,
     subscription: subscriptionReducer,
     voximplant: voximplantReducer,
+    google: googleReducer,
 });
 
 export default function configureStore(preloadedState?: IRootState) {

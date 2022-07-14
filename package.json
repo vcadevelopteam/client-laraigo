@@ -10,6 +10,7 @@
         "@material-ui/pickers": "^3.3.10",
         "@reach/combobox": "^0.16.5",
         "@react-google-maps/api": "^2.7.0",
+        "@react-oauth/google": "^0.2.6",
         "@testing-library/jest-dom": "^5.14.1",
         "@testing-library/react": "^11.2.7",
         "@testing-library/user-event": "^12.8.3",

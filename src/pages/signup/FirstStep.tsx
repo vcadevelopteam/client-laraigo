@@ -207,7 +207,7 @@ const FirstStep: FC = () => {
     const handleMouseDownPassword = (event: any) => event.preventDefault();
     return (
         <>
-            <meta name="google-signin-client_id" content="792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com" />
+            <meta name="google-signin-client_id" content={apiUrls.GOOGLECLIENTID_LOGIN} />
             <script src="https://apis.google.com/js/platform.js" async defer></script>
             <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", marginBottom: 32, marginTop: 15 }}>{t(langKeys.signupstep1title)}</div>
             <div className={classes.buttonfacebook}>
@@ -224,7 +224,7 @@ const FirstStep: FC = () => {
             </div>
             <div className={classes.buttonGoogle}>
                 <GoogleLogin
-                    clientId="792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com"
+                    clientId={apiUrls.GOOGLECLIENTID_LOGIN}
                     buttonText={t(langKeys.signupgooglebutton)}
                     style={{ borderRadius: '3px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                     onSuccess={onGoogleLoginSucess}
