@@ -670,11 +670,15 @@ const DialogLoadTickets: React.FC<{
             {},
             {},
             {},
+            {},
+            {'CLIENT': 'CLIENT', 'BOT': 'BOT'}
         ];
         const header = [
-            'UserPhone',
-            'UserName',
-            'MessageBody',
+            'date',
+            'personname',
+            'personphone',
+            'interactiontext',
+            'interactionfrom'
         ];
         exportExcel(`${t(langKeys.template)} ${t(langKeys.ticket)}`, templateMaker(data, header));
     }
@@ -711,7 +715,7 @@ const DialogLoadTickets: React.FC<{
                 />
                 <input
                     name="file"
-                    accept="text/csv,.zip,.rar"
+                    accept="text/csv,.zip,.rar,.xls,.xlsx"
                     id="laraigo-upload-csv-file"
                     type="file"
                     style={{ display: 'none' }}
