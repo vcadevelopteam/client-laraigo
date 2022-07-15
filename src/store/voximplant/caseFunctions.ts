@@ -28,6 +28,7 @@ export const setPhoneNumber = (state: IState, action: IAction): IState => {
 export const setHold = (state: IState, action: IAction): IState => {
     return {
         ...state,
+        onholddate: new Date().toISOString(),
         onhold: action.payload,
     }
 }

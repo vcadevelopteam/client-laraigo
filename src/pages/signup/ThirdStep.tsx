@@ -19,7 +19,6 @@ import {
     IosColor,
     WhatsappColor,
     TwitterColor,
-    VoiceChannelIcon,
     VoiceColor,
     TikTokColor,
     YouTubeColor,

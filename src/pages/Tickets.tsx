@@ -620,7 +620,7 @@ const DialogLoadTickets: React.FC<{
                 setWaitUpload(false);
                 fetchData();
             } else if (importRes.error) {
-                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_unexpected_error) }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(importRes.code || "error_unexpected_error") }))
                 dispatch(showBackdrop(false));
                 setWaitUpload(false);
             }
@@ -647,21 +647,21 @@ const DialogLoadTickets: React.FC<{
                 setWaitUpload(true);
             }
             else {
-                dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.no_files_selected) }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_files_selected) }))
             }
         }
         else {
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.file_without_data) }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_channel_selected) }))
         }
         
     });
     
     const handleUpload = async (files: any) => {
         if (Array.from<File>(files).length > 10) {
-            dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.max_limit_file_per_upload, {n: 10}) }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.max_limit_file_per_upload, {n: 10}) }))
         }
         else {
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.invalid_file) }))
+            setFileList(Array.from<File>(files));
         }
     }
 
@@ -805,7 +805,7 @@ const Tickets = () => {
         }
         catch (error: any) {
             const errormessage = t(error?.response?.data?.code || "error_unexpected_error")
-            dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
         }
     }
 

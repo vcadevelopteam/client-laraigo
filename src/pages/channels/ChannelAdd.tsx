@@ -5,8 +5,8 @@ import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router";
 import paths from "common/constants/paths";
 import {
-    CallIcon, VoiceColor,
-    AndroidColor, EmailColor, FacebookColor, FacebookMessengerColor, InstagramColor, IosColor, SmsColor, TelegramColor, TwitterColor, WebMessengerColor, WhatsappColor, VoiceChannelIcon, TikTokColor, YouTubeColor, LinkedInColor, TeamsColor, BloggerColor
+    VoiceColor,
+    AndroidColor, EmailColor, FacebookColor, FacebookMessengerColor, InstagramColor, IosColor, SmsColor, TelegramColor, TwitterColor, WebMessengerColor, WhatsappColor, TikTokColor, YouTubeColor, LinkedInColor, TeamsColor, BloggerColor
 } from "icons";
 import { TemplateBreadcrumbs } from "components";
 

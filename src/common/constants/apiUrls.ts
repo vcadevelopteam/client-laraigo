@@ -26,6 +26,14 @@ const APIS_URL = {
         INSTAGRAMAPP: '1924971937716955',
         CULQIKEY: 'pk_test_041501e753dcb2f9'
     },
+    CLARO: {
+        API: 'https://claroapi.laraigo.com/api',
+        WS: 'https://clarobroker.laraigo.com',
+        CHATFLOW: 'https://clarobackend.laraigo.com/zyxme/chatflow',
+        FACEBOOKAPP: '1980305408682607',
+        INSTAGRAMAPP: '1924971937716955',
+        CULQIKEY: 'pk_test_041501e753dcb2f9'
+    },
     LOCAL: {
         API: 'http://localhost:6065/api',
         //API: 'https://apix.laraigo.com/api',

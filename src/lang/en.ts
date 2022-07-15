@@ -1789,6 +1789,8 @@ const translation: LangKeys = {
     report_interaction_personcommunicationchannel: 'Person communication channel',
     report_interaction_email: 'Email',
     report_interaction_ticketgroup: 'Group',
+    propertywaitingtimecustomer: "Time to send a message alert to the advisor waiting for the client",
+    propertywaitingtimecustomermessage: "Customer waiting time alert message to advisor",
 
     least_user_or_group: 'Should choose at least user or group',
     NINGUNO: "NINGUNO",
@@ -3672,6 +3674,15 @@ const translation: LangKeys = {
     validate_time_filter: "Please select a date range less than one month.",
     go_ticket: 'Go to ticket',
 
+    productcatalog_title: 'Title',
+    productcatalog_website: 'Website',
+    productcatalog_currency: 'Currency',
+    productcatalog_condition: 'Condition',
+    productcatalog_contentid: 'Content ID',
+    productcatalog_facebookcatalogid: 'Facebook Catalog ID',
+    productcatalog_facebookproductid: 'Facebook Product ID',
+    productcatalog_facebookcatalogname: 'Facebook Catalog Name',
+
     channel_facebook: 'Facebook',
     channel_messenger: 'Messenger',
     channel_instagram: 'Instagram',
@@ -3715,15 +3726,6 @@ const translation: LangKeys = {
     subscription_channellimit: "The maximum amount of channels is:",
     subscription_nolimit: "No limit",
 
-    productcatalog_title: 'Title',
-    productcatalog_website: 'Website',
-    productcatalog_currency: 'Currency',
-    productcatalog_condition: 'Condition',
-    productcatalog_contentid: 'Content ID',
-    productcatalog_facebookcatalogid: 'Facebook Catalog ID',
-    productcatalog_facebookproductid: 'Facebook Product ID',
-    productcatalog_facebookcatalogname: 'Facebook Catalog Name',
-
     voicechannel_capacities: 'Capacities',
     voicechannel_recording: 'Recordings',
     voicechannel_recordingtooltip: 'Store and save messages. 15 seconds per $0.3',
@@ -3731,6 +3733,16 @@ const translation: LangKeys = {
     voicechannel_smstooltip: 'Allows SMS messages. 1 message per $0.00',
     voicechannel_outbound: 'Outbound',
     voicechannel_outboundtooltip: 'Allows outbound calls. 1 call per $0.00',
+    voicechannel_recordingquality: 'Recording quality',
+    voicechannel_recordingmonth3: '3 months of storage',
+    voicechannel_recordingmonth6: '6 months of storage',
+    voicechannel_recordingyear1: '1 year of storage',
+    voicechannel_recordingyear2: '2 years of storage',
+    voicechannel_recordingyear3: '3 years of storage',
+    voicechannel_recordingdefault: 'Default',
+    voicechannel_recordinghd: 'HD - High Definition',
+    voicechannel_recordinglossless: 'Lossless',
+    voicechannel_recordingalert: 'The purchase of a new number and the activation of certain capacities result in extra charges in your monthly plan. For more information please visit our price list: ',
 
     messagetemplate_sms: 'SMS',
     messagetemplate_hsm: 'HSM',
@@ -3753,16 +3765,6 @@ const translation: LangKeys = {
     messagetemplate_changetoview: 'View HTML template',
 
     validationchar: 'This field has a minimum and maximum amount of characters',
-    voicechannel_recordingquality: 'Recording quality',
-    voicechannel_recordingmonth3: '3 months of storage',
-    voicechannel_recordingmonth6: '6 months of storage',
-    voicechannel_recordingyear1: '1 year of storage',
-    voicechannel_recordingyear2: '2 years of storage',
-    voicechannel_recordingyear3: '3 years of storage',
-    voicechannel_recordingdefault: 'Default',
-    voicechannel_recordinghd: 'HD - High Definition',
-    voicechannel_recordinglossless: 'Lossless',
-    voicechannel_recordingalert: 'The purchase of a new number and the activation of certain capacities result in extra charges in your monthly plan. For more information please visit our price list: ',
 };
 
 const enResource: ResourceLanguage = {

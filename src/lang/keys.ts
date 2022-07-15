@@ -1614,6 +1614,8 @@ export const langKeys = {
     ticket_ticketgroup: 'ticket_ticketgroup',
     ticket_communicationchanneldescription: 'ticket_communicationchanneldescription',
     ticket_name: 'ticket_name',
+    propertywaitingtimecustomer: "propertywaitingtimecustomer",
+    propertywaitingtimecustomermessage: "propertywaitingtimecustomermessage",
     ticket_canalpersonareferencia: 'ticket_canalpersonareferencia',
     ticket_fechainicio: 'ticket_fechainicio',
     ticket_fechafin: 'ticket_fechafin',
@@ -3653,6 +3655,15 @@ export const langKeys = {
 
     go_ticket: 'go_ticket',
 
+    productcatalog_title: 'productcatalog_title',
+    productcatalog_website: 'productcatalog_website',
+    productcatalog_currency: 'productcatalog_currency',
+    productcatalog_condition: 'productcatalog_condition',
+    productcatalog_contentid: 'productcatalog_contentid',
+    productcatalog_facebookcatalogid: 'productcatalog_facebookcatalogid',
+    productcatalog_facebookproductid: 'productcatalog_facebookproductid',
+    productcatalog_facebookcatalogname: 'productcatalog_facebookcatalogname',
+
     channel_facebook: 'channel_facebook',
     channel_messenger: 'channel_messenger',
     channel_instagram: 'channel_instagram',
@@ -3696,15 +3707,6 @@ export const langKeys = {
     subscription_channellimit: "subscription_channellimit",
     subscription_nolimit: "subscription_nolimit",
 
-    productcatalog_title: 'productcatalog_title',
-    productcatalog_website: 'productcatalog_website',
-    productcatalog_currency: 'productcatalog_currency',
-    productcatalog_condition: 'productcatalog_condition',
-    productcatalog_contentid: 'productcatalog_contentid',
-    productcatalog_facebookcatalogid: 'productcatalog_facebookcatalogid',
-    productcatalog_facebookproductid: 'productcatalog_facebookproductid',
-    productcatalog_facebookcatalogname: 'productcatalog_facebookcatalogname',
-
     voicechannel_capacities: 'voicechannel_capacities',
     voicechannel_recording: 'voicechannel_recording',
     voicechannel_recordingtooltip: 'voicechannel_recordingtooltip',
@@ -3712,6 +3714,16 @@ export const langKeys = {
     voicechannel_smstooltip: 'voicechannel_smstooltip',
     voicechannel_outbound: 'voicechannel_outbound',
     voicechannel_outboundtooltip: 'voicechannel_outboundtooltip',
+    voicechannel_recordingquality: 'voicechannel_recordingquality',
+    voicechannel_recordingmonth3: 'voicechannel_recordingmonth3',
+    voicechannel_recordingmonth6: 'voicechannel_recordingmonth6',
+    voicechannel_recordingyear1: 'voicechannel_recordingyear1',
+    voicechannel_recordingyear2: 'voicechannel_recordingyear2',
+    voicechannel_recordingyear3: 'voicechannel_recordingyear3',
+    voicechannel_recordingdefault: 'voicechannel_recordingdefault',
+    voicechannel_recordinghd: 'voicechannel_recordinghd',
+    voicechannel_recordinglossless: 'voicechannel_recordinglossless',
+    voicechannel_recordingalert: 'voicechannel_recordingalert',
 
     messagetemplate_sms: 'messagetemplate_sms',
     messagetemplate_hsm: 'messagetemplate_hsm',
@@ -3733,17 +3745,7 @@ export const langKeys = {
     messagetemplate_changetoeditor: 'messagetemplate_changetoeditor',
     messagetemplate_changetoview: 'messagetemplate_changetoview',
 
-    validationchar: 'validationchar',
-    voicechannel_recordingquality: 'voicechannel_recordingquality',
-    voicechannel_recordingmonth3: 'voicechannel_recordingmonth3',
-    voicechannel_recordingmonth6: 'voicechannel_recordingmonth6',
-    voicechannel_recordingyear1: 'voicechannel_recordingyear1',
-    voicechannel_recordingyear2: 'voicechannel_recordingyear2',
-    voicechannel_recordingyear3: 'voicechannel_recordingyear3',
-    voicechannel_recordingdefault: 'voicechannel_recordingdefault',
-    voicechannel_recordinghd: 'voicechannel_recordinghd',
-    voicechannel_recordinglossless: 'voicechannel_recordinglossless',
-    voicechannel_recordingalert: 'voicechannel_recordingalert',
+    validationchar: 'validationchar'
 };
 
 export type LangKeys = typeof langKeys;

@@ -24,6 +24,7 @@ export interface IState {
     showcall: boolean;
     phoneNumber: string;
     onhold: boolean;
+    onholddate: string;
     statusCall: string;
     requestGetMaximumConsumption: IRequest;
     requestTransferAccountBalance: IRequest;
@@ -44,6 +45,7 @@ export const initialState: IState = {
     showcall: false,
     phoneNumber: "",
     onhold: false,
+    onholddate: new Date().toISOString(),
     statusCall: "DISCONNECTED",
     requestGetMaximumConsumption: { ...initialCommon, data: null, loading: false, error: false },
     requestTransferAccountBalance: { ...initialCommon, data: null, loading: false, error: false },
