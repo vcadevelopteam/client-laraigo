@@ -155,6 +155,11 @@ export interface VoxImplantPhoneChannel {
     cost: number;
     costvca: string;
     costinstallation: number;
+    recording: boolean,
+    sms: boolean,
+    outbound: boolean,
+    recordingstorage: string,
+    recordingquality: string,
     build: (v: Omit<VoxImplantPhoneChannel, 'build'>) => IRequestBody;
 }
 

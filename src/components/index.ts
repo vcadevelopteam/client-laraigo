@@ -1,5 +1,6 @@
 export { default as SearchField } from './fields/SearchField';
 export { default as IOSSwitch } from './fields/IOSSwitch';
+export { default as IOSSwitchPurple } from './fields/IOSSwitchPurple';
 export { default as Chat } from './inbox/InboxPanel';
 export { default as ReplyPanel } from './inbox/ReplyPanel';
 export { default as DialogInteractions } from './inbox/DialogInteractions';

@@ -3698,6 +3698,14 @@ export const langKeys = {
     productcatalog_facebookcatalogid: 'productcatalog_facebookcatalogid',
     productcatalog_facebookproductid: 'productcatalog_facebookproductid',
     productcatalog_facebookcatalogname: 'productcatalog_facebookcatalogname',
+
+    voicechannel_capacities: 'voicechannel_capacities',
+    voicechannel_recording: 'voicechannel_recording',
+    voicechannel_recordingtooltip: 'voicechannel_recordingtooltip',
+    voicechannel_sms: 'voicechannel_sms',
+    voicechannel_smstooltip: 'voicechannel_smstooltip',
+    voicechannel_outbound: 'voicechannel_outbound',
+    voicechannel_outboundtooltip: 'voicechannel_outboundtooltip',
 };
 
 export type LangKeys = typeof langKeys;
