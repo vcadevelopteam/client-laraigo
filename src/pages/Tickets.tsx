@@ -1016,6 +1016,12 @@ const Tickets = () => {
                 type: 'time'
             },
             {
+                Header: t(langKeys.ticket_tiempopromediorespuestapersona),
+                helpText: t(langKeys.ticket_tiempopromediorespuestapersona_help),
+                accessor: 'tiempopromediorespuestapersona',
+                type: 'time'
+            },
+            {
                 Header: t(langKeys.ticket_tiempoprimeraasignacion),
                 helpText: t(langKeys.ticket_tiempoprimeraasignacion_help),
                 accessor: 'tiempoprimeraasignacion',
