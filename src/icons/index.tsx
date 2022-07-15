@@ -67,6 +67,7 @@ export { ReactComponent as DownloadIcon } from 'icons/download2.svg';
 export { ReactComponent as SearchIcon } from './shearch.svg';
 export { ReactComponent as BellNotificationIcon } from './bell-notification.svg';
 export { ReactComponent as ArrowDropDownIcon } from './arrow-drop-down.svg';
+export { ReactComponent as VoiceChannelIcon } from './canal_de_voz.svg';
 export { ReactComponent as PhoneIcon } from './phone.svg';
 export { ReactComponent as PortfolioIcon } from './portfolio.svg';
 export { ReactComponent as PinLocationIcon } from './pin_location.svg';
