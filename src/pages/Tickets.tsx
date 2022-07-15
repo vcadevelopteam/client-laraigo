@@ -86,13 +86,13 @@ const DialogCloseticket: React.FC<{ fetchData: () => void, setOpenModal: (param:
     useEffect(() => {
         if (waitClose) {
             if (!closingRes.loading && !closingRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_close_ticket) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_close_ticket) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 fetchData()
                 setWaitClose(false);
             } else if (closingRes.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_unexpected_error) }))
                 dispatch(showBackdrop(false));
                 setWaitClose(false);
             }
@@ -182,7 +182,7 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
         if (waitReassign) {
             if (!reassigningRes.loading && !reassigningRes.error) {
                 const touserid = getValues('newUserGroup') !== "" && getValues('newUserId') === 0 ? 3 : getValues('newUserId');
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_reasign_ticket) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_reasign_ticket) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitReassign(false);
@@ -224,7 +224,7 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
                 })))
                 fetchData();
             } else if (reassigningRes.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_unexpected_error) }))
                 dispatch(showBackdrop(false));
                 setWaitReassign(false);
             }
@@ -257,7 +257,7 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
 
     const onSubmit = handleSubmit((data) => {
         if (data.newUserId === 0 && !data.newUserGroup) {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.least_user_or_group) }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.least_user_or_group) }))
             return;
         }
         const listConversation = rowWithDataSelected.map(x => x.conversationid).join();
@@ -326,14 +326,14 @@ const DialogTipifications: React.FC<{ fetchData: () => void, setOpenModal: (para
     useEffect(() => {
         if (waitTipify) {
             if (!tipifyRes.loading && !tipifyRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_tipify_ticket) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_tipify_ticket) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitTipify(false);
                 fetchData()
             } else if (tipifyRes.error) {
                 const message = t(tipifyRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message }))
+                dispatch(showSnackbar({ show: true, severity: "error", message }))
                 dispatch(showBackdrop(false));
                 setWaitTipify(false);
             }
@@ -603,22 +603,24 @@ const DialogLoadTickets: React.FC<{
     const [waitUpload, setWaitUpload] = useState(false);
     const mainResult = useSelector(state => state.main);
     const importRes = useSelector(state => state.inbox.triggerImportTicket)
-    const [file, setFile] = useState<File | null>(null);
 
-    const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<{
+    const [channelsite, setChannelsite] = useState<string>('');
+    const [fileList, setFileList] = useState<File[]>([])
+
+    const { handleSubmit } = useForm<{
         filename: string;
     }>();
 
     useEffect(() => {
         if (waitUpload) {
             if (!importRes.loading && !importRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_import) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_import) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitUpload(false);
                 fetchData();
             } else if (importRes.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_unexpected_error) }))
                 dispatch(showBackdrop(false));
                 setWaitUpload(false);
             }
@@ -627,52 +629,52 @@ const DialogLoadTickets: React.FC<{
 
     useEffect(() => {
         if (openModal) {
-            reset({
-                filename: '',
-            })
-            register('filename', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+            setChannelsite('');
+            setFileList([]);
         }
     }, [openModal])
 
     const onSubmit = handleSubmit(async () => {
-        let data: any = [];
-        if (file?.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
-            data = await uploadExcel(file);
-        }
-        else if (file?.type === 'text/csv') {
-            data = await uploadCSV(file);
-        }
-        if (data.length > 0) {
-            dispatch(importTicket({data}));
-            dispatch(showBackdrop(true));
-            setWaitUpload(true);
+        if (!!channelsite) {
+            if (!!fileList && fileList?.length > 0) {
+                const fd = new FormData();
+                fd.append('channelsite', channelsite);
+                for (let i = 0; i < fileList.length; i++) {
+                    fd.append(fileList[i].name, fileList[i], fileList[i].name);
+                }
+                dispatch(importTicket(fd));
+                dispatch(showBackdrop(true));
+                setWaitUpload(true);
+            }
+            else {
+                dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.no_files_selected) }))
+            }
         }
         else {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.file_without_data) }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.file_without_data) }))
         }
+        
     });
     
     const handleUpload = async (files: any) => {
-        const file = files[0];
-        if (file?.type === 'text/csv') {
-            setValue('filename', file?.name);
-            setFile(file);
+        if (Array.from<File>(files).length > 10) {
+            dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.max_limit_file_per_upload, {n: 10}) }))
         }
         else {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.invalid_file) }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.invalid_file) }))
         }
     }
 
     const handleTemplate = () => {
         const data = [
-            {}, // mainResult?.multiData?.data?.[0]?.data.reduce((a,d) => ({...a, [d.communicationchannelsite]: d.communicationchanneldesc}),{}),
+            {},
             {},
             {},
             {},
             {'CLIENT': 'CLIENT', 'BOT': 'BOT'}
         ];
         const header = [
-            'channel',
+            'date',
             'personname',
             'personphone',
             'interactiontext',
@@ -701,20 +703,24 @@ const DialogLoadTickets: React.FC<{
                     gap: '10px'
                 }}
             >
-                <FieldEdit
+                <FieldSelect
+                    label={t(langKeys.channel)}
                     className={classes.flex_1}
-                    label={t(langKeys.database)}
-                    valueDefault={getValues('filename')}
-                    error={errors.filename?.message}
-                    disabled={true}
+                    valueDefault={channelsite}
+                    onChange={(value) => setChannelsite(value?.communicationchannelsite)}
+                    variant="outlined"
+                    data={mainResult?.multiData?.data[0]?.data.sort((a, b) => (a.communicationchanneldesc || "").localeCompare(b.communicationchanneldesc)) || []}
+                    optionDesc="communicationchanneldesc"
+                    optionValue="communicationchannelid"
                 />
                 <input
                     name="file"
-                    accept="text/csv"
+                    accept="text/csv,.zip,.rar,.xls,.xlsx"
                     id="laraigo-upload-csv-file"
                     type="file"
                     style={{ display: 'none' }}
                     onChange={(e) => handleUpload(e.target.files)}
+                    multiple
                 />
                 <label htmlFor="laraigo-upload-csv-file">
                     <Button
@@ -726,6 +732,17 @@ const DialogLoadTickets: React.FC<{
                     >{t(langKeys.select)}
                     </Button>
                 </label>
+            </div>
+            <div style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "5px",
+                marginTop: "10px"
+            }}>
+                {fileList && fileList?.map((x, i) => (
+                        <div>{i + 1}. {x.name}</div>
+                    )
+                )}
             </div>
         </DialogZyx>)
 }
@@ -785,7 +802,7 @@ const Tickets = () => {
                 setWaitDownloadRecord(false)
             } else if (getCallRecordRes.error) {
                 const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.ticket_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitDownloadRecord(false)
             }
         }
@@ -1128,7 +1145,7 @@ const Tickets = () => {
                 window.open(resExportData.url, '_blank');
             } else if (resExportData.error) {
                 const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }

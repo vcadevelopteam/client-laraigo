@@ -146,14 +146,14 @@ const CulqiModal: FC<CulqiModalProps> = ({
 
     useEffect(() => {
         if (!culqiSelector.loading && culqiSelector.data) {
-            dispatch(showSnackbar({ show: true, success: true, message: '' + (successmessage ? successmessage : culqiSelector.message) }))
+            dispatch(showSnackbar({ show: true, severity: "success", message: '' + (successmessage ? successmessage : culqiSelector.message) }))
             dispatch(showBackdrop(false));
             console.log(culqiSelector.data);
             dispatch(resetCharge());
             callbackOnSuccess && callbackOnSuccess()
         }
         else if (culqiSelector.error) {
-            dispatch(showSnackbar({ show: true, success: false, message: '' + culqiSelector.message }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: '' + culqiSelector.message }))
             dispatch(showBackdrop(false));
             console.log(culqiSelector.data);
             dispatch(resetCharge());

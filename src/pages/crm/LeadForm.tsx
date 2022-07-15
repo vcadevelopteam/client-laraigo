@@ -302,7 +302,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         if (phases.error) {
             const errormessage = t(phases.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
-                success: false,
+                severity: "error",
                 message: errormessage,
                 show: true,
             }));
@@ -324,7 +324,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         if (lead.error) {
             const errormessage = t(lead.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
-                success: false,
+                severity: "error",
                 message: errormessage,
                 show: true,
             }));
@@ -368,7 +368,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         if (advisers.error) {
             const errormessage = t(advisers.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
-                success: false,
+                severity: "error",
                 message: errormessage,
                 show: true,
             }));
@@ -380,13 +380,13 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         if (saveLead.error) {
             const errormessage = t(saveLead.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
-                success: false,
+                severity: "error",
                 message: errormessage,
                 show: true,
             }));
         } else if (saveLead.success === true) {
             dispatch(showSnackbar({
-                success: true,
+                severity: "success",
                 message: "Se guardo la oportunidad con éxito",
                 show: true,
             }));
@@ -399,13 +399,13 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         if (archiveLeadProcess.error) {
             const errormessage = t(archiveLeadProcess.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
-                success: false,
+                severity: "error",
                 message: errormessage,
                 show: true,
             }));
         } else if (archiveLeadProcess.success) {
             dispatch(showSnackbar({
-                success: true,
+                severity: "success",
                 message: "Se cerró la oportunidad con éxito",
                 show: true,
             }));
@@ -419,7 +419,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             const errormessage = t(leadActivities.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 message: errormessage,
-                success: false,
+                severity: "error",
                 show: true,
             }));
         }
@@ -431,13 +431,13 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             const errormessage = t(saveActivity.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 message: errormessage,
-                success: false,
+                severity: "error",
                 show: true,
             }));
         } else if (saveActivity.success) {
             dispatch(showSnackbar({
                 message: "Se guardó la actividad",
-                success: true,
+                severity: "success",
                 show: true,
             }));
             dispatch(getLeadActivities(leadActivitySel(match.params.id)));
@@ -452,7 +452,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             const errormessage = t(leadNotes.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 message: errormessage,
-                success: false,
+                severity: "error",
                 show: true,
             }));
         }
@@ -464,13 +464,13 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             const errormessage = t(saveNote.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 message: errormessage,
-                success: false,
+                severity: "error",
                 show: true,
             }));
         } else if (saveNote.success) {
             dispatch(showSnackbar({
                 message: "Se registró la nota",
-                success: true,
+                severity: "success",
                 show: true,
             }));
             dispatch(getLeadLogNotes(leadLogNotesSel(match.params.id)));
@@ -484,7 +484,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             const errormessage = t(leadHistory.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 message: errormessage,
-                success: false,
+                severity: "error",
                 show: true,
             }));
         }
@@ -496,7 +496,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             const errormessage = t(updateLeadTagProcess.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 message: errormessage,
-                success: false,
+                severity: "error",
                 show: true,
             }));
         } else if (updateLeadTagProcess.success && edit === true) {
@@ -510,7 +510,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             const errormessage = t(leadProductsDomain.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 message: errormessage,
-                success: false,
+                severity: "error",
                 show: true,
             }));
         }
@@ -1129,7 +1129,7 @@ const SelectPersonModal: FC<SelectPersonModalProps> = ({ open, onClose, onClick 
             const errormessage = t(personList.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 message: errormessage,
-                success: false,
+                severity: "error",
                 show: true,
             }));
         } else {
@@ -1645,7 +1645,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
         if (saveActivity.success) {
             dispatch(showSnackbar({
                 message: "Se registró la actividad",
-                success: true,
+                severity: "success",
                 show: true,
             }));
             dispatch(getLeadActivities(leadActivitySel(leadid)));
@@ -2319,13 +2319,13 @@ const MarkDoneModal: FC<MarkDoneModalProps> = ({ open, onClose, onSubmit, onNext
             const errormessage = t(markDoneProcess.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 message: errormessage,
-                success: false,
+                severity: "error",
                 show: true,
             }));
         } else if (markDoneProcess.success) {
             dispatch(showSnackbar({
                 message: "Se marcó como hecho la actividad",
-                success: true,
+                severity: "success",
                 show: true,
             }));
             onClose();

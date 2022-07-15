@@ -232,8 +232,8 @@ export const resetMassiveCloseTicket = (): IActionCall => ({ type: actionTypes.M
 export const resetReassignTicket = (): IActionCall => ({ type: actionTypes.REASSIGN_TICKET_RESET });
 
 
-export const importTicket = (params: IImportTicket): IActionCall => ({
-    callAPI: () => InboxService.importTicket(params),
+export const importTicket = (data: any): IActionCall => ({
+    callAPI: () => InboxService.importTicket(data),
     types: {
         loading: actionTypes.IMPORT_TICKET,
         success: actionTypes.IMPORT_TICKET_SUCCESS,

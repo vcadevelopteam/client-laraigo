@@ -67,7 +67,7 @@ export const insertClassificationConversation = (conversationid: number, classif
 
 export const getTickets = (userid: number | null): IRequestBody => ({
     method: "UFN_CONVERSATION_SEL_TICKETSBYUSER",
-    key: "UFN_CONVERSATION_SEL_TICKETSBYUSER",
+    key: `UFN_CONVERSATION_SEL_TICKETSBYUSER_${userid}`,
     parameters: { ...(userid && { agentid: userid }) }
 })
 
@@ -3109,5 +3109,13 @@ export const getHSMHistoryReport = ({ campaign = "", date }: Dictionary): IReque
         date,
         campaignname: campaign,
         offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
+
+export const getPropertiesIncludingName = (propertyname: string): IRequestBody => ({
+    method: "UFN_PROPERTY_SEL_BY_INCLUDE_NAME",
+    key: "UFN_PROPERTY_SEL_BY_INCLUDE_NAME",
+    parameters: {
+        propertyname
     }
 })

@@ -3,12 +3,12 @@ import { initialState, IState } from "./reducer";
 import { toTime24HR, convertLocalDate } from 'common/helpers';
 import { keys } from 'common/constants';
 
-const getGroupInteractions = (interactions: IInteraction[], hideLogs: boolean = false): IGroupInteraction[] => {
+const getGroupInteractions = (interactions: IInteraction[], hideLogs: boolean = false, returnHidden: boolean = false): IGroupInteraction[] => {
 
     const listImages = interactions.filter(x => x.interactiontype.includes("image")).map(x => x.interactiontext)
     let indexImage = 0;
 
-    return (hideLogs ? interactions.filter(x => x.interactiontype !== "LOG") : cleanLogsReassignedTask(interactions)).reduce((acc: any, item: IInteraction) => {
+    return (hideLogs ? interactions.filter(x => x.interactiontype !== "LOG") : cleanLogsReassignedTask(interactions, returnHidden)).reduce((acc: any, item: IInteraction) => {
         item.indexImage = indexImage;
         item.listImage = listImages;
         item.onlyTime = toTime24HR(convertLocalDate(item.createdate, false).toLocaleTimeString())
@@ -314,16 +314,23 @@ export const getTickets = (state: IState): IState => ({
     ticketSelected: null
 });
 
-export const getTicketsSuccess = (state: IState, action: IAction): IState => ({
-    ...state,
-    isOnBottom: null,
-    ticketList: {
-        data: action.payload.data || [],
-        count: action.payload.count,
-        loading: false,
-        error: false,
-    },
-});
+export const getTicketsSuccess = (state: IState, action: IAction): IState => {
+    console.log("action.payload.key", action.payload.key.split("_").pop())
+    if ((state.agentSelected?.userid + "") === action.payload.key.split("_")?.pop()) {
+        return {
+            ...state,
+            isOnBottom: null,
+            ticketList:  {
+                data: action.payload.data || [],
+                count: action.payload.count,
+                loading: false,
+                error: false,
+            },
+        }
+    } else {
+        return state
+    }
+};
 
 export const getTicketsFailure = (state: IState, action: IAction): IState => ({
     ...state,
@@ -440,6 +447,7 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
                     {
                         ...data,
                         lastconversationdate: data.usertype === "client" ? (data.lastconversationdate || new Date().toISOString()) : null,
+                        personlastreplydate: data.usertype === "client" ? (data.personlastreplydate || new Date().toISOString()) : null,
                         firstconversationdate: data.firstconversationdate || new Date().toISOString(),
                         isAnswered: data.userid === 2
                     },
@@ -453,6 +461,7 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
                     {
                         ...conversation,
                         lastconversationdate: data.usertype === "client" ? (conversation.lastconversationdate || new Date().toISOString()) : null,
+                        personlastreplydate: data.usertype === "client" ? (conversation.personlastreplydate || new Date().toISOString()) : conversation.personlastreplydate,
                         lastreplyuser: data.usertype === "agent" ? new Date().toISOString() : conversation.lastreplyuser,
                         countnewmessages: data.usertype === "agent" ? 0 : conversation.countnewmessages + 1,
                         lastmessage: data.typemessage === "text" ? data.lastmessage : data.typemessage.toUpperCase(),
@@ -751,7 +760,7 @@ export const getInteractionsExtra = (state: IState): IState => ({
 export const getInteractionsExtraSuccess = (state: IState, action: IAction): IState => ({
     ...state,
     interactionExtraList: {
-        data: getGroupInteractions(cleanLogsReassignedTask(action.payload.data || [], true)),
+        data: getGroupInteractions(cleanLogsReassignedTask(action.payload.data || [], true), false, true),
         count: action.payload.count,
         loading: false,
         error: false,

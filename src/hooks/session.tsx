@@ -20,7 +20,7 @@ export function useForcedDisconnection(callback?: () => void) {
             dispatch(showSnackbar({
                 message: t(key),
                 show: true,
-                success: false,
+                severity: "error"
             }));
             dispatch(resetForcedDisconnection());
             callback?.();

@@ -121,12 +121,12 @@ export const RecoverPassword: FC = () => {
     useEffect(() => {
         if (waitSave) {
             if (!changeResponse.loading && !changeResponse.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(changeResponse.msg || langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(changeResponse.msg || langKeys.successful_register) }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
                 setValid(false);
             } else if (changeResponse.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(changeResponse.msg || 'error_unexpected_error') }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(changeResponse.msg || 'error_unexpected_error') }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
                 setValid(false);

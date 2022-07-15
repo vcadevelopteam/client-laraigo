@@ -112,7 +112,7 @@ const Dashboard: FC = () => {
             const error = t(dashboardtemplates.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 message: error,
-                success: false,
+                severity: "error",
                 show: true,
             }));
         }else{
@@ -128,14 +128,14 @@ const Dashboard: FC = () => {
             const error = t(dashboardtemplateDelete.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 message: error,
-                success: false,
+                severity: "error",
                 show: true,
             }));
             dispatch(resetDeleteDashboardTemplate());
         } else if (dashboardtemplateDelete.success) {
             dispatch(showSnackbar({
                 message: "Se eliminó el dashboard",
-                success: true,
+                severity: "success",
                 show: true,
             }));
             dispatch(getCollection(getDashboardTemplateSel()));

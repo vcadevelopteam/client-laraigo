@@ -58,6 +58,9 @@ export interface IState {
     showModalClose: number;
     outboundData: IObjectState<Dictionary>;
     forceddisconnect: IObjectState<{ userid: number, code: "SESSION_EXPIRED" | "OTHER_PC_CONNECTION" }>;
+    alertTMO: {
+        [key: string]: number
+    }
 }
 
 export const initialState: IState = {
@@ -96,7 +99,8 @@ export const initialState: IState = {
     isFiltering: false,
     outboundData: initialObjectState,
     forceddisconnect: initialObjectState,
-    showModalClose: 0
+    showModalClose: 0,
+    alertTMO: {}
 };
 
 export default createReducer<IState>(initialState, {

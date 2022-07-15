@@ -330,7 +330,7 @@ const Settings: FC = () => {
             dispatch(showSnackbar({
                 message: propertySettings.message || 'Error',
                 show: true,
-                success: false,
+                severity: "error"
             }));
         }
     }, [propertySettings, dispatch]);
@@ -341,7 +341,7 @@ const Settings: FC = () => {
             dispatch(showSnackbar({
                 message: setting.message || 'Error',
                 show: true,
-                success: false,
+                severity: "error"
             }));
         }
     }, [setting, dispatch]);

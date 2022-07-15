@@ -166,18 +166,18 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
 
     const uploadData = (data: any) => {
         if (data.length === 0) {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.file_without_data)}));
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.file_without_data)}));
             return null;
         }
         if (data.length > 100000) {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.too_many_records)}));
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.too_many_records)}));
             return null;
         }
         let actualHeaders = jsonData.length > 0 ? Object.keys(jsonData[0]) : null;
         let newHeaders = Object.keys(data[0]);
         if (actualHeaders) {
             if (!actualHeaders.every(h => newHeaders?.includes(h))) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.file_incompatbile_with_previous_one)}));
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.file_incompatbile_with_previous_one)}));
                 return null;
             }
         }
@@ -328,7 +328,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     const changeStep = (step: number) => {
         if (Object.keys(selectedRows).length === 0) {
             if (step === 2) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.no_record_selected)}));
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_record_selected)}));
             }
             return false;
         }

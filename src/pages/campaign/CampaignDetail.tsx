@@ -166,10 +166,10 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
 
     const checkValidation = () => {
         if (!frameProps.valid[0]) {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.required_fields_missing)}));
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.required_fields_missing)}));
         }
         else if (!frameProps.valid[1]) {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.missing_people)}));
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.missing_people)}));
         }
         else {
             let valid = true;
@@ -177,7 +177,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
             && (detaildata?.messagetemplateheader?.type || '') !== ''
             && detaildata.messagetemplateheader?.value === '') {
                 valid = false;
-                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.missing_header)}));
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.missing_header)}));
             }
             let elemVariables: string[] = [];
             let errorIndex = null;
@@ -186,7 +186,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
                 if (errorIndex !== -1) {
                     valid = false;
-                    dispatch(showSnackbar({ show: true, success: false, message: `${t(langKeys.missing_header)} ${vars[errorIndex]}` }));
+                    dispatch(showSnackbar({ show: true, severity: "error", message: `${t(langKeys.missing_header)} ${vars[errorIndex]}` }));
                 }
                 elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
             }
@@ -195,7 +195,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
                 if (errorIndex !== -1) {
                     valid = false;
-                    dispatch(showSnackbar({ show: true, success: false, message: `${t(langKeys.invalid_parameter)} ${vars[errorIndex]}` }));
+                    dispatch(showSnackbar({ show: true, severity: "error", message: `${t(langKeys.invalid_parameter)} ${vars[errorIndex]}` }));
                 }
                 elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
             }
@@ -204,7 +204,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
                 if (errorIndex !== -1) {
                     valid = false;
-                    dispatch(showSnackbar({ show: true, success: false, message: `${t(langKeys.invalid_parameter)} ${vars[errorIndex]}` }));
+                    dispatch(showSnackbar({ show: true, severity: "error", message: `${t(langKeys.invalid_parameter)} ${vars[errorIndex]}` }));
                 }
                 elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
             }
@@ -373,7 +373,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     saveCampaignMembers(campaignMembers, executeRes.data[0]?.p_campaignid);
                 } else if (executeRes.error) {
                     const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
-                    dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                     dispatch(showBackdrop(false));
                     setSave('');
                 }
@@ -381,13 +381,13 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
             }
             else if (save === 'MEMBERS') {
                 if (!executeRes.loading && !executeRes.error) {
-                    dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                     fetchData();
                     dispatch(showBackdrop(false));
                     setViewSelected("view-1");
                 } else if (executeRes.error) {
                     const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
-                    dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                     dispatch(showBackdrop(false));
                     setSave('');
                 }

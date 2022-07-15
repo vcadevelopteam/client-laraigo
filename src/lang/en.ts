@@ -979,6 +979,8 @@ const translation: LangKeys = {
     errorneedvalues: "The list of values ​​must have at least one element",
     campaign_in_execution: 'Campaign in execution',
     file_without_data: 'File without data',
+    no_channel_selected: "No channel selected",
+    no_files_selected: "No files selected",
     confirmation_changepassword: "Do you want to change the password?",
     too_many_records: 'Too many records',
     file_incompatbile_with_previous_one: 'File incompatbile with previous one',
@@ -1306,6 +1308,7 @@ const translation: LangKeys = {
     error_excess_users: "The plan change cannot be made because the number of configured users exceeds those supported by the selected plan",
     error_channels_limit: "The maximum number of channels has been reached, upgrade your plan to continue",
     error_users_limit: "The maximum number of users was reached({{limit}}), upgrade your plan to continue",
+    error_limit_exceeded: "Limit exceeded",
     timeofday: "Time of day",
     calendarview: "Calendar view",
     linkcopysuccesfull: "Link copied successfully",
@@ -2119,6 +2122,7 @@ const translation: LangKeys = {
     "personalizedreport_conversation.pausedurationbeforeuser": "conversation pause duration before user",
     "personalizedreport_conversation.pausedurationafteruser": "conversation pause duration after user",
     "personalizedreport_conversation.personfirstreplytime": "conversation person first reply time",
+    "personalizedreport_conversation.callanswereddate": "conversation call answered date",
     "personalizedreport_corp.description": "corporation description",
     "personalizedreport_corp.status": "corporation status",
     "personalizedreport_corp.type": "corporation type",
@@ -2187,6 +2191,7 @@ const translation: LangKeys = {
     "personalizedreport_person.changedate": "person change date",
     "personalizedreport_person.changeby": "person change by",
     "personalizedreport_person.name": "person name",
+    "personalizedreport_person.realname": "person real name",
     "personalizedreport_person.referringperson": "person referring person",
     "personalizedreport_person.referringpersonid": "person referring personid",
     "personalizedreport_person.persontype": "person person type",
@@ -2754,6 +2759,8 @@ const translation: LangKeys = {
 
     channellimit: 'Reached maximum number of channels, upgrade your plan to continue',
     userlimit: 'Reached maximum number of users({{limit}}), upgrade your plan to continue',
+    max_limit: 'Max limit {{n}}',
+    max_limit_file_per_upload: 'Max limit {{n}} files per upload',
     type_activitylead_call: 'Call',
     type_activitylead_automated: 'Automate message',
     type_activitylead_automatedmail: 'Automate message email',
@@ -3652,7 +3659,9 @@ const translation: LangKeys = {
     periodreportvoip: 'VoIP Calls',
     periodreportrecording: 'Call Recording',
     periodreportother: 'Others',
-    T_VOICECHANNEL: 'VOICE CHANNEL'
+    T_VOICECHANNEL: 'VOICE CHANNEL',
+    validate_time_filter: "Please select a date range less than one month.",
+    go_ticket: 'Go to ticket',
 };
 
 const enResource: ResourceLanguage = {

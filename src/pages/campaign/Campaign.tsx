@@ -188,13 +188,13 @@ export const Campaign: FC = () => {
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
@@ -206,28 +206,28 @@ export const Campaign: FC = () => {
             if (!auxResult.loading && !auxResult.error) {
                 const { status, enviado, total } = auxResult.data[0];
                 if (status === 'EJECUTANDO') {
-                    dispatch(showSnackbar({ show: true, success: true, message: `${(t(`status_${status}`.toLowerCase()) || "").toUpperCase()}: ${t(langKeys.sent)} ${enviado}/${total}` }))
+                    dispatch(showSnackbar({ show: true, severity: "success", message: `${(t(`status_${status}`.toLowerCase()) || "").toUpperCase()}: ${t(langKeys.sent)} ${enviado}/${total}` }))
                     setWaitStatus(false);
                 }
                 else if (status === 'ACTIVO') {
-                    dispatch(showSnackbar({ show: true, success: true, message: `${capitalize(t(langKeys.sent))}` }))
+                    dispatch(showSnackbar({ show: true, severity: "success", message: `${capitalize(t(langKeys.sent))}` }))
                     fetchData();
                     setWaitStatus(false);
                 }
             } else if (auxResult.error) {
                 const errormessage = t(auxResult.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitStatus(false);
             }
         }
         if (waitStart) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_transaction) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_transaction) }))
                 fetchData();
                 setWaitStart(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitStart(false);
             }
@@ -246,7 +246,7 @@ export const Campaign: FC = () => {
 
     const handleEdit = (row: Dictionary) => {
         if (row.status === 'EJECUTANDO') {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.campaign_in_execution) }));
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.campaign_in_execution) }));
         }
         else {
             setViewSelected("view-2");
@@ -256,7 +256,7 @@ export const Campaign: FC = () => {
 
     const handleDelete = (row: Dictionary) => {
         if (row.status === 'EJECUTANDO') {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.campaign_in_execution) }));
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.campaign_in_execution) }));
         }
         else {
             const callback = () => {
