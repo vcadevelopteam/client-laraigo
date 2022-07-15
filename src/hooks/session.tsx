@@ -28,5 +28,6 @@ export function useForcedDisconnection(callback?: () => void) {
                 dispatch(disconnectVoxi())
             }
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [fd, callback, t, dispatch]);
 }

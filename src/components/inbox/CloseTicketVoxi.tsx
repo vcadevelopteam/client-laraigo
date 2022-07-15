@@ -1,97 +1,21 @@
-import React, { FC, useState, MouseEventHandler, useEffect } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useState, useEffect } from 'react'
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
-import { createStyles, Theme } from '@material-ui/core/styles';
-import { Avatar, Button, DialogActions, DialogTitle, Fab, InputBase, makeStyles, MenuItem, Paper, Tooltip, Typography } from "@material-ui/core";
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import DialpadIcon from '@material-ui/icons/Dialpad';
+import { Button, DialogActions, DialogTitle } from "@material-ui/core";
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'hooks';
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import { useDispatch } from 'react-redux';
-import { makeCall, setModalCall, getHistory, geAdvisors, rejectCall } from 'store/voximplant/actions';
-import TextField from '@material-ui/core/TextField';
-import PhoneForwardedIcon from '@material-ui/icons/PhoneForwarded';
-import PhoneIcon from '@material-ui/icons/Phone';
-import { FieldSelect, AntTab, SearchField, FieldEditMulti } from 'components';
-import { IconButton, Tabs } from '@material-ui/core';
-import { conversationOutboundIns, convertLocalDate, getSecondsUntelNow, getAdvisorListVoxi, insertClassificationConversation, changeStatus, conversationCloseUpd } from 'common/helpers';
+import { FieldSelect, FieldEditMulti } from 'components';
+import { insertClassificationConversation, conversationCloseUpd } from 'common/helpers';
 import { langKeys } from 'lang/keys';
-import ContactPhoneIcon from '@material-ui/icons/ContactPhone';
-import PhoneCallbackIcon from '@material-ui/icons/PhoneCallback';
-import BackspaceIcon from '@material-ui/icons/Backspace';
-import clsx from 'clsx';
 import { execute } from 'store/main/actions';
-import { Dictionary, ICloseTicketsParams, ITicket } from '@types';
-import { ListItemSkeleton } from 'components';
-import { SearchIcon } from 'icons';
+import { Dictionary } from '@types';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import PersonIcon from '@material-ui/icons/Person';
 import { getTipificationLevel2, getTipificationLevel3, resetGetTipificationLevel2, resetGetTipificationLevel3, resetShowModal } from 'store/inbox/actions';
-import { useForm, useFieldArray } from 'react-hook-form';
-
-const useStyles = makeStyles(theme => ({
-    grey: {
-        backgroundColor: '#bdbdbd'
-    },
-    red: {
-        backgroundColor: 'rgb(180, 26, 26)'
-    },
-    tabs: {
-        paddingTop: 10,
-        paddingBottom: 10,
-    },
-    root: {
-        margin: 0,
-        padding: theme.spacing(2),
-        backgroundColor: "#7721ad",
-        color: "white",
-    },
-    closeButton: {
-        position: 'absolute',
-        right: theme.spacing(1),
-        top: theme.spacing(1),
-        color: "white",
-    },
-    numpadbuttons: {
-        width: "50px",
-        height: "50px",
-        borderRadius: "50%",
-        backgroundColor: '#e7e3e3'
-    },
-    gridlinebuttons: {
-        display: "grid",
-        width: "100%",
-        gridTemplateColumns: 'auto [col1] 50px 50px [col2] 50px 50px [col3] 50px auto',
-        paddingBottom: 25
-    },
-    input: {
-        marginLeft: theme.spacing(1),
-        flex: 1,
-    },
-    iconButton: {
-        padding: 10,
-    },
-    rootpaper: {
-        padding: '2px 4px',
-        display: 'flex',
-        alignItems: 'center',
-        height: 35,
-        border: '1px solid #EBEAED',
-        //backgroundColor: (props: any) => props.colorPlaceHolder || '#F9F9FA',
-    },
-    inputPlaceholder: {
-        '&::placeholder': {
-            fontSize: "1rem",
-            fontWeight: 500,
-            color: '#84818A',
-        },
-    },
-}));
-
+import { useForm } from 'react-hook-form';
 
 const CloseTicketVoxi: React.FC = () => {
-    const classes = useStyles();
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [openModal, setOpenModal] = useState(false);

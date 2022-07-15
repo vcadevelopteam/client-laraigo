@@ -3,8 +3,7 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { getasesorvsticketsSel, getTicketvsAdviserExport } from 'common/helpers';
-import { Dictionary, IFetchData } from "@types";
-import { makeStyles } from '@material-ui/core/styles';
+import { IFetchData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { exportData, getCollectionPaginated, resetMultiMain } from 'store/main/actions';

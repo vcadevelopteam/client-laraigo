@@ -1,5 +1,5 @@
 import { apiUrls } from '../../common/constants';
-import { ICloseTicketsParams, ISendHSM, IReassignicketParams, IReplyTicketParams, IConnectAgentUIParams, IMassiveCloseTicketsParams, Dictionary, IImportTicket } from '@types';
+import { ICloseTicketsParams, ISendHSM, IReassignicketParams, IReplyTicketParams, IConnectAgentUIParams, IMassiveCloseTicketsParams, Dictionary } from '@types';
 import { APIManager } from '../manager';
 // import {  } from "common/helpers";
 
