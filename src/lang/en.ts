@@ -3725,6 +3725,28 @@ const translation: LangKeys = {
     voicechannel_smstooltip: 'Allows SMS messages. 1 message per $0.00',
     voicechannel_outbound: 'Outbound',
     voicechannel_outboundtooltip: 'Allows outbound calls. 1 call per $0.00',
+
+    messagetemplate_sms: 'SMS',
+    messagetemplate_hsm: 'HSM',
+    messagetemplate_mail: 'Mail',
+    messagetemplate_html: 'HTML',
+    messagetemplate_standard: 'Standard',
+    messagetemplate_multimedia: 'Multimedia',
+    messagetemplate_text: 'Text',
+    messagetemplate_image: 'Image',
+    messagetemplate_document: 'Document',
+    messagetemplate_video: 'Video',
+    messagetemplate_url: 'URL',
+    messagetemplate_quickreply: 'Quick Reply',
+    messagetemplate_low: 'Low',
+    messagetemplate_medium: 'Medium',
+    messagetemplate_high: 'High',
+    messagetemplate_attachment: 'Attachments',
+    messagetemplate_reload: 'Reload',
+    messagetemplate_changetoeditor: 'Edit HTML code',
+    messagetemplate_changetoview: 'View HTML template',
+
+    validationchar: 'This field has a minimum and maximum amount of characters',
 };
 
 const enResource: ResourceLanguage = {

@@ -3718,6 +3718,28 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     voicechannel_smstooltip: 'Habilita el envio de SMS. 1 envio por $0.00',
     voicechannel_outbound: 'Outbound',
     voicechannel_outboundtooltip: 'Habilita la salida de llamadas. 1 llamada por $0.00',
+
+    messagetemplate_sms: 'SMS',
+    messagetemplate_hsm: 'HSM',
+    messagetemplate_mail: 'Correo',
+    messagetemplate_html: 'HTML',
+    messagetemplate_standard: 'Estándar',
+    messagetemplate_multimedia: 'Multimedia',
+    messagetemplate_text: 'Texto',
+    messagetemplate_image: 'Imagen',
+    messagetemplate_document: 'Documento',
+    messagetemplate_video: 'Video',
+    messagetemplate_url: 'URL',
+    messagetemplate_quickreply: 'Respuesta Rápida',
+    messagetemplate_low: 'Baja',
+    messagetemplate_medium: 'Media',
+    messagetemplate_high: 'Alta',
+    messagetemplate_attachment: 'Adjuntos',
+    messagetemplate_reload: 'Recargar',
+    messagetemplate_changetoeditor: 'Editar código HTML',
+    messagetemplate_changetoview: 'Visualizar plantilla HTML',
+
+    validationchar: 'Este campo tiene un número mínimo y máximo de caracteres',
 };
 
 const esResource: ResourceLanguage = {

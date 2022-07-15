@@ -3706,6 +3706,28 @@ export const langKeys = {
     voicechannel_smstooltip: 'voicechannel_smstooltip',
     voicechannel_outbound: 'voicechannel_outbound',
     voicechannel_outboundtooltip: 'voicechannel_outboundtooltip',
+
+    messagetemplate_sms: 'messagetemplate_sms',
+    messagetemplate_hsm: 'messagetemplate_hsm',
+    messagetemplate_mail: 'messagetemplate_mail',
+    messagetemplate_html: 'messagetemplate_html',
+    messagetemplate_standard: 'messagetemplate_standard',
+    messagetemplate_multimedia: 'messagetemplate_multimedia',
+    messagetemplate_text: 'messagetemplate_text',
+    messagetemplate_image: 'messagetemplate_image',
+    messagetemplate_document: 'messagetemplate_document',
+    messagetemplate_video: 'messagetemplate_video',
+    messagetemplate_url: 'messagetemplate_url',
+    messagetemplate_quickreply: 'messagetemplate_quickreply',
+    messagetemplate_low: 'messagetemplate_low',
+    messagetemplate_medium: 'messagetemplate_medium',
+    messagetemplate_high: 'messagetemplate_high',
+    messagetemplate_attachment: 'messagetemplate_attachment',
+    messagetemplate_reload: 'messagetemplate_reload',
+    messagetemplate_changetoeditor: 'messagetemplate_changetoeditor',
+    messagetemplate_changetoview: 'messagetemplate_changetoview',
+
+    validationchar: 'validationchar',
 };
 
 export type LangKeys = typeof langKeys;
