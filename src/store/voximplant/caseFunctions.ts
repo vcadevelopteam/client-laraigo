@@ -24,7 +24,6 @@ export const setPhoneNumber = (state: IState, action: IAction): IState => {
         phoneNumber: action.payload,
     }
 }
-
 export const setHold = (state: IState, action: IAction): IState => {
     return {
         ...state,

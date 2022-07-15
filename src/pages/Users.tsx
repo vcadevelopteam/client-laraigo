@@ -718,6 +718,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
 
     const onSubmit = handleSubmit((data) => {
         console.log(dataOrganizations)
+        
         if (!row && !data.password) {
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.password_required) }));
             return;
