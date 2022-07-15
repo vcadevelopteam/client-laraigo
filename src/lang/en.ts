@@ -3708,6 +3708,15 @@ const translation: LangKeys = {
     subscription_selectedchannel: "Selected Channels",
     subscription_channellimit: "The maximum amount of channels is:",
     subscription_nolimit: "No limit",
+
+    productcatalog_title: 'Title',
+    productcatalog_website: 'Website',
+    productcatalog_currency: 'Currency',
+    productcatalog_condition: 'Condition',
+    productcatalog_contentid: 'Content ID',
+    productcatalog_facebookcatalogid: 'Facebook Catalog ID',
+    productcatalog_facebookproductid: 'Facebook Product ID',
+    productcatalog_facebookcatalogname: 'Facebook Catalog Name',
 };
 
 const enResource: ResourceLanguage = {

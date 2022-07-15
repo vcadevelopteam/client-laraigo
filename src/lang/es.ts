@@ -3701,6 +3701,15 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     subscription_selectedchannel: "Canales Seleccionados",
     subscription_channellimit: "El límite de canales es de:",
     subscription_nolimit: "Sin límite",
+
+    productcatalog_title: 'Título',
+    productcatalog_website: 'Sitio web',
+    productcatalog_currency: 'Moneda',
+    productcatalog_condition: 'Condición',
+    productcatalog_contentid: 'ID Contenido',
+    productcatalog_facebookcatalogid: 'ID Catalogo Facebook',
+    productcatalog_facebookproductid: 'ID Producto Facebook',
+    productcatalog_facebookcatalogname: 'Nombre Catalogo Facebook',
 };
 
 const esResource: ResourceLanguage = {
