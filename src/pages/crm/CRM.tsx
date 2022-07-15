@@ -777,7 +777,7 @@ const CRM: FC = () => {
         if (!resExportData.loading && !resExportData.error) {
             dispatch(showBackdrop(false));
             setWaitExport(false);
-            window.open(resExportData.url, '_blank');
+            resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
         } else if (resExportData.error) {
             const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.blacklist).toLocaleLowerCase() })
             dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
