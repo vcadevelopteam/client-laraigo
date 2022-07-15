@@ -3595,6 +3595,9 @@ const translation: LangKeys = {
     voximplantcategory_special: 'Special',
     voximplantcategory_mobile: 'Mobile',
     voximplant_numberbought: 'The following phone number was bought: ',
+    error_no_record: 'No record',
+    error_record_error: 'Record error',
+    error_invalid_call: 'Invalid call',
 
     type_close_cierre_externo: 'External closure',
     type_close_cierre_por_envio_de_campaña: 'Closing by sending campaign',
@@ -3749,6 +3752,16 @@ const translation: LangKeys = {
     messagetemplate_changetoview: 'View HTML template',
 
     validationchar: 'This field has a minimum and maximum amount of characters',
+    voicechannel_recordingquality: 'Recording quality',
+    voicechannel_recordingmonth3: '3 months of storage',
+    voicechannel_recordingmonth6: '6 months of storage',
+    voicechannel_recordingyear1: '1 year of storage',
+    voicechannel_recordingyear2: '2 years of storage',
+    voicechannel_recordingyear3: '3 years of storage',
+    voicechannel_recordingdefault: 'Default',
+    voicechannel_recordinghd: 'HD - High Definition',
+    voicechannel_recordinglossless: 'Lossless',
+    voicechannel_recordingalert: 'The purchase of a new number and the activation of certain capacities result in extra charges in your monthly plan. For more information please visit our price list: ',
 };
 
 const enResource: ResourceLanguage = {

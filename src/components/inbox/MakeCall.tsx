@@ -226,7 +226,7 @@ const MakeCall: React.FC = () => {
     const classes = useStyles();
     const { t } = useTranslation();
     const dispatch = useDispatch();
-    
+
     const personData = useSelector(state => state.inbox.person);
 
     const [numberVox, setNumberVox] = useState("");
@@ -252,7 +252,7 @@ const MakeCall: React.FC = () => {
         console.log(resExecute)
         if (!resExecute.loading && !resExecute.error) {
             if (resExecute.key === "UFN_CONVERSATION_OUTBOUND_INS") {
-                const { v_conversationid, v_ticketnum, v_personid, v_firstconversationdate, v_personname } = resExecute.data[0]
+                const { v_conversationid, v_ticketnum, v_personid, v_firstconversationdate, v_personname, v_voximplantrecording } = resExecute.data[0]
                 const data: ITicket = {
                     conversationid: parseInt(v_conversationid),
                     ticketnum: v_ticketnum,
@@ -273,7 +273,8 @@ const MakeCall: React.FC = () => {
                     lastreplyuser: "",
                 }
                 dispatch(setModalCall(false));
-                const identifier = `${corpid}-${orgid}-${ccidvoxi}-${resExecute.data[0].v_conversationid}-${resExecute.data[0].v_personid}.${sitevoxi}.${userid}`
+                const identifier = `${corpid}-${orgid}-${ccidvoxi}-${resExecute.data[0].v_conversationid}-${resExecute.data[0].v_personid}.${sitevoxi}.${userid}.${v_voximplantrecording}`;
+
                 dispatch(makeCall({ number: numberVox, site: identifier || "", data }));
                 history.push('/message_inbox');
             }
@@ -370,7 +371,7 @@ const MakeCall: React.FC = () => {
                         variant="fullWidth"
                         style={{ borderBottom: '1px solid white', backgroundColor: '#7721ad' }}
                         textColor="primary"
-                        onChange={(_, value) => {setPageSelected(value); setGlobalFilter("")}}
+                        onChange={(_, value) => { setPageSelected(value); setGlobalFilter("") }}
                     >
                         <AntTab label={<ContactPhoneIcon style={{ color: pageSelected === 0 ? "gold" : "white" }} />} />
                         <AntTab label={<DialpadIcon style={{ color: pageSelected === 1 ? "gold" : "white" }} />} />
@@ -394,7 +395,7 @@ const MakeCall: React.FC = () => {
                                 if (filter === "") {
                                     return false;
                                 }
-                                if(filter.toLowerCase() === "sin nombre"){
+                                if (filter.toLowerCase() === "sin nombre") {
                                     return (x.personname?.trim() === x.phone?.trim())
                                 }
                                 return (x.personname?.toLowerCase()?.includes(filter.toLowerCase()) || x.phone?.includes(filter))
@@ -431,7 +432,7 @@ const MakeCall: React.FC = () => {
                                     value={numberVox}
                                     disabled={resExecute.loading || statusCall !== "DISCONNECTED"}
                                     style={{ marginRight: "auto", marginLeft: "auto", width: "400px", marginBottom: 25 }}
-                                    onInput={(e:any)=>{
+                                    onInput={(e: any) => {
                                         let val = e.target.value.replace(/[^0-9*#]/g, "")
                                         e.target.value = String(val)
                                     }}
@@ -592,3 +593,4 @@ const formatDate = (strDate: string) => {
 
     return `${day}/${month}/${year}`;
 }
+

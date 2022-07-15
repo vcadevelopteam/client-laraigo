@@ -3575,6 +3575,9 @@ export const langKeys = {
     voximplantcategory_special: 'voximplantcategory_special',
     voximplantcategory_mobile: 'mobile',
     voximplant_numberbought: 'voximplant_numberbought',
+    error_no_record: 'error_no_record',
+    error_record_error: 'error_record_error',
+    error_invalid_call: 'error_invalid_call',
 
     type_close_cierre_externo: 'type_close_cierre_externo',
     type_close_cierre_por_envio_de_campaña: 'type_close_cierre_por_envio_de_campaña',
@@ -3730,6 +3733,16 @@ export const langKeys = {
     messagetemplate_changetoview: 'messagetemplate_changetoview',
 
     validationchar: 'validationchar',
+    voicechannel_recordingquality: 'voicechannel_recordingquality',
+    voicechannel_recordingmonth3: 'voicechannel_recordingmonth3',
+    voicechannel_recordingmonth6: 'voicechannel_recordingmonth6',
+    voicechannel_recordingyear1: 'voicechannel_recordingyear1',
+    voicechannel_recordingyear2: 'voicechannel_recordingyear2',
+    voicechannel_recordingyear3: 'voicechannel_recordingyear3',
+    voicechannel_recordingdefault: 'voicechannel_recordingdefault',
+    voicechannel_recordinghd: 'voicechannel_recordinghd',
+    voicechannel_recordinglossless: 'voicechannel_recordinglossless',
+    voicechannel_recordingalert: 'voicechannel_recordingalert',
 };
 
 export type LangKeys = typeof langKeys;

@@ -84,6 +84,9 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
 
     const { t } = useTranslation();
 
+    const dataRecordingStorage = [{ value: "month3", text: t(langKeys.voicechannel_recordingmonth3) }, { value: "month6", text: t(langKeys.voicechannel_recordingmonth6) }, { value: "year1", text: t(langKeys.voicechannel_recordingyear1) }, { value: "year2", text: t(langKeys.voicechannel_recordingyear2) }, { value: "year3", text: t(langKeys.voicechannel_recordingyear3) }];
+    const dataRecordingQuality = [{ value: "default", text: t(langKeys.voicechannel_recordingdefault) }, { value: "hd", text: t(langKeys.voicechannel_recordinghd) }, { value: "lossless", text: t(langKeys.voicechannel_recordinglossless) }];
+
     const categoriesResult = useSelector(state => state.voximplant.requestGetCategories);
     const classes = useChannelAddStyles();
     const countryStatesResult = useSelector(state => state.voximplant.requestGetCountryStates);
@@ -127,6 +130,9 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
         setWaitPlan(true);
     }, [])
 
+    const openPricingPage = () => {
+        window.open("https://laraigo.com/en/pricing/", '_blank');
+    }
 
     useEffect(() => {
         if (phonePrice) {
@@ -295,26 +301,63 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
             if (getValues('channels.voximplantphone.region')) {
                 if (hasStates) {
                     if (getValues('channels.voximplantphone.state')) {
-                        setNextButton(false);
+                        if (getValues('channels.voximplantphone.recording')) {
+                            if (getValues('channels.voximplantphone.recordingquality') && getValues('channels.voximplantphone.recordingstorage')) {
+                                setNextButton(false);
+                            }
+                        }
+                        else {
+                            setNextButton(false);
+                        }
                     }
                 }
                 else {
-                    setNextButton(false);
+                    if (getValues('channels.voximplantphone.recording')) {
+                        if (getValues('channels.voximplantphone.recordingquality') && getValues('channels.voximplantphone.recordingstorage')) {
+                            setNextButton(false);
+                        }
+                    }
+                    else {
+                        setNextButton(false);
+                    }
                 }
             }
         }
     }
 
+    const handleSwitchRecordingQuality = (value: any) => {
+        setValue('channels.voximplantphone.recordingquality', value);
+
+        disableNextButton();
+    }
+
+    const handleSwitchRecordingStorage = (value: any) => {
+        setValue('channels.voximplantphone.recordingstorage', value);
+
+        disableNextButton();
+    }
+
     const handleSwitchRecording = (value: boolean) => {
         setValue('channels.voximplantphone.recording', value);
+
+        if (!value ) {
+            setValue('channels.voximplantphone.recordingquality', '');
+            setValue('channels.voximplantphone.recordingquality', '');
+        }
+
+        disableNextButton();
     }
 
     const handleSwitchSms = (value: boolean) => {
         setValue('channels.voximplantphone.sms', value);
+
+        disableNextButton();
     }
 
     const handleSwitchOutbound = (value: boolean) => {
         setValue('channels.voximplantphone.outbound', value);
+
+        disableNextButton();
     }
 
     const handleCountry = (value: any) => {
@@ -430,7 +473,7 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                     <div className={classes.containerDetail}>
                         <div style={{ textAlign: "left", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.voximplant_buynumber)}</div>
                         <div className={classes.containerCapacities}>
-                            <div style={{ verticalAlign: "middle", marginRight: "10px" }}>
+                            <div style={{ verticalAlign: "middle", marginRight: "30px" }}>
                                 <b>{t(langKeys.voicechannel_capacities)}</b>
                             </div>
                             <div className={classes.containerItem}>
@@ -525,6 +568,30 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                                 valueDefault={getValues('channels.voximplantphone.region')}
                             />
                         </div>}
+                        {checkedRecording && <div className="row-zyx">
+                            <FieldSelect
+                                className="col-12"
+                                data={dataRecordingStorage}
+                                label={t(langKeys.voicechannel_recording)}
+                                onChange={(value: any) => { handleSwitchRecordingStorage(value); }}
+                                optionDesc="text"
+                                optionValue="value"
+                                variant="outlined"
+                                valueDefault={getValues('channels.voximplantphone.recordingstorage')}
+                            />
+                        </div>}
+                        {checkedRecording && <div className="row-zyx">
+                            <FieldSelect
+                                className="col-12"
+                                data={dataRecordingQuality}
+                                label={t(langKeys.voicechannel_recordingquality)}
+                                onChange={(value: any) => { handleSwitchRecordingQuality(value); }}
+                                optionDesc="text"
+                                optionValue="value"
+                                variant="outlined"
+                                valueDefault={getValues('channels.voximplantphone.recordingquality')}
+                            />
+                        </div>}
                         <div className="row-zyx">
                             <div style={{ display: "inline-block" }}>
                                 <div>
@@ -536,6 +603,11 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                                 </div>
                             </div>
                         </div>
+                        {(checkedRecording || checkedSms || checkedOutbound) && <div className="row-zyx">
+                            <div style={{ display: "flex", flexFlow: "row", flexWrap: "wrap" }}>
+                                <p><b style={{ color: "#762AA9" }}>{t(langKeys.voicechannel_recordingalert)}</b><a style={{ fontWeight: 'bold', cursor: 'pointer' }} onClick={openPricingPage} rel="noopener noreferrer">https://laraigo.com/en/pricing/</a></p>
+                            </div>
+                        </div>}
                     </div>
                     <div style={{ paddingLeft: "64%" }}>
                         <Button
