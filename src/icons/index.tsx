@@ -163,6 +163,12 @@ export { ReactComponent as TelegramColor2 } from './telegram-color2.svg';
 export { ReactComponent as TwitterColor } from './twitter-color.svg';
 export { ReactComponent as WebMessengerColor } from './web-messenger-color.svg';
 export { ReactComponent as WhatsappColor } from './whatsapp-color.svg';
+export { ReactComponent as BloggerColor } from './blogger.svg';
+export { ReactComponent as VoiceColor } from './canal_de_voz.svg';
+export { ReactComponent as LinkedInColor } from './linkedin.svg';
+export { ReactComponent as TeamsColor } from './microsoft-teams.svg';
+export { ReactComponent as TikTokColor } from './tiktok.svg';
+export { ReactComponent as YouTubeColor } from './youtubechannel.svg';
 
 export { ReactComponent as LaraigoAnimalIcon } from './Laraigo-emojis_animal.svg';
 export { ReactComponent as LaraigoBanderaIcon } from './Laraigo-emojis_bandera.svg';

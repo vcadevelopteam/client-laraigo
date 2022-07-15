@@ -96,6 +96,26 @@ const paths = {
     },
     CHANNELS_ADD: '/channels/add',
     CHANNELS_ADD_CHATWEB: '/channels/add/chatweb',
+    CHANNELS_ADD_TIKTOK: {
+        path: '/channels/:id/add/ChannelAddTikTok',
+        resolve: (channelId: string | number) => `/channels/${channelId}/add/ChannelAddTikTok`,
+    },
+    CHANNELS_ADD_YOUTUBE: {
+        path: '/channels/:id/add/ChannelAddYouTube',
+        resolve: (channelId: string | number) => `/channels/${channelId}/add/ChannelAddYouTube`,
+    },
+    CHANNELS_ADD_LINKEDIN: {
+        path: '/channels/:id/add/ChannelAddLinkedIn',
+        resolve: (channelId: string | number) => `/channels/${channelId}/add/ChannelAddLinkedIn`,
+    },
+    CHANNELS_ADD_TEAMS: {
+        path: '/channels/:id/add/ChannelAddTeams',
+        resolve: (channelId: string | number) => `/channels/${channelId}/add/ChannelAddTeams`,
+    },
+    CHANNELS_ADD_BLOGGER: {
+        path: '/channels/:id/add/ChannelAddBlogger',
+        resolve: (channelId: string | number) => `/channels/${channelId}/add/ChannelAddBlogger`,
+    },
     CHANNELS_EDIT: {
         path: '/channels/edit/:id',
         resolve: (channelId: string | number) => `/channels/edit/${channelId}`,
@@ -114,9 +134,9 @@ const paths = {
     PROPERTIES: '/extras/properties',
     QUICKREPLIES: '/extras/quickreplies',
     USERS: '/extras/users',
-    GROUPCONFIG: '/extras/groupconfig',    
-    WHITELIST: '/extras/whitelist',    
-    USERSETTINGS: '/usersettings',    
+    GROUPCONFIG: '/extras/groupconfig',
+    WHITELIST: '/extras/whitelist',
+    USERSETTINGS: '/usersettings',
     INAPPROPRIATEWORDS: '/extras/inappropriatewords',
     INTELLIGENTMODELS: '/extras/intelligentmodels',
     SLA: '/extras/sla',

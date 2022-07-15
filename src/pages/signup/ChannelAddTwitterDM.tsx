@@ -58,7 +58,7 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
                 return t(langKeys.field_required);
             }
         }
-        
+
         register('channels.twitterDM.description', { validate: strRequired, value: '' });
         register('channels.twitterDM.consumerkey', { validate: strRequired, value: '' });
         register('channels.twitterDM.consumersecret', { validate: strRequired, value: '' });
@@ -66,65 +66,45 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
         register('channels.twitterDM.accesssecret', { validate: strRequired, value: '' });
         register('channels.twitterDM.devenvironment', { validate: strRequired, value: '' });
         register('channels.twitterDM.communicationchannelowner', { value: '' });
-        register('channels.twitterDM.build', { value: values => ({
-            "method": "UFN_COMMUNICATIONCHANNEL_INS",
-            "parameters": {
-                "id": 0,
-                "description": values.description,
-                "type": "",
-                "communicationchannelsite": "",
-                "communicationchannelowner": values.communicationchannelowner,
-                "chatflowenabled": true,
-                "integrationid": "",
-                "color": "",
-                "icons": "",
-                "other": "",
-                "form": "",
-                "apikey": "",
-                "coloricon": "#1D9BF0",
-            },
-            "type": "TWITTERDM",
-            "service": {
-                "consumerkey": values.consumerkey,
-                "consumersecret": values.consumersecret,
-                "accesstoken": values.accesstoken,
-                "accesssecret": values.accesssecret,
-                "devenvironment": values.devenvironment
-            }
-        })});
+        register('channels.twitterDM.build', {
+            value: values => ({
+                "method": "UFN_COMMUNICATIONCHANNEL_INS",
+                "parameters": {
+                    "id": 0,
+                    "description": values.description,
+                    "type": "",
+                    "communicationchannelsite": "",
+                    "communicationchannelowner": values.communicationchannelowner,
+                    "chatflowenabled": true,
+                    "integrationid": "",
+                    "color": "",
+                    "icons": "",
+                    "other": "",
+                    "form": "",
+                    "apikey": "",
+                    "coloricon": "#1D9BF0",
+                },
+                "type": "TWITTERDM",
+                "service": {
+                    "consumerkey": values.consumerkey,
+                    "consumersecret": values.consumersecret,
+                    "accesstoken": values.accesstoken,
+                    "accesssecret": values.accesssecret,
+                    "devenvironment": values.devenvironment
+                }
+            })
+        });
 
         return () => {
             unregister('channels.twitterDM');
         }
     }, [register, unregister]);
-    
+
     useEffect(() => {
         if (foreground !== 'twitterDM' && viewSelected !== "view1") {
             setViewSelected("view1");
-        } 
+        }
     }, [foreground, viewSelected]);
-
-    // useEffect(() => {
-    //     if (channelName.length > 0 && devenvironment.length > 0) {
-    //         setrequestchannels(prev => {
-    //             const index = prev.findIndex(x => x.type === "TWITTERDM");
-    //             if (index === -1) {
-    //                 return [
-    //                     ...prev,
-    //                     fields,
-    //                 ]
-    //             } else {
-    //                 prev.splice(index, 1);
-    //                 return [
-    //                     ...prev,
-    //                     fields,
-    //                 ];
-    //             }
-    //         });
-    //     } else {
-    //         setrequestchannels(prev => prev.filter(x => x.type !== "TWITTERDM"));
-    //     }
-    // }, [channelName, devenvironment, fields]);
 
     const setView = (option: "view1" | "view2") => {
         if (option === "view1") {
@@ -234,24 +214,24 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
                 <DeleteOutlineIcon />
             </IconButton>}
             {!hasFinished && <Typography>
-                <Trans i18nKey={langKeys.connectface2} />
+                <Trans i18nKey={langKeys.subscription_genericconnect} />
             </Typography>}
             {hasFinished && <TwitterColor
-                style={{ width: 100, height: 100, alignSelf: 'center' }}/>
+                style={{ width: 100, height: 100, alignSelf: 'center' }} />
             }
             {hasFinished && (
                 <div style={{ alignSelf: 'center' }}>
                     <Typography
                         color="primary"
                         style={{ fontSize: '1.5vw', fontWeight: 'bold', textAlign: 'center' }}>
-                        ¡Felicitaciones!
+                        {t(langKeys.subscription_congratulations)}
                     </Typography>
                     <Typography
                         color="primary"
                         style={{ fontSize: '1.2vw', fontWeight: 500 }}>
-                        Haz conectado Twitter con tu cuenta
+                        {t(langKeys.subscription_message1)} {t(langKeys.channel_twitterdm)} {t(langKeys.subscription_message2)}
                     </Typography>
-            </div>
+                </div>
             )}
             <FieldEdit
                 onChange={(value) => setValue('channels.twitterDM.description', value)}
@@ -279,27 +259,6 @@ export const ChannelAddTwitterDM: FC<{ setOpenWarning: (param: any) => void }> =
                 size="small"
                 error={errors.channels?.twitterDM?.devenvironment?.message}
             />
-            {/* <div className="row-zyx">
-                <div className="col-3"></div>
-                <div className="col-6">
-                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                        {t(langKeys.givechannelcolor)}
-                    </Box>
-                    <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                        <TwitterIcon style={{ fill: `${coloricon}`, width: "100px" }} />
-                        <ColorInput
-                            hex={fields.parameters.coloricon}
-                            onChange={e => {
-                                setFields(prev => ({
-                                    ...prev,
-                                    parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
-                                }));
-                                setcoloricon(e.hex)
-                            }}
-                        />
-                    </div>
-                </div>
-            </div> */}
             {!hasFinished && (
                 <Button
                     onClick={() => setView("view2")}

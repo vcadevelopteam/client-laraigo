@@ -684,7 +684,8 @@ export const langKeys = {
     enablechatflow: "enablechatflow",
     enterapikey: "enterapikey",
     finishreg: "finishreg",
-    whatsapptitle: "whatsapptitle",
+    whatsapptitlesmooch: "whatsapptitlesmooch",
+    whatsapptitledialog: "whatsapptitledialog",
     registerwhats: "registerwhats",
     connectnumberfield: "connectnumberfield",
     select: "select",
@@ -1935,12 +1936,12 @@ export const langKeys = {
     submotive: "submotive",
     assessment: "assessment",
     closedby: "closedby",
-    
+
     dateoffirstreplytoadviser: "dateoffirstreplytoadviser",
     timeoffirstreplytoadviser: "timeoffirstreplytoadviser",
     closing_date: "closing_date",
     closing_time: "closing_time",
-    
+
     dateoflastreplytoadviser: "dateoflastreplytoadviser",
     timeoflastreplytoadviser: "timeoflastreplytoadviser",
 
@@ -3645,6 +3646,49 @@ export const langKeys = {
     validate_time_filter: "validate_time_filter",
 
     go_ticket: 'go_ticket',
+
+    channel_facebook: 'channel_facebook',
+    channel_messenger: 'channel_messenger',
+    channel_instagram: 'channel_instagram',
+    channel_instagramdm: 'channel_instagramdm',
+    channel_whatsapp: 'channel_whatsapp',
+    channel_telegram: 'channel_telegram',
+    channel_twitter: 'channel_twitter',
+    channel_twitterdm: 'channel_twitterdm',
+    channel_tiktok: 'channel_tiktok',
+    channel_youtube: 'channel_youtube',
+    channel_linkedin: 'channel_linkedin',
+    channel_chatweb: 'channel_chatweb',
+    channel_email: 'channel_email',
+    channel_phone: 'channel_phone',
+    channel_sms: 'channel_sms',
+    channel_ios: 'channel_ios',
+    channel_android: 'channel_android',
+    channel_teams: 'channel_teams',
+    channel_blogger: 'channel_blogger',
+    channel_genericalert: 'channel_genericalert',
+    channel_bloggertitle: 'channel_bloggertitle',
+    channel_youtubetitle: 'channel_youtubetitle',
+    channel_teamstitle: 'channel_teamstitle',
+    channel_tiktoktitle: 'channel_tiktoktitle',
+    channel_linkedintitle: 'channel_linkedintitle',
+
+    subscription_congratulations: 'subscription_congratulations',
+    subscription_message1: 'subscription_message1',
+    subscription_message2: 'subscription_message2',
+
+    smooch_apikeyid: 'smooch_apikeyid',
+    smooch_apikeysecret: 'smooch_apikeysecret',
+    smooch_appid: 'smooch_appid',
+
+    blogger_account: 'blogger_account',
+    blogger_url: 'blogger_url',
+
+    subscription_genericconnect: 'subscription_genericconnect',
+    subscription_instagramconnect: "subscription_instagramconnect",
+    subscription_selectedchannel: "subscription_selectedchannel",
+    subscription_channellimit: "subscription_channellimit",
+    subscription_nolimit: "subscription_nolimit",
 };
 
 export type LangKeys = typeof langKeys;

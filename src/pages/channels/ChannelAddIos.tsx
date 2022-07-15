@@ -76,7 +76,7 @@ export const ChannelAddIos: FC = () => {
         history.push(paths.CHANNELS);
     }
     useEffect(() => {
-        if (!mainResult.loading && setins){
+        if (!mainResult.loading && setins) {
             if (executeResult) {
                 setsetins(false)
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
@@ -102,21 +102,20 @@ export const ChannelAddIos: FC = () => {
     }, [mainResult])
 
     function setnameField(value: any) {
-        setChannelreg(value === "")
+        setChannelreg(value === "");
         let partialf = fields;
-        partialf.parameters.description = value
-        setFields(partialf)
+        partialf.parameters.description = value;
+        setFields(partialf);
     }
     return (
         <div style={{ width: '100%' }}>
             <Breadcrumbs aria-label="breadcrumb">
-                <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD, whatsAppData)}}>
+                <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD, whatsAppData) }}>
                     {t(langKeys.previoustext)}
                 </Link>
             </Breadcrumbs>
             <div>
                 <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.commchannelfinishreg)}</div>
-
                 <div className="row-zyx">
                     <div className="col-3"></div>
                     <FieldEdit
@@ -129,10 +128,10 @@ export const ChannelAddIos: FC = () => {
                     <div className="col-3"></div>
                     <div className="col-6">
                         <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                        {t(langKeys.givechannelcolor)}
+                            {t(langKeys.givechannelcolor)}
                         </Box>
-                        <div style={{display:"flex",justifyContent:"space-around", alignItems: "center"}}>
-                            <AppleIcon style={{fill: `${coloricon}`, width: "100px" }}/>
+                        <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
+                            <AppleIcon style={{ fill: `${coloricon}`, width: "100px" }} />
                             <ColorInput
                                 hex={fields.parameters.coloricon}
                                 onChange={e => {
@@ -147,7 +146,7 @@ export const ChannelAddIos: FC = () => {
                     </div>
                 </div>
                 <div style={{ paddingLeft: "80%" }}>
-                    {showRegister ? 
+                    {showRegister ?
                         <Button
                             onClick={() => { finishreg() }}
                             className={classes.button}
@@ -158,7 +157,7 @@ export const ChannelAddIos: FC = () => {
                         </Button>
                         : null
                     }
-                    {showClose ? 
+                    {showClose ?
                         <Button
                             onClick={() => { goback() }}
                             className={classes.button}
@@ -175,16 +174,16 @@ export const ChannelAddIos: FC = () => {
             <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}>
                 {t(langKeys.iosstep1)}
             </div>
-            <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word', width: '100%', whiteSpace: 'break-spaces'}}><code>
-                { `[Smooch initWithSettings:[SKTSettings settingsWithIntegrationId:@"${integrationId}"] completionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {\n\tif (error == nil) {\n\t\t// Initialization complete\n\t} else {\n\t\t// Something went wrong\n\t}\n}];` }
-                </code></pre><div style={{ height: 10 }} />
+            <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word', width: '100%', whiteSpace: 'break-spaces' }}><code>
+                {`[Smooch initWithSettings:[SKTSettings settingsWithIntegrationId:@"${integrationId}"] completionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {\n\tif (error == nil) {\n\t\t// Initialization complete\n\t} else {\n\t\t// Something went wrong\n\t}\n}];`}
+            </code></pre><div style={{ height: 10 }} />
             </div>
             <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}>
                 {t(langKeys.iosstep2)}
             </div>
-            <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word', width: '100%', whiteSpace: 'break-spaces'}}><code>
-                { `Smooch.initWith(SKTSettings(integrationId: "${integrationId}")) { (error: Error?, userInfo: [AnyHashable : Any]?) in\n\tif (error == nil) {\n\t\t// Initialization complete\n\t} else {\n\t\t// Something went wrong\n\t}\n}` }
-                </code></pre><div style={{ height: 10 }} />
+            <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word', width: '100%', whiteSpace: 'break-spaces' }}><code>
+                {`Smooch.initWith(SKTSettings(integrationId: "${integrationId}")) { (error: Error?, userInfo: [AnyHashable : Any]?) in\n\tif (error == nil) {\n\t\t// Initialization complete\n\t} else {\n\t\t// Something went wrong\n\t}\n}`}
+            </code></pre><div style={{ height: 10 }} />
             </div>
             <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}>
                 {t(langKeys.iosstep3)}

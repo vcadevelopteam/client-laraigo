@@ -121,7 +121,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                 return t(langKeys.emailverification) as string;
             }
         }
-        
+
         const phoneRequired = (value: string) => {
             if (!phoneRegExp.test(value) || value.length < 10) {
                 return "Ingrese un número de telefono válido"
@@ -140,37 +140,39 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
         register('channels.whatsapp.phonenumberwhatsappbusiness', { validate: strRequired, value: '' });
         register('channels.whatsapp.nameassociatednumber', { validate: strRequired, value: '' });
         register('channels.whatsapp.communicationchannelowner', { value: '' });
-        register('channels.whatsapp.build', { value: values => ({
-            "method": "UFN_COMMUNICATIONCHANNEL_INS",
-            "parameters": {
-                "id": 0,
-                "description": values.description,
-                "type": "",
-                "communicationchannelsite": "",
-                "communicationchannelowner": values.communicationchannelowner,
-                "chatflowenabled": true,
-                "integrationid": "",
-                "color": "",
-                "icons": "",
-                "other": "",
-                "form": "",
-                "apikey": "",
-                "coloricon": "#4AC959",
-            },
-            "type": "WHATSAPPSMOOCH",
-            "service": {
-                "accesstoken": values.accesstoken,
-                "brandname": values.brandName,
-                "brandaddress": values.brandAddress,
-                "firstname": values.firstName,
-                "lastname": values.lastName,
-                "email": values.email,
-                "phone": values.phone,
-                "customerfacebookid": values.customerfacebookid,
-                "phonenumberwhatsappbusiness": values.phonenumberwhatsappbusiness,
-                "nameassociatednumber": values.nameassociatednumber,
-            }
-        })});
+        register('channels.whatsapp.build', {
+            value: values => ({
+                "method": "UFN_COMMUNICATIONCHANNEL_INS",
+                "parameters": {
+                    "id": 0,
+                    "description": values.description,
+                    "type": "",
+                    "communicationchannelsite": "",
+                    "communicationchannelowner": values.communicationchannelowner,
+                    "chatflowenabled": true,
+                    "integrationid": "",
+                    "color": "",
+                    "icons": "",
+                    "other": "",
+                    "form": "",
+                    "apikey": "",
+                    "coloricon": "#4AC959",
+                },
+                "type": "WHATSAPPSMOOCH",
+                "service": {
+                    "accesstoken": values.accesstoken,
+                    "brandname": values.brandName,
+                    "brandaddress": values.brandAddress,
+                    "firstname": values.firstName,
+                    "lastname": values.lastName,
+                    "email": values.email,
+                    "phone": values.phone,
+                    "customerfacebookid": values.customerfacebookid,
+                    "phonenumberwhatsappbusiness": values.phonenumberwhatsappbusiness,
+                    "nameassociatednumber": values.nameassociatednumber,
+                }
+            })
+        });
 
         return () => {
             unregister('channels.whatsapp')
@@ -180,7 +182,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
     useEffect(() => {
         if (foreground !== 'whatsapp' && viewSelected !== "view1") {
             setViewSelected("view1");
-        } 
+        }
     }, [foreground, viewSelected]);
 
     const setView = (option: "view1" | "view2" | "view3") => {
@@ -285,7 +287,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                     />
                 </div>
                 <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey", marginBottom: "15px" }}>
-                    {t(langKeys.whatsappinformation3)+" "}
+                    {t(langKeys.whatsappinformation3) + " "}
                     <Link href="http://africau.edu/images/default/sample.pdf">
                         {t(langKeys.whatsappguidedownload)}
                     </Link>
@@ -336,48 +338,6 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
             </div>
         );
     }
-    /*else if (viewSelected === "view3") {
-        return (<div style={{ marginTop: "auto", marginBottom: "auto", maxHeight: "100%" }}>
-            <Breadcrumbs aria-label="breadcrumb">
-                <Link
-                    color="textSecondary"
-                    href="/"
-                    onClick={(e) => {
-                        e.preventDefault();
-                        setView("view2");
-                    }}
-                >
-                    {'<< '}<Trans i18nKey={langKeys.previoustext} />
-                </Link>
-            </Breadcrumbs>
-            <div>
-                <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.whatsapptitle)}</div>
-                <div className="row-zyx">
-                    <div className="col-3"></div>
-                    <FieldEdit
-                        onChange={(value) => setService(value, "accesstoken")}
-                        label={t(langKeys.enterapikey)}
-                        valueDefault={apiKey}
-                        className="col-6"
-                    />
-                </div>
-                <Button
-                    className={classes.centerbutton}
-                    variant="contained"
-                    color="primary"
-                    disabled={apiKey.length === 0}
-                    onClick={() => {
-                        // setViewSelected("viewfinishreg")
-                        setView("view1");
-                        setHasFinished(true);
-                        setConfirmations(prev => prev++);
-                    }}
-                >
-                    <Trans i18nKey={langKeys.registerwhats} />
-                </Button>
-            </div>
-        </div>)
-    }*/
 
     return (
         <div className={clsx(commonClasses.root, submitError && commonClasses.rootError)}>
@@ -393,24 +353,24 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                 <DeleteOutlineIcon />
             </IconButton>}
             {!hasFinished && <Typography>
-                <Trans i18nKey={langKeys.connectface2} />
+                <Trans i18nKey={langKeys.subscription_genericconnect} />
             </Typography>}
             {hasFinished && <WhatsappColor
-                style={{ width: 100, height: 100, alignSelf: 'center' }}/>
+                style={{ width: 100, height: 100, alignSelf: 'center' }} />
             }
             {hasFinished && (
                 <div style={{ alignSelf: 'center' }}>
                     <Typography
                         color="primary"
                         style={{ fontSize: '1.5vw', fontWeight: 'bold', textAlign: 'center' }}>
-                        ¡Felicitaciones!
+                        {t(langKeys.subscription_congratulations)}
                     </Typography>
                     <Typography
                         color="primary"
                         style={{ fontSize: '1.2vw', fontWeight: 500 }}>
-                        Haz conectado WhatsApp con tu cuenta
+                        {t(langKeys.subscription_message1)} {t(langKeys.channel_whatsapp)} {t(langKeys.subscription_message2)}
                     </Typography>
-            </div>
+                </div>
             )}
             <FieldEdit
                 onChange={(value) => setValue('channels.whatsapp.description', value)}
@@ -427,27 +387,6 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                     )
                 }}
             />
-            {/* <div className="row-zyx">
-                <div className="col-3"></div>
-                <div className="col-6">
-                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                        {t(langKeys.givechannelcolor)}
-                    </Box>
-                    <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                        <WhatsappIcon style={{ fill: `${coloricon}`, width: "100px" }} />
-                        <ColorInput
-                            hex={fields.parameters.coloricon}
-                            onChange={e => {
-                                setFields(prev => ({
-                                    ...prev,
-                                    parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
-                                }));
-                                setcoloricon(e.hex)
-                            }}
-                        />
-                    </div>
-                </div>
-            </div> */}
             {!hasFinished && (
                 <Button
                     onClick={() => setView("view2")}

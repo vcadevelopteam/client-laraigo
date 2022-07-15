@@ -4,12 +4,13 @@ import { makeStyles, Typography, Paper } from '@material-ui/core';
 import { langKeys } from "lang/keys";
 import { Trans } from "react-i18next";
 import clsx from "clsx";
-import PhoneIcon from '@material-ui/icons/Phone';
+import { useTranslation } from "react-i18next";
 import { ControlPoint as ControlPointIcon } from "@material-ui/icons";
 import {
     LaraigoLogo,
-    ZyxmeMessengerIcon,
-
+    SmsColor,
+    EmailColor,
+    WebMessengerColor,
     FacebookMessengerColor2 as FacebookMessengerColor,
     FacebookColor2 as FacebookColor,
     InstagramColor2 as InstagramColor,
@@ -19,6 +20,12 @@ import {
     WhatsappColor,
     TwitterColor,
     VoiceChannelIcon,
+    VoiceColor,
+    TikTokColor,
+    YouTubeColor,
+    LinkedInColor,
+    TeamsColor,
+    BloggerColor,
 } from "icons";
 import { ListChannels, SubscriptionContext, usePlanData } from "./context";
 
@@ -103,28 +110,12 @@ const ThirdStep: FC = () => {
     const { listchannels, toggleChannel } = useContext(SubscriptionContext);
     const planData = usePlanData();
     const classes = useChannelAddStyles();
+    const { t } = useTranslation();
+
     const socialMediaOptions: ChannelOption[] = [
         {
-            icon: <FacebookMessengerColor className={classes.icon} />,
-            label: 'Messenger',
-            key: 'messenger',
-            onClick: () => {
-                toggleChannel('messenger');
-            },
-            selected: listchannels.messenger,
-        },
-        {
-            icon: <WhatsappColor className={classes.icon} />,
-            label: 'Whatsapp',
-            key: 'whatsapp',
-            onClick: () => {
-                toggleChannel('whatsapp');
-            },
-            selected: listchannels.whatsapp,
-        },
-        {
             icon: <FacebookColor className={classes.icon} />,
-            label: 'Facebook',
+            label: t(langKeys.channel_facebook),
             key: 'facebook',
             onClick: () => {
                 toggleChannel('facebook');
@@ -132,8 +123,17 @@ const ThirdStep: FC = () => {
             selected: listchannels.facebook,
         },
         {
+            icon: <FacebookMessengerColor className={classes.icon} />,
+            label: t(langKeys.channel_messenger),
+            key: 'messenger',
+            onClick: () => {
+                toggleChannel('messenger');
+            },
+            selected: listchannels.messenger,
+        },
+        {
             icon: <InstagramColor className={classes.icon} />,
-            label: 'Instagram',
+            label: t(langKeys.channel_instagram),
             key: 'instagram',
             onClick: () => {
                 toggleChannel('instagram');
@@ -142,25 +142,25 @@ const ThirdStep: FC = () => {
         },
         {
             icon: <InstagramColor className={classes.icon} />,
-            label: 'Instagram DM',
+            label: t(langKeys.channel_instagramdm),
             key: 'instagramDM',
             onClick: () => {
                 toggleChannel('instagramDM');
             },
             selected: listchannels.instagramDM,
         },
-    ];
-    const businessChannelOptions: ChannelOption[] = [
         {
-            icon: <ZyxmeMessengerIcon className={classes.icon} />,
-            label: 'Chat Web',
-            key: 'chatWeb',
-            onClick: () => toggleChannel('chatWeb'),
-            selected: listchannels.chatWeb,
+            icon: <WhatsappColor className={classes.icon} />,
+            label: t(langKeys.channel_whatsapp),
+            key: 'whatsapp',
+            onClick: () => {
+                toggleChannel('whatsapp');
+            },
+            selected: listchannels.whatsapp,
         },
         {
             icon: <TelegramColor className={classes.icon} />,
-            label: 'Telegram',
+            label: t(langKeys.channel_telegram),
             key: 'telegram',
             onClick: () => {
                 toggleChannel('telegram');
@@ -169,7 +169,7 @@ const ThirdStep: FC = () => {
         },
         {
             icon: <TwitterColor className={classes.icon} />,
-            label: 'Twitter',
+            label: t(langKeys.channel_twitter),
             key: 'twitter',
             onClick: () => {
                 toggleChannel('twitter');
@@ -178,31 +178,73 @@ const ThirdStep: FC = () => {
         },
         {
             icon: <TwitterColor className={classes.icon} />,
-            label: 'Twitter DM',
+            label: t(langKeys.channel_twitterdm),
             key: 'twitterDM',
             onClick: () => {
                 toggleChannel('twitterDM');
             },
             selected: listchannels.twitterDM,
         },
-        /*{
-            icon: <EmailIcon className={classes.icon} />,
-            label: 'Email',
+        {
+            icon: <TikTokColor className={classes.icon} />,
+            label: t(langKeys.channel_tiktok),
+            key: 'tiktok',
+            onClick: () => {
+                toggleChannel('tiktok');
+            },
+            selected: listchannels.tiktok,
+        },
+        {
+            icon: <YouTubeColor className={classes.icon} />,
+            label: t(langKeys.channel_youtube),
+            key: 'youtube',
+            onClick: () => {
+                toggleChannel('youtube');
+            },
+            selected: listchannels.youtube,
+        },
+        {
+            icon: <LinkedInColor className={classes.icon} />,
+            label: t(langKeys.channel_linkedin),
+            key: 'linkedin',
+            onClick: () => {
+                toggleChannel('linkedin');
+            },
+            selected: listchannels.linkedin,
+        },
+    ];
+    const businessChannelOptions: ChannelOption[] = [
+        {
+            icon: <WebMessengerColor className={classes.icon} />,
+            label: t(langKeys.channel_chatweb),
+            key: 'chatWeb',
+            onClick: () => toggleChannel('chatWeb'),
+            selected: listchannels.chatWeb,
+        },
+        {
+            icon: <EmailColor className={classes.icon} />,
+            label: t(langKeys.channel_email),
             key: 'email',
             onClick: () => toggleChannel('email'),
             selected: listchannels.email
-
-        },*/
+        },
         {
-            icon: <VoiceChannelIcon className={classes.icon} />,
-            label: 'phone',
+            icon: <VoiceColor className={classes.icon} />,
+            label: t(langKeys.channel_phone),
             key: 'phone',
             onClick: () => toggleChannel('phone'),
             selected: listchannels.voximplantphone
         },
         {
+            icon: <SmsColor className={classes.icon} />,
+            label: t(langKeys.channel_sms),
+            key: 'sms',
+            onClick: () => toggleChannel('sms'),
+            selected: listchannels.sms
+        },
+        {
             icon: <IosColor className={classes.icon} />,
-            label: 'iOS SDk',
+            label: t(langKeys.channel_ios),
             key: 'apple',
             onClick: () => {
                 toggleChannel('apple');
@@ -211,23 +253,41 @@ const ThirdStep: FC = () => {
         },
         {
             icon: <AndroidColor className={classes.icon} />,
-            label: 'Android SDK',
+            label: t(langKeys.channel_android),
             key: 'android',
             onClick: () => {
                 toggleChannel('android');
             },
             selected: listchannels.android,
         },
+        {
+            icon: <TeamsColor className={classes.icon} />,
+            label: t(langKeys.channel_teams),
+            key: 'teams',
+            onClick: () => {
+                toggleChannel('teams');
+            },
+            selected: listchannels.teams,
+        },
+        {
+            icon: <BloggerColor className={classes.icon} />,
+            label: t(langKeys.channel_blogger),
+            key: 'blogger',
+            onClick: () => {
+                toggleChannel('blogger');
+            },
+            selected: listchannels.blogger,
+        },
     ];
 
     const description = () => {
         switch (planData.plan!.plan) {
-            case "BASIC":return "Solo se podrá seleccionar un canal";
-            case "PRO": return "Solo se podrá seleccionar 3 canales";
+            case "BASIC": return `${t(langKeys.subscription_channellimit)} 1`;
+            case "PRO": return `${t(langKeys.subscription_channellimit)} 3`;
             case "ADVANCED":
             case "ENTERPRISE":
             case "PREMIUM":
-                return "Sin limite";
+                return `${t(langKeys.subscription_channellimit)} ${t(langKeys.subscription_nolimit)}`;
             default: return "-";
         }
     }
@@ -303,7 +363,7 @@ const useOptionClasses = makeStyles(theme => ({
         backgroundColor: 'white',
         fontSize: 15,
         fontWeight: 400,
-        color: '#A59F9F',        
+        color: '#A59F9F',
         fill: '#A59F9F',
         justifyContent: 'center',
         textAlign: 'center',

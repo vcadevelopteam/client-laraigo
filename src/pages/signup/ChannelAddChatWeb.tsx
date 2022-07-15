@@ -14,7 +14,7 @@ import { resetInsertChannel } from 'store/channel/actions';
 import { useSelector } from 'hooks';
 import { showSnackbar } from 'store/popus/actions';
 import { getInsertChatwebChannel } from 'common/helpers';
-import { ZyxmeMessengerIcon } from 'icons';
+import { WebMessengerColor, ZyxmeMessengerIcon } from 'icons';
 import { MainData, SubscriptionContext } from './context';
 
 interface TabPanelProps {
@@ -24,7 +24,7 @@ interface TabPanelProps {
 
 interface FieldTemplate {
     text: React.ReactNode;
-    node: (onClose: (key: string) => void, data: IChatWebAddFormField, form:UseFormReturn<IChatWebAdd>, index:number) => React.ReactNode;
+    node: (onClose: (key: string) => void, data: IChatWebAddFormField, form: UseFormReturn<IChatWebAdd>, index: number) => React.ReactNode;
     data: IChatWebAddFormField;
 }
 
@@ -550,12 +550,12 @@ interface NameTemplateProps {
     index: number;
 }
 
-const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form,index }) => {
+const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index }) => {
     const classes = useTemplateStyles();
     const { t } = useTranslation();
     const [required, setRequired] = useState(data.required);
 
-    const handleRequired = (checked: boolean) =>{
+    const handleRequired = (checked: boolean) => {
         setRequired(checked);
         data.required = checked;
     }
@@ -585,7 +585,7 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form,index 
                                                 </label>
                                             </Grid>
                                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                                <IOSSwitch checked={required} onChange={(_, v) => {handleRequired(v);form.setValue(`form.${index}.required`, v)}} />
+                                                <IOSSwitch checked={required} onChange={(_, v) => { handleRequired(v); form.setValue(`form.${index}.required`, v) }} />
                                             </Grid>
                                         </Grid>
                                     </Box>
@@ -741,7 +741,7 @@ const CONTACT = "CONTACT";
 const templates: { [x: string]: FieldTemplate } = {
     [NAME_FIELD]: {
         text: <Trans i18nKey={langKeys.name} />,
-        node: (onClose, data, form,index) => {
+        node: (onClose, data, form, index) => {
             return (
                 <NameTemplate
                     form={form}
@@ -791,7 +791,7 @@ const templates: { [x: string]: FieldTemplate } = {
     },
     [PHONE_FIELD]: {
         text: <Trans i18nKey={langKeys.phone} />,
-        node: (onClose, data, form,index) => {
+        node: (onClose, data, form, index) => {
             return (
                 <NameTemplate
                     form={form}
@@ -816,7 +816,7 @@ const templates: { [x: string]: FieldTemplate } = {
     },
     [EMAIL_FIELD]: {
         text: <Trans i18nKey={langKeys.email} />,
-        node: (onClose, data, form,index) => {
+        node: (onClose, data, form, index) => {
             return (
                 <NameTemplate
                     form={form}
@@ -841,7 +841,7 @@ const templates: { [x: string]: FieldTemplate } = {
     },
     [DOCUMENT_FIELD]: {
         text: <Trans i18nKey={langKeys.document} />,
-        node: (onClose, data, form,index) => {
+        node: (onClose, data, form, index) => {
             return (
                 <NameTemplate
                     form={form}
@@ -866,7 +866,7 @@ const templates: { [x: string]: FieldTemplate } = {
     },
     [SUPPLUNUMBER_FIELD]: {
         text: <Trans i18nKey={langKeys.supplynumber} />,
-        node: (onClose, data, form,index) => {
+        node: (onClose, data, form, index) => {
             return (
                 <NameTemplate
                     form={form}
@@ -891,7 +891,7 @@ const templates: { [x: string]: FieldTemplate } = {
     },
     [CONTACT]: {
         text: <Trans i18nKey={langKeys.contact} />,
-        node: (onClose, data, form,index) => {
+        node: (onClose, data, form, index) => {
             return (
                 <NameTemplate
                     form={form}
@@ -927,7 +927,7 @@ const TabPanelForm: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
     }, [fields]);
 
     const handleCloseTemplate = (key: string) => {
-        const newFields = fields.filter(e => e.data.field !== templates[key].data.field) 
+        const newFields = fields.filter(e => e.data.field !== templates[key].data.field)
         setFields(newFields);
     };
 
@@ -997,7 +997,7 @@ const TabPanelForm: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
                     </Grid>
                 </Grid>
             </Grid>
-            {fields.map((e,i) => e.node(handleCloseTemplate, e.data, form, i))}
+            {fields.map((e, i) => e.node(handleCloseTemplate, e.data, form, i))}
         </div>
     );
 }
@@ -1082,7 +1082,7 @@ const TabPanelBubble: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
                 <Box m={1} style={{ display: enable ? 'block' : 'none' }}>
                     <Grid container direction="row">
                         <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                            <label className={classes.text}>Texto</label>
+                            <label className={classes.text}>{t(langKeys.text)}</label>
                         </Grid>
                         <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
                             <TextField
@@ -1585,7 +1585,7 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
     useEffect(() => {
         if (foreground !== 'chatWeb' && selectedView !== "view1") {
             setSelectedView("view1");
-        } 
+        }
     }, [foreground, selectedView]);
 
     useEffect(() => {
@@ -1657,16 +1657,18 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
                 return t(langKeys.field_required);
             }
         }
-        
+
         register('channels.chatWeb.description', { validate: strRequired, value: '' });
-        register('channels.chatWeb.build', { value: values => {
-            return getInsertChatwebChannel(
-                getValues('channels.chatWeb.description'),
-                false,
-                "#7721ad",
-                nestedForm.getValues(),
-            );
-        }});
+        register('channels.chatWeb.build', {
+            value: values => {
+                return getInsertChatwebChannel(
+                    getValues('channels.chatWeb.description'),
+                    false,
+                    "#7721ad",
+                    nestedForm.getValues(),
+                );
+            }
+        });
 
         return () => {
             unregister('channels.chatWeb');
@@ -1682,7 +1684,7 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
 
         nestedForm.register('interface.chattitle', { validate: strRequired, value: '' });
         nestedForm.register('interface.chatsubtitle', { validate: strRequired, value: '' });
-        
+
         const cb = async () => {
             const valid = await nestedForm.trigger();
             setSubmitError(!valid);
@@ -1772,14 +1774,6 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
                     <Trans i18nKey={langKeys.next} />
                 </Button>
             </div>
-            {/* <div style={{ display: showFinalStep ? 'block' : 'none' }}>
-                <ChannelAddEnd
-                    loading={insertChannel.loading}
-                    integrationId={insertChannel.value?.integrationid}
-                    onSubmit={handleSubmit}
-                    onClose={() => setShowFinalStep(false)}
-                />
-            </div> */}
         </div>
     );
 };
@@ -1805,10 +1799,13 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
     } = useContext(SubscriptionContext);
     const { t } = useTranslation();
     const { getValues, setValue, formState: { errors } } = useFormContext<MainData>();
-    
+
     return (
         <div className={clsx(commonClasses.root, submitError && commonClasses.rootError)}>
-            {!hasFinished && <ZyxmeMessengerIcon className={commonClasses.leadingIcon} />}
+            {!hasFinished && <Typography>
+                <Trans i18nKey={langKeys.subscription_genericconnect} />
+            </Typography>}
+            {!hasFinished && <WebMessengerColor className={commonClasses.leadingIcon} />}
             {!hasFinished && <IconButton
                 color="primary"
                 className={commonClasses.trailingIcon}
@@ -1816,22 +1813,22 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
             >
                 <DeleteOutlineIcon />
             </IconButton>}
-            {hasFinished && <ZyxmeMessengerIcon
-                style={{ width: 100, height: 100, alignSelf: 'center', fill: 'gray' }}/>
+            {hasFinished && <WebMessengerColor
+                style={{ width: 100, height: 100, alignSelf: 'center', fill: 'gray' }} />
             }
             {hasFinished && (
                 <div style={{ alignSelf: 'center' }}>
                     <Typography
                         color="primary"
                         style={{ fontSize: '1.5vw', fontWeight: 'bold', textAlign: 'center' }}>
-                        ¡Felicitaciones!
+                        {t(langKeys.subscription_congratulations)}
                     </Typography>
                     <Typography
                         color="primary"
                         style={{ fontSize: '1.2vw', fontWeight: 500 }}>
-                        Haz conectado con ChatWeb
+                        {t(langKeys.subscription_message1)} {t(langKeys.channel_chatweb)} {t(langKeys.subscription_message2)}
                     </Typography>
-            </div>
+                </div>
             )}
             <FieldEdit
                 onChange={v => setValue('channels.chatWeb.description', v)}
@@ -1848,20 +1845,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
                         </InputAdornment>
                     )
                 }}
-            />  
-
-            {/* <div className="row-zyx">
-                    <div className="col-3"></div>
-                    <div className="col-6">
-                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                        {t(langKeys.givechannelcolor)}
-                        </Box>
-                        <div style={{display:"flex",justifyContent:"space-around", alignItems: "center"}}>
-                            <ZyxmeMessengerIcon style={{fill: `${coloricon}`, width: "100px" }}/>
-                            <ColorInput hex={hexIconColor} onChange={e => {setHexIconColor(e.hex);setcoloricon(e.hex)}} />
-                        </div>
-                    </div>
-                </div> */}
+            />
             {!hasFinished && (
                 <Button
                     onClick={onNext}
@@ -1873,14 +1857,6 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
                     <Trans i18nKey={langKeys.next} />
                 </Button>
             )}
-            {/* <div style={{ height: 20 }} />
-            <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column' }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word' }}><code>
-                {`<script src="https://zyxmelinux.zyxmeapp.com/zyxme/chat/src/chatwebclient.min.js" integrationid="${integrationId}"></script>`}
-            </code></pre><div style={{ height: 20 }} />
-                <Button variant="contained" color="primary" onClick={() => history.push(paths.CHANNELS)}>
-                    Terminar
-                </Button>
-            </div> */}
         </div>
     );
 }
