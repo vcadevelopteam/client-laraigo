@@ -32,6 +32,10 @@ const TicketvsAdviser: FC = () => {
                 accessor: 'numeroticket',
             },
             {
+                Header: t(langKeys.startDate),
+                accessor: 'fechainicio',
+            },
+            {
                 Header: t(langKeys.starttime),
                 accessor: 'horainicio',
             },
