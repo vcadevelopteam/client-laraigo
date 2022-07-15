@@ -428,6 +428,7 @@ const translation: LangKeys = {
     registerCode: 'Código de registro',
     rich_response: 'Respuesta enriquecida',
     docNumber: 'Número de documento',
+    waittime: "Tiempo de espera",
     docType: 'Tipo de documento',
     objective: "Objetivo",
     variation: "Variación",

@@ -33,6 +33,7 @@ export const langKeys = {
     undo: "undo",
     redo: "redo",
     make_call: "make_call",
+    waittime: "waittime",
     outboundcall: "outboundcall",
     inboundcall: "inboundcall",
     disconnections: "disconnections",
