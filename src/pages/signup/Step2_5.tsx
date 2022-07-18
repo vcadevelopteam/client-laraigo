@@ -36,8 +36,6 @@ const Step2five: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarnin
     ]), [t]);
 
     const docTypeValidate = (docnum: string, docType: number) => {
-        console.log(docType);
-
         if (!docnum) {
             return t(langKeys.field_required);
         }

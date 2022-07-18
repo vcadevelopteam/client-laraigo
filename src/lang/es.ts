@@ -3758,6 +3758,17 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     messagetemplate_changetoview: 'Visualizar plantilla HTML',
 
     validationchar: 'Este campo tiene un número mínimo y máximo de caracteres',
+    channel_youtubealert1: 'Instala el chatbot en tu canal de YouTube y empieza a conseguir clientes potenciales.',
+    channel_youtubealert2: 'Los canales enlazados a tu cuenta de Google seran usados para este proceso',
+    selectchannellink: 'Selecciona el canal a enlazar',
+    channel_bloggeralert1: 'Instala el chatbot en tu blog y empieza a conseguir clientes potenciales.',
+    channel_bloggeralert2: 'Los canales enlazados a tu cuenta de Google seran usados para este proceso',
+    registerinfobip: "Registrar como Infobip",
+    registergmail: "Registrar como Gmail",
+    channel_gmailalert1: 'Instala el chatbot en tu correo y empieza a conseguir clientes potenciales.',
+    channel_gmailalert2: 'La cuenta de correo que selecciones será usada para este proceso',
+    channel_gmailtitle: 'Conectar Gmail',
+    subscription_missinginfo: 'Debe completar la información faltante para los canales seleccionados',
 };
 
 const esResource: ResourceLanguage = {

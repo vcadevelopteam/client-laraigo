@@ -42,6 +42,7 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
+    const [nextbutton2, setNextbutton2] = useState(true);
 
     useEffect(() => {
         const cb = async () => {
@@ -248,7 +249,7 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
                 </div>
             )}
             <FieldEdit
-                onChange={(value) => setValue('channels.twitter.description', value)}
+                onChange={(value) => { setValue('channels.twitter.description', value); setNextbutton2(!value); }}
                 valueDefault={getValues('channels.twitter.description')}
                 label={t(langKeys.givechannelname)}
                 variant="outlined"
@@ -279,6 +280,7 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
                     className={commonClasses.button}
                     variant="contained"
                     color="primary"
+                    disabled={nextbutton2}
                 >
                     <Trans i18nKey={langKeys.next} />
                 </Button>

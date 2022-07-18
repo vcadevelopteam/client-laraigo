@@ -172,8 +172,12 @@ export interface TikTokChannel {
 
 export interface YouTubeChannel {
     description: string;
-    account: string;
-    url: string;
+    accesstoken: string;
+    refreshtoken: string;
+    scope: string;
+    tokentype: string;
+    idtoken: string;
+    channel: string;
     build: (v: Omit<YouTubeChannel, 'build'>) => IRequestBody;
 }
 
@@ -193,8 +197,12 @@ export interface TeamsChannel {
 
 export interface BloggerChannel {
     description: string;
-    account: string;
-    url: string;
+    accesstoken: string;
+    refreshtoken: string;
+    scope: string;
+    tokentype: string;
+    idtoken: string;
+    channel: string;
     build: (v: Omit<BloggerChannel, 'build'>) => IRequestBody;
 }
 
@@ -203,6 +211,12 @@ export interface EmailChannel {
     apikey: string;
     url: string;
     emittername: string;
+    accesstoken: string;
+    refreshtoken: string;
+    scope: string;
+    tokentype: string;
+    idtoken: string;
+    type: string;
     build: (v: Omit<EmailChannel, 'build'>) => IRequestBody;
 }
 
@@ -542,8 +556,6 @@ export const SubscriptionProvider: FC = ({ children }) => {
         submitObs.trigger();
     }
     const valchannels = () => {
-        console.log(form.formState.errors)
-        debugger
         form.handleSubmit(onVal, onError)();
     }
     const onCheckFunc = (altfunc?: any) => {
@@ -633,7 +645,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
 
     const onError: SubmitErrorHandler<MainData> = (err) => {
         dispatch(showSnackbar({
-            message: "Debe completar el/los canal/es",
+            message: t(langKeys.subscription_missinginfo),
             show: true,
             severity: "error",
         }))

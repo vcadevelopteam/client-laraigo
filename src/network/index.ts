@@ -7,3 +7,4 @@ export * as CulqiService from './service/culqi';
 export * as SubscriptionService from './service/subscription';
 export * as DashboardService from './service/dashboard';
 export * as VoximplantService from './service/voximplant';
+export * as GoogleService from './service/google';

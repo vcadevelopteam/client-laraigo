@@ -3746,6 +3746,17 @@ export const langKeys = {
     messagetemplate_changetoview: 'messagetemplate_changetoview',
 
     validationchar: 'validationchar'
+    channel_youtubealert1: 'channel_youtubealert1',
+    channel_youtubealert2: 'channel_youtubealert2',
+    selectchannellink: 'selectchannellink',
+    channel_bloggeralert1: 'channel_bloggeralert1',
+    channel_bloggeralert2: 'channel_bloggeralert2',
+    registerinfobip: "registerinfobip",
+    registergmail: "registergmail",
+    channel_gmailalert1: 'channel_gmailalert1',
+    channel_gmailalert2: 'channel_gmailalert2',
+    channel_gmailtitle: 'channel_gmailtitle',
+    subscription_missinginfo: 'subscription_missinginfo',
 };
 
 export type LangKeys = typeof langKeys;
