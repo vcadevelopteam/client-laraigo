@@ -190,7 +190,7 @@ export const ChannelAddEmail: FC<{ setOpenWarning: (param: any) => void }> = ({ 
         if (waitExchange) {
             if (!exchangeCodeResult.loading) {
                 if (!exchangeCodeResult.error) {
-                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.success) }));
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }));
                     if (exchangeCodeResult.data) {
                         setValue('channels.email.accesstoken', exchangeCodeResult.data.access_token);
                         setValue('channels.email.idtoken', exchangeCodeResult.data.id_token);
@@ -206,7 +206,7 @@ export const ChannelAddEmail: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                     }
                 }
                 else {
-                    dispatch(showSnackbar({ show: true, success: false, message: t(((exchangeCodeResult.msg || exchangeCodeResult.message) || exchangeCodeResult.code) || 'error_unexpected_error') }));
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(((exchangeCodeResult.msg || exchangeCodeResult.message) || exchangeCodeResult.code) || 'error_unexpected_error') }));
                 }
                 dispatch(showBackdrop(false));
                 setWaitExchange(false);

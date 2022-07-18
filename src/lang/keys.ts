@@ -3745,7 +3745,7 @@ export const langKeys = {
     messagetemplate_changetoeditor: 'messagetemplate_changetoeditor',
     messagetemplate_changetoview: 'messagetemplate_changetoview',
 
-    validationchar: 'validationchar'
+    validationchar: 'validationchar',
     channel_youtubealert1: 'channel_youtubealert1',
     channel_youtubealert2: 'channel_youtubealert2',
     selectchannellink: 'selectchannellink',

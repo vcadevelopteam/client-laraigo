@@ -173,7 +173,7 @@ export const ChannelAddYouTube: FC<{ setOpenWarning: (param: any) => void }> = (
         if (waitExchange) {
             if (!exchangeCodeResult.loading) {
                 if (!exchangeCodeResult.error) {
-                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.success) }));
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }));
                     if (exchangeCodeResult.data) {
                         setValue('channels.youtube.accesstoken', exchangeCodeResult.data.access_token);
                         setValue('channels.youtube.idtoken', exchangeCodeResult.data.id_token);
@@ -190,7 +190,7 @@ export const ChannelAddYouTube: FC<{ setOpenWarning: (param: any) => void }> = (
                     }
                 }
                 else {
-                    dispatch(showSnackbar({ show: true, success: false, message: t(((exchangeCodeResult.msg || exchangeCodeResult.message) || exchangeCodeResult.code) || 'error_unexpected_error') }));
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(((exchangeCodeResult.msg || exchangeCodeResult.message) || exchangeCodeResult.code) || 'error_unexpected_error') }));
                 }
                 dispatch(showBackdrop(false));
                 setWaitExchange(false);
@@ -202,7 +202,7 @@ export const ChannelAddYouTube: FC<{ setOpenWarning: (param: any) => void }> = (
         if (waitList) {
             if (!listYouTubeResult.loading) {
                 if (!listYouTubeResult.error) {
-                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.success) }));
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }));
                     if (listYouTubeResult.data) {
                         if (listYouTubeResult.data.items) {
                             listYouTubeResult.data.items.forEach((element: any) => {
@@ -213,7 +213,7 @@ export const ChannelAddYouTube: FC<{ setOpenWarning: (param: any) => void }> = (
                     }
                 }
                 else {
-                    dispatch(showSnackbar({ show: true, success: false, message: t(((listYouTubeResult.msg || listYouTubeResult.message) || listYouTubeResult.code) || 'error_unexpected_error') }));
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(((listYouTubeResult.msg || listYouTubeResult.message) || listYouTubeResult.code) || 'error_unexpected_error') }));
                 }
                 dispatch(showBackdrop(false));
                 setWaitList(false);

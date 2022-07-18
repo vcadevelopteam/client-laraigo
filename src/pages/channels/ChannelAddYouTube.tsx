@@ -139,7 +139,7 @@ export const ChannelAddYouTube: FC = () => {
         if (waitExchange) {
             if (!exchangeCodeResult.loading) {
                 if (!exchangeCodeResult.error) {
-                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.success) }));
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }));
                     if (exchangeCodeResult.data) {
                         let partialFields = fields;
                         partialFields.service.accesstoken = exchangeCodeResult.data.access_token;
@@ -158,7 +158,7 @@ export const ChannelAddYouTube: FC = () => {
                     }
                 }
                 else {
-                    dispatch(showSnackbar({ show: true, success: false, message: t(((exchangeCodeResult.msg || exchangeCodeResult.message) || exchangeCodeResult.code) || 'error_unexpected_error') }));
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(((exchangeCodeResult.msg || exchangeCodeResult.message) || exchangeCodeResult.code) || 'error_unexpected_error') }));
                 }
                 dispatch(showBackdrop(false));
                 setWaitExchange(false);
@@ -170,7 +170,7 @@ export const ChannelAddYouTube: FC = () => {
         if (waitList) {
             if (!listYouTubeResult.loading) {
                 if (!listYouTubeResult.error) {
-                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.success) }));
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }));
                     if (listYouTubeResult.data) {
                         if (listYouTubeResult.data.items) {
                             listYouTubeResult.data.items.forEach((element: any) => {
@@ -181,7 +181,7 @@ export const ChannelAddYouTube: FC = () => {
                     }
                 }
                 else {
-                    dispatch(showSnackbar({ show: true, success: false, message: t(((listYouTubeResult.msg || listYouTubeResult.message) || listYouTubeResult.code) || 'error_unexpected_error') }));
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(((listYouTubeResult.msg || listYouTubeResult.message) || listYouTubeResult.code) || 'error_unexpected_error') }));
                 }
                 dispatch(showBackdrop(false));
                 setWaitList(false);
