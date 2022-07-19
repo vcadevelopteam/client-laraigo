@@ -355,6 +355,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
 
     const [templateTypeDisabled, setTemplateTypeDisabled] = useState(['SMS', 'MAIL'].includes(getValues('type')));
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { fields: buttons } = useFieldArray({
         control,
         name: "buttons",

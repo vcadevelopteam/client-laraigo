@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useCallback } from 'react'
-import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomainLight, insConversationClassificationMassive, reassignMassiveTicket, getUserSel, getHistoryStatusConversation, getCampaignLst, uploadCSV, uploadExcel, getPropertySelByName, exportExcel, templateMaker } from 'common/helpers';
+import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomainLight, insConversationClassificationMassive, reassignMassiveTicket, getUserSel, getHistoryStatusConversation, getCampaignLst, getPropertySelByName, exportExcel, templateMaker } from 'common/helpers';
 import { getCollectionPaginated, exportData, getMultiCollection, resetAllMain, execute, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
@@ -11,7 +11,7 @@ import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Box from '@material-ui/core/Box/Box';
-import { DialogZyx, FieldMultiSelect, FieldSelect, FieldEditMulti, FieldEdit } from 'components';
+import { DialogZyx, FieldMultiSelect, FieldSelect, FieldEditMulti } from 'components';
 import TableZyx from 'components/fields/table-simple';
 import { DialogInteractions } from 'components';
 import { useForm } from 'react-hook-form';

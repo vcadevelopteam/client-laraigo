@@ -1,8 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useState, MouseEventHandler } from 'react'
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import { createStyles, Theme } from '@material-ui/core/styles';
-import { Avatar, Fab, InputBase, makeStyles, MenuItem, Paper, Tooltip, Typography } from "@material-ui/core";
+import { Avatar, Fab, makeStyles, MenuItem, Typography } from "@material-ui/core";
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import DialpadIcon from '@material-ui/icons/Dialpad';
 import { useTranslation } from 'react-i18next';
@@ -13,9 +14,9 @@ import { makeCall, setModalCall, getHistory, geAdvisors, rejectCall, setPhoneNum
 import TextField from '@material-ui/core/TextField';
 import PhoneForwardedIcon from '@material-ui/icons/PhoneForwarded';
 import PhoneIcon from '@material-ui/icons/Phone';
-import { FieldSelect, AntTab, SearchField } from 'components';
+import { AntTab, SearchField } from 'components';
 import { IconButton, Tabs } from '@material-ui/core';
-import { conversationOutboundIns, convertLocalDate, getSecondsUntelNow, getAdvisorListVoxi } from 'common/helpers';
+import { conversationOutboundIns, convertLocalDate, getSecondsUntelNow } from 'common/helpers';
 import { langKeys } from 'lang/keys';
 import ContactPhoneIcon from '@material-ui/icons/ContactPhone';
 import PhoneCallbackIcon from '@material-ui/icons/PhoneCallback';
@@ -24,7 +25,6 @@ import clsx from 'clsx';
 import { execute } from 'store/main/actions';
 import { ITicket } from '@types';
 import { ListItemSkeleton } from 'components';
-import { SearchIcon } from 'icons';
 import { showSnackbar } from 'store/popus/actions';
 import PersonIcon from '@material-ui/icons/Person';
 import { useHistory } from 'react-router';

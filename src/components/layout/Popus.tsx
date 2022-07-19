@@ -25,13 +25,6 @@ const useStyles = makeStyles({
     }
 });
 
-const action = (
-    <Button color="secondary" size="small">
-        lorem ipsum dolorem
-    </Button>
-);
-
-
 const Popus: React.FC = () => {
     const classes = useStyles();
     const dispatch = useDispatch();

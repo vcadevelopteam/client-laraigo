@@ -7,7 +7,7 @@ import RGL, { WidthProvider } from 'react-grid-layout';
 import { Trans, useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { Close as CloseIcon, Clear as ClearIcon, Add as AddIcon, Save as SaveIcon } from "@material-ui/icons";
-import { FieldErrors, useFieldArray, useForm, UseFormGetValues, UseFormRegister, UseFormSetValue, UseFormUnregister } from "react-hook-form";
+import { FieldErrors, useForm, UseFormGetValues, UseFormRegister, UseFormSetValue, UseFormUnregister } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { getMultiCollection, resetMain, resetMultiMain } from "store/main/actions";
 import { getDashboardTemplateIns, getDashboardTemplateSel, getKpiSel, getReportTemplateSel, getTagsChatflow } from "common/helpers";
@@ -210,7 +210,7 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
     }, [dashboardtemplate, edit, t, dispatch]);
 
 
-    const {control,register,unregister,formState: { errors }, getValues, setValue, handleSubmit,reset,} = useForm<Items>({
+    const {register,unregister,formState: { errors }, getValues, setValue, handleSubmit,reset,} = useForm<Items>({
         defaultValues: {
             
         }
@@ -663,7 +663,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
     }
 
     function deleteFunnel(index:number){
-        let newtagsdata=tagsdata.filter((x:any,i:number)=>i!=index)
+        let newtagsdata=tagsdata.filter((x:any,i:number)=>i!==index)
         debugger
         settagsdata(newtagsdata)
         setValue(`${key}.tags`,newtagsdata)

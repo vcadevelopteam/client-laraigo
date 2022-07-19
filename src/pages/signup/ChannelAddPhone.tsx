@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import { Button, IconButton, InputAdornment, makeStyles, Typography, FormControlLabel } from "@material-ui/core";
@@ -8,7 +9,7 @@ import { getName } from "country-list";
 import { langKeys } from "lang/keys";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import { useDispatch } from "react-redux";
-import { useHistory, useLocation } from "react-router";
+import { useHistory } from "react-router";
 import { useSelector } from "hooks";
 import { Trans, useTranslation } from "react-i18next";
 import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon, LinkOff as LinkOffIcon } from '@material-ui/icons';
@@ -20,11 +21,6 @@ import InfoIcon from "@material-ui/icons/Info";
 import paths from "common/constants/paths";
 import PhoneIcon from "@material-ui/icons/Phone";
 import Tooltip from "@material-ui/core/Tooltip";
-
-interface whatsAppData {
-    row?: any;
-    typeWhatsApp?: string;
-}
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -76,8 +72,6 @@ const useChannelAddStyles = makeStyles(theme => ({
 export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
     const {
         commonClasses,
-        selectedChannels,
-        finishreg,
         deleteChannel,
     } = useContext(SubscriptionContext);
     const dispatch = useDispatch();
@@ -92,16 +86,14 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     const countryStatesResult = useSelector(state => state.voximplant.requestGetCountryStates);
     const executeResult = useSelector(state => state.channel.successinsert);
     const history = useHistory();
-    const location = useLocation<whatsAppData>();
     const regionsResult = useSelector(state => state.voximplant.requestGetRegions);
     const mainResult = useSelector(state => state.channel.channelList);
-    const whatsAppData = location.state as whatsAppData | null;
     const { getValues, setValue, register, unregister, formState: { errors } } = useFormContext<MainData>();
 
     const planData = usePlanData();
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [phoneTax, setPhoneTax] = useState(planData?.plan?.phonetax || 0);
-    const [waitPlan, setWaitPlan] = useState(false);
     const [checkedRecording, setCheckedRecording] = useState(false);
     const [checkedSms, setCheckedSms] = useState(false);
     const [checkedOutbound, setCheckedOutbound] = useState(false);
@@ -127,7 +119,6 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     useEffect(() => {
         dispatch(getCategories({}));
         setWaitCategories(true);
-        setWaitPlan(true);
     }, [])
 
     const openPricingPage = () => {

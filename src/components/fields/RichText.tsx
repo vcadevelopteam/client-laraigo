@@ -1,4 +1,5 @@
-import { Box, BoxProps, IconButton, IconButtonProps, Menu, TextField, Toolbar, makeStyles, Button, InputAdornment, Tabs, FormHelperText, CircularProgress, Tooltip, InputLabel, SelectProps, FormControl, Select, MenuItem, ClickAwayListener, Divider } from '@material-ui/core';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { Box, BoxProps, IconButton, IconButtonProps, Menu, TextField, Toolbar, makeStyles, Button, InputAdornment, Tabs, FormHelperText, CircularProgress, Tooltip, SelectProps, FormControl, Select, MenuItem, ClickAwayListener, Divider } from '@material-ui/core';
 import {
     FormatBold as FormatBoldIcon,
     FormatItalic as FormatItalicIcon,
@@ -28,7 +29,7 @@ import { withHistory } from 'slate-history';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import ReactDomServer from 'react-dom/server';
-import { AntTab, ColorInput } from 'components';
+import { AntTab } from 'components';
 import clsx from 'clsx';
 import { useSelector } from 'hooks';
 import { resetUploadFile, uploadFile } from 'store/main/actions';
@@ -472,14 +473,6 @@ const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, placeholder
             {error && error !== '' && <FormHelperText error>{error}</FormHelperText>}
         </Box >
     );
-}
-
-const NormalLine: FC<{ attributes?: any, children: React.ReactNode }> = ({ attributes = {}, children }) => {
-    const editor = useSlate();
-    const marks = Editor.marks(editor);
-    const textalign = marks?.textalign || 'left';
-
-    return <p {...attributes} style={{ textAlign: textalign }}>{children}</p>;
 }
 
 /**Renderiza el texto seleccionado con cierto estilo */

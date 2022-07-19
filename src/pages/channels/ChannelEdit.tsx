@@ -83,6 +83,7 @@ const ChannelEdit: FC = () => {
             }));
             history.push(paths.CHANNELS);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [edit, history, dispatch]);
 
     const handleSubmit = useCallback(() => {

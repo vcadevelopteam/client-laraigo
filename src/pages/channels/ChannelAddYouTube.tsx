@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useEffect, useState } from "react";
 import { makeStyles, Breadcrumbs, Button, Box } from '@material-ui/core';

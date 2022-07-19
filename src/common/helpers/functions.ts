@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 import { Dictionary } from "@types";
 import * as XLSX from 'xlsx';
 
