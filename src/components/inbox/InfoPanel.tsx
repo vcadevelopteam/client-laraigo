@@ -700,7 +700,7 @@ const Attachments: React.FC = () => {
                 ...(item.interactions || [])
             ], []);
             setListFiles(interactions.reduce<Dictionary[]>((acc, item) => {
-                if (item?.interactiontext?.split("&%MAIL%&")[2] && item?.interactiontext?.split("&%MAIL%&")[2] != "{}") {
+                if (item?.interactiontext?.split("&%MAIL%&")[2] && item?.interactiontext?.split("&%MAIL%&")[2] !== "{}") {
                     const filesjson = JSON.parse(item.interactiontext.split("&%MAIL%&")[2])
                     const keys = Object.keys(filesjson)
                     let arrayres = keys.filter(key => (key.split(".").pop() !== "jpg" && key.split(".").pop() !== "png" && key.split(".").pop() !== "jpeg")).reduce<Dictionary[]>((acc1, key) => [

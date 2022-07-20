@@ -14,7 +14,7 @@ import { resetInsertChannel } from 'store/channel/actions';
 import { useSelector } from 'hooks';
 import { showSnackbar } from 'store/popus/actions';
 import { getInsertChatwebChannel } from 'common/helpers';
-import { WebMessengerColor, ZyxmeMessengerIcon } from 'icons';
+import { WebMessengerColor } from 'icons';
 import { MainData, SubscriptionContext } from './context';
 
 interface TabPanelProps {

@@ -24,6 +24,7 @@ interface Properties {
     alertTicketNew: boolean | undefined;
     alertMessageIn: boolean | undefined;
     hide_log_conversation: boolean;
+    limit_reassign_group: boolean;
     auto_close: Dictionary;
     auto_close_holding: Dictionary;
     time_reassign_call: number | undefined;

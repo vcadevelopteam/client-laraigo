@@ -27,9 +27,7 @@ export const ChannelAddTeams: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     const {
         commonClasses,
         foreground,
-        selectedChannels,
         submitObservable,
-        finishreg,
         setForeground,
         deleteChannel,
     } = useContext(SubscriptionContext);
@@ -144,6 +142,7 @@ export const ChannelAddTeams: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                         <div className="col-3"></div>
                         <FieldEdit
                             onChange={v => {
+                                // eslint-disable-next-line no-useless-escape
                                 setNextbutton(v === "" || getValues('channels.teams.url') === "" || !/\S+@\S+\.\S+/.test(v) || !/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/.test(getValues('channels.teams.url')));
                                 setValue('channels.teams.account', v);
                             }}
@@ -157,6 +156,7 @@ export const ChannelAddTeams: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                         <div className="col-3"></div>
                         <FieldEdit
                             onChange={v => {
+                                // eslint-disable-next-line no-useless-escape
                                 setNextbutton(v === "" || getValues('channels.teams.account') === "" || !/\S+@\S+\.\S+/.test(getValues('channels.teams.account')) || !/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/.test(v))
                                 setValue('channels.teams.url', v);
                             }}

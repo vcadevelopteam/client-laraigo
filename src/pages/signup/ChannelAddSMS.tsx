@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useContext, useEffect, useState } from "react";
 import { makeStyles, Breadcrumbs, Button, Link, IconButton, Typography, InputAdornment } from '@material-ui/core';
@@ -27,9 +28,7 @@ export const ChannelAddSMS: FC<{ setOpenWarning: (param: any) => void }> = ({ se
     const {
         commonClasses,
         foreground,
-        selectedChannels,
         submitObservable,
-        finishreg,
         setForeground,
         deleteChannel,
     } = useContext(SubscriptionContext);

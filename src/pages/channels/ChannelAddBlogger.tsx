@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 /* eslint-disable react-hooks/exhaustive-deps */
 import Link from '@material-ui/core/Link';
 import paths from "common/constants/paths";

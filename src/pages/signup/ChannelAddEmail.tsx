@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 /* eslint-disable react-hooks/exhaustive-deps */
 import clsx from 'clsx';
 
@@ -42,7 +43,7 @@ export const ChannelAddEmail: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     const classes = useChannelAddStyles();
     const exchangeCodeResult = useSelector(state => state.google.requestExchangeCode);
 
-    const { commonClasses, deleteChannel, finishreg, foreground, selectedChannels, setForeground, submitObservable, } = useContext(SubscriptionContext);
+    const { commonClasses, deleteChannel, foreground, setForeground, submitObservable, } = useContext(SubscriptionContext);
     const { getValues, setValue, register, unregister, formState: { errors }, trigger } = useFormContext<MainData>();
 
     const [hasFinished, setHasFinished] = useState(false);

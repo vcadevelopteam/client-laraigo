@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 /* eslint-disable react-hooks/exhaustive-deps */
 import clsx from 'clsx';
 
@@ -36,7 +37,7 @@ export const ChannelAddBlogger: FC<{ setOpenWarning: (param: any) => void }> = (
     const exchangeCodeResult = useSelector(state => state.google.requestExchangeCode);
     const listBloggerResult = useSelector(state => state.google.requestListBlogger);
 
-    const { commonClasses, deleteChannel, finishreg, foreground, selectedChannels, setForeground, submitObservable, } = useContext(SubscriptionContext);
+    const { commonClasses, deleteChannel, foreground, setForeground, submitObservable, } = useContext(SubscriptionContext);
     const { getValues, setValue, register, unregister, formState: { errors }, trigger } = useFormContext<MainData>();
 
     const [channellist, setChannellist] = useState([]);

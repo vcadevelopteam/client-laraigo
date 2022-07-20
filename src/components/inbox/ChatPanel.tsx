@@ -107,7 +107,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
 
     useEffect(() => {
         setTemplatesList(multiData?.data?.[5] && multiData?.data[5].data.filter(x => x.type === "HSM"))
-        setchannelsList(multiData?.data?.[13]?.data?.filter(e=>e.type.includes("WHA"))||[])
+        setchannelsList(multiData?.data?.[13]?.data?.filter(e => e.type.includes("WHA")) || [])
     }, [multiData.data])
 
     useEffect(() => {
@@ -122,18 +122,18 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
             register('communicationchannelid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
             register('communicationchanneltype', { validate: (value) => ((value && value.length > 0) || t(langKeys.field_required)) });
             register('platformtype', { validate: (value) => ((value && value.length > 0) || t(langKeys.field_required)) });
-            if(ticketSelected?.communicationchanneltype?.includes('WHA')||ticketSelected?.communicationchanneltype?.includes('VOXI')){
+            if (ticketSelected?.communicationchanneltype?.includes('WHA') || ticketSelected?.communicationchanneltype?.includes('VOXI')) {
                 let value = channelsList[0]
-                setValue('communicationchannelid', value?.communicationchannelid||0);
-                setValue('communicationchanneltype', value?.type||"");
-                setValue('platformtype', value?.communicationchannelsite||""); 
+                setValue('communicationchannelid', value?.communicationchannelid || 0);
+                setValue('communicationchanneltype', value?.type || "");
+                setValue('platformtype', value?.communicationchannelsite || "");
             }
         }
     }, [openModal])
 
     const onSelectTemplate = (value: Dictionary) => {
-        if(ticketSelected?.communicationchanneltype?.includes('WHA')){
-            
+        if (ticketSelected?.communicationchanneltype?.includes('WHA')) {
+
             setValue('communicationchannelid', ticketSelected?.communicationchannelid!!);
             setValue('communicationchanneltype', ticketSelected?.communicationchanneltype!!);
             setValue('platformtype', ticketSelected?.communicationchannelsite!!);
@@ -197,16 +197,16 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
             button2Type="submit"
         >
             <div className="row-zyx">
-                
+
                 {!ticketSelected?.communicationchanneltype?.includes('WHA') &&
                     <FieldSelect
                         label={t(langKeys.channel)}
                         className="col-12"
                         valueDefault={getValues('communicationchannelid')}
                         onChange={(value) => {
-                            setValue('communicationchannelid', value?.communicationchannelid||0);
-                            setValue('communicationchanneltype', value?.type||"");
-                            setValue('platformtype', value?.communicationchannelsite||""); 
+                            setValue('communicationchannelid', value?.communicationchannelid || 0);
+                            setValue('communicationchanneltype', value?.type || "");
+                            setValue('platformtype', value?.communicationchannelsite || "");
                         }}
                         error={errors?.communicationchannelid?.message}
                         data={channelsList}
@@ -426,13 +426,11 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const agentToReassignList = useSelector(state => state.inbox.agentToReassignList);
     const user = useSelector(state => state.login.validateToken.user);
-    const groups = user?.groups?.split(",")||[]
-    
+    const [userToReassign, setUserToReassign] = useState<Dictionary[]>([])
+    const groups = user?.groups?.split(",") || [];
     const userType = useSelector(state => state.inbox.userType);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
-
     const reassigningRes = useSelector(state => state.inbox.triggerReassignTicket);
-
     const interactionBaseList = useSelector(state => state.inbox.interactionBaseList);
 
     const { register, handleSubmit, setValue, getValues, trigger, reset, formState: { errors } } = useForm<{
@@ -503,6 +501,24 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
         setWaitReassign(true)
 
     });
+
+    useEffect(() => {
+        if (user) {
+            const groups = user?.groups ? user?.groups.split(",") : [];
+            if (user.properties.limit_reassign_group) {
+                setUserToReassign([
+                    { domainvalue: "NINGUNO", domaindesc: t(langKeys.NINGUNO) },
+                    ...(multiData?.data?.[3]?.data || []).filter(x => x.domainvalue !== ticketSelected?.usergroup).filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true)
+                ])
+            } else {
+                setUserToReassign([
+                    { domainvalue: "NINGUNO", domaindesc: t(langKeys.NINGUNO) },
+                    ...(multiData?.data?.[3]?.data || []).filter(x => x.domainvalue !== ticketSelected?.usergroup)
+                ])
+            }
+        }
+    }, [user, multiData])
+
     return (
         <DialogZyx
             open={openModal}
@@ -524,7 +540,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                         trigger('newUserId');
                     }}
                     error={errors?.newUserGroup?.message}
-                    data={[{domainvalue:"NINGUNO",domaindesc: t(langKeys.NINGUNO)},...(multiData?.data?.[3]?.data || []).filter(x => x.domainvalue !== ticketSelected?.usergroup).filter(x=>user?.groups!==""?user?.groups?.includes(x.domainvalue):true)]}
+                    data={userToReassign}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />
@@ -536,26 +552,26 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                         setValue('newUserId', value ? value.userid : 0);
                     }}
                     error={errors?.newUserId?.message}
-                    data={agentToReassignList.filter(x => x.status === "ACTIVO").filter(x=>{
-                        if(getValues("newUserGroup")){
+                    data={agentToReassignList.filter(x => x.status === "ACTIVO").filter(x => {
+                        if (getValues("newUserGroup")) {
                             let ingroup = false;
-                            if(getValues("newUserGroup")==="NINGUNO"){
-                                if(groups[0]!==""){
+                            if (getValues("newUserGroup") === "NINGUNO") {
+                                if (groups[0] !== "") {
                                     groups.forEach(e => {
-                                        if(x.groups.split(",").includes(e)) ingroup=true;
+                                        if (x.groups.split(",").includes(e)) ingroup = true;
                                     })
-                                }else{
-                                    ingroup=true
+                                } else {
+                                    ingroup = true
                                 }
                                 return ingroup
-                            }else{
+                            } else {
                                 return x.groups.includes(getValues("newUserGroup"))
                             }
-                        }else{
+                        } else {
                             return false
                         }
                     })
-                }
+                    }
                     optionDesc="displayname"
                     optionValue="userid"
                 />
@@ -962,10 +978,10 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     return (
         <>
             <div className={classes.containerButtonsChat}>
-                {(!voxiConnection.error && !voxiConnection.loading && statusCall!=="CONNECTED" && userConnected && statusCall!=="CONNECTING" && 
-                ticketSelected?.communicationchanneltype !== "VOXI" && location.pathname=== "/message_inbox" ) &&
+                {(!voxiConnection.error && !voxiConnection.loading && statusCall !== "CONNECTED" && userConnected && statusCall !== "CONNECTING" &&
+                    ticketSelected?.communicationchanneltype !== "VOXI" && location.pathname === "/message_inbox") &&
                     <Tooltip title={t(langKeys.make_call) + ""} arrow placement="top">
-                        <IconButton onClick={() => {dispatch(setModalCall(true))}}>
+                        <IconButton onClick={() => { dispatch(setModalCall(true)) }}>
                             <PhoneIcon width={24} height={24} fill="#8F92A1" />
                         </IconButton>
                     </Tooltip>
@@ -1042,7 +1058,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                         {t(langKeys.typify)}
                     </MenuItem>
                 }
-                {(ticketSelected?.communicationchanneltype?.includes('WHA') || multiData?.data?.[13]?.data?.filter(e=>e.type.includes("WHA")).length>0 ) &&
+                {(ticketSelected?.communicationchanneltype?.includes('WHA') || multiData?.data?.[13]?.data?.filter(e => e.type.includes("WHA")).length > 0) &&
                     <MenuItem onClick={() => {
                         setAnchorEl(null)
                         setOpenModalHSM(true)
@@ -1090,7 +1106,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     )
 }
 
-const typeText = ["text", "post-text", "reply-text", "quickreply", "carousel", "LOG","email"]
+const typeText = ["text", "post-text", "reply-text", "quickreply", "carousel", "LOG", "email"]
 
 const applySearch = (list: Dictionary[], index: number) => {
     const inthtml = document.getElementById(`interaction-${list[index].interactionid}`)

@@ -36,7 +36,7 @@ export const ChannelAddYouTube: FC<{ setOpenWarning: (param: any) => void }> = (
     const exchangeCodeResult = useSelector(state => state.google.requestExchangeCode);
     const listYouTubeResult = useSelector(state => state.google.requestListYouTube);
 
-    const { commonClasses, deleteChannel, finishreg, foreground, selectedChannels, setForeground, submitObservable, } = useContext(SubscriptionContext);
+    const { commonClasses, deleteChannel, foreground, setForeground, submitObservable, } = useContext(SubscriptionContext);
     const { getValues, setValue, register, unregister, formState: { errors }, trigger } = useFormContext<MainData>();
 
     const [channellist, setChannellist] = useState([]);

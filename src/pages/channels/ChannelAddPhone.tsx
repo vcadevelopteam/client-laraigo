@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import { Box, Breadcrumbs, Button, makeStyles, FormControlLabel } from "@material-ui/core";
@@ -85,13 +86,11 @@ export const ChannelAddPhone: FC = () => {
     const classes = useChannelAddStyles();
     const countryStatesResult = useSelector(state => state.voximplant.requestGetCountryStates);
     const executeResult = useSelector(state => state.channel.successinsert);
-    const insertResult = useSelector(state => state.channel.insertChannel);
     const multiResult = useSelector(state => state.main.multiData);
     const history = useHistory();
     const location = useLocation<whatsAppData>();
     const regionsResult = useSelector(state => state.voximplant.requestGetRegions);
     const mainResult = useSelector(state => state.channel.channelList);
-    const user = useSelector(state => state.login.validateToken.user);
     const whatsAppData = location.state as whatsAppData | null;
 
     const [checkedRecording, setCheckedRecording] = useState(false);
