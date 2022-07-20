@@ -1938,6 +1938,24 @@ export const langKeys = {
     report_userproductivityhours_qtytickets: 'report_userproductivityhours_qtytickets',
     report_userproductivityhours_qtyconnection: 'report_userproductivityhours_qtyconnection',
     report_userproductivityhours_qtydisconnection: 'report_userproductivityhours_qtydisconnection',
+
+    report_survey: 'report_survey',
+    report_survey_ticketnum: 'report_survey_ticketnum',
+    report_survey_ticketdate: 'report_survey_ticketdate',
+    report_survey_tickettime: 'report_survey_tickettime',
+    report_survey_classification: 'report_survey_classification',
+    report_survey_supervisor: 'report_survey_supervisor',
+    report_survey_agent: 'report_survey_agent',
+    report_survey_firstgroup: 'report_survey_firstgroup',
+    report_survey_lastgroup: 'report_survey_lastgroup',
+    report_survey_answer1: 'report_survey_answer1',
+    report_survey_comment1: 'report_survey_comment1',
+    report_survey_answer2: 'report_survey_answer2',
+    report_survey_comment2: 'report_survey_comment2',
+    report_survey_answer3: 'report_survey_answer3',
+    report_survey_comment3: 'report_survey_comment3',
+
+
     submotive: "submotive",
     assessment: "assessment",
     closedby: "closedby",
@@ -3265,6 +3283,7 @@ export const langKeys = {
     propertyhorainiatencion: 'propertyhorainiatencion',
     propertyhorasuspension: 'propertyhorasuspension',
     propertycargarconversaciones: 'propertycargarconversaciones',
+    propertyreporteencuesta: 'propertyreporteencuesta',
 
     property_tooltip_enable_button: 'property_tooltip_enable_button',
     property_tooltip_disable_button: 'property_tooltip_disable_button',
