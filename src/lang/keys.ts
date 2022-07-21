@@ -874,6 +874,7 @@ export const langKeys = {
     dropoutrate: "dropoutrate",
     advisorquantity: "advisorquantity",
     tmetooltip: "tmetooltip",
+    tmeadvisortooltip: "tmeadvisortooltip",
     tmrtooltip: "tmrtooltip",
     npstooltip: "npstooltip",
     csattooltip: "csattooltip",
