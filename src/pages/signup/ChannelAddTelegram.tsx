@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useContext, useEffect, useState } from "react";
-import { Button, IconButton, Typography, InputAdornment } from '@material-ui/core';
+import { IconButton, Typography, InputAdornment } from '@material-ui/core';
 import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon, LinkOff as LinkOffIcon } from '@material-ui/icons';
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
@@ -12,8 +12,6 @@ import { useFormContext } from "react-hook-form";
 export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
     const {
         commonClasses,
-        selectedChannels,
-        finishreg,
         deleteChannel,
     } = useContext(SubscriptionContext);
     const { getValues, setValue, register, unregister, formState: { errors } } = useFormContext<MainData>();
@@ -26,32 +24,34 @@ export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = 
                 return t(langKeys.field_required);
             }
         }
-        
+
         register('channels.telegram.description', { validate: strRequired, value: '' });
         register('channels.telegram.accesstoken', { validate: strRequired, value: '' });
         register('channels.telegram.communicationchannelowner', { value: '' });
-        register('channels.telegram.build', { value: values => ({
-            "method": "UFN_COMMUNICATIONCHANNEL_INS",
-            "parameters": {
-                "id": 0,
-                "description": values.description,
-                "type": "",
-                "communicationchannelsite": "",
-                "communicationchannelowner": "",
-                "chatflowenabled": true,
-                "integrationid": "",
-                "color": "",
-                "icons": "",
-                "other": "",
-                "form": "",
-                "apikey": "",
-                "coloricon": "#207FDD",
-            },
-            "type": "TELEGRAM",
-            "service": {
-                "accesstoken": values.accesstoken
-            }
-        })});
+        register('channels.telegram.build', {
+            value: values => ({
+                "method": "UFN_COMMUNICATIONCHANNEL_INS",
+                "parameters": {
+                    "id": 0,
+                    "description": values.description,
+                    "type": "",
+                    "communicationchannelsite": "",
+                    "communicationchannelowner": "",
+                    "chatflowenabled": true,
+                    "integrationid": "",
+                    "color": "",
+                    "icons": "",
+                    "other": "",
+                    "form": "",
+                    "apikey": "",
+                    "coloricon": "#207FDD",
+                },
+                "type": "TELEGRAM",
+                "service": {
+                    "accesstoken": values.accesstoken
+                }
+            })
+        });
 
         return () => {
             unregister('channels.telegram')
@@ -82,24 +82,24 @@ export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = 
                 <DeleteOutlineIcon />
             </IconButton>}
             {!hasFinished && <Typography>
-                <Trans i18nKey={langKeys.connectface2} />
+                <Trans i18nKey={langKeys.subscription_genericconnect} />
             </Typography>}
             {hasFinished && <TelegramColor
-                style={{ width: 100, height: 100, alignSelf: 'center' }}/>
+                style={{ width: 100, height: 100, alignSelf: 'center' }} />
             }
             {hasFinished && (
                 <div style={{ alignSelf: 'center' }}>
                     <Typography
                         color="primary"
                         style={{ fontSize: '1.5vw', fontWeight: 'bold', textAlign: 'center' }}>
-                        ¡Felicitaciones!
+                        {t(langKeys.subscription_congratulations)}
                     </Typography>
                     <Typography
                         color="primary"
                         style={{ fontSize: '1.2vw', fontWeight: 500 }}>
-                        Haz conectado Teletram
+                        {t(langKeys.subscription_message1)} {t(langKeys.channel_telegram)} {t(langKeys.subscription_message2)}
                     </Typography>
-            </div>
+                </div>
             )}
             <FieldEdit
                 onChange={v => setValue('channels.telegram.description', v)}
@@ -124,27 +124,6 @@ export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = 
                 size="small"
                 error={errors.channels?.telegram?.accesstoken?.message}
             />
-            {/* <div className="row-zyx">
-                <div className="col-3"></div>
-                <div className="col-6">
-                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                        {t(langKeys.givechannelcolor)}
-                    </Box>
-                    <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                        <TelegramIcon style={{ fill: `${coloricon}`, width: "100px" }} />
-                        <ColorInput
-                            hex={fields.parameters.coloricon}
-                            onChange={e => {
-                                setFields(prev => ({
-                                    ...prev,
-                                    parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
-                                }));
-                                setcoloricon(e.hex)
-                            }}
-                        />
-                    </div>
-                </div>
-            </div> */}
         </div>
     );
 }

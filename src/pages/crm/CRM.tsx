@@ -15,12 +15,14 @@ import { Trans, useTranslation } from "react-i18next";
 import { DialogZyx3Opt, FieldEdit, FieldMultiSelect, FieldSelect } from "components";
 import { Search as SearchIcon, ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon, Add as AddIcon } from '@material-ui/icons';
 import { Button, IconButton } from "@material-ui/core";
+import PhoneIcon from '@material-ui/icons/Phone';
 import { Dictionary, ICampaignLst, IChannel, ICrmLead, IDomain, IFetchData } from "@types";
 import TablePaginated, { buildQueryFilters, useQueryParams } from 'components/fields/table-paginated';
 import { makeStyles } from '@material-ui/core/styles';
 import { Rating } from '@material-ui/lab';
 import { DialogSendTemplate, NewActivityModal, NewNoteModal } from "./Modals";
 import { WhatsappIcon } from "icons";
+import { setModalCall, setPhoneNumber } from "store/voximplant/actions";
 
 interface dataBackend {
   columnid: number,
@@ -462,6 +464,9 @@ const CRM: FC = () => {
   const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
   const [autoRefresh, setAutoRefresh] = useState(false);
   const [waitExport, setWaitExport] = useState(false);
+  const voxiConnection = useSelector(state => state.voximplant.connection);
+  const statusCall = useSelector(state => state.voximplant.statusCall);
+  const userConnected = useSelector(state => state.inbox.userConnected);
   const [allParameters, setAllParametersPrivate] = useState<{ contact: string, channel: string, asesorid: number }>({
     // asesorid: otherParams.asesorid || mainMulti.data[2]?.data?.map(d => d.userid).includes(user?.userid) ? (user?.userid || 0) : 0,
     asesorid: initialAsesorId,
@@ -614,6 +619,7 @@ const CRM: FC = () => {
         isComponent: true,
         Cell: (props: any) => {
           const row = props.cell.row.original;
+          console.log((!voxiConnection.error && !voxiConnection.loading && statusCall!=="CONNECTED" && userConnected && statusCall!=="CONNECTING" && !!row.phone))
           if (row.status === 'ACTIVO') {
             return (
               <React.Fragment>
@@ -689,6 +695,21 @@ const CRM: FC = () => {
                       color="action" 
                     />
                   </IconButton>
+                  {(!voxiConnection.error && !voxiConnection.loading && statusCall!=="CONNECTED" && userConnected && statusCall!=="CONNECTING" && !!row.phone) &&
+                    <IconButton
+                      aria-label="more"
+                      aria-controls="long-menu"
+                      aria-haspopup="true"
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        dispatch(setPhoneNumber(row.phone))
+                        dispatch(setModalCall(true))
+                      }}
+                    >
+                      <PhoneIcon color="action" titleAccess={t(langKeys.make_call)}/>
+                    </IconButton>
+                  }
                 </div>
               </React.Fragment>
             )
@@ -700,7 +721,7 @@ const CRM: FC = () => {
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [voxiConnection,statusCall]
   );
 
   const fetchGridData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
@@ -756,10 +777,10 @@ const CRM: FC = () => {
         if (!resExportData.loading && !resExportData.error) {
             dispatch(showBackdrop(false));
             setWaitExport(false);
-            window.open(resExportData.url, '_blank');
+            resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
         } else if (resExportData.error) {
             const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.blacklist).toLocaleLowerCase() })
-            dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
             dispatch(showBackdrop(false));
             setWaitExport(false);
         }

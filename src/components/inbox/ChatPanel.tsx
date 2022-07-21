@@ -75,7 +75,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
     useEffect(() => {
         if (waitClose) {
             if (!sendingRes.loading && !sendingRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_send_hsm) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_send_hsm) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
 
@@ -98,7 +98,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
                 setWaitClose(false);
             } else if (sendingRes.error) {
 
-                dispatch(showSnackbar({ show: true, success: false, message: t(sendingRes.code || "error_unexpected_error") }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(sendingRes.code || "error_unexpected_error") }))
                 dispatch(showBackdrop(false));
                 setWaitClose(false);
             }
@@ -107,7 +107,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
 
     useEffect(() => {
         setTemplatesList(multiData?.data?.[5] && multiData?.data[5].data.filter(x => x.type === "HSM"))
-        setchannelsList(multiData?.data?.[13]?.data?.filter(e=>e.type.includes("WHA"))||[])
+        setchannelsList(multiData?.data?.[13]?.data?.filter(e => e.type.includes("WHA")) || [])
     }, [multiData.data])
 
     useEffect(() => {
@@ -122,18 +122,18 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
             register('communicationchannelid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
             register('communicationchanneltype', { validate: (value) => ((value && value.length > 0) || t(langKeys.field_required)) });
             register('platformtype', { validate: (value) => ((value && value.length > 0) || t(langKeys.field_required)) });
-            if(ticketSelected?.communicationchanneltype?.includes('WHA')||ticketSelected?.communicationchanneltype?.includes('VOXI')){
+            if (ticketSelected?.communicationchanneltype?.includes('WHA') || ticketSelected?.communicationchanneltype?.includes('VOXI')) {
                 let value = channelsList[0]
-                setValue('communicationchannelid', value?.communicationchannelid||0);
-                setValue('communicationchanneltype', value?.type||"");
-                setValue('platformtype', value?.communicationchannelsite||""); 
+                setValue('communicationchannelid', value?.communicationchannelid || 0);
+                setValue('communicationchanneltype', value?.type || "");
+                setValue('platformtype', value?.communicationchannelsite || "");
             }
         }
     }, [openModal])
 
     const onSelectTemplate = (value: Dictionary) => {
-        if(ticketSelected?.communicationchanneltype?.includes('WHA')){
-            
+        if (ticketSelected?.communicationchanneltype?.includes('WHA')) {
+
             setValue('communicationchannelid', ticketSelected?.communicationchannelid!!);
             setValue('communicationchanneltype', ticketSelected?.communicationchanneltype!!);
             setValue('platformtype', ticketSelected?.communicationchannelsite!!);
@@ -197,16 +197,16 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
             button2Type="submit"
         >
             <div className="row-zyx">
-                
+
                 {!ticketSelected?.communicationchanneltype?.includes('WHA') &&
                     <FieldSelect
                         label={t(langKeys.channel)}
                         className="col-12"
                         valueDefault={getValues('communicationchannelid')}
                         onChange={(value) => {
-                            setValue('communicationchannelid', value?.communicationchannelid||0);
-                            setValue('communicationchanneltype', value?.type||"");
-                            setValue('platformtype', value?.communicationchannelsite||""); 
+                            setValue('communicationchannelid', value?.communicationchannelid || 0);
+                            setValue('communicationchanneltype', value?.type || "");
+                            setValue('platformtype', value?.communicationchannelsite || "");
                         }}
                         error={errors?.communicationchannelid?.message}
                         data={channelsList}
@@ -294,7 +294,7 @@ const DialogCloseticket: React.FC<{
     useEffect(() => {
         if (waitClose) {
             if (!closingRes.loading && !closingRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_close_ticket) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_close_ticket) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 dispatch(emitEvent({
@@ -310,7 +310,7 @@ const DialogCloseticket: React.FC<{
                 }));
                 setWaitClose(false);
             } else if (closingRes.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(closingRes.code || "error_unexpected_error") }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(closingRes.code || "error_unexpected_error") }))
                 dispatch(showBackdrop(false));
                 setWaitClose(false);
             }
@@ -321,7 +321,7 @@ const DialogCloseticket: React.FC<{
         if (waitOther) {
             if (!changeStatusRes.loading && !changeStatusRes.error) {
 
-                dispatch(showSnackbar({ show: true, success: true, message: status === "SUSPENDIDO" ? t(langKeys.successful_suspend_ticket) : t(langKeys.successful_reactivate_ticket) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: status === "SUSPENDIDO" ? t(langKeys.successful_suspend_ticket) : t(langKeys.successful_reactivate_ticket) }))
                 // dispatch(changeStatusTicket(ticketSelected?.conversationid!!, status));
 
                 dispatch(emitEvent({
@@ -339,7 +339,7 @@ const DialogCloseticket: React.FC<{
                 setWaitOther(false);
             } else if (changeStatusRes.error) {
                 const message = t(changeStatusRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message }))
+                dispatch(showSnackbar({ show: true, severity: "error", message }))
                 dispatch(showBackdrop(false));
                 setWaitOther(false);
             }
@@ -425,11 +425,12 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     const multiData = useSelector(state => state.main.multiData);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const agentToReassignList = useSelector(state => state.inbox.agentToReassignList);
+    const user = useSelector(state => state.login.validateToken.user);
+    const [userToReassign, setUserToReassign] = useState<Dictionary[]>([])
+    const groups = user?.groups?.split(",") || [];
     const userType = useSelector(state => state.inbox.userType);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
-
     const reassigningRes = useSelector(state => state.inbox.triggerReassignTicket);
-
     const interactionBaseList = useSelector(state => state.inbox.interactionBaseList);
 
     const { register, handleSubmit, setValue, getValues, trigger, reset, formState: { errors } } = useForm<{
@@ -443,7 +444,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     useEffect(() => {
         if (waitReassign) {
             if (!reassigningRes.loading && !reassigningRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_reasign_ticket) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_reasign_ticket) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitReassign(false);
@@ -463,7 +464,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                 }));
 
             } else if (reassigningRes.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_unexpected_error) }))
                 dispatch(showBackdrop(false));
                 setWaitReassign(false);
             }
@@ -485,7 +486,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
 
     const onSubmit = handleSubmit((data) => {
         if (data.newUserId === 0 && !data.newUserGroup) {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.least_user_or_group) }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.least_user_or_group) }))
             return;
         }
         const dd: IReassignicketParams = {
@@ -501,6 +502,23 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
 
     });
 
+    useEffect(() => {
+        if (user) {
+            const groups = user?.groups ? user?.groups.split(",") : [];
+            if (user.properties.limit_reassign_group) {
+                setUserToReassign([
+                    { domainvalue: "NINGUNO", domaindesc: t(langKeys.NINGUNO) },
+                    ...(multiData?.data?.[3]?.data || []).filter(x => x.domainvalue !== ticketSelected?.usergroup).filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true)
+                ])
+            } else {
+                setUserToReassign([
+                    { domainvalue: "NINGUNO", domaindesc: t(langKeys.NINGUNO) },
+                    ...(multiData?.data?.[3]?.data || []).filter(x => x.domainvalue !== ticketSelected?.usergroup)
+                ])
+            }
+        }
+    }, [user, multiData])
+
     return (
         <DialogZyx
             open={openModal}
@@ -513,20 +531,6 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
         >
             <div className="row-zyx">
                 <FieldSelect
-                    label={t(langKeys.advisor)}
-                    className="col-12"
-                    valueDefault={getValues('newUserId')}
-                    onChange={(value) => {
-                        setValue('newUserId', value ? value.userid : 0);
-                        setValue('newUserGroup', '');
-                        trigger('newUserGroup');
-                    }}
-                    error={errors?.newUserId?.message}
-                    data={agentToReassignList.filter(x => x.status === "ACTIVO")}
-                    optionDesc="displayname"
-                    optionValue="userid"
-                />
-                <FieldSelect
                     label={t(langKeys.group_plural)}
                     className="col-12"
                     valueDefault={getValues('newUserGroup')}
@@ -536,9 +540,40 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                         trigger('newUserId');
                     }}
                     error={errors?.newUserGroup?.message}
-                    data={(multiData?.data?.[3]?.data || []).filter(x => x.domainvalue !== ticketSelected?.usergroup)}
+                    data={userToReassign}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
+                />
+                <FieldSelect
+                    label={t(langKeys.advisor)}
+                    className="col-12"
+                    valueDefault={getValues('newUserId')}
+                    onChange={(value) => {
+                        setValue('newUserId', value ? value.userid : 0);
+                    }}
+                    error={errors?.newUserId?.message}
+                    data={agentToReassignList.filter(x => x.status === "ACTIVO").filter(x => {
+                        if (getValues("newUserGroup")) {
+                            let ingroup = false;
+                            if (getValues("newUserGroup") === "NINGUNO") {
+                                if (groups[0] !== "") {
+                                    groups.forEach(e => {
+                                        if (x.groups.split(",").includes(e)) ingroup = true;
+                                    })
+                                } else {
+                                    ingroup = true
+                                }
+                                return ingroup
+                            } else {
+                                return x.groups.includes(getValues("newUserGroup"))
+                            }
+                        } else {
+                            return false
+                        }
+                    })
+                    }
+                    optionDesc="displayname"
+                    optionValue="userid"
                 />
                 <FieldEditMulti
                     label={t(langKeys.observation)}
@@ -583,14 +618,14 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
     useEffect(() => {
         if (waitInsLead) {
             if (!insLeadRes.loading && !insLeadRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitInsLead(false);
                 dispatch(updatePerson({ ...personSelected!!, havelead: true }));
             } else if (insLeadRes.error) {
                 const message = t(insLeadRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message }))
+                dispatch(showSnackbar({ show: true, severity: "error", message }))
                 dispatch(showBackdrop(false));
                 setWaitInsLead(false);
             }
@@ -765,14 +800,14 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
     useEffect(() => {
         if (waitTipify) {
             if (!tipifyRes.loading && !tipifyRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_tipify_ticket) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_tipify_ticket) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitTipify(false);
             } else if (tipifyRes.error) {
                 const message = t(tipifyRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
 
-                dispatch(showSnackbar({ show: true, success: false, message }))
+                dispatch(showSnackbar({ show: true, severity: "error", message }))
                 dispatch(showBackdrop(false));
                 setWaitTipify(false);
             }
@@ -934,7 +969,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                 }
                 else {
                     setCheckTipification(false);
-                    dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.tipify_ticket) }))
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.tipify_ticket) }))
                 }
             }
         }
@@ -943,10 +978,10 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     return (
         <>
             <div className={classes.containerButtonsChat}>
-                {(!voxiConnection.error && !voxiConnection.loading && statusCall!=="CONNECTED" && userConnected && statusCall!=="CONNECTING" && 
-                ticketSelected?.communicationchanneltype !== "VOXI" && location.pathname=== "/message_inbox" ) &&
+                {(!voxiConnection.error && !voxiConnection.loading && statusCall !== "CONNECTED" && userConnected && statusCall !== "CONNECTING" &&
+                    ticketSelected?.communicationchanneltype !== "VOXI" && location.pathname === "/message_inbox") &&
                     <Tooltip title={t(langKeys.make_call) + ""} arrow placement="top">
-                        <IconButton onClick={() => {dispatch(setModalCall(true))}}>
+                        <IconButton onClick={() => { dispatch(setModalCall(true)) }}>
                             <PhoneIcon width={24} height={24} fill="#8F92A1" />
                         </IconButton>
                     </Tooltip>
@@ -1023,7 +1058,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                         {t(langKeys.typify)}
                     </MenuItem>
                 }
-                {(ticketSelected?.communicationchanneltype?.includes('WHA') || multiData?.data?.[13]?.data?.filter(e=>e.type.includes("WHA")).length>0 ) &&
+                {(ticketSelected?.communicationchanneltype?.includes('WHA') || multiData?.data?.[13]?.data?.filter(e => e.type.includes("WHA")).length > 0) &&
                     <MenuItem onClick={() => {
                         setAnchorEl(null)
                         setOpenModalHSM(true)
@@ -1071,7 +1106,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     )
 }
 
-const typeText = ["text", "post-text", "reply-text", "quickreply", "carousel", "LOG","email"]
+const typeText = ["text", "post-text", "reply-text", "quickreply", "carousel", "LOG", "email"]
 
 const applySearch = (list: Dictionary[], index: number) => {
     const inthtml = document.getElementById(`interaction-${list[index].interactionid}`)

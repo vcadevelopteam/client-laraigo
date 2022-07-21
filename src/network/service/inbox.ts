@@ -1,5 +1,5 @@
 import { apiUrls } from '../../common/constants';
-import { ICloseTicketsParams, ISendHSM, IReassignicketParams, IReplyTicketParams, IConnectAgentUIParams, IMassiveCloseTicketsParams, Dictionary, IImportTicket } from '@types';
+import { ICloseTicketsParams, ISendHSM, IReassignicketParams, IReplyTicketParams, IConnectAgentUIParams, IMassiveCloseTicketsParams, Dictionary } from '@types';
 import { APIManager } from '../manager';
 // import {  } from "common/helpers";
 
@@ -41,12 +41,8 @@ export function sendHSM(data: ISendHSM) {
     return APIManager.post(apiUrls.SEND_HSM, { data: { data } }, true);
 }
 
-export function importTicket({ data }: IImportTicket) {
-    return APIManager.post(apiUrls.IMPORT_TICKET, { data: {
-        data: {
-            datatable: data
-        }
-    } }, true);
+export function importTicket(data: FormData) {
+    return APIManager.post(apiUrls.IMPORT_TICKET, { data }, true);
 }
 
 export function replyTicket(params: IReplyTicketParams | IReplyTicketParams[], isList: boolean = false) {

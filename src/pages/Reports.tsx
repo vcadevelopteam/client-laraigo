@@ -243,6 +243,28 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                     type: "string"
                                 }
                         }
+                    case "interaction":
+                        switch (x.proargnames) {
+                            case "interactiontext":
+                                return {
+                                    Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                                    accessor: x.proargnames,
+                                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help")? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
+                                    type: "string",
+                                    Cell: (props: any) => {
+                                        const { interactiontext } = props.cell.row.original;
+                                        let texttoshow = interactiontext.length<40? interactiontext: interactiontext.substring(0, 40) + "... "
+                                        return texttoshow
+                                    }
+                                }
+                            default:
+                                return {
+                                    Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                                    accessor: x.proargnames,
+                                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help")? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
+                                    type: "string"
+                                }
+                        }
                     default:
                         return {
                             Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
@@ -266,10 +288,10 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
             if (!resExportData.loading && !resExportData.error) {
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
-                window.open(resExportData.url, '_blank');
+                resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
             } else if (resExportData.error) {
                 const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
@@ -848,13 +870,13 @@ const Reports: FC = () => {
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
@@ -997,7 +1019,7 @@ const Reports: FC = () => {
                                     component="img"
                                     height="140"
                                     className={classes.media}
-                                    image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/03reportepersonalizado.png'}
+                                    image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/PROCESOSYCONSULTORIA/ad0b89eb-6ed6-409d-b2e7-ddc9ea6c6f28/asesorvstickets.png'}
                                     title={t(langKeys.report_ticketvsasesor)}
                                 />
                                 <CardContent>

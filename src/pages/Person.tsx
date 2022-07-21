@@ -8,6 +8,7 @@ import { Dictionary, IObjectState, IPerson, IPersonChannel, IPersonCommunication
 import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, TextField, MenuItem, Paper, InputBase } from '@material-ui/core';
 import clsx from 'clsx';
 import { BuildingIcon, DocNumberIcon, DocTypeIcon, EMailInboxIcon, GenderIcon, TelephoneIcon, WhatsappIcon, SearchIcon } from 'icons';
+import PhoneIcon from '@material-ui/icons/Phone';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -34,6 +35,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Menu from '@material-ui/core/Menu';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import { getLeadPhases, resetGetLeadPhases } from 'store/lead/actions';
+import { setModalCall, setPhoneNumber } from 'store/voximplant/actions';
 const urgencyLevels = [null, 'LOW', 'MEDIUM', 'HIGH']
 
 // interface SelectFieldProps {
@@ -140,13 +142,13 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
         if (waitClose) {
             if (!sendingRes.loading && !sendingRes.error) {
                 const message = type === "HSM" ? t(langKeys.successful_send_hsm) : (type === "SMS" ? t(langKeys.successful_send_sms) : t(langKeys.successful_send_mail));
-                dispatch(showSnackbar({ show: true, success: true, message }))
+                dispatch(showSnackbar({ show: true, severity: "success", message }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitClose(false);
             } else if (sendingRes.error) {
 
-                dispatch(showSnackbar({ show: true, success: false, message: t(sendingRes.code || "error_unexpected_error") }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(sendingRes.code || "error_unexpected_error") }))
                 dispatch(showBackdrop(false));
                 setWaitClose(false);
             }
@@ -609,10 +611,10 @@ export const Person: FC = () => {
             if (!resExportData.loading && !resExportData.error) {
                 dispatch(showBackdrop(false));
                 setWaitExport(false);
-                window.open(resExportData.url, '_blank');
+                resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
             } else if (resExportData.error) {
                 const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.person).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitExport(false);
             }
@@ -738,7 +740,7 @@ export const Person: FC = () => {
                 setWaitImport(true)
             }
             else {
-                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.no_records_valid) }));
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) }));
             }
         }
     }
@@ -765,13 +767,13 @@ export const Person: FC = () => {
     useEffect(() => {
         if (waitImport) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
                 fetchData(fetchDataAux);
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.quickreplies).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
             }
@@ -1126,7 +1128,7 @@ export const PersonDetail: FC = () => {
             dispatch(showSnackbar({
                 message: domains.message!,
                 show: true,
-                success: false,
+                severity: "error"
             }));
         }
     }, [domains, dispatch]);
@@ -1139,14 +1141,14 @@ export const PersonDetail: FC = () => {
             dispatch(showSnackbar({
                 message: edit.message!,
                 show: true,
-                success: false,
+                severity: "error"
             }));
         } else if (edit.success) {
             dispatch(showBackdrop(false));
             dispatch(showSnackbar({
                 message: t(langKeys.successful_edit),
                 show: true,
-                success: true,
+                severity: "success"
             }));
             if (!person?.personid) {
                 history.push(paths.PERSON);
@@ -1208,12 +1210,12 @@ export const PersonDetail: FC = () => {
     useEffect(() => {
         if (waitLock) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_transaction) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_transaction) }))
                 dispatch(showBackdrop(false));
                 setWaitLock(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.person).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitLock(false);
             }
@@ -1930,6 +1932,18 @@ const useChannelItemStyles = makeStyles(theme => ({
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
     },
+    contentContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'flex-start',
+        flexGrow: 1,
+    },
+    propTitle: {
+        fontWeight: 400,
+        fontSize: 14,
+        color: '#8F92A1',
+    },
     item: {
         display: 'flex',
         flexDirection: 'column',
@@ -1952,6 +1966,19 @@ const useChannelItemStyles = makeStyles(theme => ({
         gap: '0.5em',
         alignItems: 'center',
     },
+    propSubtitle: {
+        color: theme.palette.text.primary,
+        fontWeight: 400,
+        fontSize: 15,
+        margin: 0,
+        width: '100%',
+    },
+    buttonphone:{
+        padding: 0,
+        '&:hover': {
+            color: "#7721ad",
+        },
+    }
 }));
 
 interface ChannelItemProps {
@@ -1988,17 +2015,22 @@ const nameschannel: { [x: string]: string } = {
 const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
     const { t } = useTranslation();
     const classes = useChannelItemStyles();
+    const dispatch = useDispatch();
+    const voxiConnection = useSelector(state => state.voximplant.connection);
+    const statusCall = useSelector(state => state.voximplant.statusCall);
+    const userConnected = useSelector(state => state.inbox.userConnected);
     const personIdentifier = useMemo(() => {
         if (!channel) return '';
 
         const index = channel.personcommunicationchannel.lastIndexOf('_');
         return channel.personcommunicationchannel.substring(0, index);
     }, [channel]);
+    console.log(channel.type)
 
     return (
-        <div className={classes.root}>
+        <div className={classes.root} style={{display:"flex"}}>
             <Grid container direction="row">
-                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                <Grid item xs={11} sm={11} md={6} lg={6} xl={6}>
                     <Property
                         title={<Trans i18nKey={langKeys.communicationchannel} />}
                         subtitle={(
@@ -2021,11 +2053,24 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
                     />
                 </Grid>
                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-                    <Property
-                        title={<Trans i18nKey={langKeys.personIdentifier} />}
-                        subtitle={channel.personcommunicationchannelowner}
-                        m={1}
-                    />
+                    
+                    <Box>
+                        <div className={classes.contentContainer}>
+                            <label className={classes.propTitle}>{<Trans i18nKey={langKeys.personIdentifier} />}</label>
+                            <div style={{ height: 4 }} />
+                            <div style={{display:"flex"}}>
+                                {(!voxiConnection.error && !voxiConnection.loading && statusCall!=="CONNECTED" && userConnected && statusCall!=="CONNECTING" && (channel.type.includes("WHA")||channel.type.includes("VOXI"))) &&
+                                    <IconButton
+                                        className={classes.buttonphone}
+                                        onClick={() => {dispatch(setPhoneNumber(channel.personcommunicationchannelowner));dispatch(setModalCall(true))}}
+                                    >
+                                        <PhoneIcon style={{ width: "20px", height: "20px" }} />
+                                    </IconButton>
+                                }
+                                <div className={classes.propSubtitle}>{channel.personcommunicationchannelowner || "-"}</div>
+                            </div>
+                        </div>
+                    </Box>
                 </Grid>
                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                     <Property
@@ -2254,7 +2299,7 @@ const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
             dispatch(showSnackbar({
                 message: conversations.message || 'Error',
                 show: true,
-                success: false,
+                severity: "error"
             }));
         } else {
             setList(prevList => [...prevList, ...conversations.data]);

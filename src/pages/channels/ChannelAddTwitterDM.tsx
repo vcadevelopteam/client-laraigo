@@ -79,39 +79,43 @@ export const ChannelAddTwitterDM: FC = () => {
         setWaitSave(true);
         setViewSelected("main")
     }
+
     useEffect(() => {
-        if (!mainResult.loading && setins){
+        if (!mainResult.loading && setins) {
             if (executeResult) {
                 setsetins(false)
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
                 history.push(paths.CHANNELS)
             } else if (!executeResult) {
                 const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
         }
     }, [mainResult])
+
     useEffect(() => {
         if (waitSave) {
             dispatch(showBackdrop(false));
             setWaitSave(false);
         }
     }, [mainResult])
+
     function setnameField(value: any) {
         setChannelreg(value === "")
         let partialf = fields;
         partialf.parameters.description = value
         setFields(partialf)
     }
-    if(viewSelected==="view1"){
+    
+    if (viewSelected === "view1") {
         return (
             <div style={{ width: '100%' }}>
                 <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD, whatsAppData)}}>
+                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD, whatsAppData) }}>
                         {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
@@ -122,11 +126,11 @@ export const ChannelAddTwitterDM: FC = () => {
                         <div className="col-3"></div>
                         <FieldEdit
                             onChange={(value) => {
-                                setNextbutton(value==="" || fields.service.consumersecret===""||fields.service.accesstoken===""||fields.service.accesssecret==="")
+                                setNextbutton(value === "" || fields.service.consumersecret === "" || fields.service.accesstoken === "" || fields.service.accesssecret === "")
                                 let partialf = fields;
-                                partialf.service.consumerkey= value
+                                partialf.service.consumerkey = value
                                 setFields(partialf)
-                            }}                            
+                            }}
                             valueDefault={fields.service.consumerkey}
                             label={t(langKeys.consumerapikey)}
                             className="col-6"
@@ -136,9 +140,9 @@ export const ChannelAddTwitterDM: FC = () => {
                         <div className="col-3"></div>
                         <FieldEdit
                             onChange={(value) => {
-                                setNextbutton(value==="" || fields.service.consumerkey===""||fields.service.accesstoken===""||fields.service.accesssecret==="")
+                                setNextbutton(value === "" || fields.service.consumerkey === "" || fields.service.accesstoken === "" || fields.service.accesssecret === "")
                                 let partialf = fields;
-                                partialf.service.consumersecret= value
+                                partialf.service.consumersecret = value
                                 setFields(partialf)
                             }}
                             valueDefault={fields.service.consumersecret}
@@ -150,9 +154,9 @@ export const ChannelAddTwitterDM: FC = () => {
                         <div className="col-3"></div>
                         <FieldEdit
                             onChange={(value) => {
-                                setNextbutton(value==="" || fields.service.consumerkey===""||fields.service.consumersecret===""||fields.service.accesssecret==="")
+                                setNextbutton(value === "" || fields.service.consumerkey === "" || fields.service.consumersecret === "" || fields.service.accesssecret === "")
                                 let partialf = fields;
-                                partialf.service.accesstoken= value
+                                partialf.service.accesstoken = value
                                 setFields(partialf)
                             }}
                             valueDefault={fields.service.accesstoken}
@@ -164,9 +168,9 @@ export const ChannelAddTwitterDM: FC = () => {
                         <div className="col-3"></div>
                         <FieldEdit
                             onChange={(value) => {
-                                setNextbutton(value==="" || fields.service.consumerkey===""||fields.service.consumersecret===""||fields.service.accesstoken==="")
+                                setNextbutton(value === "" || fields.service.consumerkey === "" || fields.service.consumersecret === "" || fields.service.accesstoken === "")
                                 let partialf = fields;
-                                partialf.service.accesssecret= value
+                                partialf.service.accesssecret = value
                                 setFields(partialf)
                             }}
                             valueDefault={fields.service.accesssecret}
@@ -174,7 +178,6 @@ export const ChannelAddTwitterDM: FC = () => {
                             className="col-6"
                         />
                     </div>
-
                     <div style={{ paddingLeft: "80%" }}>
                         <Button
                             disabled={nextbutton}
@@ -184,13 +187,11 @@ export const ChannelAddTwitterDM: FC = () => {
                             color="primary"
                         >{t(langKeys.next)}
                         </Button>
-
                     </div>
-
                 </div>
             </div>
         )
-    }else if(viewSelected==="view2"){
+    } else if (viewSelected === "view2") {
         return (
             <div style={{ width: '100%' }}>
                 <Breadcrumbs aria-label="breadcrumb">
@@ -205,9 +206,9 @@ export const ChannelAddTwitterDM: FC = () => {
                         <div className="col-3"></div>
                         <FieldEdit
                             onChange={(value) => {
-                                setNextbutton2(value==="")
+                                setNextbutton2(value === "")
                                 let partialf = fields;
-                                partialf.service.devenvironment= value;
+                                partialf.service.devenvironment = value;
                                 partialf.parameters.communicationchannelowner = "";
                                 setFields(partialf)
                             }}
@@ -216,7 +217,6 @@ export const ChannelAddTwitterDM: FC = () => {
                             className="col-6"
                         />
                     </div>
-
                     <div style={{ paddingLeft: "80%" }}>
                         <Button
                             disabled={nextbutton2}
@@ -226,13 +226,11 @@ export const ChannelAddTwitterDM: FC = () => {
                             color="primary"
                         >{t(langKeys.next)}
                         </Button>
-
                     </div>
-
                 </div>
             </div>
         )
-    }else{
+    } else {
         return (
             <div style={{ width: '100%' }}>
                 <Breadcrumbs aria-label="breadcrumb">
@@ -242,7 +240,6 @@ export const ChannelAddTwitterDM: FC = () => {
                 </Breadcrumbs>
                 <div>
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.commchannelfinishreg)}</div>
-
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
@@ -255,10 +252,10 @@ export const ChannelAddTwitterDM: FC = () => {
                         <div className="col-3"></div>
                         <div className="col-6">
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                            {t(langKeys.givechannelcolor)}
+                                {t(langKeys.givechannelcolor)}
                             </Box>
-                            <div style={{display:"flex",justifyContent:"space-around", alignItems: "center"}}>
-                                <TwitterIcon style={{fill: `${coloricon}`, width: "100px" }}/>
+                            <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
+                                <TwitterIcon style={{ fill: `${coloricon}`, width: "100px" }} />
                                 <ColorInput
                                     hex={fields.parameters.coloricon}
                                     onChange={e => {
@@ -281,9 +278,7 @@ export const ChannelAddTwitterDM: FC = () => {
                             color="primary"
                         >{t(langKeys.finishreg)}
                         </Button>
-
                     </div>
-
                 </div>
             </div>
         )

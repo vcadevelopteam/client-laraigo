@@ -20,7 +20,7 @@ export function useForcedDisconnection(callback?: () => void) {
             dispatch(showSnackbar({
                 message: t(key),
                 show: true,
-                success: false,
+                severity: "error"
             }));
             dispatch(resetForcedDisconnection());
             callback?.();
@@ -28,5 +28,6 @@ export function useForcedDisconnection(callback?: () => void) {
                 dispatch(disconnectVoxi())
             }
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [fd, callback, t, dispatch]);
 }

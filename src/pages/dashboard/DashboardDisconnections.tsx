@@ -9,7 +9,7 @@ import { FC, Fragment, useEffect, useState } from "react";
 import { Range } from 'react-date-range';
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis, CartesianGrid, Pie, PieChart, Legend } from "recharts";
+import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis, Pie, PieChart, Legend } from "recharts";
 import { getMultiCollection, getMultiCollectionAux, resetMainAux, resetMultiMainAux } from "store/main/actions";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 
@@ -201,13 +201,13 @@ const DashboardDisconnections: FC = () => {
                         })
                     }
                 })
-                setdatatotaltime(disconnectiontypes.reduce((acc:any,x:string, i:number)=>[...acc,{type:x, time: arraydisconnectiontimes[i]}],[]))
+                setdatatotaltime(disconnectiontypes.reduce((acc:any,x:string, i:number)=>[...acc,{type:x, time: arraydisconnectiontimes[i]}],[]).filter((x:any)=>x.time!==0))
                 settcovstdc([{title: t(langKeys.totaltimeconnected), time: timestotal[0]},{title: t(langKeys.totaltimeoffline), time: timestotal[1]}])
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (remultiaux.error) {
                 const errormessage = t(remultiaux.code || "error_unexpected_error", { module: t(langKeys.quickreplies).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }

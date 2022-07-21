@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -71,7 +72,7 @@ const UploaderIcon: React.FC<{ classes: any, type: "image" | "file", setFiles: (
             } else if (uploadResult.error) {
                 // const errormessage = uploadResult.code || "error_unexpected_error"
                 setFiles((x: IFile[]) => x.map(item => item.id === idUpload ? { ...item, url: uploadResult.url, error: true } : item))
-                // dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                // dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
             }
         }
@@ -293,7 +294,7 @@ const TmpRichResponseIcon: React.FC<{ classes: any, setText: (param: string) => 
         const listInteractions = cleanedRichResponse(block.cards, variablecontext)
 
         if (listInteractions.length === 0) {
-            dispatch(showSnackbar({ show: true, success: false, message: 'No hay cards' }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: 'No hay cards' }))
             return;
         }
 
@@ -631,7 +632,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                         setBodyobject([{ "type": "paragraph", align:"left", "children": [{ "text": "" }] }]);
 
                     } else {
-                        dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                        dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                     }
                 }
             }
@@ -700,7 +701,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             const listInteractions = cleanedRichResponse(block.cards, variablecontext)
 
             if (listInteractions.length === 0) {
-                dispatch(showSnackbar({ show: true, success: false, message: 'No hay cards' }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: 'No hay cards' }))
                 return;
             }
 

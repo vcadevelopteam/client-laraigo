@@ -1,21 +1,22 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useState, MouseEventHandler } from 'react'
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import { createStyles, Theme } from '@material-ui/core/styles';
-import { Avatar, Fab, InputBase, makeStyles, MenuItem, Paper, Tooltip, Typography } from "@material-ui/core";
+import { Avatar, Fab, makeStyles, MenuItem, Typography } from "@material-ui/core";
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import DialpadIcon from '@material-ui/icons/Dialpad';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'hooks';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import { useDispatch } from 'react-redux';
-import { makeCall, setModalCall, getHistory, geAdvisors, rejectCall } from 'store/voximplant/actions';
+import { makeCall, setModalCall, getHistory, geAdvisors, rejectCall, setPhoneNumber } from 'store/voximplant/actions';
 import TextField from '@material-ui/core/TextField';
 import PhoneForwardedIcon from '@material-ui/icons/PhoneForwarded';
 import PhoneIcon from '@material-ui/icons/Phone';
-import { FieldSelect, AntTab, SearchField } from 'components';
+import { AntTab, SearchField } from 'components';
 import { IconButton, Tabs } from '@material-ui/core';
-import { conversationOutboundIns, convertLocalDate, getSecondsUntelNow, getAdvisorListVoxi } from 'common/helpers';
+import { conversationOutboundIns, convertLocalDate, getSecondsUntelNow } from 'common/helpers';
 import { langKeys } from 'lang/keys';
 import ContactPhoneIcon from '@material-ui/icons/ContactPhone';
 import PhoneCallbackIcon from '@material-ui/icons/PhoneCallback';
@@ -24,9 +25,9 @@ import clsx from 'clsx';
 import { execute } from 'store/main/actions';
 import { ITicket } from '@types';
 import { ListItemSkeleton } from 'components';
-import { SearchIcon } from 'icons';
 import { showSnackbar } from 'store/popus/actions';
 import PersonIcon from '@material-ui/icons/Person';
+import { useHistory } from 'react-router';
 
 const useStyles = makeStyles(theme => ({
     grey: {
@@ -225,7 +226,7 @@ const MakeCall: React.FC = () => {
     const classes = useStyles();
     const { t } = useTranslation();
     const dispatch = useDispatch();
-    
+
     const personData = useSelector(state => state.inbox.person);
 
     const [numberVox, setNumberVox] = useState("");
@@ -237,6 +238,7 @@ const MakeCall: React.FC = () => {
     const [waitingDate, setWaitingDate] = useState<string | null>(null);
     const user = useSelector(state => state.login.validateToken.user);
     const ringtone = React.useRef<HTMLAudioElement>(null);
+    const phonenumber = useSelector(state => state.voximplant.phoneNumber);
     const showcall = useSelector(state => state.voximplant.showcall);
     const statusCall = useSelector(state => state.voximplant.statusCall);
     const historial = useSelector(state => state.voximplant.requestGetHistory);
@@ -244,12 +246,13 @@ const MakeCall: React.FC = () => {
     const [waiting2, setwaiting2] = useState(false)
 
     const { corpid, orgid, sitevoxi, ccidvoxi, userid } = useSelector(state => state.login.validateToken?.user!!);
+    const history = useHistory();
 
     React.useEffect(() => {
         console.log(resExecute)
         if (!resExecute.loading && !resExecute.error) {
             if (resExecute.key === "UFN_CONVERSATION_OUTBOUND_INS") {
-                const { v_conversationid, v_ticketnum, v_personid, v_firstconversationdate, v_personname } = resExecute.data[0]
+                const { v_conversationid, v_ticketnum, v_personid, v_firstconversationdate, v_personname, v_voximplantrecording } = resExecute.data[0]
                 const data: ITicket = {
                     conversationid: parseInt(v_conversationid),
                     ticketnum: v_ticketnum,
@@ -270,13 +273,15 @@ const MakeCall: React.FC = () => {
                     lastreplyuser: "",
                 }
                 dispatch(setModalCall(false));
-                const identifier = `${corpid}-${orgid}-${ccidvoxi}-${resExecute.data[0].v_conversationid}-${resExecute.data[0].v_personid}.${sitevoxi}.${userid}`
+                const identifier = `${corpid}-${orgid}-${ccidvoxi}-${resExecute.data[0].v_conversationid}-${resExecute.data[0].v_personid}.${sitevoxi}.${userid}.${v_voximplantrecording}`;
+
                 dispatch(makeCall({ number: numberVox, site: identifier || "", data }));
+                history.push('/message_inbox');
             }
         } else if (!resExecute.loading && resExecute.error && resExecute.key === "UFN_CONVERSATION_OUTBOUND_INS") {
             const errormessage = t(resExecute.code || "error_unexpected_error", { module: t(langKeys.whitelist).toLocaleLowerCase() })
             const messagetoshow = resExecute.code === "error_already_exists_record" ? t(langKeys.already_call_person) : errormessage;
-            dispatch(showSnackbar({ show: true, success: false, message: messagetoshow }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: messagetoshow }))
             setwaiting2(false)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -334,7 +339,8 @@ const MakeCall: React.FC = () => {
     React.useEffect(() => {
         if (showcall) {
             setwaiting2(false)
-            setNumberVox(personData?.data?.phone||"")
+            setNumberVox(personData?.data?.phone||phonenumber||"")
+            dispatch(setPhoneNumber(""))
         } else {
             setPageSelected(1)
         }
@@ -365,7 +371,7 @@ const MakeCall: React.FC = () => {
                         variant="fullWidth"
                         style={{ borderBottom: '1px solid white', backgroundColor: '#7721ad' }}
                         textColor="primary"
-                        onChange={(_, value) => {setPageSelected(value); setGlobalFilter("")}}
+                        onChange={(_, value) => { setPageSelected(value); setGlobalFilter("") }}
                     >
                         <AntTab label={<ContactPhoneIcon style={{ color: pageSelected === 0 ? "gold" : "white" }} />} />
                         <AntTab label={<DialpadIcon style={{ color: pageSelected === 1 ? "gold" : "white" }} />} />
@@ -389,7 +395,7 @@ const MakeCall: React.FC = () => {
                                 if (filter === "") {
                                     return false;
                                 }
-                                if(filter.toLowerCase() === "sin nombre"){
+                                if (filter.toLowerCase() === "sin nombre") {
                                     return (x.personname?.trim() === x.phone?.trim())
                                 }
                                 return (x.personname?.toLowerCase()?.includes(filter.toLowerCase()) || x.phone?.includes(filter))
@@ -426,7 +432,7 @@ const MakeCall: React.FC = () => {
                                     value={numberVox}
                                     disabled={resExecute.loading || statusCall !== "DISCONNECTED"}
                                     style={{ marginRight: "auto", marginLeft: "auto", width: "400px", marginBottom: 25 }}
-                                    onInput={(e:any)=>{
+                                    onInput={(e: any) => {
                                         let val = e.target.value.replace(/[^0-9*#]/g, "")
                                         e.target.value = String(val)
                                     }}
@@ -587,3 +593,4 @@ const formatDate = (strDate: string) => {
 
     return `${day}/${month}/${year}`;
 }
+

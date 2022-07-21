@@ -14,6 +14,8 @@ const actionType = {
     MUTE_CALL: 'voximplant/MUTE_CALL',
     UNMUTE_CALL: 'voximplant/UNMUTE_CALL',
     SET_MODAL_CALL: 'voximplant/SET_MODAL_CALL',
+    SET_PHONE_NUMBER: 'voximplant/SET_PHONE_NUMBER',
+    SET_HOLD: 'voximplant/SET_HOLD',
     DISCONNECT: 'voximplant/DISCONNECT',
 
     GET_CATEGORIES: 'voximplant/GET_CATEGORIES',

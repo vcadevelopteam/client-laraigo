@@ -214,11 +214,11 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
 
     const triggerExportData = () => {
         if (Object.keys(selectedRows).length === 0) {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.no_record_selected)}));
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_record_selected)}));
             return null;
         }
         if (!reportType) {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.no_type_selected)}));
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_type_selected)}));
             return null;
         }
         if (reportType === dataReportType.default) {
@@ -268,10 +268,10 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
             if (!resExportData.loading && !resExportData.error) {
                 dispatch(showBackdrop(false));
                 setWaitExport(false);
-                window.open(resExportData.url, '_blank');
+                resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
             } else if (resExportData.error) {
                 const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.blacklist).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitExport(false);
             }

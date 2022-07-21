@@ -31,26 +31,34 @@ const Popus: React.FC = () => {
     const { t } = useTranslation();
 
     const popus = useSelector(state => state.popus);
+    const snackbar = useSelector(state => state.popus.snackbar);
     const lightbox = useSelector(state => state.popus.lightbox);
 
-    const handleCloseSnackbar = () => dispatch(showSnackbar({ ...popus.snackbar, show: false }));
+    const handleCloseSnackbar = () => dispatch(showSnackbar({ ...snackbar, show: false }));
 
     const manageConfirmationTmp = () => dispatch(manageConfirmation({ ...popus.question, visible: false }));
 
     const manageLightBoxTmp = (lightboxtmp: any) => dispatch(manageLightBox(lightboxtmp));
-    
+
     return (
         <>
             <Snackbar
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                anchorOrigin={{ vertical: snackbar.vertical || "top", horizontal: snackbar.horizontal || 'right' }}
                 color="white"
-                open={popus.snackbar.show}
+                autoHideDuration={6000}
+                open={snackbar.show}
                 onClose={handleCloseSnackbar}
                 key={'topright'}
             >
-                <MuiAlert className={classes.cookieAlert} elevation={6} variant="filled" onClose={handleCloseSnackbar} severity={popus.snackbar.success ? "success" : "error"}>
-                    <div style={{whiteSpace: 'pre-wrap'}}>
-                        {popus.snackbar.message}
+                <MuiAlert
+                    className={classes.cookieAlert}
+                    elevation={6}
+                    variant="filled"
+                    onClose={handleCloseSnackbar}
+                    action={snackbar.action}
+                    severity={snackbar.severity || "info"}>
+                    <div style={{ whiteSpace: 'pre-wrap' }}>
+                        {snackbar.message}
                     </div>
                 </MuiAlert>
             </Snackbar>

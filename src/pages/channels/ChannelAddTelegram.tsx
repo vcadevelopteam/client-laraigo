@@ -79,22 +79,24 @@ export const ChannelAddTelegram: FC = () => {
         setWaitSave(true);
         setViewSelected("main")
     }
+
     useEffect(() => {
-        if (!mainResult.loading && setins){
+        if (!mainResult.loading && setins) {
             if (executeResult) {
                 setsetins(false)
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
-                history.push(paths.CHANNELS)
+                history.push(paths.CHANNELS);
             } else if (!executeResult) {
                 const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
         }
     }, [mainResult])
+
     useEffect(() => {
         if (waitSave) {
             dispatch(showBackdrop(false));
@@ -103,23 +105,25 @@ export const ChannelAddTelegram: FC = () => {
     }, [mainResult])
 
     function setnameField(value: any) {
-        setChannelreg(value==="")
+        setChannelreg(value === "");
         let partialf = fields;
-        partialf.parameters.description = value
-        setFields(partialf)
+        partialf.parameters.description = value;
+        setFields(partialf);
     }
-    function setBotKey(val:string){
-        setNextbutton(val==="")
+
+    function setBotKey(val: string) {
+        setNextbutton(val === "");
         let partialf = fields;
-        partialf.service.accesstoken=val;
-        partialf.parameters.communicationchannelowner="";
-        setFields(partialf)
+        partialf.service.accesstoken = val;
+        partialf.parameters.communicationchannelowner = "";
+        setFields(partialf);
     }
-    if(viewSelected==="view1"){
+    
+    if (viewSelected === "view1") {
         return (
             <div style={{ width: '100%' }}>
                 <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD, whatsAppData)}}>
+                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD, whatsAppData) }}>
                         {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
@@ -134,7 +138,6 @@ export const ChannelAddTelegram: FC = () => {
                             className="col-6"
                         />
                     </div>
-
                     <div style={{ paddingLeft: "80%" }}>
                         <Button
                             disabled={nextbutton}
@@ -144,14 +147,11 @@ export const ChannelAddTelegram: FC = () => {
                             color="primary"
                         >{t(langKeys.next)}
                         </Button>
-
                     </div>
-
                 </div>
             </div>
         )
-    
-    }else{
+    } else {
         return (
             <div style={{ width: '100%' }}>
                 <Breadcrumbs aria-label="breadcrumb">
@@ -161,7 +161,6 @@ export const ChannelAddTelegram: FC = () => {
                 </Breadcrumbs>
                 <div>
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.commchannelfinishreg)}</div>
-
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
@@ -174,10 +173,10 @@ export const ChannelAddTelegram: FC = () => {
                         <div className="col-3"></div>
                         <div className="col-6">
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                            {t(langKeys.givechannelcolor)}
+                                {t(langKeys.givechannelcolor)}
                             </Box>
-                            <div style={{display:"flex",justifyContent:"space-around", alignItems: "center"}}>
-                                <TelegramIcon style={{fill: `${coloricon}`, width: "100px" }}/>
+                            <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
+                                <TelegramIcon style={{ fill: `${coloricon}`, width: "100px" }} />
                                 <ColorInput
                                     hex={fields.parameters.coloricon}
                                     onChange={e => {
@@ -191,7 +190,6 @@ export const ChannelAddTelegram: FC = () => {
                             </div>
                         </div>
                     </div>
-                    
                     <div style={{ paddingLeft: "80%" }}>
                         <Button
                             onClick={() => { finishreg() }}
@@ -201,9 +199,7 @@ export const ChannelAddTelegram: FC = () => {
                             color="primary"
                         >{t(langKeys.finishreg)}
                         </Button>
-
                     </div>
-
                 </div>
             </div>
         )

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useContext, useEffect, useState } from "react";
 import { IconButton, InputAdornment, Typography } from '@material-ui/core';
 import { showBackdrop } from 'store/popus/actions';
@@ -26,8 +27,8 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
     } = useContext(SubscriptionContext);
     const { getValues, setValue, register, unregister, formState: { errors } } = useFormContext<MainData>();
     const [waitSave, setWaitSave] = useState(false);
-    const [hasFinished, setHasFinished] = useState(false)
-    const mainResult = useSelector(state => state.channel.facebookPages)
+    const [hasFinished, setHasFinished] = useState(false);
+    const mainResult = useSelector(state => state.channel.facebookPages);
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
@@ -37,36 +38,38 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
                 return t(langKeys.field_required);
             }
         }
-        
+
         register('channels.facebook.description', { validate: strRequired, value: '' });
         register('channels.facebook.accesstoken', { validate: strRequired, value: '' });
         register('channels.facebook.communicationchannelowner', { validate: strRequired, value: '' });
         register('channels.facebook.communicationchannelsite', { validate: strRequired, value: '' });
         register('channels.facebook.siteid', { validate: strRequired, value: '' });
-        register('channels.facebook.build', { value: values => ({
-            "method": "UFN_COMMUNICATIONCHANNEL_INS",
-            "parameters": {
-                "id": 0,
-                "description": values.description,
-                "type": "",
-                "communicationchannelsite": values.communicationchannelsite,
-                "communicationchannelowner": values.communicationchannelowner,
-                "chatflowenabled": true,
-                "integrationid": "",
-                "color": "",
-                "icons": "",
-                "other": "",
-                "form": "",
-                "apikey": "",
-                "coloricon": "#2d88ff",
-            },
-            "type": "FACEBOOK",
-            "service": {
-                "accesstoken": values.accesstoken,
-                "siteid": values.siteid,
-                "appid": apiUrls.FACEBOOKAPP
-            }
-        })});
+        register('channels.facebook.build', {
+            value: values => ({
+                "method": "UFN_COMMUNICATIONCHANNEL_INS",
+                "parameters": {
+                    "id": 0,
+                    "description": values.description,
+                    "type": "",
+                    "communicationchannelsite": values.communicationchannelsite,
+                    "communicationchannelowner": values.communicationchannelowner,
+                    "chatflowenabled": true,
+                    "integrationid": "",
+                    "color": "",
+                    "icons": "",
+                    "other": "",
+                    "form": "",
+                    "apikey": "",
+                    "coloricon": "#2d88ff",
+                },
+                "type": "FACEBOOK",
+                "service": {
+                    "accesstoken": values.accesstoken,
+                    "siteid": values.siteid,
+                    "appid": apiUrls.FACEBOOKAPP
+                }
+            })
+        });
 
         return () => {
             unregister('channels.facebook')
@@ -74,10 +77,6 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [register, unregister, dispatch]);
-
-    useEffect(() => {
-        console.log(`SIGNUP ADD FACEBOOK: ${window.location.href}`);
-    }, [])
 
     useEffect(() => {
         if (waitSave) {
@@ -120,21 +119,21 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
                 <Trans i18nKey={langKeys.connectface2} />
             </Typography>}
             {hasFinished && <FacebookColor
-                style={{ width: 100, height: 100, alignSelf: 'center' }}/>
+                style={{ width: 100, height: 100, alignSelf: 'center' }} />
             }
             {hasFinished && (
                 <div style={{ alignSelf: 'center' }}>
                     <Typography
                         color="primary"
                         style={{ fontSize: '1.5vw', fontWeight: 'bold', textAlign: 'center' }}>
-                        ¡Felicitaciones!
+                        {t(langKeys.subscription_congratulations)}
                     </Typography>
                     <Typography
                         color="primary"
                         style={{ fontSize: '1.2vw', fontWeight: 500 }}>
-                        Haz conectado Facebook con tu cuenta
+                        {t(langKeys.subscription_message1)} {t(langKeys.channel_facebook)} {t(langKeys.subscription_message2)}
                     </Typography>
-            </div>
+                </div>
             )}
             <FieldEdit
                 onChange={(value) => setValue('channels.facebook.description', value)}
@@ -151,27 +150,6 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
                     )
                 }}
             />
-            {/* <div className="row-zyx">
-                <div className="col-3"></div>
-                <div className="col-6">
-                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                        {t(langKeys.givechannelcolor)}
-                    </Box>
-                    <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                        <FacebookWallIcon style={{ fill: `${coloricon}`, width: "100px" }} />
-                        <ColorInput
-                            hex={fields.parameters.coloricon}
-                            onChange={e => {
-                                setFields(prev => ({
-                                    ...prev,
-                                    parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
-                                }));
-                                setcoloricon(e.hex)
-                            }}
-                        />
-                    </div>
-                </div>
-            </div> */}
             <FieldSelect
                 onChange={(value) => setValueField(value)}
                 label={t(langKeys.selectpagelink)}
@@ -184,7 +162,6 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
                 disabled={mainResult.loading || mainResult.data.length === 0}
                 error={errors.channels?.facebook?.siteid?.message}
             />
-
             {((getValues('channels.facebook.siteid')?.length || 0) === 0) && (mainResult.data.length === 0) && (
                 <FacebookLogin
                     appId={apiUrls.FACEBOOKAPP}

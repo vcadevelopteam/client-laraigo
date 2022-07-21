@@ -7,7 +7,7 @@ import RGL, { WidthProvider } from 'react-grid-layout';
 import { Trans, useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { Close as CloseIcon, Clear as ClearIcon, Add as AddIcon, Save as SaveIcon } from "@material-ui/icons";
-import { FieldErrors, useFieldArray, useForm, UseFormGetValues, UseFormRegister, UseFormSetValue, UseFormUnregister } from "react-hook-form";
+import { FieldErrors, useForm, UseFormGetValues, UseFormRegister, UseFormSetValue, UseFormUnregister } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { getMultiCollection, resetMain, resetMultiMain } from "store/main/actions";
 import { getDashboardTemplateIns, getDashboardTemplateSel, getKpiSel, getReportTemplateSel, getTagsChatflow } from "common/helpers";
@@ -161,7 +161,7 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
             const error = t(reportTemplatesAndKpis.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 message: error,
-                success: false,
+                severity: "error",
                 show: true,
             }));
         }
@@ -173,13 +173,13 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
             const error = t(dashboardSave.code || "error_unexpected_error", { module: t(langKeys.dashboard).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 message: error,
-                success: false,
+                severity: "error",
                 show: true,
             }));
         } else if (dashboardSave.success === true) {
             dispatch(showSnackbar({
                 message: "Se guardó el dashboard",
-                success: true,
+                severity: "success",
                 show: true,
             }));
             history.push(paths.DASHBOARD);
@@ -192,7 +192,7 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
             const error = t(dashboardtemplate.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 message: error,
-                success: false,
+                severity: "error",
                 show: true,
             }));
         } else if (dashboardtemplate.value) {
@@ -210,7 +210,7 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
     }, [dashboardtemplate, edit, t, dispatch]);
 
 
-    const {control,register,unregister,formState: { errors }, getValues, setValue, handleSubmit,reset,} = useForm<Items>({
+    const {register,unregister,formState: { errors }, getValues, setValue, handleSubmit,reset,} = useForm<Items>({
         defaultValues: {
             
         }
@@ -249,7 +249,7 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
         if (layout.length <= 1) {
             dispatch(showSnackbar({
                 message: t(langKeys.empty_dashboard_form_error),
-                success: false,
+                severity: "error",
                 show: true,
             }));
         } else {
@@ -508,6 +508,10 @@ const useLayoutItemStyles = makeStyles(theme => ({
         top: 1,
         right: 1,
     },
+    funnelLvlTitle: {
+        display: "flex",
+        justifyContent: "space-between"
+    },
     field: {
         marginBottom: '0.65rem',
     },
@@ -656,6 +660,13 @@ export const LayoutItem: FC<LayoutItemProps> = ({
 
     const mandatoryNumField = (value: number) => {
         return value === 0 ? t(langKeys.field_required) : undefined;
+    }
+
+    function deleteFunnel(index:number){
+        let newtagsdata=tagsdata.filter((x:any,i:number)=>i!==index)
+        debugger
+        settagsdata(newtagsdata)
+        setValue(`${key}.tags`,newtagsdata)
     }
 
     return (
@@ -833,7 +844,12 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                     <>
                         {tagsdata.map((tag:any, i:number) => {
                             return <div key={`tagdatalevel${i+1}`}>
-                                <p style={{fontSize: 14, fontWeight: 500}}>{t(langKeys.level)} {i+1}</p>
+                                <div className={classes.funnelLvlTitle}>
+                                    <p style={{fontSize: 14, fontWeight: 500}}>{t(langKeys.level)} {i+1}</p>
+                                    <IconButton onClick={()=>deleteFunnel(i)} size="small" style={{ width: 18, height: 18, margin: 14, marginRight: 0 }} >
+                                        <CloseIcon style={{ width: 18, height: 18 }} />
+                                    </IconButton>
+                                </div>
                                 <div    style={{paddingLeft: 40}}>
                                     <FieldSelect
                                         fregister={{
@@ -850,6 +866,9 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                                         onChange={(v: any) => {
                                             let initTags=getValues(`${key}.tags`)||[];
                                             initTags[i].value = v?.tag || "";
+                                            let newtagdata=tagsdata;
+                                            newtagdata[i].value = v?.tag || "";
+                                            settagsdata(newtagdata)
                                             setValue(`${key}.tags`,initTags)
                                         }}
                                         error={errors[key]?.tags?.[i]?.value.message}
@@ -866,6 +885,9 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                                         onChange={(value: any) => {
                                             let initTags=getValues(`${key}.tags`)||[];
                                             initTags[i].title = value || "";
+                                            let newtagdata=tagsdata;
+                                            newtagdata[i].title = value || "";
+                                            settagsdata(newtagdata)
                                             setValue(`${key}.tags`,initTags)
                                         }}
                                         error={errors[key]?.tags?.[i]?.title.message}

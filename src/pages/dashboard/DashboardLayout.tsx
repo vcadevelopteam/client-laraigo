@@ -143,7 +143,7 @@ const DashboardLayout: FC = () => {
             const error = t(dashboardtemplate.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 message: error,
-                success: false,
+                severity: "error",
                 show: true,
             }));
         } else if (dashboardtemplate.value) {
@@ -160,7 +160,7 @@ const DashboardLayout: FC = () => {
             const error = t(dashboard.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 message: error,
-                success: false,
+                severity: "error",
                 show: true,
             }));
         }
@@ -172,13 +172,13 @@ const DashboardLayout: FC = () => {
             const error = t(dashboardSave.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 message: error,
-                success: false,
+                severity: "error",
                 show: true,
             }));
         } else if (dashboardSave.success === true) {
             dispatch(showSnackbar({
                 message: "Se guardó el dashboard",
-                success: true,
+                severity: "success",
                 show: true,
             }));
             if (mustLoadagain.current) {
@@ -197,13 +197,13 @@ const DashboardLayout: FC = () => {
             const error = t(dashboardtemplateDelete.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 message: error,
-                success: false,
+                severity: "error",
                 show: true,
             }));
         } else if (dashboardtemplateDelete.success) {
             dispatch(showSnackbar({
                 message: "Se eliminó el dashboard",
-                success: true,
+                severity: "success",
                 show: true,
             }));
             history.push(paths.DASHBOARD);
@@ -216,7 +216,7 @@ const DashboardLayout: FC = () => {
             const error = t(reportTemplates.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 message: error,
-                success: false,
+                severity: "error",
                 show: true,
             }));
         }
@@ -1127,13 +1127,14 @@ interface LayoutFunnelProps {
 }
 
 const LayoutFunnel: FC<LayoutFunnelProps> = ({ data,title,...props }) => {
-    let dataFunnel = data.map((e:any,i:number)=> ({name:e.title,value:e.quantity, fill:PIE_COLORS[i]}))
-    let total = dataFunnel[0].value
+    let truedata = data.map((e:any,i:number)=> ({name:e.title,value:e.quantity, fill:PIE_COLORS[i]}))
+    let dataFunnel = data.map((e:any,i:number)=> ({name:e.title,value:data.length-i, fill:PIE_COLORS[i]}))
+    let total = truedata[0].value
     const classes = useDashboardLayoutStyles();
     function exportexcel(){
         const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
         const fileExtension = '.xlsx';
-        let dataexport = dataFunnel.map((e:any,i:number)=> ({Nombre:e.name,Cantidad:e.value,"% Representativo":((e.value/total)*100).toFixed(0)}))
+        let dataexport = truedata.map((e:any,i:number)=> ({Nombre:e.name,Cantidad:e.value,"% Representativo":((e.value/total)*100).toFixed(0)}))
         const ws = XLSX.utils.json_to_sheet(dataexport);
         const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
@@ -1163,7 +1164,7 @@ const LayoutFunnel: FC<LayoutFunnelProps> = ({ data,title,...props }) => {
                             if(Number(dataFunnel[props2.index].value) !==0){
                                 return <g>
                                     <text x={x+width-50} y={y+height/2}>
-                                        {dataFunnel[props2.index].value} - {((Number(dataFunnel[props2.index].value)/total)*100).toFixed(1)}%
+                                        {truedata[props2.index].value} - {total!==0?((Number(truedata[props2.index].value)/total)*100).toFixed(1):100}%
                                     </text>
                                 </g>
                             }else{
@@ -1366,7 +1367,7 @@ const TableModal: FC<TableModalProps> = ({ title, open, rawColumns, dateRange, d
             const error = t(mainDynamic.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 message: error,
-                success: false,
+                severity: "error",
                 show: true,
             }));
         }

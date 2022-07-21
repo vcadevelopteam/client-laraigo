@@ -3,8 +3,7 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { getasesorvsticketsSel, getTicketvsAdviserExport } from 'common/helpers';
-import { Dictionary, IFetchData } from "@types";
-import { makeStyles } from '@material-ui/core/styles';
+import { IFetchData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { exportData, getCollectionPaginated, resetMultiMain } from 'store/main/actions';
@@ -30,6 +29,10 @@ const TicketvsAdviser: FC = () => {
             {
                 Header: t(langKeys.ticket_number),
                 accessor: 'numeroticket',
+            },
+            {
+                Header: t(langKeys.startDate),
+                accessor: 'fechainicio',
             },
             {
                 Header: t(langKeys.starttime),
@@ -154,10 +157,10 @@ const TicketvsAdviser: FC = () => {
             if (!resExportData.loading && !resExportData.error) {
                 dispatch(showBackdrop(false));
                 setWaitExport(false);
-                window.open(resExportData.url, '_blank');
+                resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
             } else if (resExportData.error) {
                 const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.person).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitExport(false);
             }
@@ -193,10 +196,10 @@ const TicketvsAdviser: FC = () => {
             if (!resExportData.loading && !resExportData.error) {
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
-                window.open(resExportData.url, '_blank');
+                resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
             } else if (resExportData.error) {
                 const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
