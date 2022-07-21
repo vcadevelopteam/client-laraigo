@@ -3275,7 +3275,7 @@ const translation: LangKeys = {
     propertyhorainiatencion: 'Start time of attention',
     propertyhorasuspension: 'Time for automatic suspension',
     propertycargarconversaciones: 'Allows you to enable or disable the Upload Conversations button',
-    propertyreporteencuesta: 'Enable Survey Report (Score and Comment)',
+    propertyreporteencuestas: 'Enable Survey Report (Score and Comment)',
 
     property_tooltip_enable_button: 'Enable button',
     property_tooltip_disable_button: 'Disable button',

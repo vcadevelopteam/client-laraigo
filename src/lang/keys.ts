@@ -3283,7 +3283,7 @@ export const langKeys = {
     propertyhorainiatencion: 'propertyhorainiatencion',
     propertyhorasuspension: 'propertyhorasuspension',
     propertycargarconversaciones: 'propertycargarconversaciones',
-    propertyreporteencuesta: 'propertyreporteencuesta',
+    propertyreporteencuestas: 'propertyreporteencuestas',
 
     property_tooltip_enable_button: 'property_tooltip_enable_button',
     property_tooltip_disable_button: 'property_tooltip_disable_button',

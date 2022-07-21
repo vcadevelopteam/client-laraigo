@@ -3258,7 +3258,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     propertyhorainiatencion: 'Hora inicio de atención',
     propertyhorasuspension: 'Hora de suspensión',
     propertycargarconversaciones: 'Permite activar o desactivar el botón Cargar conversaciones',
-    propertyreporteencuesta: 'Habilita Reporte de Encuestas (Puntuación y Comentario)',
+    propertyreporteencuestas: 'Habilita Reporte de Encuestas (Puntuación y Comentario)',
 
     property_tooltip_enable_button: 'Activar botón',
     property_tooltip_disable_button: 'Desactivar botón',
