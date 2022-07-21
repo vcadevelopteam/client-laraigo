@@ -1867,7 +1867,7 @@ const translation: LangKeys = {
     report_userproductivityhours_filter_channels: 'Channels',
     report_userproductivityhours_filter_hours: 'Hour',
 
-    report_survey: 'Survey',
+    report_survey: 'Satisfaction surveys',
     report_survey_ticketnum: 'Ticket',
     report_survey_ticketdate: 'Ticket date',
     report_survey_tickettime: 'Start time',
@@ -3275,7 +3275,7 @@ const translation: LangKeys = {
     propertyhorainiatencion: 'Start time of attention',
     propertyhorasuspension: 'Time for automatic suspension',
     propertycargarconversaciones: 'Allows you to enable or disable the Upload Conversations button',
-    propertyreporteencuestas: 'Enable Survey Report (Score and Comment)',
+    propertyreporte_encuestas: 'Enable Survey Report (Score and Comment)',
 
     property_tooltip_enable_button: 'Enable button',
     property_tooltip_disable_button: 'Disable button',
