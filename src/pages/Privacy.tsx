@@ -113,6 +113,24 @@ export const Privacy: FC = () => {
                             </li>
                         </ul>
                     </li>
+                    <li>
+                        <p><b>{t(langKeys.privacypolicy44)}</b> {t(langKeys.privacypolicy45)}</p>
+                        <ul style={{listStyleType: 'none'}}>
+                            <li>
+                                <p><b>{t(langKeys.privacypolicy46)}</b> {t(langKeys.privacypolicy47)}</p>
+                                <p>{t(langKeys.privacypolicy48)}</p>
+                            </li>
+                            <li>
+                                <p><b>{t(langKeys.privacypolicy49)}</b> {t(langKeys.privacypolicy50)}</p>
+                                <ul>
+                                    <li><b>{t(langKeys.privacypolicy51)}</b> {t(langKeys.privacypolicy52)}</li>
+                                    <li><b>{t(langKeys.privacypolicy53)}</b> {t(langKeys.privacypolicy54)}</li>
+                                    <li><b>{t(langKeys.privacypolicy55)}</b> {t(langKeys.privacypolicy56)}</li>
+                                </ul>
+                                <p>{t(langKeys.privacypolicy57)}</p>
+                            </li>
+                        </ul>
+                    </li>
                 </ol>
                 <p><b>{t(langKeys.privacypolicy32)}</b></p>
                 <p>{t(langKeys.privacypolicy33)}</p>

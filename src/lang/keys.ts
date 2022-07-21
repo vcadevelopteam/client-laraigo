@@ -3777,6 +3777,21 @@ export const langKeys = {
     channel_gmailalert2: 'channel_gmailalert2',
     channel_gmailtitle: 'channel_gmailtitle',
     subscription_missinginfo: 'subscription_missinginfo',
+
+    privacypolicy44: "privacypolicy44",
+    privacypolicy45: "privacypolicy45",
+    privacypolicy46: "privacypolicy46",
+    privacypolicy47: "privacypolicy47",
+    privacypolicy48: "privacypolicy48",
+    privacypolicy49: "privacypolicy49",
+    privacypolicy50: "privacypolicy50",
+    privacypolicy51: "privacypolicy51",
+    privacypolicy52: "privacypolicy52",
+    privacypolicy53: "privacypolicy53",
+    privacypolicy54: "privacypolicy54",
+    privacypolicy55: "privacypolicy55",
+    privacypolicy56: "privacypolicy56",
+    privacypolicy57: "privacypolicy57",
 };
 
 export type LangKeys = typeof langKeys;
