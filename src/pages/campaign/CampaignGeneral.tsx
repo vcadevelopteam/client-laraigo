@@ -61,6 +61,7 @@ const dataCampaignType = [
     { key: 'TEXTO', value: 'text'},
     { key: 'HSM', value: 'hsm', rif: 'startsWith', rifvalue: 'WHA' },
     { key: 'SMS', value: 'sms', rif: 'startsWith', rifvalue: 'SMS'},
+    { key: 'CALL', value: 'call', rif: 'starsWith', rifvalue: 'VOX' }
 ];
 
 type FormFields = {
@@ -243,6 +244,9 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         else if (channeltype?.startsWith('SMS')) {
             onChangeType({key: 'SMS'});
         }
+        else if (channeltype?.startsWith('VOX')) {
+            onChangeType({key: 'CALL'});
+        }
         else {
             onChangeType({key: 'TEXTO'});
         }
@@ -273,6 +277,9 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
         else if (getValues('communicationchanneltype')?.startsWith('SMS')) {
             return dataCampaignType.filter(t => t.key === 'SMS');
+        }
+        else if (getValues('communicationchanneltype')?.startsWith('VOX')) {
+            return dataCampaignType.filter(t => t.key === 'CALL');
         }
         else {
             return filterIf(dataCampaignType);
