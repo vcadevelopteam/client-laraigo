@@ -1252,6 +1252,7 @@ const translation: LangKeys = {
     tmotooltip: "Tiempo promedio de la conversación (duración real + tiempo pausado).",
     tmotooltipproductivity: "Tiempo promedio de la conversación del asesor (duración real + tiempo pausado).",
     tmetooltip: "Es el tiempo promedio de la primera respuesta que otorga el asesor/bot al cliente.",
+    tmeadvisortooltip: "Es el tiempo promedio de la primera respuesta que otorga el asesor al cliente.",
     tmrtooltip: "Tiempo Promedio de respuesta del asesor/bot.",
     maxavgtickethourtooltip: "Asesor o bot con la cantidad de Tickets más altas atendidas en una hora en específico.",
     minavgtickethourtooltip: "Asesor o bot con la cantidad de Tickets más bajas atendidas en una hora en específico.",

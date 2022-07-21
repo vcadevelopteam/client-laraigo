@@ -1319,6 +1319,7 @@ const translation: LangKeys = {
     tmotooltip: "Average time of the conversation (real duration + paused time).",
     tmotooltipproductivity: "Average time of the advisor's conversation (real duration + paused time).",
     tmetooltip: "It is the average time of the first response given by the advisor/bot to the client.",
+    tmeadvisortooltip: "It is the average time of the first response given by the advisor to the client.",
     numberofadvisers: "Number of Advisors",
     rankinghsmtooltip: "Shows the number of HSMs templates launched.",
     hsmperdaytooltip: "Shows the number of HSMs sent per day.",
