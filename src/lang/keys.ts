@@ -3746,7 +3746,22 @@ export const langKeys = {
     messagetemplate_changetoeditor: 'messagetemplate_changetoeditor',
     messagetemplate_changetoview: 'messagetemplate_changetoview',
 
-    validationchar: 'validationchar'
+    validationchar: 'validationchar',
+
+    privacypolicy44: "privacypolicy44",
+    privacypolicy45: "privacypolicy45",
+    privacypolicy46: "privacypolicy46",
+    privacypolicy47: "privacypolicy47",
+    privacypolicy48: "privacypolicy48",
+    privacypolicy49: "privacypolicy49",
+    privacypolicy50: "privacypolicy50",
+    privacypolicy51: "privacypolicy51",
+    privacypolicy52: "privacypolicy52",
+    privacypolicy53: "privacypolicy53",
+    privacypolicy54: "privacypolicy54",
+    privacypolicy55: "privacypolicy55",
+    privacypolicy56: "privacypolicy56",
+    privacypolicy57: "privacypolicy57",
 };
 
 export type LangKeys = typeof langKeys;
