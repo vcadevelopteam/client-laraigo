@@ -3759,6 +3759,21 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     messagetemplate_changetoview: 'Visualizar plantilla HTML',
 
     validationchar: 'Este campo tiene un número mínimo y máximo de caracteres',
+
+    privacypolicy44: "2.5. Información de Google:",
+    privacypolicy45: "En Laraigo, ofrecemos la posibilidad de enlazar tu cuenta de Google a una de nuestras aplicaciones en múltiples procesos.",
+    privacypolicy46: "2.5.1. Suscripción:",
+    privacypolicy47: "Ofrecemos la posibilidad de utilizar su cuenta de Google en nuestro proceso de suscripción. Si aceptas enlazar tu cuenta de Google como medio de registro, recibimos el nombre de tu cuenta y correo electrónico.",
+    privacypolicy48: "Usamos esta información como parte de nuestro proceso de creación de usuario. El usuario creado por un enlace con una cuenta de Google puede ser identificado por la información obtenida en el proceso y podrá ser utilizado para contactar a la persona que lo registró si es necesario.",
+    privacypolicy49: "2.5.2. Gestión de Canales:",
+    privacypolicy50: "Ofrecemos la posibilidad de utilizar su cuenta de Google para los canales de Gmail, YouTube y Blogger. Al enlazar una cuenta de Google, usted acepta el compartir con nosotros la siguiente información basada en eventos:",
+    privacypolicy51: "Gmail:",
+    privacypolicy52: "Correos electronicos entrantes y los permisos necesarios para enviar mensajes de correo como el usuario enlazado",
+    privacypolicy53: "YouTube:",
+    privacypolicy54: "Información del canal y de los videos publicados como titulo, imagen de portada, comentarios y respuestas, ademas de los permisos necesario para publicar comentarios como el usuario enlazado",
+    privacypolicy55: "Blogger:",
+    privacypolicy56: "Información del blog y de los post, como titulo del post, contenido del post e información de las respuestas, ademas de los permisos necesario para responder como el usuario enlazado",
+    privacypolicy57: "Usamos la información como parte de nuestro módulo de gestión de canales. La información es utilizada para crear un canal donde eventos entrantes (comentarios y mensajes) son registrados en la plataforma y procesados como tickets. Algunos usuarios selectos de la plataforma pueden enviar respuestas a estos tickets, las cuales serán mostradas como respuestas en el canal de Google que corresponda.",
 };
 
 const esResource: ResourceLanguage = {
