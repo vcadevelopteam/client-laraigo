@@ -29,7 +29,6 @@ import { connectAgentUI } from 'store/inbox/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { useLocation } from "react-router-dom";
 import { apiUrls } from 'common/constants';
-import paths from 'common/constants/paths';
 import { LaraigoLogo } from 'icons';
 import { useForm } from 'react-hook-form';
 import { FieldEdit, DialogZyx } from 'components';
@@ -124,7 +123,7 @@ const SignIn = () => {
     const handleClickShowPassword = () => setShowPassword(!showPassword);
 
     const handleSignUp = () => {
-        window.open(paths.SIGNUPBASIC, "_self");
+        window.open("https://laraigo.com/en/#pricetable", "_self");
     }
 
     const handleRecover = () => {
