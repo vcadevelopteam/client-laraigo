@@ -15,7 +15,15 @@ export const getAgents = (): IActionCall => ({
 
 export const resetGetAgents = (): IActionCall => ({ type: actionTypes.GET_AGENTS_RESET });
 
-
+export const checkPaymentPlan = (requestBody: Dictionary): IActionCall => ({
+    callAPI: () => CommonService.reeschedulecall(requestBody),
+    types: {
+        loading: actionTypes.REESCHEDULE_CALL,
+        success: actionTypes.REESCHEDULE_CALL_SUCCESS,
+        failure: actionTypes.REESCHEDULE_CALL_FAILURE,
+    },
+    type: null,
+});
 
 export const filterTickets = (lastmessage: string, start_createticket: string, end_createticket: string, channels: string, conversationstatus: string, displayname: string, phone: string): IActionCall => ({
     callAPI: () => CommonService.main(getTicketsByFilter(
