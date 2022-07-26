@@ -249,7 +249,6 @@ const MakeCall: React.FC = () => {
     const history = useHistory();
 
     React.useEffect(() => {
-        console.log(resExecute)
         if (!resExecute.loading && !resExecute.error) {
             if (resExecute.key === "UFN_CONVERSATION_OUTBOUND_INS") {
                 const { v_conversationid, v_ticketnum, v_personid, v_firstconversationdate, v_personname, v_voximplantrecording } = resExecute.data[0]
@@ -305,8 +304,6 @@ const MakeCall: React.FC = () => {
 
     //reassign if the call overload time limit
     React.useEffect(() => {
-        console.log("timeWaiting", timeWaiting)
-        // console.log("user?.properties.time_reassign_call", user?.properties.time_reassign_call)
         if (timeWaiting >= 0) {
             if (timeWaiting >= (user?.properties.time_reassign_call || 30) && (call.type === "INBOUND" && statusCall === "CONNECTING")) {
                 dispatch(rejectCall(call.call));
