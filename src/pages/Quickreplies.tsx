@@ -7,7 +7,7 @@ import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, 
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { getQuickrepliesSel, getValuesFromDomain, insQuickreplies, getValuesForTree, uploadExcel, getParentSel, exportExcel, templateMaker } from 'common/helpers';
+import { getQuickrepliesSel, getValuesFromDomain, insQuickreplies, getValuesForTree, uploadExcel, getParentSel, exportExcel, templateMaker,deleteClassificationTree } from 'common/helpers';
 import { EmojiPickerZyx } from 'components'
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import { Dictionary } from "@types";
@@ -19,14 +19,18 @@ import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import { getCollection, resetAllMain, getMultiCollection, execute, getMultiCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 import ClearIcon from '@material-ui/icons/Clear';
 import { TreeItem, TreeView } from '@material-ui/lab';
-import { IconButton, Input, InputAdornment, InputLabel } from '@material-ui/core';
+import { IconButton, Input, InputAdornment, InputLabel, Menu, MenuItem } from '@material-ui/core';
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import { DetailTipification } from './Tipifications';
 import { useHistory } from 'react-router-dom';
 import paths from 'common/constants/paths';
+import {
+    MoreVert as MoreVertIcon,
+} from '@material-ui/icons';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -67,12 +71,15 @@ const useStyles = makeStyles((theme) => ({
         height: 240,
         flexGrow: 1,
         maxWidth: 400,
-    }
+    },
+    treelabels: {display:"flex",justifyContent:"space-between"}
 }));
 
-const TreeItemsFromData2: React.FC<{ dataClassTotal: Dictionary}> = ({ dataClassTotal }) => {
+const TreeItemsFromData2: React.FC<{ dataClassTotal: Dictionary,setAnchorEl: (param: any) => void, setonclickdelete:(param: any) => void}> = ({ dataClassTotal,setAnchorEl,setonclickdelete }) => {
     const parents: any[] = []
     const children: any[] = []
+    const classes = useStyles();
+    
 
     dataClassTotal.forEach((x: Dictionary) => {
         if (x.parent === 0) {
@@ -94,17 +101,37 @@ const TreeItemsFromData2: React.FC<{ dataClassTotal: Dictionary}> = ({ dataClass
             children.push(item)
         }
     })
+    function Loadchildren(id: number) {
 
-    function loadchildren(id: number) {
         return children.map(x => {
             if (x.father === id) {
                 return (
                     <TreeItem
                         key={x.key}
                         nodeId={String(x.nodeId)}
-                        label={x.label}
+                        label={
+                        <div className={classes.treelabels}>
+                            <div>{x.label}</div>
+                            <div>
+                            {!x.children && 
+                                <IconButton
+                                    onClick={(event)=>{setAnchorEl(event.currentTarget);setonclickdelete(x.key)}}
+                                    size="small"
+                                >
+                                <MoreVertIcon
+                                    style={{ cursor: 'pointer' }}
+                                    aria-label="more"
+                                    aria-controls="long-menu"
+                                    aria-haspopup="true"
+                                    color="action"
+                                    fontSize="small"
+                                />
+                                </IconButton>
+                            }
+                            </div>
+                        </div>}
                     >
-                        {x.children ? loadchildren(x.key) : null}
+                        {x.children ? Loadchildren(x.key) : null}
                     </TreeItem>
                 )
             }
@@ -117,17 +144,39 @@ const TreeItemsFromData2: React.FC<{ dataClassTotal: Dictionary}> = ({ dataClass
                 <TreeItem
                     key={x.key}
                     nodeId={String(x.nodeId)}
-                    label={x.label}
+                    label={
+                        <div className={classes.treelabels}>
+                            <div>{x.label}</div>
+                            <div>
+                            {!x.children && 
+                                <IconButton
+                                    onClick={(event)=>{setAnchorEl(event.currentTarget);setonclickdelete(x.key)}}
+                                    size="small"
+                                >
+                                <MoreVertIcon
+                                    style={{ cursor: 'pointer' }}
+                                    aria-label="more"
+                                    aria-controls="long-menu"
+                                    aria-haspopup="true"
+                                    color="action"
+                                    fontSize="small"
+                                />
+                                </IconButton>
+                            }
+                            </div>
+                        </div>}
                 >
-                    {x.children ? loadchildren(x.key) : null}
+                    {x.children ? Loadchildren(x.key) : null}
                 </TreeItem>)}
         </>
     )
 };
 
-const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary, setValueTmp: (p1: number) => void, setselectedlabel: (param: any) => void }> = ({ dataClassTotal, setValueTmp, setselectedlabel }) => {
+const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary, setValueTmp: (p1: number) => void, setselectedlabel: (param: any) => void ,setAnchorEl: (param: any) => void, 
+    setonclickdelete:(param: any) => void}> = ({ dataClassTotal, setValueTmp, setselectedlabel,setAnchorEl,setonclickdelete }) => {
     const parents: any[] = []
     const children: any[] = []
+    const classes = useStyles();
 
     dataClassTotal.forEach((x: Dictionary) => {
         if (x.parent === 0) {
@@ -155,17 +204,36 @@ const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary, setValueTmp: (p1
         setselectedlabel(x.label)
     }
 
-    function loadchildren(id: number) {
+    function Loadchildren(id: number) {
         return children.map(x => {
             if (x.father === id) {
                 return (
                     <TreeItem
                         key={x.key}
                         nodeId={String(x.nodeId)}
-                        label={x.label}
+                        label={<div className={classes.treelabels}>
+                        <div>{x.label}</div>
+                        <div>
+                        {!x.children && 
+                            <IconButton
+                                onClick={(event)=>{setAnchorEl(event.currentTarget);setonclickdelete(x.key)}}
+                                size="small"
+                            >
+                            <MoreVertIcon
+                                style={{ cursor: 'pointer' }}
+                                aria-label="more"
+                                aria-controls="long-menu"
+                                aria-haspopup="true"
+                                color="action"
+                                fontSize="small"
+                            />
+                            </IconButton>
+                        }
+                        </div>
+                    </div>}
                         onLabelClick={() => setselect(x)}
                     >
-                        {x.children ? loadchildren(x.key) : null}
+                        {x.children ? Loadchildren(x.key) : null}
                     </TreeItem>
                 )
             }
@@ -178,10 +246,29 @@ const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary, setValueTmp: (p1
                 <TreeItem
                     key={x.key}
                     nodeId={String(x.nodeId)}
-                    label={x.label}
+                    label={<div className={classes.treelabels}>
+                    <div>{x.label}</div>
+                    <div>
+                    {!x.children && 
+                        <IconButton
+                            onClick={(event)=>{setAnchorEl(event.currentTarget);setonclickdelete(x.key)}}
+                            size="small"
+                        >
+                        <MoreVertIcon
+                            style={{ cursor: 'pointer' }}
+                            aria-label="more"
+                            aria-controls="long-menu"
+                            aria-haspopup="true"
+                            color="action"
+                            fontSize="small"
+                        />
+                        </IconButton>
+                    }
+                    </div>
+                </div>}
                     onLabelClick={() => setselect(x)}
                 >
-                    {x.children ? loadchildren(x.key) : null}
+                    {x.children ? Loadchildren(x.key) : null}
                 </TreeItem>)}
         </>
     )
@@ -194,6 +281,12 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
     const [quickreply, setQuickreply] = useState(row ? row.quickreply : "")
     const executeRes = useSelector(state => state.main.execute);
     const multiDataAuxRes = useSelector(state => state.main.multiDataAux)
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [onclickdelete, setonclickdelete] = useState(0);
+    const open = Boolean(anchorEl);
+    const handleCloseMenu = () => {
+        setAnchorEl(null);
+    };
 
     const dispatch = useDispatch();
 
@@ -237,10 +330,18 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
-                fetchData && fetchData();
-                dispatch(showBackdrop(false));
-                setViewSelected("view-1")
+                if(open){
+                    fetchMultiData();
+                    setAnchorEl(null);
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))                    
+                    dispatch(showBackdrop(false));
+                }else{
+
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                    fetchData && fetchData();
+                    dispatch(showBackdrop(false));
+                    setViewSelected("view-1")
+                }
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.quickreplies).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
@@ -427,8 +528,40 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                         dataClassTotal={dataClassTotal}
                         setValueTmp={(e) => setValue('classificationid', e)}
                         setselectedlabel={setselectedlabel}
+                        setAnchorEl={setAnchorEl}
+                        setonclickdelete={setonclickdelete}
                     />
                 </TreeView>
+                <Menu
+                    id="long-menu"
+                    anchorEl={anchorEl}
+                    open={open}
+                    onClose={handleCloseMenu}
+                    PaperProps={{
+                        style: {
+                            maxHeight: 48 * 4.5,
+                            width: '20ch',
+                        },
+                    }}
+                >
+                    <MenuItem 
+                        onClick={() => {
+                            const callback = () => {
+                                dispatch(execute(deleteClassificationTree(onclickdelete)));
+                                dispatch(showBackdrop(true));
+                                setWaitSave(true);
+                            }
+                    
+                            dispatch(manageConfirmation({
+                                visible: true,
+                                question: t(langKeys.confirmation_delete),
+                                callback
+                            }))
+                        }}
+                    >
+                        <DeleteIcon style={{color:"rgb(119, 33, 173)"}}/>  {t(langKeys.delete)}
+                    </MenuItem>
+                </Menu>
                 <div className="row-zyx">
                 </div>
             </DialogZyx>
@@ -469,6 +602,12 @@ const Quickreplies: FC = () => {
         { id: "view-0", name: t(langKeys.configuration_plural) },
         { id: "view-1", name: t(langKeys.quickreply_plural) },
     ];
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [onclickdelete, setonclickdelete] = useState(0);
+    const open = Boolean(anchorEl);
+    const handleCloseMenu = () => {
+        setAnchorEl(null);
+    };
     function redirectFunc(view:string){
         if(view ==="view-0"){
             history.push(paths.CONFIGURATION)
@@ -546,6 +685,8 @@ const Quickreplies: FC = () => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(insertexcel?langKeys.successful_edit: langKeys.successful_delete) }))
+                setAnchorEl(null);
+                fetchMultiData();
                 fetchData();
                 setinsertexcel(false)
                 dispatch(showBackdrop(false));
@@ -639,6 +780,37 @@ const Quickreplies: FC = () => {
                         handleClick={redirectFunc}
                     />
                 </div>
+            
+                <Menu
+                    id="long-menu"
+                    anchorEl={anchorEl}
+                    open={open}
+                    onClose={handleCloseMenu}
+                    PaperProps={{
+                        style: {
+                            maxHeight: 48 * 4.5,
+                            width: '20ch',
+                        },
+                    }}
+                >
+                    <MenuItem 
+                        onClick={() => {
+                            const callback = () => {
+                                dispatch(execute(deleteClassificationTree(onclickdelete)));
+                                dispatch(showBackdrop(true));
+                                setWaitSave(true);
+                            }
+                    
+                            dispatch(manageConfirmation({
+                                visible: true,
+                                question: t(langKeys.confirmation_delete),
+                                callback
+                            }))
+                        }}
+                    >
+                        <DeleteIcon style={{color:"rgb(119, 33, 173)"}}/>  {t(langKeys.delete)}
+                    </MenuItem>
+                </Menu>
                 <Fragment>
                     <TableZyx
                         columns={columns}
@@ -689,6 +861,8 @@ const Quickreplies: FC = () => {
                         >
                             <TreeItemsFromData2
                                 dataClassTotal={mainResult.multiData.data[1] && mainResult.multiData.data[1].success ? mainResult.multiData.data[1].data : []}
+                                setAnchorEl={setAnchorEl}
+                                setonclickdelete={setonclickdelete}
                             />
                         </TreeView>
                         <div className="row-zyx">
