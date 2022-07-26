@@ -117,16 +117,17 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
     const multiData = useSelector(state => state.main.multiData);
     const [dateToClose, setDateToClose] = useState<Date | null>(null)
     const dictAutoClose = useSelector(state => state.login.validateToken.user?.properties?.auto_close);
+    const secondsToAnwserCall = useSelector(state => state.login.validateToken.user?.properties?.seconds_to_answer_call);
     const statusCall = useSelector(state => state.voximplant?.statusCall);
     const dictAutoCloseHolding = useSelector(state => state.login.validateToken.user?.properties?.auto_close_holding);
     const waitingcustomermessage = useSelector(state => state.login.validateToken.user?.properties?.waiting_customer_message);
     const callVoxiTmp = useSelector(state => state.voximplant.call);
-
     const [callVoxi, setCallVoxi] = useState<Call | null>(null);
     const dispatch = useDispatch();
-
     const [iconColor, setIconColor] = useState('#7721AD');
     const { t } = useTranslation();
+    const [timeWaiting, setTimeWaiting] = useState(-1);
+    const [waitingDate, setWaitingDate] = useState<string | null>(null);
 
     useEffect(() => {
         if (callVoxiTmp && callVoxiTmp.call && callVoxiTmp.data?.conversationid === conversationid && item.status === "ASIGNADO") {
@@ -145,11 +146,6 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
     }, [multiData, communicationchannelid]);
 
     useEffect(() => {
-        console.log("teaaa", {
-            countnewmessages,
-            personlastreplydate,
-            lastreplyuser
-        })
         if (countnewmessages === 0 && personlastreplydate && lastreplyuser) {
             const timeClose = (userType === "AGENT" || agentSelected?.userid !== 3) ? (dictAutoClose?.[communicationchannelid] || 0) : (dictAutoCloseHolding?.[communicationchannelid] || 0);
             if (timeClose === 0) {
@@ -201,6 +197,36 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
             }
         }
     }
+
+    React.useEffect(() => {
+        if (callVoxiTmp.type === "INBOUND" && statusCall === "CONNECTING") {
+            setWaitingDate(new Date().toISOString())
+            setTimeWaiting(0);
+        }
+    }, [callVoxiTmp, statusCall])
+
+    console.log(timeWaiting, secondsToAnwserCall, callVoxiTmp.type, statusCall)
+
+    React.useEffect(() => {
+        if (timeWaiting >= 0 && (secondsToAnwserCall || 0) > 0) {
+
+            if (timeWaiting >= (secondsToAnwserCall || 0) && (callVoxiTmp.type === "INBOUND" && statusCall === "CONNECTING")) {
+                dispatch(answerCall({ call: callVoxi!!, conversationid }));
+                setWaitingDate(null);
+                setTimeWaiting(-1);
+                return;
+            }
+            if (callVoxiTmp.type === "INBOUND" && statusCall === "CONNECTING") {
+                setTimeout(() => {
+                    setTimeWaiting(getSecondsUntelNow(convertLocalDate(waitingDate)));
+                }, 1000)
+            } else {
+                setTimeWaiting(-1);
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [timeWaiting]);
+
 
     return (
         <div
@@ -261,7 +287,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                         />
                     }
                     {communicationchanneltype !== "VOXI" &&
-                        <LabelGo 
+                        <LabelGo
                             isTimer={false}
                             color={origin === "OUTBOUND" ? "#ffbf00" : "#0000ff"}
                             label={origin || "INBOUND"}
