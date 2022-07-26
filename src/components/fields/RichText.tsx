@@ -441,14 +441,14 @@ const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, placeholder
                             <FormatQuoteIcon />
                         </BlockButton>
                         {(image && onlyurl) &&
-                            <>
                                 <OnlyURLInsertImageButton>
                                     <InsertPhotoIcon />
-                                </OnlyURLInsertImageButton> :
-                                <InsertImageButton>
-                                    <InsertPhotoIcon />
-                                </InsertImageButton>
-                            </>
+                                </OnlyURLInsertImageButton>
+                        }
+                        {
+                            /*<InsertImageButton>
+                            <InsertPhotoIcon />
+                        </InsertImageButton> */
                         }
                         {upload.loading && (
                             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
@@ -1089,7 +1089,7 @@ const OnlyURLInsertImageButton: FC = ({ children }) => {
     }, [url, editor, clearUrl]);
 
     return (
-        <div>
+        <>
             <Tooltip title={t(langKeys.image) || ''}>
                 <IconButton
                     aria-controls="insert-image-button-rich-text-popup"
@@ -1143,7 +1143,7 @@ const OnlyURLInsertImageButton: FC = ({ children }) => {
                     </div>
                 </div>
             </Menu>
-        </div>
+        </>
     );
 }
 
