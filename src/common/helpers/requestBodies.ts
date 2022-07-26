@@ -3119,3 +3119,10 @@ export const getPropertiesIncludingName = (propertyname: string): IRequestBody =
         propertyname
     }
 })
+export const deleteClassificationTree = (id: number): IRequestBody => ({
+    method: "UFN_CLASSIFICATION_DEL",
+    key: "UFN_CLASSIFICATION_DEL",
+    parameters: {
+        id
+    }
+})
