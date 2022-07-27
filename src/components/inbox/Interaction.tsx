@@ -19,7 +19,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import Avatar from '@material-ui/core/Avatar';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
-// import { ShoppingCart } from '@material-ui/icons';
+import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
 
 const useStylesInteraction = makeStyles((theme) => ({
     containerCarousel: {
@@ -420,6 +420,10 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const [showfulltext, setshowfulltext] = useState(interactiontext.length <= 450)
+    const { isLoaded } = useJsApiLoader({
+        googleMapsApiKey: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4" /*"AIzaSyCBij6DbsB8SQC_RRKm3-X07RLmvQEnP9w"*/,
+    });
+
 
     if (!interactiontext.trim() || interactiontype === "typing")
         return null;
@@ -711,6 +715,34 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 onlyTime={onlyTime}
             />
         )
+    } else if (interactiontype === "location") {
+
+        const coordinates = interactiontext.split("=").pop()?.split(",") || ["", ""];
+
+        return isLoaded ? (
+            <div
+                title={convertLocalDate(createdate).toLocaleString()}
+                className={clsx(classes.interactionText, {
+                    [classes.interactionTextAgent]: userType !== 'client',
+                })}
+            >
+                <div style={{width: "300px"}}>
+                    <GoogleMap
+                        mapContainerStyle={{
+                            width: '100%',
+                            height: "200px"
+                        }}
+                        center={{ lat: parseFloat(coordinates[0]), lng: parseFloat(coordinates[1]) }}
+                        zoom={10}
+                    >
+                        { /* Child components, such as markers, info windows, etc. */}
+                        <></>
+                    </GoogleMap>
+                </div>
+                <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
+                <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
+            </div>
+        ) : null
     }
     return (
         <div className={clsx(classes.interactionText, {
