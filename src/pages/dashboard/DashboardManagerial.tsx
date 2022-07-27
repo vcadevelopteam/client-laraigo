@@ -1679,7 +1679,7 @@ const DashboardManagerial: FC = () => {
                             </div>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.pollssent, { survey: 'NPS' })}</div>
-                                <div className={classes.datafield}>{dataEncuesta.npspollssent}</div>
+                                <div className={classes.datafield}>{dataEncuesta.npspollsanswered}</div>
                             </div>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.pollsanswered, { survey: 'NPS' })}</div>
@@ -1763,7 +1763,7 @@ const DashboardManagerial: FC = () => {
                             </div>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.pollssent, { survey: 'CSAT' })}</div>
-                                <div className={classes.datafield}>{dataEncuesta.csatpollssent}</div>
+                                <div className={classes.datafield}>{dataEncuesta.csatpollsanswered}</div>
                             </div>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.pollsanswered, { survey: 'CSAT' })}</div>
@@ -1849,7 +1849,7 @@ const DashboardManagerial: FC = () => {
                             </div>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.pollssent, { survey: 'FCR' })}</div>
-                                <div className={classes.datafield}>{dataEncuesta.fcrpollssent}</div>
+                                <div className={classes.datafield}>{dataEncuesta.fcrpollsanswered}</div>
                             </div>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.pollsanswered, { survey: 'FCR' })}</div>
@@ -1929,7 +1929,7 @@ const DashboardManagerial: FC = () => {
                             </div>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.pollssent, { survey: 'FIX' })}</div>
-                                <div className={classes.datafield}>{dataEncuesta.fixpollssent}</div>
+                                <div className={classes.datafield}>{dataEncuesta.fixpollsanswered}</div>
                             </div>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.pollsanswered, { survey: 'FIX' })}</div>
