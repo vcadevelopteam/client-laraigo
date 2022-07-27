@@ -1715,6 +1715,7 @@ const translation: LangKeys = {
     dashboard_operationalpush_disconnections_userstatus: "Status",
     dashboard_operationalpush_disconnections_conectedtime: "Connected Time",
     dashboard_operationalpush_disconnections_desconectedtime: "Disconnected Time",
+    error_invaliddata: "No valid data found",
     week: "Week",
     reportscheduler: "Automatic Shipments",
     reportscheduler_singular: "Automatic Shipment",
