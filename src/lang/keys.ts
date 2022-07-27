@@ -1832,6 +1832,13 @@ export const langKeys = {
     dashboard_operationalpush_application_quantity: "dashboard_operationalpush_application_quantity",
     dashboard_operationalpush_application_channel: "dashboard_operationalpush_application_channel",
 
+    dashboard_operationalpush_disconnections_usr: "dashboard_operationalpush_disconnections_usr",
+    dashboard_operationalpush_disconnections_fullname: "dashboard_operationalpush_disconnections_fullname",
+    dashboard_operationalpush_disconnections_usergroups: "dashboard_operationalpush_disconnections_usergroups",
+    dashboard_operationalpush_disconnections_userstatus: "dashboard_operationalpush_disconnections_userstatus",
+    dashboard_operationalpush_disconnections_conectedtime: "dashboard_operationalpush_disconnections_conectedtime",
+    dashboard_operationalpush_disconnections_desconectedtime: "dashboard_operationalpush_disconnections_desconectedtime",
+
     report_loginhistory: 'report_loginhistory',
     report_loginhistory_datehour: 'report_loginhistory_datehour',
     report_loginhistory_user: 'report_loginhistory_user',

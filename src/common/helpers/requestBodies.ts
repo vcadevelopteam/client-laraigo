@@ -3063,6 +3063,17 @@ export const getDisconnectionTimes = ({ startdate, enddate, asesorid, supervisor
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
+export const getDisconnectionDataTimes = ({ startdate, enddate, asesorid, supervisorid }: Dictionary): IRequestBody => ({
+    method: "UFN_DASHBOARD_DISCONNECTIONTIMES_DATA_SEL",
+    key: "UFN_DASHBOARD_DISCONNECTIONTIMES_DATA_SEL",
+    parameters: {
+        startdate,
+        enddate, 
+        asesorid,
+        supervisorid, 
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
 
 //getPaginatedTicket
 export const getasesorvsticketsSel = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
