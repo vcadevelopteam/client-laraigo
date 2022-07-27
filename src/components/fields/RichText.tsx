@@ -467,6 +467,7 @@ const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, placeholder
                         renderElement={renderElement}
                         renderLeaf={renderLeaf}
                         spellCheck={spellCheck}
+                        style={{borderTop: "1.5px dotted #949494"}}
                     />
                 }
             </Slate>
@@ -1108,6 +1109,7 @@ const OnlyURLInsertImageButton: FC = ({ children }) => {
                 anchorEl={anchorEl}
                 open={open}
                 onClose={handleClose}
+                variant="menu"
                 MenuListProps={{
                     'aria-labelledby': 'basic-button',
                 }}
@@ -1147,6 +1149,7 @@ const OnlyURLInsertImageButton: FC = ({ children }) => {
     );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const InsertImageButton: FC = ({ children }) => {
     const editor = useSlateStatic();
     const dispatch = useDispatch();
