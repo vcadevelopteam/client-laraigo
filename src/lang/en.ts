@@ -1706,6 +1706,13 @@ const translation: LangKeys = {
     dashboard_operationalpush_application_tag: "Tag",
     dashboard_operationalpush_application_quantity: "Quantity",
     dashboard_operationalpush_application_channel: "Channel",
+    
+    dashboard_operationalpush_disconnections_usr: "User",
+    dashboard_operationalpush_disconnections_fullname: "Full Name",
+    dashboard_operationalpush_disconnections_usergroups: "Groups",
+    dashboard_operationalpush_disconnections_userstatus: "Status",
+    dashboard_operationalpush_disconnections_conectedtime: "Connected Time",
+    dashboard_operationalpush_disconnections_desconectedtime: "Disconnected Time",
     week: "Week",
     reportscheduler: "Automatic Shipments",
     reportscheduler_singular: "Automatic Shipment",

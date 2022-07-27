@@ -1,6 +1,6 @@
 import { Box, Button, createStyles, makeStyles, Theme } from "@material-ui/core";
 import { Dictionary } from "@types";
-import { getDisconnectionTimes, getDateCleaned, getUserAsesorByOrgID, getValuesFromDomain, timetoseconds, formattime} from "common/helpers";
+import { getDisconnectionTimes, getDateCleaned, getUserAsesorByOrgID, getValuesFromDomain, timetoseconds, formattime, exportExcel} from "common/helpers";
 import { DateRangePicker, DialogZyx, FieldSelect } from "components";
 import { useSelector } from "hooks";
 import { CalendarIcon } from "icons";
@@ -10,8 +10,9 @@ import { Range } from 'react-date-range';
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis, Pie, PieChart, Legend } from "recharts";
-import { getMultiCollection, getMultiCollectionAux, resetMainAux, resetMultiMainAux } from "store/main/actions";
+import { getCollectionAux, getMultiCollection, getMultiCollectionAux, resetMainAux, resetMultiMainAux } from "store/main/actions";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
 const COLORS = ["#0087e0", "#ff0000", "#296680", "#fc3617", "#e8187a", "#7cfa57", "#cfbace", "#4cd45f", "#fd5055", "#7e1be4", "#bf1490", "#66c6cf", "#011c3d", "#1a9595", "#4ae2c7", "#515496", "#a2aa65", "#df909c", "#3aa343", "#e0606e"];
 
@@ -168,6 +169,9 @@ const DashboardDisconnections: FC = () => {
     const [tcovstdc, settcovstdc] = useState<any>([]);
     const [usersearch, setusersearch] = useState(0);
     const user = useSelector(state => state.login.validateToken.user);
+    const [downloaddatafile,setdownloaddatafile]=useState(false);
+    const [titlefile, settitlefile] = useState('');
+    const resaux = useSelector(state => state.main.mainAux);
     
     async function funcsearch() {
         let tosend = { 
@@ -248,6 +252,39 @@ const DashboardDisconnections: FC = () => {
             </text>
         );
     }
+    
+    useEffect(() => {
+        if(downloaddatafile) {
+            if(!resaux.loading){
+                if (resaux.data.length > 0) {
+                    exportExcel(titlefile, resaux.data, Object.keys(resaux.data[0]).filter(x=>x!=="desconectedtimejson").reduce((ac: any[], c: any) => (
+                        [
+                            ...ac,
+                            { Header: t((langKeys as any)[`dashboard_operationalpush_disconnections_${c}`]), accessor: c }
+                        ]),
+                        []
+                    ))
+                }
+                else {
+                    exportExcel(titlefile, [{'': t(langKeys.no_records)}])
+                }
+                setdownloaddatafile(false)
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [resaux,downloaddatafile])
+
+    async function downloaddata(){
+        let tosend = { 
+            startdate: dateRangeCreateDate.startDate, 
+            enddate: dateRangeCreateDate.endDate, 
+            asesorid: usersearch, 
+            supervisorid: user?.userid||0,
+        }
+        setdownloaddatafile(true)
+        settitlefile(t(langKeys.tagranking));
+        dispatch(getCollectionAux(getDisconnectionTimes(tosend)))
+    }
     return (
         <Fragment>
             <DialogZyx
@@ -277,7 +314,7 @@ const DashboardDisconnections: FC = () => {
                         label={t(langKeys.user)}
                         className={classes.fieldsfilter}
                         variant="outlined"
-                        onChange={(value) => setusersearch(value.userid||0)}
+                        onChange={(value) => setusersearch(value?.userid||0)}
                         valueDefault={usersearch}
                         data={dataasesors}
                         optionDesc="userdesc"
@@ -302,6 +339,9 @@ const DashboardDisconnections: FC = () => {
                         className={classes.itemCard}
                         style={{width:"100%"}}
                     >
+                        <div className={classes.downloadiconcontainer}>                            
+                            <CloudDownloadIcon onClick={()=>downloaddata()} className={classes.styleicon}/>
+                        </div>
                         <div style={{width: "100%"}}> 
                             <div style={{display: "flex"}}>
                                 <div style={{fontWeight: "bold",fontSize: "1.6em",}}> {t(langKeys.totaltimeduetodisconnectionreasons)} </div>
@@ -329,6 +369,9 @@ const DashboardDisconnections: FC = () => {
                         className={classes.itemCard}
                         style={{width:"100%"}}
                     >
+                        <div className={classes.downloadiconcontainer}>                            
+                            <CloudDownloadIcon onClick={()=>downloaddata()} className={classes.styleicon}/>
+                        </div>
                         <div style={{width: "100%"}}> 
                             <div style={{display: "flex"}}>
                                 <div style={{fontWeight: "bold",fontSize: "1.6em",}}> {t(langKeys.timeconnectedvstimeoff)} </div>
