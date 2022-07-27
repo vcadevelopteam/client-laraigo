@@ -28,6 +28,7 @@ export const langKeys = {
     invitation_phone: "invitation_phone",
     invitation_date: "invitation_date",
     add_classification: "add_classification",
+    error_invaliddata: "error_invaliddata",
     align: "align",
     font: "font",
     undo: "undo",

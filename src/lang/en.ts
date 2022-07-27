@@ -1706,6 +1706,7 @@ const translation: LangKeys = {
     dashboard_operationalpush_application_tag: "Tag",
     dashboard_operationalpush_application_quantity: "Quantity",
     dashboard_operationalpush_application_channel: "Channel",
+    error_invaliddata: "No valid data found",
     week: "Week",
     reportscheduler: "Automatic Shipments",
     reportscheduler_singular: "Automatic Shipment",

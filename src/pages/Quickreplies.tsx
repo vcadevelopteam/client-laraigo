@@ -591,11 +591,14 @@ const Quickreplies: FC = () => {
         setinsertexcel(true)
         const file = files[0];
         if (file) {
+            debugger
+            let classificationids = Object.keys(mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.description}), {}))
             let data: any = (await uploadExcel(file, undefined) as any[])
                 .filter((d: any) => !['', null, undefined].includes(d.summarize)
                     && !['', null, undefined].includes(d.detail)
-                    && Object.keys(mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.description}), {})).includes('' + d.classificationid)
+                    && classificationids.includes(d.classificationid.toString().trim().split('-')[0].split(' ')[0])
                 );
+            debugger
             if (data.length > 0) {
                 dispatch(showBackdrop(true));
                 dispatch(execute({
@@ -613,6 +616,8 @@ const Quickreplies: FC = () => {
                     }))
                 }, true));
                 setWaitSave(true)
+            }else{
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_invaliddata) }))
             }
         }
     }
