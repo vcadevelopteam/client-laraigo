@@ -1710,6 +1710,8 @@ const translation: LangKeys = {
     dashboard_operationalpush_application_channel: "Channel",
     
     dashboard_operationalpush_disconnections_usr: "User",
+    dashboard_operationalpush_disconnections_type: "Reason",
+    dashboard_operationalpush_disconnections_time: "Time",
     dashboard_operationalpush_disconnections_fullname: "Full Name",
     dashboard_operationalpush_disconnections_usergroups: "Groups",
     dashboard_operationalpush_disconnections_userstatus: "Status",

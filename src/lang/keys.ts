@@ -1834,6 +1834,8 @@ export const langKeys = {
     dashboard_operationalpush_application_channel: "dashboard_operationalpush_application_channel",
 
     dashboard_operationalpush_disconnections_usr: "dashboard_operationalpush_disconnections_usr",
+    dashboard_operationalpush_disconnections_type: "dashboard_operationalpush_disconnections_type",
+    dashboard_operationalpush_disconnections_time: "dashboard_operationalpush_disconnections_time",
     dashboard_operationalpush_disconnections_fullname: "dashboard_operationalpush_disconnections_fullname",
     dashboard_operationalpush_disconnections_usergroups: "dashboard_operationalpush_disconnections_usergroups",
     dashboard_operationalpush_disconnections_userstatus: "dashboard_operationalpush_disconnections_userstatus",

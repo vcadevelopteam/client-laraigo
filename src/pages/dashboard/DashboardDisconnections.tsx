@@ -10,7 +10,7 @@ import { Range } from 'react-date-range';
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis, Pie, PieChart, Legend } from "recharts";
-import { getCollectionAux, getMultiCollection, getMultiCollectionAux, resetMainAux, resetMultiMainAux } from "store/main/actions";
+import { getMultiCollection, getMultiCollectionAux, resetMainAux, resetMultiMainAux } from "store/main/actions";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
@@ -169,9 +169,6 @@ const DashboardDisconnections: FC = () => {
     const [tcovstdc, settcovstdc] = useState<any>([]);
     const [usersearch, setusersearch] = useState(0);
     const user = useSelector(state => state.login.validateToken.user);
-    const [downloaddatafile,setdownloaddatafile]=useState(false);
-    const [titlefile, settitlefile] = useState('');
-    const resaux = useSelector(state => state.main.mainAux);
     
     async function funcsearch() {
         let tosend = { 
@@ -252,38 +249,18 @@ const DashboardDisconnections: FC = () => {
             </text>
         );
     }
-    
-    useEffect(() => {
-        if(downloaddatafile) {
-            if(!resaux.loading){
-                if (resaux.data.length > 0) {
-                    exportExcel(titlefile, resaux.data, Object.keys(resaux.data[0]).filter(x=>x!=="desconectedtimejson").reduce((ac: any[], c: any) => (
-                        [
-                            ...ac,
-                            { Header: t((langKeys as any)[`dashboard_operationalpush_disconnections_${c}`]), accessor: c }
-                        ]),
-                        []
-                    ))
-                }
-                else {
-                    exportExcel(titlefile, [{'': t(langKeys.no_records)}])
-                }
-                setdownloaddatafile(false)
-            }
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [resaux,downloaddatafile])
 
-    async function downloaddata(){
-        let tosend = { 
-            startdate: dateRangeCreateDate.startDate, 
-            enddate: dateRangeCreateDate.endDate, 
-            asesorid: usersearch, 
-            supervisorid: user?.userid||0,
+    function downloaddata(data:any,title:string) {
+        if (data.length !== 0) {
+            let seteddata = data.map((x:any)=>{return {...x,time:formattime(x.time)}})
+            exportExcel(title, seteddata, Object.keys(seteddata[0]).reduce((ac: any[], c: any) => (
+                [
+                    ...ac,
+                    { Header: t((langKeys as any)[`dashboard_operationalpush_disconnections_${c}`]), accessor: c }
+                ]),
+                []
+            ))
         }
-        setdownloaddatafile(true)
-        settitlefile(t(langKeys.tagranking));
-        dispatch(getCollectionAux(getDisconnectionTimes(tosend)))
     }
     return (
         <Fragment>
@@ -340,7 +317,7 @@ const DashboardDisconnections: FC = () => {
                         style={{width:"100%"}}
                     >
                         <div className={classes.downloadiconcontainer}>                            
-                            <CloudDownloadIcon onClick={()=>downloaddata()} className={classes.styleicon}/>
+                            <CloudDownloadIcon onClick={()=>downloaddata(datatotaltime,t(langKeys.totaltimeduetodisconnectionreasons))} className={classes.styleicon}/>
                         </div>
                         <div style={{width: "100%"}}> 
                             <div style={{display: "flex"}}>
@@ -369,9 +346,6 @@ const DashboardDisconnections: FC = () => {
                         className={classes.itemCard}
                         style={{width:"100%"}}
                     >
-                        <div className={classes.downloadiconcontainer}>                            
-                            <CloudDownloadIcon onClick={()=>downloaddata()} className={classes.styleicon}/>
-                        </div>
                         <div style={{width: "100%"}}> 
                             <div style={{display: "flex"}}>
                                 <div style={{fontWeight: "bold",fontSize: "1.6em",}}> {t(langKeys.timeconnectedvstimeoff)} </div>

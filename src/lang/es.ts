@@ -1677,6 +1677,8 @@ const translation: LangKeys = {
     error_invaliddata: "No se econtraron datos válidos",
 
     dashboard_operationalpush_disconnections_usr: "Usuario",
+    dashboard_operationalpush_disconnections_type: "Motivo",
+    dashboard_operationalpush_disconnections_time: "Tiempo",
     dashboard_operationalpush_disconnections_fullname: "Nombre completo",
     dashboard_operationalpush_disconnections_usergroups: "Grupos",
     dashboard_operationalpush_disconnections_userstatus: "Estado",
