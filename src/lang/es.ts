@@ -1674,6 +1674,8 @@ const translation: LangKeys = {
     dashboard_operationalpush_messageperday_status: 'Estado',
 
     dashboard_operationalpush_disconnections_usr: "Usuario",
+    dashboard_operationalpush_disconnections_type: "Motivo",
+    dashboard_operationalpush_disconnections_time: "Tiempo",
     dashboard_operationalpush_disconnections_fullname: "Nombre completo",
     dashboard_operationalpush_disconnections_usergroups: "Grupos",
     dashboard_operationalpush_disconnections_userstatus: "Estado",
