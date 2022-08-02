@@ -3822,6 +3822,13 @@ const translation: LangKeys = {
     privacypolicy55: "Blogger:",
     privacypolicy56: "Blog and post information like blog name, post content and reply information and the permission to reply on behalf of the user",
     privacypolicy57: "We use the information provided as part of our channel management module. The information of the selected account is used to create a channel where the incoming events (Posts, comments and messages) are registered in our platform and processed as tickets. Some select users of the platform can then send replies to these tickets which are then shown as replies in the linked Google platform.",
+
+    registergupshup: "Register as Gupshup",
+    whatsapptitlegupshup: "To connect a WhatsApp Gupshup account please enter the information of the app you want to connect in the following form",
+    gupshuppappid: "App ID",
+    gupshuppappname: "App Name",
+    gupshuppapikey: "API Key",
+    gupshuppappnumber: "Phone Number",
 };
 
 const enResource: ResourceLanguage = {
