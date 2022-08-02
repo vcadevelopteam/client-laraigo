@@ -3784,8 +3784,10 @@ const translation: LangKeys = {
 
     registergupshup: "Register as Gupshup",
     whatsapptitlegupshup: "To connect a WhatsApp Gupshup account please enter the information of the app you want to connect in the following form",
-    gupshuppartnertoken: 'Partner Token',
-    gupshupappid: 'App ID',
+    gupshuppappid: "App ID",
+    gupshuppappname: "App Name",
+    gupshuppapikey: "API Key",
+    gupshuppappnumber: "Phone Number",
 };
 
 const enResource: ResourceLanguage = {

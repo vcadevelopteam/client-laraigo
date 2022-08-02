@@ -3765,8 +3765,10 @@ export const langKeys = {
 
     registergupshup: "registergupshup",
     whatsapptitlegupshup: "whatsapptitlegupshup",
-    gupshuppartnertoken: 'gupshuppartnertoken',
-    gupshupappid: 'gupshupappid',
+    gupshuppappid: "gupshuppappid",
+    gupshuppappname: "gupshuppappname",
+    gupshuppapikey: "gupshuppapikey",
+    gupshuppappnumber: "gupshuppappnumber",
 };
 
 export type LangKeys = typeof langKeys;

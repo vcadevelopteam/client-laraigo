@@ -154,7 +154,9 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
             "apikeyid": "",
             "apikeysecret": "",
             "appid": "",
-            "partnertoken": "",
+            "appname": "",
+            "apikey": "",
+            "appnumber": "",
         }
     })
 
@@ -244,7 +246,9 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                 "apikeyid": "",
                                 "apikeysecret": "",
                                 "appid": "",
-                                "partnertoken": "",
+                                "appname": "",
+                                "apikey": "",
+                                "appnumber": "",
                             }
                         });
 
@@ -322,10 +326,26 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
         setFields(partialf);
     }
 
-    function setPartnerToken(value: string, field: string) {
+    function setAppName(value: string, field: string) {
         setNextbutton(value === "")
         let partialf = fields;
-        partialf.service.partnertoken = value;
+        partialf.service.appname = value;
+        partialf.parameters.communicationchannelowner = "";
+        setFields(partialf);
+    }
+
+    function setApiKey(value: string, field: string) {
+        setNextbutton(value === "")
+        let partialf = fields;
+        partialf.service.apikey = value;
+        partialf.parameters.communicationchannelowner = "";
+        setFields(partialf);
+    }
+
+    function setAppNumber(value: string, field: string) {
+        setNextbutton(value === "")
+        let partialf = fields;
+        partialf.service.appnumber = value;
         partialf.parameters.communicationchannelowner = "";
         setFields(partialf);
     }
@@ -494,22 +514,45 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                 <TextField
                                     style={{ width: "100%" }}
                                     onChange={(e) => {
-                                        setPartnerToken(e.target.value, "partnertoken");
-                                        setdisablebutton3(!e.target.value || !fields.service.appid)
+                                        setAppId(e.target.value, "appid");
+                                        setdisablebutton3(!e.target.value || !fields.service.appname || !fields.service.apikey || !fields.service.appnumber)
                                     }}
                                     variant="outlined"
-                                    label={t(langKeys.gupshuppartnertoken)}
+                                    label={t(langKeys.gupshuppappid)}
                                 />
                             </div>
                             <div style={{ width: "100%", padding: "10px 25%" }}>
                                 <TextField
                                     style={{ width: "100%" }}
                                     onChange={(e) => {
-                                        setAppId(e.target.value, "appid");
-                                        setdisablebutton3(!e.target.value || !fields.service.partnertoken)
+                                        setAppName(e.target.value, "appname");
+                                        setdisablebutton3(!fields.service.appid || !e.target.value || !fields.service.apikey || !fields.service.appnumber)
                                     }}
                                     variant="outlined"
-                                    label={t(langKeys.gupshupappid)}
+                                    label={t(langKeys.gupshuppappname)}
+                                />
+                            </div>
+                            <div style={{ width: "100%", padding: "10px 25%" }}>
+                                <TextField
+                                    style={{ width: "100%" }}
+                                    onChange={(e) => {
+                                        setApiKey(e.target.value, "apikey");
+                                        setdisablebutton3(!fields.service.appid || !fields.service.appname || !e.target.value || !fields.service.appnumber)
+                                    }}
+                                    variant="outlined"
+                                    label={t(langKeys.gupshuppapikey)}
+                                />
+                            </div>
+                            <div style={{ width: "100%", padding: "10px 25%" }}>
+                                <TextField
+                                    style={{ width: "100%" }}
+                                    onChange={(e) => {
+                                        setAppNumber(e.target.value, "appnumber");
+                                        setdisablebutton3(!fields.service.appid || !fields.service.appname || !fields.service.apikey || !e.target.value)
+                                    }}
+                                    variant="outlined"
+                                    label={t(langKeys.gupshuppappnumber)}
+                                    type={"number"}
                                 />
                             </div>
                         </div>

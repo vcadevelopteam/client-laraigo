@@ -3777,8 +3777,10 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
 
     registergupshup: "Registrar como Gupshup",
     whatsapptitlegupshup: "Para conectar una cuenta de WhatsApp Gupshup, ingresa la información del App que deseas conectar en el siguiente formulario",
-    gupshuppartnertoken: 'Token de Socio',
-    gupshupappid: 'ID de Aplicación',
+    gupshuppappid: "ID de Aplicación",
+    gupshuppappname: "Nombre de Aplicación",
+    gupshuppapikey: "Llave API",
+    gupshuppappnumber: "Número telefónico",
 };
 
 const esResource: ResourceLanguage = {
