@@ -75,11 +75,13 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
     const [nextbutton, setNextbutton] = useState(true);
     const [disablebutton, setdisablebutton] = useState(true);
     const [disablebutton2, setdisablebutton2] = useState(true);
+    const [disablebutton3, setdisablebutton3] = useState(true);
     const [setins, setsetins] = useState(false);
     const [set360, setset360] = useState(false);
     const [setsmooch, setsetsmooch] = useState(false);
     const [setRegisterSmooch, setSetRegisterSmooch] = useState(false);
     const [setRegister360, setSetRegister360] = useState(false);
+    const [setRegisterGupshup, setSetRegisterGupshup] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
     const [setParameters, setSetParameters] = useState(true);
 
@@ -152,6 +154,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
             "apikeyid": "",
             "apikeysecret": "",
             "appid": "",
+            "partnertoken": "",
         }
     })
 
@@ -170,6 +173,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
         if (roledesc !== "SUPERADMIN" && !edit && whatsAppData?.typeWhatsApp === "DIALOG") {
             setSetRegister360(true);
             setSetRegisterSmooch(false);
+            setSetRegisterGupshup(false);
 
             let partialField = fields;
             partialField.type = "DIALOG";
@@ -180,9 +184,21 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
         if (roledesc !== "SUPERADMIN" && !edit && whatsAppData?.typeWhatsApp === "SMOOCH") {
             setSetRegister360(false);
             setSetRegisterSmooch(true);
+            setSetRegisterGupshup(false);
 
             let partialField = fields;
             partialField.type = "WHATSAPPSMOOCHINSERT";
+
+            setFields(partialField);
+        }
+
+        if (roledesc !== "SUPERADMIN" && !edit && whatsAppData?.typeWhatsApp === "GUPSHUP") {
+            setSetRegister360(false);
+            setSetRegisterSmooch(false);
+            setSetRegisterGupshup(true);
+
+            let partialField = fields;
+            partialField.type = "WHATSAPPGUPSHUP";
 
             setFields(partialField);
         }
@@ -228,6 +244,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                 "apikeyid": "",
                                 "apikeysecret": "",
                                 "appid": "",
+                                "partnertoken": "",
                             }
                         });
 
@@ -301,6 +318,14 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
         setNextbutton(value === "")
         let partialf = fields;
         partialf.service.appid = value;
+        partialf.parameters.communicationchannelowner = "";
+        setFields(partialf);
+    }
+
+    function setPartnerToken(value: string, field: string) {
+        setNextbutton(value === "")
+        let partialf = fields;
+        partialf.service.partnertoken = value;
         partialf.parameters.communicationchannelowner = "";
         setFields(partialf);
     }
@@ -434,6 +459,64 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                 </div>
             )
         }
+        else if (setRegisterGupshup) {
+            return (
+                <div style={{ width: '100%' }}>
+                    <Breadcrumbs aria-label="breadcrumb">
+                        <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD, whatsAppData) }}>
+                            {t(langKeys.previoustext)}
+                        </Link>
+                    </Breadcrumbs>
+                    <div>
+                        <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.whatsapptitlegupshup)}</div>
+                        {
+                            edit ?
+                                <Button
+                                    className={classes.centerbutton}
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={false}
+                                    onClick={() => { history.push(paths.CHANNELS_ADD, whatsAppData) }}
+                                >{t(langKeys.close)}
+                                </Button>
+                                :
+                                <Button
+                                    className={classes.centerbutton}
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={disablebutton3}
+                                    onClick={() => { setViewSelected("viewfinishreg") }}
+                                >{t(langKeys.registerwhats)}
+                                </Button>
+                        }
+                        <div className="row-zyx">
+                            <div style={{ width: "100%", padding: "10px 25%" }}>
+                                <TextField
+                                    style={{ width: "100%" }}
+                                    onChange={(e) => {
+                                        setPartnerToken(e.target.value, "partnertoken");
+                                        setdisablebutton3(!e.target.value || !fields.service.appid)
+                                    }}
+                                    variant="outlined"
+                                    label={t(langKeys.gupshuppartnertoken)}
+                                />
+                            </div>
+                            <div style={{ width: "100%", padding: "10px 25%" }}>
+                                <TextField
+                                    style={{ width: "100%" }}
+                                    onChange={(e) => {
+                                        setAppId(e.target.value, "appid");
+                                        setdisablebutton3(!e.target.value || !fields.service.partnertoken)
+                                    }}
+                                    variant="outlined"
+                                    label={t(langKeys.gupshupappid)}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )
+        }
         else if (roledesc === "SUPERADMIN" && !edit) {
             return (
                 <div style={{ width: '100%' }}>
@@ -449,6 +532,8 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                             <Button
                                 onClick={() => {
                                     setSetRegister360(true);
+                                    setSetRegisterSmooch(false);
+                                    setSetRegisterGupshup(false);
 
                                     let partialField = fields;
                                     partialField.type = "WHATSAPP";
@@ -465,7 +550,9 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                         <div style={{ flex: "1", margin: "0px 15px" }}>
                             <Button
                                 onClick={() => {
+                                    setSetRegister360(false);
                                     setSetRegisterSmooch(true);
+                                    setSetRegisterGupshup(false);
 
                                     let partialField = fields;
                                     partialField.type = "WHATSAPPSMOOCHINSERT";
@@ -477,6 +564,25 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                 variant="contained"
                                 color="primary"
                             >{t(langKeys.registersmooch)}
+                            </Button>
+                        </div>
+                        <div style={{ flex: "1", margin: "0px 15px" }}>
+                            <Button
+                                onClick={() => {
+                                    setSetRegister360(false);
+                                    setSetRegisterSmooch(false);
+                                    setSetRegisterGupshup(true);
+
+                                    let partialField = fields;
+                                    partialField.type = "WHATSAPPGUPSHUP";
+
+                                    setFields(partialField);
+                                }}
+                                className={classes.button2}
+                                disabled={false}
+                                variant="contained"
+                                color="primary"
+                            >{t(langKeys.registergupshup)}
                             </Button>
                         </div>
                     </div>

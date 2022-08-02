@@ -3762,6 +3762,11 @@ export const langKeys = {
     privacypolicy55: "privacypolicy55",
     privacypolicy56: "privacypolicy56",
     privacypolicy57: "privacypolicy57",
+
+    registergupshup: "registergupshup",
+    whatsapptitlegupshup: "whatsapptitlegupshup",
+    gupshuppartnertoken: 'gupshuppartnertoken',
+    gupshupappid: 'gupshupappid',
 };
 
 export type LangKeys = typeof langKeys;
