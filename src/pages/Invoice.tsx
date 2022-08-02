@@ -3113,7 +3113,7 @@ const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg 
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
 
-                    if (row.hasreport === false && row.invoicestatus !== "INVOICED" && row.paymentstatus !== 'PAID') {
+                    if ((row.hasreport === false || row.hasreport === true) && row.invoicestatus !== "INVOICED" && row.paymentstatus !== 'PAID') {
                         return (
                             <TemplateIcons
                                 deleteFunction={() => handleDelete(row)}
