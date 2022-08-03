@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux";
 import { useSelector } from 'hooks';
 import { showBackdrop } from "store/popus/actions";
 import { makeStyles } from '@material-ui/core/styles';
-import { getCollectionAux2, getMultiCollection, getMultiCollectionAux2, resetMultiMain } from "store/main/actions";
+import { getCollectionAux2, getMultiCollection, getMultiCollectionAux2, resetMultiMain, cleanMemoryTable, setMemoryTable } from "store/main/actions";
 import { langKeys } from "lang/keys";
 import TableZyx from "components/fields/table-simple";
 import { Button, } from "@material-ui/core";
@@ -101,25 +101,25 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
     const multiDataAux2 = useSelector(state => state.main.multiDataAux2);
     const [gridData, setGridData] = useState<any[]>([]);
 
-    function search(){
+    function search() {
         dispatch(showBackdrop(true))
         dispatch(getMultiCollectionAux2([
             getInvoiceReportDetail({
                 corpid: row?.corpid || 0,
                 year: row?.year || 0,
-                month: columnid?.includes('month_') ? +columnid.replace('month_','') : 0,
+                month: columnid?.includes('month_') ? +columnid.replace('month_', '') : 0,
                 currency: row?.currency || ""
             })
         ]))
     }
     useEffect(() => {
-        if (!multiDataAux2.loading){
-            setGridData((multiDataAux2.data[0]?.data||[]).map(x => ({
+        if (!multiDataAux2.loading) {
+            setGridData((multiDataAux2.data[0]?.data || []).map(x => ({
                 ...x,
                 invoicestatus: (t(`${x.invoicestatus}`) || ""),
                 paymentstatus: (t(`${x.paymentstatus}`) || ""),
                 paymentdate: x.paymentdate ? new Date(x.paymentdate).toLocaleString() : '',
-            }))||[]);
+            })) || []);
             dispatch(showBackdrop(false))
         }
     }, [multiDataAux2])
@@ -136,7 +136,7 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 NoFilter: true,
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    return <span style={{color: row["color"]}}>{row.corpdesc}</span>
+                    return <span style={{ color: row["color"] }}>{row.corpdesc}</span>
                 },
             },
             {
@@ -146,7 +146,7 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     const column = props.cell.column.id;
-                    return <span style={{color: row["color"]}}>{row[column]}</span>
+                    return <span style={{ color: row["color"] }}>{row[column]}</span>
                 },
             },
             {
@@ -156,7 +156,7 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     const column = props.cell.column.id;
-                    return <span style={{color: row["color"]}}>{row[column]}</span>
+                    return <span style={{ color: row["color"] }}>{row[column]}</span>
                 },
             },
             {
@@ -166,7 +166,7 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     const column = props.cell.column.id;
-                    return <span style={{color: row["color"]}}>{row[column]}</span>
+                    return <span style={{ color: row["color"] }}>{row[column]}</span>
                 },
             },
             {
@@ -176,7 +176,7 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     const column = props.cell.column.id;
-                    return <span style={{color: row["color"]}}>{row[column]}</span>
+                    return <span style={{ color: row["color"] }}>{row[column]}</span>
                 },
             },
             {
@@ -191,7 +191,7 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                         {urlpdf ?
                             <a
                                 onClick={(e) => { e.stopPropagation(); }}
-                                style={{color: row["color"]}}
+                                style={{ color: row["color"] }}
                                 href={urlpdf}
                                 target="_blank"
                                 rel="noreferrer"
@@ -199,7 +199,7 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                                 {docnumber}
                             </a>
                             :
-                            <span style={{color: row["color"]}}>
+                            <span style={{ color: row["color"] }}>
                                 {docnumber}
                             </span>
                         }
@@ -213,7 +213,7 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     const column = props.cell.column.id;
-                    return <span style={{color: row["color"]}}>{row[column]}</span>
+                    return <span style={{ color: row["color"] }}>{row[column]}</span>
                 },
             },
             {
@@ -224,7 +224,7 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     const column = props.cell.column.id;
-                    return <span style={{color: row["color"]}}>{formatCurrency(row[column])}</span>
+                    return <span style={{ color: row["color"] }}>{formatCurrency(row[column])}</span>
                 },
             },
             {
@@ -235,7 +235,7 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     const column = props.cell.column.id;
-                    return <span style={{color: row["color"]}}>{formatCurrency(row[column])}</span>
+                    return <span style={{ color: row["color"] }}>{formatCurrency(row[column])}</span>
                 },
             },
             {
@@ -246,7 +246,7 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     const column = props.cell.column.id;
-                    return <span style={{color: row["color"]}}>{formatCurrency(row[column])}</span>
+                    return <span style={{ color: row["color"] }}>{formatCurrency(row[column])}</span>
                 },
             },
             {
@@ -256,7 +256,7 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     const column = props.cell.column.id;
-                    return <span style={{color: row["color"]}}>{row[column]}</span>
+                    return <span style={{ color: row["color"] }}>{row[column]}</span>
                 },
             },
             {
@@ -266,7 +266,7 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     const column = props.cell.column.id;
-                    return <span style={{color: row["color"]}}>{row[column]}</span>
+                    return <span style={{ color: row["color"] }}>{row[column]}</span>
                 },
             },
             {
@@ -276,7 +276,7 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     const column = props.cell.column.id;
-                    return <span style={{color: row["color"]}}>{row[column]}</span>
+                    return <span style={{ color: row["color"] }}>{row[column]}</span>
                 },
             },
             {
@@ -286,7 +286,7 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     const column = props.cell.column.id;
-                    return <span style={{color: row["color"]}}>{row[column]}</span>
+                    return <span style={{ color: row["color"] }}>{row[column]}</span>
                 },
             },
             {
@@ -296,7 +296,7 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     const column = props.cell.column.id;
-                    return <span style={{color: row["color"]}}>{row[column]}</span>
+                    return <span style={{ color: row["color"] }}>{row[column]}</span>
                 },
             },
         ],
@@ -304,10 +304,10 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
     );
 
     return (
-        <div style={{width: '100%'}}>
+        <div style={{ width: '100%' }}>
             <div className={classes.containerDetail}>
                 <TableZyx
-                    titlemodule={`${row?.corpdesc} (${row?.year}${columnid?.includes('month_') ? `-${columnid.replace('month_','')}` : ''})`}
+                    titlemodule={`${row?.corpdesc} (${row?.year}${columnid?.includes('month_') ? `-${columnid.replace('month_', '')}` : ''})`}
                     ButtonsElement={() => (
                         <Button
                             variant="contained"
@@ -331,11 +331,13 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
     );
 }
 
+const IDREPORTINVOICE = "IDREPORTINVOICE";
 const ReportInvoice: FC = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const mainAux2 = useSelector(state => state.main.mainAux2);
     const multiData = useSelector(state => state.main.multiData);
+    const memoryTable = useSelector(state => state.main.memoryTable);
     const classes = useStyles()
     const [year, setYear] = useState(`${new Date().getFullYear()}`);
     const [currency, setCurrency] = useState("");
@@ -361,21 +363,21 @@ const ReportInvoice: FC = () => {
                 NoFilter: true,
             },
             ...([...Array.from(Array(12).keys())].map((c, i) => ({
-                Header: t((langKeys as any)[`month_${(''+(i+1)).padStart(2,'0')}`]),
-                accessor: `month_${i+1}`,
+                Header: t((langKeys as any)[`month_${('' + (i + 1)).padStart(2, '0')}`]),
+                accessor: `month_${i + 1}`,
                 type: 'number',
                 sortType: 'number',
                 NoFilter: true,
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     const column = props.cell.column.id;
-                    return <span style={{color: row[`color_${i+1}`]}}>{formatCurrencyNoDecimals(row[column])}</span>
+                    return <span style={{ color: row[`color_${i + 1}`] }}>{formatCurrencyNoDecimals(row[column])}</span>
                 },
                 Footer: (props: any) => {
                     const total = React.useMemo(
-                      () =>
-                        props.rows.reduce((sum: any, row: any) => row.values[`month_${i+1}`] + sum, 0),
-                      [props.rows]
+                        () =>
+                            props.rows.reduce((sum: any, row: any) => row.values[`month_${i + 1}`] + sum, 0),
+                        [props.rows]
                     )
                     return <>{formatCurrencyNoDecimals(total)}</>
                 },
@@ -393,9 +395,9 @@ const ReportInvoice: FC = () => {
                 },
                 Footer: (props: any) => {
                     const total = React.useMemo(
-                      () =>
-                        props.rows.reduce((sum: any, row: any) => row.values["total"] + sum, 0),
-                      [props.rows]
+                        () =>
+                            props.rows.reduce((sum: any, row: any) => row.values["total"] + sum, 0),
+                        [props.rows]
                     )
                     return <>{formatCurrencyNoDecimals(total)}</>
                 },
@@ -418,7 +420,7 @@ const ReportInvoice: FC = () => {
         }
         else {
             dispatch(showSnackbar({
-                message: t(langKeys.xfield_ismissing, {field: t(langKeys.year)}),
+                message: t(langKeys.xfield_ismissing, { field: t(langKeys.year) }),
                 show: true,
                 severity: "error"
             }));
@@ -430,7 +432,11 @@ const ReportInvoice: FC = () => {
         dispatch(getMultiCollection([
             getCurrencyList()
         ]))
+        dispatch(setMemoryTable({
+            id: IDREPORTINVOICE
+        }))
         return () => {
+            dispatch(cleanMemoryTable());
             dispatch(resetMultiMain());
         }
     }, [])
@@ -438,16 +444,16 @@ const ReportInvoice: FC = () => {
     useEffect(() => {
         if (!mainAux2.loading) {
             setGridDataCurrencyList(Array.from(new Set((mainAux2?.data || []).map(item => item.currency))));
-            const initialmonth = [...Array.from(Array(12).keys())].reduce((acc, item) => ({...acc, [`month_${item + 1}`]: 0, [`color_${item + 1}`]: 'black'}), {})
+            const initialmonth = [...Array.from(Array(12).keys())].reduce((acc, item) => ({ ...acc, [`month_${item + 1}`]: 0, [`color_${item + 1}`]: 'black' }), {})
             setGridData(
                 Object.values((mainAux2?.data || []).reduce((acc, item) => ({
                     ...acc,
-                    [`corp_${item.corpid}_${item.currency}`] : acc[`corp_${item.corpid}_${item.currency}`] ? {
+                    [`corp_${item.corpid}_${item.currency}`]: acc[`corp_${item.corpid}_${item.currency}`] ? {
                         ...acc[`corp_${item.corpid}_${item.currency}`],
                         [`color_${item.month}`]: item.color,
                         [`month_${item.month}`]: item.totalamount,
                         total: acc[`corp_${item.corpid}_${item.currency}`].total + item.totalamount,
-                        
+
                     } : {
                         ...initialmonth,
                         corpid: item.corpid,
@@ -458,18 +464,18 @@ const ReportInvoice: FC = () => {
                         [`month_${item.month}`]: item.totalamount,
                         total: item.totalamount,
                     }
-                }),{})).reduce((acc, item) => ({
+                }), {})).reduce((acc, item) => ({
                     ...acc,
                     [item.currency]: [...(acc[item.currency] || []), item]
-                }),{})
+                }), {})
             )
             dispatch(showBackdrop(false));
         }
     }, [mainAux2])
 
     useEffect(() => {
-        if (!multiData.loading){
-            setCurrencyList((multiData.data[0]?.data||[]));
+        if (!multiData.loading) {
+            setCurrencyList((multiData.data[0]?.data || []));
             dispatch(showBackdrop(false))
         }
     }, [multiData])
@@ -483,11 +489,11 @@ const ReportInvoice: FC = () => {
         return (
             <React.Fragment>
                 <div style={{ height: 10 }}></div>
-                <div className={classes.containerHeader} style={{display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'space-between'}}>
-                    <div style={{display: 'flex', gap: 8}}>
+                <div className={classes.containerHeader} style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', gap: 8 }}>
                         <FieldSelect
                             label={t(langKeys.year)}
-                            style={{width: 140}}
+                            style={{ width: 140 }}
                             variant="outlined"
                             valueDefault={year}
                             onChange={(value) => setYear(value?.value)}
@@ -497,7 +503,7 @@ const ReportInvoice: FC = () => {
                         />
                         <FieldSelect
                             label={t(langKeys.currency)}
-                            style={{width: 140}}
+                            style={{ width: 140 }}
                             variant="outlined"
                             valueDefault={currency}
                             onChange={(value) => setCurrency(value?.code)}
@@ -518,7 +524,7 @@ const ReportInvoice: FC = () => {
                         </div>
                     </div>
                 </div>
-                
+
                 {gridDataCurrencyList.map(crcy => {
                     return (
                         <TableZyx
@@ -531,6 +537,9 @@ const ReportInvoice: FC = () => {
                             loading={multiData.loading}
                             register={false}
                             useFooter={true}
+                            pageSizeDefault={IDREPORTINVOICE === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                            initialPageIndex={IDREPORTINVOICE === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                            initialStateFilter={IDREPORTINVOICE === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
                         />
                     )
                 })}
