@@ -115,9 +115,9 @@ const TreeItemsFromData2: React.FC<{ dataClassTotal: Dictionary,setAnchorEl: (pa
                         <div className={classes.treelabels}>
                             <div>{x.label}</div>
                             <div>
-                            {(!x.children && x.quickreplies===0) && 
+                            {(!x.children) && 
                                 <IconButton
-                                    onClick={(event)=>{setAnchorEl(event.currentTarget);setonclickdelete(x.key)}}
+                                    onClick={(event)=>{setAnchorEl(event.currentTarget);setonclickdelete(x)}}
                                     size="small"
                                 >
                                 <MoreVertIcon
@@ -150,9 +150,9 @@ const TreeItemsFromData2: React.FC<{ dataClassTotal: Dictionary,setAnchorEl: (pa
                         <div className={classes.treelabels}>
                             <div>{x.label}</div>
                             <div>
-                            {(!x.children && x.quickreplies===0) && 
+                            {(!x.children) && 
                                 <IconButton
-                                    onClick={(event)=>{setAnchorEl(event.currentTarget);setonclickdelete(x.key)}}
+                                    onClick={(event)=>{setAnchorEl(event.currentTarget);setonclickdelete(x)}}
                                     size="small"
                                 >
                                 <MoreVertIcon
@@ -218,9 +218,9 @@ const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary, setValueTmp: (p1
                         label={<div className={classes.treelabels}>
                         <div>{x.label}</div>
                         <div>
-                        {(!x.children && x.quickreplies===0) && 
+                        {(!x.children) && 
                             <IconButton
-                                onClick={(event)=>{setAnchorEl(event.currentTarget);setonclickdelete(x.key)}}
+                                onClick={(event)=>{setAnchorEl(event.currentTarget);setonclickdelete(x)}}
                                 size="small"
                             >
                             <MoreVertIcon
@@ -253,9 +253,9 @@ const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary, setValueTmp: (p1
                     label={<div className={classes.treelabels}>
                     <div>{x.label}</div>
                     <div>
-                    {(!x.children && x.quickreplies===0) && 
+                    {(!x.children) && 
                         <IconButton
-                            onClick={(event)=>{setAnchorEl(event.currentTarget);setonclickdelete(x.key)}}
+                            onClick={(event)=>{setAnchorEl(event.currentTarget);setonclickdelete(x)}}
                             size="small"
                         >
                         <MoreVertIcon
@@ -286,7 +286,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
     const executeRes = useSelector(state => state.main.execute);
     const multiDataAuxRes = useSelector(state => state.main.multiDataAux)
     const [anchorEl, setAnchorEl] = useState(null);
-    const [onclickdelete, setonclickdelete] = useState(0);
+    const [onclickdelete, setonclickdelete] = useState<any>(null);
     const open = Boolean(anchorEl);
     const handleCloseMenu = () => {
         setAnchorEl(null);
@@ -550,17 +550,23 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                 >
                     <MenuItem 
                         onClick={() => {
-                            const callback = () => {
-                                dispatch(execute(deleteClassificationTree(onclickdelete)));
-                                dispatch(showBackdrop(true));
-                                setWaitSave(true);
+                            if(onclickdelete){
+                                if(onclickdelete?.quickreplies !== 0){
+                                    dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.warningnoquickreplies) }))  
+
+                                }else{
+                                    const callback = () => {
+                                        dispatch(execute(deleteClassificationTree(onclickdelete?.key||0)));
+                                        dispatch(showBackdrop(true));
+                                        setWaitSave(true);
+                                    }
+                                    dispatch(manageConfirmation({
+                                        visible: true,
+                                        question: t(langKeys.confirmation_delete),
+                                        callback
+                                    }))
+                                }
                             }
-                    
-                            dispatch(manageConfirmation({
-                                visible: true,
-                                question: t(langKeys.confirmation_delete),
-                                callback
-                            }))
                         }}
                     >
                         <DeleteIcon style={{color:"rgb(119, 33, 173)"}}/>  {t(langKeys.delete)}
@@ -607,7 +613,7 @@ const Quickreplies: FC = () => {
         { id: "view-1", name: t(langKeys.quickreply_plural) },
     ];
     const [anchorEl, setAnchorEl] = useState(null);
-    const [onclickdelete, setonclickdelete] = useState(0);
+    const [onclickdelete, setonclickdelete] = useState<any>(null);
     const open = Boolean(anchorEl);
     const handleCloseMenu = () => {
         setAnchorEl(null);
@@ -804,17 +810,23 @@ const Quickreplies: FC = () => {
                 >
                     <MenuItem 
                         onClick={() => {
-                            const callback = () => {
-                                dispatch(execute(deleteClassificationTree(onclickdelete)));
-                                dispatch(showBackdrop(true));
-                                setWaitSave(true);
+                            if(onclickdelete){
+                                if(onclickdelete?.quickreplies !== 0){
+                                    dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.warningnoquickreplies) }))  
+
+                                }else{
+                                    const callback = () => {
+                                        dispatch(execute(deleteClassificationTree(onclickdelete?.key||0)));
+                                        dispatch(showBackdrop(true));
+                                        setWaitSave(true);
+                                    }
+                                    dispatch(manageConfirmation({
+                                        visible: true,
+                                        question: t(langKeys.confirmation_delete),
+                                        callback
+                                    }))
+                                }
                             }
-                    
-                            dispatch(manageConfirmation({
-                                visible: true,
-                                question: t(langKeys.confirmation_delete),
-                                callback
-                            }))
                         }}
                     >
                         <DeleteIcon style={{color:"rgb(119, 33, 173)"}}/>  {t(langKeys.delete)}

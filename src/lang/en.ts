@@ -1723,6 +1723,7 @@ const translation: LangKeys = {
     reportscheduler_singular: "Automatic Shipment",
     reportschedulerdetail1: "Report Settings",
     reportschedulerdetail2: "Shipping configuration",
+    warningnoquickreplies: "A clasification cannot be deleted because it is associated with a quick response.",
     origintype: "Origin type",
     to: "To",
     subject: "Subject",
