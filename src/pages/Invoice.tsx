@@ -4484,6 +4484,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
 
     const classes = useStyles();
     const culqiResult = useSelector(state => state.culqi.requestCreateInvoice);
+    const executeRes = useSelector(state => state.main.execute);
     const invoicehasreport = data?.row?.hasreport || false;
     const multiResult = useSelector(state => state.main.multiDataAux);
     const user = useSelector(state => state.login.validateToken.user);
@@ -4502,6 +4503,8 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
     const [pageSelected, setPageSelected] = useState(0);
     const [amountTax, setAmountTax] = useState(0);
     const [amountTotal, setAmountTotal] = useState(0);
+    const [showUpdateButton, setShowUpdateButton] = useState(false);
+    const [waitRefresh, setWaitRefresh] = useState(false);
 
     const dataCurrency = [{ value: "PEN", description: "PEN" }, { value: "USD", description: "USD" }]
 
@@ -4523,6 +4526,10 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
     useEffect(() => {
         if (waitLoad) {
             if (data?.row) {
+                if (data?.row.invoicestatus !== "INVOICED" && data?.row.paymentstatus !== "PAID" && invoicehasreport && user?.roledesc === "SUPERADMIN") {
+                    setShowUpdateButton(true);
+                }
+
                 dispatch(getMultiCollectionAux([getInvoiceDetail(data?.row.corpid, data?.row.orgid, data?.row.invoiceid)]));
 
                 setValue('invoicecurrency', data?.row.currency);
@@ -4884,6 +4891,36 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
         }))
     });
 
+    const refreshInvoice = (data: any) => {
+        const callback = () => {
+            dispatch(execute(invoiceRefresh(data)));
+            dispatch(showBackdrop(true));
+            setWaitRefresh(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_invoicerefresh),
+            callback
+        }))
+    }
+
+    useEffect(() => {
+        if (waitRefresh) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }))
+                dispatch(showBackdrop(false));
+                fetchData && fetchData();
+                setViewSelected("view-1");
+                setWaitRefresh(false);
+            } else if (executeRes.error) {
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() }) }))
+                dispatch(showBackdrop(false));
+                setWaitRefresh(false);
+            }
+        }
+    }, [executeRes, waitRefresh])
+
     useEffect(() => {
         if (waitSave) {
             if (!culqiResult.loading && !culqiResult.error) {
@@ -4934,6 +4971,15 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             startIcon={<SaveIcon color="secondary" />}
                             style={{ backgroundColor: "#55BD84" }}
                         >{t(langKeys.saveasdraft)}
+                        </Button>}
+                        {(invoicehasreport && showUpdateButton) && <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            onClick={() => { refreshInvoice(data?.row || null) }}
+                            startIcon={<RefreshIcon style={{ color: 'white' }} />}
+                            style={{ backgroundColor: "#55BD84" }}
+                        >{t(langKeys.refresh)}
                         </Button>}
                         <Button
                             className={classes.button}
