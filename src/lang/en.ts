@@ -3829,6 +3829,18 @@ const translation: LangKeys = {
     gupshuppappname: "App Name",
     gupshuppapikey: "API Key",
     gupshuppappnumber: "Phone Number",
+    invoiceconfirmation01: "This document will be emited:",
+    invoiceconfirmation02: "NIT: ",
+    invoiceconfirmation03: "Business Name: ",
+    invoiceconfirmation04: "Service Year: ",
+    invoiceconfirmation05: "Service Month: ",
+    invoiceconfirmation06: "Document Type: ",
+    invoiceconfirmation07: "Credit Type: ",
+    invoiceconfirmation08: "Currency: ",
+    invoiceconfirmation09: "Tax Base: ",
+    invoiceconfirmation10: "Tax: ",
+    invoiceconfirmation11: "Total Amount: ",
+    invoiceconfirmation12: "¿Do you wish to continue?",
 };
 
 const enResource: ResourceLanguage = {

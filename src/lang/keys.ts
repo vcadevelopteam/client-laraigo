@@ -3811,6 +3811,18 @@ export const langKeys = {
     gupshuppappname: "gupshuppappname",
     gupshuppapikey: "gupshuppapikey",
     gupshuppappnumber: "gupshuppappnumber",
+    invoiceconfirmation01: "invoiceconfirmation01",
+    invoiceconfirmation02: "invoiceconfirmation02",
+    invoiceconfirmation03: "invoiceconfirmation03",
+    invoiceconfirmation04: "invoiceconfirmation04",
+    invoiceconfirmation05: "invoiceconfirmation05",
+    invoiceconfirmation06: "invoiceconfirmation06",
+    invoiceconfirmation07: "invoiceconfirmation07",
+    invoiceconfirmation08: "invoiceconfirmation08",
+    invoiceconfirmation09: "invoiceconfirmation09",
+    invoiceconfirmation10: "invoiceconfirmation10",
+    invoiceconfirmation11: "invoiceconfirmation11",
+    invoiceconfirmation12: "invoiceconfirmation12",
 };
 
 export type LangKeys = typeof langKeys;

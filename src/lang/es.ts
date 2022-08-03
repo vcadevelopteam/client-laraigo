@@ -3821,6 +3821,18 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     gupshuppappname: "Nombre de Aplicación",
     gupshuppapikey: "Llave API",
     gupshuppappnumber: "Número telefónico",
+    invoiceconfirmation01: "Se va a emitir el siguiente documento:",
+    invoiceconfirmation02: "RUC: ",
+    invoiceconfirmation03: "Razón Social: ",
+    invoiceconfirmation04: "Año del Servicio: ",
+    invoiceconfirmation05: "Mes del Servicio: ",
+    invoiceconfirmation06: "Tipo de Documento: ",
+    invoiceconfirmation07: "Tipo de Crédito: ",
+    invoiceconfirmation08: "Moneda: ",
+    invoiceconfirmation09: "Base Imponible: ",
+    invoiceconfirmation10: "IGV: ",
+    invoiceconfirmation11: "Monto Total: ",
+    invoiceconfirmation12: "¿Desea continuar?",
 };
 
 const esResource: ResourceLanguage = {
