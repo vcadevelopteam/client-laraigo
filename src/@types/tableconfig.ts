@@ -43,6 +43,7 @@ export interface TableConfig {
     selectionFilter?: { key: string, value: string };
     initialSelectedRows?: any;
     setSelectedRows?: (param?: any) => void;
+    setDataFiltered?: (param?: any) => void;
     allRowsSelected?: boolean;
     setAllRowsSelected?: (value: boolean) => void;
     autotrigger?: boolean;

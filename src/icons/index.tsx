@@ -47,6 +47,10 @@ export const reportsImage = [
     {
       name: "reports_invoice_report",
       image: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/03reportepersonalizado.png'
+    },
+    {
+      name: "reports_survey_report",
+      image: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/03reportepersonalizado.png'
     }
   ];
 
