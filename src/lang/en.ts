@@ -3781,6 +3781,19 @@ const translation: LangKeys = {
     privacypolicy55: "Blogger:",
     privacypolicy56: "Blog and post information like blog name, post content and reply information and the permission to reply on behalf of the user",
     privacypolicy57: "We use the information provided as part of our channel management module. The information of the selected account is used to create a channel where the incoming events (Posts, comments and messages) are registered in our platform and processed as tickets. Some select users of the platform can then send replies to these tickets which are then shown as replies in the linked Google platform.",
+
+    invoiceconfirmation01: "This document will be emited:",
+    invoiceconfirmation02: "NIT: ",
+    invoiceconfirmation03: "Business Name: ",
+    invoiceconfirmation04: "Service Year: ",
+    invoiceconfirmation05: "Service Month: ",
+    invoiceconfirmation06: "Document Type: ",
+    invoiceconfirmation07: "Credit Type: ",
+    invoiceconfirmation08: "Currency: ",
+    invoiceconfirmation09: "Tax Base: ",
+    invoiceconfirmation10: "Tax: ",
+    invoiceconfirmation11: "Total Amount: ",
+    invoiceconfirmation12: "¿Do you wish to continue?",
 };
 
 const enResource: ResourceLanguage = {

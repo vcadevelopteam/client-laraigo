@@ -3774,6 +3774,19 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     privacypolicy55: "Blogger:",
     privacypolicy56: "Información del blog y de los post, como titulo del post, contenido del post e información de las respuestas, ademas de los permisos necesario para responder como el usuario enlazado",
     privacypolicy57: "Usamos la información como parte de nuestro módulo de gestión de canales. La información es utilizada para crear un canal donde eventos entrantes (comentarios y mensajes) son registrados en la plataforma y procesados como tickets. Algunos usuarios selectos de la plataforma pueden enviar respuestas a estos tickets, las cuales serán mostradas como respuestas en el canal de Google que corresponda.",
+
+    invoiceconfirmation01: "Se va a emitir el siguiente documento:",
+    invoiceconfirmation02: "RUC: ",
+    invoiceconfirmation03: "Razón Social: ",
+    invoiceconfirmation04: "Año del Servicio: ",
+    invoiceconfirmation05: "Mes del Servicio: ",
+    invoiceconfirmation06: "Tipo de Documento: ",
+    invoiceconfirmation07: "Tipo de Crédito: ",
+    invoiceconfirmation08: "Moneda: ",
+    invoiceconfirmation09: "Base Imponible: ",
+    invoiceconfirmation10: "IGV: ",
+    invoiceconfirmation11: "Monto Total: ",
+    invoiceconfirmation12: "¿Desea continuar?",
 };
 
 const esResource: ResourceLanguage = {
