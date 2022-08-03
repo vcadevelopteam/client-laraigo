@@ -150,7 +150,7 @@ const TreeItemsFromData2: React.FC<{ dataClassTotal: Dictionary,setAnchorEl: (pa
                         <div className={classes.treelabels}>
                             <div>{x.label}</div>
                             <div>
-                            {(!x.children  && x.quickreplies===0) && 
+                            {(!x.children && x.quickreplies===0) && 
                                 <IconButton
                                     onClick={(event)=>{setAnchorEl(event.currentTarget);setonclickdelete(x.key)}}
                                     size="small"
@@ -218,7 +218,7 @@ const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary, setValueTmp: (p1
                         label={<div className={classes.treelabels}>
                         <div>{x.label}</div>
                         <div>
-                        {(!x.children  && x.quickreplies===0) && 
+                        {(!x.children && x.quickreplies===0) && 
                             <IconButton
                                 onClick={(event)=>{setAnchorEl(event.currentTarget);setonclickdelete(x.key)}}
                                 size="small"
@@ -253,7 +253,7 @@ const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary, setValueTmp: (p1
                     label={<div className={classes.treelabels}>
                     <div>{x.label}</div>
                     <div>
-                    {(!x.children  && x.quickreplies===0) && 
+                    {(!x.children && x.quickreplies===0) && 
                         <IconButton
                             onClick={(event)=>{setAnchorEl(event.currentTarget);setonclickdelete(x.key)}}
                             size="small"
@@ -334,8 +334,8 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
+                fetchMultiData();
                 if(open){
-                    fetchMultiData();
                     setAnchorEl(null);
                     dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))                    
                     dispatch(showBackdrop(false));
@@ -343,7 +343,6 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
 
                     dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                     fetchData && fetchData();
-                    fetchMultiData && fetchMultiData();
                     dispatch(showBackdrop(false));
                     setViewSelected("view-1")
                 }
