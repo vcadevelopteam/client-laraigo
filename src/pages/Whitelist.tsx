@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect } from 'components';
 import { getWhitelistSel, getValuesFromDomain, insWhitelist } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -62,6 +62,7 @@ const DetailWhitelist: React.FC<DetailWhitelistProps> = ({ data: { row, edit }, 
             type: 'NINGUNO',
             id: row ? row.whitelistid : 0,
             username: row ? (row.username || '') : '',
+            phone: row ? (row.phone || '') : '',
             documenttype: row ? (row.documenttype || '') : '',
             documentnumber: row ? row.documentnumber : 0,
             usergroup: row ? row.usergroup : "",
@@ -75,6 +76,7 @@ const DetailWhitelist: React.FC<DetailWhitelistProps> = ({ data: { row, edit }, 
         register('id');
         register('username', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('documenttype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('phone', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register('documentnumber', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register('usergroup', { validate: (value) => (value && value.length ) || t(langKeys.field_required) });
     }, [edit, register]);
@@ -146,64 +148,53 @@ const DetailWhitelist: React.FC<DetailWhitelistProps> = ({ data: { row, edit }, 
                 </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.username)} 
-                                className="col-6"
-                                onChange={(value) => setValue('username', value)}
-                                valueDefault={row ? (row.username || "") : ""}
-                                error={errors?.username?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.username)}
-                                value={row ? (row.username || "") : ""}
-                                className="col-6"
-                            />}
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.documenttype)} 
-                                className="col-6"
-                                onChange={(value) => setValue('documenttype', value)}
-                                valueDefault={row ? (row.documenttype || "") : ""}
-                                error={errors?.documenttype?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.documenttype)}
-                                value={row ? (row.documenttype || "") : ""}
-                                className="col-6"
-                            />}
+                        <FieldEdit
+                            label={t(langKeys.username)} 
+                            className="col-6"
+                            onChange={(value) => setValue('username', value)}
+                            valueDefault={row ? (row.username || "") : ""}
+                            error={errors?.username?.message}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.phone)} 
+                            className="col-6"
+                            onChange={(value) => setValue('phone', value ? parseInt(value) : 0)}
+                            valueDefault={row ? (row.phone || "") : ""}
+                            type="number"
+                            error={errors?.phone?.message}
+                        />
                     </div>
                     <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.documentnumber)} 
-                                error={errors?.documentnumber?.message}
-                                onChange={(value) => setValue('documentnumber', value ? parseInt(value) : 0)}
-                                type="number"
-                                className="col-6"
-                                valueDefault={row ? (row.documentnumber || "") : ""}
-                            />
-                            : <FieldView
-                                label={t(langKeys.documentnumber)}
-                                value={row ? (row.documentnumber || "") : ""}
-                                className="col-6"
-                            />}
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.usergroup)}                                
-                                className="col-6"
-                                valueDefault={row ? (row.usergroup || "") : ""}
-                                onChange={(value) => setValue('usergroup', (value?value.domainvalue:""))}
-                                error={errors?.usergroup?.message}
-                                data={dataDomain}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                            />
-                            : <FieldView
-                                label={t(langKeys.usergroup)}
-                                value={row ? (row.domaindesc || "") : ""}
-                                className="col-6"
-                            />}
+                        <FieldSelect
+                            label={t(langKeys.documenttype)}                                
+                            className="col-6"
+                            valueDefault={row ? (row.documenttype || "") : ""}
+                            onChange={(value) => setValue('documenttype', (value?value.domainvalue:""))}
+                            error={errors?.usergroup?.message}
+                            data={[{domainvalue: "DNI"},{domainvalue: "RUC"}]}
+                            optionDesc="domainvalue"
+                            optionValue="domainvalue"
+                        />
+                        <FieldEdit
+                            label={t(langKeys.documentnumber)} 
+                            error={errors?.documentnumber?.message}
+                            onChange={(value) => setValue('documentnumber', value ? parseInt(value) : 0)}
+                            type="number"
+                            className="col-6"
+                            valueDefault={row ? (row.documentnumber || "") : ""}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldSelect
+                            label={t(langKeys.usergroup)}                                
+                            className="col-6"
+                            valueDefault={row ? (row.usergroup || "") : ""}
+                            onChange={(value) => setValue('usergroup', (value?value.domainvalue:""))}
+                            error={errors?.usergroup?.message}
+                            data={dataDomain}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
                     </div>
                     
                 </div>
@@ -234,6 +225,8 @@ const Whitelist: FC = () => {
                 accessor: 'userid',
                 NoFilter: true,
                 isComponent: true,
+                minWidth: 60,
+                width: '1%',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (
@@ -259,6 +252,11 @@ const Whitelist: FC = () => {
             {
                 Header: t(langKeys.documentnumber),
                 accessor: 'documentnumber',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.phone),
+                accessor: 'phone',
                 NoFilter: true
             },
             {
@@ -348,6 +346,7 @@ const Whitelist: FC = () => {
                     titlemodule={t(langKeys.whitelist, { count: 2 })}
                     data={mainResult.mainData.data}
                     download={true}
+                    onClickRow={handleEdit}
                     ButtonsElement={() => (
                         <Button
                             disabled={mainResult.mainData.loading}
