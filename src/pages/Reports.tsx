@@ -956,7 +956,7 @@ const Reports: FC = () => {
                                     component="img"
                                     height="140"
                                     className={classes.media}
-                                    image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/02reportehsm.png"
+                                    image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/PROCESOSYCONSULTORIA/5740f300-9107-4c2f-b7eb-eee27652acab/Historial%20HSM.png"
                                     title={t(langKeys.hsmhistory)}
                                 />
                                 <CardContent>
