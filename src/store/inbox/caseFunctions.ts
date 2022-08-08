@@ -1130,6 +1130,7 @@ export const wsConnect = (state: IState, action: IAction): IState => ({
 
 export const forceddesconection = (state: IState, action: IAction): IState => ({
     ...state,
+    showModalClose: 0,
     forceddisconnect: {
         error: false,
         loading: false,
