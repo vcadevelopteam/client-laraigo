@@ -21,7 +21,7 @@ const CloseTicketVoxi: React.FC = () => {
     const [openModal, setOpenModal] = useState(false);
     const showModalVoxi = useSelector(state => state.inbox.showModalClose);
     const callVoxiTmp = useSelector(state => state.voximplant.call);
-    const multiData = useSelector(state => state.main.multiData);
+    const multiData = useSelector(state => state.main.multiDataAux2);
     const tipificationLevel2 = useSelector(state => state.inbox.tipificationsLevel2);
     const tipificationLevel3 = useSelector(state => state.inbox.tipificationsLevel3);
     const [waitTipify, setWaitTipify] = useState(false);
@@ -88,7 +88,7 @@ const CloseTicketVoxi: React.FC = () => {
             register('path1');
             register('reschedulingdate');
             register('observation');
-            if(multiData?.data[12]?.data[0].propertyvalue==="1" && modalview==="view-1"){
+            if(multiData?.data[2]?.data[0].propertyvalue==="1" && modalview==="view-1"){
                 register('classificationid1', { validate: (value:any) => (((value && value > 0) || t(langKeys.field_required)) )});
 
             }else{
@@ -221,7 +221,7 @@ const CloseTicketVoxi: React.FC = () => {
                                 valueDefault={getValues('classificationid1')}
                                 onChange={onChangeTipificationLevel1}
                                 error={errors?.classificationid1?.message}
-                                data={multiData?.data[2] && multiData?.data[2].data}
+                                data={multiData?.data[1] && multiData?.data[1].data}
                                 optionDesc="description"
                                 optionValue="classificationid"
                             />
