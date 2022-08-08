@@ -30,6 +30,7 @@ const CloseTicketVoxi: React.FC = () => {
     const [waitClose, setWaitClose] = useState(false);
     const [motive, setmotive] = useState("");
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm();
+    
     React.useEffect(() => {
         if (showModalVoxi > 0) {
             setOpenModal(true)
