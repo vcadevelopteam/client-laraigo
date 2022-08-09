@@ -31,6 +31,7 @@ export const langKeys = {
     align: "align",
     font: "font",
     undo: "undo",
+    warningnoquickreplies: "warningnoquickreplies",
     redo: "redo",
     make_call: "make_call",
     waittime: "waittime",
