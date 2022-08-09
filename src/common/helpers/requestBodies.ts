@@ -246,10 +246,10 @@ export const getWhitelistSel = (whitelistid: number): IRequestBody => ({
     }
 });
 
-export const insWhitelist = ({ id, operation, documenttype, documentnumber, usergroup, type, status, username }: Dictionary): IRequestBody => ({
+export const insWhitelist = ({ id, operation, documenttype,phone, documentnumber, usergroup, type, status, username }: Dictionary): IRequestBody => ({
     method: "UFN_WHITELIST_INS",
     key: "UFN_WHITELIST_INS",
-    parameters: { id, operation, documenttype, documentnumber, usergroup, type, status, asesorname: username }
+    parameters: { id, operation, documenttype,phone: phone.toString()||"", documentnumber: documentnumber.toString(), usergroup, type, status, asesorname: username }
 });
 
 export const getInappropriateWordsSel = (id: number): IRequestBody => ({
@@ -3117,5 +3117,12 @@ export const getPropertiesIncludingName = (propertyname: string): IRequestBody =
     key: "UFN_PROPERTY_SEL_BY_INCLUDE_NAME",
     parameters: {
         propertyname
+    }
+})
+export const deleteClassificationTree = (id: number): IRequestBody => ({
+    method: "UFN_CLASSIFICATION_DEL",
+    key: "UFN_CLASSIFICATION_DEL",
+    parameters: {
+        id
     }
 })
