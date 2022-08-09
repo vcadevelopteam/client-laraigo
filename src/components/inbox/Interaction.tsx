@@ -19,7 +19,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import Avatar from '@material-ui/core/Avatar';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
-import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
+import LocationOnIcon from '@material-ui/icons/LocationOn';
 
 const useStylesInteraction = makeStyles((theme) => ({
     containerCarousel: {
@@ -726,7 +727,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                     [classes.interactionTextAgent]: userType !== 'client',
                 })}
             >
-                <div style={{width: "300px"}}>
+                <div style={{ width: "300px" }}>
                     <GoogleMap
                         mapContainerStyle={{
                             width: '100%',
@@ -735,8 +736,9 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                         center={{ lat: parseFloat(coordinates[0]), lng: parseFloat(coordinates[1]) }}
                         zoom={10}
                     >
-                        { /* Child components, such as markers, info windows, etc. */}
-                        <></>
+                        <Marker
+                            position={{ lat: parseFloat(coordinates[0]), lng: parseFloat(coordinates[1]) }}
+                        />
                     </GoogleMap>
                 </div>
                 <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
