@@ -251,6 +251,8 @@ const DashboardDisconnections: FC = () => {
     }
 
     function downloaddata(data:any,title:string) {
+        console.log(data)
+        debugger
         if (data.length !== 0) {
             let seteddata = data.map((x:any)=>{return {...x,time:formattime(x.time)}})
             exportExcel(title, seteddata, Object.keys(seteddata[0]).reduce((ac: any[], c: any) => (
@@ -346,6 +348,9 @@ const DashboardDisconnections: FC = () => {
                         className={classes.itemCard}
                         style={{width:"100%"}}
                     >
+                        <div className={classes.downloadiconcontainer}>                            
+                            <CloudDownloadIcon onClick={()=>downloaddata(tcovstdc,t(langKeys.timeconnectedvstimeoff))} className={classes.styleicon}/>
+                        </div>
                         <div style={{width: "100%"}}> 
                             <div style={{display: "flex"}}>
                                 <div style={{fontWeight: "bold",fontSize: "1.6em",}}> {t(langKeys.timeconnectedvstimeoff)} </div>
