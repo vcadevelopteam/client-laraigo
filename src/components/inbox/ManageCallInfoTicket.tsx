@@ -14,9 +14,10 @@ import PauseIcon from '@material-ui/icons/Pause';
 import MicOffIcon from '@material-ui/icons/MicOff';
 import { FieldSelect } from 'components';
 import { Card, CardContent } from '@material-ui/core';
-import { convertLocalDate, secondsToTime, getSecondsUntelNow } from 'common/helpers';
+import { convertLocalDate, secondsToTime, getSecondsUntelNow, callUpdateToken } from 'common/helpers';
 import { langKeys } from 'lang/keys';
 import DialpadIcon from '@material-ui/icons/Dialpad';
+import { getCollectionAux } from 'store/main/actions';
 
 const ManageCallInfoTicket: React.FC = () => {
     const { t } = useTranslation();
@@ -163,7 +164,10 @@ const ManageCallInfoTicket: React.FC = () => {
                                 <>
                                     <IconButton //answercall
                                         style={{ marginLeft: "10px", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#55bd84' }}
-                                        onClick={() => dispatch(answerCall({ call: call.call!!, conversationid: ticketSelected?.conversationid!! }))}
+                                        onClick={() => {
+                                            dispatch(getCollectionAux(callUpdateToken()))
+                                            dispatch(answerCall({ call: call.call!!, conversationid: ticketSelected?.conversationid!! }))
+                                        }}
                                     >
                                         <PhoneIcon style={{ color: "white", width: "35px", height: "35px" }} />
                                     </IconButton>

@@ -8,7 +8,7 @@ import clsx from 'clsx';
 import Badge from '@material-ui/core/Badge';
 import { useDispatch } from 'react-redux';
 import Tooltip from '@material-ui/core/Tooltip';
-import { convertLocalDate, secondsToTime, getSecondsUntelNow } from 'common/helpers';
+import { convertLocalDate, secondsToTime, getSecondsUntelNow, callUpdateToken } from 'common/helpers';
 import { answerCall, hangupCall } from 'store/voximplant/actions';
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
@@ -19,6 +19,7 @@ import CallEndIcon from '@material-ui/icons/CallEnd';
 import { PhoneCalling } from 'icons';
 import { showSnackbar } from 'store/popus/actions';
 import Button from '@material-ui/core/Button';
+import { getCollectionAux } from 'store/main/actions';
 
 const useStyles = makeStyles((theme) => ({
     label: {
@@ -211,6 +212,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
         if (timeWaiting >= 0 && (secondsToAnwserCall || 0) > 0) {
 
             if (timeWaiting >= (secondsToAnwserCall || 0) && (callVoxiTmp.type === "INBOUND" && statusCall === "CONNECTING")) {
+                dispatch(getCollectionAux(callUpdateToken()))
                 dispatch(answerCall({ call: callVoxi!!, conversationid }));
                 setWaitingDate(null);
                 setTimeWaiting(-1);
@@ -301,6 +303,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                         style={{ width: "35px", height: "35px", borderRadius: "50%", backgroundColor: '#55bd84' }}
                         onClick={(e) => {
                             e.stopPropagation();
+                            dispatch(getCollectionAux(callUpdateToken()))
                             dispatch(answerCall({ call: callVoxi!!, conversationid }));
                         }}
                     >

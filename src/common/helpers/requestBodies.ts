@@ -21,6 +21,11 @@ export const getOrgUserSel = (userid: number, orgid: number): IRequestBody => ({
         all: true
     }
 })
+export const callUpdateToken = (): IRequestBody => ({
+    method: "UFN_TEST",
+    key: "UFN_TEST",
+    parameters: { }
+})
 export const getConversationSelVoxi = (): IRequestBody => ({
     method: "UFN_CONVERSATION_SEL_VOXI",
     key: "UFN_CONVERSATION_SEL_VOXI",
