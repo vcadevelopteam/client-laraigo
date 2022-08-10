@@ -6,13 +6,13 @@ import { Button, DialogActions, DialogTitle } from "@material-ui/core";
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { FieldSelect, FieldEditMulti } from 'components';
+import { FieldSelect, FieldEditMulti, FieldEdit } from 'components';
 import { insertClassificationConversation, conversationCloseUpd } from 'common/helpers';
 import { langKeys } from 'lang/keys';
 import { execute } from 'store/main/actions';
 import { Dictionary } from '@types';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { getTipificationLevel2, getTipificationLevel3, resetGetTipificationLevel2, resetGetTipificationLevel3, resetShowModal } from 'store/inbox/actions';
+import { getTipificationLevel2, getTipificationLevel3, resetGetTipificationLevel2, resetGetTipificationLevel3, resetShowModal, checkPaymentPlan } from 'store/inbox/actions';
 import { useForm } from 'react-hook-form';
 
 const CloseTicketVoxi: React.FC = () => {
@@ -21,17 +21,19 @@ const CloseTicketVoxi: React.FC = () => {
     const [openModal, setOpenModal] = useState(false);
     const showModalVoxi = useSelector(state => state.inbox.showModalClose);
     const callVoxiTmp = useSelector(state => state.voximplant.call);
-    const multiData = useSelector(state => state.main.multiData);
+    const multiData = useSelector(state => state.main.multiDataAux2);
     const tipificationLevel2 = useSelector(state => state.inbox.tipificationsLevel2);
     const tipificationLevel3 = useSelector(state => state.inbox.tipificationsLevel3);
     const [waitTipify, setWaitTipify] = useState(false);
     const [modalview, setmodalview] = useState("view-1");
     const tipifyRes = useSelector(state => state.main.execute);
     const [waitClose, setWaitClose] = useState(false);
+    const [motive, setmotive] = useState("");
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm();
     React.useEffect(() => {
         if (showModalVoxi > 0) {
             setOpenModal(true)
+            setmotive("");
         }
     }, [showModalVoxi])
 
@@ -84,8 +86,9 @@ const CloseTicketVoxi: React.FC = () => {
             register('classificationid2');
             register('classificationid3');
             register('path1');
+            register('reschedulingdate');
             register('observation');
-            if(multiData?.data[12]?.data[0].propertyvalue==="1" && modalview==="view-1"){
+            if(multiData?.data[2]?.data[0].propertyvalue==="1" && modalview==="view-1"){
                 register('classificationid1', { validate: (value:any) => (((value && value > 0) || t(langKeys.field_required)) )});
 
             }else{
@@ -145,20 +148,56 @@ const CloseTicketVoxi: React.FC = () => {
     });
 
     const onSubmit = handleSubmit((data) => {
-        console.log("data",callVoxiTmp)
-        const dd: Dictionary = {
-            conversationid: callVoxiTmp?.data?.conversationid!!,
-            motive: data.motive,
-            obs: data.observation||"",
-            ticketnum: callVoxiTmp?.data?.ticketnum!!,
-            personcommunicationchannel: callVoxiTmp?.data?.personcommunicationchannel!!,
-            communicationchannelid: callVoxiTmp?.data?.communicationchannelid!!,
-            personid: callVoxiTmp?.data?.personid,
-        }
+        
+        if(motive === "LLAMADAREPROGRAMDA"){
+            debugger
+            if(data.reschedulingdate){
+                if(new Date(data.reschedulingdate).getTime() > new Date().getTime()){
+                    console.log("data",callVoxiTmp)
+                    const dd: Dictionary = {
+                        conversationid: callVoxiTmp?.data?.conversationid!!,
+                        motive: data.motive,
+                        obs: data.observation||"",
+                        ticketnum: callVoxiTmp?.data?.ticketnum!!,
+                        personcommunicationchannel: callVoxiTmp?.data?.personcommunicationchannel!!,
+                        communicationchannelid: callVoxiTmp?.data?.communicationchannelid!!,
+                        personid: callVoxiTmp?.data?.personid,
+                    }
+                    dispatch(checkPaymentPlan({
+                        parameters:{
+                            firstname: callVoxiTmp?.data?.displayname,
+                            lastname: "",
+                            phone: callVoxiTmp?.data?.personcommunicationchannel.split(':')[1].split("@")[0],
+                            communicationchannelid: callVoxiTmp?.data?.communicationchannelid,
+                            datetime: new Date(data.reschedulingdate).getTime()
+                        }
+                    }))
 
-        dispatch(showBackdrop(true));
-        dispatch(execute(conversationCloseUpd(dd)));
-        setWaitClose(true)
+                    dispatch(showBackdrop(true));
+                    dispatch(execute(conversationCloseUpd(dd)));
+                    setWaitClose(true)
+                }else{
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_rescheduling_date) }))
+                }
+            }else{
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.invalid_rescheduling_date) }))
+            }
+        }else{
+            console.log("data",callVoxiTmp)
+            const dd: Dictionary = {
+                conversationid: callVoxiTmp?.data?.conversationid!!,
+                motive: data.motive,
+                obs: data.observation||"",
+                ticketnum: callVoxiTmp?.data?.ticketnum!!,
+                personcommunicationchannel: callVoxiTmp?.data?.personcommunicationchannel!!,
+                communicationchannelid: callVoxiTmp?.data?.communicationchannelid!!,
+                personid: callVoxiTmp?.data?.personid,
+            }
+    
+            dispatch(showBackdrop(true));
+            dispatch(execute(conversationCloseUpd(dd)));
+            setWaitClose(true)
+        }
         
     });
 
@@ -182,7 +221,7 @@ const CloseTicketVoxi: React.FC = () => {
                                 valueDefault={getValues('classificationid1')}
                                 onChange={onChangeTipificationLevel1}
                                 error={errors?.classificationid1?.message}
-                                data={multiData?.data[2] && multiData?.data[2].data}
+                                data={multiData?.data[1] && multiData?.data[1].data}
                                 optionDesc="description"
                                 optionValue="classificationid"
                             />
@@ -216,9 +255,9 @@ const CloseTicketVoxi: React.FC = () => {
                                 label={t(langKeys.ticket_reason)}
                                 className="col-12"
                                 valueDefault={getValues('motive')}
-                                onChange={(value) => setValue('motive', value ? value.domainvalue : '')}
+                                onChange={(value) => {setValue('motive', value ? value.domainvalue : ''); setmotive(value ? value.domainvalue : '')}}
                                 error={errors?.motive?.message}
-                                data={(multiData?.data?.[0]?.data || [] )}
+                                data={[...(multiData?.data?.[0]?.data || [] ),{domaindesc: "Llamada reprogramada", domainvalue: "LLAMADAREPROGRAMDA"}]}
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
                             />
@@ -229,6 +268,15 @@ const CloseTicketVoxi: React.FC = () => {
                                 onChange={(value) => setValue('obs', value)}
                                 maxLength={1024}
                             />
+                            {motive === "LLAMADAREPROGRAMDA" &&<>
+                                <FieldEdit
+                                    label={t(langKeys.reschedulingdate)}
+                                    valueDefault={getValues('reschedulingdate')}
+                                    className="flex-1"
+                                    type="datetime-local"
+                                    onChange={(value) => setValue('reschedulingdate', value)}
+                                />
+                            </>}
                         </div>
                     }
                 </DialogContent>

@@ -1,5 +1,5 @@
 import { apiUrls } from '../../common/constants';
-import { IRequestBody, IRequestBodyPaginated, ITransaction, IRequestBodyDynamic } from '@types';
+import { IRequestBody, IRequestBodyPaginated, ITransaction, IRequestBodyDynamic, Dictionary } from '@types';
 import { APIManager, ExternalRequestManager } from '../manager';
 import { removeAuthorizationToken } from "common/helpers";
 
@@ -24,6 +24,9 @@ export function exportData(requestBody: IRequestBody) {
 
 export function validateToken() {
     return APIManager.get(apiUrls.LOGIN_URL, {}, true);
+}
+export function reeschedulecall(requestBody: Dictionary ) {
+    return APIManager.post(apiUrls.REESCHEDULECALL, { data: requestBody }, true);
 }
 
 export function changeOrganization(newcorpid: number, neworgid: number, corpdesc: string, orgdesc: string) {
