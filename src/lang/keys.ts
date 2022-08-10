@@ -35,6 +35,7 @@ export const langKeys = {
     warningnoquickreplies: "warningnoquickreplies",
     redo: "redo",
     make_call: "make_call",
+    limitgroupreassignment: "limitgroupreassignment",
     waittime: "waittime",
     outboundcall: "outboundcall",
     inboundcall: "inboundcall",
