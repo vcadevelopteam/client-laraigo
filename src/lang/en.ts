@@ -418,6 +418,7 @@ const translation: LangKeys = {
     type_corp_juridica: 'Legal person',
 
     type_org_ninguno: 'NONE',
+    limitgroupreassignment: "Limit group reassignment",
     type_org_1: 'Transitory agricultural crops.',
     type_org_2: 'Permanent agricultural crops',
     type_org_3: 'Plant propagation (nurseries)',

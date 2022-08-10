@@ -13,7 +13,7 @@ import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipification
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { changeStatus, getConversationClassification2, insertClassificationConversation, insLeadPerson } from 'common/helpers';
 import { execute, getCollectionAux2 } from 'store/main/actions';
-import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView, FieldMultiSelect, FieldMultiSelectFreeSolo } from 'components'
+import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView, FieldMultiSelect, FieldMultiSelectFreeSolo, TemplateSwitch } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -421,12 +421,13 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitReassign, setWaitReassign] = useState(false);
+    const [limitgroups, setlimitgroups] = useState(true);
 
     const multiData = useSelector(state => state.main.multiData);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const agentToReassignList = useSelector(state => state.inbox.agentToReassignList);
     const user = useSelector(state => state.login.validateToken.user);
-    const [userToReassign, setUserToReassign] = useState<Dictionary[]>([])
+    const [usergroupslist, setusergroupslist] = useState<Dictionary[]>([])
     const groups = user?.groups?.split(",") || [];
     const userType = useSelector(state => state.inbox.userType);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
@@ -504,20 +505,21 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
 
     useEffect(() => {
         if (user) {
-            const groups = user?.groups ? user?.groups.split(",") : [];
-            if (user.properties.limit_reassign_group) {
-                setUserToReassign([
-                    { domainvalue: "NINGUNO", domaindesc: t(langKeys.NINGUNO) },
-                    ...(multiData?.data?.[3]?.data || []).filter(x => x.domainvalue !== ticketSelected?.usergroup).filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true)
-                ])
-            } else {
-                setUserToReassign([
-                    { domainvalue: "NINGUNO", domaindesc: t(langKeys.NINGUNO) },
-                    ...(multiData?.data?.[3]?.data || []).filter(x => x.domainvalue !== ticketSelected?.usergroup)
-                ])
+            if(!limitgroups){
+                setusergroupslist((multiData?.data?.[3]?.data || []))
+            }else{
+                const groups = user?.groups ? user?.groups.split(",") : [];
+                if (user.properties.limit_reassign_group) {
+                    setusergroupslist((multiData?.data?.[3]?.data || []).filter(x => x.domainvalue !== ticketSelected?.usergroup).filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true))
+                } else {
+                    setusergroupslist((multiData?.data?.[3]?.data || []))
+                }
             }
         }
-    }, [user, multiData])
+    }, [user,limitgroups, multiData])
+    useEffect(() => {
+        console.log(!limitgroups && getValues('newUserGroup')==="")
+    }, [limitgroups])
 
     return (
         <DialogZyx
@@ -530,6 +532,18 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
             button2Type="submit"
         >
             <div className="row-zyx">
+                <TemplateSwitch
+                    label={t(langKeys.limitgroupreassignment)}
+                    className="col-6"
+                    valueDefault={limitgroups}
+                    onChange={(value) => {
+                        setlimitgroups(value)
+                        setValue('newUserGroup', '');
+                        setValue('newUserId', 0);
+                        trigger('newUserGroup');
+                        trigger('newUserId');
+                    }}
+                />
                 <FieldSelect
                     label={t(langKeys.group_plural)}
                     className="col-12"
@@ -540,7 +554,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                         trigger('newUserId');
                     }}
                     error={errors?.newUserGroup?.message}
-                    data={userToReassign}
+                    data={usergroupslist}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />
@@ -552,7 +566,8 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                         setValue('newUserId', value ? value.userid : 0);
                     }}
                     error={errors?.newUserId?.message}
-                    data={agentToReassignList.filter(x => x.status === "ACTIVO").filter(x => {
+                    data={(!limitgroups && getValues('newUserGroup')==="")? agentToReassignList:
+                        agentToReassignList.filter(x => x.status === "ACTIVO").filter(x => {
                         if (getValues("newUserGroup")) {
                             let ingroup = false;
                             if (getValues("newUserGroup") === "NINGUNO") {
