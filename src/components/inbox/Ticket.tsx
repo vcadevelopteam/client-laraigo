@@ -162,6 +162,17 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dictAutoClose, dictAutoCloseHolding, countnewmessages, userType, agentSelected?.userid, communicationchannelid, lastreplyuser])
 
+    useEffect(() => {
+        let timer = null;
+        if (statusCall === "CONNECTED") {
+            timer = setTimeout(() => {
+                dispatch(getCollectionAux(callUpdateToken()))
+            }, 30000)
+        } else {
+            timer && clearTimeout(timer);
+        }
+    }, [dispatch, statusCall])
+
     const validateTime = (time: number) => {
         if (userType === "AGENT" && (countnewmessages || 0) > 0) {
             if (multiData.data?.[14]?.data) {
@@ -175,9 +186,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                     if (!Number.isNaN(minutesAlert)) {
                         const secondsAlert = minutesAlert * 60;
                         if (time % secondsAlert === 0) {
-                            console.log(2)
                             const minuteswaiting = time / 60;
-                            console.log(minuteswaiting)
                             if (minuteswaiting >= 1) {
                                 const messagetoshow = `Ticket ${ticketnum}: ` + (waitingcustomermessage || "Tu cliente está esperando {{minutos}} minutos por tu respuesta.").replace("{{minutos}}", minuteswaiting + "")
                                 dispatch(showSnackbar({
@@ -206,13 +215,10 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
         }
     }, [callVoxiTmp, statusCall])
 
-    console.log(timeWaiting, secondsToAnwserCall, callVoxiTmp.type, statusCall)
-
     React.useEffect(() => {
         if (timeWaiting >= 0 && (secondsToAnwserCall || 0) > 0) {
 
             if (timeWaiting >= (secondsToAnwserCall || 0) && (callVoxiTmp.type === "INBOUND" && statusCall === "CONNECTING")) {
-                dispatch(getCollectionAux(callUpdateToken()))
                 dispatch(answerCall({ call: callVoxi!!, conversationid }));
                 setWaitingDate(null);
                 setTimeWaiting(-1);
@@ -303,7 +309,6 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                         style={{ width: "35px", height: "35px", borderRadius: "50%", backgroundColor: '#55bd84' }}
                         onClick={(e) => {
                             e.stopPropagation();
-                            dispatch(getCollectionAux(callUpdateToken()))
                             dispatch(answerCall({ call: callVoxi!!, conversationid }));
                         }}
                     >
