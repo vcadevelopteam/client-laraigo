@@ -2559,6 +2559,13 @@ export const langKeys = {
     "personalizedreport_surveyansweredsummary.fix_answervalue": "personalizedreport_surveyansweredsummary.fix_answervalue",
     "personalizedreport_surveyansweredsummary.fix_answer": "personalizedreport_surveyansweredsummary.fix_answer",
 
+    "personalizedreport_firstorguser.groups": "personalizedreport_firstorguser.groups",
+    "personalizedreport_firstorguser.channels": "personalizedreport_firstorguser.channels",
+    "personalizedreport_firstorguser.type": "personalizedreport_firstorguser.type",
+    "personalizedreport_lastorguser.groups": "personalizedreport_lastorguser.groups",
+    "personalizedreport_lastorguser.channels": "personalizedreport_lastorguser.channels",
+    "personalizedreport_lastorguser.type": "personalizedreport_lastorguser.type",
+
     chatHeaderTitle: 'chatHeaderTitle',
     subtitle: 'subtitle',
     chatHeaderSubtitle: 'chatHeaderSubtitle',

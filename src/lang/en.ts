@@ -2479,6 +2479,13 @@ const translation: LangKeys = {
     "personalizedreport_surveyansweredsummary.fix_answervalue": "fix answer value",
     "personalizedreport_surveyansweredsummary.fix_answer": "fix answer",
 
+    "personalizedreport_firstorguser.groups": "first user groups",
+    "personalizedreport_firstorguser.channels": "first user channels",
+    "personalizedreport_firstorguser.type": "first user type",
+    "personalizedreport_lastorguser.groups": "last user groups",
+    "personalizedreport_lastorguser.channels": "last user channels",
+    "personalizedreport_lastorguser.type": "last user type",
+
     chatHeaderTitle: 'Chat header title',
     subtitle: 'Subtitle',
     chatHeaderSubtitle: 'Chat header subtitle',
