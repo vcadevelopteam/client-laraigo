@@ -2411,6 +2411,13 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     "personalizedreport_surveyansweredsummary.fix_answervalue": "valor respuesta fix",
     "personalizedreport_surveyansweredsummary.fix_answer": "respuesta fix",
 
+    "personalizedreport_firstorguser.groups": "grupos del primer usuario",
+    "personalizedreport_firstorguser.channels": "canales del primer usuario",
+    "personalizedreport_firstorguser.type": "tipo del primer usuario",
+    "personalizedreport_lastorguser.groups": "grupos del último usuario",
+    "personalizedreport_lastorguser.channels": "canales del último usuario",
+    "personalizedreport_lastorguser.type": "tipo del último usuario",
+
     chatHeaderTitle: 'Título de la cabecera del chat',
     subtitle: 'Subtítulo',
     chatHeaderSubtitle: 'Subtítulo de la cabecera del chat',
