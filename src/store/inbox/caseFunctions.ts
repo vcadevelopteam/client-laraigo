@@ -680,7 +680,7 @@ export const getDataTicketSuccess = (state: IState, action: IAction): IState => 
             },
             isOnBottom: null,
             configurationVariables: {
-                data: action.payload.data[2].data.filter((x: any) => !!x.visible).sort((a: any, b: any) => (a.priority < b.priority) ? 1 : ((b.priority < a.priority) ? -1 : 0)) || [],
+                data: action.payload.data[2].data.filter((x: any) => !!x.visible) || [],
                 count: action.payload.count,
                 loading: false,
                 error: false,
