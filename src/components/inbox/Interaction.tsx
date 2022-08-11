@@ -656,15 +656,19 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             </div>
         );
     } else if (interactiontype === "interactivelist") {
-        return (
-            <InteractiveList
-                interactiontext={interactiontext}
-                createdate={createdate}
-                classes={classes}
-                userType={userType}
-                onlyTime={onlyTime}
-            />
-        )
+        try {
+            return (
+                <InteractiveList
+                    interactiontext={interactiontext}
+                    createdate={createdate}
+                    classes={classes}
+                    userType={userType}
+                    onlyTime={onlyTime}
+                />
+            )
+        } catch (error) {
+            return null
+        }
     } else if (interactiontype === "post-image") {
         return (
             <div title={convertLocalDate(createdate).toLocaleString()} className={classes.interactionImage} style={{ marginLeft: 'auto', marginRight: 'auto' }}>
