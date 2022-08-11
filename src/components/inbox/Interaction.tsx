@@ -456,42 +456,46 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             </div>
         );
     else if (interactiontype === "email") {
-        const [subject, body, files] = interactiontext.split("&%MAIL%&")
-        return (
-            <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
-                [classes.interactionTextAgent]: userType !== 'client',
-            })} >
-                <div>RE-LARAIGO: {subject}</div>
-                <div dangerouslySetInnerHTML={{ __html: body }} />
-                {(files && files !== "{}") &&
-                    Object.keys(JSON.parse(files)).map((file: any) => {
-                        let hreffile = JSON.parse(files)[file]
-                        let extension = file.split('.').pop()
-                        return (
-                            <a key={file} download rel="noreferrer" target="_blank" href={hreffile} style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 4, maxWidth: 200, border: "1px solid #e1e1e1", borderRadius: 5, marginBottom: 5, paddingRight: 5 }}>
-                                {extension === "pdf" ? (
-                                    <PdfIcon width="30" height="30" />
-                                ) : (extension === "doc" || extension === "docx") ? (
-                                    <DocIcon width="30" height="30" />
-                                ) : (extension === "xls" || extension === "xlsx" || extension === "csv") ? (
-                                    <XlsIcon width="30" height="30" />
-                                ) : (extension === "ppt" || extension === "pptx") ? (
-                                    <PptIcon width="30" height="30" />
-                                ) : (extension === "text" || extension === "txt") ? (
-                                    <TxtIcon width="30" height="30" />
-                                ) : (extension === "zip" || extension === "rar") ? (
-                                    <ZipIcon width="30" height="30" />
-                                ) : <FileIcon width="30" height="30" />
-                                }
-                                <div style={{ color: '#171717', textOverflow: 'ellipsis', overflowX: 'hidden', flex: 1, whiteSpace: 'nowrap' }}>{decodeURI(file)}</div>
-                                <DownloadIcon2 width="20" height="20" color="primary" />
-                            </a>)
-                    })
-                }
-                <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
-                <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
-            </div>
-        );
+        try {
+            const [subject, body, files] = interactiontext.split("&%MAIL%&")
+            return (
+                <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
+                    [classes.interactionTextAgent]: userType !== 'client',
+                })} >
+                    <div>RE-LARAIGO: {subject}</div>
+                    <div dangerouslySetInnerHTML={{ __html: body }} />
+                    {(files && files !== "{}") &&
+                        Object.keys(JSON.parse(files)).map((file: any) => {
+                            let hreffile = JSON.parse(files)[file]
+                            let extension = file.split('.').pop()
+                            return (
+                                <a key={file} download rel="noreferrer" target="_blank" href={hreffile} style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 4, maxWidth: 200, border: "1px solid #e1e1e1", borderRadius: 5, marginBottom: 5, paddingRight: 5 }}>
+                                    {extension === "pdf" ? (
+                                        <PdfIcon width="30" height="30" />
+                                    ) : (extension === "doc" || extension === "docx") ? (
+                                        <DocIcon width="30" height="30" />
+                                    ) : (extension === "xls" || extension === "xlsx" || extension === "csv") ? (
+                                        <XlsIcon width="30" height="30" />
+                                    ) : (extension === "ppt" || extension === "pptx") ? (
+                                        <PptIcon width="30" height="30" />
+                                    ) : (extension === "text" || extension === "txt") ? (
+                                        <TxtIcon width="30" height="30" />
+                                    ) : (extension === "zip" || extension === "rar") ? (
+                                        <ZipIcon width="30" height="30" />
+                                    ) : <FileIcon width="30" height="30" />
+                                    }
+                                    <div style={{ color: '#171717', textOverflow: 'ellipsis', overflowX: 'hidden', flex: 1, whiteSpace: 'nowrap' }}>{decodeURI(file)}</div>
+                                    <DownloadIcon2 width="20" height="20" color="primary" />
+                                </a>)
+                        })
+                    }
+                    <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
+                    <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
+                </div>
+            );
+        } catch (error) {
+            return null
+        }
     } else if (interactiontype === "image" || interactiontype === "comment-image")
         return (
             <div title={convertLocalDate(createdate).toLocaleString()} className={classes.interactionImage}>
@@ -508,56 +512,64 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             </div>
         );
     else if (interactiontype === "quickreply") {
-        let text, json;
+        try {
+            let text, json;
 
-        if (interactiontext.substring(0, 1) === "{") {
-            const jj = JSON.parse(interactiontext);
+            if (interactiontext.substring(0, 1) === "{") {
+                const jj = JSON.parse(interactiontext);
+                return (
+                    <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
+                        [classes.interactionTextAgent]: userType !== 'client',
+                    })}>
+                        {jj.stringsmooch}
+                        <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
+                        <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
+                    </div>
+                );
+            } else {
+                text = interactiontext.split("&&&")[0];
+                json = interactiontext.split("&&&")[1]
+            }
+
+            const listButtons: Dictionary[] = JSON.parse(`[${json}]`);
             return (
-                <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
+                <div className={clsx(classes.interactionText, {
                     [classes.interactionTextAgent]: userType !== 'client',
-                })}>
-                    {jj.stringsmooch}
+                })} style={{ display: 'inline-block' }}>
+                    {text}
+                    <div className={classes.containerQuickreply}>
+                        {listButtons.map((item: Dictionary, index: number) => {
+                            return <div key={index} className={classes.buttonQuickreply}>{item.text || item.title}
+                            </div>
+                        })}
+                    </div>
                     <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
                     <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
                 </div>
-            );
-        } else {
-            text = interactiontext.split("&&&")[0];
-            json = interactiontext.split("&&&")[1]
+            )
+        } catch (error) {
+            return null
         }
-
-        const listButtons: Dictionary[] = JSON.parse(`[${json}]`);
-        return (
-            <div className={clsx(classes.interactionText, {
-                [classes.interactionTextAgent]: userType !== 'client',
-            })} style={{ display: 'inline-block' }}>
-                {text}
-                <div className={classes.containerQuickreply}>
-                    {listButtons.map((item: Dictionary, index: number) => {
-                        return <div key={index} className={classes.buttonQuickreply}>{item.text || item.title}
-                        </div>
-                    })}
-                </div>
-                <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
-                <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
-            </div>
-        )
     } else if (interactiontype === "postback") {
-        const [text, json] = interactiontext.split("&&&");
-        const listButtons: Dictionary[] = JSON.parse(`[${json}]`);
-        return (
-            <div className={classes.containerPostback} style={{ backgroundColor: 'white' }}>
-                <div className={classes.headerPostback}>
-                    {text}
+        try {
+            const [text, json] = interactiontext.split("&&&");
+            const listButtons: Dictionary[] = JSON.parse(`[${json}]`);
+            return (
+                <div className={classes.containerPostback} style={{ backgroundColor: 'white' }}>
+                    <div className={classes.headerPostback}>
+                        {text}
+                    </div>
+                    <div >
+                        {listButtons.map((item: Dictionary, index: number) => {
+                            return <div key={index} className={classes.buttonPostback}>{item.text}
+                            </div>
+                        })}
+                    </div>
                 </div>
-                <div >
-                    {listButtons.map((item: Dictionary, index: number) => {
-                        return <div key={index} className={classes.buttonPostback}>{item.text}
-                        </div>
-                    })}
-                </div>
-            </div>
-        )
+            )
+        } catch (error) {
+            return null
+        }
     } else if (interactiontype === "LOG") {
         return (
             <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
@@ -573,8 +585,12 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             </div>
         );
     } else if (interactiontype === "carousel") {
-        const listItems: Dictionary[] = JSON.parse(`[${interactiontext}]`);
-        return (<Carousel carousel={listItems} />)
+        try {
+            const listItems: Dictionary[] = JSON.parse(`[${interactiontext}]`);
+            return (<Carousel carousel={listItems} />)
+        } catch (error) {
+            return null
+        }
     } else if (interactiontype === "audio" || (interactiontype === "video" && interactiontext.includes(".oga"))) {
         return (
             <div className={classes.interactionImage} style={{ borderRadius: 0, height: 50, backgroundColor: 'transparent' }}>
