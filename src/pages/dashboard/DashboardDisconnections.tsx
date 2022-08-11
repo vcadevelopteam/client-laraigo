@@ -331,7 +331,7 @@ const DashboardDisconnections: FC = () => {
                                 <ResponsiveContainer width="100%" aspect={5.0 / 2.0}>
                                     <BarChart data={datatotaltime}>
                                         <XAxis domain={["",""]} angle={-40} interval={0} textAnchor="end"  type="category" dataKey="type" height={95}/>
-                                        <YAxis tickFormatter={v=>formattime(v)} />
+                                        <YAxis tickFormatter={v=>formattime(v)} width={100}/>
                                         <RechartsTooltip formatter={(value: any, name: any) => [formattime(value), t(name)]} />
                                         <Bar dataKey="time" fill="#8884d8" > </Bar>
                                     </BarChart>
