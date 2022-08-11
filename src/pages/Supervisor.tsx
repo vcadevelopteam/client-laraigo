@@ -340,18 +340,21 @@ const HeaderAgentPanel: FC<{
 
 const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
     const agentList = useSelector(state => state.inbox.agentList);
+    const [agentsToShow, setAgentsToShow] = useState<IAgent[]>([]);
+    const [dataAgents, setDataAgents] = useState<IAgent[]>([]);    
+    const [firstload, setfirstload] = useState(true);    
 
     const onSearch = (pageSelected: number, search: string, filterBy: string) => {
-        setAgentsToShow(filterAboutStatusName(dataAgents, pageSelected, search, filterBy));
+        setAgentsToShow(filterAboutStatusName(dataAgents, pageSelected, search, filterBy))
     }
-
-    const [agentsToShow, setAgentsToShow] = useState<IAgent[]>([]);
-    const [dataAgents, setDataAgents] = useState<IAgent[]>([]);
 
     useEffect(() => {
         if (!agentList.loading && !agentList.error) {
             setDataAgents(agentList.data as IAgent[])
-            setAgentsToShow(agentList.data as IAgent[])
+            if(firstload && agentList.data.length > 0){
+                setAgentsToShow(agentList.data as IAgent[])
+                setfirstload(false)
+            }
         }
     }, [agentList])
     
