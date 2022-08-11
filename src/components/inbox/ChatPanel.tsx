@@ -941,12 +941,17 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     // const [showLogs, setShowLogs] = React.useState<boolean>(false)
 
     const closeTicket = (newstatus: string) => {
-        let tipificationproperty = (multiData?.data?.[12]?.data || [])[0];
-        if (tipificationproperty?.propertyvalue === "1") {
-            setCheckTipification(true);
-            dispatch(getCollectionAux2(getConversationClassification2(ticketSelected?.conversationid!!)))
-        }
-        else {
+        if (newstatus === "CERRADO") {
+            let tipificationproperty = (multiData?.data?.[12]?.data || [])[0];
+            if (tipificationproperty?.propertyvalue === "1") {
+                setCheckTipification(true);
+                dispatch(getCollectionAux2(getConversationClassification2(ticketSelected?.conversationid!!)))
+            }
+            else {
+                setOpenModalCloseticket(true);
+                setTypeStatus(newstatus);
+            }
+        } else {
             setOpenModalCloseticket(true);
             setTypeStatus(newstatus);
         }
