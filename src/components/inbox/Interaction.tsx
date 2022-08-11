@@ -617,29 +617,33 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             </div>
         )
     } else if (interactiontype === "interactivebutton") {
-        const jsonIntt = JSON.parse(interactiontext);
-        jsonIntt.headertype = jsonIntt.headertype || "text";
-        return (
-            <div style={{ display: 'flex', gap: 4, flexDirection: 'column' }}>
-                <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
-                    [classes.interactionTextAgent]: userType !== 'client',
-                })}>
-                    {jsonIntt.headertype === "text" ? (
-                        <div style={{ fontWeight: 500 }}>{jsonIntt.header}</div>
-                    ) : jsonIntt.header}
-                    {jsonIntt.body}
-                    {jsonIntt.footer && (
-                        <div style={{ color: 'rgb(0,0,0,0.45)', fontSize: 12 }}>{jsonIntt.footer}</div>
-                    )}
-                    <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
-                </div>
-                {jsonIntt.buttons.map((button: any, i: number) => (
-                    <div key={i} style={{ background: '#FFF', color: '#00a5f4', borderRadius: 4, padding: '6px 8px', textAlign: 'center', textTransform: 'uppercase' }}>
-                        {button.title}
+        try {
+            const jsonIntt = JSON.parse(interactiontext);
+            jsonIntt.headertype = jsonIntt.headertype || "text";
+            return (
+                <div style={{ display: 'flex', gap: 4, flexDirection: 'column' }}>
+                    <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
+                        [classes.interactionTextAgent]: userType !== 'client',
+                    })}>
+                        {jsonIntt.headertype === "text" ? (
+                            <div style={{ fontWeight: 500 }}>{jsonIntt.header}</div>
+                        ) : jsonIntt.header}
+                        {jsonIntt.body}
+                        {jsonIntt.footer && (
+                            <div style={{ color: 'rgb(0,0,0,0.45)', fontSize: 12 }}>{jsonIntt.footer}</div>
+                        )}
+                        <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
                     </div>
-                ))}
-            </div>
-        )
+                    {jsonIntt.buttons.map((button: any, i: number) => (
+                        <div key={i} style={{ background: '#FFF', color: '#00a5f4', borderRadius: 4, padding: '6px 8px', textAlign: 'center', textTransform: 'uppercase' }}>
+                            {button.title}
+                        </div>
+                    ))}
+                </div>
+            )
+        } catch (error) {
+            return null
+        }
     } else if (interactiontype === "reply-text") {
         const textres = interactiontext.split("###")[1];
         return (
