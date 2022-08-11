@@ -87,7 +87,8 @@ const MessageInbox: React.FC = () => {
             getInappropriateWordsLst(),
             getPropertySelByName("TIPIFICACION"),
             getUserChannelSel(),
-            getPropertiesIncludingName("WAITINGTIMECUSTOMER")
+            getPropertiesIncludingName("WAITINGTIMECUSTOMER"),
+            getPropertySelByName("LIMITARREASIGNACIONGRUPO"),
         ]))
         setinitial(false)
         return () => {

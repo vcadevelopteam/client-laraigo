@@ -13,7 +13,7 @@ import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipification
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { changeStatus, getConversationClassification2, insertClassificationConversation, insLeadPerson } from 'common/helpers';
 import { execute, getCollectionAux2 } from 'store/main/actions';
-import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView, FieldMultiSelect, FieldMultiSelectFreeSolo, TemplateSwitch } from 'components'
+import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView, FieldMultiSelect, FieldMultiSelectFreeSolo } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -421,7 +421,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitReassign, setWaitReassign] = useState(false);
-    const [limitgroups, setlimitgroups] = useState(true);
+    const [limitgroups, setlimitgroups] = useState(false);
 
     const multiData = useSelector(state => state.main.multiData);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
@@ -504,6 +504,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     });
 
     useEffect(() => {
+        setlimitgroups(multiData?.data?.[14]?.data?.[0]?.propertyvalue==="1"||false)
         if (user) {
             if(!limitgroups){
                 setusergroupslist((multiData?.data?.[3]?.data || []))
@@ -532,18 +533,6 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
             button2Type="submit"
         >
             <div className="row-zyx">
-                <TemplateSwitch
-                    label={t(langKeys.limitgroupreassignment)}
-                    className="col-6"
-                    valueDefault={limitgroups}
-                    onChange={(value) => {
-                        setlimitgroups(value)
-                        setValue('newUserGroup', '');
-                        setValue('newUserId', 0);
-                        trigger('newUserGroup');
-                        trigger('newUserId');
-                    }}
-                />
                 <FieldSelect
                     label={t(langKeys.group_plural)}
                     className="col-12"
