@@ -508,12 +508,12 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
             if (user.properties.limit_reassign_group) {
                 setUserToReassign([
                     { domainvalue: "NINGUNO", domaindesc: t(langKeys.NINGUNO) },
-                    ...(multiData?.data?.[3]?.data || []).filter(x => x.domainvalue !== ticketSelected?.usergroup).filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true)
+                    ...(multiData?.data?.[3]?.data || []).filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true)
                 ])
             } else {
                 setUserToReassign([
                     { domainvalue: "NINGUNO", domaindesc: t(langKeys.NINGUNO) },
-                    ...(multiData?.data?.[3]?.data || []).filter(x => x.domainvalue !== ticketSelected?.usergroup)
+                    ...(multiData?.data?.[3]?.data || [])
                 ])
             }
         }
