@@ -15,7 +15,7 @@ import TableZyx from '../components/fields/table-simple';
 
 import { Box, CircularProgress, IconButton, Paper } from '@material-ui/core';
 import { Close, FileCopy, GetApp } from '@material-ui/icons';
-import { convertLocalDate, getMessageTemplateSel, getValuesFromDomain, insMessageTemplate, richTextToString } from 'common/helpers';
+import { convertLocalDate, getMessageTemplateSel, getValuesFromDomain, insMessageTemplate, richTextToString, selCommunicationChannelWhatsApp } from 'common/helpers';
 import { Descendant } from "slate";
 import { Dictionary, MultiData } from "@types";
 import { execute, getCollection, getMultiCollection, resetAllMain, uploadFile } from 'store/main/actions';
@@ -29,6 +29,7 @@ import { useDispatch } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useSelector } from 'hooks';
 import { useTranslation } from 'react-i18next';
+import { synchronizeTemplate } from 'store/channel/actions';
 
 interface RowSelected {
     edit: boolean,
@@ -101,11 +102,15 @@ const MessageTemplates: FC = () => {
 
     const executeResult = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main);
+    const synchronizeRequest = useSelector(state => state.channel.requestSynchronizeTemplate);
 
+    const [communicationChannelList, setCommunicationChannelList] = useState<Dictionary[]>([]);
+    const [communicationChannel, setCommunicationChannel] = useState<any>(null);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [showId, setShowId] = useState(false);
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitSave, setWaitSave] = useState(false);
+    const [waitSynchronize, setWaitSynchronize] = useState(false);
 
     const columns = React.useMemo(
         () => [
@@ -181,6 +186,24 @@ const MessageTemplates: FC = () => {
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase();
                 }
             },
+            {
+                accessor: 'fromprovider',
+                Header: t(langKeys.messagetemplate_fromprovider),
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const { fromprovider } = props.cell.row.original;
+                    return (fromprovider ? t(langKeys.yes) : t(langKeys.no)).toUpperCase();
+                }
+            },
+            {
+                accessor: 'externalstatus',
+                Header: t(langKeys.messagetemplate_externalstatus),
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const { externalstatus } = props.cell.row.original;
+                    return (externalstatus ? t(externalstatus) : t(langKeys.none)).toUpperCase();
+                }
+            },
         ],
         [showId]
     )
@@ -192,6 +215,7 @@ const MessageTemplates: FC = () => {
         dispatch(getMultiCollection([
             getValuesFromDomain("MESSAGETEMPLATECATEGORY"),
             getValuesFromDomain("LANGUAGE"),
+            selCommunicationChannelWhatsApp(),
         ]));
         return () => {
             dispatch(resetAllMain());
@@ -220,6 +244,31 @@ const MessageTemplates: FC = () => {
         }
     }, [mainResult.mainData.data])
 
+    useEffect(() => {
+        if (mainResult.multiData.data.length > 0) {
+            if (mainResult.multiData.data[2] && mainResult.multiData.data[2].success) {
+                setCommunicationChannelList(mainResult.multiData.data[2].data || []);
+            }
+        }
+    }, [mainResult.multiData.data])
+
+    useEffect(() => {
+        if (waitSynchronize) {
+            if (!synchronizeRequest.loading && !synchronizeRequest.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(synchronizeRequest.code || "success") }))
+                dispatch(showBackdrop(false));
+                fetchData();
+                setWaitSynchronize(false);
+            }
+            else if (synchronizeRequest.error) {
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(synchronizeRequest.code || "error_unexpected_error") }))
+                dispatch(showBackdrop(false));
+                fetchData();
+                setWaitSynchronize(false);
+            }
+        }
+    }, [synchronizeRequest, waitSynchronize])
+
     const handleRegister = () => {
         setViewSelected("view-2");
         setRowSelected({ row: null, edit: true });
@@ -233,6 +282,20 @@ const MessageTemplates: FC = () => {
     const handleEdit = (row: Dictionary) => {
         setViewSelected("view-2");
         setRowSelected({ row, edit: true });
+    }
+
+    const handleSynchronize = (channel: any) => {
+        const callback = () => {
+            dispatch(synchronizeTemplate(channel));
+            dispatch(showBackdrop(true));
+            setWaitSynchronize(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.messagetemplate_synchronize_alert01) + `${channel.communicationchanneldesc} (${channel.phone})` + t(langKeys.messagetemplate_synchronize_alert02),
+            callback
+        }))
     }
 
     const handleDelete = (row: Dictionary) => {
@@ -256,6 +319,29 @@ const MessageTemplates: FC = () => {
         return (
             <TableZyx
                 onClickRow={handleEdit}
+                ButtonsElement={() => (
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                        <FieldSelect
+                            label={t(langKeys.communicationchannel)}
+                            style={{ width: 300 }}
+                            valueDefault={communicationChannel?.communicationchannelid}
+                            variant="outlined"
+                            optionDesc="communicationchanneldesc"
+                            optionValue="communicationchannelid"
+                            data={communicationChannelList}
+                            onChange={(value) => { setCommunicationChannel(value) }}
+                        />
+                        <Button
+                            disabled={!communicationChannel}
+                            variant="contained"
+                            color="primary"
+                            style={{ width: 140, backgroundColor: "#55BD84" }}
+                            startIcon={<RefreshIcon style={{ color: 'white' }} />}
+                            onClick={() => { handleSynchronize(communicationChannel) }}
+                        >{t(langKeys.messagetemplate_synchronize)}
+                        </Button>
+                    </div>
+                )}
                 columns={columns}
                 titlemodule={t(langKeys.messagetemplate_plural, { count: 2 })}
                 data={mainResult.mainData.data}
@@ -350,6 +436,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
             templatetype: row?.templatetype || 'STANDARD',
             type: row?.type || 'HSM',
             typeattachment: row?.typeattachment || '',
+            fromprovider: row?.fromprovider || false,
+            externalid: row?.externalid || '',
+            externalstatus: row?.externalstatus || '',
+            communicationchannelid: row?.communicationchannelid || 0,
+            communicationchanneltype: row?.communicationchanneltype || '',
+            exampleparameters: row?.exampleparameters || '',
         }
     });
 

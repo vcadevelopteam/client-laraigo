@@ -7,20 +7,20 @@ export const getChannels = (state: IState): IState => ({
 });
 
 export const getChannelsSuccessInsert = (state: IState, action: IAction): IState => {
-    return{
+    return {
         ...state,
         channelList: {
-            data: [ { applicationId: action.payload?.applicationId, integrationId: action.payload?.integrationId }],
+            data: [{ applicationId: action.payload?.applicationId, integrationId: action.payload?.integrationId }],
             count: 0,
             loading: false,
             error: false,
         },
-        successinsert:true
+        successinsert: true
     }
-}
-;
+};
+
 export const getChannelsSuccess = (state: IState, action: IAction): IState => {
-    return{
+    return {
         ...state,
         channelList: {
             data: action.payload.pageData.data || [],
@@ -28,7 +28,7 @@ export const getChannelsSuccess = (state: IState, action: IAction): IState => {
             loading: false,
             error: false,
         },
-        successinsert:true
+        successinsert: true
     }
 };
 
@@ -41,7 +41,7 @@ export const getChannelsFailure = (state: IState, action: IAction): IState => ({
         code: action.payload.code || 'getChannelsFailure:error',
         message: action.payload.message || 'Error al obtener la lista de tickets',
     },
-    successinsert:false
+    successinsert: false
 });
 
 export const getChannelsReset = (state: IState): IState => ({
@@ -175,7 +175,6 @@ export const activateChannelReset = (state: IState): IState => ({
     facebookPages: initialState.facebookPages,
 });
 
-//#region FACEBOOK_PAGES
 export const facebookPages = (state: IState): IState => ({
     ...state,
     facebookPages: {
@@ -211,9 +210,7 @@ export const facebookPagesReset = (state: IState): IState => ({
     ...state,
     facebookPages: initialState.facebookPages,
 });
-//#endregion
 
-//#region MESSENGER_PAGES
 export const messengerPages = (state: IState): IState => ({
     ...state,
     messengerPages: {
@@ -249,9 +246,7 @@ export const messengerPagesReset = (state: IState): IState => ({
     ...state,
     messengerPages: initialState.messengerPages,
 });
-//#endregion
 
-//#region INSTAGRAM_PAGES
 export const instagramPages = (state: IState): IState => ({
     ...state,
     instagramPages: {
@@ -287,9 +282,7 @@ export const instagramPagesReset = (state: IState): IState => ({
     ...state,
     instagramPages: initialState.instagramPages,
 });
-//#endregion
 
-//#region INSTAGRAMDM_PAGES
 export const instagramDMPages = (state: IState): IState => ({
     ...state,
     instagramDMPages: {
@@ -325,4 +318,39 @@ export const instagramDMPagesReset = (state: IState): IState => ({
     ...state,
     instagramDMPages: initialState.instagramDMPages,
 });
-//#endregion
+
+export const synchronizeTemplate = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestSynchronizeTemplate: {
+        ...state.requestSynchronizeTemplate,
+        error: false,
+        loading: true,
+    }
+})
+
+export const synchronizeTemplateFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestSynchronizeTemplate: {
+        ...state.requestSynchronizeTemplate,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message || 'error_unexpected_error',
+    }
+})
+
+export const synchronizeTemplateSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestSynchronizeTemplate: {
+        ...state.requestSynchronizeTemplate,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message,
+    }
+})
+
+export const synchronizeTemplateReset = (state: IState): IState => ({
+    ...state,
+    requestSynchronizeTemplate: initialState.requestSynchronizeTemplate,
+})

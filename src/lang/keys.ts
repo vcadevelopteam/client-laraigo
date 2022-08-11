@@ -3762,6 +3762,13 @@ export const langKeys = {
     privacypolicy55: "privacypolicy55",
     privacypolicy56: "privacypolicy56",
     privacypolicy57: "privacypolicy57",
+
+    messagetemplate_preview: "messagetemplate_preview",
+    messagetemplate_fromprovider: "messagetemplate_fromprovider",
+    messagetemplate_externalstatus: "messagetemplate_externalstatus",
+    messagetemplate_synchronize: "messagetemplate_synchronize",
+    messagetemplate_synchronize_alert01: "messagetemplate_synchronize_alert01",
+    messagetemplate_synchronize_alert02: "messagetemplate_synchronize_alert02",
 };
 
 export type LangKeys = typeof langKeys;

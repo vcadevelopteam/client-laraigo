@@ -770,6 +770,12 @@ export const insMessageTemplate = (
         buttons,
         priority,
         attachment,
+        fromprovider,
+        externalid,
+        externalstatus,
+        communicationchannelid,
+        communicationchanneltype,
+        exampleparameters,
         operation
     }: Dictionary): IRequestBody => ({
 
@@ -795,6 +801,12 @@ export const insMessageTemplate = (
             buttons: JSON.stringify(buttons),
             priority,
             attachment,
+            fromprovider,
+            externalid,
+            externalstatus,
+            communicationchannelid,
+            communicationchanneltype,
+            exampleparameters,
             operation
         }
     });
@@ -3049,7 +3061,7 @@ export const getAdvisorListVoxi = (): IRequestBody => ({
 
 export const getUserAsesorByOrgID = (): IRequestBody => ({
     method: "UFN_USER_ASESORBYORGID_LST",
-    parameters: { }
+    parameters: {}
 });
 
 export const getDisconnectionTimes = ({ startdate, enddate, asesorid, supervisorid }: Dictionary): IRequestBody => ({
@@ -3057,9 +3069,9 @@ export const getDisconnectionTimes = ({ startdate, enddate, asesorid, supervisor
     key: "UFN_DASHBOARD_DICONNECTIONTIMES_SEL",
     parameters: {
         startdate,
-        enddate, 
+        enddate,
         asesorid,
-        supervisorid, 
+        supervisorid,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
@@ -3118,4 +3130,10 @@ export const getPropertiesIncludingName = (propertyname: string): IRequestBody =
     parameters: {
         propertyname
     }
+})
+
+export const selCommunicationChannelWhatsApp = (): IRequestBody => ({
+    method: "UFN_COMMUNICATIONCHANNEL_SEL_WHATSAPP",
+    key: "UFN_COMMUNICATIONCHANNEL_SEL_WHATSAPP",
+    parameters: {}
 })
