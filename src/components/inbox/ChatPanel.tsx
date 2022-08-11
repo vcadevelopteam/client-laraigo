@@ -504,22 +504,23 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     });
 
     useEffect(() => {
-        setlimitgroups(multiData?.data?.[14]?.data?.[0]?.propertyvalue==="1"||false)
+        setlimitgroups(multiData?.data?.[14]?.data?.[0]?.propertyvalue === "1" || false)
         if (user) {
-            if(!limitgroups){
+            if (!limitgroups) {
                 setusergroupslist((multiData?.data?.[3]?.data || []))
-            }else{
+            } else {
                 const groups = user?.groups ? user?.groups.split(",") : [];
                 if (user.properties.limit_reassign_group) {
-                    setusergroupslist((multiData?.data?.[3]?.data || []).filter(x => x.domainvalue !== ticketSelected?.usergroup).filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true))
+                    setusergroupslist((multiData?.data?.[3]?.data || []).filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true))
                 } else {
                     setusergroupslist((multiData?.data?.[3]?.data || []))
                 }
             }
         }
-    }, [user,limitgroups, multiData])
+    }, [user, limitgroups, multiData])
+
     useEffect(() => {
-        console.log(!limitgroups && getValues('newUserGroup')==="")
+        console.log(!limitgroups && getValues('newUserGroup') === "")
     }, [limitgroups])
 
     return (
@@ -555,26 +556,26 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                         setValue('newUserId', value ? value.userid : 0);
                     }}
                     error={errors?.newUserId?.message}
-                    data={(!limitgroups && getValues('newUserGroup')==="")? agentToReassignList:
+                    data={(!limitgroups && getValues('newUserGroup') === "") ? agentToReassignList :
                         agentToReassignList.filter(x => x.status === "ACTIVO").filter(x => {
-                        if (getValues("newUserGroup")) {
-                            let ingroup = false;
-                            if (getValues("newUserGroup") === "NINGUNO") {
-                                if (groups[0] !== "") {
-                                    groups.forEach(e => {
-                                        if (x.groups.split(",").includes(e)) ingroup = true;
-                                    })
+                            if (getValues("newUserGroup")) {
+                                let ingroup = false;
+                                if (getValues("newUserGroup") === "NINGUNO") {
+                                    if (groups[0] !== "") {
+                                        groups.forEach(e => {
+                                            if (x.groups.split(",").includes(e)) ingroup = true;
+                                        })
+                                    } else {
+                                        ingroup = true
+                                    }
+                                    return ingroup
                                 } else {
-                                    ingroup = true
+                                    return x.groups.includes(getValues("newUserGroup"))
                                 }
-                                return ingroup
                             } else {
-                                return x.groups.includes(getValues("newUserGroup"))
+                                return false
                             }
-                        } else {
-                            return false
-                        }
-                    })
+                        })
                     }
                     optionDesc="displayname"
                     optionValue="userid"

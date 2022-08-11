@@ -2078,7 +2078,7 @@ const translation: LangKeys = {
     "personalizedreport_conversation.wnlumetadata": "conversation metadata",
     "personalizedreport_conversation.wnlurelations": "conversation relations",
     "personalizedreport_conversation.wnlusemanticroles": "conversation semantic roles",
-    "personalizedreport_conversation.wnlcclass": "conversation classification",
+    "personalizedreport_conversation.wnlcclass": "conversation watson classification",
     "personalizedreport_conversation.wtaanger": "conversation anger tone",
     "personalizedreport_conversation.wtafear": "conversation fear tone",
     "personalizedreport_conversation.wtajoy": "conversation joy tone",
@@ -2485,10 +2485,10 @@ const translation: LangKeys = {
 
     "personalizedreport_firstorguser.groups": "first user groups",
     "personalizedreport_firstorguser.channels": "first user channels",
-    "personalizedreport_firstorguser.type": "first user type",
+    "personalizedreport_firstorguser.type": "first user role type",
     "personalizedreport_lastorguser.groups": "last user groups",
     "personalizedreport_lastorguser.channels": "last user channels",
-    "personalizedreport_lastorguser.type": "last user type",
+    "personalizedreport_lastorguser.type": "last user role type",
 
     chatHeaderTitle: 'Chat header title',
     subtitle: 'Subtitle',
