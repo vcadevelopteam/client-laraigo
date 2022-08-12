@@ -421,7 +421,6 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitReassign, setWaitReassign] = useState(false);
-    const [limitgroups, setlimitgroups] = useState(false);
 
     const multiData = useSelector(state => state.main.multiData);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
@@ -504,9 +503,8 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     });
 
     useEffect(() => {
-        setlimitgroups(multiData?.data?.[14]?.data?.[0]?.propertyvalue==="1"||false)
         if (user) {
-            if(!limitgroups){
+            if(!(multiData?.data?.[14]?.data?.[0]?.propertyvalue==="1"||false)){
                 setusergroupslist((multiData?.data?.[3]?.data || []))
             }else{
                 const groups = user?.groups ? user?.groups.split(",") : [];
@@ -517,10 +515,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                 }
             }
         }
-    }, [user,limitgroups, multiData])
-    useEffect(() => {
-        console.log(!limitgroups && getValues('newUserGroup')==="")
-    }, [limitgroups])
+    }, [user, multiData])
 
     return (
         <DialogZyx
@@ -555,7 +550,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                         setValue('newUserId', value ? value.userid : 0);
                     }}
                     error={errors?.newUserId?.message}
-                    data={(!limitgroups && getValues('newUserGroup')==="")? agentToReassignList:
+                    data={(!(multiData?.data?.[14]?.data?.[0]?.propertyvalue==="1"||false) && getValues('newUserGroup')==="")? agentToReassignList:
                         agentToReassignList.filter(x => x.status === "ACTIVO").filter(x => {
                         if (getValues("newUserGroup")) {
                             let ingroup = false;
