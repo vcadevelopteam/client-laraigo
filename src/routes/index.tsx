@@ -16,7 +16,7 @@ import { makeStyles } from "@material-ui/core";
 import { useForcedDisconnection, useSelector } from 'hooks';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { wsConnect } from "store/inbox/actions";
+import { setDataUser, wsConnect } from "store/inbox/actions";
 import { voximplantConnect } from "store/voximplant/actions";
 import { getAccessToken } from 'common/helpers';
 import { Redirect } from 'react-router-dom';
@@ -60,6 +60,11 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 	React.useEffect(() => {
 		if (!resValidateToken.error && !resValidateToken.loading) {
 			const automaticConnection = resLogin.user?.automaticConnection || false;
+			dispatch(setDataUser({
+				holdingBySupervisor: resValidateToken.user?.properties.holding_by_supervisor || "CANAL",
+				userGroup: resValidateToken.user?.groups || "",
+				role: resValidateToken.user?.roledesc || "",
+			}))
 			const fromLogin = !!resLogin.user;
 			const { userid, orgid, roledesc, ownervoxi, sitevoxi } = resValidateToken.user!!
 			dispatch(wsConnect({ userid, orgid, usertype: 'PLATFORM', automaticConnection, fromLogin, roledesc }));

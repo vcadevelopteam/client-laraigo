@@ -299,3 +299,5 @@ export const resetForcedDisconnection = (): IActionCall => ({ type: actionTypes.
 export const disconnectSocket = (): IActionCall => ({ type: actionTypes.WS_DISCONNECT });
 
 export const newTicketCall = (payload: any): IActionCall => ({ type: actionTypes.NEW_TICKET_CALL, payload });
+
+export const setDataUser = (payload: { holdingBySupervisor: "CANAL" | "GRUPO", userGroup: string, role: string }): IActionCall => ({ type: actionTypes.SET_DATA_USER, payload });
