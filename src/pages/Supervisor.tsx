@@ -142,7 +142,7 @@ const RenderRow = memo(
     ({ data, index, style }: any) => {
         const { items } = data;
         const item = items[index]
-        
+
         return (
             <div style={style}>
                 <ItemAgent key={item.userid} agent={item} />
@@ -340,26 +340,31 @@ const HeaderAgentPanel: FC<{
 
 const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
     const agentList = useSelector(state => state.inbox.agentList);
-
-    const onSearch = (pageSelected: number, search: string, filterBy: string) => {
-        setAgentsToShow(filterAboutStatusName(dataAgents, pageSelected, search, filterBy));
-    }
-
     const [agentsToShow, setAgentsToShow] = useState<IAgent[]>([]);
     const [dataAgents, setDataAgents] = useState<IAgent[]>([]);
+    const [firstload, setfirstload] = useState(true);
+
+    const onSearch = (pageSelected: number, search: string, filterBy: string) => {
+        setAgentsToShow(filterAboutStatusName(dataAgents, pageSelected, search, filterBy))
+    }
 
     useEffect(() => {
         if (!agentList.loading && !agentList.error) {
             setDataAgents(agentList.data as IAgent[])
-            setAgentsToShow(agentList.data as IAgent[])
+            if (firstload && agentList.data.length > 0) {
+                setAgentsToShow(agentList.data as IAgent[])
+                setfirstload(false)
+            } else {
+                setAgentsToShow(agentList.data.filter(y => agentsToShow.map(x => x.userid).includes(y.userid)))
+            }
         }
     }, [agentList])
-    
+
     return (
         <div className={classes.containerAgents}>
             <HeaderAgentPanel classes={classes} onSearch={onSearch} />
             {agentList.loading ? <ListItemSkeleton /> :
-                <div className="scroll-style-go" style={{height: '100%'}}>
+                <div className="scroll-style-go" style={{ height: '100%' }}>
                     <AutoSizer>
                         {({ height, width }: any) => (
                             <FixedSizeList

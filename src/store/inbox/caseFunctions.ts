@@ -416,6 +416,11 @@ export const resetInboxSupervisor = (state: IState, action: IAction): IState => 
 
 export const newMessageFromClient = (state: IState, action: IAction): IState => {
     const data: INewMessageParams = action.payload;
+    if (state.role === "SUPERVISOR" && state.holdingBySupervisor === "GRUPO" && data.newConversation && data.userid === 3 && !!state.userGroup) {
+        if (!state.userGroup.split(",").includes(data.usergroup || "")) {
+            return state;
+        }
+    }
     let newticketList = [...state.ticketList.data];
     let newInteractionList = [...state.interactionList.data];
     let newTicketSelected = state.ticketSelected ? { ...state.ticketSelected } : null;
@@ -680,7 +685,7 @@ export const getDataTicketSuccess = (state: IState, action: IAction): IState => 
             },
             isOnBottom: null,
             configurationVariables: {
-                data: action.payload.data[2].data.filter((x: any) => !!x.visible).sort((a: any, b: any) => (a.priority < b.priority) ? 1 : ((b.priority < a.priority) ? -1 : 0)) || [],
+                data: action.payload.data[2].data.filter((x: any) => !!x.visible) || [],
                 count: action.payload.count,
                 loading: false,
                 error: false,
@@ -782,13 +787,6 @@ export const getInteractionsExtraReset = (state: IState): IState => ({
     ...state,
     interactionExtraList: initialState.interactionExtraList,
 });
-
-
-
-
-
-
-
 
 export const closeTicket = (state: IState): IState => ({
     ...state,
@@ -916,9 +914,6 @@ export const connectAgentUItmpReset = (state: IState): IState => ({
     triggerConnectAgentGo: initialState.triggerConnectAgentGo,
 });
 
-
-
-
 export const replyTicket = (state: IState): IState => ({
     ...state,
     triggerReplyTicket: { ...state.triggerReplyTicket, loading: true, error: false },
@@ -947,11 +942,6 @@ export const replyTicketReset = (state: IState): IState => ({
     ...state,
     triggerReplyTicket: initialState.triggerReplyTicket,
 });
-
-
-
-
-
 
 export const sendHSM = (state: IState): IState => ({
     ...state,
@@ -1150,4 +1140,11 @@ export const callConnected = (state: IState, action: IAction): IState => ({
 export const resetForceddesconection = (state: IState, action: IAction): IState => ({
     ...state,
     forceddisconnect: initialState.forceddisconnect,
+});
+
+export const setDataUser = (state: IState, action: IAction): IState => ({
+    ...state,
+    holdingBySupervisor: action.payload.holdingBySupervisor,
+    userGroup: action.payload.userGroup,
+    role: action.payload.role
 });

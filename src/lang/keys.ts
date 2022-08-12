@@ -31,6 +31,7 @@ export const langKeys = {
     align: "align",
     font: "font",
     undo: "undo",
+    warningnoquickreplies: "warningnoquickreplies",
     redo: "redo",
     make_call: "make_call",
     limitgroupreassignment: "limitgroupreassignment",
@@ -1831,6 +1832,15 @@ export const langKeys = {
     dashboard_operationalpush_application_quantity: "dashboard_operationalpush_application_quantity",
     dashboard_operationalpush_application_channel: "dashboard_operationalpush_application_channel",
 
+    dashboard_operationalpush_disconnections_usr: "dashboard_operationalpush_disconnections_usr",
+    dashboard_operationalpush_disconnections_type: "dashboard_operationalpush_disconnections_type",
+    dashboard_operationalpush_disconnections_time: "dashboard_operationalpush_disconnections_time",
+    dashboard_operationalpush_disconnections_fullname: "dashboard_operationalpush_disconnections_fullname",
+    dashboard_operationalpush_disconnections_usergroups: "dashboard_operationalpush_disconnections_usergroups",
+    dashboard_operationalpush_disconnections_userstatus: "dashboard_operationalpush_disconnections_userstatus",
+    dashboard_operationalpush_disconnections_conectedtime: "dashboard_operationalpush_disconnections_conectedtime",
+    dashboard_operationalpush_disconnections_desconectedtime: "dashboard_operationalpush_disconnections_desconectedtime",
+
     report_loginhistory: 'report_loginhistory',
     report_loginhistory_datehour: 'report_loginhistory_datehour',
     report_loginhistory_user: 'report_loginhistory_user',
@@ -2549,6 +2559,13 @@ export const langKeys = {
     "personalizedreport_surveyansweredsummary.fix_question": "personalizedreport_surveyansweredsummary.fix_question",
     "personalizedreport_surveyansweredsummary.fix_answervalue": "personalizedreport_surveyansweredsummary.fix_answervalue",
     "personalizedreport_surveyansweredsummary.fix_answer": "personalizedreport_surveyansweredsummary.fix_answer",
+
+    "personalizedreport_firstorguser.groups": "personalizedreport_firstorguser.groups",
+    "personalizedreport_firstorguser.channels": "personalizedreport_firstorguser.channels",
+    "personalizedreport_firstorguser.type": "personalizedreport_firstorguser.type",
+    "personalizedreport_lastorguser.groups": "personalizedreport_lastorguser.groups",
+    "personalizedreport_lastorguser.channels": "personalizedreport_lastorguser.channels",
+    "personalizedreport_lastorguser.type": "personalizedreport_lastorguser.type",
 
     chatHeaderTitle: 'chatHeaderTitle',
     subtitle: 'subtitle',

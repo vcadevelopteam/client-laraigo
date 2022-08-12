@@ -511,7 +511,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
             }else{
                 const groups = user?.groups ? user?.groups.split(",") : [];
                 if (user.properties.limit_reassign_group) {
-                    setusergroupslist((multiData?.data?.[3]?.data || []).filter(x => x.domainvalue !== ticketSelected?.usergroup).filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true))
+                    setusergroupslist((multiData?.data?.[3]?.data || []).filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true))
                 } else {
                     setusergroupslist((multiData?.data?.[3]?.data || []))
                 }
@@ -945,12 +945,17 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     // const [showLogs, setShowLogs] = React.useState<boolean>(false)
 
     const closeTicket = (newstatus: string) => {
-        let tipificationproperty = (multiData?.data?.[12]?.data || [])[0];
-        if (tipificationproperty?.propertyvalue === "1") {
-            setCheckTipification(true);
-            dispatch(getCollectionAux2(getConversationClassification2(ticketSelected?.conversationid!!)))
-        }
-        else {
+        if (newstatus === "CERRADO") {
+            let tipificationproperty = (multiData?.data?.[12]?.data || [])[0];
+            if (tipificationproperty?.propertyvalue === "1") {
+                setCheckTipification(true);
+                dispatch(getCollectionAux2(getConversationClassification2(ticketSelected?.conversationid!!)))
+            }
+            else {
+                setOpenModalCloseticket(true);
+                setTypeStatus(newstatus);
+            }
+        } else {
             setOpenModalCloseticket(true);
             setTypeStatus(newstatus);
         }
