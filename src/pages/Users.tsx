@@ -1075,6 +1075,7 @@ const Users: FC = () => {
         []
     );
     const handleTemplate = () => {
+        console.log(domains)
         const data = [
             {},
             {},
@@ -1092,6 +1093,7 @@ const Users: FC = () => {
             { 'true': 'true', 'false': 'false' },
             domains.value?.roles?.reduce((a, d) => ({ ...a, [d.roleid]: d.roldesc }), {}),
             dataChannelsTemp.reduce((a, d) => ({ ...a, [d.communicationchannelid]: d.description }), {}),
+            domains.value?.billinggroups?.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
         ];
         const header = [
             'firstname',
@@ -1109,7 +1111,8 @@ const Users: FC = () => {
             'password',
             'pwdchangefirstlogin',
             'role',
-            'channels'
+            'channels',
+            'billinggroups'
         ];
         exportExcel(`${t(langKeys.template)} ${t(langKeys.import)}`, templateMaker(data, header));
     }
