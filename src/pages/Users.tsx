@@ -1093,7 +1093,7 @@ const Users: FC = () => {
             { 'true': 'true', 'false': 'false' },
             domains.value?.roles?.reduce((a, d) => ({ ...a, [d.roleid]: d.roldesc }), {}),
             dataChannelsTemp.reduce((a, d) => ({ ...a, [d.communicationchannelid]: d.description }), {}),
-            domains.value?.billinggroups?.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
+            domains.value?.groups?.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
         ];
         const header = [
             'firstname',
@@ -1112,7 +1112,7 @@ const Users: FC = () => {
             'pwdchangefirstlogin',
             'role',
             'channels',
-            'billinggroups'
+            'group'
         ];
         exportExcel(`${t(langKeys.template)} ${t(langKeys.import)}`, templateMaker(data, header));
     }
@@ -1250,6 +1250,7 @@ const Users: FC = () => {
                     && (f.status === undefined || Object.keys(domains.value?.userstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.status))
                     && (f.pwdchangefirstlogin === undefined || ["true", "false"].includes('' + f.pwdchangefirstlogin))
                     && (f.role === undefined || Object.keys(domains.value?.roles?.reduce((a: any, d) => ({ ...a, [d.roleid]: `${d.roleid}` }), {})).includes('' + f.role))
+                    && (f.group === undefined || Object.keys(domains.value?.groups?.reduce((a: any, d) => ({ ...a, [d.domainid]: `${d.domainid}` }), {})).includes('' + f.group))
             });
 
             const messageerrors = datainit.filter((f: any) => {
@@ -1260,6 +1261,7 @@ const Users: FC = () => {
                     || !(f.status === undefined || Object.keys(domains.value?.userstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.status))
                     || !(f.pwdchangefirstlogin === undefined || ["true", "false"].includes('' + f.pwdchangefirstlogin))
                     || !(f.role === undefined || Object.keys(domains.value?.roles?.reduce((a: any, d) => ({ ...a, [d.roleid]: `${d.roleid}` }), {})).includes('' + f.role))
+                    || !(f.group === undefined || Object.keys(domains.value?.groups?.reduce((a: any, d) => ({ ...a, [d.domainid]: `${d.domainid}` }), {})).includes('' + f.group))
             }).reduce((acc, x) => acc + t(langKeys.error_estructure_user, { email: x.email }) + `\n`, '');
 
             setMessageError(messageerrors)
@@ -1296,7 +1298,7 @@ const Users: FC = () => {
                                 orgid: user?.orgid,
                                 bydefault: true,
                                 labels: "",
-                                groups: "",
+                                groups: d.group,
                                 channels: d.channels || "",
                                 status: d.status,
                                 type: "NINGUNO",
