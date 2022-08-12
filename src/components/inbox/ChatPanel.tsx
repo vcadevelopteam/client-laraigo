@@ -304,6 +304,7 @@ const DialogCloseticket: React.FC<{
                         ticketnum: ticketSelected?.ticketnum,
                         status: ticketSelected?.status,
                         isanswered: ticketSelected?.isAnswered,
+                        usergroup: ticketSelected?.usergroup,
                         userid: userType === "AGENT" ? 0 : agentSelected?.userid,
                         getToken: userType === "SUPERVISOR"
                     }
