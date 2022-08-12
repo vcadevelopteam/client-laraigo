@@ -45,6 +45,9 @@ export interface IState {
     triggerImportTicket: IBaseState;
     showInfoPanel: boolean;
     userType: "SUPERVISOR" | "AGENT" | null;
+    holdingBySupervisor: "CANAL" | "GRUPO";
+    userGroup: string;
+    role: string;
     hideLogsOnTicket: boolean;
     wsConnected: boolean;
     userConnected: boolean;
@@ -100,6 +103,9 @@ export const initialState: IState = {
     outboundData: initialObjectState,
     forceddisconnect: initialObjectState,
     showModalClose: 0,
+    holdingBySupervisor: "CANAL",
+    role: "",
+    userGroup: "",
     alertTMO: {}
 };
 
@@ -235,4 +241,5 @@ export default createReducer<IState>(initialState, {
     [actionTypes.SET_HIDE_LOGS_ON_TICKET]: caseFunctions.setHideLogsOnTicket,
     [actionTypes.NEW_TICKET_CALL]: caseFunctions.newCallTicket,
     [actionTypes.CALL_CONNECTED]: caseFunctions.callConnected,
+    [actionTypes.SET_DATA_USER]: caseFunctions.setDataUser,
 });
