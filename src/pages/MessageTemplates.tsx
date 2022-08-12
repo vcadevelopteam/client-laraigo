@@ -18,7 +18,7 @@ import { Close, FileCopy, GetApp } from '@material-ui/icons';
 import { convertLocalDate, getMessageTemplateSel, getValuesFromDomain, insMessageTemplate, richTextToString, selCommunicationChannelWhatsApp } from 'common/helpers';
 import { Descendant } from "slate";
 import { Dictionary, MultiData } from "@types";
-import { execute, getCollection, getMultiCollection, resetAllMain, uploadFile } from 'store/main/actions';
+import { execute, getCollection, getMultiCollection, resetAllMain, uploadFile, cleanMemoryTable, setMemoryTable } from 'store/main/actions';
 import { FieldEdit, FieldEditMulti, FieldSelect, FieldView, RichText, TemplateBreadcrumbs, TemplateIcons, TitleDetail } from 'components';
 import { html } from '@codemirror/lang-html';
 import { langKeys } from 'lang/keys';
@@ -95,6 +95,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const IDMESSAGETEMPLATE = "IDMESSAGETEMPLATE";
 const MessageTemplates: FC = () => {
     const dispatch = useDispatch();
 
@@ -102,6 +103,7 @@ const MessageTemplates: FC = () => {
 
     const executeResult = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main);
+    const memoryTable = useSelector(state => state.main.memoryTable);
     const synchronizeRequest = useSelector(state => state.channel.requestSynchronizeTemplate);
 
     const [communicationChannelList, setCommunicationChannelList] = useState<Dictionary[]>([]);
@@ -212,6 +214,9 @@ const MessageTemplates: FC = () => {
 
     useEffect(() => {
         fetchData();
+        dispatch(setMemoryTable({
+            id: IDMESSAGETEMPLATE
+        }));
         dispatch(getMultiCollection([
             getValuesFromDomain("MESSAGETEMPLATECATEGORY"),
             getValuesFromDomain("LANGUAGE"),
@@ -219,6 +224,7 @@ const MessageTemplates: FC = () => {
         ]));
         return () => {
             dispatch(resetAllMain());
+            dispatch(cleanMemoryTable());
         };
     }, []);
 
@@ -349,6 +355,9 @@ const MessageTemplates: FC = () => {
                 loading={mainResult.mainData.loading}
                 register={true}
                 handleRegister={handleRegister}
+                pageSizeDefault={IDMESSAGETEMPLATE === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                initialPageIndex={IDMESSAGETEMPLATE === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                initialStateFilter={IDMESSAGETEMPLATE === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
             />
         )
     }
