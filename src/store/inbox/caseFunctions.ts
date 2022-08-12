@@ -580,6 +580,13 @@ export const resetShowModal = (state: IState, action: IAction): IState => ({
 
 export const deleteTicket = (state: IState, action: IAction): IState => {
     const data: IDeleteTicketParams = action.payload;
+
+    if (state.role === "SUPERVISOR" && state.holdingBySupervisor === "GRUPO" && data.userid === 3 && !!state.userGroup) {
+        if (!state.userGroup.split(",").includes(data.usergroup || "")) {
+            return state;
+        }
+    }
+
     let newticketList = [...state.ticketList.data];
     let newAgentList = [...state.agentList.data];
     let newTicketSelected = state.ticketSelected ? { ...state.ticketSelected } : null;

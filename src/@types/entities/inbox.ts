@@ -70,6 +70,7 @@ export interface IDeleteTicketParams {
     conversationid: number;
     ticketnum: string;
     status: string;
+    usergroup: string;
     orgid: number;
     isanswered: boolean;
     userid: number;
