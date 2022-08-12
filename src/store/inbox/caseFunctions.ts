@@ -416,8 +416,10 @@ export const resetInboxSupervisor = (state: IState, action: IAction): IState => 
 
 export const newMessageFromClient = (state: IState, action: IAction): IState => {
     const data: INewMessageParams = action.payload;
-    if (state.role === "SUPERVISOR" && state.holdingBySupervisor === "GRUPO" && data.newConversation && data.userid === 3) {
-        return state;
+    if (state.role === "SUPERVISOR" && state.holdingBySupervisor === "GRUPO" && data.newConversation && data.userid === 3 && !!state.userGroup) {
+        if (!state.userGroup.split(",").includes(data.usergroup || "")) {
+            return state;
+        }
     }
     let newticketList = [...state.ticketList.data];
     let newInteractionList = [...state.interactionList.data];
