@@ -107,7 +107,7 @@ export const getDataTicket = (ticket: ITicket, lock: boolean): IActionCall => ({
 
 export const resetGetDataTicket = (): IActionCall => ({ type: actionTypes.GET_INTERACTIONS_EXTRA_RESET });
 
-export const selectTicket = (ticket: ITicket): IActionCall => ({ type: actionTypes.SELECT_TICKET, payload: ticket });
+export const selectTicket = (ticket: ITicket | null): IActionCall => ({ type: actionTypes.SELECT_TICKET, payload: ticket });
 
 export const updatePerson = (person: IPerson): IActionCall => ({ type: actionTypes.UPDATE_PERSON, payload: person });
 

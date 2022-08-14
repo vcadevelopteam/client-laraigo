@@ -10,7 +10,7 @@ import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Tooltip from '@material-ui/core/Tooltip';
 import { GetIcon } from 'components'
-import { getAgents, selectAgent, emitEvent, cleanAlerts, cleanInboxSupervisor, setAgentsToReassign } from 'store/inbox/actions';
+import { getAgents, selectAgent, emitEvent, cleanAlerts, cleanInboxSupervisor, setAgentsToReassign, selectTicket } from 'store/inbox/actions';
 import { getMultiCollection, resetAllMain } from 'store/main/actions';
 import { getValuesFromDomainLight, getCommChannelLst, getListUsers, getClassificationLevel1, getListQuickReply, getMessageTemplateLst, getEmojiAllSel, getInappropriateWordsLst, getPropertySelByName, getUserChannelSel } from 'common/helpers';
 import { setOpenDrawer } from 'store/popus/actions';
@@ -392,6 +392,8 @@ const Supervisor: FC = () => {
     const wsConnected = useSelector(state => state.inbox.wsConnected);
     const multiData = useSelector(state => state.main.multiData);
     const [initial, setInitial] = useState(true)
+    const firstLoad = React.useRef(true);
+
 
     useEffect(() => {
         if (multiData?.data[1])
@@ -427,10 +429,18 @@ const Supervisor: FC = () => {
 
     useEffect(() => {
         if (wsConnected) {
-            dispatch(emitEvent({
-                event: 'connectChat',
-                data: { usertype: 'SUPERVISOR' }
-            }));
+            if (firstLoad.current) {
+                firstLoad.current = false;
+
+                dispatch(emitEvent({
+                    event: 'connectChat',
+                    data: { usertype: 'SUPERVISOR' }
+                }));   
+            } else {
+                dispatch(getAgents())
+                dispatch(selectAgent(null))
+                dispatch(selectTicket(null))
+            }
         }
     }, [wsConnected])
 

@@ -493,7 +493,7 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
                 interactiontext: data.lastmessage,
                 createdate: new Date().toISOString(),
                 userid: data.usertype === "agent" ? data.userid : 0,
-                usertype: data.usertype === "agent" && data.userid === 2 ? "BOT" : data.usertype,
+                usertype: data?.usertype === "agent" && data.userid === 2 ? "BOT" : data?.usertype,
             }
             newInteractionList = AddNewInteraction(state.interactionList.data, newInteraction)
         }
