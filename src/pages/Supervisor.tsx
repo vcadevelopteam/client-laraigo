@@ -152,7 +152,7 @@ const RenderRow = memo(
     areEqual
 )
 
-const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agent: { name, userid, image, isConnected, countPaused, countClosed, countNotAnswered, countPending, countAnswered, channels } }) => {
+const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agent: { name, motivetype, userid, image, isConnected, countPaused, countClosed, countNotAnswered, countPending, countAnswered, channels } }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -171,7 +171,9 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agen
                     }}
                     variant="dot"
                 >
-                    <Avatar src={image || undefined} >{name?.split(" ").reduce((acc, item) => acc + (acc.length < 2 ? item.substring(0, 1).toUpperCase() : ""), "")}</Avatar>
+                    <Tooltip title={motivetype || ""}>
+                        <Avatar src={image || undefined} >{name?.split(" ").reduce((acc, item) => acc + (acc.length < 2 ? item.substring(0, 1).toUpperCase() : ""), "")}</Avatar>
+                    </Tooltip>
                 </BadgeGo>
                 <div>
                     <div className={classes.agentName} title={name}>{name}</div>
@@ -342,7 +344,7 @@ const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
     const agentList = useSelector(state => state.inbox.agentList);
     const [agentsToShow, setAgentsToShow] = useState<IAgent[]>([]);
     const [dataAgents, setDataAgents] = useState<IAgent[]>([]);
-    const [firstload, setfirstload] = useState(true);
+    const firstLoad = React.useRef(true);
 
     const onSearch = (pageSelected: number, search: string, filterBy: string) => {
         setAgentsToShow(filterAboutStatusName(dataAgents, pageSelected, search, filterBy))
@@ -351,9 +353,9 @@ const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
     useEffect(() => {
         if (!agentList.loading && !agentList.error) {
             setDataAgents(agentList.data as IAgent[])
-            if (firstload && agentList.data.length > 0) {
+            if (firstLoad.current && agentList.data.length > 0) {
                 setAgentsToShow(agentList.data as IAgent[])
-                setfirstload(false)
+                firstLoad.current = false
             } else {
                 setAgentsToShow(agentList.data.filter(y => agentsToShow.map(x => x.userid).includes(y.userid)))
             }

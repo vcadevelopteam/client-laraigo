@@ -234,7 +234,7 @@ export const setUserType = (state: IState, action: IAction): IState => ({
 export const selectTicket = (state: IState, action: IAction): IState => ({
     ...state,
     ticketSelected: action.payload,
-    showInfoPanel: false,
+    showInfoPanel: !action.payload ? false : state.showInfoPanel,
     tipificationsLevel2: initialState.tipificationsLevel2,
     tipificationsLevel3: initialState.tipificationsLevel3
 })
@@ -355,7 +355,12 @@ export const connectAgentWS = (state: IState, action: IAction): IState => {
     const { userType } = state;
 
     if (userType === 'SUPERVISOR') {
-        newAgentList = newAgentList.map(x => x.userid === data.userid ? { ...x, isConnected: data.isconnected } : x).sort((a: any, b: any) => (a.isConnected === b.isConnected) ? 0 : a.isConnected ? -1 : 1)
+        newAgentList = newAgentList.map(x => x.userid === data.userid ? { 
+            ...x, 
+            isConnected: data.isconnected, 
+            motivetype: action.payload.observation, 
+            userstatustype:  (data.isconnected ? "ACTIVO" : (action.payload.observation ? "INBOX" : "LOGOUT") )
+        } : x).sort((a: any, b: any) => (a.isConnected === b.isConnected) ? 0 : a.isConnected ? -1 : 1)
     }
 
     return {
@@ -673,7 +678,7 @@ export const personSawChat = (state: IState, action: IAction): IState => {
 
 export const getDataTicket = (state: IState): IState => ({
     ...state,
-    interactionList: { ...state.interactionList, loading: true, error: false },
+    interactionList: { ...state.interactionList, data: [], loading: true, error: false },
     interactionBaseList: [],
     person: { ...state.person, loading: true, error: false },
 });

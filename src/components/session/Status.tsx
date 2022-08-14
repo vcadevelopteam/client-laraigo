@@ -55,6 +55,7 @@ const DialogReasonsDisconnection: React.FC<{
             event: 'connectAgent',
             data: {
                 isconnected: !userConnected,
+                observation: data.observation,
                 userid: 0,
                 orgid: 0
             }
