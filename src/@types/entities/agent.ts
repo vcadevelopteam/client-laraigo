@@ -8,6 +8,8 @@ export interface IAgent {
     countNotAnswered?: number;
     countPending: number;
     status: string | null;
+    motivetype?: string | null;
+    userstatustype?: string | null;
     groups: string | null;
     image: string | null;
     channels: string[];
