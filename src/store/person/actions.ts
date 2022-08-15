@@ -111,6 +111,7 @@ export const getDomainsByTypename = (): IActionCall => ({
         getValuesFromDomain("ESTADOGENERICO"),
         getValuesFromDomain("ESTADOUSUARIO"),
         getRolesByOrg(),
+        getValuesFromDomain("GRUPOS"),
     ]),
     types: {
         loading: actionTypes.GET_DOMAINS_BY_TYPENAME,

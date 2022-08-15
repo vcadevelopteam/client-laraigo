@@ -1077,6 +1077,7 @@ const Users: FC = () => {
         []
     );
     const handleTemplate = () => {
+        console.log(domains)
         const data = [
             {},
             {},
@@ -1094,6 +1095,7 @@ const Users: FC = () => {
             { 'true': 'true', 'false': 'false' },
             domains.value?.roles?.reduce((a, d) => ({ ...a, [d.roleid]: d.roldesc }), {}),
             dataChannelsTemp.reduce((a, d) => ({ ...a, [d.communicationchannelid]: d.description }), {}),
+            domains.value?.usergroup?.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
         ];
         const header = [
             'firstname',
@@ -1111,7 +1113,8 @@ const Users: FC = () => {
             'password',
             'pwdchangefirstlogin',
             'role',
-            'channels'
+            'channels',
+            'groups'
         ];
         exportExcel(`${t(langKeys.template)} ${t(langKeys.import)}`, templateMaker(data, header));
     }
@@ -1251,6 +1254,7 @@ const Users: FC = () => {
                     && (f.role === undefined || Object.keys(domains.value?.roles?.reduce((a: any, d) => ({ ...a, [d.roleid]: `${d.roleid}` }), {})).includes('' + f.role))
             });
 
+            debugger
             const messageerrors = datainit.filter((f: any) => {
                 return !(f.company === undefined || Object.keys(domains.value?.company?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.company))
                     || !(f.doctype === undefined || Object.keys(domains.value?.docTypes?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.doctype))
@@ -1295,7 +1299,7 @@ const Users: FC = () => {
                                 orgid: user?.orgid,
                                 bydefault: true,
                                 labels: "",
-                                groups: "",
+                                groups: d.groups || "",
                                 channels: d.channels || "",
                                 status: d.status,
                                 type: "NINGUNO",
