@@ -358,8 +358,8 @@ export const connectAgentWS = (state: IState, action: IAction): IState => {
         newAgentList = newAgentList.map(x => x.userid === data.userid ? { 
             ...x, 
             isConnected: data.isconnected, 
-            motivetype: action.payload.observation, 
-            userstatustype:  (data.isconnected ? "ACTIVO" : (action.payload.observation ? "INBOX" : "LOGOUT") )
+            motivetype: data.motive, 
+            userstatustype:  (data.isconnected ? "ACTIVO" : (data.motive ? "INBOX" : "LOGOUT") )
         } : x).sort((a: any, b: any) => (a.isConnected === b.isConnected) ? 0 : a.isConnected ? -1 : 1)
     }
 
@@ -421,6 +421,7 @@ export const resetInboxSupervisor = (state: IState, action: IAction): IState => 
 
 export const newMessageFromClient = (state: IState, action: IAction): IState => {
     const data: INewMessageParams = action.payload;
+    
     if (state.role === "SUPERVISOR" && state.holdingBySupervisor === "GRUPO" && data.newConversation && data.userid === 3 && !!state.userGroup) {
         if (!state.userGroup.split(",").includes(data.usergroup || "")) {
             return state;
@@ -585,7 +586,6 @@ export const resetShowModal = (state: IState, action: IAction): IState => ({
 
 export const deleteTicket = (state: IState, action: IAction): IState => {
     const data: IDeleteTicketParams = action.payload;
-
     if (state.role === "SUPERVISOR" && state.holdingBySupervisor === "GRUPO" && data.userid === 3 && !!state.userGroup) {
         if (!state.userGroup.split(",").includes(data.usergroup || "")) {
             return state;

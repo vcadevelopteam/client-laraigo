@@ -80,6 +80,7 @@ export interface IDeleteTicketParams {
 export interface IConnectAgentParams {
     isconnected: boolean;
     userid: number;
+    motive?: string | null;
 }
 
 export interface IConnectAgentUIParams {
