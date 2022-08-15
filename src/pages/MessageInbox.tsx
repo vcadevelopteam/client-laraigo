@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'hooks';
-import { setUserType, emitEvent, cleanAlerts, setAgentsToReassign, selectAgent, resetSelectTicket } from 'store/inbox/actions';
+import { getAgents, selectTicket, setUserType, emitEvent, cleanAlerts, setAgentsToReassign, selectAgent, resetSelectTicket } from 'store/inbox/actions';
 import { useDispatch } from 'react-redux';
 import InboxPanel from 'components/inbox/InboxPanel'
 import { getMultiCollection, resetAllMain } from 'store/main/actions';
@@ -15,7 +15,7 @@ const MessageInbox: React.FC = () => {
     const aNewTicket = useSelector(state => state.inbox.aNewTicket);
     const aNewMessage = useSelector(state => state.inbox.aNewMessage);
     const multiData = useSelector(state => state.main.multiData);
-
+    const firstLoad = React.useRef(true);
     const [initial, setinitial] = React.useState(true);
     const audioNewTicket = useRef<HTMLAudioElement>(null);
     const audioNewMessage = useRef<HTMLAudioElement>(null);
@@ -99,10 +99,17 @@ const MessageInbox: React.FC = () => {
 
     useEffect(() => {
         if (wsConnected) {
-            dispatch(emitEvent({
-                event: 'connectChat',
-                data: { usertype: 'AGENT' }
-            }));
+            if (firstLoad.current) {
+                firstLoad.current = false;
+                dispatch(emitEvent({
+                    event: 'connectChat',
+                    data: { usertype: 'AGENT' }
+                }));
+            } else {
+                dispatch(getAgents())
+                dispatch(selectAgent(null))
+                dispatch(selectTicket(null))
+            }
         }
     }, [wsConnected])
 

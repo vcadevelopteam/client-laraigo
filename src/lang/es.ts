@@ -5,7 +5,7 @@ const translation: LangKeys = {
     currentlanguage: 'es',
     english: 'Inglés',
     spanish: 'Español',
-
+    notred: "Se perdió la conexión, estamos tratando de volver a conectar",
     dashboard: 'Dashboard',
     dashboard_plural: 'Dashboards',
 
@@ -2424,6 +2424,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     "personalizedreport_lastorguser.groups": "grupos del último usuario",
     "personalizedreport_lastorguser.channels": "canales del último usuario",
     "personalizedreport_lastorguser.type": "tipo de rol del último usuario",
+
+    "personalizedreport_conversationclassification.tipification": "tipificación de la conversación",
 
     chatHeaderTitle: 'Título de la cabecera del chat',
     subtitle: 'Subtítulo',

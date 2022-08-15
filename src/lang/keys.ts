@@ -10,7 +10,7 @@ export const langKeys = {
     show_logs: 'show_logs',
     hide_logs: 'hide_logs',
     compliance: "compliance",
-
+    notred: "notred",
     selectday: "selectday",
     schedule_availability: "schedule_availability",
     reset_weekly_hours: "reset_weekly_hours",
@@ -2575,6 +2575,8 @@ export const langKeys = {
     "personalizedreport_lastorguser.groups": "personalizedreport_lastorguser.groups",
     "personalizedreport_lastorguser.channels": "personalizedreport_lastorguser.channels",
     "personalizedreport_lastorguser.type": "personalizedreport_lastorguser.type",
+
+    "personalizedreport_conversationclassification.tipification": "personalizedreport_conversationclassification.tipification",
 
     chatHeaderTitle: 'chatHeaderTitle',
     subtitle: 'subtitle',

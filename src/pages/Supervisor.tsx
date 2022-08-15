@@ -396,7 +396,6 @@ const Supervisor: FC = () => {
     const [initial, setInitial] = useState(true)
     const firstLoad = React.useRef(true);
 
-
     useEffect(() => {
         if (multiData?.data[1])
             dispatch(setAgentsToReassign(multiData?.data?.[1].data || []))

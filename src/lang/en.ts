@@ -6,7 +6,7 @@ const translation: LangKeys = {
     search_ticket: 'Search in conversation',
     english: 'English',
     spanish: 'Spanish',
-
+    notred: "Connection was lost, we are trying to reconnect",
     dashboard: 'Dashboard',
     dashboard_plural: 'Dashboards',
 
@@ -2495,6 +2495,8 @@ const translation: LangKeys = {
     "personalizedreport_lastorguser.groups": "last user groups",
     "personalizedreport_lastorguser.channels": "last user channels",
     "personalizedreport_lastorguser.type": "last user role type",
+
+    "personalizedreport_conversationclassification.tipification": "conversation tipification",
 
     chatHeaderTitle: 'Chat header title',
     subtitle: 'Subtitle',
