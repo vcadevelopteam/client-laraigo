@@ -6,7 +6,7 @@ const translation: LangKeys = {
     search_ticket: 'Search in conversation',
     english: 'English',
     spanish: 'Spanish',
-
+    notred: "Connection was lost, we are trying to reconnect",
     dashboard: 'Dashboard',
     dashboard_plural: 'Dashboards',
 

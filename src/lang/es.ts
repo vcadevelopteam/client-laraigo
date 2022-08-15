@@ -5,7 +5,7 @@ const translation: LangKeys = {
     currentlanguage: 'es',
     english: 'Inglés',
     spanish: 'Español',
-
+    notred: "Se perdió la conexión, estamos tratando de volver a conectar",
     dashboard: 'Dashboard',
     dashboard_plural: 'Dashboards',
 

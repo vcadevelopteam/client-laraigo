@@ -10,7 +10,7 @@ export const langKeys = {
     show_logs: 'show_logs',
     hide_logs: 'hide_logs',
     compliance: "compliance",
-
+    notred: "notred",
     selectday: "selectday",
     schedule_availability: "schedule_availability",
     reset_weekly_hours: "reset_weekly_hours",
