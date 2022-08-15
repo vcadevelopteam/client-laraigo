@@ -2496,6 +2496,8 @@ const translation: LangKeys = {
     "personalizedreport_lastorguser.channels": "last user channels",
     "personalizedreport_lastorguser.type": "last user role type",
 
+    "personalizedreport_conversationclassification.tipification": "conversation tipification",
+
     chatHeaderTitle: 'Chat header title',
     subtitle: 'Subtitle',
     chatHeaderSubtitle: 'Chat header subtitle',

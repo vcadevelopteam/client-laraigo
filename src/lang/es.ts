@@ -2425,6 +2425,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     "personalizedreport_lastorguser.channels": "canales del último usuario",
     "personalizedreport_lastorguser.type": "tipo de rol del último usuario",
 
+    "personalizedreport_conversationclassification.tipification": "tipificación de la conversación",
+
     chatHeaderTitle: 'Título de la cabecera del chat',
     subtitle: 'Subtítulo',
     chatHeaderSubtitle: 'Subtítulo de la cabecera del chat',

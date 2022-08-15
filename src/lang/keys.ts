@@ -2576,6 +2576,8 @@ export const langKeys = {
     "personalizedreport_lastorguser.channels": "personalizedreport_lastorguser.channels",
     "personalizedreport_lastorguser.type": "personalizedreport_lastorguser.type",
 
+    "personalizedreport_conversationclassification.tipification": "personalizedreport_conversationclassification.tipification",
+
     chatHeaderTitle: 'chatHeaderTitle',
     subtitle: 'subtitle',
     chatHeaderSubtitle: 'chatHeaderSubtitle',
