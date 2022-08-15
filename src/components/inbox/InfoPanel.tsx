@@ -781,8 +781,20 @@ const InfoPanel: React.FC = () => {
     const [pageSelected, setPageSelected] = useState(0);
     const [order, setOrder] = useState(-1)
     const { t } = useTranslation();
+    const loading = useSelector(state => state.inbox.person.loading);
+
+    if (loading) {
+        return (
+            <div className={classes.containerInfo}>
+                <div style={{ flex: 1, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <CircularProgress />
+                </div>
+            </div>
+        )
+    }
     return (
         <div className={classes.containerInfo}>
+
             <InfoClient />
             <Tabs
                 value={pageSelected}

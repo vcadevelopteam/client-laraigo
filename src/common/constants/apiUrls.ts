@@ -38,7 +38,9 @@ const APIS_URL = {
         CHATFLOW: 'https://clarobackend.laraigo.com/zyxme/chatflow',
         FACEBOOKAPP: '1980305408682607',
         INSTAGRAMAPP: '1924971937716955',
-        CULQIKEY: 'pk_test_041501e753dcb2f9'
+        CULQIKEY: 'pk_test_041501e753dcb2f9',
+        GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
+        GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
     },
     LOCAL: {
         API: 'http://localhost:6065/api',

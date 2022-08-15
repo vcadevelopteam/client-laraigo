@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useSelector } from 'hooks';
 import Avatar from '@material-ui/core/Avatar';
 import { styled, makeStyles } from '@material-ui/core/styles';
-import { ITicket } from "@types";
+import { Dictionary, ITicket } from "@types";
 import { GetIcon } from 'components'
 import clsx from 'clsx';
 import Badge from '@material-ui/core/Badge';
@@ -117,6 +117,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
     const userType = useSelector(state => state.inbox.userType);
     const multiData = useSelector(state => state.main.multiData);
     const [dateToClose, setDateToClose] = useState<Date | null>(null)
+    const data14 = React.useRef<Dictionary[] | null>(null)
     const dictAutoClose = useSelector(state => state.login.validateToken.user?.properties?.auto_close);
     const secondsToAnwserCall = useSelector(state => state.login.validateToken.user?.properties?.seconds_to_answer_call);
     const statusCall = useSelector(state => state.voximplant?.statusCall);
@@ -140,9 +141,13 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
     }, [callVoxiTmp]);
 
     React.useEffect(() => {
-        if (!multiData.error && !multiData.loading && multiData?.data[6] && multiData.data[6].success) {
-            const channelSelected = multiData.data[6].data.find(x => x.communicationchannelid === communicationchannelid);
-            setIconColor(channelSelected?.coloricon || '#7721AD');
+        if (!multiData.error && !multiData.loading) {
+            if (multiData?.data[6] && multiData.data[6].success) {
+                const channelSelected = multiData.data[6].data.find(x => x.communicationchannelid === communicationchannelid);
+                setIconColor(channelSelected?.coloricon || '#7721AD');
+            } else if (multiData?.data[14] && multiData.data[14].success) {
+                data14.current = multiData.data[14].data;
+            }
         }
     }, [multiData, communicationchannelid]);
 
@@ -173,11 +178,11 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
         }
     }, [dispatch, statusCall])
 
-    const validateTime = (time: number) => {
+    const validateTime = React.useCallback((time: number) => {
         if (userType === "AGENT" && (countnewmessages || 0) > 0) {
-            if (multiData.data?.[14]?.data) {
+            if (data14.current) {
 
-                const pAlerts = multiData.data?.[14]?.data;
+                const pAlerts = data14.current;
 
                 const alert = pAlerts.find(x => x.groupname === item.usergroup && !!x.propertyvalue && x.propertyvalue !== "0");
                 if (alert) {
@@ -206,7 +211,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                 }
             }
         }
-    }
+    }, [countnewmessages, dispatch, item, setTicketSelected, t, ticketnum, userType, waitingcustomermessage])
 
     React.useEffect(() => {
         if (callVoxiTmp.type === "INBOUND" && statusCall === "CONNECTING") {
