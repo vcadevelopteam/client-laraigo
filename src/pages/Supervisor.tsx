@@ -10,7 +10,7 @@ import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Tooltip from '@material-ui/core/Tooltip';
 import { GetIcon } from 'components'
-import { getAgents, selectAgent, emitEvent, cleanAlerts, cleanInboxSupervisor, setAgentsToReassign } from 'store/inbox/actions';
+import { getAgents, selectAgent, emitEvent, cleanAlerts, cleanInboxSupervisor, setAgentsToReassign, selectTicket } from 'store/inbox/actions';
 import { getMultiCollection, resetAllMain } from 'store/main/actions';
 import { getValuesFromDomainLight, getCommChannelLst, getListUsers, getClassificationLevel1, getListQuickReply, getMessageTemplateLst, getEmojiAllSel, getInappropriateWordsLst, getPropertySelByName, getUserChannelSel } from 'common/helpers';
 import { setOpenDrawer } from 'store/popus/actions';
@@ -152,7 +152,7 @@ const RenderRow = memo(
     areEqual
 )
 
-const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agent: { name, userid, image, isConnected, countPaused, countClosed, countNotAnswered, countPending, countAnswered, channels } }) => {
+const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agent: { name, motivetype, userid, image, isConnected, countPaused, countClosed, countNotAnswered, countPending, countAnswered, channels } }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -171,7 +171,9 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agen
                     }}
                     variant="dot"
                 >
-                    <Avatar src={image || undefined} >{name?.split(" ").reduce((acc, item) => acc + (acc.length < 2 ? item.substring(0, 1).toUpperCase() : ""), "")}</Avatar>
+                    <Tooltip title={motivetype || ""}>
+                        <Avatar src={image || undefined} >{name?.split(" ").reduce((acc, item) => acc + (acc.length < 2 ? item.substring(0, 1).toUpperCase() : ""), "")}</Avatar>
+                    </Tooltip>
                 </BadgeGo>
                 <div>
                     <div className={classes.agentName} title={name}>{name}</div>
@@ -342,7 +344,7 @@ const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
     const agentList = useSelector(state => state.inbox.agentList);
     const [agentsToShow, setAgentsToShow] = useState<IAgent[]>([]);
     const [dataAgents, setDataAgents] = useState<IAgent[]>([]);
-    const [firstload, setfirstload] = useState(true);
+    const firstLoad = React.useRef(true);
 
     const onSearch = (pageSelected: number, search: string, filterBy: string) => {
         setAgentsToShow(filterAboutStatusName(dataAgents, pageSelected, search, filterBy))
@@ -351,9 +353,9 @@ const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
     useEffect(() => {
         if (!agentList.loading && !agentList.error) {
             setDataAgents(agentList.data as IAgent[])
-            if (firstload && agentList.data.length > 0) {
+            if (firstLoad.current && agentList.data.length > 0) {
                 setAgentsToShow(agentList.data as IAgent[])
-                setfirstload(false)
+                firstLoad.current = false
             } else {
                 setAgentsToShow(agentList.data.filter(y => agentsToShow.map(x => x.userid).includes(y.userid)))
             }
@@ -392,6 +394,8 @@ const Supervisor: FC = () => {
     const wsConnected = useSelector(state => state.inbox.wsConnected);
     const multiData = useSelector(state => state.main.multiData);
     const [initial, setInitial] = useState(true)
+    const firstLoad = React.useRef(true);
+
 
     useEffect(() => {
         if (multiData?.data[1])
@@ -427,10 +431,18 @@ const Supervisor: FC = () => {
 
     useEffect(() => {
         if (wsConnected) {
-            dispatch(emitEvent({
-                event: 'connectChat',
-                data: { usertype: 'SUPERVISOR' }
-            }));
+            if (firstLoad.current) {
+                firstLoad.current = false;
+
+                dispatch(emitEvent({
+                    event: 'connectChat',
+                    data: { usertype: 'SUPERVISOR' }
+                }));   
+            } else {
+                dispatch(getAgents())
+                dispatch(selectAgent(null))
+                dispatch(selectTicket(null))
+            }
         }
     }, [wsConnected])
 
