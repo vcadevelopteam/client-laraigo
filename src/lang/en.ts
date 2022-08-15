@@ -690,6 +690,7 @@ const translation: LangKeys = {
     search: 'Search',
     refresh: 'Refresh',
     duplicate: 'Duplicate',
+    stop: 'Stop',
     organizationclass: "Organization of Classifications",
     tablePageOf: 'Page <0>{{currentPage}}</0> of <1>{{totalPages}}</1>',
     tableShowingRecordOf: 'Showing {{itemCount}} records of {{totalItems}}',
@@ -1185,6 +1186,7 @@ const translation: LangKeys = {
     contractedplan: "Contracted Plan",
     confirmation_save: 'Are you sure to save the record?',
     confirmation_delete: 'Are you sure to delete the record?',
+    confirmation_stop: 'Are you sure to stop the operation?',
     confirmation_duplicate: 'Are you sure to duplicate the record?',
     confirmation_delete_data: 'Are you sure to delete all data?',
     confirmation_close: 'Are you sure to close the record?',
@@ -2499,6 +2501,8 @@ const translation: LangKeys = {
     "personalizedreport_lastorguser.groups": "last user groups",
     "personalizedreport_lastorguser.channels": "last user channels",
     "personalizedreport_lastorguser.type": "last user role type",
+
+    "personalizedreport_conversationclassification.tipification": "conversation tipification",
 
     chatHeaderTitle: 'Chat header title',
     subtitle: 'Subtitle',

@@ -1169,6 +1169,13 @@ export const delCampaign = ({
     }
 });
 
+export const stopCampaign = ({ campaignid }: Dictionary): IRequestBody => ({
+    method: "UFN_CAMPAIGN_STOP",
+    parameters: {
+        campaignid
+    }
+});
+
 export const getUserGroupsSel = (): IRequestBody => ({
     method: "UFN_USER_GROUPS_SEL",
     parameters: {}
