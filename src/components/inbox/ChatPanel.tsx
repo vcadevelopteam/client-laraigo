@@ -504,7 +504,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
 
     useEffect(() => {
         if (user) {
-            if(!(multiData?.data?.[14]?.data?.[0]?.propertyvalue==="1"||true)){
+            if(!(multiData.data.filter(x=>x.key==="UFN_PROPERTY_SELBYNAME_LIMITARREASIGNACIONGRUPO")?.[0]?.data?.[0]?.propertyvalue==="1"||false)){
                 setusergroupslist((multiData?.data?.[3]?.data || []))
             }else{
                 const groups = user?.groups ? user?.groups.split(",") : [];
@@ -550,7 +550,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                         setValue('newUserId', value ? value.userid : 0);
                     }}
                     error={errors?.newUserId?.message}
-                    data={(!(multiData?.data?.[14]?.data?.[0]?.propertyvalue==="1"||true) && getValues('newUserGroup')==="")? agentToReassignList:
+                    data={(!(multiData.data.filter(x=>x.key==="UFN_PROPERTY_SELBYNAME_LIMITARREASIGNACIONGRUPO")?.[0]?.data?.[0]?.propertyvalue==="1"||false) && getValues('newUserGroup')==="")? agentToReassignList:
                         agentToReassignList.filter(x => x.status === "ACTIVO").filter(x => {
                         if (getValues("newUserGroup")) {
                             let ingroup = false;
