@@ -44,8 +44,7 @@ const useStyles = makeStyles((theme) => ({
 const IconOptions: React.FC<{
     disabled?: boolean,
     onHandlerDelete?: (e?: any) => void;
-    onHandlerStop?: (e?: any) => void;
-}> = ({ disabled, onHandlerDelete, onHandlerStop }) => {
+}> = ({ disabled, onHandlerDelete }) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const { t } = useTranslation();
 
@@ -83,18 +82,6 @@ const IconOptions: React.FC<{
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                {onHandlerStop &&
-                    <MenuItem onClick={(e: any) => {
-                        e.stopPropagation()
-                        setAnchorEl(null);
-                        onHandlerStop();
-                    }}>
-                        <ListItemIcon>
-                            <StopIcon width={18} style={{ fill: '#7721AD' }} />
-                        </ListItemIcon>
-                        {t(langKeys.stop)}
-                    </MenuItem>
-                }
                 {onHandlerDelete &&
                     <MenuItem onClick={(e: any) => {
                         e.stopPropagation()
@@ -142,9 +129,6 @@ export const Campaign: FC = () => {
                             onHandlerDelete={() => {
                                 handleDelete(row)
                             }}
-                            onHandlerStop={row.status === 'EJECUTANDO' ? () => {
-                                handleStop(row)
-                            } : undefined}
                         />
                     )
                 }
@@ -195,6 +179,28 @@ export const Campaign: FC = () => {
                 Cell: (props: any) => {
                     const { status } = props.cell.row.original;
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
+                }
+            },
+            {
+                accessor: 'stop',
+                isComponent: true,
+                maxWidth: '80px',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    if (row?.status === 'EJECUTANDO') {
+                        return <StopIcon
+                            titleAccess={t(langKeys.stop)}
+                            fontSize='large'
+                            style={{ width:35, height:35, fill: '#ea2e49' }}
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                handleStop(row)
+                            }}
+                        />
+                    }
+                    else {
+                        return null
+                    }
                 }
             },
             {
