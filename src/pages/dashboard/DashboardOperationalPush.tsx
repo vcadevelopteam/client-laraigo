@@ -163,7 +163,7 @@ const DashboardOperationalPush: FC = () => {
     const remultiaux = useSelector(state => state.main.multiDataAux);
     const resaux = useSelector(state => state.main.mainAux);
     const user = useSelector(state => state.login.validateToken.user);
-    const groups = user?.groups?.split(",") || [];
+    const groups = user?.groups?.split(",").filter(x=>!!x) || [];
     const [downloaddatafile, setdownloaddatafile] = useState(false);
     const [section, setSection] = useState('')
     const [titlefile, settitlefile] = useState('');
