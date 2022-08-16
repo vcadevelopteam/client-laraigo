@@ -213,7 +213,7 @@ footer a {
     display: none;
 }
 .scroll-style-go {
-    overflow-y: overlay!important;
+    overflow-y: auto!important;
     
 }
 .scroll-style-go::-webkit-scrollbar-track
@@ -228,7 +228,7 @@ footer a {
 }
 .scroll-style-go::-webkit-scrollbar
 {
-	width: 5px;
+	width: 10px;
 	background-color: transparent;
 }
 .scroll-style-go:hover:-webkit-scrollbar

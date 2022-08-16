@@ -426,9 +426,11 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     const multiData = useSelector(state => state.main.multiData);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const agentToReassignList = useSelector(state => state.inbox.agentToReassignList);
+    
     const user = useSelector(state => state.login.validateToken.user);
-    const [userToReassign, setUserToReassign] = useState<Dictionary[]>([])
     const groups = user?.groups?.split(",") || [];
+
+    const [userToReassign, setUserToReassign] = useState<Dictionary[]>([])
     const userType = useSelector(state => state.inbox.userType);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const reassigningRes = useSelector(state => state.inbox.triggerReassignTicket);
