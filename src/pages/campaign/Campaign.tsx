@@ -273,18 +273,6 @@ export const Campaign: FC = () => {
     }, []);
 
     useEffect(() => {
-        if (waitStart) {
-            if (!auxResult.loading && !auxResult.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_transaction) }))
-                fetchData();
-                setWaitStart(false);
-            } else if (auxResult.error) {
-                const errormessage = t(auxResult.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
-                dispatch(showBackdrop(false));
-                setWaitStart(false);
-            }
-        }
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
@@ -311,7 +299,7 @@ export const Campaign: FC = () => {
                 setWaitStop(false);
             }
         }
-    }, [executeResult, waitStart, waitSave, waitStop]);
+    }, [executeResult, waitSave, waitStop]);
 
     useEffect(() => {
         if (waitStatus) {
@@ -332,7 +320,19 @@ export const Campaign: FC = () => {
                 setWaitStatus(false);
             }
         }
-    }, [auxResult, waitStatus])
+        if (waitStart) {
+            if (!auxResult.loading && !auxResult.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_transaction) }))
+                fetchData();
+                setWaitStart(false);
+            } else if (auxResult.error) {
+                const errormessage = t(auxResult.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitStart(false);
+            }
+        }
+    }, [auxResult, waitStatus, waitStart])
 
     const handleRegister = () => {
         setViewSelected("view-2");
