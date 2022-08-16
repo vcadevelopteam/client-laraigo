@@ -17,6 +17,8 @@ export interface IRequest extends ITemplate {
 
 export interface IState {
     requestSynchronizeTemplate: IRequest;
+    requestAddTemplate: IRequest;
+    requestDeleteTemplate: IRequest;
 
     channelList: IListStatePaginated<Dictionary>;
 
@@ -34,6 +36,8 @@ export interface IState {
 
 export const initialState: IState = {
     requestSynchronizeTemplate: { ...initialCommon, data: null, loading: false, error: false },
+    requestAddTemplate: { ...initialCommon, data: null, loading: false, error: false },
+    requestDeleteTemplate: { ...initialCommon, data: null, loading: false, error: false },
 
     channelList: initialListPaginatedState,
 
@@ -101,4 +105,14 @@ export default createReducer<IState>(initialState, {
     [actionTypes.SYNCHRONIZE_TEMPLATE_FAILURE]: caseFUnctions.synchronizeTemplateFailure,
     [actionTypes.SYNCHRONIZE_TEMPLATE_SUCCESS]: caseFUnctions.synchronizeTemplateSuccess,
     [actionTypes.SYNCHRONIZE_TEMPLATE_RESET]: caseFUnctions.synchronizeTemplateReset,
+
+    [actionTypes.ADD_TEMPLATE]: caseFUnctions.addTemplate,
+    [actionTypes.ADD_TEMPLATE_FAILURE]: caseFUnctions.addTemplateFailure,
+    [actionTypes.ADD_TEMPLATE_SUCCESS]: caseFUnctions.addTemplateSuccess,
+    [actionTypes.ADD_TEMPLATE_RESET]: caseFUnctions.addTemplateReset,
+
+    [actionTypes.DELETE_TEMPLATE]: caseFUnctions.deleteTemplate,
+    [actionTypes.DELETE_TEMPLATE_FAILURE]: caseFUnctions.deleteTemplateFailure,
+    [actionTypes.DELETE_TEMPLATE_SUCCESS]: caseFUnctions.deleteTemplateSuccess,
+    [actionTypes.DELETE_TEMPLATE_RESET]: caseFUnctions.deleteTemplateReset,
 });

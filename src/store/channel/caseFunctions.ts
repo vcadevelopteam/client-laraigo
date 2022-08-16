@@ -354,3 +354,75 @@ export const synchronizeTemplateReset = (state: IState): IState => ({
     ...state,
     requestSynchronizeTemplate: initialState.requestSynchronizeTemplate,
 })
+
+export const addTemplate = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestAddTemplate: {
+        ...state.requestAddTemplate,
+        error: false,
+        loading: true,
+    }
+})
+
+export const addTemplateFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestAddTemplate: {
+        ...state.requestAddTemplate,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message || 'error_unexpected_error',
+    }
+})
+
+export const addTemplateSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestAddTemplate: {
+        ...state.requestAddTemplate,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message,
+    }
+})
+
+export const addTemplateReset = (state: IState): IState => ({
+    ...state,
+    requestAddTemplate: initialState.requestAddTemplate,
+})
+
+export const deleteTemplate = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestDeleteTemplate: {
+        ...state.requestDeleteTemplate,
+        error: false,
+        loading: true,
+    }
+})
+
+export const deleteTemplateFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestDeleteTemplate: {
+        ...state.requestDeleteTemplate,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message || 'error_unexpected_error',
+    }
+})
+
+export const deleteTemplateSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestDeleteTemplate: {
+        ...state.requestDeleteTemplate,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message,
+    }
+})
+
+export const deleteTemplateReset = (state: IState): IState => ({
+    ...state,
+    requestDeleteTemplate: initialState.requestDeleteTemplate,
+})

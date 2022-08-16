@@ -230,3 +230,27 @@ export const synchronizeTemplate = (request: any): IActionCall => ({
 });
 
 export const resetSynchronizeTemplate = (): IActionCall => ({ type: actionTypes.SYNCHRONIZE_TEMPLATE_RESET });
+
+export const addTemplate = (request: any): IActionCall => ({
+    callAPI: () => ChannelsService.addTemplate(request),
+    types: {
+        failure: actionTypes.ADD_TEMPLATE_FAILURE,
+        loading: actionTypes.ADD_TEMPLATE,
+        success: actionTypes.ADD_TEMPLATE_SUCCESS,
+    },
+    type: null,
+});
+
+export const resetAddTemplate = (): IActionCall => ({ type: actionTypes.ADD_TEMPLATE_RESET });
+
+export const deleteTemplate = (request: any): IActionCall => ({
+    callAPI: () => ChannelsService.deleteTemplate(request),
+    types: {
+        failure: actionTypes.DELETE_TEMPLATE_FAILURE,
+        loading: actionTypes.DELETE_TEMPLATE,
+        success: actionTypes.DELETE_TEMPLATE_SUCCESS,
+    },
+    type: null,
+});
+
+export const resetDeleteTemplate = (): IActionCall => ({ type: actionTypes.DELETE_TEMPLATE_RESET });

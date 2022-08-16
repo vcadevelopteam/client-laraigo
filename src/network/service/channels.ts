@@ -62,3 +62,11 @@ export function vrfplan(accessToken: String) {
 export function synchronizeTemplate(request: any) {
     return APIManager.post(apiUrls.SYNCHRONIZE_TEMPLATE, { data: request }, true);
 }
+
+export function addTemplate(request: any) {
+    return APIManager.post(apiUrls.ADD_TEMPLATE, { data: request }, true);
+}
+
+export function deleteTemplate(request: any) {
+    return APIManager.post(apiUrls.DELETE_TEMPLATE, { data: request }, true);
+}

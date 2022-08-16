@@ -138,4 +138,6 @@ export const apiUrls = {
     VOXIMPLANT_GET_CALLRECORD: `${BASE_URL}/voximplant/getcallrecord`,
 
     SYNCHRONIZE_TEMPLATE: `${BASE_URL}/channel/synchronizetemplate`,
+    ADD_TEMPLATE: `${BASE_URL}/channel/addtemplate`,
+    DELETE_TEMPLATE: `${BASE_URL}/channel/deletetemplate`,
 };
