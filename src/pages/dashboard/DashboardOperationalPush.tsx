@@ -162,6 +162,8 @@ const DashboardOperationalPush: FC = () => {
     const mainResult = useSelector(state => state.main);
     const remultiaux = useSelector(state => state.main.multiDataAux);
     const resaux = useSelector(state => state.main.mainAux);
+    const user = useSelector(state => state.login.validateToken.user);
+    const groups = user?.groups?.split(",") || [];
     const [downloaddatafile, setdownloaddatafile] = useState(false);
     const [section, setSection] = useState('')
     const [titlefile, settitlefile] = useState('');
@@ -273,7 +275,7 @@ const DashboardOperationalPush: FC = () => {
     useEffect(() => {
         if (mainResult.multiData.data.length !== 0) {
             let multiData = mainResult.multiData.data;
-            setdataqueue(multiData[0] && multiData[0].success ? multiData[0].data : []);
+            setdataqueue(multiData[0] && multiData[0].success ? multiData[0].data.filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true) : []);
             setdataprovider(multiData[1] && multiData[1].success ? multiData[1].data : []);
             setdatachannels(multiData[2] && multiData[2].success ? multiData[2].data : []);
             setdatasupervisors(multiData[3] && multiData[3].success ? multiData[3].data : []);
