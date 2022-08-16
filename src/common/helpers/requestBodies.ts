@@ -176,7 +176,7 @@ export const getReportschedulerreportsSel = () => ({
 // solo devuelve desc y value, no id (USAR ESTE PARA LOS SELECTS SIMPLES DE DOMINIOS)
 export const getValuesFromDomainLight = (domainname: string, keytmp?: any, orgid?: number | null): IRequestBody => ({
     method: "UFN_DOMAIN_LST_VALUES_ONLY_DATA",
-    key: "UFN_DOMAIN_LST_VALUES_ONLY_DATA" + (keytmp || ""),
+    key: "UFN_DOMAIN_LST_VALUES_ONLY_DATA_" + (domainname),
     parameters: {
         domainname,
         orgid: orgid || undefined

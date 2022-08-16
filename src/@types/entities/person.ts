@@ -60,6 +60,7 @@ export interface IPerson {
     changedate: string;
     personcommunicationchannel: string;
     havelead: boolean;
+    haveclassification: boolean;
 }
 
 export interface IPersonCommunicationChannel {
