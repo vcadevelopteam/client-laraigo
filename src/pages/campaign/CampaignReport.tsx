@@ -237,7 +237,30 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
                 }, [])),
                 `${t(langKeys.report)}`,
                 'excel',
-                true
+                true,
+                [
+                    {key: 'templatetype', alias: t(langKeys.templatetype)},
+                    {key: 'date', alias: t(langKeys.date)},
+                    {key: 'campaign', alias: t(langKeys.campaign)},
+                    {key: 'description', alias: t(langKeys.description)},
+                    {key: 'ticketnum', alias: t(langKeys.ticket)},
+                    {key: 'group', alias: t(langKeys.group)},
+                    {key: 'userid', alias: t(langKeys.userid)},
+                    {key: 'agent', alias: t(langKeys.agent)},
+                    {key: 'contact', alias: t(langKeys.contact)},
+                    {key: 'template', alias: t(langKeys.templatename)},
+                    {key: 'rundate', alias: t(langKeys.rundate)},
+                    {key: 'runtime', alias: t(langKeys.runtime)},
+                    {key: 'firstreplydate', alias: t(langKeys.firstreplydate)},
+                    {key: 'firstreplytime', alias: t(langKeys.firstreplytime)},
+                    {key: 'finishdate', alias: t(langKeys.finishconversationdate)},
+                    {key: 'finishtime', alias: t(langKeys.finishconversationtime)},
+                    {key: 'finishtime', alias: t(langKeys.templatetype)},
+                    {key: 'classification', alias: t(langKeys.classification)},
+                    {key: 'conversationid', alias: t(langKeys.conversationid)},
+                    {key: 'status', alias: t(langKeys.status)},
+                    {key: 'log', alias: t(langKeys.log)},
+                ]
             ));
             dispatch(showBackdrop(true));
             setWaitExport(true);
@@ -253,7 +276,28 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
                 }, [])),
                 `${t(langKeys.report)}`,
                 'excel',
-                true
+                true,
+                [
+                    {key: 'templatetype', alias: t(langKeys.templatetype)},
+                    {key: 'campaign', alias: t(langKeys.campaign)},
+                    {key: 'description', alias: t(langKeys.description)},
+                    {key: 'template', alias: t(langKeys.template)},
+                    {key: 'ticketnum', alias: t(langKeys.ticket)},
+                    {key: 'year', alias: t(langKeys.year)},
+                    {key: 'month', alias: t(langKeys.month)},
+                    {key: 'ticketdate', alias: t(langKeys.ticketdate)},
+                    {key: 'tickettime', alias: t(langKeys.tickettime)},
+                    {key: 'contact', alias: t(langKeys.contact)},
+                    {key: 'client', alias: t(langKeys.client)},
+                    {key: 'channel', alias: t(langKeys.channel)},
+                    {key: 'group', alias: t(langKeys.group)},
+                    {key: 'firstagent', alias: t(langKeys.firstagent)},
+                    {key: 'message', alias: t(langKeys.message)},
+                    {key: 'classification', alias: t(langKeys.classification)},
+                    {key: 'lastagent', alias: t(langKeys.lastagent)},
+                    {key: 'status', alias: t(langKeys.status)},
+                    {key: 'log', alias: t(langKeys.log)},
+                ]
             ));
             dispatch(showBackdrop(true));
             setWaitExport(true);
