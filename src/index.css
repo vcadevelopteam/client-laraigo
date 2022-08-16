@@ -239,7 +239,7 @@ footer a {
 .scroll-style-go::-webkit-scrollbar-thumb
 {
 	border-radius: 10px;
-	background-color: rgba(0, 0, 0, 0);
+	background-color: rgba(0, 0, 0, .2);
     -webkit-transition: .2s ease-in-out;
     transition: .2s ease-in-out
 }
