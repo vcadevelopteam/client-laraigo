@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import Tabs from '@material-ui/core/Tabs';
 import Avatar from '@material-ui/core/Avatar';
 import { EMailInboxIcon, PhoneIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, ZipIcon } from 'icons';
-import { getTicketsPerson, showInfoPanel, updatePerson } from 'store/inbox/actions';
+import { getTicketsPerson, showInfoPanel, updateClassificationPerson, updatePerson } from 'store/inbox/actions';
 import { GetIcon, FieldEdit, FieldSelect, DialogInteractions, AntTab, FieldEditMulti } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
@@ -558,6 +558,7 @@ const Classifications: React.FC = () => {
 
     useEffect(() => {
         if (!mainAux2.loading && !mainAux2.error) {
+            dispatch(updateClassificationPerson(mainAux2.data.length > 0))
             setClassifications(mainAux2?.data?.reverse() || [])
         }
     }, [mainAux2])

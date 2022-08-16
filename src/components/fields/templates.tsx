@@ -1100,7 +1100,8 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisNoShow = [
                 {open && (
                     <div style={{
                         position: 'absolute',
-                        bottom: 50
+                        bottom: 50,
+                        zIndex: 1201
                     }}>
                         <Picker
                             onSelect={onSelect}
@@ -1176,6 +1177,7 @@ export const GifPickerZyx: React.FC<{ onSelect?: (e: any) => void, style?: any }
                         bottom: 50,
                         width: 342,
                         height: 400,
+                        zIndex: 1201,
                         backgroundColor: 'white',
                         padding: 4,
                         boxShadow: '0 1px 2px 0 rgb(16 35 47 / 15%)',

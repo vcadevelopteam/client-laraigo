@@ -67,14 +67,6 @@ const useStyles = makeStyles((theme) => ({
         // overflowY: 'auto',
         // backgroundColor: '#e0e0e0',
     },
-    containerQuickreply: {
-        whiteSpace: 'break-spaces',
-        flexWrap: 'wrap',
-        fontStyle: 'normal',
-        fontWeight: 'normal',
-        display: 'flex',
-        gap: theme.spacing(.5),
-    },
     containerPostback: {
         width: 200,
         padding: 0,
@@ -288,6 +280,12 @@ const useStyles = makeStyles((theme) => ({
         maxWidth: 200
     },
     containerQuickReply: {
+        whiteSpace: 'break-spaces',
+        flexWrap: 'wrap',
+        fontStyle: 'normal',
+        fontWeight: 'normal',
+        display: 'flex',
+        gap: theme.spacing(.5),
         boxShadow: '0px 3px 6px rgb(0 0 0 / 10%)',
         backgroundColor: '#FFF',
         width: 250,
