@@ -165,7 +165,7 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agen
             <div className={classes.agentUp}>
                 <BadgeGo
                     overlap="circular"
-                    colortmp={(userstatustype === "INBOX" && status === "DESCONECTADO") ? "#e89647" : (isConnected ? "#44b700" : "#b41a1a")}
+                    colortmp={(userstatustype === "INBOX" && status === "DESCONECTADO" && !!motivetype) ? "#e89647" : (isConnected ? "#44b700" : "#b41a1a")}
                     anchorOrigin={{
                         vertical: 'top',
                         horizontal: 'right',
@@ -244,6 +244,7 @@ const HeaderAgentPanel: FC<{
     const { t } = useTranslation();
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [filterBy, setFilterBy] = useState('user')
+    const agentList = useSelector(state => state.inbox.agentList);
 
     const onChangeSearchAgent = (e: any) => setSearch(e.target.value);
 
@@ -336,9 +337,9 @@ const HeaderAgentPanel: FC<{
                 textColor="primary"
                 onChange={(_, value) => setPageSelected(value)}
             >
-                <AntTab label={`${t(langKeys.all_adivisers)}(${countAll})`} />
-                <AntTab label={`${t(langKeys.conected)}(${countConnected})`} />
-                <AntTab label={`${t(langKeys.disconected)}(${countDisconnected})`} />
+                <AntTab label={`${t(langKeys.all_adivisers)}(${pageSelected === 0 ? countAll : agentList.data.length})`} />
+                <AntTab label={`${t(langKeys.conected)}(${pageSelected === 1 ? countConnected : agentList.data.filter(x => x.isConnected).length})`} />
+                <AntTab label={`${t(langKeys.disconected)}(${pageSelected === 2 ? countDisconnected : agentList.data.filter(x => !x.isConnected).length})`} />
             </Tabs>
         </>
     )
