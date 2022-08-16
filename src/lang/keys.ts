@@ -1246,6 +1246,7 @@ export const langKeys = {
     search_inbox: 'search_inbox',
     deletedata: 'deletedata',
     refresh: 'refresh',
+    stop: 'stop',
 
     newmessagetemplate: 'newmessagetemplate',
     messagetemplate: 'messagetemplate',
@@ -1496,6 +1497,7 @@ export const langKeys = {
     confirmation: 'confirmation',
     confirmation_save: 'confirmation_save',
     confirmation_delete: 'confirmation_delete',
+    confirmation_stop: 'confirmation_stop',
     confirmation_duplicate: 'confirmation_duplicate',
     confirmation_delete_data: 'confirmation_delete_data',
     confirmation_close: 'confirmation_close',
