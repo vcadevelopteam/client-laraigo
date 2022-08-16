@@ -25,7 +25,7 @@ import { langKeys } from 'lang/keys';
 import { makeStyles } from '@material-ui/core/styles';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import { renderToString, toElement } from 'components/fields/RichText';
-import { Provider, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useSelector } from 'hooks';
 import { useTranslation } from 'react-i18next';
