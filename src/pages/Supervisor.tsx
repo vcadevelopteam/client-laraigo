@@ -56,7 +56,8 @@ const useStyles = makeStyles((theme) => ({
         width: '100%'
     },
     containerAgents: {
-        flex: '0 0 300px',
+        flex: '0 0 310px',
+        width: '310px',
         display: 'flex',
         flexDirection: 'column',
         backgroundColor: 'white',

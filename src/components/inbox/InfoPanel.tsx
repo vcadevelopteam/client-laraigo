@@ -548,7 +548,7 @@ const Classifications: React.FC = () => {
 
     useEffect(() => {
         dispatch(getCollectionAux2(getConversationClassification2(ticketSelected?.conversationid!!)))
-    }, [ticketSelected])
+    }, [])
 
     useEffect(() => {
         if (!tipifyRes.loading && !tipifyRes.error) {
@@ -557,7 +557,9 @@ const Classifications: React.FC = () => {
     }, [tipifyRes])
 
     useEffect(() => {
-        setClassifications(mainAux2?.data?.reverse() || [])
+        if (!mainAux2.loading && !mainAux2.error) {
+            setClassifications(mainAux2?.data?.reverse() || [])
+        }
     }, [mainAux2])
 
     useEffect(() => {
