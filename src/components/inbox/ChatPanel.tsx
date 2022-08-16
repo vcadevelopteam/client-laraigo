@@ -284,7 +284,7 @@ const DialogCloseticket: React.FC<{
     const [waitClose, setWaitClose] = useState(false);
     const [waitOther, setWaitOther] = useState(false);
     const changeStatusRes = useSelector(state => state.main.execute);
-
+    const [motives, setMotives] = useState<{ closed: Dictionary[], suspend: Dictionary[], selected: Dictionary[] }>({ closed: [], suspend: [], selected: [] });
     const multiData = useSelector(state => state.main.multiData);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const userType = useSelector(state => state.inbox.userType);
@@ -320,11 +320,24 @@ const DialogCloseticket: React.FC<{
     }, [closingRes, waitClose])
 
     useEffect(() => {
+        if (!multiData.error && !multiData.loading) {
+            const indexClosed = multiData.data.findIndex((x => x.key === `UFN_DOMAIN_LST_VALUES_ONLY_DATA_MOTIVOCIERRE`));
+            const indexSuspend = multiData.data.findIndex((x => x.key === `UFN_DOMAIN_LST_VALUES_ONLY_DATA_MOTIVOSUSPENSION`));
+
+            if (indexClosed > -1) {
+                setMotives({
+                    closed: multiData.data[indexClosed].data,
+                    suspend: multiData.data[indexSuspend].data,
+                    selected: []
+                })   
+            }
+        }
+    }, [multiData])
+
+    useEffect(() => {
         if (waitOther) {
             if (!changeStatusRes.loading && !changeStatusRes.error) {
-
                 dispatch(showSnackbar({ show: true, severity: "success", message: status === "SUSPENDIDO" ? t(langKeys.successful_suspend_ticket) : t(langKeys.successful_reactivate_ticket) }))
-                // dispatch(changeStatusTicket(ticketSelected?.conversationid!!, status));
 
                 dispatch(emitEvent({
                     event: 'changeStatusTicket',
@@ -350,6 +363,17 @@ const DialogCloseticket: React.FC<{
 
     useEffect(() => {
         if (openModal) {
+            if (status === "CERRADO") {
+                setMotives({
+                    ...motives,
+                    selected: motives.closed
+                })
+            } else {
+                setMotives({
+                    ...motives,
+                    selected: motives.suspend
+                })
+            }
             reset({
                 motive: '',
                 observation: ''
@@ -404,7 +428,7 @@ const DialogCloseticket: React.FC<{
                     valueDefault={getValues('motive')}
                     onChange={(value) => setValue('motive', value ? value.domainvalue : '')}
                     error={errors?.motive?.message}
-                    data={(status === "CERRADO" ? multiData?.data?.[0]?.data || [] : multiData?.data?.[8]?.data || [])}
+                    data={motives.selected}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />
