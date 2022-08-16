@@ -409,7 +409,6 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
                     fetchData={fetchData}
                     ButtonsElement={ButtonsElement}
                     exportPersonalized={triggerExportData}
-                    autotrigger={true}
                     useSelection={true}
                     selectionKey={selectionKey}
                     setSelectedRows={setSelectedRows}
