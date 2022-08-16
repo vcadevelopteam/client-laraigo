@@ -181,7 +181,8 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
                 {open && (
                     <div style={{
                         position: 'absolute',
-                        bottom: 60
+                        bottom: 60,
+                        zIndex: 1201,
                     }}>
                         <div className={classes.containerQuickReply}>
                             <div>
@@ -337,7 +338,8 @@ const TmpRichResponseIcon: React.FC<{ classes: any, setText: (param: string) => 
                 {open && (
                     <div style={{
                         position: 'absolute',
-                        bottom: 60
+                        bottom: 60,
+                        zIndex: 1201,
                     }}>
                         <div className={classes.containerQuickReply}>
                             <div>
