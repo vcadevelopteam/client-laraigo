@@ -126,6 +126,11 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
                 Cell: cell
             },
             {
+                Header: t(langKeys.templatename),
+                accessor: 'templatename',
+                Cell: cell
+            },
+            {
                 Header: t(langKeys.channel),
                 accessor: 'channel',
                 Cell: cell
