@@ -254,7 +254,16 @@ export const updatePerson = (state: IState, action: IAction): IState => ({
     }
 })
 
-
+export const updatePersonClassification = (state: IState, action: IAction): IState => ({
+    ...state,
+    person: {
+        ...state.person,
+        data: {
+            ...state.person.data!!,
+            haveclassification: action.payload
+        }
+    }
+})
 
 export const resetSelectTicket = (state: IState, action: IAction): IState => ({
     ...state,
@@ -317,7 +326,6 @@ export const getTickets = (state: IState): IState => ({
 });
 
 export const getTicketsSuccess = (state: IState, action: IAction): IState => {
-    console.log("action.payload.key", action.payload.key.split("_").pop())
     if ((state.agentSelected?.userid + "") === action.payload.key.split("_")?.pop()) {
         return {
             ...state,
@@ -360,6 +368,7 @@ export const connectAgentWS = (state: IState, action: IAction): IState => {
         newAgentList = newAgentList.map(x => x.userid === data.userid ? { 
             ...x, 
             isConnected: data.isconnected, 
+            status: data.isconnected ? "ACTIVO" : "DESCONECTADO",
             motivetype: data.motive, 
             userstatustype:  (data.isconnected ? "ACTIVO" : (data.motive ? "INBOX" : "LOGOUT") )
         } : x).sort((a: any, b: any) => (a.isConnected === b.isConnected) ? 0 : a.isConnected ? -1 : 1)
