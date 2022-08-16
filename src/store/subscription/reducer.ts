@@ -32,10 +32,12 @@ export default createReducer<IState>(initialState, {
     [actionTypes.RECOVER_PASSWORD_FAILURE]: caseFUnctions.recoverPasswordFailure,
     [actionTypes.RECOVER_PASSWORD_SUCCESS]: caseFUnctions.recoverPasswordSuccess,
     [actionTypes.RECOVER_PASSWORD_RESET]: caseFUnctions.recoverPasswordReset,
+
     [actionTypes.CHANGE_PASSWORD]: caseFUnctions.changePassword,
     [actionTypes.CHANGE_PASSWORD_FAILURE]: caseFUnctions.changePasswordFailure,
     [actionTypes.CHANGE_PASSWORD_SUCCESS]: caseFUnctions.changePasswordSuccess,
     [actionTypes.CHANGE_PASSWORD_RESET]: caseFUnctions.changePasswordReset,
+
     [actionTypes.VALIDATE_CHANNELS]: caseFUnctions.validateChannels,
     [actionTypes.VALIDATE_CHANNELS_FAILURE]: caseFUnctions.validateChannelsFailure,
     [actionTypes.VALIDATE_CHANNELS_SUCCESS]: caseFUnctions.validateChannelsSuccess,
