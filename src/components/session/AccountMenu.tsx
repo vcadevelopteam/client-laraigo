@@ -87,7 +87,6 @@ const AccountMenu: FC = () => {
     };
 
     const signOut = () => {
-        dispatch(connectAgentAPI(false))
         dispatch(connectAgentUI(false))
         if (!voxiConnection.error) {
             dispatch(disconnectVoxi())
