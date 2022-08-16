@@ -1995,6 +1995,8 @@ export const langKeys = {
     report_survey_answer3: 'report_survey_answer3',
     report_survey_comment3: 'report_survey_comment3',
 
+    report_campaign: 'report_campaign',
+
 
     submotive: "submotive",
     assessment: "assessment",
