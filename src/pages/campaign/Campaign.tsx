@@ -274,12 +274,12 @@ export const Campaign: FC = () => {
 
     useEffect(() => {
         if (waitStart) {
-            if (!executeResult.loading && !executeResult.error) {
+            if (!auxResult.loading && !auxResult.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_transaction) }))
                 fetchData();
                 setWaitStart(false);
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
+            } else if (auxResult.error) {
+                const errormessage = t(auxResult.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitStart(false);
