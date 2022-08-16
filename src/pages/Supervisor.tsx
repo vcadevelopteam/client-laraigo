@@ -152,7 +152,7 @@ const RenderRow = memo(
     areEqual
 )
 
-const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agent: { name, motivetype, userid, image, isConnected, countPaused, countClosed, countNotAnswered, countPending, countAnswered, channels } }) => {
+const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agent: { name, motivetype, userid, image, isConnected, countPaused, countClosed, countNotAnswered, status, userstatustype, countAnswered, channels } }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -164,7 +164,7 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agen
             <div className={classes.agentUp}>
                 <BadgeGo
                     overlap="circular"
-                    colortmp={isConnected ? "#44b700" : "#b41a1a"}
+                    colortmp={(userstatustype === "INBOX" && status === "DESCONECTADO") ? "#e89647" : (isConnected ? "#44b700" : "#b41a1a")}
                     anchorOrigin={{
                         vertical: 'top',
                         horizontal: 'right',
@@ -231,8 +231,11 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agen
 
 const HeaderAgentPanel: FC<{
     classes: any,
-    onSearch: (pageSelected: number, search: string, filterBy: string) => void
-}> = ({ classes, onSearch }) => {
+    onSearch: (pageSelected: number, search: string, filterBy: string) => void,
+    countAll: number,
+    countConnected: number,
+    countDisconnected: number,
+}> = ({ classes, onSearch, countAll, countConnected, countDisconnected }) => {
 
     const [pageSelected, setPageSelected] = useState(0);
     const [showSearch, setShowSearch] = useState(false);
@@ -332,9 +335,9 @@ const HeaderAgentPanel: FC<{
                 textColor="primary"
                 onChange={(_, value) => setPageSelected(value)}
             >
-                <AntTab label={t(langKeys.all_adivisers)} />
-                <AntTab label={t(langKeys.conected)} />
-                <AntTab label={t(langKeys.disconected)} />
+                <AntTab label={`${t(langKeys.all_adivisers)}(${countAll})`} />
+                <AntTab label={`${t(langKeys.conected)}(${countConnected})`} />
+                <AntTab label={`${t(langKeys.disconected)}(${countDisconnected})`} />
             </Tabs>
         </>
     )
@@ -364,7 +367,13 @@ const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
 
     return (
         <div className={classes.containerAgents}>
-            <HeaderAgentPanel classes={classes} onSearch={onSearch} />
+            <HeaderAgentPanel 
+                classes={classes} 
+                onSearch={onSearch} 
+                countAll={agentsToShow.length}
+                countConnected={agentsToShow.filter(x => x.isConnected).length}
+                countDisconnected={agentsToShow.filter(x => !x.isConnected).length}
+            />
             {agentList.loading ? <ListItemSkeleton /> :
                 <div className="scroll-style-go" style={{ height: '100%' }}>
                     <AutoSizer>
@@ -395,7 +404,6 @@ const Supervisor: FC = () => {
     const multiData = useSelector(state => state.main.multiData);
     const [initial, setInitial] = useState(true)
     const firstLoad = React.useRef(true);
-
 
     useEffect(() => {
         if (multiData?.data[1])

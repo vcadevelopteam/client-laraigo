@@ -325,30 +325,32 @@ const DialogInteractions: React.FC<{ ticket: Dictionary | null, openModal: boole
                 gg.style.display = 'flex';
                 gg.style.flexDirection = 'column';
                 gg.style.gap = '8px';
+                gg.style.width = '190mm';
                 gg.id = "newexportcontainer"
                 document.body.appendChild(gg);
 
                 gg.innerHTML = el.current.innerHTML;
                 document.body.appendChild(gg);
                 const pdf = new jsPDF('p', 'mm');
-
                 if (pdf) {
                     DomToImage.toPng(gg)
                         .then(imgData => {
-                            var imgWidth = 210;
-                            var pageHeight = 295;
-                            var imgHeight = gg.scrollHeight * imgWidth / gg.offsetWidth;
+                            var imgWidth = 200;
+                            var pageHeight = 297;
+                            var imgHeight = Math.ceil(gg.scrollHeight * 0.2645833333);
                             var heightLeft = imgHeight;
                             var doc = new jsPDF('p', 'mm');
-                            var position = 10; // give some top padding to first page
+                            var topPadding = 10;
+                            var position = topPadding; // give some top padding to first page
 
-                            doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                            doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
                             heightLeft -= pageHeight;
 
                             while (heightLeft >= 0) {
-                                position += heightLeft - imgHeight; // top padding for other pages
+                                debugger // 4806109
+                                position = heightLeft - imgHeight + topPadding; // top padding for other pages
                                 doc.addPage();
-                                doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                                doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
                                 heightLeft -= pageHeight;
                             }
                             doc.save(`ticket${ticket?.ticketnum}.pdf`);

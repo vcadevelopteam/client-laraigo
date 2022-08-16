@@ -1072,6 +1072,11 @@ const Users: FC = () => {
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
                 }
             },
+            {
+                Header: t(langKeys.billingGroup),
+                accessor: 'billinggroup',
+                NoFilter: true
+            },
 
         ],
         []

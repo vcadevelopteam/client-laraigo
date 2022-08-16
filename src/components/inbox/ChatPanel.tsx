@@ -34,6 +34,7 @@ import PhoneIcon from '@material-ui/icons/Phone';
 import IOSSwitch from "components/fields/IOSSwitch";
 import { setModalCall } from 'store/voximplant/actions';
 import { useLocation } from 'react-router-dom';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 
 const dataPriority = [
     { option: 'HIGH' },
@@ -426,9 +427,11 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     const multiData = useSelector(state => state.main.multiData);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const agentToReassignList = useSelector(state => state.inbox.agentToReassignList);
+    
     const user = useSelector(state => state.login.validateToken.user);
-    const [usergroupslist, setusergroupslist] = useState<Dictionary[]>([])
     const groups = user?.groups?.split(",") || [];
+
+    const [usergroupslist, setusergroupslist] = useState<Dictionary[]>([])
     const userType = useSelector(state => state.inbox.userType);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const reassigningRes = useSelector(state => state.inbox.triggerReassignTicket);
@@ -1212,6 +1215,7 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
     const person = useSelector(state => state.inbox.person.data);
     const [showSearcher, setShowSearcher] = useState(false);
     const showInfoPanelTrigger = () => dispatch(showInfoPanel())
+    const { t } = useTranslation();
 
     return (
         <div style={{ position: 'relative' }}>
@@ -1226,6 +1230,13 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
                         </div>
                         <div style={{ fontSize: 14, fontWeight: 400 }}>
                             Ticket {ticketSelected!!.ticketnum}
+                            <Tooltip style={{padding:0, paddingLeft:5}} title={t(langKeys.copyticketnum) + ""} arrow placement="top">
+                                <IconButton onClick={()=>{
+                                    navigator.clipboard.writeText(ticketSelected!!.ticketnum)
+                                    }}>
+                                    <FileCopyIcon style={{width:15, height:15}} fill="#8F92A1" />
+                                </IconButton>
+                            </Tooltip>
                         </div>
                     </div>
                 </div>

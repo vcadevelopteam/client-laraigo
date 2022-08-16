@@ -5,7 +5,7 @@ const translation: LangKeys = {
     currentlanguage: 'es',
     english: 'Inglés',
     spanish: 'Español',
-
+    notred: "Se perdió la conexión, estamos tratando de volver a conectar",
     dashboard: 'Dashboard',
     dashboard_plural: 'Dashboards',
 
@@ -148,8 +148,10 @@ const translation: LangKeys = {
     search_result: 'Resultado de búsqueda',
     persons_selected: 'personas seleccionadas',
     without_result: 'Sin resultado',
+    copyticketnum: "Copiar número de ticket",
     without_files: 'Sin adjuntos',
     information: "Información",
+    copied: "Copiado",
     translationservice: 'Servicio de Traduccion',
     channeltype: 'Tipo Canal',
     channeldesc: 'Descripcion Canal',
