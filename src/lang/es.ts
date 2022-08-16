@@ -1837,6 +1837,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
 
     report_userproductivity: 'Productividad de asesores',
     report_ticketvsasesor: 'Tickets vs Asesor',
+    report_campaign: 'Campañas',
     report_userproductivity_totalclosedtickets: 'N° Tickets cerrados',
     report_userproductivity_holdingtickets: 'N° Tickets en holding',
     report_userproductivity_asesortickets: 'N° Tickets en asesor',

@@ -18,7 +18,8 @@ import { CalendarIcon } from 'icons';
 import { Search as SearchIcon } from '@material-ui/icons';
 
 interface DetailProps {
-    setViewSelected: (view: string) => void;
+    setViewSelected?: (view: string) => void;
+    externalUse?: boolean;
 }
 
 const arrayBread = [
@@ -66,7 +67,7 @@ const initialRange = {
     key: 'selection'
 }
 
-export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
+export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externalUse }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -337,7 +338,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
 
     const ButtonsElement = () => {
         return (
-            <div style={{display: 'flex', gap: '4px'}}>
+            <div style={{display: 'flex', gap: '8px'}}>
                 <DateRangePicker
                     open={openDateRangeCreateDateModal}
                     setOpen={setOpenDateRangeCreateDateModal}
@@ -378,7 +379,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
 
     return (
         <div style={{ width: '100%' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            {!externalUse && <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div>
                     <TemplateBreadcrumbs
                         breadcrumbs={arrayBread}
@@ -394,11 +395,12 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
                         type="button"
                         color="primary"
                         style={{ backgroundColor: "#FB5F5F" }}
-                        onClick={() => setViewSelected("view-1")}
+                        onClick={() => setViewSelected && setViewSelected("view-1")}
                     >{t(langKeys.back)}</Button>
                 </div>
-            </div>
-            <div className={classes.containerDetail}>
+            </div>}
+            {externalUse && <div style={{ height: 10 }}></div>}
+            <div className={externalUse ? '' : classes.containerDetail}>
                 <TablePaginated
                     columns={columns}
                     data={mainPaginated.data}

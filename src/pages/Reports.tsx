@@ -41,6 +41,7 @@ import { Search as SearchIcon } from '@material-ui/icons';
 import ReportInvoice from 'components/report/ReportInvoice';
 import TicketvsAdviser from 'components/report/TicketvsAdviser';
 import HSMHistoryReport from './HSMHistoryReport';
+import { CampaignReport } from './campaign';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -1031,6 +1032,27 @@ const Reports: FC = () => {
                         </Card>
                     </Grid>
                 )
+            case 'CAMPAIGN':
+                return (
+                    <Grid item key={"campaign"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                        <Card >
+                            <CardActionArea onClick={() => handleSelectedString("campaign")}>
+                                <CardMedia
+                                    component="img"
+                                    height="140"
+                                    className={classes.media}
+                                    image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/02reportehsm.png"
+                                    title={t(langKeys.campaign)}
+                                />
+                                <CardContent>
+                                    <Typography gutterBottom variant="h6" component="div">
+                                        {t(langKeys.campaign)}
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                )
             default:
                 return (
                     <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
@@ -1269,6 +1291,20 @@ const Reports: FC = () => {
                         handleClick={handleSelectedString}
                     />
                     <TicketvsAdviser />
+                </div>
+            </>
+        )
+    } else if (viewSelected === "campaign") {
+        return (
+            <>
+                <div style={{ width: '100%' }}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={getArrayBread(t('report_campaign'), t(langKeys.report_plural))}
+                        handleClick={handleSelectedString}
+                    />
+                    <CampaignReport
+                        externalUse={true}
+                    />
                 </div>
             </>
         )
