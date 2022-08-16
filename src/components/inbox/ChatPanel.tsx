@@ -9,7 +9,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent, sendHSM, updatePerson, hideLogInteractions } from 'store/inbox/actions';
+import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent, sendHSM, updatePerson, hideLogInteractions, updateClassificationPerson } from 'store/inbox/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { changeStatus, getConversationClassification2, insertClassificationConversation, insLeadPerson } from 'common/helpers';
 import { execute, getCollectionAux2 } from 'store/main/actions';
@@ -329,7 +329,7 @@ const DialogCloseticket: React.FC<{
                     closed: multiData.data[indexClosed].data,
                     suspend: multiData.data[indexSuspend].data,
                     selected: []
-                })   
+                })
             }
         }
     }, [multiData])
@@ -451,7 +451,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     const multiData = useSelector(state => state.main.multiData);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const agentToReassignList = useSelector(state => state.inbox.agentToReassignList);
-    
+
     const user = useSelector(state => state.login.validateToken.user);
     const groups = user?.groups?.split(",") || [];
 
@@ -828,6 +828,7 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
     useEffect(() => {
         if (waitTipify) {
             if (!tipifyRes.loading && !tipifyRes.error) {
+                dispatch(updateClassificationPerson(true))
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_tipify_ticket) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
@@ -961,16 +962,16 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     const voxiConnection = useSelector(state => state.voximplant.connection);
     const [openModalHSM, setOpenModalHSM] = useState(false);
     const multiData = useSelector(state => state.main.multiData);
+    const person = useSelector(state => state.inbox.person);
     const statusCall = useSelector(state => state.voximplant.statusCall);
     const [checkTipification, setCheckTipification] = useState(false);
     const mainAux2 = useSelector(state => state.main.mainAux2);
     const location = useLocation();
     const userConnected = useSelector(state => state.inbox.userConnected);
-    // const [showLogs, setShowLogs] = React.useState<boolean>(false)
 
     const closeTicket = (newstatus: string) => {
         if (newstatus === "CERRADO") {
-            let tipificationproperty = (multiData?.data?.[12]?.data || [])[0];
+            let tipificationproperty = (multiData?.data?.[12]?.data || [{ propertyvalue: "0" }])[0];
             if (tipificationproperty?.propertyvalue === "1") {
                 setCheckTipification(true);
                 dispatch(getCollectionAux2(getConversationClassification2(ticketSelected?.conversationid!!)))
@@ -1032,7 +1033,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                 {(ticketSelected?.status !== 'CERRADO' && ticketSelected?.communicationchanneltype !== "VOXI") &&
                     <Tooltip title={t(langKeys.close_ticket) + ""} arrow placement="top">
                         <IconButton onClick={() => closeTicket("CERRADO")}>
-                            <CloseTicketIcon width={24} height={24} fill="#8F92A1" />
+                            <CloseTicketIcon width={24} height={24} fill={person.data?.haveclassification ? "#b41a1a" : "#8F92A1"} />
                         </IconButton>
                     </Tooltip>
                 }
@@ -1255,11 +1256,11 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
                         </div>
                         <div style={{ fontSize: 14, fontWeight: 400 }}>
                             Ticket {ticketSelected!!.ticketnum}
-                            <Tooltip style={{padding:0, paddingLeft:5}} title={t(langKeys.copyticketnum) + ""} arrow placement="top">
-                                <IconButton onClick={()=>{
+                            <Tooltip style={{ padding: 0, paddingLeft: 5 }} title={t(langKeys.copyticketnum) + ""} arrow placement="top">
+                                <IconButton onClick={() => {
                                     navigator.clipboard.writeText(ticketSelected!!.ticketnum)
-                                    }}>
-                                    <FileCopyIcon style={{width:15, height:15}} fill="#8F92A1" />
+                                }}>
+                                    <FileCopyIcon style={{ width: 15, height: 15 }} fill="#8F92A1" />
                                 </IconButton>
                             </Tooltip>
                         </div>
