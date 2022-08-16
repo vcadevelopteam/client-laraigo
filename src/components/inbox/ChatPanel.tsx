@@ -34,6 +34,7 @@ import PhoneIcon from '@material-ui/icons/Phone';
 import IOSSwitch from "components/fields/IOSSwitch";
 import { setModalCall } from 'store/voximplant/actions';
 import { useLocation } from 'react-router-dom';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 
 const dataPriority = [
     { option: 'HIGH' },
@@ -1215,6 +1216,7 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
     const person = useSelector(state => state.inbox.person.data);
     const [showSearcher, setShowSearcher] = useState(false);
     const showInfoPanelTrigger = () => dispatch(showInfoPanel())
+    const { t } = useTranslation();
 
     return (
         <div style={{ position: 'relative' }}>
@@ -1229,6 +1231,13 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
                         </div>
                         <div style={{ fontSize: 14, fontWeight: 400 }}>
                             Ticket {ticketSelected!!.ticketnum}
+                            <Tooltip style={{padding:0, paddingLeft:5}} title={t(langKeys.copyticketnum) + ""} arrow placement="top">
+                                <IconButton onClick={()=>{
+                                    navigator.clipboard.writeText(ticketSelected!!.ticketnum)
+                                    }}>
+                                    <FileCopyIcon style={{width:15, height:15}} fill="#8F92A1" />
+                                </IconButton>
+                            </Tooltip>
                         </div>
                     </div>
                 </div>

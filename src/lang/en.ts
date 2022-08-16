@@ -424,6 +424,8 @@ const translation: LangKeys = {
     type_org_4: 'Cattle Raising (cattle and pigs, sheep, poultry etc.)',
     type_org_5: 'Mixed exploitation',
     type_org_6: 'Ordinary hunting',
+    copyticketnum: "Copy ticket number",
+    copied: "Copied",
     type_org_7: 'Silviculture and other forestry activities',
     type_org_8: 'Wood extraction',
     type_org_9: 'Fishing and aquaculture',
