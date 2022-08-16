@@ -87,6 +87,7 @@ const cleanLogsReassignedTask = (interactions: IInteraction[], returnHidden: boo
 
 export const getAgents = (state: IState): IState => ({
     ...initialState,
+    wsConnected: state.wsConnected,
     userConnected: state.userConnected,
     userType: "SUPERVISOR",
     agentList: { ...state.agentList, loading: true, error: false },
@@ -120,7 +121,8 @@ export const getAgentsFailure = (state: IState, action: IAction): IState => ({
 });
 
 export const getAgentsReset = (state: IState): IState => ({
-    ...initialState
+    ...initialState,
+    wsConnected: state.wsConnected,
 });
 
 export const getPerson = (state: IState): IState => ({
