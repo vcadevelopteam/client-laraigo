@@ -1013,7 +1013,7 @@ const Reports: FC = () => {
                 )
             case 'TICKETVSADVISER':
                 return (
-                    superadmin && <Grid item key={"report_ticketvsasesor"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                    <Grid item key={"report_ticketvsasesor"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
                         <Card >
                             <CardActionArea onClick={() => handleSelectedString("report_ticketvsasesor")}>
                                 <CardMedia
