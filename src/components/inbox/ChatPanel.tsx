@@ -451,11 +451,10 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     const multiData = useSelector(state => state.main.multiData);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const agentToReassignList = useSelector(state => state.inbox.agentToReassignList);
-
     const user = useSelector(state => state.login.validateToken.user);
     const groups = user?.groups?.split(",") || [];
 
-    const [userToReassign, setUserToReassign] = useState<Dictionary[]>([])
+    const [usergroupslist, setusergroupslist] = useState<Dictionary[]>([])
     const userType = useSelector(state => state.inbox.userType);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const reassigningRes = useSelector(state => state.inbox.triggerReassignTicket);
@@ -532,17 +531,15 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
 
     useEffect(() => {
         if (user) {
-            const groups = user?.groups ? user?.groups.split(",") : [];
-            if (user.properties.limit_reassign_group) {
-                setUserToReassign([
-                    { domainvalue: "NINGUNO", domaindesc: t(langKeys.NINGUNO) },
-                    ...(multiData?.data?.[3]?.data || []).filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true)
-                ])
-            } else {
-                setUserToReassign([
-                    { domainvalue: "NINGUNO", domaindesc: t(langKeys.NINGUNO) },
-                    ...(multiData?.data?.[3]?.data || [])
-                ])
+            if(!(multiData.data.filter(x=>x.key==="UFN_PROPERTY_SELBYNAME_LIMITARREASIGNACIONGRUPO")?.[0]?.data?.[0]?.propertyvalue==="1"||false)){
+                setusergroupslist((multiData?.data?.[3]?.data || []))
+            }else{
+                const groups = user?.groups ? user?.groups.split(",") : [];
+                if (user.properties.limit_reassign_group) {
+                    setusergroupslist((multiData?.data?.[3]?.data || []).filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true))
+                } else {
+                    setusergroupslist((multiData?.data?.[3]?.data || []))
+                }
             }
         }
     }, [user, multiData])
@@ -568,7 +565,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                         trigger('newUserId');
                     }}
                     error={errors?.newUserGroup?.message}
-                    data={userToReassign}
+                    data={usergroupslist}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />
@@ -580,23 +577,15 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                         setValue('newUserId', value ? value.userid : 0);
                     }}
                     error={errors?.newUserId?.message}
-                    data={agentToReassignList.filter(x => x.status === "ACTIVO").filter(x => {
-                        if (getValues("newUserGroup")) {
-                            let ingroup = false;
-                            if (getValues("newUserGroup") === "NINGUNO") {
-                                if (groups[0] !== "") {
-                                    groups.forEach(e => {
-                                        if (x.groups.split(",").includes(e)) ingroup = true;
-                                    })
-                                } else {
-                                    ingroup = true
-                                }
-                                return ingroup
-                            } else {
-                                return x.groups.includes(getValues("newUserGroup"))
+                    data={agentToReassignList.filter(x=>{
+                        if(!(multiData.data.filter(x=>x.key==="UFN_PROPERTY_SELBYNAME_LIMITARREASIGNACIONGRUPO")?.[0]?.data?.[0]?.propertyvalue==="1"||false)){
+                            if(getValues("newUserGroup")===""){
+                                return true
+                            }else{
+                                return (x.status === "ACTIVO" && x.groups.includes(getValues("newUserGroup")))
                             }
-                        } else {
-                            return false
+                        }else{
+                            return (x.status === "ACTIVO" && x.groups.includes(getValues("newUserGroup")))
                         }
                     })
                     }

@@ -1949,9 +1949,9 @@ export const getdashboardoperativoEncuesta2Seldata = ({ startdate, enddate, chan
     }
 });
 
-export const getPropertySelByName = (propertyname: string): IRequestBody => ({
+export const getPropertySelByName = (propertyname: string, key=""): IRequestBody => ({
     method: 'UFN_PROPERTY_SELBYNAME',
-    key: "UFN_PROPERTY_SELBYNAME",
+    key: `UFN_PROPERTY_SELBYNAME${key}`,
     parameters: {
         propertyname
     }

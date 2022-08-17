@@ -87,7 +87,8 @@ const MessageInbox: React.FC = () => {
             getInappropriateWordsLst(),
             getPropertySelByName("TIPIFICACION"),
             getUserChannelSel(),
-            getPropertiesIncludingName("WAITINGTIMECUSTOMER")
+            getPropertiesIncludingName("WAITINGTIMECUSTOMER"),
+            getPropertySelByName("LIMITARREASIGNACIONGRUPO","_LIMITARREASIGNACIONGRUPO"),
         ]))
         dispatch(getMultiCollectionAux2([
             getValuesFromDomainLight("MOTIVOCIERRE"),
