@@ -1723,6 +1723,7 @@ const translation: LangKeys = {
     dashboard_operationalpush_application_tag: "Tag",
     dashboard_operationalpush_application_quantity: "Quantity",
     dashboard_operationalpush_application_channel: "Channel",
+    error_invaliddata: "No valid data found",
     
     dashboard_operationalpush_disconnections_usr: "User",
     dashboard_operationalpush_disconnections_type: "Reason",

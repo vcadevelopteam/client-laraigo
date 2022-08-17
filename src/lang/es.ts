@@ -1688,6 +1688,7 @@ const translation: LangKeys = {
     dashboard_operationalpush_messageperday_sentdate: 'Fecha del mensaje enviado',
     dashboard_operationalpush_messageperday_clientnumber: 'Número',
     dashboard_operationalpush_messageperday_status: 'Estado',
+    error_invaliddata: "No se econtraron datos válidos",
 
     dashboard_operationalpush_disconnections_usr: "Usuario",
     dashboard_operationalpush_disconnections_type: "Motivo",
