@@ -262,6 +262,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
         setValue('roleid', value ? value.roleid : 0);
         setValue('roledesc', value ? value.roldesc : 0);
         setValue('type', value ? value.type : 0);
+        setValue('redirect', ''); 
+        updatefield('redirect', '');
 
         updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
             p[index] = { ...p[index], roleid: value?.roleid || 0, roledesc: value?.roldesc || 0, type: value?.type || 0 }
@@ -357,7 +359,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                             <FieldSelect
                                 label={t(langKeys.default_application)}
                                 className={classes.mb2}
-                                valueDefault={row?.redirect || ""}
+                                valueDefault={getValues("redirect")}
                                 onChange={(value) => { setValue('redirect', value?.path || ''); updatefield('redirect', value?.path || '') }}
                                 error={errors?.redirect?.message}
                                 data={dataApplications.data}
