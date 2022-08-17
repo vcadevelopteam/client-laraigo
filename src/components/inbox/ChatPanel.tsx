@@ -578,24 +578,15 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                         setValue('newUserId', value ? value.userid : 0);
                     }}
                     error={errors?.newUserId?.message}
-                    data={(!(multiData.data.filter(x=>x.key==="UFN_PROPERTY_SELBYNAME_LIMITARREASIGNACIONGRUPO")?.[0]?.data?.[0]?.propertyvalue==="1"||false) && getValues('newUserGroup')==="")? agentToReassignList:
-                        agentToReassignList.filter(x => x.status === "ACTIVO").filter(x => {
-                        if (getValues("newUserGroup")) {
-                            let ingroup = false;
-                            if (getValues("newUserGroup") === "NINGUNO") {
-                                if (groups[0] !== "") {
-                                    groups.forEach(e => {
-                                        if (x.groups.split(",").includes(e)) ingroup = true;
-                                    })
-                                } else {
-                                    ingroup = true
-                                }
-                                return ingroup
-                            } else {
-                                return x.groups.includes(getValues("newUserGroup"))
+                    data={agentToReassignList.filter(x=>{
+                        if(!(multiData.data.filter(x=>x.key==="UFN_PROPERTY_SELBYNAME_LIMITARREASIGNACIONGRUPO")?.[0]?.data?.[0]?.propertyvalue==="1"||false)){
+                            if(getValues("newUserGroup")===""){
+                                return true
+                            }else{
+                                return (x.status === "ACTIVO" && x.groups.includes(getValues("newUserGroup")))
                             }
-                        } else {
-                            return false
+                        }else{
+                            return (x.status === "ACTIVO" && x.groups.includes(getValues("newUserGroup")))
                         }
                     })
                     }
