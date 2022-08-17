@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { BoxProps, makeStyles, Box, Grid } from '@material-ui/core';
 import { Title } from 'components';
 import { langKeys } from 'lang/keys';
@@ -313,6 +313,7 @@ const Settings: FC = () => {
     const user = useSelector(state => state.login.validateToken.user);
     const setting = useSelector(state => state.setting.setting);
     const propertySettings = useSelector(state => state.setting.propertySettings);
+    const [ambiente, setAmbiente] = useState("");
 
     useEffect(() => {
         dispatch(getSetting(getCountConfigurationsBody()));
@@ -325,7 +326,9 @@ const Settings: FC = () => {
     }, [dispatch]);
 
     useEffect(() => {
-        if (propertySettings.loading) return;
+        if (!propertySettings.loading && !propertySettings.error){
+            setAmbiente(propertySettings?.data?.[9]?.data?.[0]?.propertyvalue||"");
+        }        
         if (propertySettings.error === true) {
             dispatch(showSnackbar({
                 message: propertySettings.message || 'Error',
@@ -337,6 +340,7 @@ const Settings: FC = () => {
 
     useEffect(() => {
         if (setting.loading) return;
+        
         if (setting.error === true) {
             dispatch(showSnackbar({
                 message: setting.message || 'Error',
@@ -621,6 +625,7 @@ const Settings: FC = () => {
                         </Grid> 
                     </Grid>
                     
+                    {(ambiente!=="CLARO") &&
                     <Grid item xs={12} sm={12} md={12} lg={6} xl={6}>
                         <Grid container direction="column">
                             <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
@@ -640,7 +645,7 @@ const Settings: FC = () => {
                             </Grid>
                         </Grid>
                     </Grid>
-
+                    }
                     <Grid item xs={12} sm={12} md={12} lg={6} xl={6}>
                         <Grid container direction="column">
                             <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
@@ -660,7 +665,7 @@ const Settings: FC = () => {
                             </Grid>
                         </Grid>
                     </Grid>
-
+                    {(ambiente!=="CLARO") &&
                     <Grid item xs={12} sm={12} md={12} lg={6} xl={6}>
                         <Grid container direction="column">
                             <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
@@ -679,7 +684,7 @@ const Settings: FC = () => {
                                 />
                             </Grid>
                         </Grid>
-                    </Grid>
+                    </Grid>}
                 </Grid>
                 </>
             }
