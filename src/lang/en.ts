@@ -3223,6 +3223,7 @@ const translation: LangKeys = {
     propertynpsrojo: 'Traffic lights',
     time: "Time",
     report_ticketvsasesor: 'Tickets vs Adviser',
+    report_campaign: 'Campaign',
     propertynpsverde: 'Traffic lights',
     totaltimeconnected: "Total time connected",
     totaltimeoffline: "Total time offline",
