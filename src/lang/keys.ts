@@ -803,6 +803,7 @@ export const langKeys = {
 
     online: 'online',
     offline: 'offline',
+    reschedulingdate: "reschedulingdate",
     logIn: 'logIn',
     newRegisterMessage: 'newRegisterMessage',
     newRegisterMessage2: 'newRegisterMessage2',
@@ -815,7 +816,8 @@ export const langKeys = {
     ready_to_close: 'ready_to_close',
     suspend_ticket: 'suspend_ticket',
     activate_ticket: 'activate_ticket',
-
+    error_rescheduling_date: 'error_rescheduling_date',
+    invalid_rescheduling_date: 'invalid_rescheduling_date',
     user: 'user',
     user_plural: 'user_plural',
     contracted: "contracted",

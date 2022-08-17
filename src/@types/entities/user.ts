@@ -28,6 +28,7 @@ interface Properties {
     auto_close: Dictionary;
     auto_close_holding: Dictionary;
     time_reassign_call: number | undefined;
+    seconds_to_answer_call: number | undefined;
     waiting_customer_message: string | undefined;
     holding_by_supervisor: "CANAL" | "GRUPO" | undefined;
 

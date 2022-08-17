@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { getAgents, selectTicket, setUserType, emitEvent, cleanAlerts, setAgentsToReassign, selectAgent, resetSelectTicket } from 'store/inbox/actions';
 import { useDispatch } from 'react-redux';
 import InboxPanel from 'components/inbox/InboxPanel'
-import { getMultiCollection, resetAllMain } from 'store/main/actions';
+import { getMultiCollection, getMultiCollectionAux2, resetAllMain } from 'store/main/actions';
 import { getMessageTemplateLst, getValuesFromDomainLight, getCommChannelLst, getListUsers, getClassificationLevel1, getListQuickReply, getEmojiAllSel, getInappropriateWordsLst, getPropertySelByName, getUserChannelSel, getPropertiesIncludingName } from 'common/helpers';
 
 const MessageInbox: React.FC = () => {
@@ -88,6 +88,11 @@ const MessageInbox: React.FC = () => {
             getPropertySelByName("TIPIFICACION"),
             getUserChannelSel(),
             getPropertiesIncludingName("WAITINGTIMECUSTOMER")
+        ]))
+        dispatch(getMultiCollectionAux2([
+            getValuesFromDomainLight("MOTIVOCIERRE"),
+            getClassificationLevel1("TIPIFICACION"),
+            getPropertySelByName("TIPIFICACION"),
         ]))
         setinitial(false)
         return () => {

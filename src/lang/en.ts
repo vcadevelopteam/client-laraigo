@@ -153,10 +153,12 @@ const translation: LangKeys = {
     logIn: 'Log in',
     newRegisterMessage: 'Don\'t have an account? ',
     newRegisterMessage2: 'Sign up',
+    reschedulingdate: "Rescheduling date",
     signoff: 'Sign Off',
 
     changePassword: 'Change password',
-
+    error_rescheduling_date: 'The rescheduling date must be later than the current date',
+    invalid_rescheduling_date: 'You must choose a reschedule date',
     user: 'User',
     user_plural: 'Users',
 
