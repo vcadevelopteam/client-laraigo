@@ -1799,6 +1799,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
     } = useContext(SubscriptionContext);
     const { t } = useTranslation();
     const { getValues, setValue, formState: { errors } } = useFormContext<MainData>();
+    const [nextbutton2, setNextbutton2] = useState(true);
 
     return (
         <div className={clsx(commonClasses.root, submitError && commonClasses.rootError)}>
@@ -1831,7 +1832,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
                 </div>
             )}
             <FieldEdit
-                onChange={v => setValue('channels.chatWeb.description', v)}
+                onChange={v => { setValue('channels.chatWeb.description', v); setNextbutton2(!v); }}
                 valueDefault={getValues('channels.chatWeb.description')}
                 label={t(langKeys.givechannelname)}
                 variant="outlined"
@@ -1852,7 +1853,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
                     className={commonClasses.button}
                     variant="contained"
                     color="primary"
-                    disabled={loading || integrationId != null}
+                    disabled={loading || integrationId != null || nextbutton2}
                 >
                     <Trans i18nKey={langKeys.next} />
                 </Button>

@@ -3793,6 +3793,18 @@ const translation: LangKeys = {
     subscription_channellimit: "The maximum amount of channels is:",
     subscription_nolimit: "No limit",
 
+    channel_youtubealert1: 'Install the chatbot on your YouTube channel and start getting leads.',
+    channel_youtubealert2: 'The channels linked to your Google account will be the ones used on this process.',
+    selectchannellink: 'Select the channel to link',
+    channel_bloggeralert1: 'Install the chatbot on your blog and start getting leads.',
+    channel_bloggeralert2: 'The channels linked to your Google account will be the ones used on this process.',
+    registerinfobip: "Register as Infobip",
+    registergmail: "Register as Gmail",
+    channel_gmailalert1: 'Install the chatbot on your mail and start getting leads.',
+    channel_gmailalert2: 'The selected mail account will be the one used on this process.',
+    channel_gmailtitle: 'Connect Gmail',
+    subscription_missinginfo: 'You must complete the information of the selected channels',
+
     voicechannel_capacities: 'Capacities',
     voicechannel_recording: 'Recordings',
     voicechannel_recordingtooltip: 'Store and save messages. 15 seconds per $0.3',

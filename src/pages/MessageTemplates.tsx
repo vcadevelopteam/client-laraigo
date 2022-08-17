@@ -681,7 +681,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
         setValue('attachment', getValues('attachment').split(',').filter((a: string) => a !== f).join(','));
         await trigger('attachment');
     }
-
+    
     return (
         <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>

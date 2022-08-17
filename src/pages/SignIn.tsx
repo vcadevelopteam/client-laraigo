@@ -149,14 +149,15 @@ const SignIn = () => {
         }
     }
 
-    const onGoogleLoginFailure = (r: any) => {
-        if (r && r.error) {
-            switch (r.error) {
+    const onGoogleLoginFailure = (event: any) => {
+        console.log('GOOGLE LOGIN FAILURE: ' + JSON.stringify(event));
+        if (event && event.error) {
+            switch (event.error) {
                 case 'idpiframe_initialization_failed':
                 case 'popup_closed_by_user':
                     break;
                 default:
-                    alert(r.error);
+                    alert(event.error);
                     break;
             }
         }
@@ -174,7 +175,6 @@ const SignIn = () => {
     }, [location]);
 
     useEffect(() => {
-        console.log(`FACEBOOK SIGNIN: ${window.location.href}`);
         if (getAccessToken()) {
             history.push('/');
         }
@@ -189,7 +189,7 @@ const SignIn = () => {
 
     return (
         <>
-            <meta name="google-signin-client_id" content="792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com" />
+            <meta name="google-signin-client_id" content={apiUrls.GOOGLECLIENTID_LOGIN} />
             <script src="https://apis.google.com/js/platform.js" async defer></script>
             <Container component="main" maxWidth="xs" className={classes.containerLogin}>
                 <div className={classes.childContainer}>
@@ -267,7 +267,7 @@ const SignIn = () => {
                                     />
                                     <div className={classes.buttonGoogle}>
                                         <GoogleLogin
-                                            clientId="792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com"
+                                            clientId={apiUrls.GOOGLECLIENTID_LOGIN}
                                             buttonText={t(langKeys.login_with_google)}
                                             style={{ justifyContent: 'center', width: '100%' }}
                                             onSuccess={onGoogleLoginSucess}

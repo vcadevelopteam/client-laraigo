@@ -82,7 +82,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
     const [hasFinished, setHasFinished] = useState(false);
     const [submitError, setSubmitError] = useState(false);
     const { t } = useTranslation();
-
+    const [nextbutton2, setNextbutton2] = useState(true);
     const classes = useChannelAddStyles();
 
     useEffect(() => {
@@ -373,7 +373,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                 </div>
             )}
             <FieldEdit
-                onChange={(value) => setValue('channels.whatsapp.description', value)}
+                onChange={(value) => { setValue('channels.whatsapp.description', value); setNextbutton2(!value); }}
                 valueDefault={getValues('channels.whatsapp.description')}
                 label={t(langKeys.givechannelname)}
                 variant="outlined"
@@ -393,6 +393,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                     className={commonClasses.button}
                     variant="contained"
                     color="primary"
+                    disabled={nextbutton2}
                 >
                     <Trans i18nKey={langKeys.next} />
                 </Button>
