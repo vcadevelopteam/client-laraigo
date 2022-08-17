@@ -3838,6 +3838,13 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     privacypolicy55: "Blogger:",
     privacypolicy56: "Información del blog y de los post, como titulo del post, contenido del post e información de las respuestas, ademas de los permisos necesario para responder como el usuario enlazado",
     privacypolicy57: "Usamos la información como parte de nuestro módulo de gestión de canales. La información es utilizada para crear un canal donde eventos entrantes (comentarios y mensajes) son registrados en la plataforma y procesados como tickets. Algunos usuarios selectos de la plataforma pueden enviar respuestas a estos tickets, las cuales serán mostradas como respuestas en el canal de Google que corresponda.",
+
+    registergupshup: "Registrar como Gupshup",
+    whatsapptitlegupshup: "Para conectar una cuenta de WhatsApp Gupshup, ingresa la información del App que deseas conectar en el siguiente formulario",
+    gupshuppappid: "ID de Aplicación",
+    gupshuppappname: "Nombre de Aplicación",
+    gupshuppapikey: "Llave API",
+    gupshuppappnumber: "Número telefónico",
 };
 
 const esResource: ResourceLanguage = {
