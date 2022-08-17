@@ -389,6 +389,7 @@ export const langKeys = {
     businesshours: "businesshours",
     starttime: "starttime",
     finishtime: "finishtime",
+    realduration: "realduration",
     contractedplanbyperiod: "contractedplanbyperiod",
     newsupportplan: "newsupportplan",
     newcontractedplanbyperiod: "newcontractedplanbyperiod",

@@ -186,6 +186,7 @@ const translation: LangKeys = {
     businesshours: "Business hours",
     starttime: "Start time",
     finishtime: "Finish time",
+    realduration: "Conversation duration",
     submotive: "Submotive",
     assessment: "Assessment",
     newsupportplan: "New support plan",
