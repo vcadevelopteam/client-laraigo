@@ -9,7 +9,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent, sendHSM, updatePerson, hideLogInteractions } from 'store/inbox/actions';
+import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent, sendHSM, updatePerson, hideLogInteractions, updateClassificationPerson } from 'store/inbox/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { changeStatus, getConversationClassification2, insertClassificationConversation, insLeadPerson } from 'common/helpers';
 import { execute, getCollectionAux2 } from 'store/main/actions';
@@ -34,6 +34,7 @@ import PhoneIcon from '@material-ui/icons/Phone';
 import IOSSwitch from "components/fields/IOSSwitch";
 import { setModalCall } from 'store/voximplant/actions';
 import { useLocation } from 'react-router-dom';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 
 const dataPriority = [
     { option: 'HIGH' },
@@ -283,7 +284,7 @@ const DialogCloseticket: React.FC<{
     const [waitClose, setWaitClose] = useState(false);
     const [waitOther, setWaitOther] = useState(false);
     const changeStatusRes = useSelector(state => state.main.execute);
-
+    const [motives, setMotives] = useState<{ closed: Dictionary[], suspend: Dictionary[], selected: Dictionary[] }>({ closed: [], suspend: [], selected: [] });
     const multiData = useSelector(state => state.main.multiData);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const userType = useSelector(state => state.inbox.userType);
@@ -304,6 +305,7 @@ const DialogCloseticket: React.FC<{
                         ticketnum: ticketSelected?.ticketnum,
                         status: ticketSelected?.status,
                         isanswered: ticketSelected?.isAnswered,
+                        usergroup: ticketSelected?.usergroup,
                         userid: userType === "AGENT" ? 0 : agentSelected?.userid,
                         getToken: userType === "SUPERVISOR"
                     }
@@ -318,11 +320,24 @@ const DialogCloseticket: React.FC<{
     }, [closingRes, waitClose])
 
     useEffect(() => {
+        if (!multiData.error && !multiData.loading) {
+            const indexClosed = multiData.data.findIndex((x => x.key === `UFN_DOMAIN_LST_VALUES_ONLY_DATA_MOTIVOCIERRE`));
+            const indexSuspend = multiData.data.findIndex((x => x.key === `UFN_DOMAIN_LST_VALUES_ONLY_DATA_MOTIVOSUSPENSION`));
+
+            if (indexClosed > -1) {
+                setMotives({
+                    closed: multiData.data[indexClosed].data,
+                    suspend: multiData.data[indexSuspend].data,
+                    selected: []
+                })
+            }
+        }
+    }, [multiData])
+
+    useEffect(() => {
         if (waitOther) {
             if (!changeStatusRes.loading && !changeStatusRes.error) {
-
                 dispatch(showSnackbar({ show: true, severity: "success", message: status === "SUSPENDIDO" ? t(langKeys.successful_suspend_ticket) : t(langKeys.successful_reactivate_ticket) }))
-                // dispatch(changeStatusTicket(ticketSelected?.conversationid!!, status));
 
                 dispatch(emitEvent({
                     event: 'changeStatusTicket',
@@ -348,6 +363,17 @@ const DialogCloseticket: React.FC<{
 
     useEffect(() => {
         if (openModal) {
+            if (status === "CERRADO") {
+                setMotives({
+                    ...motives,
+                    selected: motives.closed
+                })
+            } else {
+                setMotives({
+                    ...motives,
+                    selected: motives.suspend
+                })
+            }
             reset({
                 motive: '',
                 observation: ''
@@ -402,7 +428,7 @@ const DialogCloseticket: React.FC<{
                     valueDefault={getValues('motive')}
                     onChange={(value) => setValue('motive', value ? value.domainvalue : '')}
                     error={errors?.motive?.message}
-                    data={(status === "CERRADO" ? multiData?.data?.[0]?.data || [] : multiData?.data?.[8]?.data || [])}
+                    data={motives.selected}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />
@@ -426,8 +452,9 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const agentToReassignList = useSelector(state => state.inbox.agentToReassignList);
     const user = useSelector(state => state.login.validateToken.user);
-    const [usergroupslist, setusergroupslist] = useState<Dictionary[]>([])
     const groups = user?.groups?.split(",") || [];
+
+    const [usergroupslist, setusergroupslist] = useState<Dictionary[]>([])
     const userType = useSelector(state => state.inbox.userType);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const reassigningRes = useSelector(state => state.inbox.triggerReassignTicket);
@@ -790,6 +817,7 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
     useEffect(() => {
         if (waitTipify) {
             if (!tipifyRes.loading && !tipifyRes.error) {
+                dispatch(updateClassificationPerson(true))
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_tipify_ticket) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
@@ -923,16 +951,16 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     const voxiConnection = useSelector(state => state.voximplant.connection);
     const [openModalHSM, setOpenModalHSM] = useState(false);
     const multiData = useSelector(state => state.main.multiData);
+    const person = useSelector(state => state.inbox.person);
     const statusCall = useSelector(state => state.voximplant.statusCall);
     const [checkTipification, setCheckTipification] = useState(false);
     const mainAux2 = useSelector(state => state.main.mainAux2);
     const location = useLocation();
     const userConnected = useSelector(state => state.inbox.userConnected);
-    // const [showLogs, setShowLogs] = React.useState<boolean>(false)
 
     const closeTicket = (newstatus: string) => {
         if (newstatus === "CERRADO") {
-            let tipificationproperty = (multiData?.data?.[12]?.data || [])[0];
+            let tipificationproperty = (multiData?.data?.[12]?.data || [{ propertyvalue: "0" }])[0];
             if (tipificationproperty?.propertyvalue === "1") {
                 setCheckTipification(true);
                 dispatch(getCollectionAux2(getConversationClassification2(ticketSelected?.conversationid!!)))
@@ -994,7 +1022,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                 {(ticketSelected?.status !== 'CERRADO' && ticketSelected?.communicationchanneltype !== "VOXI") &&
                     <Tooltip title={t(langKeys.close_ticket) + ""} arrow placement="top">
                         <IconButton onClick={() => closeTicket("CERRADO")}>
-                            <CloseTicketIcon width={24} height={24} fill="#8F92A1" />
+                            <CloseTicketIcon width={24} height={24} fill={person.data?.haveclassification ? "#b41a1a" : "#8F92A1"} />
                         </IconButton>
                     </Tooltip>
                 }
@@ -1202,6 +1230,7 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
     const person = useSelector(state => state.inbox.person.data);
     const [showSearcher, setShowSearcher] = useState(false);
     const showInfoPanelTrigger = () => dispatch(showInfoPanel())
+    const { t } = useTranslation();
 
     return (
         <div style={{ position: 'relative' }}>
@@ -1216,6 +1245,13 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
                         </div>
                         <div style={{ fontSize: 14, fontWeight: 400 }}>
                             Ticket {ticketSelected!!.ticketnum}
+                            <Tooltip style={{ padding: 0, paddingLeft: 5 }} title={t(langKeys.copyticketnum) + ""} arrow placement="top">
+                                <IconButton onClick={() => {
+                                    navigator.clipboard.writeText(ticketSelected!!.ticketnum)
+                                }}>
+                                    <FileCopyIcon style={{ width: 15, height: 15 }} fill="#8F92A1" />
+                                </IconButton>
+                            </Tooltip>
                         </div>
                     </div>
                 </div>

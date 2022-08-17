@@ -107,7 +107,7 @@ export const getDataTicket = (ticket: ITicket, lock: boolean): IActionCall => ({
 
 export const resetGetDataTicket = (): IActionCall => ({ type: actionTypes.GET_INTERACTIONS_EXTRA_RESET });
 
-export const selectTicket = (ticket: ITicket): IActionCall => ({ type: actionTypes.SELECT_TICKET, payload: ticket });
+export const selectTicket = (ticket: ITicket | null): IActionCall => ({ type: actionTypes.SELECT_TICKET, payload: ticket });
 
 export const updatePerson = (person: IPerson): IActionCall => ({ type: actionTypes.UPDATE_PERSON, payload: person });
 
@@ -301,3 +301,5 @@ export const disconnectSocket = (): IActionCall => ({ type: actionTypes.WS_DISCO
 export const newTicketCall = (payload: any): IActionCall => ({ type: actionTypes.NEW_TICKET_CALL, payload });
 
 export const setDataUser = (payload: { holdingBySupervisor: "CANAL" | "GRUPO", userGroup: string, role: string }): IActionCall => ({ type: actionTypes.SET_DATA_USER, payload });
+
+export const updateClassificationPerson = (payload: boolean): IActionCall => ({ type: actionTypes.UPDATE_CLASSIFICATION_PERSON, payload });

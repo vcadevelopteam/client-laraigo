@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons } from 'components';
-import { getCampaignLst, delCampaign, getCampaignStatus, getCampaignStart, dateToLocalDate, todayDate, capitalize } from 'common/helpers';
+import { getCampaignLst, delCampaign, getCampaignStatus, getCampaignStart, dateToLocalDate, todayDate, capitalize, stopCampaign } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -15,6 +15,12 @@ import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/acti
 import { CampaignDetail } from 'pages';
 import { Blacklist } from './Blacklist';
 import { CampaignReport } from './CampaignReport';
+import { IconButton, ListItemIcon } from '@material-ui/core';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import DeleteIcon from '@material-ui/icons/Delete';
+import StopIcon from '@material-ui/icons/Stop';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -35,6 +41,64 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const IconOptions: React.FC<{
+    disabled?: boolean,
+    onHandlerDelete?: (e?: any) => void;
+}> = ({ disabled, onHandlerDelete }) => {
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const { t } = useTranslation();
+
+    const handleClose = (e: any) => {
+        e.stopPropagation()
+        setAnchorEl(null)
+    };
+    return (
+        <>
+            <IconButton
+                aria-label="more"
+                aria-controls="long-menu"
+                aria-haspopup="true"
+                size="small"
+                disabled={disabled}
+                onClick={(e) => {
+                    e.stopPropagation()
+                    setAnchorEl(e.currentTarget)
+                }}
+            >
+                <MoreVertIcon />
+            </IconButton>
+            <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                getContentAnchorEl={null}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+            >
+                {onHandlerDelete &&
+                    <MenuItem onClick={(e: any) => {
+                        e.stopPropagation()
+                        setAnchorEl(null);
+                        onHandlerDelete();
+                    }}>
+                        <ListItemIcon color="inherit">
+                            <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                        </ListItemIcon>
+                        {t(langKeys.delete)}
+                    </MenuItem>
+                }
+            </Menu>
+        </>
+    )
+}
+
 export const Campaign: FC = () => {
     const dispatch = useDispatch();
     const classes = useStyles();
@@ -48,6 +112,7 @@ export const Campaign: FC = () => {
     const [waitSave, setWaitSave] = useState(false);
     const [waitStart, setWaitStart] = useState(false);
     const [waitStatus, setWaitStatus] = useState(false);
+    const [waitStop, setWaitStop] = useState(false);
 
     const columns = React.useMemo(
         () => [
@@ -60,10 +125,10 @@ export const Campaign: FC = () => {
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (
-                        <TemplateIcons
-                            viewFunction={() => handleView(row)}
-                            deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
+                        <IconOptions
+                            onHandlerDelete={() => {
+                                handleDelete(row)
+                            }}
                         />
                     )
                 }
@@ -114,6 +179,28 @@ export const Campaign: FC = () => {
                 Cell: (props: any) => {
                     const { status } = props.cell.row.original;
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
+                }
+            },
+            {
+                accessor: 'stop',
+                isComponent: true,
+                maxWidth: '80px',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    if (row?.status === 'EJECUTANDO') {
+                        return <StopIcon
+                            titleAccess={t(langKeys.stop)}
+                            fontSize='large'
+                            style={{ width:35, height:35, fill: '#ea2e49' }}
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                handleStop(row)
+                            }}
+                        />
+                    }
+                    else {
+                        return null
+                    }
                 }
             },
             {
@@ -199,7 +286,20 @@ export const Campaign: FC = () => {
                 setWaitSave(false);
             }
         }
-    }, [executeResult, waitSave]);
+        if (waitStop) {
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_transaction) }))
+                fetchData();
+                dispatch(showBackdrop(false));
+                setWaitStop(false);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitStop(false);
+            }
+        }
+    }, [executeResult, waitSave, waitStop]);
 
     useEffect(() => {
         if (waitStatus) {
@@ -221,12 +321,12 @@ export const Campaign: FC = () => {
             }
         }
         if (waitStart) {
-            if (!executeResult.loading && !executeResult.error) {
+            if (!auxResult.loading && !auxResult.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_transaction) }))
                 fetchData();
                 setWaitStart(false);
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
+            } else if (auxResult.error) {
+                const errormessage = t(auxResult.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitStart(false);
@@ -237,11 +337,6 @@ export const Campaign: FC = () => {
     const handleRegister = () => {
         setViewSelected("view-2");
         setRowSelected({ row: null, edit: true });
-    }
-
-    const handleView = (row: Dictionary) => {
-        setViewSelected("view-2");
-        setRowSelected({ row, edit: false });
     }
 
     const handleEdit = (row: Dictionary) => {
@@ -268,6 +363,22 @@ export const Campaign: FC = () => {
             dispatch(manageConfirmation({
                 visible: true,
                 question: t(langKeys.confirmation_delete),
+                callback
+            }))
+        }
+    }
+
+    const handleStop = (row: Dictionary) => {
+        if (row.status === 'EJECUTANDO') {
+            const callback = () => {
+                dispatch(execute(stopCampaign({ campaignid: row.id })));
+                dispatch(showBackdrop(true));
+                setWaitStop(true);
+            }
+
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_stop),
                 callback
             }))
         }

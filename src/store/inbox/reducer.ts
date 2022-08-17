@@ -242,4 +242,5 @@ export default createReducer<IState>(initialState, {
     [actionTypes.NEW_TICKET_CALL]: caseFunctions.newCallTicket,
     [actionTypes.CALL_CONNECTED]: caseFunctions.callConnected,
     [actionTypes.SET_DATA_USER]: caseFunctions.setDataUser,
+    [actionTypes.UPDATE_CLASSIFICATION_PERSON]: caseFunctions.updatePersonClassification,
 });

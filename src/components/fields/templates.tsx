@@ -443,17 +443,10 @@ export const CurrencyFieldEdit: FC<ICurrencyFieldEdit> = ({
                 helperText={error || null}
                 rows={rows}
                 size={size}
-                // onChange={(e) => {
-                //     setvalue(e.target.value);
-                //     onChange && onChange(e.target.value);
-                // }}
                 onValueChange={(values) => { // { formattedValue, value }
                     setvalue(values.value);
                     onChange && onChange(values.value);
                 }}
-                // onBlur={(e) => {
-                //     onBlur && onBlur(e.target.value);
-                // }}
                 inputProps={inputProps}
                 InputProps={InputProps}
             />
@@ -465,7 +458,7 @@ export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disable
     const [value, setvalue] = useState("");
 
     useEffect(() => {
-        setvalue(valueDefault);
+        setvalue(valueDefault || "");
     }, [valueDefault])
 
     return (
@@ -647,6 +640,7 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
                 filterSelectedOptions
                 style={style}
                 disabled={disabled}
+                disableCloseOnSelect
                 loading={loading}
                 value={optionsSelected}
                 renderOption={(option, { selected }: any) => (
@@ -1106,7 +1100,8 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisNoShow = [
                 {open && (
                     <div style={{
                         position: 'absolute',
-                        bottom: 50
+                        bottom: 50,
+                        zIndex: 1201
                     }}>
                         <Picker
                             onSelect={onSelect}
@@ -1182,6 +1177,7 @@ export const GifPickerZyx: React.FC<{ onSelect?: (e: any) => void, style?: any }
                         bottom: 50,
                         width: 342,
                         height: 400,
+                        zIndex: 1201,
                         backgroundColor: 'white',
                         padding: 4,
                         boxShadow: '0 1px 2px 0 rgb(16 35 47 / 15%)',

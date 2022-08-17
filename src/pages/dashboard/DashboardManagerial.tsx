@@ -183,6 +183,8 @@ const initialRange = {
 
 const DashboardManagerial: FC = () => {
     const classes = useStyles();
+    const user = useSelector(state => state.login.validateToken.user);
+    const groups = user?.groups?.split(",").filter(x=>!!x) || [];
     const mainResultMulti = useSelector(state => state.main.multiData);
     const remultiaux = useSelector(state => state.main.multiDataAux);
     const resaux = useSelector(state => state.main.mainAux);
@@ -368,7 +370,8 @@ const DashboardManagerial: FC = () => {
         if(bringdataFilters){
             if (mainResultMulti.data.length !== 0) {
                 let multiData = mainResultMulti.data;
-                setdataqueue(multiData[0] && multiData[0].success ? multiData[0].data : []);
+                console.log(groups)
+                setdataqueue(multiData[0] && multiData[0].success ? multiData[0].data.filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true) : []);
                 setdataprovider(multiData[1] && multiData[1].success ? multiData[1].data : []);
                 setdatachannels(multiData[2] && multiData[2].success ? multiData[2].data : []);
                 setbringdataFilters(false)

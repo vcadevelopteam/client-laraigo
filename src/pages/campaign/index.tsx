@@ -3,3 +3,4 @@ export { CampaignDetail } from './CampaignDetail';
 export { CampaignGeneral } from './CampaignGeneral';
 export { CampaignPerson } from './CampaignPerson';
 export { CampaignMessage } from './CampaignMessage';
+export { CampaignReport } from './CampaignReport';
