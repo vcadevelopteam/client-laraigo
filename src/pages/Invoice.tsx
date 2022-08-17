@@ -4500,6 +4500,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
     const [waitLoad, setWaitLoad] = useState(false);
     const [waitOrgLoad, setWaitOrgLoad] = useState(false);
     const [waitOrg, setWaitOrg] = useState(false);
+    const [showInsertMessage, setShowInsertMessage] = useState(false);
     const [pageSelected, setPageSelected] = useState(0);
     const [amountTax, setAmountTax] = useState(0);
     const [amountTotal, setAmountTotal] = useState(0);
@@ -4780,6 +4781,18 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
         }
     }
 
+    const getDocumentResult = (country: string, documenttype: string) => {
+        if ((country === 'PE' && documenttype === '6') || (country !== 'PE' && documenttype === '0')) {
+            return 'emissorinvoice';
+        }
+
+        if ((country === 'PE') && (documenttype === '1' || documenttype === '4' || documenttype === '7')) {
+            return 'emissorticket';
+        }
+
+        return '';
+    }
+
     const getInvoiceType = (invoicetype: string) => {
         switch (invoicetype) {
             case '01':
@@ -4886,7 +4899,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
 
         dispatch(manageConfirmation({
             visible: true,
-            question: t(langKeys.confirmation_save),
+            question: showInsertMessage ? t(langKeys.confirmation_save) : `${t(langKeys.invoiceconfirmation01)}\n\n${t(langKeys.invoiceconfirmation02)}${getValues('clientdocnumber')}\n${t(langKeys.invoiceconfirmation03)}${getValues('clientbusinessname')}\n${t(langKeys.invoiceconfirmation04)}${getValues('year')}\n${t(langKeys.invoiceconfirmation05)}${getValues('month')}\n${t(langKeys.invoiceconfirmation06)}${t(getDocumentResult(getValues('clientcountry') || '', getValues('clientdoctype') || ''))}\n${t(langKeys.invoiceconfirmation07)}${t(getValues('clientcredittype'))}\n${t(langKeys.invoiceconfirmation08)}${getValues('invoicecurrency')}\n${t(langKeys.invoiceconfirmation09)}${formatNumber(getValues('invoicetotalamount') || 0)}\n${t(langKeys.invoiceconfirmation10)}${formatNumber(amountTax || 0)}\n${t(langKeys.invoiceconfirmation11)}${formatNumber(amountTotal || 0)}\n\n${t(langKeys.invoiceconfirmation12)}`,
             callback
         }))
     });
@@ -4967,7 +4980,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             variant="contained"
                             color="primary"
                             type='submit'
-                            onClick={() => setValue('onlyinsert', true)}
+                            onClick={() => { setValue('onlyinsert', true); setShowInsertMessage(true); }}
                             startIcon={<SaveIcon color="secondary" />}
                             style={{ backgroundColor: "#55BD84" }}
                         >{t(langKeys.saveasdraft)}
@@ -4986,7 +4999,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             variant="contained"
                             color="primary"
                             type='submit'
-                            onClick={() => setValue('onlyinsert', false)}
+                            onClick={() => { setValue('onlyinsert', false); setShowInsertMessage(false); }}
                             startIcon={<PaymentIcon color="secondary" />}
                             style={{ backgroundColor: "#55BD84" }}
                         >{t(langKeys.emitinvoice)}

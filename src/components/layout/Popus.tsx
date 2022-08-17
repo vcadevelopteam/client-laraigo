@@ -78,7 +78,9 @@ const Popus: React.FC = () => {
                 <DialogTitle>{t(langKeys.confirmation)}</DialogTitle>
                 <DialogContent>
                     <DialogContentText color="textPrimary">
-                        {popus.question.question}
+                        <div style={{ whiteSpace: "pre-wrap" }}>
+                            {popus.question.question}
+                        </div>
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
