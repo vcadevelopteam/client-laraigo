@@ -28,9 +28,9 @@ const useToolbarStyles = makeStyles(theme => ({
         },
     },
     imageLaraigo: {
-        content: 'url(/Laraigo-logo-name.svg)',
+        content: 'url(/laraigo/Laraigo-logo-name.svg)',
         [theme.breakpoints.down('xs')]: {
-            content: 'url(/Laraigo-logo.svg)',
+            content: 'url(/laraigo/Laraigo-logo.svg)',
         },
     },
     statusConnection: {

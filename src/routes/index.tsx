@@ -111,7 +111,7 @@ const RouterApp: FC = () => {
 	}, [dispatch]));
 
 	return (
-		<Router basename={process.env.PUBLIC_URL}>
+		<Router basename={'/laraigo'}>
 			<Switch>
 				<ProtectRoute exact path="/" />
 				<Route exact path={paths.SIGNIN} component={SignIn} />
