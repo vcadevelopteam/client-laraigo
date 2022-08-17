@@ -236,6 +236,7 @@ export const getDomainsByTypenameSuccess = (state: IState, action: IAction): ISt
     const genericstatus = (action.payload.data as any[])[14].data as Dictionary[] | null;
     const userstatus = (action.payload.data as any[])[15].data as Dictionary[] | null;
     const roles = (action.payload.data as any[])[16].data as Dictionary[] | null;
+    const usergroup = (action.payload.data as any[])[17].data as Dictionary[] | null;
 
     return {
         ...state,
@@ -259,6 +260,7 @@ export const getDomainsByTypenameSuccess = (state: IState, action: IAction): ISt
                 genericstatus: genericstatus || [],
                 userstatus: userstatus || [],
                 roles: roles || [],
+                usergroup: usergroup || [],
             },
             loading: false,
             error: false,
