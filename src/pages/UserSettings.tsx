@@ -609,6 +609,8 @@ const UserSettings: FC = () => {
                         </div>
                     </div>
                 </div>
+                {(user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMINISTRADOR")&&
+                <>
                 <div className={classes.containerDetail}>
                     <div className={classes.seccionTitle}>{t(langKeys.planinformation)}</div>
                     <div className="row-zyx">
@@ -635,6 +637,8 @@ const UserSettings: FC = () => {
                         </div>
                     </div>
                 </div>
+                </>
+                }
             </div>
         )
     }
