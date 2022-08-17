@@ -992,7 +992,7 @@ const Reports: FC = () => {
                 )
             case 'INVOICE':
                 return (
-                    superadmin && <Grid item key={"invoice"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                    <Grid item key={"invoice"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
                         <Card >
                             <CardActionArea onClick={() => handleSelectedString("reportinvoice")}>
                                 <CardMedia
