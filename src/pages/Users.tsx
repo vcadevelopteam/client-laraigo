@@ -1083,6 +1083,7 @@ const Users: FC = () => {
     );
     const handleTemplate = () => {
         console.log(domains)
+        debugger
         const data = [
             {},
             {},
@@ -1307,7 +1308,7 @@ const Users: FC = () => {
                                 groups: d.groups || "",
                                 channels: d.channels || "",
                                 status: d.status,
-                                type: "NINGUNO",
+                                type: domains?.value?.roles?.filter(x=>x.roleid===d.role)?.[0]?.roldesc||"",
                                 supervisor: "",
                                 operation: "INSERT",
                                 redirect: "/usersettings"
