@@ -1,9 +1,25 @@
-import { Dictionary, IListStatePaginated, IObjectState, IProcessState } from "@types";
-import { createReducer, initialListPaginatedState, initialObjectState, initialProccessState } from "common/helpers";
+import { Dictionary, IListStatePaginated, IObjectState, IProcessState, ITemplate } from "@types";
+import { createReducer, initialListPaginatedState, initialObjectState, initialProccessState, initialCommon } from "common/helpers";
 import * as caseFUnctions from './caseFunctions';
 import actionTypes from "./actionTypes";
 
+interface channelResponse {
+    code: string,
+    id: string,
+    msg: string,
+    object: string,
+}
+
+export interface IRequest extends ITemplate {
+    data: channelResponse | null;
+    msg?: string | null;
+}
+
 export interface IState {
+    requestSynchronizeTemplate: IRequest;
+    requestAddTemplate: IRequest;
+    requestDeleteTemplate: IRequest;
+
     channelList: IListStatePaginated<Dictionary>;
 
     facebookPages: IListStatePaginated<any>;
@@ -12,13 +28,17 @@ export interface IState {
     instagramDMPages: IListStatePaginated<any>;
 
     successinsert: Boolean;
-    insertChannel: IObjectState<{ success : boolean, integrationid: string }>;
-    activateChannel: IObjectState<{ success : boolean}>;
-    checkPaymentPlan: IObjectState<{ success : boolean, createChannel : boolean, providerWhatsApp: string }>;
+    insertChannel: IObjectState<{ success: boolean, integrationid: string }>;
+    activateChannel: IObjectState<{ success: boolean }>;
+    checkPaymentPlan: IObjectState<{ success: boolean, createChannel: boolean, providerWhatsApp: string }>;
     editChannel: IProcessState;
 }
 
 export const initialState: IState = {
+    requestSynchronizeTemplate: { ...initialCommon, data: null, loading: false, error: false },
+    requestAddTemplate: { ...initialCommon, data: null, loading: false, error: false },
+    requestDeleteTemplate: { ...initialCommon, data: null, loading: false, error: false },
+
     channelList: initialListPaginatedState,
 
     facebookPages: initialListPaginatedState,
@@ -80,4 +100,19 @@ export default createReducer<IState>(initialState, {
     [actionTypes.INSTAGRAMDM_PAGES_SUCCESS]: caseFUnctions.instagramDMPagesSuccess,
     [actionTypes.INSTAGRAMDM_PAGES_FAILURE]: caseFUnctions.instagramDMPagesFailure,
     [actionTypes.INSTAGRAMDM_PAGES_RESET]: caseFUnctions.instagramDMPagesReset,
+
+    [actionTypes.SYNCHRONIZE_TEMPLATE]: caseFUnctions.synchronizeTemplate,
+    [actionTypes.SYNCHRONIZE_TEMPLATE_FAILURE]: caseFUnctions.synchronizeTemplateFailure,
+    [actionTypes.SYNCHRONIZE_TEMPLATE_SUCCESS]: caseFUnctions.synchronizeTemplateSuccess,
+    [actionTypes.SYNCHRONIZE_TEMPLATE_RESET]: caseFUnctions.synchronizeTemplateReset,
+
+    [actionTypes.ADD_TEMPLATE]: caseFUnctions.addTemplate,
+    [actionTypes.ADD_TEMPLATE_FAILURE]: caseFUnctions.addTemplateFailure,
+    [actionTypes.ADD_TEMPLATE_SUCCESS]: caseFUnctions.addTemplateSuccess,
+    [actionTypes.ADD_TEMPLATE_RESET]: caseFUnctions.addTemplateReset,
+
+    [actionTypes.DELETE_TEMPLATE]: caseFUnctions.deleteTemplate,
+    [actionTypes.DELETE_TEMPLATE_FAILURE]: caseFUnctions.deleteTemplateFailure,
+    [actionTypes.DELETE_TEMPLATE_SUCCESS]: caseFUnctions.deleteTemplateSuccess,
+    [actionTypes.DELETE_TEMPLATE_RESET]: caseFUnctions.deleteTemplateReset,
 });

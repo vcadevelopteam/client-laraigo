@@ -150,6 +150,10 @@ export const apiUrls = {
 
     VOXIMPLANT_GET_CALLRECORD: `${BASE_URL}/voximplant/getcallrecord`,
 
+    SYNCHRONIZE_TEMPLATE: `${BASE_URL}/channel/synchronizetemplate`,
+    ADD_TEMPLATE: `${BASE_URL}/channel/addtemplate`,
+    DELETE_TEMPLATE: `${BASE_URL}/channel/deletetemplate`,
+
     GOOGLE_EXCHANGECODE: `${BASE_URL}/google/exchangecode`,
     GOOGLE_LISTBLOGGER: `${BASE_URL}/google/listblogger`,
     GOOGLE_LISTYOUTUBE: `${BASE_URL}/google/listyoutube`,
