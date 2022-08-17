@@ -572,9 +572,9 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                                                     label={t(langKeys.analysis_type)}
                                                     className={classes.mb2}
                                                     error={errors?.services?.[i]?.analyzemode?.message}
-                                                    valueDefault={(item.analyzemode) ? item.analyzemode : analysis_type[0].value}
+                                                    valueDefault={getValues(`services.${i}.analyzemode`)}
                                                     onChange={(value) => {
-                                                        fieldUpdate(i, { ...fields[i], analyzemode: value.value })
+                                                        setValue(`services.${i}.analyzemode`, value?.value || "")
                                                     }}
                                                     data={analysis_type}
                                                     optionDesc="description"
