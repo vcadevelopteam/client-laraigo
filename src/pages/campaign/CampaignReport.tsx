@@ -256,7 +256,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                     {key: 'firstreplytime', alias: t(langKeys.firstreplytime)},
                     {key: 'finishdate', alias: t(langKeys.finishconversationdate)},
                     {key: 'finishtime', alias: t(langKeys.finishconversationtime)},
-                    {key: 'finishtime', alias: t(langKeys.templatetype)},
+                    {key: 'realduration', alias: t(langKeys.realduration)},
                     {key: 'classification', alias: t(langKeys.classification)},
                     {key: 'conversationid', alias: t(langKeys.conversationid)},
                     {key: 'status', alias: t(langKeys.status)},
