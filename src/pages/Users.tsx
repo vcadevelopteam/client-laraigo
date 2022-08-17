@@ -1300,7 +1300,7 @@ const Users: FC = () => {
                                 labels: "",
                                 groups: d.groups || "",
                                 channels: d.channels || "",
-                                status: d.status,
+                                status: "DESCONECTADO",
                                 type: domains?.value?.roles?.filter(x=>x.roleid===d.role)?.[0]?.roldesc||"",
                                 supervisor: "",
                                 operation: "INSERT",
