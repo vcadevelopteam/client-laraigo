@@ -183,7 +183,7 @@ const SignIn = () => {
     useEffect(() => {
         if (!resLogin.error && resLogin.user && getAccessToken()) {
             dispatch(connectAgentUI(resLogin.user.automaticConnection!!))
-            history.push(resLogin.user.redirect ? resLogin.user.redirect : "/supervisor");
+            window.open(resLogin.user.redirect ? resLogin.user.redirect : "/supervisor", "_self");
         }
     }, [resLogin]);
 
