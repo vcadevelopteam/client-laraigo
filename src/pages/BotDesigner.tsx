@@ -18,8 +18,10 @@ const BotDesigner: FC = () => {
 
     const receiveCrossDomainMessage = (event: any) => {
         if (event?.origin === origin) {
-            dispatch(chatblock_set(event.data.chatblock));
-            history.push(paths.VARIABLECONFIGURATION);
+            if (event?.data?.chatblock) {
+                dispatch(chatblock_set(event.data.chatblock));
+                history.push(paths.VARIABLECONFIGURATION);
+            }
         }
     }
 

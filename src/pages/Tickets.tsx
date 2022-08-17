@@ -11,7 +11,7 @@ import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Box from '@material-ui/core/Box/Box';
-import { DialogZyx, FieldMultiSelect, FieldSelect, FieldEditMulti } from 'components';
+import { DialogZyx, FieldMultiSelect, FieldSelect, FieldEditMulti, FieldMultiSelectVirtualized } from 'components';
 import TableZyx from 'components/fields/table-simple';
 import { DialogInteractions } from 'components';
 import { useForm } from 'react-hook-form';
@@ -49,6 +49,9 @@ const useStyles = makeStyles((theme) => ({
     },
     filterComponent: {
         width: '250px'
+    },
+    filterComponentVirtualized: {
+        width: '300px'
     },
     button: {
         padding: 12,
@@ -1299,9 +1302,9 @@ const Tickets = () => {
                             optionValue="userid"
                             disabled={mainPaginated.loading}
                         />
-                        <FieldMultiSelect
+                        <FieldMultiSelectVirtualized
                             label={t(langKeys.campaign)}
-                            className={classes.filterComponent}
+                            className={classes.filterComponentVirtualized}
                             key="fieldMultiSelect_campaign"
                             valueDefault={allParameters["campaignid"] || ""}
                             onChange={(value) => setValue("campaignid", value ? value.map((o: Dictionary) => o.id).join() : '')}
