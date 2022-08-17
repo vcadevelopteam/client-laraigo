@@ -1019,6 +1019,7 @@ const DashboardManagerial: FC = () => {
                         return { hora: i, asesoresconectados: "0", avgasesoresconectados: "0" }
                 })
                 setResAsesoreconectadosbar(arrayconbar)
+                console.log(arrayconbar)
                 let avg= arrayconbar.reduce((acc, x) => acc + Number(x.asesoresconectados),0)/24
                 setDataAsesoreconectadosbar({
                     avgasesoresconectados: avg.toFixed(2)
@@ -2102,7 +2103,7 @@ const DashboardManagerial: FC = () => {
                                     <Line type="monotone" dataKey="asesoresconectados" stroke="#8884d8" strokeWidth={2} />
                                     <CartesianGrid stroke="#ccc" />
                                     <XAxis domain={["",""]} type="category" dataKey="hora"><Label value={` ${t(langKeys.timeofday)} `} offset={-5} position="insideBottom" /></XAxis>
-                                    <YAxis><Label value={` ${t(langKeys.assesor_plural)} `} angle={-90} offset={0} position="insideLeft" /></YAxis>
+                                    <YAxis domain={[0, (auto:any) => Math.floor(auto * 1.3)]}><Label value={` ${t(langKeys.assesor_plural)} `} angle={-90} offset={0} position="insideLeft" /></YAxis>
                                     <RechartsTooltip />
                                 </LineChart>
                             </ResponsiveContainer>
