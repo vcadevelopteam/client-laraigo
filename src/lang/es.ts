@@ -539,6 +539,7 @@ const translation: LangKeys = {
     businesshours: "Horario de atención",
     starttime: "Hora de inicio",
     finishtime: "Hora de fin",
+    realduration: "Duración de conversación",
     linkcopysuccesfull: "Enlace copiado con éxito",
     newsupportplan: "Nuevo plan de soporte",
     newcontractedplanbyperiod: "Nuevo plan contratado",
