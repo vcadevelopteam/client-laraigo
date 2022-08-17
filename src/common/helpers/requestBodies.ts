@@ -2011,6 +2011,10 @@ export const getPropertyConfigurationsBody = (): IRequestBody[] => ([
         method: "UFN_PROPERTY_SELBYNAME",
         parameters: { propertyname: 'WAITINGREPETITIVEMESSAGE' },
     },
+    {
+        method: "UFN_PROPERTY_SELBYNAME",
+        parameters: { propertyname: 'AMBIENTE' },
+    },
 ]);
 
 export const insPersonBody = (person: Dictionary): IRequestBody => ({
