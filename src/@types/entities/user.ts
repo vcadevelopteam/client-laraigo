@@ -31,7 +31,7 @@ interface Properties {
     seconds_to_answer_call: number | undefined;
     waiting_customer_message: string | undefined;
     holding_by_supervisor: "CANAL" | "GRUPO" | undefined;
-
+    environment: string;
 }
 
 interface Domains {
